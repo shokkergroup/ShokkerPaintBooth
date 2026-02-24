@@ -1,0 +1,60 @@
+{
+  "name": "shokker-paint-booth-ag",
+  "version": "0.1.1-alpha",
+  "description": "Shokker Paint Booth AG — iRacing Spec Map Tool",
+  "main": "main.js",
+  "author": "Shokker Group",
+  "license": "UNLICENSED",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --win --x64"
+  },
+  "devDependencies": {
+    "electron": "33.4.11",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "com.shokker.paintbooth.ag",
+    "productName": "Shokker Paint Booth AG",
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": "nsis",
+      "icon": null,
+      "artifactName": "ShokkerPaintBoothAG-${version}-Setup.${ext}"
+    },
+    "nsis": {
+      "oneClick": true,
+      "allowToChangeInstallationDirectory": false,
+      "createDesktopShortcut": true,
+      "shortcutName": "Shokker Paint Booth AG"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "license.html",
+      "license-preload.js"
+    ],
+    "extraResources": [
+      {
+        "from": "server/shokker-paint-booth-ag.exe",
+        "to": "server/shokker-paint-booth-ag.exe"
+      },
+      {
+        "from": "server/paint-booth-v2.html",
+        "to": "server/paint-booth-v2.html"
+      }
+    ],
+    "asar": true,
+    "publish": {
+      "provider": "github",
+      "owner": "ShokkerGroup",
+      "repo": "ShokkerPaintBooth"
+    }
+  },
+  "dependencies": {
+    "electron-updater": "^6.8.3"
+  }
+}

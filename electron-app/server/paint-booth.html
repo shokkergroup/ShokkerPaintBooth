@@ -1,0 +1,1879 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SHOKKER PAINT BOOTH - Multi-Zone Paint Finish Studio</title>
+    <style>
+        :root {
+            --bg-dark: #0a0a0a;
+            --bg-card: #111118;
+            --bg-hover: #1a1a25;
+            --accent: #ff3366;
+            --accent-dim: #cc2952;
+            --accent-blue: #3366ff;
+            --accent-green: #33ff66;
+            --accent-gold: #ffaa00;
+            --accent-orange: #ff6600;
+            --text: #e0e0e0;
+            --text-dim: #888;
+            --text-bright: #fff;
+            --border: #2a2a38;
+            --success: #00ff88;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text);
+            line-height: 1.6;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            background: linear-gradient(135deg, var(--bg-card) 0%, #1a0a10 50%, #0a0a1a 100%);
+            border-bottom: 2px solid var(--accent);
+            padding: 10px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 100;
+        }
+        .header h1 {
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            background: linear-gradient(90deg, var(--accent), #ff6699, var(--accent-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .header .subtitle {
+            font-size: 11px;
+            color: var(--text-dim);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .version-badge {
+            background: var(--accent);
+            color: #000;
+            padding: 3px 10px;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: 700;
+        }
+        .back-link {
+            color: var(--text-dim);
+            text-decoration: none;
+            font-size: 12px;
+            padding: 4px 10px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+        .back-link:hover { color: var(--accent); border-color: var(--accent); }
+
+        /* ===== MAIN LAYOUT ===== */
+        .main-container {
+            display: grid;
+            grid-template-columns: 300px 1fr 340px;
+            height: calc(100vh - 52px);
+        }
+
+        /* ===== LEFT PANEL ===== */
+        .left-panel {
+            background: var(--bg-card);
+            border-right: 1px solid var(--border);
+            overflow-y: auto;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+        }
+        .panel-title {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .panel-title .count {
+            font-size: 10px;
+            color: var(--text-dim);
+            font-weight: 400;
+            letter-spacing: 0;
+        }
+
+        /* Zone Items */
+        .zone-item {
+            background: var(--bg-hover);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px 12px;
+            margin-bottom: 6px;
+            cursor: pointer;
+            transition: all 0.15s;
+            position: relative;
+        }
+        .zone-item:hover { border-color: var(--accent); }
+        .zone-item.active {
+            border-color: var(--accent);
+            background: linear-gradient(135deg, rgba(255,51,102,0.08) 0%, rgba(51,102,255,0.05) 100%);
+            box-shadow: 0 0 12px rgba(255,51,102,0.15);
+        }
+        .zone-item.has-finish { border-left: 3px solid var(--accent-green); }
+        .zone-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+        .zone-name-area {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+            min-width: 0;
+        }
+        .zone-color-dot {
+            width: 14px; height: 14px;
+            border-radius: 3px;
+            border: 1px solid rgba(255,255,255,0.2);
+            flex-shrink: 0;
+        }
+        .zone-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-bright);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .zone-finish-badge {
+            font-size: 9px;
+            background: rgba(0,204,102,0.15);
+            color: var(--accent-green);
+            padding: 2px 7px;
+            border-radius: 8px;
+            white-space: nowrap;
+            font-weight: 600;
+        }
+        .zone-desc {
+            font-size: 11px;
+            color: var(--text-dim);
+            margin-top: 3px;
+            padding-left: 22px;
+        }
+        .zone-delete {
+            position: absolute;
+            top: 4px; right: 4px;
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            cursor: pointer;
+            font-size: 11px;
+            opacity: 0;
+            transition: opacity 0.2s;
+            padding: 2px 5px;
+        }
+        .zone-item:hover .zone-delete { opacity: 0.5; }
+        .zone-delete:hover { opacity: 1 !important; color: #ff4444; }
+
+        /* Add Zone Button */
+        .add-zone-btn {
+            width: 100%;
+            background: transparent;
+            border: 2px dashed var(--border);
+            border-radius: 8px;
+            padding: 10px;
+            color: var(--text-dim);
+            cursor: pointer;
+            text-align: center;
+            font-size: 12px;
+            transition: all 0.2s;
+            margin-top: 4px;
+        }
+        .add-zone-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+        /* Car Info */
+        .car-info {
+            margin-top: auto;
+            padding-top: 12px;
+            border-top: 1px solid var(--border);
+        }
+        .car-info-field {
+            margin-bottom: 6px;
+        }
+        .car-info-field label {
+            font-size: 10px;
+            color: var(--text-dim);
+            display: block;
+            margin-bottom: 2px;
+        }
+        .car-info-field input {
+            width: 100%;
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            padding: 5px 8px;
+            color: var(--text);
+            font-size: 11px;
+        }
+        .car-info-field input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        /* Presets */
+        .presets-bar {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+        .preset-btn {
+            padding: 4px 8px;
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            color: var(--text-dim);
+            cursor: pointer;
+            font-size: 10px;
+            transition: all 0.2s;
+        }
+        .preset-btn:hover { border-color: var(--accent-gold); color: var(--accent-gold); }
+
+        /* ===== CENTER PANEL ===== */
+        .center-panel {
+            background: #080810;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .canvas-toolbar {
+            position: absolute;
+            top: 10px; left: 10px;
+            display: flex;
+            gap: 4px;
+            z-index: 10;
+        }
+        .tool-btn {
+            background: rgba(17,17,24,0.92);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 5px 11px;
+            color: var(--text-dim);
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 600;
+            transition: all 0.15s;
+        }
+        .tool-btn:hover { border-color: var(--accent); color: var(--text); }
+        .tool-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(255,51,102,0.1); }
+        .tool-btn .shortcut {
+            font-size: 9px;
+            color: var(--text-dim);
+            margin-left: 3px;
+            opacity: 0.5;
+        }
+
+        .canvas-container {
+            position: relative;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        #mainCanvas {
+            cursor: crosshair;
+            display: block;
+        }
+
+        .brush-bar {
+            position: absolute;
+            bottom: 10px; left: 10px;
+            background: rgba(17,17,24,0.92);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 6px 12px;
+            color: var(--text-dim);
+            font-size: 11px;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .brush-bar input[type="range"] {
+            width: 100px;
+            accent-color: var(--accent);
+        }
+
+        .canvas-status {
+            position: absolute;
+            bottom: 10px; right: 10px;
+            background: rgba(17,17,24,0.92);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 6px 12px;
+            color: var(--text-dim);
+            font-size: 10px;
+            z-index: 10;
+        }
+
+        .upload-area {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        .upload-area.hidden { opacity: 0; }
+        .upload-area .icon { font-size: 48px; margin-bottom: 10px; opacity: 0.3; }
+        .upload-area .text { color: var(--text-dim); font-size: 14px; }
+        .upload-area .hint { color: var(--text-dim); font-size: 11px; margin-top: 6px; opacity: 0.5; }
+        .upload-btn-area {
+            position: absolute;
+            top: 10px; right: 10px;
+            z-index: 10;
+        }
+        .upload-file-btn {
+            background: rgba(17,17,24,0.92);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 5px 11px;
+            color: var(--text-dim);
+            cursor: pointer;
+            font-size: 11px;
+            transition: all 0.15s;
+        }
+        .upload-file-btn:hover { border-color: var(--accent-green); color: var(--accent-green); }
+
+        /* ===== RIGHT PANEL ===== */
+        .right-panel {
+            background: var(--bg-card);
+            border-left: 1px solid var(--border);
+            overflow-y: auto;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Intensity Section */
+        .intensity-section {
+            background: var(--bg-hover);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px 12px;
+            margin-bottom: 12px;
+        }
+        .intensity-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            color: var(--text-dim);
+            margin-bottom: 6px;
+        }
+        .intensity-value {
+            color: var(--accent-orange);
+            font-weight: 700;
+        }
+        .intensity-section input[type="range"] {
+            width: 100%;
+            accent-color: var(--accent-orange);
+        }
+        .intensity-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 9px;
+            color: #555;
+            margin-top: 3px;
+        }
+
+        /* Finish Categories */
+        .finish-scroll { flex: 1; overflow-y: auto; }
+        .finish-category { margin-bottom: 12px; }
+        .finish-category-title {
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 6px;
+            padding-bottom: 4px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .finish-option {
+            background: var(--bg-hover);
+            border: 1px solid var(--border);
+            border-radius: 7px;
+            padding: 8px 10px;
+            margin-bottom: 4px;
+            cursor: pointer;
+            transition: all 0.15s;
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }
+        .finish-option:hover { border-color: var(--accent); }
+        .finish-option.selected {
+            border-color: var(--accent-green);
+            background: rgba(0,204,102,0.06);
+        }
+        .finish-swatch {
+            width: 28px; height: 28px;
+            border-radius: 5px;
+            border: 1px solid rgba(255,255,255,0.1);
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+        .finish-info { flex: 1; min-width: 0; }
+        .finish-name {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-bright);
+        }
+        .finish-desc {
+            font-size: 10px;
+            color: var(--text-dim);
+            margin-top: 1px;
+        }
+        .finish-tags {
+            display: flex;
+            gap: 4px;
+            margin-top: 4px;
+        }
+        .finish-tag {
+            font-size: 9px;
+            padding: 1px 6px;
+            border-radius: 6px;
+        }
+        .finish-tag.spec-only { background: rgba(0,204,102,0.12); color: #4c4; }
+        .finish-tag.paint-mod { background: rgba(255,102,0,0.12); color: #f84; }
+
+        /* Generate Section */
+        .generate-section {
+            margin-top: auto;
+            padding-top: 12px;
+            border-top: 1px solid var(--border);
+        }
+        .generate-btn {
+            width: 100%;
+            background: linear-gradient(135deg, var(--accent), var(--accent-dim));
+            border: none;
+            border-radius: 8px;
+            padding: 12px;
+            color: var(--text-bright);
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            letter-spacing: 1px;
+            transition: all 0.2s;
+        }
+        .generate-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 20px rgba(255,51,102,0.3); }
+        .copy-prompt-btn {
+            width: 100%;
+            background: transparent;
+            border: 1px solid var(--accent);
+            border-radius: 8px;
+            padding: 8px;
+            color: var(--accent);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 6px;
+            transition: all 0.2s;
+        }
+        .copy-prompt-btn:hover { background: rgba(255,51,102,0.1); }
+        .export-json-btn {
+            width: 100%;
+            background: transparent;
+            border: 1px solid var(--accent-blue);
+            border-radius: 8px;
+            padding: 8px;
+            color: var(--accent-blue);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 6px;
+            transition: all 0.2s;
+        }
+        .export-json-btn:hover { background: rgba(51,102,255,0.1); }
+
+        /* ===== MODAL ===== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-overlay.show { display: flex; }
+        .modal {
+            background: var(--bg-card);
+            border: 1px solid var(--accent);
+            border-radius: 12px;
+            padding: 24px;
+            max-width: 750px;
+            width: 92%;
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+        .modal h2 {
+            color: var(--accent);
+            font-size: 18px;
+            margin-bottom: 4px;
+        }
+        .modal .modal-subtitle {
+            color: var(--text-dim);
+            font-size: 12px;
+            margin-bottom: 16px;
+        }
+        .prompt-output {
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 11px;
+            color: var(--text);
+            white-space: pre-wrap;
+            line-height: 1.6;
+            max-height: 50vh;
+            overflow-y: auto;
+        }
+        .modal-buttons {
+            display: flex;
+            gap: 8px;
+            margin-top: 16px;
+        }
+        .modal-buttons button {
+            flex: 1;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+            border: none;
+            transition: all 0.2s;
+        }
+        .btn-copy-prompt { background: var(--accent); color: var(--text-bright); }
+        .btn-copy-prompt:hover { opacity: 0.9; }
+        .btn-copy-prompt.copied { background: var(--success); color: #000; }
+        .btn-close-modal { background: var(--bg-hover); color: var(--text-dim); border: 1px solid var(--border) !important; }
+        .btn-close-modal:hover { color: var(--text); }
+
+        /* ===== TOAST ===== */
+        .toast {
+            position: fixed;
+            bottom: 20px; left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: var(--success);
+            color: #000;
+            padding: 8px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 12px;
+            transition: transform 0.3s;
+            z-index: 2000;
+        }
+        .toast.show { transform: translateX(-50%) translateY(0); }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1100px) {
+            .main-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto 1fr auto;
+            }
+            .left-panel, .right-panel { max-height: 40vh; }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #444; }
+    </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+    <div>
+        <h1>SHOKKER PAINT BOOTH</h1>
+        <div class="subtitle">Multi-Zone Paint Finish Studio</div>
+    </div>
+    <div class="header-right">
+        <span class="version-badge">v1.0 BETA</span>
+    </div>
+</div>
+
+<!-- MAIN LAYOUT -->
+<div class="main-container">
+
+    <!-- ===== LEFT PANEL: Zone Manager ===== -->
+    <div class="left-panel">
+        <div class="panel-title">
+            Paint Zones
+            <span class="count" id="zoneCount">6 zones</span>
+        </div>
+
+        <div class="presets-bar">
+            <button class="preset-btn" onclick="applyPreset('gloss')">Full Gloss</button>
+            <button class="preset-btn" onclick="applyPreset('metallic')">All Metal</button>
+            <button class="preset-btn" onclick="applyPreset('showcar')">Show Car</button>
+            <button class="preset-btn" onclick="applyPreset('clear')">Clear All</button>
+        </div>
+
+        <div id="zoneList"></div>
+
+        <button class="add-zone-btn" onclick="addZone()">+ Add Custom Zone</button>
+
+        <div class="car-info">
+            <div class="panel-title" style="margin-top:12px;">Car Info</div>
+            <div class="car-info-field">
+                <label>Car Name</label>
+                <input type="text" id="carName" value="Superman #51 ARCA" placeholder="My Car">
+            </div>
+            <div class="car-info-field">
+                <label>iRacing ID</label>
+                <input type="text" id="iracingId" value="23371">
+            </div>
+            <div class="car-info-field">
+                <label>Paint File Path</label>
+                <input type="text" id="paintPath" placeholder="E:\path\to\car.tga">
+            </div>
+            <div class="car-info-field">
+                <label>Output Folder</label>
+                <input type="text" id="outputPath" placeholder="E:\path\to\output">
+            </div>
+            <div style="display:flex;gap:4px;margin-top:8px;">
+                <button class="preset-btn" onclick="saveConfig()" style="flex:1;">Save Config</button>
+                <button class="preset-btn" onclick="loadConfig()" style="flex:1;">Load Config</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== CENTER PANEL: Canvas ===== -->
+    <div class="center-panel" id="centerPanel">
+        <div class="canvas-toolbar">
+            <button class="tool-btn active" data-tool="paint" onclick="setTool('paint')">Paint <span class="shortcut">B</span></button>
+            <button class="tool-btn" data-tool="erase" onclick="setTool('erase')">Erase <span class="shortcut">E</span></button>
+            <button class="tool-btn" data-tool="rect" onclick="setTool('rect')">Rect <span class="shortcut">R</span></button>
+            <button class="tool-btn" data-tool="fill" onclick="setTool('fill')">Fill <span class="shortcut">F</span></button>
+        </div>
+
+        <div class="upload-btn-area">
+            <button class="upload-file-btn" onclick="document.getElementById('fileInput').click()">Upload Image</button>
+            <input type="file" id="fileInput" accept="image/*" style="display:none;" onchange="handleFileUpload(event)">
+        </div>
+
+        <div class="canvas-container">
+            <canvas id="mainCanvas" width="700" height="700"></canvas>
+        </div>
+
+        <div class="brush-bar">
+            Brush: <span id="brushLabel">30</span>px
+            <input type="range" min="3" max="150" value="30" id="brushSlider" oninput="updateBrush()">
+        </div>
+
+        <div class="canvas-status" id="canvasStatus">No image loaded</div>
+
+        <div class="upload-area" id="uploadHint">
+            <div class="icon">&#x1F3A8;</div>
+            <div class="text">Drop your car's UV flat image here</div>
+            <div class="hint">PNG, JPG, or screenshot of your TGA</div>
+        </div>
+    </div>
+
+    <!-- ===== RIGHT PANEL: Finish Selector ===== -->
+    <div class="right-panel">
+        <div class="panel-title">
+            Assign Finish
+            <span class="count" id="selectedZoneLabel">Select a zone</span>
+        </div>
+
+        <div class="intensity-section">
+            <div class="intensity-header">
+                <span>Effect Intensity</span>
+                <span class="intensity-value" id="intensityLabel">100%</span>
+            </div>
+            <input type="range" min="0" max="14" value="9" id="intensitySlider" oninput="updateIntensity()">
+            <div class="intensity-labels" style="display:flex;justify-content:space-between;">
+                <span>10%</span><span>50%</span><span>100%</span><span>150%</span>
+            </div>
+        </div>
+
+        <div class="finish-scroll" id="finishList"></div>
+
+        <div class="generate-section">
+            <button class="generate-btn" onclick="generatePrompt()">
+                GENERATE BUILD PROMPT
+            </button>
+            <button class="copy-prompt-btn" onclick="generateAndCopy()">
+                Copy Prompt to Clipboard
+            </button>
+            <button class="export-json-btn" onclick="exportJSON()">
+                Export Zone Config (JSON)
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- PROMPT MODAL -->
+<div class="modal-overlay" id="promptModal">
+    <div class="modal">
+        <h2>Build Prompt for Claude</h2>
+        <p class="modal-subtitle">Copy this prompt and paste it to Claude Code to generate your multi-zone paint finish.</p>
+        <div class="prompt-output" id="promptOutput"></div>
+        <div class="modal-buttons">
+            <button class="btn-copy-prompt" onclick="copyPrompt()">Copy to Clipboard</button>
+            <button class="btn-close-modal" onclick="closeModal()">Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ================================================================
+// FINISH DATABASE
+// ================================================================
+const FINISHES = {
+    standard: {
+        label: "STANDARD",
+        items: [
+            { id: "gloss", name: "Gloss", desc: "Standard glossy clear coat", specOnly: true, swatch: "linear-gradient(135deg, #444 0%, #888 40%, #fff 50%, #888 60%, #444 100%)",
+              spec: { metallic: 0, roughness: 30, clearcoat: 16, specmask: 255 } },
+            { id: "matte", name: "Matte", desc: "Flat/dead finish, no reflections", specOnly: true, swatch: "linear-gradient(135deg, #333 0%, #555 100%)",
+              spec: { metallic: 0, roughness: 200, clearcoat: 0, specmask: 200 } },
+            { id: "satin", name: "Satin", desc: "Between gloss and matte, subtle sheen", specOnly: true, swatch: "linear-gradient(135deg, #3a3a3a 0%, #666 50%, #3a3a3a 100%)",
+              spec: { metallic: 0, roughness: 100, clearcoat: 8, specmask: 230 } }
+        ]
+    },
+    metallic: {
+        label: "METALLIC",
+        items: [
+            { id: "metallic", name: "Metallic", desc: "Standard metallic car paint with fine flake", specOnly: false, swatch: "linear-gradient(135deg, #4a4a4a 0%, #aaa 40%, #fff 50%, #aaa 60%, #4a4a4a 100%)",
+              spec: { metallic: 200, roughness: 60, clearcoat: 16, specmask: 255 } },
+            { id: "pearl", name: "Pearl", desc: "Pearlescent color-shift shimmer", specOnly: false, swatch: "linear-gradient(135deg, #ffe0f0 0%, #e0f0ff 50%, #fff0e0 100%)",
+              spec: { metallic: 160, roughness: 40, clearcoat: 16, specmask: 255 } },
+            { id: "chrome", name: "Chrome", desc: "Mirror chrome finish (brightens paint)", specOnly: false, swatch: "linear-gradient(135deg, #999 0%, #fff 45%, #eee 50%, #fff 55%, #999 100%)",
+              spec: { metallic: 255, roughness: 10, clearcoat: 16, specmask: 255 } },
+            { id: "satin_metal", name: "Satin Metal", desc: "Brushed/satin metallic texture", specOnly: false, swatch: "linear-gradient(135deg, #555 0%, #888 50%, #555 100%)",
+              spec: { metallic: 180, roughness: 100, clearcoat: 8, specmask: 240 } }
+        ]
+    },
+    flake: {
+        label: "PREMIUM FLAKE",
+        items: [
+            { id: "metal_flake", name: "Metal Flake", desc: "Visible glitter particles at multiple scales", specOnly: false, swatch: "linear-gradient(135deg, #555 0%, #aaa 30%, #fff 35%, #aaa 40%, #555 100%)",
+              spec: { metallic: 220, roughness: 50, clearcoat: 16, specmask: 255 } },
+            { id: "holographic_flake", name: "Holographic Flake", desc: "Rainbow-shifting flake (Neonizm technique)", specOnly: false, swatch: "linear-gradient(135deg, #ff3366 0%, #33ff66 25%, #3366ff 50%, #ffaa00 75%, #ff3366 100%)",
+              spec: { metallic: 230, roughness: 45, clearcoat: 16, specmask: 255 } },
+            { id: "galaxy_flake", name: "Galaxy Flake", desc: "Dense rainbow sparkle dots", specOnly: false, swatch: "linear-gradient(135deg, #110033 0%, #ff33aa 30%, #3366ff 60%, #00ffaa 100%)",
+              spec: { metallic: 240, roughness: 40, clearcoat: 16, specmask: 255 } }
+        ]
+    },
+    specialty: {
+        label: "SPECIALTY",
+        items: [
+            { id: "candy", name: "Candy", desc: "Deep saturated candy coat over metallic", specOnly: false, swatch: "linear-gradient(135deg, #880022 0%, #ff3366 50%, #880022 100%)",
+              spec: { metallic: 180, roughness: 35, clearcoat: 16, specmask: 255 } },
+            { id: "chameleon", name: "Chameleon", desc: "Color-shift teal/purple chameleon", specOnly: false, swatch: "linear-gradient(135deg, #3366ff 0%, #33ffaa 33%, #cc33ff 66%, #3366ff 100%)",
+              spec: { metallic: 200, roughness: 40, clearcoat: 16, specmask: 255 } },
+            { id: "anodized", name: "Anodized", desc: "Brushed anodized aluminum look", specOnly: false, swatch: "linear-gradient(90deg, #444 0%, #777 30%, #555 60%, #888 100%)",
+              spec: { metallic: 220, roughness: 80, clearcoat: 4, specmask: 240 } },
+            { id: "prismatic", name: "Prismatic", desc: "Full rainbow color bands with flake", specOnly: false, swatch: "linear-gradient(135deg, #ff0000 0%, #ff8800 17%, #ffff00 33%, #00ff00 50%, #0088ff 67%, #8800ff 83%, #ff0088 100%)",
+              spec: { metallic: 230, roughness: 45, clearcoat: 16, specmask: 255 } },
+            { id: "frozen", name: "Frozen", desc: "Matte metallic ice finish", specOnly: false, swatch: "linear-gradient(135deg, #aaccdd 0%, #ddeeff 50%, #99bbcc 100%)",
+              spec: { metallic: 180, roughness: 140, clearcoat: 4, specmask: 220 } },
+            { id: "carbon_fiber", name: "Carbon Fiber", desc: "Carbon weave texture pattern", specOnly: false, swatch: "repeating-linear-gradient(45deg, #222 0px, #222 2px, #333 2px, #333 4px)",
+              spec: { metallic: 80, roughness: 90, clearcoat: 16, specmask: 240 } }
+        ]
+    },
+    premium: {
+        label: "NEW PREMIUM",
+        items: [
+            { id: "oil_slick", name: "Oil Slick", desc: "Dark iridescent rainbow (oil on water)", specOnly: false, swatch: "linear-gradient(135deg, #110022 0%, #ff33aa 25%, #3366ff 50%, #33ffaa 75%, #110022 100%)",
+              spec: { metallic: 240, roughness: 35, clearcoat: 16, specmask: 255 } },
+            { id: "lava_flake", name: "Lava Flake", desc: "Red/orange/gold shifting metallic", specOnly: false, swatch: "linear-gradient(135deg, #ff2200 0%, #ff8800 33%, #ffcc00 66%, #ff4400 100%)",
+              spec: { metallic: 230, roughness: 50, clearcoat: 16, specmask: 255 } },
+            { id: "electric", name: "Electric", desc: "Neon blue/purple energy shimmer", specOnly: false, swatch: "linear-gradient(135deg, #0022ff 0%, #8800ff 50%, #00ccff 100%)",
+              spec: { metallic: 220, roughness: 40, clearcoat: 16, specmask: 255 } },
+            { id: "frost_bite", name: "Frost Bite", desc: "Ice blue crystalline metallic", specOnly: false, swatch: "linear-gradient(135deg, #88ccff 0%, #ffffff 40%, #aaddff 60%, #66bbff 100%)",
+              spec: { metallic: 200, roughness: 60, clearcoat: 12, specmask: 250 } }
+        ]
+    }
+};
+
+const INTENSITY_NAMES = ['10', '20', '30', '40', '50', '60', '70', '80', '90', '100', '110', '120', '130', '140', '150'];
+const INTENSITY_LABELS = ['10%', '20%', '30%', '40%', '50%', '60%', '70%', '80%', '90%', '100%', '110%', '120%', '130%', '140%', '150%'];
+
+// ================================================================
+// STATE
+// ================================================================
+let zones = [];
+let selectedZoneIdx = -1;
+let currentTool = 'paint';
+let brushSize = 30;
+let isDrawing = false;
+let carImage = null;
+let rectStart = null;
+
+const ZONE_COLORS = [
+    '#ff3366', '#33ff88', '#3388ff', '#ffaa00', '#ff33ff',
+    '#33ffee', '#ff8833', '#aa33ff', '#88ff33', '#ff5577',
+    '#33aaff', '#ffff44', '#ff33aa', '#55ff99', '#8855ff',
+    '#ff6644', '#44ff66', '#4466ff', '#ffcc33', '#cc33ff'
+];
+let nextColorIdx = 0;
+
+// ================================================================
+// INITIALIZATION
+// ================================================================
+function init() {
+    const defaults = [
+        { name: "Base / Body", desc: "Main body panels and base color areas" },
+        { name: "Numbers", desc: "Door numbers, roof number" },
+        { name: "Sponsors / Logos", desc: "Sponsor decals and logo areas" },
+        { name: "Hood", desc: "Hood artwork / design area" },
+        { name: "Stripes / Accents", desc: "Stripes, pinstripes, design accents" },
+        { name: "Roof / Spoiler", desc: "Roof and rear spoiler" }
+    ];
+
+    defaults.forEach(d => {
+        zones.push({
+            name: d.name,
+            desc: d.desc,
+            finish: null,
+            intensity: 9,
+            color: ZONE_COLORS[nextColorIdx++ % ZONE_COLORS.length],
+            mask: null
+        });
+    });
+
+    renderZones();
+    renderFinishes();
+    setupCanvas();
+    setupDragDrop();
+    setupKeyboard();
+    loadConfig(true); // silent load
+}
+
+// ================================================================
+// ZONE RENDERING
+// ================================================================
+function renderZones() {
+    const el = document.getElementById('zoneList');
+    el.innerHTML = zones.map((z, i) => `
+        <div class="zone-item ${i === selectedZoneIdx ? 'active' : ''} ${z.finish ? 'has-finish' : ''}"
+             onclick="selectZone(${i})">
+            <button class="zone-delete" onclick="event.stopPropagation(); deleteZone(${i});" title="Delete zone">&times;</button>
+            <div class="zone-header">
+                <div class="zone-name-area">
+                    <div class="zone-color-dot" style="background:${z.color}"></div>
+                    <span class="zone-name">${z.name}</span>
+                </div>
+                ${z.finish ? `<span class="zone-finish-badge">${getFinishName(z.finish)}</span>` : ''}
+            </div>
+            <div class="zone-desc">${z.desc}</div>
+        </div>
+    `).join('');
+
+    document.getElementById('zoneCount').textContent = zones.length + ' zone' + (zones.length !== 1 ? 's' : '');
+    updateSelectedZoneLabel();
+}
+
+function selectZone(idx) {
+    selectedZoneIdx = idx;
+    renderZones();
+    renderFinishes();
+    if (zones[idx]) {
+        document.getElementById('intensitySlider').value = zones[idx].intensity;
+        updateIntensity();
+    }
+    redrawCanvas();
+}
+
+function addZone() {
+    const name = prompt('Zone name:', 'Zone ' + (zones.length + 1));
+    if (!name) return;
+    const desc = prompt('Description:', 'Custom area');
+    zones.push({
+        name,
+        desc: desc || '',
+        finish: null,
+        intensity: 9,
+        color: ZONE_COLORS[nextColorIdx++ % ZONE_COLORS.length],
+        mask: null
+    });
+    renderZones();
+    selectZone(zones.length - 1);
+}
+
+function deleteZone(idx) {
+    if (!confirm('Delete zone "' + zones[idx].name + '"?')) return;
+    zones.splice(idx, 1);
+    if (selectedZoneIdx >= zones.length) selectedZoneIdx = zones.length - 1;
+    renderZones();
+    redrawCanvas();
+}
+
+function updateSelectedZoneLabel() {
+    const label = document.getElementById('selectedZoneLabel');
+    if (selectedZoneIdx >= 0 && zones[selectedZoneIdx]) {
+        label.textContent = zones[selectedZoneIdx].name;
+        label.style.color = 'var(--accent)';
+    } else {
+        label.textContent = 'Select a zone';
+        label.style.color = '';
+    }
+}
+
+function getFinishName(id) {
+    for (const cat of Object.values(FINISHES)) {
+        const f = cat.items.find(i => i.id === id);
+        if (f) return f.name;
+    }
+    return id;
+}
+
+function findFinish(id) {
+    for (const cat of Object.values(FINISHES)) {
+        const f = cat.items.find(i => i.id === id);
+        if (f) return f;
+    }
+    return null;
+}
+
+// ================================================================
+// FINISH RENDERING
+// ================================================================
+function renderFinishes() {
+    const el = document.getElementById('finishList');
+    let html = '';
+
+    for (const [key, cat] of Object.entries(FINISHES)) {
+        html += `<div class="finish-category">
+            <div class="finish-category-title">${cat.label}</div>`;
+
+        for (const f of cat.items) {
+            const isSelected = selectedZoneIdx >= 0 && zones[selectedZoneIdx] && zones[selectedZoneIdx].finish === f.id;
+            html += `
+            <div class="finish-option ${isSelected ? 'selected' : ''}" onclick="assignFinish('${f.id}')">
+                <div class="finish-swatch" style="background:${f.swatch}"></div>
+                <div class="finish-info">
+                    <div class="finish-name">${f.name}</div>
+                    <div class="finish-desc">${f.desc}</div>
+                    <div class="finish-tags">
+                        ${f.specOnly ? '<span class="finish-tag spec-only">Spec Only</span>' : '<span class="finish-tag paint-mod">Paint Mod</span>'}
+                    </div>
+                </div>
+            </div>`;
+        }
+        html += '</div>';
+    }
+
+    el.innerHTML = html;
+}
+
+function assignFinish(finishId) {
+    if (selectedZoneIdx < 0) {
+        showToast('Select a zone first!', '#ff4444');
+        return;
+    }
+    zones[selectedZoneIdx].finish = finishId;
+    renderZones();
+    renderFinishes();
+    redrawCanvas();
+    showToast(getFinishName(finishId) + ' assigned to ' + zones[selectedZoneIdx].name);
+}
+
+function updateIntensity() {
+    const val = parseInt(document.getElementById('intensitySlider').value);
+    document.getElementById('intensityLabel').textContent = INTENSITY_LABELS[val];
+    if (selectedZoneIdx >= 0 && zones[selectedZoneIdx]) {
+        zones[selectedZoneIdx].intensity = val;
+    }
+}
+
+// ================================================================
+// PRESETS
+// ================================================================
+function applyPreset(type) {
+    zones.forEach(z => {
+        switch(type) {
+            case 'gloss': z.finish = 'gloss'; z.intensity = 2; break;
+            case 'metallic': z.finish = 'metallic'; z.intensity = 2; break;
+            case 'showcar':
+                if (z.name.toLowerCase().includes('base') || z.name.toLowerCase().includes('body'))
+                    { z.finish = 'frost_bite'; z.intensity = 2; }
+                else if (z.name.toLowerCase().includes('number'))
+                    { z.finish = 'prismatic'; z.intensity = 3; }
+                else if (z.name.toLowerCase().includes('sponsor') || z.name.toLowerCase().includes('logo'))
+                    { z.finish = 'gloss'; z.intensity = 1; }
+                else if (z.name.toLowerCase().includes('stripe') || z.name.toLowerCase().includes('accent'))
+                    { z.finish = 'holographic_flake'; z.intensity = 2; }
+                else if (z.name.toLowerCase().includes('hood'))
+                    { z.finish = 'metal_flake'; z.intensity = 2; }
+                else { z.finish = 'metallic'; z.intensity = 2; }
+                break;
+            case 'clear': z.finish = null; z.intensity = 2; break;
+        }
+    });
+    renderZones();
+    renderFinishes();
+    showToast('Preset applied: ' + type);
+}
+
+// ================================================================
+// CANVAS
+// ================================================================
+function setupCanvas() {
+    const canvas = document.getElementById('mainCanvas');
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#0d0d16';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    canvas.addEventListener('mousedown', onMouseDown);
+    canvas.addEventListener('mousemove', onMouseMove);
+    canvas.addEventListener('mouseup', onMouseUp);
+    canvas.addEventListener('mouseleave', onMouseUp);
+}
+
+function setupDragDrop() {
+    const panel = document.getElementById('centerPanel');
+    panel.addEventListener('dragover', e => { e.preventDefault(); panel.style.outline = '2px solid var(--accent)'; });
+    panel.addEventListener('dragleave', () => { panel.style.outline = 'none'; });
+    panel.addEventListener('drop', e => {
+        e.preventDefault();
+        panel.style.outline = 'none';
+        const file = e.dataTransfer.files[0];
+        if (file) loadImage(file);
+    });
+}
+
+function handleFileUpload(e) {
+    const file = e.target.files[0];
+    if (file) loadImage(file);
+}
+
+function loadImage(file) {
+    const reader = new FileReader();
+    reader.onload = e => {
+        const img = new Image();
+        img.onload = () => {
+            carImage = img;
+            document.getElementById('uploadHint').classList.add('hidden');
+            document.getElementById('canvasStatus').textContent = img.width + 'x' + img.height + ' loaded';
+            redrawCanvas();
+        };
+        img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+}
+
+function redrawCanvas() {
+    const canvas = document.getElementById('mainCanvas');
+    const ctx = canvas.getContext('2d');
+
+    // Background
+    if (carImage) {
+        ctx.drawImage(carImage, 0, 0, canvas.width, canvas.height);
+    } else {
+        ctx.fillStyle = '#0d0d16';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+
+    // Zone overlays
+    zones.forEach((z, idx) => {
+        if (z.mask) {
+            ctx.globalAlpha = (idx === selectedZoneIdx) ? 0.45 : 0.2;
+            ctx.drawImage(z.mask, 0, 0);
+            ctx.globalAlpha = 1.0;
+        }
+    });
+}
+
+function getZoneMask(idx) {
+    if (!zones[idx].mask) {
+        const c = document.createElement('canvas');
+        c.width = 700; c.height = 700;
+        zones[idx].mask = c;
+    }
+    return zones[idx].mask;
+}
+
+function paintAt(x, y) {
+    if (selectedZoneIdx < 0) return;
+    const mask = getZoneMask(selectedZoneIdx);
+    const ctx = mask.getContext('2d');
+
+    if (currentTool === 'erase') {
+        ctx.globalCompositeOperation = 'destination-out';
+        ctx.beginPath();
+        ctx.arc(x, y, brushSize, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalCompositeOperation = 'source-over';
+    } else {
+        ctx.fillStyle = zones[selectedZoneIdx].color;
+        ctx.beginPath();
+        ctx.arc(x, y, brushSize, 0, Math.PI * 2);
+        ctx.fill();
+    }
+    redrawCanvas();
+}
+
+function onMouseDown(e) {
+    const x = e.offsetX, y = e.offsetY;
+    if (currentTool === 'rect') {
+        rectStart = { x, y };
+    } else if (currentTool === 'fill') {
+        if (selectedZoneIdx >= 0) {
+            const mask = getZoneMask(selectedZoneIdx);
+            const ctx = mask.getContext('2d');
+            ctx.fillStyle = zones[selectedZoneIdx].color;
+            ctx.fillRect(0, 0, 700, 700);
+            redrawCanvas();
+        }
+    } else {
+        isDrawing = true;
+        paintAt(x, y);
+    }
+}
+
+function onMouseMove(e) {
+    if (isDrawing && (currentTool === 'paint' || currentTool === 'erase')) {
+        paintAt(e.offsetX, e.offsetY);
+    }
+}
+
+function onMouseUp(e) {
+    if (currentTool === 'rect' && rectStart) {
+        if (selectedZoneIdx >= 0) {
+            const mask = getZoneMask(selectedZoneIdx);
+            const ctx = mask.getContext('2d');
+            ctx.fillStyle = zones[selectedZoneIdx].color;
+            const x1 = Math.min(rectStart.x, e.offsetX);
+            const y1 = Math.min(rectStart.y, e.offsetY);
+            const w = Math.abs(e.offsetX - rectStart.x);
+            const h = Math.abs(e.offsetY - rectStart.y);
+            ctx.fillRect(x1, y1, w, h);
+            redrawCanvas();
+        }
+        rectStart = null;
+    }
+    isDrawing = false;
+}
+
+function setTool(tool) {
+    currentTool = tool;
+    document.querySelectorAll('.tool-btn').forEach(b => {
+        b.classList.toggle('active', b.dataset.tool === tool);
+    });
+}
+
+function updateBrush() {
+    brushSize = parseInt(document.getElementById('brushSlider').value);
+    document.getElementById('brushLabel').textContent = brushSize;
+}
+
+// ================================================================
+// KEYBOARD SHORTCUTS
+// ================================================================
+function setupKeyboard() {
+    document.addEventListener('keydown', e => {
+        // Don't trigger if typing in input
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+        switch(e.key.toLowerCase()) {
+            case 'b': setTool('paint'); break;
+            case 'e': setTool('erase'); break;
+            case 'r': setTool('rect'); break;
+            case 'f': setTool('fill'); break;
+            case '1': case '2': case '3': case '4': case '5': case '6':
+            case '7': case '8': case '9':
+                const idx = parseInt(e.key) - 1;
+                if (idx < zones.length) selectZone(idx);
+                break;
+            case '[': // decrease brush
+                brushSize = Math.max(3, brushSize - 5);
+                document.getElementById('brushSlider').value = brushSize;
+                document.getElementById('brushLabel').textContent = brushSize;
+                break;
+            case ']': // increase brush
+                brushSize = Math.min(150, brushSize + 5);
+                document.getElementById('brushSlider').value = brushSize;
+                document.getElementById('brushLabel').textContent = brushSize;
+                break;
+        }
+    });
+}
+
+// ================================================================
+// PROMPT GENERATION
+// ================================================================
+function generatePrompt() {
+    const carName = document.getElementById('carName').value || 'My Car';
+    const iracingId = document.getElementById('iracingId').value || '23371';
+    const paintPath = document.getElementById('paintPath').value || '[PAINT FILE PATH - set in Car Info]';
+    const outputPath = document.getElementById('outputPath').value || '[OUTPUT FOLDER - set in Car Info]';
+
+    const assigned = zones.filter(z => z.finish);
+    if (assigned.length === 0) {
+        showToast('Assign at least one finish first!', '#ff4444');
+        return;
+    }
+
+    // Build the zone config for embedding
+    let zoneConfig = '';
+    let zoneIdx = 0;
+    zones.forEach((z, i) => {
+        if (!z.finish) return;
+        const intensityName = INTENSITY_NAMES[z.intensity];
+        zoneConfig += `    {"name": "${z.name}", "desc": "${z.desc}", "finish": "${z.finish}", "intensity": "${intensityName}"},\n`;
+        zoneIdx++;
+    });
+
+    // Build zone summary for the header
+    let zoneSummary = '';
+    zones.forEach((z, i) => {
+        if (!z.finish) return;
+        const finish = findFinish(z.finish);
+        const intensityName = INTENSITY_LABELS[z.intensity];
+        zoneSummary += `# ${i + 1}. "${z.name}" => ${finish ? finish.name : z.finish} (${intensityName})\n`;
+    });
+
+    let p = `SHOKKER PAINT BOOTH - Self-Contained Build Script
+===================================================
+Save this as a .py file and run it, OR paste it to Claude Code and say "run this script".
+Car: ${carName} | iRacing ID: ${iracingId}
+Generated: ${new Date().toLocaleString()}
+
+IMPORTANT: This script is SELF-CONTAINED. It includes ALL engine code.
+Just run it with: python script.py
+Requires: numpy, Pillow (pip install numpy Pillow)
+
+Zone Assignments:
+${zoneSummary}
+Claude: Write this EXACT script to a .py file and execute it. Do NOT modify the engine code.
+===================================================
+
+\`\`\`python
+"""
+SHOKKER PAINT BOOTH - Auto-Generated Build Script
+Car: ${carName} | iRacing ID: ${iracingId}
+Generated: ${new Date().toLocaleString()}
+"""
+import numpy as np
+from PIL import Image, ImageFilter
+import struct
+import os
+import time
+
+# ================================================================
+# CONFIG - Edit these paths if needed
+# ================================================================
+PAINT_FILE = r"${paintPath}"
+OUTPUT_DIR = r"${outputPath}"
+IRACING_ID = "${iracingId}"
+SEED = 51
+
+ZONES = [
+${zoneConfig}]
+
+# ================================================================
+# TGA WRITERS
+# ================================================================
+def write_tga_32bit(filepath, rgba_array):
+    h, w = rgba_array.shape[:2]
+    with open(filepath, 'wb') as f:
+        f.write(struct.pack('<B', 0))
+        f.write(struct.pack('<B', 0))
+        f.write(struct.pack('<B', 2))
+        f.write(struct.pack('<5B', 0, 0, 0, 0, 0))
+        f.write(struct.pack('<H', 0))
+        f.write(struct.pack('<H', 0))
+        f.write(struct.pack('<H', w))
+        f.write(struct.pack('<H', h))
+        f.write(struct.pack('<B', 32))
+        f.write(struct.pack('<B', 0x28))
+        bgra = np.stack([rgba_array[:,:,2], rgba_array[:,:,1],
+                         rgba_array[:,:,0], rgba_array[:,:,3]], axis=-1)
+        f.write(bgra.tobytes())
+
+def write_tga_24bit(filepath, rgb_array):
+    h, w = rgb_array.shape[:2]
+    with open(filepath, 'wb') as f:
+        f.write(struct.pack('<B', 0))
+        f.write(struct.pack('<B', 0))
+        f.write(struct.pack('<B', 2))
+        f.write(struct.pack('<5B', 0, 0, 0, 0, 0))
+        f.write(struct.pack('<H', 0))
+        f.write(struct.pack('<H', 0))
+        f.write(struct.pack('<H', w))
+        f.write(struct.pack('<H', h))
+        f.write(struct.pack('<B', 24))
+        f.write(struct.pack('<B', 0x20))
+        bgr = np.stack([rgb_array[:,:,2], rgb_array[:,:,1], rgb_array[:,:,0]], axis=-1)
+        f.write(bgr.tobytes())
+
+# ================================================================
+# NOISE GENERATORS
+# ================================================================
+def generate_perlin_noise_2d(shape, res, seed=None):
+    if seed is not None:
+        np.random.seed(seed)
+    def f(t):
+        return 6*t**5 - 15*t**4 + 10*t**3
+    delta = (res[0]/shape[0], res[1]/shape[1])
+    d = (shape[0]//res[0], shape[1]//res[1])
+    grid = np.mgrid[0:res[0]:delta[0], 0:res[1]:delta[1]].transpose(1,2,0) % 1
+    angles = 2*np.pi*np.random.rand(res[0]+1, res[1]+1)
+    gradients = np.dstack((np.cos(angles), np.sin(angles)))
+    g00 = gradients[:-1,:-1].repeat(d[0],0).repeat(d[1],1)
+    g10 = gradients[1:,:-1].repeat(d[0],0).repeat(d[1],1)
+    g01 = gradients[:-1,1:].repeat(d[0],0).repeat(d[1],1)
+    g11 = gradients[1:,1:].repeat(d[0],0).repeat(d[1],1)
+    n00 = np.sum(np.dstack((grid[:,:,0], grid[:,:,1]))*g00, 2)
+    n10 = np.sum(np.dstack((grid[:,:,0]-1, grid[:,:,1]))*g10, 2)
+    n01 = np.sum(np.dstack((grid[:,:,0], grid[:,:,1]-1))*g01, 2)
+    n11 = np.sum(np.dstack((grid[:,:,0]-1, grid[:,:,1]-1))*g11, 2)
+    t = f(grid)
+    n0 = n00*(1-t[:,:,0]) + t[:,:,0]*n10
+    n1 = n01*(1-t[:,:,0]) + t[:,:,0]*n11
+    return np.sqrt(2)*((1-t[:,:,1])*n0 + t[:,:,1]*n1)
+
+def multi_scale_noise(shape, scales, weights, seed=42):
+    h, w = shape
+    combined = np.zeros((h, w))
+    total_weight = sum(weights)
+    for scale, weight in zip(scales, weights):
+        np.random.seed(seed + scale * 7)
+        if scale == 1:
+            noise = np.random.randn(h, w)
+        else:
+            small_h = max(1, h // scale)
+            small_w = max(1, w // scale)
+            small_noise = np.random.randn(small_h, small_w)
+            noise_img = Image.fromarray(
+                ((small_noise + 3) / 6 * 255).clip(0, 255).astype(np.uint8)
+            )
+            noise_img = noise_img.resize((w, h), Image.NEAREST)
+            noise = np.array(noise_img).astype(np.float32) / 255.0 * 2 - 1
+        combined += noise * weight
+    return combined / total_weight
+
+# ================================================================
+# INTENSITY PRESETS
+# ================================================================
+INTENSITY = {
+    "10":  {"paint": 0.10, "spec": 0.12, "bright": 0.005},
+    "20":  {"paint": 0.20, "spec": 0.24, "bright": 0.010},
+    ...
+    "100": {"paint": 1.00, "spec": 1.50, "bright": 0.100},
+    ...
+    "150": {"paint": 1.50, "spec": 2.00, "bright": 0.150},
+}
+
+# ================================================================
+# SPEC MAP GENERATORS
+# ================================================================
+def spec_gloss(shape, mask, seed, sm):
+    spec = np.zeros((shape[0], shape[1], 4), dtype=np.uint8)
+    spec[:,:,0] = np.clip(5 * mask + 5 * (1-mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(25 * mask + 100 * (1-mask), 0, 255).astype(np.uint8)
+    spec[:,:,2] = 16; spec[:,:,3] = 255
+    return spec
+
+def spec_matte(shape, mask, seed, sm):
+    spec = np.zeros((shape[0], shape[1], 4), dtype=np.uint8)
+    spec[:,:,0] = 0
+    spec[:,:,1] = np.clip(190 * mask + 100 * (1-mask), 0, 255).astype(np.uint8)
+    spec[:,:,2] = 0; spec[:,:,3] = 255
+    return spec
+
+def spec_satin(shape, mask, seed, sm):
+    spec = np.zeros((shape[0], shape[1], 4), dtype=np.uint8)
+    spec[:,:,0] = 0
+    spec[:,:,1] = np.clip(100 * mask + 100 * (1-mask), 0, 255).astype(np.uint8)
+    spec[:,:,2] = 16; spec[:,:,3] = 255
+    return spec
+
+def spec_metallic(shape, mask, seed, sm):
+    spec = np.zeros((shape[0], shape[1], 4), dtype=np.uint8)
+    mn = multi_scale_noise(shape, [1, 2, 4], [0.3, 0.4, 0.3], seed+100)
+    spec[:,:,0] = np.clip(225 * mask + 5 * (1-mask) + mn * 40 * sm * mask, 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(20 * mask + 100 * (1-mask) + mn * 18 * sm * mask, 0, 255).astype(np.uint8)
+    spec[:,:,2] = 16; spec[:,:,3] = 255
+    return spec
+
+def spec_pearl(shape, mask, seed, sm):
+    spec = np.zeros((shape[0], shape[1], 4), dtype=np.uint8)
+    mn = multi_scale_noise(shape, [1, 2, 3], [0.4, 0.35, 0.25], seed+100)
+    spec[:,:,0] = np.clip(190 * mask + 5 * (1-mask) + mn * 30 * sm * mask, 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(18 * mask + 100 * (1-mask) + mn * 10 * sm * mask, 0, 255).astype(np.uint8)
+    spec[:,:,2] = 16; spec[:,:,3] = 255
+    return spec
+
+def spec_chrome(shape, mask, seed, sm):
+    spec = np.zeros((shape[0], shape[1], 4), dtype=np.uint8)
+    spec[:,:,0] = np.clip(255 * mask + 5 * (1-mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(2 * mask + 100 * (1-mask), 0, 255).astype(np.uint8)
+    spec[:,:,2] = 16; spec[:,:,3] = 255
+    return spec
+
+def spec_satin_metal(shape, mask, seed, sm):
+    spec = np.zeros((shape[0], shape[1], 4), dtype=np.uint8)
+    h, w = shape
+    np.random.seed(seed)
+    brush = np.random.randn(1, w) * 0.5
+    brush = np.tile(brush, (h, 1))
+    brush += np.random.randn(h, w) * 0.2
+    spec[:,:,0] = np.clip(235 * mask + 5 * (1-mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(65 * mask + 100 * (1-mask) + brush * 20 * sm * mask, 0, 255).astype(np.uint8)
+    spec[:,:,2] = 16; spec[:,:,3] = 255
+    return spec
+
+def spec_metal_flake(shape, mask, seed, sm):
+    spec = np.zeros((shape[0], shape[1], 4), dtype=np.uint8)
+    mf = multi_scale_noise(shape, [1, 2, 4, 8], [0.15, 0.25, 0.35, 0.25], seed+100)
+    rf = multi_scale_noise(shape, [1, 3, 6], [0.3, 0.4, 0.3], seed+200)
+    spec[:,:,0] = np.clip(240 * mask + 5 * (1-mask) + mf * 50 * sm * mask, 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(12 * mask + 100 * (1-mask) + rf * 40 * sm * mask, 0, 255).astype(np.uint8)
+    spec[:,:,2] = 16; spec[:,:,3] = 255
+    return spec
+
+def spec_holographic_flake(shape, mask, seed, sm):
+    spec = np.zeros((shape[0], shape[1], 4), dtype=np.uint8)
+    mf = multi_scale_noise(shape, [1, 2, 4, 6], [0.2, 0.3, 0.3, 0.2], seed+100)
+    rf = multi_scale_noise(shape, [1, 3], [0.5, 0.5], seed+200)
+    spec[:,:,0] = np.clip(245 * mask + 5 * (1-mask) + mf * 45 * sm * mask, 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(10 * mask + 100 * (1-mask) + rf * 30 * sm * mask, 0, 255).astype(np.uint8)
+    spec[:,:,2] = 16; spec[:,:,3] = 255
+    return spec
+
+def spec_galaxy_flake(shape, mask, seed, sm):
+    spec = np.zeros((shape[0], shape[1], 4), dtype=np.uint8)
+    mf = multi_scale_noise(shape, [1, 2, 4, 6], [0.2, 0.3, 0.3, 0.2], seed+100)
+    spec[:,:,0] = np.clip(245 * mask + 5 * (1-mask) + mf * 45 * sm * mask, 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(6 * mask + 100 * (1-mask) + mf * 20 * sm * mask, 0, 255).astype(np.uint8)
+    spec[:,:,2] = 16; spec[:,:,3] = 255
+    return spec
+
+def spec_candy(shape, mask, seed, sm):
+    spec = np.zeros((shape[0], shape[1], 4), dtype=np.uint8)
+    mn = multi_scale_noise(shape, [1, 2], [0.6, 0.4], seed+100)
+    spec[:,:,0] = np.clip(235 * mask + 5 * (1-mask) + mn * 25 * sm * mask, 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(6 * mask + 100 * (1-mask), 0, 255).astype(np.uint8)
+    spec[:,:,2] = 16; spec[:,:,3] = 255
+    return spec
+
+def spec_chameleon(shape, mask, seed, sm):
+    spec = np.zeros((shape[0], shape[1], 4), dtype=np.uint8)
+    mn = multi_scale_noise(shape, [1, 2, 4], [0.3, 0.4, 0.3], seed+100)
+    spec[:,:,0] = np.clip(240 * mask + 5 * (1-mask) + mn * 35 * sm * mask, 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(10 * mask + 100 * (1-mask) + mn * 12 * sm * mask, 0, 255).astype(np.uint8)
+    spec[:,:,2] = 16; spec[:,:,3] = 255
+    return spec
+
+def spec_anodized(shape, mask, seed, sm):
+    spec = np.zeros((shape[0], shape[1], 4), dtype=np.uint8)
+    grain = multi_scale_noise(shape, [1, 2, 3], [0.4, 0.35, 0.25], seed+100)
+    spec[:,:,0] = np.clip(210 * mask + 5 * (1-mask) + grain * 15 * sm * mask, 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(50 * mask + 100 * (1-mask) + grain * 10 * sm * mask, 0, 255).astype(np.uint8)
+    spec[:,:,2] = 0; spec[:,:,3] = 255
+    return spec
+
+def spec_prismatic(shape, mask, seed, sm):
+    spec = np.zeros((shape[0], shape[1], 4), dtype=np.uint8)
+    mf = multi_scale_noise(shape, [1, 2, 4, 6], [0.2, 0.3, 0.3, 0.2], seed+100)
+    rf = multi_scale_noise(shape, [1, 3], [0.5, 0.5], seed+200)
+    spec[:,:,0] = np.clip(250 * mask + 5 * (1-mask) + mf * 40 * sm * mask, 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(8 * mask + 100 * (1-mask) + rf * 25 * sm * mask, 0, 255).astype(np.uint8)
+    spec[:,:,2] = 16; spec[:,:,3] = 255
+    return spec
+
+def spec_frozen(shape, mask, seed, sm):
+    spec = np.zeros((shape[0], shape[1], 4), dtype=np.uint8)
+    mn = multi_scale_noise(shape, [1, 2, 4], [0.3, 0.4, 0.3], seed+100)
+    spec[:,:,0] = np.clip(225 * mask + 5 * (1-mask) + mn * 30 * sm * mask, 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(140 * mask + 100 * (1-mask) + mn * 20 * sm * mask, 0, 255).astype(np.uint8)
+    spec[:,:,2] = 0; spec[:,:,3] = 255
+    return spec
+
+def spec_carbon_fiber(shape, mask, seed, sm):
+    spec = np.zeros((shape[0], shape[1], 4), dtype=np.uint8)
+    h, w = shape
+    y, x = np.mgrid[0:h, 0:w]
+    weave_size = 6
+    cf = (((x // weave_size + y // weave_size) % 2).astype(np.float32) * 0.6 +
+          ((np.sin(x * np.pi / weave_size) * np.sin(y * np.pi / weave_size) + 1) / 2) * 0.4)
+    spec[:,:,0] = np.clip(50 * mask + 5 * (1-mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(45 * mask + 100 * (1-mask) + cf * 35 * sm * mask, 0, 255).astype(np.uint8)
+    spec[:,:,2] = 16; spec[:,:,3] = 255
+    return spec
+
+def spec_oil_slick(shape, mask, seed, sm):
+    spec = np.zeros((shape[0], shape[1], 4), dtype=np.uint8)
+    mn = multi_scale_noise(shape, [1, 2], [0.5, 0.5], seed+100)
+    spec[:,:,0] = np.clip(250 * mask + 5 * (1-mask) + mn * 15 * sm * mask, 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(5 * mask + 100 * (1-mask) + mn * 8 * sm * mask, 0, 255).astype(np.uint8)
+    spec[:,:,2] = 16; spec[:,:,3] = 255
+    return spec
+
+def spec_lava_flake(shape, mask, seed, sm):
+    spec = np.zeros((shape[0], shape[1], 4), dtype=np.uint8)
+    mf = multi_scale_noise(shape, [1, 2, 4, 8], [0.15, 0.25, 0.35, 0.25], seed+100)
+    spec[:,:,0] = np.clip(240 * mask + 5 * (1-mask) + mf * 45 * sm * mask, 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(10 * mask + 100 * (1-mask) + mf * 25 * sm * mask, 0, 255).astype(np.uint8)
+    spec[:,:,2] = 16; spec[:,:,3] = 255
+    return spec
+
+def spec_electric(shape, mask, seed, sm):
+    spec = np.zeros((shape[0], shape[1], 4), dtype=np.uint8)
+    mn = multi_scale_noise(shape, [1, 2, 3], [0.4, 0.35, 0.25], seed+100)
+    spec[:,:,0] = np.clip(235 * mask + 5 * (1-mask) + mn * 35 * sm * mask, 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(8 * mask + 100 * (1-mask) + mn * 15 * sm * mask, 0, 255).astype(np.uint8)
+    spec[:,:,2] = 16; spec[:,:,3] = 255
+    return spec
+
+def spec_frost_bite(shape, mask, seed, sm):
+    spec = np.zeros((shape[0], shape[1], 4), dtype=np.uint8)
+    mn = multi_scale_noise(shape, [2, 4, 8], [0.3, 0.4, 0.3], seed+100)
+    rn = multi_scale_noise(shape, [2, 6, 10], [0.3, 0.4, 0.3], seed+200)
+    spec[:,:,0] = np.clip(230 * mask + 5 * (1-mask) + mn * 35 * sm * mask, 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(80 * mask + 100 * (1-mask) + rn * 40 * sm * mask, 0, 255).astype(np.uint8)
+    spec[:,:,2] = 16; spec[:,:,3] = 255
+    return spec
+
+# ================================================================
+# PAINT MODIFIERS (very subtle - no color shifts)
+# ================================================================
+def paint_none(paint, shape, mask, seed, pm, bb):
+    return paint
+
+def paint_subtle_flake(paint, shape, mask, seed, pm, bb):
+    for c in range(3):
+        flake = multi_scale_noise(shape, [1, 2, 4], [0.4, 0.35, 0.25], seed + c * 17)
+        paint[:,:,c] = np.clip(paint[:,:,c] + flake * 0.04 * pm * mask, 0, 1)
+    paint = np.clip(paint + bb * mask[:,:,np.newaxis], 0, 1)
+    return paint
+
+def paint_fine_sparkle(paint, shape, mask, seed, pm, bb):
+    flake = multi_scale_noise(shape, [1], [1.0], seed + 50)
+    for c in range(3):
+        paint[:,:,c] = np.clip(paint[:,:,c] + flake * 0.03 * pm * mask, 0, 1)
+    paint = np.clip(paint + bb * mask[:,:,np.newaxis], 0, 1)
+    return paint
+
+def paint_coarse_flake(paint, shape, mask, seed, pm, bb):
+    r_flake = multi_scale_noise(shape, [2, 4, 8], [0.3, 0.4, 0.3], seed+11)
+    g_flake = multi_scale_noise(shape, [2, 4, 8], [0.3, 0.4, 0.3], seed+22)
+    b_flake = multi_scale_noise(shape, [2, 4, 8], [0.3, 0.4, 0.3], seed+33)
+    strength = 0.06 * pm
+    paint[:,:,0] = np.clip(paint[:,:,0] + r_flake * strength * mask, 0, 1)
+    paint[:,:,1] = np.clip(paint[:,:,1] + g_flake * strength * mask, 0, 1)
+    paint[:,:,2] = np.clip(paint[:,:,2] + b_flake * strength * mask, 0, 1)
+    paint = np.clip(paint + bb * mask[:,:,np.newaxis], 0, 1)
+    return paint
+
+def paint_carbon_darken(paint, shape, mask, seed, pm, bb):
+    h, w = shape
+    y, x = np.mgrid[0:h, 0:w]
+    weave_size = 6
+    cf = (((x // weave_size + y // weave_size) % 2).astype(np.float32) * 0.6 +
+          ((np.sin(x * np.pi / weave_size) * np.sin(y * np.pi / weave_size) + 1) / 2) * 0.4)
+    for c in range(3):
+        paint[:,:,c] = np.clip(paint[:,:,c] - cf * 0.08 * pm * mask, 0, 1)
+    return paint
+
+def paint_chrome_brighten(paint, shape, mask, seed, pm, bb):
+    blend = 0.5 * pm
+    for c in range(3):
+        paint[:,:,c] = paint[:,:,c] * (1 - mask * blend) + 0.92 * mask * blend
+    return paint
+
+# ================================================================
+# FINISH REGISTRY
+# ================================================================
+FINISH_REGISTRY = {
+    "gloss":              (spec_gloss,             paint_none),
+    "matte":              (spec_matte,             paint_none),
+    "satin":              (spec_satin,             paint_none),
+    "metallic":           (spec_metallic,          paint_subtle_flake),
+    "pearl":              (spec_pearl,             paint_fine_sparkle),
+    "chrome":             (spec_chrome,            paint_chrome_brighten),
+    "satin_metal":        (spec_satin_metal,       paint_subtle_flake),
+    "metal_flake":        (spec_metal_flake,       paint_coarse_flake),
+    "holographic_flake":  (spec_holographic_flake, paint_coarse_flake),
+    "galaxy_flake":       (spec_galaxy_flake,      paint_coarse_flake),
+    "candy":              (spec_candy,             paint_fine_sparkle),
+    "chameleon":          (spec_chameleon,         paint_subtle_flake),
+    "anodized":           (spec_anodized,          paint_subtle_flake),
+    "prismatic":          (spec_prismatic,         paint_coarse_flake),
+    "frozen":             (spec_frozen,            paint_subtle_flake),
+    "carbon_fiber":       (spec_carbon_fiber,      paint_carbon_darken),
+    "oil_slick":          (spec_oil_slick,         paint_fine_sparkle),
+    "lava_flake":         (spec_lava_flake,        paint_coarse_flake),
+    "electric":           (spec_electric,          paint_subtle_flake),
+    "frost_bite":         (spec_frost_bite,        paint_subtle_flake),
+}
+
+# ================================================================
+# MASK COMPUTATION
+# ================================================================
+def compute_mask(scheme, threshold=0.40, softness=0.15):
+    brightness = scheme[:,:,0]*0.299 + scheme[:,:,1]*0.587 + scheme[:,:,2]*0.114
+    low = threshold - softness/2
+    high = threshold + softness/2
+    mask = np.clip((high - brightness) / (high - low + 1e-10), 0, 1)
+    mask_img = Image.fromarray((mask*255).astype(np.uint8))
+    mask_img = mask_img.filter(ImageFilter.GaussianBlur(radius=2))
+    return np.array(mask_img).astype(np.float32) / 255.0
+
+# ================================================================
+# MAIN EXECUTION
+# ================================================================
+if __name__ == '__main__':
+    print("=" * 60)
+    print("  SHOKKER PAINT BOOTH - Multi-Zone Build")
+    print(f"  Car: ${carName}")
+    print(f"  Zones: {len(ZONES)}")
+    print("=" * 60)
+
+    start_time = time.time()
+    os.makedirs(OUTPUT_DIR, exist_ok=True)
+
+    # Load paint file
+    print(f"\\n  Loading paint: {PAINT_FILE}")
+    scheme_img = Image.open(PAINT_FILE).convert('RGB')
+    scheme = np.array(scheme_img).astype(np.float32) / 255.0
+    h, w = scheme.shape[:2]
+    shape = (h, w)
+    print(f"  Resolution: {w}x{h}")
+
+    # Compute base mask
+    mask = compute_mask(scheme)
+
+    # Initialize combined spec map and paint
+    combined_spec = np.zeros((h, w, 4), dtype=np.uint8)
+    # Default spec: low metallic, medium roughness, clear coat, full spec mask
+    combined_spec[:,:,0] = 5    # Low metallic
+    combined_spec[:,:,1] = 100  # Medium roughness
+    combined_spec[:,:,2] = 16   # Full clear coat
+    combined_spec[:,:,3] = 255  # Full spec mask
+    paint = scheme.copy()
+
+    # Apply each zone
+    for zone in ZONES:
+        name = zone["name"]
+        finish_name = zone["finish"]
+        intensity = zone["intensity"]
+
+        if finish_name not in FINISH_REGISTRY:
+            print(f"  WARNING: Unknown finish '{finish_name}', skipping zone '{name}'")
+            continue
+
+        preset = INTENSITY[intensity]
+        pm = preset["paint"]
+        sm = preset["spec"]
+        bb = preset["bright"]
+
+        spec_fn, paint_fn = FINISH_REGISTRY[finish_name]
+
+        print(f"  [{name}] => {finish_name} ({intensity})")
+
+        # Generate spec for this zone (applies to masked area)
+        zone_spec = spec_fn(shape, mask, SEED, sm)
+
+        # Apply paint modification
+        paint = paint_fn(paint, shape, mask, SEED, pm, bb)
+
+        # Blend zone spec into combined spec (mask-weighted)
+        for c in range(4):
+            combined_spec[:,:,c] = np.where(
+                mask > 0.1,
+                zone_spec[:,:,c],
+                combined_spec[:,:,c]
+            ).astype(np.uint8)
+
+    # Convert paint to uint8
+    paint_rgb = (np.clip(paint, 0, 1) * 255).astype(np.uint8)
+
+    # Save outputs
+    paint_path = os.path.join(OUTPUT_DIR, f"car_{IRACING_ID}.tga")
+    spec_path = os.path.join(OUTPUT_DIR, f"car_spec_{IRACING_ID}.tga")
+
+    write_tga_24bit(paint_path, paint_rgb)
+    write_tga_32bit(spec_path, combined_spec)
+
+    # Also save PNG previews
+    Image.fromarray(paint_rgb).save(os.path.join(OUTPUT_DIR, "PREVIEW_paint.png"))
+    Image.fromarray(combined_spec).save(os.path.join(OUTPUT_DIR, "PREVIEW_spec.png"))
+    Image.fromarray((mask * 255).astype(np.uint8)).save(os.path.join(OUTPUT_DIR, "PREVIEW_mask.png"))
+
+    elapsed = time.time() - start_time
+    print(f"\\n{'=' * 60}")
+    print(f"  DONE in {elapsed:.1f}s!")
+    print(f"  Paint: {paint_path}")
+    print(f"  Spec:  {spec_path}")
+    print(f"{'=' * 60}")
+\`\`\``;
+
+    document.getElementById('promptOutput').textContent = p;
+    document.getElementById('promptModal').classList.add('show');
+}
+
+function generateAndCopy() {
+    generatePrompt();
+    setTimeout(copyPrompt, 100);
+}
+
+function copyPrompt() {
+    const text = document.getElementById('promptOutput').textContent;
+    navigator.clipboard.writeText(text).then(() => {
+        const btn = document.querySelector('.btn-copy-prompt');
+        btn.textContent = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = 'Copy to Clipboard'; btn.classList.remove('copied'); }, 2000);
+        showToast('Prompt copied to clipboard!');
+    }).catch(() => {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        showToast('Prompt copied!');
+    });
+}
+
+function closeModal() {
+    document.getElementById('promptModal').classList.remove('show');
+}
+
+// ================================================================
+// EXPORT JSON
+// ================================================================
+function exportJSON() {
+    const config = {
+        app: 'Shokker Paint Booth',
+        version: '1.0',
+        timestamp: new Date().toISOString(),
+        car: {
+            name: document.getElementById('carName').value,
+            iracingId: document.getElementById('iracingId').value,
+            paintPath: document.getElementById('paintPath').value,
+            outputPath: document.getElementById('outputPath').value
+        },
+        zones: zones.map(z => ({
+            name: z.name,
+            desc: z.desc,
+            finish: z.finish,
+            intensity: z.intensity,
+            intensityName: INTENSITY_NAMES[z.intensity]
+        }))
+    };
+
+    const json = JSON.stringify(config, null, 2);
+    navigator.clipboard.writeText(json).then(() => {
+        showToast('Zone config JSON copied!');
+    }).catch(() => {
+        showToast('Could not copy to clipboard', '#ff4444');
+    });
+}
+
+// ================================================================
+// SAVE / LOAD CONFIG
+// ================================================================
+function saveConfig() {
+    const config = {
+        car: {
+            name: document.getElementById('carName').value,
+            iracingId: document.getElementById('iracingId').value,
+            paintPath: document.getElementById('paintPath').value,
+            outputPath: document.getElementById('outputPath').value
+        },
+        zones: zones.map(z => ({
+            name: z.name,
+            desc: z.desc,
+            finish: z.finish,
+            intensity: z.intensity,
+            color: z.color
+        }))
+    };
+    localStorage.setItem('shokker_paint_booth_config', JSON.stringify(config));
+    showToast('Configuration saved!');
+}
+
+function loadConfig(silent) {
+    const raw = localStorage.getItem('shokker_paint_booth_config');
+    if (!raw) {
+        if (!silent) showToast('No saved config found', '#ff4444');
+        return;
+    }
+    try {
+        const config = JSON.parse(raw);
+        if (config.car) {
+            document.getElementById('carName').value = config.car.name || '';
+            document.getElementById('iracingId').value = config.car.iracingId || '23371';
+            document.getElementById('paintPath').value = config.car.paintPath || '';
+            document.getElementById('outputPath').value = config.car.outputPath || '';
+        }
+        if (config.zones && config.zones.length > 0) {
+            zones = config.zones.map(z => ({
+                ...z,
+                mask: null
+            }));
+            nextColorIdx = zones.length;
+            selectedZoneIdx = -1;
+            renderZones();
+            renderFinishes();
+        }
+        if (!silent) showToast('Configuration loaded!');
+    } catch(e) {
+        if (!silent) showToast('Failed to load config', '#ff4444');
+    }
+}
+
+// ================================================================
+// TOAST
+// ================================================================
+function showToast(msg, color) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.style.background = color || 'var(--success)';
+    t.style.color = color === '#ff4444' ? '#fff' : '#000';
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// ================================================================
+// START
+// ================================================================
+init();
+</script>
+
+</body>
+</html>

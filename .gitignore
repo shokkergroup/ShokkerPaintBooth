@@ -1,0 +1,56 @@
+# Build artifacts
+__pycache__/
+*.pyc
+*.pyo
+build/
+dist/
+server.build/
+server.dist/
+server.onefile-build/
+_nuitka_test/
+_pybuild_work/
+_pybuild_work_ag/
+
+# Binaries
+*.exe
+*.pdb
+*.dll
+
+# Logs
+*.log
+*_log.txt
+server_err.txt
+server_log.txt
+server_out.txt
+build_log*.txt
+build_output.txt
+
+# Electron build output
+electron-app/dist/
+electron-app/node_modules/
+
+# Output / render results
+output/
+swatches/
+audit_images/
+chameleon_test_output/
+test_improvements_imgs/
+spec_check/
+
+# Test/preview images
+*.png
+!docs/*.png
+
+# Temp files
+.server_port
+last_render_request.json
+
+# Backup files
+*.bak*
+
+# Archive
+_archive/
+
+# OS files
+Thumbs.db
+.DS_Store

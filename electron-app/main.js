@@ -524,10 +524,51 @@ ipcMain.handle('get-quick-navs', async () => {
     if (fs.existsSync(drive)) drives.push({ name: letter + ':', path: drive, type: 'drive' });
   }
   const quick_navs = [];
-  const iracing = path.join(os.homedir(), 'Documents', 'iRacing', 'paint');
-  if (fs.existsSync(iracing) && fs.statSync(iracing).isDirectory()) {
-    quick_navs.push({ name: 'iRacing Paint Folder', path: iracing.replace(/\\/g, '/'), type: 'shortcut' });
+
+  // BUILD 30: OneDrive compatibility — search multiple possible iRacing paint paths
+  // OneDrive redirects Documents, so the paint folder may live under OneDrive/ instead
+  const home = os.homedir();
+  const iracingCandidates = [
+    // Standard path
+    path.join(home, 'Documents', 'iRacing', 'paint'),
+    // OneDrive personal
+    path.join(home, 'OneDrive', 'Documents', 'iRacing', 'paint'),
+    // OneDrive for Business (has org name suffix)
+    // We scan for OneDrive - * folders dynamically below
+  ];
+
+  // Scan for any "OneDrive - *" folders (business/education OneDrive)
+  try {
+    const homeEntries = fs.readdirSync(home, { withFileTypes: true });
+    for (const entry of homeEntries) {
+      if (entry.isDirectory() && entry.name.startsWith('OneDrive -') || entry.name.startsWith('OneDrive-')) {
+        iracingCandidates.push(path.join(home, entry.name, 'Documents', 'iRacing', 'paint'));
+      }
+    }
+  } catch (e) { /* ignore scan errors */ }
+
+  // Also check Windows Known Folder path via environment variable
+  // USERPROFILE\Documents may differ from os.homedir() on some setups
+  if (process.env.USERPROFILE && process.env.USERPROFILE !== home) {
+    iracingCandidates.push(path.join(process.env.USERPROFILE, 'Documents', 'iRacing', 'paint'));
   }
+
+  // Use the first valid path found
+  let iracingFound = false;
+  for (const candidate of iracingCandidates) {
+    try {
+      if (fs.existsSync(candidate) && fs.statSync(candidate).isDirectory()) {
+        quick_navs.push({ name: 'iRacing Paint Folder', path: candidate.replace(/\\/g, '/'), type: 'shortcut' });
+        console.log(`[QuickNav] iRacing paint folder found: ${candidate}`);
+        iracingFound = true;
+        break;
+      }
+    } catch (e) { /* skip inaccessible paths */ }
+  }
+  if (!iracingFound) {
+    console.log('[QuickNav] iRacing paint folder not found in any standard location');
+  }
+
   return { drives, quick_navs };
 });
 

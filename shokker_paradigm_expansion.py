@@ -2371,6 +2371,14 @@ def integrate_paradigm(engine_module):
     engine_module.PATTERN_REGISTRY.update(PARADIGM_PATTERNS)
     engine_module.MONOLITHIC_REGISTRY.update(PARADIGM_MONOLITHICS)
 
+    # --- Sort registries alphabetically after merge ---
+    for reg_name in ('BASE_REGISTRY', 'PATTERN_REGISTRY', 'MONOLITHIC_REGISTRY'):
+        reg = getattr(engine_module, reg_name, None)
+        if reg is not None:
+            sorted_reg = dict(sorted(reg.items()))
+            reg.clear()
+            reg.update(sorted_reg)
+
     counts = {
         "bases": len(PARADIGM_BASES),
         "patterns": len(PARADIGM_PATTERNS),

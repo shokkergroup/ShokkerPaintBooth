@@ -683,6 +683,11 @@ def integrate_color_monolithics(engine_module):
 
     engine_module.MONOLITHIC_REGISTRY.update(all_entries)
 
+    # --- Sort MONOLITHIC_REGISTRY alphabetically after merge ---
+    sorted_reg = dict(sorted(engine_module.MONOLITHIC_REGISTRY.items()))
+    engine_module.MONOLITHIC_REGISTRY.clear()
+    engine_module.MONOLITHIC_REGISTRY.update(sorted_reg)
+
     counts = {
         "solid": len(solid_entries),
         "gradient": len(gradient_entries),

@@ -5720,7 +5720,6 @@ def paint_shokk_adrenaline(paint, shape, mask, seed, pm, bb):
     """SHOKK Adrenaline — racing heartbeat red pulse radiating from center outward."""
     h, w = shape
     y, x = _get_mgrid(shape)
-    from scipy.ndimage import gaussian_filter
     cy, cx = h * 0.5, w * 0.5
     dist = np.sqrt((y - cy)**2 + (x - cx)**2)
     max_dist = np.sqrt(cy**2 + cx**2)

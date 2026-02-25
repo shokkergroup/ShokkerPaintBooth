@@ -51,6 +51,17 @@ last_render_request.json
 # Archive
 _archive/
 
+# Audit & dev scripts
+_audit_*.py
+_audit_*.txt
+_quality_audit*.py
+_quality_audit*.txt
+_polish_*.py
+_polish_*.txt
+_sort_registries*.py
+_cleanup_*.py
+_cleanup_*.txt
+
 # OS files
 Thumbs.db
 .DS_Store

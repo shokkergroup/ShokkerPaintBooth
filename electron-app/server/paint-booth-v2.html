@@ -6587,67 +6587,67 @@
         // ===== GROUP MAPS for sub-tab navigation =====
         const BASE_GROUPS = {
             "Foundation": ["clear_matte", "eggshell", "flat_black", "gloss", "matte", "primer", "satin", "semi_gloss", "silk", "wet_look"],
-            "Metallic Standard": ["candy", "candy_apple", "champagne", "copper", "gunmetal", "metal_flake_base", "metallic", "midnight_pearl", "pearl", "pearlescent_white", "pewter", "satin_metal"],
-            "Chrome & Mirror": ["antique_chrome", "black_chrome", "blue_chrome", "candy_chrome", "chrome", "dark_chrome", "mirror_gold", "red_chrome", "satin_chrome", "surgical_steel"],
             "Candy & Pearl": ["candy_burgundy", "candy_cobalt", "candy_emerald", "chameleon", "iridescent", "moonstone", "opal", "spectraflame", "tinted_clear", "tri_coat_pearl"],
-            "Satin & Wrap": ["brushed_wrap", "chrome_wrap", "color_flip_wrap", "frozen_matte", "gloss_wrap", "liquid_wrap", "matte_wrap", "satin_wrap", "stealth_wrap", "textured_wrap"],
-            "Industrial & Tactical": ["armor_plate", "battleship_gray", "blackout", "cerakote", "duracoat", "gunship_gray", "mil_spec_od", "mil_spec_tan", "powder_coat", "sandblasted", "submarine_black", "vantablack"],
-            "Ceramic & Glass": ["ceramic", "ceramic_matte", "crystal_clear", "enamel", "obsidian", "piano_black", "porcelain", "tempered_glass"],
-            "Racing Heritage": ["asphalt_grind", "barn_find", "checkered_chrome", "dirt_track_satin", "drag_strip_gloss", "endurance_ceramic", "heat_shield", "pace_car_pearl", "pit_lane_matte", "race_day_gloss", "rally_mud", "rat_rod_primer", "sprint_car_chrome", "stock_car_enamel", "victory_lane"],
-            "Exotic Metal": ["anodized", "brushed_aluminum", "brushed_titanium", "cobalt_metal", "diamond_coat", "frozen", "liquid_titanium", "platinum", "raw_aluminum", "rose_gold", "titanium_raw", "tungsten"],
-            "Weathered & Aged": ["acid_rain", "desert_worn", "galvanized", "heat_treated", "oxidized_copper", "patina_bronze", "rugged", "salt_corroded", "sun_baked", "vintage_chrome"],
-            "Oem Automotive": ["ambulance_white", "dealer_pearl", "factory_basecoat", "fire_engine", "fleet_white", "police_black", "school_bus", "showroom_clear", "smoked", "taxi_yellow"],
             "Carbon & Composite": ["aramid", "carbon_base", "carbon_ceramic", "fiberglass", "forged_composite", "graphene", "hybrid_weave", "kevlar_base"],
-            "Premium Luxury": ["bentley_silver", "bugatti_blue", "ferrari_rosso", "koenigsegg_clear", "lamborghini_verde", "maybach_two_tone", "mclaren_orange", "pagani_tricolore", "porsche_pts", "satin_gold"],
-            "Shokk Series": ["burnt_headers", "electric_ice", "mercury", "plasma_metal", "shokk_blood", "shokk_pulse", "shokk_static", "shokk_venom", "shokk_void", "volcanic"],
+            "Ceramic & Glass": ["ceramic", "ceramic_matte", "crystal_clear", "enamel", "obsidian", "piano_black", "porcelain", "tempered_glass"],
+            "Chrome & Mirror": ["antique_chrome", "black_chrome", "blue_chrome", "candy_chrome", "chrome", "dark_chrome", "mirror_gold", "red_chrome", "satin_chrome", "surgical_steel"],
+            "Exotic Metal": ["anodized", "brushed_aluminum", "brushed_titanium", "cobalt_metal", "diamond_coat", "frozen", "liquid_titanium", "platinum", "raw_aluminum", "rose_gold", "titanium_raw", "tungsten"],
             "Extreme & Experimental": ["bioluminescent", "dark_matter", "holographic_base", "neutron_star", "plasma_core", "quantum_black", "solar_panel", "superconductor"],
-            "PARADIGM — Impossible Materials": ["singularity", "bioluminescent", "liquid_obsidian", "prismatic", "p_mercury"],
-            "PARADIGM — Elemental Forces": ["p_phantom", "p_volcanic", "arctic_ice", "carbon_weave", "nebula"],
+            "Industrial & Tactical": ["armor_plate", "battleship_gray", "blackout", "cerakote", "duracoat", "gunship_gray", "mil_spec_od", "mil_spec_tan", "powder_coat", "sandblasted", "submarine_black", "vantablack"],
+            "Metallic Standard": ["candy", "candy_apple", "champagne", "copper", "gunmetal", "metal_flake_base", "metallic", "midnight_pearl", "pearl", "pearlescent_white", "pewter", "satin_metal"],
+            "Oem Automotive": ["ambulance_white", "dealer_pearl", "factory_basecoat", "fire_engine", "fleet_white", "police_black", "school_bus", "showroom_clear", "smoked", "taxi_yellow"],
+            "PARADIGM — Elemental Forces": ["arctic_ice", "carbon_weave", "nebula", "p_mercury", "p_phantom", "p_volcanic"],
+            "PARADIGM — Impossible Materials": ["bioluminescent", "liquid_obsidian", "p_mercury", "prismatic", "singularity"],
+            "Premium Luxury": ["bentley_silver", "bugatti_blue", "ferrari_rosso", "koenigsegg_clear", "lamborghini_verde", "maybach_two_tone", "mclaren_orange", "pagani_tricolore", "porsche_pts", "satin_gold"],
+            "Racing Heritage": ["asphalt_grind", "barn_find", "checkered_chrome", "dirt_track_satin", "drag_strip_gloss", "endurance_ceramic", "heat_shield", "pace_car_pearl", "pit_lane_matte", "race_day_gloss", "rally_mud", "rat_rod_primer", "sprint_car_chrome", "stock_car_enamel", "victory_lane"],
+            "Satin & Wrap": ["brushed_wrap", "chrome_wrap", "color_flip_wrap", "frozen_matte", "gloss_wrap", "liquid_wrap", "matte_wrap", "satin_wrap", "stealth_wrap", "textured_wrap"],
+            "Shokk Series": ["burnt_headers", "electric_ice", "mercury", "plasma_metal", "shokk_blood", "shokk_pulse", "shokk_static", "shokk_venom", "shokk_void", "volcanic"],
+            "Weathered & Aged": ["acid_rain", "desert_worn", "galvanized", "heat_treated", "oxidized_copper", "patina_bronze", "rugged", "salt_corroded", "sun_baked", "vintage_chrome"],
         };
 
         const PATTERN_GROUPS = {
-            "Carbon & Weave": ["basket_weave", "carbon_4x4", "carbon_fiber", "carbon_spread_tow", "carbon_uni", "exhaust_wrap", "forged_carbon", "harness_weave", "kevlar_weave", "nanoweave", "tweed_weave"],
-            "Metal & Industrial": ["chainlink", "chainmail", "corrugated", "diamond_plate", "expanded_metal", "grating", "hammered", "hex_mesh", "knurled", "mega_flake", "metal_flake", "perforated", "rivet_grid", "rivet_plate", "roll_cage"],
-            "Nature & Organic": ["coral_reef", "frost_crystal", "glacier_crack", "lava_flow", "leather_grain", "marble", "rain_drop", "river_stone", "topographic", "tree_bark", "wood_grain"],
-            "Geometric": ["argyle", "art_deco", "celtic_knot", "chevron", "crosshatch", "greek_key", "herringbone", "houndstooth", "pinstripe", "plaid", "tessellation", "yin_yang"],
-            "Racing & Motorsport": ["aero_flow", "asphalt_texture", "brake_dust", "checkered_flag", "drift_marks", "finish_line", "lap_counter", "pit_lane_marks", "podium_stripe", "racing_stripe", "rev_counter", "rooster_tail", "rpm_gauge", "skid_marks", "speed_lines", "sponsor_fade", "starting_grid", "tire_smoke", "tire_tread", "track_map", "trophy_laurel", "turbo_swirl", "victory_confetti", "wind_tunnel"],
-            "Tech & Digital": ["binary_code", "circuit_board", "data_stream", "glitch_scan", "hologram", "holographic_flake", "matrix_rain", "pixel_grid", "qr_code", "static_noise", "tron", "wifi_waves"],
-            "Weather & Elements": ["aurora_bands", "hailstorm", "lightning", "nitro_burst", "plasma", "ripple", "sandstorm", "solar_flare", "tornado", "wave"],
+            "Abstract & Experimental": ["biomechanical", "fractal", "interference", "morse_code", "optical_illusion", "sound_wave", "stardust", "voronoi_shatter"],
+            "Animal & Wildlife": ["camo", "crocodile", "dazzle", "feather", "giraffe", "leopard", "multicam", "snake_skin", "tiger_stripe", "zebra"],
             "Artistic & Cultural": ["aztec", "brick", "burlap", "damascus", "denim", "dragon_scale", "fleur_de_lis", "japanese_wave", "lace", "mandala", "mosaic", "norse_rune", "paisley", "quilted", "silk_weave", "steampunk_gears", "tribal_flame", "velvet"],
+            "Carbon & Weave": ["basket_weave", "carbon_4x4", "carbon_fiber", "carbon_spread_tow", "carbon_uni", "exhaust_wrap", "forged_carbon", "harness_weave", "kevlar_weave", "nanoweave", "tweed_weave"],
+            "Cartoons": ["cartoon_plaid", "groovy_swirl", "polka_pop", "prehistoric_spot", "retro_atom", "retro_flower_power", "toon_bones", "toon_cloud", "toon_lightning", "toon_speed", "toon_stars", "zigzag_stripe"],
+            "Comics": ["cape_flow", "comic_halftone", "comic_panel", "dark_knight_scales", "gamma_pulse", "hero_burst", "pow_burst", "power_aura", "power_bolt", "shield_rings", "villain_stripe", "web_pattern"],
             "Damage & Wear": ["acid_wash", "battle_worn", "bullet_holes", "cracked_ice", "fracture", "g_force", "magma_crack", "peeling_paint", "razor", "road_rash", "rust_bloom", "shrapnel", "spark_scatter"],
+            "Flames": ["blue_flame", "classic_hotrod", "ember_scatter", "fire_lick", "fireball", "flame_fade", "ghost_flames", "hellfire", "inferno", "pinstripe_flames", "torch_burn", "wildfire"],
+            "Geometric": ["argyle", "art_deco", "celtic_knot", "chevron", "crosshatch", "greek_key", "herringbone", "houndstooth", "pinstripe", "plaid", "tessellation", "yin_yang"],
             "Gothic & Dark": ["barbed_wire", "gothic_cross", "gothic_scroll", "iron_cross", "pentagram", "razor_wire", "skull", "skull_wings", "spiderweb", "thorn_vine"],
             "Medical & Science": ["atomic_orbital", "biohazard", "dna_helix", "ekg", "fingerprint", "molecular", "neuron_network", "pulse_monitor"],
-            "Animal & Wildlife": ["camo", "crocodile", "dazzle", "feather", "giraffe", "leopard", "multicam", "snake_skin", "tiger_stripe", "zebra"],
+            "Metal & Industrial": ["chainlink", "chainmail", "corrugated", "diamond_plate", "expanded_metal", "grating", "hammered", "hex_mesh", "knurled", "mega_flake", "metal_flake", "perforated", "rivet_grid", "rivet_plate", "roll_cage"],
+            "Nature & Organic": ["coral_reef", "frost_crystal", "glacier_crack", "lava_flow", "leather_grain", "marble", "rain_drop", "river_stone", "topographic", "tree_bark", "wood_grain"],
+            "PARADIGM — Digital Reality": ["circuitboard", "holographic", "p_tessellation", "p_topographic", "soundwave"],
+            "PARADIGM — Physics Exploits": ["caustic", "dimensional", "fresnel_ghost", "neural", "p_plasma"],
+            "Racing & Motorsport": ["aero_flow", "asphalt_texture", "brake_dust", "checkered_flag", "drift_marks", "finish_line", "lap_counter", "pit_lane_marks", "podium_stripe", "racing_stripe", "rev_counter", "rooster_tail", "rpm_gauge", "skid_marks", "speed_lines", "sponsor_fade", "starting_grid", "tire_smoke", "tire_tread", "track_map", "trophy_laurel", "turbo_swirl", "victory_confetti", "wind_tunnel"],
             "Shokk Series": ["ember_mesh", "shokk_bioform", "shokk_bolt", "shokk_fracture", "shokk_grid", "shokk_hex", "shokk_nebula", "shokk_plasma_storm", "shokk_predator", "shokk_pulse_wave", "shokk_scream", "shokk_singularity", "shokk_tesseract", "shokk_waveform", "turbine"],
-            "Abstract & Experimental": ["biomechanical", "fractal", "interference", "morse_code", "optical_illusion", "sound_wave", "stardust", "voronoi_shatter"],
-            "Flames": ["classic_hotrod", "ghost_flames", "pinstripe_flames", "fire_lick", "inferno", "fireball", "hellfire", "wildfire", "flame_fade", "blue_flame", "torch_burn", "ember_scatter"],
-            "Skate & Surf": ["wave_curl", "ocean_foam", "palm_frond", "tiki_totem", "grip_tape", "halfpipe", "bamboo_stalk", "surf_stripe", "board_wax", "tropical_leaf", "rip_tide", "hibiscus"],
-            "Cartoons": ["retro_flower_power", "prehistoric_spot", "toon_stars", "toon_speed", "groovy_swirl", "zigzag_stripe", "toon_cloud", "retro_atom", "polka_pop", "toon_bones", "cartoon_plaid", "toon_lightning"],
-            "Comics": ["hero_burst", "web_pattern", "dark_knight_scales", "comic_halftone", "pow_burst", "cape_flow", "power_bolt", "shield_rings", "comic_panel", "power_aura", "villain_stripe", "gamma_pulse"],
-            "PARADIGM — Physics Exploits": ["fresnel_ghost", "caustic", "dimensional", "neural", "p_plasma"],
-            "PARADIGM — Digital Reality": ["holographic", "circuitboard", "soundwave", "p_topographic", "p_tessellation"],
+            "Skate & Surf": ["bamboo_stalk", "board_wax", "grip_tape", "halfpipe", "hibiscus", "ocean_foam", "palm_frond", "rip_tide", "surf_stripe", "tiki_totem", "tropical_leaf", "wave_curl"],
+            "Tech & Digital": ["binary_code", "circuit_board", "data_stream", "glitch_scan", "hologram", "holographic_flake", "matrix_rain", "pixel_grid", "qr_code", "static_noise", "tron", "wifi_waves"],
+            "Weather & Elements": ["aurora_bands", "hailstorm", "lightning", "nitro_burst", "plasma", "ripple", "sandstorm", "solar_flare", "tornado", "wave"],
         };
 
         const SPECIAL_GROUPS = {
-            "Chameleon Classic": ["chameleon_amethyst", "chameleon_arctic", "chameleon_copper", "chameleon_emerald", "chameleon_midnight", "chameleon_obsidian", "chameleon_ocean", "chameleon_phoenix", "chameleon_venom", "mystichrome", "chameleon_aurora", "chameleon_fire", "chameleon_frost", "chameleon_galaxy", "chameleon_neon"],
-            "Color Shift Adaptive": ["cs_complementary", "cs_cool", "cs_extreme", "cs_rainbow", "cs_split", "cs_subtle", "cs_triadic", "cs_warm", "cs_chrome_shift", "cs_earth", "cs_monochrome", "cs_neon_shift", "cs_ocean_shift", "cs_prism_shift", "cs_vivid"],
-            "Color Shift Preset": ["cs_deepocean", "cs_inferno", "cs_mystichrome", "cs_nebula", "cs_solarflare", "cs_supernova", "cs_toxic", "cs_candy_paint", "cs_dark_flame", "cs_gold_rush", "cs_oilslick", "cs_rose_gold_shift"],
-            "Prizm Series": ["prizm_adaptive", "prizm_black_rainbow", "prizm_blood_moon", "prizm_duochrome", "prizm_holographic", "prizm_iridescent", "prizm_mystichrome", "prizm_neon", "prizm_phoenix", "prizm_solar", "prizm_venom", "prizm_cosmos", "prizm_dark_matter", "prizm_fire_ice", "prizm_spectrum"],
-            "Effect & Visual": ["aurora", "cel_shade", "depth_map", "double_exposure", "glitch", "holographic_wrap", "infrared", "phantom", "polarized", "thermochromic", "uv_blacklight", "x_ray", "chromatic_aberration", "crt_scanline", "datamosh", "embossed", "film_burn", "fish_eye", "halftone", "kaleidoscope", "long_exposure", "negative", "parallax", "refraction", "solarization"],
-            "Racing Legend": ["black_flag", "dawn_patrol", "drafting", "green_flag", "heat_haze", "last_lap", "pace_lap", "photo_finish", "pole_position", "race_worn", "rain_race", "tunnel_run", "under_lights", "victory_burnout", "white_flag", "burnout_zone", "chicane_blur", "cool_down", "drag_chute", "flag_wave", "grid_walk", "night_race", "pit_stop", "red_mist", "slipstream"],
-            "Weather & Element": ["desert_mirage", "ember_glow", "frost_bite", "frozen_lake", "liquid_metal", "meteor_shower", "ocean_floor", "oil_slick", "tornado_alley", "volcanic_glass", "acid_rain", "black_ice", "blizzard", "dew_drop", "dust_storm", "fog_bank", "hail_damage", "heat_wave", "hurricane", "lightning_strike", "magma_flow", "monsoon", "permafrost", "solar_wind", "tidal_wave"],
-            "Dark & Gothic": ["cursed", "eclipse", "nightmare", "possessed", "reaper", "rust", "voodoo", "weathered_paint", "worn_chrome", "wraith", "banshee", "blood_oath", "catacombs", "dark_ritual", "death_metal", "demon_forge", "gargoyle", "graveyard", "haunted", "hellhound", "iron_maiden", "lich_king", "necrotic", "shadow_realm", "spectral"],
+            "Chameleon Classic": ["chameleon_amethyst", "chameleon_arctic", "chameleon_aurora", "chameleon_copper", "chameleon_emerald", "chameleon_fire", "chameleon_frost", "chameleon_galaxy", "chameleon_midnight", "chameleon_neon", "chameleon_obsidian", "chameleon_ocean", "chameleon_phoenix", "chameleon_venom", "mystichrome"],
+            "Color Shift Adaptive": ["cs_chrome_shift", "cs_complementary", "cs_cool", "cs_earth", "cs_extreme", "cs_monochrome", "cs_neon_shift", "cs_ocean_shift", "cs_prism_shift", "cs_rainbow", "cs_split", "cs_subtle", "cs_triadic", "cs_vivid", "cs_warm"],
+            "Color Shift Preset": ["cs_candy_paint", "cs_dark_flame", "cs_deepocean", "cs_gold_rush", "cs_inferno", "cs_mystichrome", "cs_nebula", "cs_oilslick", "cs_rose_gold_shift", "cs_solarflare", "cs_supernova", "cs_toxic"],
+            "Dark & Gothic": ["banshee", "blood_oath", "catacombs", "cursed", "dark_ritual", "death_metal", "demon_forge", "eclipse", "gargoyle", "graveyard", "haunted", "hellhound", "iron_maiden", "lich_king", "necrotic", "nightmare", "possessed", "reaper", "rust", "shadow_realm", "spectral", "voodoo", "weathered_paint", "worn_chrome", "wraith"],
+            "Effect & Visual": ["aurora", "cel_shade", "chromatic_aberration", "crt_scanline", "datamosh", "depth_map", "double_exposure", "embossed", "film_burn", "fish_eye", "glitch", "halftone", "holographic_wrap", "infrared", "kaleidoscope", "long_exposure", "negative", "parallax", "phantom", "polarized", "refraction", "solarization", "thermochromic", "uv_blacklight", "x_ray"],
             "Luxury & Exotic": ["alexandrite", "black_diamond", "champagne_toast", "galaxy", "liquid_gold", "mother_of_pearl", "ruby", "sapphire", "silk_road", "stained_glass", "velvet_crush", "venetian_glass"],
-            "Neon & Glow": ["cyber_punk", "firefly", "laser_grid", "led_matrix", "neon_glow", "neon_vegas", "plasma_globe", "radioactive", "scorched", "static", "aurora_glow", "blacklight_paint", "bioluminescent_wave", "electric_arc", "fluorescent", "glow_stick", "laser_show", "magnesium_burn", "neon_sign", "phosphorescent", "rave", "sodium_lamp", "tesla_coil", "tracer_round", "welding_arc"],
-            "Texture & Surface": ["acid_etched_glass", "brushed_steel_dark", "cast_iron", "concrete", "etched_metal", "forged_iron", "hammered_copper", "granite", "obsidian_glass", "sandstone", "slate_tile", "volcanic_rock"],
-            "Vintage & Retro": ["barn_find", "drive_in", "hot_rod_flames", "muscle_car_stripe", "patina_truck", "pin_up", "vinyl_record", "woodie_wagon", "art_deco_gold", "beat_up_truck", "classic_racing", "daguerreotype", "diner_chrome", "faded_glory", "grindhouse", "jukebox", "moonshine", "nascar_heritage", "nostalgia_drag", "old_school", "psychedelic", "sepia", "tin_type", "woodie", "zeppelin"],
-            "Surreal & Fantasy": ["acid_trip", "antimatter", "dreamscape", "fourth_dimension", "glitch_reality", "mirage", "phantom_zone", "portal", "time_warp", "astral", "crystal_cave", "dark_fairy", "dragon_breath", "enchanted", "ethereal", "fractal_dimension", "hallucination", "levitation", "multiverse", "nebula_core", "simulation", "tesseract", "void_walker", "wormhole"],
-            "Shokk Series": ["shokk_adrenaline", "shokk_aftermath", "shokk_blackout", "shokk_defib", "shokk_ekg", "shokk_flatline", "shokk_overload", "shokk_resurrection", "shokk_unleashed", "shokk_voltage", "shokk_affliction", "shokk_dia_de_muertos", "shokk_lafleur", "shokk_northern_soul", "shokk_samurai"],
-            "PARADIGM — Reality Break": ["void", "wormhole", "gravity_well", "phase_shift"],
-            "PARADIGM — Energy States": ["ember", "blackbody", "pulse", "p_aurora", "thin_film"],
-            "PARADIGM — Extreme Matter": ["living_chrome", "mercury_pool", "quantum", "crystal_lattice"],
-            "PARADIGM — Stealth Tech": ["stealth", "glass_armor", "magnetic", "p_static"],
+            "Neon & Glow": ["aurora_glow", "bioluminescent_wave", "blacklight_paint", "cyber_punk", "electric_arc", "firefly", "fluorescent", "glow_stick", "laser_grid", "laser_show", "led_matrix", "magnesium_burn", "neon_glow", "neon_sign", "neon_vegas", "phosphorescent", "plasma_globe", "radioactive", "rave", "scorched", "sodium_lamp", "static", "tesla_coil", "tracer_round", "welding_arc"],
             "Novelty & Fun": ["aged_leather", "bark", "bone", "brick_wall", "burlap", "cork", "crocodile_leather", "linen", "parchment", "petrified_wood", "stucco", "suede", "terra_cotta"],
+            "PARADIGM — Energy States": ["blackbody", "ember", "p_aurora", "pulse", "thin_film"],
+            "PARADIGM — Extreme Matter": ["crystal_lattice", "living_chrome", "mercury_pool", "quantum"],
+            "PARADIGM — Reality Break": ["gravity_well", "phase_shift", "void", "wormhole"],
+            "PARADIGM — Stealth Tech": ["glass_armor", "magnetic", "p_static", "stealth"],
+            "Prizm Series": ["prizm_adaptive", "prizm_black_rainbow", "prizm_blood_moon", "prizm_cosmos", "prizm_dark_matter", "prizm_duochrome", "prizm_fire_ice", "prizm_holographic", "prizm_iridescent", "prizm_mystichrome", "prizm_neon", "prizm_phoenix", "prizm_solar", "prizm_spectrum", "prizm_venom"],
+            "Racing Legend": ["black_flag", "burnout_zone", "chicane_blur", "cool_down", "dawn_patrol", "drafting", "drag_chute", "flag_wave", "green_flag", "grid_walk", "heat_haze", "last_lap", "night_race", "pace_lap", "photo_finish", "pit_stop", "pole_position", "race_worn", "rain_race", "red_mist", "slipstream", "tunnel_run", "under_lights", "victory_burnout", "white_flag"],
+            "Shokk Series": ["shokk_adrenaline", "shokk_affliction", "shokk_aftermath", "shokk_blackout", "shokk_defib", "shokk_dia_de_muertos", "shokk_ekg", "shokk_flatline", "shokk_lafleur", "shokk_northern_soul", "shokk_overload", "shokk_resurrection", "shokk_samurai", "shokk_unleashed", "shokk_voltage"],
+            "Surreal & Fantasy": ["acid_trip", "antimatter", "astral", "crystal_cave", "dark_fairy", "dragon_breath", "dreamscape", "enchanted", "ethereal", "fourth_dimension", "fractal_dimension", "glitch_reality", "hallucination", "levitation", "mirage", "multiverse", "nebula_core", "phantom_zone", "portal", "simulation", "tesseract", "time_warp", "void_walker", "wormhole"],
+            "Texture & Surface": ["acid_etched_glass", "brushed_steel_dark", "cast_iron", "concrete", "etched_metal", "forged_iron", "granite", "hammered_copper", "obsidian_glass", "sandstone", "slate_tile", "volcanic_rock"],
+            "Vintage & Retro": ["art_deco_gold", "barn_find", "beat_up_truck", "classic_racing", "daguerreotype", "diner_chrome", "drive_in", "faded_glory", "grindhouse", "hot_rod_flames", "jukebox", "moonshine", "muscle_car_stripe", "nascar_heritage", "nostalgia_drag", "old_school", "patina_truck", "pin_up", "psychedelic", "sepia", "tin_type", "vinyl_record", "woodie", "woodie_wagon", "zeppelin"],
+            "Weather & Element": ["acid_rain", "black_ice", "blizzard", "desert_mirage", "dew_drop", "dust_storm", "ember_glow", "fog_bank", "frost_bite", "frozen_lake", "hail_damage", "heat_wave", "hurricane", "lightning_strike", "liquid_metal", "magma_flow", "meteor_shower", "monsoon", "ocean_floor", "oil_slick", "permafrost", "solar_wind", "tidal_wave", "tornado_alley", "volcanic_glass"],
         };
 
         // ================================================================
@@ -9270,7 +9270,7 @@
             <div class="swatch-square" style="background:#333;display:flex;align-items:center;justify-content:center;color:var(--text-dim);font-size:10px;">&#8709;</div>
             <div class="swatch-label">(not set)</div></div>`;
                 const baseGroupedIds = new Set();
-                Object.keys(BASE_GROUPS).forEach(groupName => {
+                Object.keys(BASE_GROUPS).sort((a, b) => a === 'Foundation' ? -1 : b === 'Foundation' ? 1 : a.localeCompare(b)).forEach(groupName => {
                     const ids = BASE_GROUPS[groupName];
                     if (!ids || ids.length === 0) return;
                     const groupBases = ids.map(id => BASES.find(b => b.id === id)).filter(Boolean);
@@ -9301,11 +9301,10 @@
                 }
                 // Monolithics — grouped by SPECIAL_GROUPS, separated into Color-Changing vs Effect sections
                 const groupedIds = new Set();
-                const EFFECT_GROUPS = new Set(["Effect & Visual", "Racing Legend", "Weather & Element", "Dark & Gothic",
-                    "Luxury & Exotic", "Neon & Glow", "Texture & Surface", "Vintage & Retro", "Surreal & Fantasy"]);
-                const allGroupNames = Object.keys(SPECIAL_GROUPS);
-                const colorChangingGroups = allGroupNames.filter(g => !EFFECT_GROUPS.has(g));
-                const effectGroups = allGroupNames.filter(g => EFFECT_GROUPS.has(g));
+                const COLOR_CHANGING_GROUPS = new Set(["Chameleon Classic", "Color Shift Adaptive", "Color Shift Preset", "Prizm Series"]);
+                const allGroupNames = Object.keys(SPECIAL_GROUPS).sort();
+                const colorChangingGroups = allGroupNames.filter(g => COLOR_CHANGING_GROUPS.has(g));
+                const effectGroups = allGroupNames.filter(g => !COLOR_CHANGING_GROUPS.has(g));
 
                 function renderGroupSection(groups, sectionLabel, sectionIcon) {
                     let s = `<div class="swatch-section-divider" style="margin:10px 0 6px; padding:6px 8px; background:var(--bg-dark); border:1px solid var(--border); border-radius:6px; display:flex; align-items:center; gap:6px;">
@@ -9353,7 +9352,7 @@
             <div class="swatch-square" style="background:#333;display:flex;align-items:center;justify-content:center;color:var(--text-dim);font-size:10px;">&#8709;</div>
             <div class="swatch-label">None</div></div>`;
                 const patGroupedIds = new Set();
-                Object.keys(PATTERN_GROUPS).forEach(groupName => {
+                Object.keys(PATTERN_GROUPS).sort().forEach(groupName => {
                     const ids = PATTERN_GROUPS[groupName];
                     if (!ids || ids.length === 0) return;
                     const groupPats = ids.map(id => PATTERNS.find(p => p.id === id)).filter(Boolean);

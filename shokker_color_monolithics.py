@@ -79,7 +79,7 @@ MATERIAL_TEMPLATES = {
     "matte":    {"M": 5,   "R": 180, "CC": 0,   "style": "solid"},
     "satin":    {"M": 15,  "R": 90,  "CC": 8,   "style": "solid"},
     "metallic": {"M": 200, "R": 50,  "CC": 16,  "style": "flake"},
-    "pearl":    {"M": 120, "R": 35,  "CC": 16,  "style": "pearl"},
+    "pearl":    {"M": 99,  "R": 35,  "CC": 16,  "style": "pearl"},
     "candy":    {"M": 200, "R": 15,  "CC": 16,  "style": "candy"},
     "chrome":   {"M": 250, "R": 3,   "CC": 0,   "style": "chrome"},
     "flat":     {"M": 0,   "R": 230, "CC": 0,   "style": "flat"},

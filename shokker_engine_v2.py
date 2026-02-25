@@ -1991,16 +1991,24 @@ def paint_rust_corrosion(paint, shape, mask, seed, pm, bb):
 
 def paint_neon_edge(paint, shape, mask, seed, pm, bb):
     """Neon glow — edges and features glow bright fluorescent."""
-    # Detect edges in paint brightness
     from PIL import ImageFilter
     h, w = shape
+    rng = np.random.RandomState(seed)
+    # Detect edges in paint brightness
     brightness = (paint[:,:,0]*0.299 + paint[:,:,1]*0.587 + paint[:,:,2]*0.114)
     bright_img = Image.fromarray((brightness * 255).astype(np.uint8))
     edges = np.array(bright_img.filter(ImageFilter.FIND_EDGES)).astype(np.float32) / 255.0
-    glow = np.clip(edges * 3, 0, 1) * pm
-    paint[:,:,0] = np.clip(paint[:,:,0] + glow * 0.08 * mask, 0, 1)
-    paint[:,:,1] = np.clip(paint[:,:,1] + glow * 0.15 * mask, 0, 1)  # green-ish neon
-    paint[:,:,2] = np.clip(paint[:,:,2] + glow * 0.10 * mask, 0, 1)
+    # Also generate noise-based glow so effect works on uniform paint
+    noise = rng.rand(h, w).astype(np.float32)
+    noise_img = Image.fromarray((noise * 255).astype(np.uint8))
+    noise_edges = np.array(noise_img.filter(ImageFilter.FIND_EDGES)).astype(np.float32) / 255.0
+    # Combine real edges with noise edges as fallback
+    combined = np.clip(edges * 3 + noise_edges * 1.5, 0, 1)
+    glow = combined * pm * mask
+    # Strong fluorescent green/cyan glow
+    paint[:,:,0] = np.clip(paint[:,:,0] + glow * 0.15, 0, 1)
+    paint[:,:,1] = np.clip(paint[:,:,1] + glow * 0.65, 0, 1)  # bright green neon
+    paint[:,:,2] = np.clip(paint[:,:,2] + glow * 0.40, 0, 1)  # cyan tint
     return paint
 
 def paint_weathered_peel(paint, shape, mask, seed, pm, bb):

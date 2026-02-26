@@ -5169,7 +5169,7 @@
         <div class="zone-float-expand-tab" id="zoneFloatExpandTab" onclick="toggleZoneFloat()"
             title="Show Zone Editor (E)">&#9664;</div>
 
-        <div class="center-panel" style="position:relative;">
+        <div class="center-panel" id="centerPanel" style="position:relative; transition: padding-left 0.15s ease;">
 
             <!-- Top toolbar bar -->
             <div
@@ -5191,57 +5191,139 @@
 
                         <span style="width: 1px; height: 18px; background: var(--border); margin: 0 4px;"></span>
 
-                        <span style="font-size: 9px; color: var(--text-dim);">MODE:</span>
-                        <button id="modeEyedropper" class="btn btn-sm draw-tool-btn active"
-                            onclick="setCanvasMode('eyedropper')" title="Pick colors from paint"
-                            style="font-size: 10px; padding: 2px 6px;">🎨 Pick</button>
-                        <button id="modeBrush" class="btn btn-sm draw-tool-btn" onclick="setCanvasMode('brush')"
-                            title="Paint region for selected zone" style="font-size: 10px; padding: 2px 6px;">🖌️
-                            Draw</button>
-                        <button id="modeRect" class="btn btn-sm draw-tool-btn" onclick="setCanvasMode('rect')"
-                            title="Draw rectangle region" style="font-size: 10px; padding: 2px 6px;">▭ Rect</button>
-                        <button id="modeErase" class="btn btn-sm draw-tool-btn" onclick="setCanvasMode('erase')"
-                            title="Erase drawn regions" style="font-size: 10px; padding: 2px 6px;">🧹 Erase</button>
-                        <button id="modeWand" class="btn btn-sm draw-tool-btn" onclick="setCanvasMode('wand')"
-                            title="Magic Wand — click to auto-select similar connected pixels"
-                            style="font-size: 10px; padding: 2px 6px;">🎯 Wand</button>
+                        <!-- Primary Tools Row: Selection + Drawing -->
+                        <div
+                            style="display:flex; gap:3px; align-items:center; flex-wrap:nowrap; flex:1; overflow-x:auto;">
+                            <span
+                                style="font-size:8px; color:var(--accent-gold); font-weight:700; white-space:nowrap;">SELECT</span>
+                            <button id="modeEyedropper" class="btn btn-sm draw-tool-btn active"
+                                onclick="setCanvasMode('eyedropper')" title="Pick colors from paint (P)"
+                                style="font-size:10px; padding:2px 6px; white-space:nowrap;">🎨 Pick</button>
+                            <button id="modeWand" class="btn btn-sm draw-tool-btn" onclick="setCanvasMode('wand')"
+                                title="Magic Wand — auto-select connected similar pixels (W)"
+                                style="font-size:10px; padding:2px 6px; white-space:nowrap;">🎯 Wand</button>
+                            <button id="modeSelectAll" class="btn btn-sm draw-tool-btn"
+                                onclick="setCanvasMode('selectall')"
+                                title="Select ALL pixels of clicked color everywhere (A)"
+                                style="font-size:10px; padding:2px 6px; white-space:nowrap;">&#9635; All</button>
+                            <button id="modeEdge" class="btn btn-sm draw-tool-btn" onclick="setCanvasMode('edge')"
+                                title="Edge detection — bounded by hard color edges (E)"
+                                style="font-size:10px; padding:2px 6px; white-space:nowrap;">&#8982; Edge</button>
 
-                        <button id="modeSelectAll" class="btn btn-sm draw-tool-btn" onclick="setCanvasMode('selectall')"
-                            title="Select ALL pixels of clicked color (everywhere, not just connected)"
-                            style="font-size: 10px; padding: 2px 6px;">&#9635; All</button>
-                        <button id="modeEdge" class="btn btn-sm draw-tool-btn" onclick="setCanvasMode('edge')"
-                            title="Edge detection — auto-select regions bounded by hard color edges"
-                            style="font-size: 10px; padding: 2px 6px;">&#8982; Edge</button>
+                            <span
+                                style="width:1px; height:14px; background:var(--border); margin:0 2px; flex-shrink:0;"></span>
+                            <span
+                                style="font-size:8px; color:var(--accent-blue); font-weight:700; white-space:nowrap;">DRAW</span>
+                            <button id="modeBrush" class="btn btn-sm draw-tool-btn" onclick="setCanvasMode('brush')"
+                                title="Paint region for selected zone (B)"
+                                style="font-size:10px; padding:2px 6px; white-space:nowrap;">🖌️ Brush</button>
+                            <button id="modeRect" class="btn btn-sm draw-tool-btn" onclick="setCanvasMode('rect')"
+                                title="Draw rectangle region (R)"
+                                style="font-size:10px; padding:2px 6px; white-space:nowrap;">▭ Rect</button>
+                            <button id="modeLasso" class="btn btn-sm draw-tool-btn" onclick="setCanvasMode('lasso')"
+                                title="Polygon Lasso — click to place vertices, double-click to fill (L)"
+                                style="font-size:10px; padding:2px 6px; white-space:nowrap;">⬡ Lasso</button>
+                            <button id="modeErase" class="btn btn-sm draw-tool-btn" onclick="setCanvasMode('erase')"
+                                title="Erase drawn regions (X)"
+                                style="font-size:10px; padding:2px 6px; white-space:nowrap;">🧹 Erase</button>
 
-                        <span style="width: 1px; height: 18px; background: var(--border); margin: 0 2px;"></span>
-
-
-                        <label id="brushSizeLabel" style="font-size: 9px; color: var(--text-dim);">Size:</label>
-                        <input id="brushSize" type="range" min="5" max="80" value="20" style="width: 50px;"
-                            title="Brush/eraser size"
-                            oninput="document.getElementById('brushSizeVal').textContent=this.value">
-                        <span id="brushSizeVal" style="font-size: 9px; color: var(--text-dim); width: 16px;">20</span>
-                        <label id="wandToleranceLabel"
-                            style="font-size: 9px; color: var(--text-dim); display: none;">Tol:</label>
-                        <input id="wandTolerance" type="range" min="5" max="100" value="32"
-                            style="width: 50px; display: none;" title="Color similarity threshold"
-                            oninput="document.getElementById('wandTolVal').textContent=this.value">
-                        <span id="wandTolVal"
-                            style="font-size: 9px; color: var(--text-dim); width: 16px; display: none;">32</span>
-
-                        <span style="flex: 1;"></span>
-
-                        <button class="btn btn-sm" onclick="undoDrawStroke()" title="Undo last stroke (Ctrl+Z)"
-                            style="font-size: 9px; padding: 2px 6px; border-color: var(--accent-blue); color: var(--accent-blue);">↩
-                            Undo</button>
-                        <button class="btn btn-sm" onclick="clearZoneRegions(selectedZoneIndex)"
-                            title="Clear drawn regions for current zone"
-                            style="font-size: 9px; padding: 2px 6px; border-color: #ff4444; color: #ff4444;">Clear</button>
-                        <button class="btn btn-sm" onclick="clearAllRegions()" title="Clear ALL drawn regions"
-                            style="font-size: 9px; padding: 2px 6px; border-color: #ff4444; color: #ff4444;">Clear
-                            All</button>
+                            <!-- Brush/Wand params -->
+                            <span
+                                style="width:1px; height:14px; background:var(--border); margin:0 2px; flex-shrink:0;"></span>
+                            <label id="brushSizeLabel"
+                                style="font-size:9px; color:var(--text-dim); white-space:nowrap;">Size:</label>
+                            <input id="brushSize" type="range" min="5" max="80" value="20"
+                                style="width:45px; flex-shrink:0;" title="Brush/eraser size"
+                                oninput="document.getElementById('brushSizeVal').textContent=this.value">
+                            <span id="brushSizeVal" style="font-size:9px; color:var(--text-dim); width:16px;">20</span>
+                            <label id="wandToleranceLabel"
+                                style="font-size:9px; color:var(--text-dim); display:none;">Tol:</label>
+                            <input id="wandTolerance" type="range" min="5" max="100" value="32"
+                                style="width:45px; display:none;" title="Color similarity threshold"
+                                oninput="document.getElementById('wandTolVal').textContent=this.value">
+                            <span id="wandTolVal"
+                                style="font-size:9px; color:var(--text-dim); width:16px; display:none;">32</span>
+                        </div>
                     </div>
                 </div>
+            </div>
+
+            <!-- Secondary Toolbar: Advanced Tools (compact sub-bar) -->
+            <div id="advancedToolbar"
+                style="display:none; align-items:center; gap:2px; padding:3px 10px; background:rgba(17,17,24,0.85); border-bottom:1px solid var(--border); flex-shrink:0; flex-wrap:wrap;">
+                <span
+                    style="font-size:7px; color:var(--accent-green); font-weight:700; white-space:nowrap;">SPATIAL</span>
+                <button id="modeSpatialInclude" class="btn btn-sm draw-tool-btn"
+                    onclick="setCanvasMode('spatial-include')"
+                    title="Include brush — paint areas to KEEP in zone's color match (green overlay)"
+                    style="font-size:9px; padding:1px 5px; white-space:nowrap;">✅ Include</button>
+                <button id="modeSpatialExclude" class="btn btn-sm draw-tool-btn"
+                    onclick="setCanvasMode('spatial-exclude')"
+                    title="Exclude brush — paint areas to REMOVE from zone's color match (red overlay)"
+                    style="font-size:9px; padding:1px 5px; white-space:nowrap;">❌ Exclude</button>
+                <label id="spatialSizeLabel"
+                    style="font-size:8px; color:var(--text-dim); display:none; white-space:nowrap;">Size:</label>
+                <input id="spatialBrushSize" type="range" min="3" max="80" value="15" style="width:40px; display:none;"
+                    title="Spatial brush size"
+                    oninput="spatialBrushRadius=parseInt(this.value); document.getElementById('spatialSizeVal').textContent=this.value">
+                <span id="spatialSizeVal"
+                    style="font-size:8px; color:var(--text-dim); width:14px; display:none;">15</span>
+
+                <span style="width:1px; height:12px; background:var(--border); margin:0 2px; flex-shrink:0;"></span>
+                <span style="font-size:7px; color:var(--text-dim); font-weight:700; white-space:nowrap;">ACTIONS</span>
+                <button class="btn btn-sm" onclick="undoDrawStroke()" title="Undo last stroke (Ctrl+Z)"
+                    style="font-size:8px; padding:1px 5px; border-color:var(--accent-blue); color:var(--accent-blue); white-space:nowrap;">↩
+                    Undo</button>
+                <button class="btn btn-sm" onclick="undoSpatialStroke()" title="Undo last spatial stroke"
+                    style="font-size:8px; padding:1px 5px; border-color:var(--accent-green); color:var(--accent-green); white-space:nowrap;">↩
+                    Spatial</button>
+                <button class="btn btn-sm" onclick="clearZoneRegions(selectedZoneIndex)"
+                    title="Clear drawn regions for current zone"
+                    style="font-size:8px; padding:1px 5px; border-color:#ff4444; color:#ff4444; white-space:nowrap;">🗑️
+                    Region</button>
+                <button class="btn btn-sm" onclick="clearSpatialMask(selectedZoneIndex)"
+                    title="Clear spatial include/exclude for current zone"
+                    style="font-size:8px; padding:1px 5px; border-color:#ff4444; color:#ff4444; white-space:nowrap;">🗑️
+                    Spatial</button>
+                <button class="btn btn-sm" onclick="clearAllRegions()" title="Clear ALL drawn regions"
+                    style="font-size:8px; padding:1px 5px; border-color:#ff4444; color:#ff4444; white-space:nowrap;">Clear
+                    All</button>
+
+                <span style="width:1px; height:12px; background:var(--border); margin:0 2px; flex-shrink:0;"></span>
+                <span style="font-size:7px; color:#cc88ff; font-weight:700; white-space:nowrap;">REFINE</span>
+                <button class="btn btn-sm" onclick="growRegionMask(2)" title="Expand selection outward by 2px"
+                    style="font-size:8px; padding:1px 5px; border-color:#cc88ff; color:#cc88ff; white-space:nowrap;">+
+                    Grow</button>
+                <button class="btn btn-sm" onclick="shrinkRegionMask(2)" title="Contract selection inward by 2px"
+                    style="font-size:8px; padding:1px 5px; border-color:#cc88ff; color:#cc88ff; white-space:nowrap;">−
+                    Shrink</button>
+                <button class="btn btn-sm" onclick="fillRegionHoles()" title="Fill enclosed holes in selection"
+                    style="font-size:8px; padding:1px 5px; border-color:#cc88ff; color:#cc88ff; white-space:nowrap;">◉
+                    Fill</button>
+
+                <span style="width:1px; height:12px; background:var(--border); margin:0 2px; flex-shrink:0;"></span>
+                <span style="font-size:7px; color:var(--accent-blue); font-weight:700; white-space:nowrap;">MASK</span>
+                <button class="btn btn-sm" onclick="invertRegionMask()"
+                    title="Invert selection (swap selected/unselected)"
+                    style="font-size:8px; padding:1px 5px; border-color:var(--accent-blue); color:var(--accent-blue); white-space:nowrap;">⊘
+                    Invert</button>
+                <button class="btn btn-sm" onclick="copyMaskToZone()" title="Copy this zone's mask to another zone"
+                    style="font-size:8px; padding:1px 5px; border-color:var(--accent-blue); color:var(--accent-blue); white-space:nowrap;">📋
+                    Copy</button>
+                <button class="btn btn-sm" onclick="mirrorRegionMask()"
+                    title="Mirror mask horizontally (flip left↔right)"
+                    style="font-size:8px; padding:1px 5px; border-color:var(--accent-blue); color:var(--accent-blue); white-space:nowrap;">↔
+                    Mirror</button>
+
+                <span style="width:1px; height:12px; background:var(--border); margin:0 2px; flex-shrink:0;"></span>
+                <span style="font-size:7px; color:var(--text-dim); font-weight:700; white-space:nowrap;">VIEW</span>
+                <button class="btn btn-sm" onclick="zoomToSelection()"
+                    title="Zoom viewport to fit current zone's selection"
+                    style="font-size:8px; padding:1px 5px; white-space:nowrap;">🔍 Zoom</button>
+                <label style="font-size:7px; color:var(--text-dim); white-space:nowrap;">Opacity:</label>
+                <input id="overlayOpacity" type="range" min="0" max="200" value="100" style="width:40px;"
+                    title="Zone overlay opacity (0-100%)" oninput="setOverlayOpacity(this.value / 100)">
+                <span id="overlayOpacityVal" style="font-size:7px; color:var(--text-dim); width:20px;">50%</span>
             </div>
 
             <!-- Drawing zone indicator -->
@@ -5253,6 +5335,10 @@
                 <span id="drawZoneHint" style="font-size: 9px; color: var(--text-dim); font-weight: 400;">(select a
                     different zone on the left)</span>
             </div>
+
+            <!-- Brush cursor circle (follows mouse during brush/spatial modes) -->
+            <div id="brushCursorCircle" style="display:none; position:fixed; pointer-events:none; z-index:9999;
+                border:2px solid rgba(255,255,255,0.7); border-radius:50%; mix-blend-mode:difference;"></div>
 
             <!-- Paint Canvas Viewport (scrollable/zoomable) -->
             <div class="canvas-viewport" id="canvasViewport">
@@ -5425,7 +5511,7 @@
                 </div>
                 <!-- One-Click Deploy to iRacing -->
                 <div id="renderDeployRow"
-                    style="display:none; margin-top: 6px; padding: 6px 8px; background: rgba(51,102,255,0.08); border: 1px solid rgba(51,102,255,0.3); border-radius: 4px;">
+                    style="display:none !important; margin-top: 6px; padding: 6px 8px; background: rgba(51,102,255,0.08); border: 1px solid rgba(51,102,255,0.3); border-radius: 4px;">
                     <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
                         <span
                             style="font-size:10px; color:var(--accent-blue); font-weight:600; letter-spacing:0.5px;">DEPLOY
@@ -5499,6 +5585,16 @@
                             <button class="btn btn-sm" style="font-size: 10px; padding: 3px 8px; white-space: nowrap;"
                                 onclick="useEyedropperColor()"
                                 title="Replace zone's color with this single color">Set</button>
+                            <!-- Divider -->
+                            <div style="width: 1px; height: 24px; background: var(--border); flex-shrink: 0;"></div>
+                            <!-- Use Region button — commits lasso/brush region to zone without needing a color -->
+                            <button class="btn btn-sm" id="useRegionBtn"
+                                style="font-size: 10px; padding: 3px 8px; white-space: nowrap; border-color: #cc88ff; color: #cc88ff;"
+                                onclick="useRegionForZone()"
+                                title="Use drawn region (lasso/brush) as the zone's pixel selection — no color needed">🎯
+                                Use Region</button>
+                            <span id="regionStatus"
+                                style="font-size: 9px; color: var(--text-dim); white-space: nowrap;"></span>
                             <!-- Divider -->
                             <div style="width: 1px; height: 24px; background: var(--border); flex-shrink: 0;"></div>
                             <span style="font-size: 9px; color: var(--text-dim);">Edit base &amp; pattern in the zone
@@ -5870,6 +5966,8 @@
             const empty2 = document.getElementById('paintPreviewEmpty2');
             if (empty2) empty2.style.display = 'none';
             document.getElementById('paintPreviewLoaded').style.display = 'flex';
+            const advBar1 = document.getElementById('advancedToolbar'); if (advBar1) advBar1.style.display = 'flex';
+            const edInfo1 = document.getElementById('eyedropperInfo'); if (edInfo1) edInfo1.style.display = 'block';
             document.getElementById('paintPreviewStatus').textContent = `(${width}x${height})`;
             document.getElementById('paintDimensions').textContent = `${width}x${height}`;
             const canvasInner = document.getElementById('canvasInner');
@@ -7623,7 +7721,8 @@
         // Great for numbers, sponsors, artwork where colors overlap body paint.
         // regionMask is canvas-resolution: 1 = pixel belongs, 0 = doesn't
 
-        let canvasMode = 'eyedropper'; // 'eyedropper' | 'brush' | 'rect' | 'erase' | 'wand'
+        let canvasMode = 'eyedropper'; // 'eyedropper' | 'brush' | 'rect' | 'erase' | 'wand' | 'spatial-include' | 'spatial-exclude'
+        let spatialBrushRadius = 15; // Radius for spatial include/exclude brush
         let isDrawing = false;
         let rectStart = null; // {x, y} for rectangle start point
         let paintImageData = null;
@@ -7911,10 +8010,20 @@
                 } else if (zone.colorMode === 'special' && zone.color === 'everything') {
                     dotColor = 'linear-gradient(135deg, #888, #ccc)';
                     dotTitle = 'Everything (all pixels)';
+                } else if (zone.regionMask && zone.regionMask.some(v => v > 0)) {
+                    // Zone has a drawn region but no color — that's valid, region replaces color detection
+                    dotColor = '#cc88ff';
+                    dotTitle = 'Region-based zone (lasso/brush drawn)';
                 } else {
                     dotColor = 'NOCOLOR';
                     dotTitle = 'No color selected \u2014 pick a color first';
                 }
+
+                // Region badge: show a purple indicator when zone has a drawn region
+                const hasRegion = zone.regionMask && zone.regionMask.some(v => v > 0);
+                const regionBadge = hasRegion
+                    ? `<span style="font-size:8px; color:#cc88ff; margin-left:2px; white-space:nowrap;" title="Region drawn (${zone.regionMask.reduce((s, v) => s + (v > 0 ? 1 : 0), 0).toLocaleString()} pixels)">🎯</span>`
+                    : '';
 
                 const mutedClass = zone.muted ? ' zone-muted' : '';
                 html += `<div class="zone-card${accordionClass}${mutedClass}" onclick="selectZone(${i})" id="zone-card-${i}"
@@ -7926,7 +8035,7 @@
                 <input class="zone-name-input" type="text" value="${escapeHtml(zone.name)}"
                     onclick="event.stopPropagation()"
                     onchange="updateZoneName(${i}, this.value)">
-                ${summaryHtml}
+                ${summaryHtml}${regionBadge}
                 <button class="zone-mute-btn${zone.muted ? ' muted' : ''}" onclick="event.stopPropagation(); toggleZoneMute(${i})" title="${zone.muted ? 'Unmute zone (include in render)' : 'Mute zone (exclude from render)'}">${zone.muted ? '&#x1F6AB;' : '&#x1F441;'}</button>
                 <button class="zone-move-btn" onclick="event.stopPropagation(); duplicateZone(${i})" title="Duplicate this zone" style="font-size:12px; padding:1px 5px;">&#x29C9;</button>
                 <div class="zone-reorder-group">
@@ -8251,6 +8360,7 @@
             if (index < 0 || index >= zones.length) {
                 panel.innerHTML = '';
                 panel.classList.remove('active');
+                updateBottomBarShift();
                 return;
             }
             panel.classList.add('active');
@@ -8571,6 +8681,54 @@
                 html += '<div class="zone-priority-note">First zone = highest priority</div>';
             }
 
+            // ===== SPATIAL SELECTION — Include/Exclude refinement =====
+            if (zone.base || zone.finish) {
+                const hasSpatial = hasSpatialMask(zone);
+                const isSpatialActive = canvasMode === 'spatial-include' || canvasMode === 'spatial-exclude';
+                html += `<div class="pattern-stack-section" style="border-top:1px solid var(--border);margin-top:6px;padding-top:6px;">
+            <div class="pattern-stack-header" style="color:var(--accent-green);font-size:10px;">
+                🎯 Spatial Selection
+                <span style="font-size:9px;color:var(--text-dim);margin-left:4px;">Refine color match with include/exclude regions</span>
+                ${hasSpatial ? '<span style="font-size:8px;color:var(--accent-green);margin-left:auto;float:right;">ACTIVE</span>' : ''}
+            </div>
+            <div style="padding:4px 8px;">
+                <div style="font-size:9px;color:var(--text-dim);margin-bottom:6px;">
+                    Paint on the preview to include (green) or exclude (red) areas from this zone's color selection.
+                </div>
+                <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px;">
+                    <button class="btn btn-sm${canvasMode === 'spatial-include' ? ' active' : ''}" 
+                        onclick="event.stopPropagation(); toggleSpatialMode('include')" 
+                        style="padding:3px 8px;font-size:10px;${canvasMode === 'spatial-include' ? 'background:rgba(0,200,100,0.3);border-color:var(--accent-green);color:var(--accent-green);' : ''}"
+                        title="Include brush: paint areas to KEEP in this zone">
+                        🟢 Include
+                    </button>
+                    <button class="btn btn-sm${canvasMode === 'spatial-exclude' ? ' active' : ''}" 
+                        onclick="event.stopPropagation(); toggleSpatialMode('exclude')" 
+                        style="padding:3px 8px;font-size:10px;${canvasMode === 'spatial-exclude' ? 'background:rgba(220,50,50,0.3);border-color:#ff4444;color:#ff4444;' : ''}"
+                        title="Exclude brush: paint areas to REMOVE from this zone">
+                        🔴 Exclude
+                    </button>
+                    <button class="btn btn-sm" onclick="event.stopPropagation(); clearSpatialMask(${i})" 
+                        style="padding:3px 8px;font-size:10px;" title="Clear all include/exclude marks">
+                        🗑️ Clear
+                    </button>
+                    <button class="btn btn-sm" onclick="event.stopPropagation(); undoSpatialStroke()" 
+                        style="padding:3px 8px;font-size:10px;" title="Undo last spatial stroke">
+                        ↩ Undo
+                    </button>
+                    ${isSpatialActive ? '<button class="btn btn-sm" onclick="event.stopPropagation(); toggleSpatialMode(\'off\')" style="padding:3px 8px;font-size:10px;color:var(--accent-orange);border-color:var(--accent-orange);">✋ Stop Drawing</button>' : ''}
+                </div>
+                ${isSpatialActive ? `<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
+                    <span style="font-size:9px;color:var(--text-dim);min-width:60px;">Brush Size</span>
+                    <input type="range" min="3" max="80" value="${spatialBrushRadius}" 
+                        oninput="spatialBrushRadius = parseInt(this.value); document.getElementById('spatialBrushVal').textContent = this.value + 'px'"
+                        style="flex:1;">
+                    <span id="spatialBrushVal" style="font-size:10px;color:var(--text-dim);min-width:30px;">${spatialBrushRadius}px</span>
+                </div>` : ''}
+            </div>
+        </div>`;
+            }
+
             html += `</div>`; // close zone-detail-body
 
             // Apply/Confirm footer
@@ -8615,13 +8773,14 @@
             updateBottomBarShift();
         }
 
-        // Shift the bottom bar right when the floating zone panel is visible (not collapsed)
+        // Shift the entire center panel right when the floating zone panel is visible (not collapsed)
         function updateBottomBarShift() {
-            const bar = document.getElementById('canvasBottomBar');
-            if (!bar) return;
             const floatPanel = document.getElementById('zoneEditorFloat');
             const isOpen = floatPanel && floatPanel.classList.contains('active') && !floatPanel.classList.contains('collapsed');
-            bar.style.paddingLeft = isOpen ? '370px' : '0';
+            const shiftPx = isOpen ? '370px' : '0';
+            // Shift entire center panel content
+            const centerPanel = document.getElementById('centerPanel');
+            if (centerPanel) centerPanel.style.paddingLeft = shiftPx;
         }
 
         // ===== ZONE ACTIONS =====
@@ -8634,6 +8793,10 @@
             }
             // Sync the right-side eyedropper panel to match the selected zone
             syncEyedropperPanel();
+            // Update region status indicator in bottom bar
+            if (typeof updateRegionStatus === 'function') updateRegionStatus();
+            // Refresh overlay to show only the selected zone's masks
+            if (typeof renderRegionOverlay === 'function') renderRegionOverlay();
         }
 
         function updateZoneName(index, name) {
@@ -9024,6 +9187,7 @@
                 pickerTolerance: 40,
                 colors: [],
                 regionMask: null,
+                spatialMask: null, // Uint8Array: 0=unset, 1=include(green), 2=exclude(red)
                 hint: "Pick a base material + pattern, then set the color",
                 lockBase: false,
                 lockPattern: false,
@@ -11321,6 +11485,8 @@ if __name__ == '__main__':
                         const empty2 = document.getElementById('paintPreviewEmpty2');
                         if (empty2) empty2.style.display = 'none';
                         document.getElementById('paintPreviewLoaded').style.display = 'flex';
+                        const advBar2 = document.getElementById('advancedToolbar'); if (advBar2) advBar2.style.display = 'flex';
+                        const edInfo2 = document.getElementById('eyedropperInfo'); if (edInfo2) edInfo2.style.display = 'block';
                         document.getElementById('paintDimensions').textContent = `${img.width}x${img.height}`;
                         document.getElementById('paintPreviewStatus').textContent = `(${img.width}x${img.height})`;
                         const canvasInner = document.getElementById('canvasInner');
@@ -11647,6 +11813,8 @@ if __name__ == '__main__':
                     const empty2 = document.getElementById('paintPreviewEmpty2');
                     if (empty2) empty2.style.display = 'none';
                     document.getElementById('paintPreviewLoaded').style.display = 'flex';
+                    const advBar3 = document.getElementById('advancedToolbar'); if (advBar3) advBar3.style.display = 'flex';
+                    const edInfo3 = document.getElementById('eyedropperInfo'); if (edInfo3) edInfo3.style.display = 'block';
                     document.getElementById('paintDimensions').textContent = `${img.width}x${img.height}`;
                     document.getElementById('paintPreviewStatus').textContent = `(${img.width}x${img.height})`;
                     const canvasInner = document.getElementById('canvasInner');
@@ -11884,6 +12052,10 @@ if __name__ == '__main__':
                     const val = canvasMode === 'brush' ? 1 : 0;
                     paintRegionCircle(pos.x, pos.y, radius, val);
                     _fastOverlayArc(pos.x, pos.y, radius, val); // fast GPU draw — no full ImageData rebuild
+                } else if ((canvasMode === 'spatial-include' || canvasMode === 'spatial-exclude') && isDrawing) {
+                    const val = canvasMode === 'spatial-include' ? 1 : 2;
+                    paintSpatialCircle(pos.x, pos.y, spatialBrushRadius, val);
+                    renderRegionOverlay();
                 } else if (canvasMode === 'rect' && isDrawing && rectStart) {
                     // Use clamped coords so drag pins to canvas edge instead of dying
                     const cpos = getPixelAtClamped(e);
@@ -11905,7 +12077,7 @@ if __name__ == '__main__':
 
                 // Prevent native canvas image drag for draw tools — without this,
                 // the browser can start a drag-and-drop operation that steals mousemove events
-                if (['brush', 'rect', 'erase'].includes(canvasMode)) {
+                if (['brush', 'rect', 'erase', 'spatial-include', 'spatial-exclude', 'lasso'].includes(canvasMode)) {
                     e.preventDefault();
                 }
 
@@ -11931,6 +12103,20 @@ if __name__ == '__main__':
                     // (RAF-wrapped renderRegionOverlay() is async and may not run in time,
                     //  leaving regionCanvas at default 300×150 → tiny dots bug)
                     _doRenderRegionOverlay();
+                } else if (canvasMode === 'spatial-include' || canvasMode === 'spatial-exclude') {
+                    pushSpatialUndo(selectedZoneIndex);
+                    isDrawing = true;
+                    const val = canvasMode === 'spatial-include' ? 1 : 2;
+                    paintSpatialCircle(pos.x, pos.y, spatialBrushRadius, val);
+                    _doRenderRegionOverlay();
+                } else if (canvasMode === 'lasso') {
+                    // Right-click undoes last lasso point
+                    if (e.button === 2) { undoLassoPoint(); return; }
+                    addLassoPoint(pos.x, pos.y);
+                    // Double-click closes the lasso
+                    if (e.detail >= 2 && lassoPoints.length >= 3) {
+                        closeLasso();
+                    }
                 } else if (canvasMode === 'rect') {
                     pushUndo(selectedZoneIndex); // Save state before rect draw
                     isDrawing = true;
@@ -11978,6 +12164,9 @@ if __name__ == '__main__':
                 if ((canvasMode === 'brush' || canvasMode === 'erase') && isDrawing) {
                     renderRegionOverlay();
                 }
+                if ((canvasMode === 'spatial-include' || canvasMode === 'spatial-exclude') && isDrawing) {
+                    _doRenderRegionOverlay();
+                }
                 isDrawing = false;
             };
 
@@ -12022,28 +12211,56 @@ if __name__ == '__main__':
 
             // Update toolbar button active states
             document.querySelectorAll('.draw-tool-btn').forEach(btn => btn.classList.remove('active'));
-            const btnId = { eyedropper: 'modeEyedropper', brush: 'modeBrush', rect: 'modeRect', erase: 'modeErase', wand: 'modeWand', selectall: 'modeSelectAll', edge: 'modeEdge' }[mode];
+            const btnId = {
+                eyedropper: 'modeEyedropper', brush: 'modeBrush', rect: 'modeRect',
+                erase: 'modeErase', wand: 'modeWand', selectall: 'modeSelectAll',
+                edge: 'modeEdge', 'spatial-include': 'modeSpatialInclude',
+                'spatial-exclude': 'modeSpatialExclude', lasso: 'modeLasso'
+            }[mode];
             document.getElementById(btnId)?.classList.add('active');
+            // Reset lasso state when switching away
+            if (mode !== 'lasso' && lassoActive) { lassoActive = false; lassoPoints = []; hideLassoPreview(); }
 
             // Toggle tool-specific controls
             const showBrush = (mode === 'brush' || mode === 'erase');
             const showWand = (mode === 'wand' || mode === 'selectall' || mode === 'edge' || mode === 'rect');
+            const showSpatial = (mode === 'spatial-include' || mode === 'spatial-exclude');
             document.getElementById('brushSizeLabel').style.display = showBrush ? '' : 'none';
             document.getElementById('brushSize').style.display = showBrush ? '' : 'none';
             document.getElementById('brushSizeVal').style.display = showBrush ? '' : 'none';
             document.getElementById('wandToleranceLabel').style.display = showWand ? '' : 'none';
             document.getElementById('wandTolerance').style.display = showWand ? '' : 'none';
             document.getElementById('wandTolVal').style.display = showWand ? '' : 'none';
+            document.getElementById('spatialSizeLabel').style.display = showSpatial ? '' : 'none';
+            document.getElementById('spatialBrushSize').style.display = showSpatial ? '' : 'none';
+            document.getElementById('spatialSizeVal').style.display = showSpatial ? '' : 'none';
 
             // Update cursor
             const viewport = document.getElementById('canvasViewport');
             if (mode === 'eyedropper') {
-                // Crosshair for precision when picking colors
-                // When zoomed in: left-click = pick, left-drag = pan (cursor changes to grabbing during drag)
                 canvas.style.cursor = 'crosshair';
                 if (viewport) viewport.style.cursor = '';
                 document.getElementById('drawZoneIndicator').style.display = 'none';
                 document.getElementById('regionCanvas').style.pointerEvents = 'none';
+            } else if (showSpatial) {
+                canvas.style.cursor = 'none'; // Hide native cursor, use brush circle
+                if (viewport) viewport.style.cursor = '';
+                document.getElementById('drawZoneIndicator').style.display = 'flex';
+                updateDrawZoneIndicator();
+                document.getElementById('regionCanvas').style.pointerEvents = 'none';
+            } else if (showBrush) {
+                canvas.style.cursor = 'none'; // Hide native cursor, use brush circle
+                if (viewport) viewport.style.cursor = '';
+                document.getElementById('drawZoneIndicator').style.display = 'flex';
+                updateDrawZoneIndicator();
+                document.getElementById('regionCanvas').style.pointerEvents = 'none';
+            } else if (mode === 'lasso') {
+                canvas.style.cursor = 'crosshair';
+                if (viewport) viewport.style.cursor = '';
+                document.getElementById('drawZoneIndicator').style.display = 'flex';
+                updateDrawZoneIndicator();
+                document.getElementById('regionCanvas').style.pointerEvents = 'none';
+                startLasso();
             } else {
                 canvas.style.cursor = (mode === 'wand' || mode === 'selectall' || mode === 'edge') ? 'crosshair' : 'cell';
                 if (viewport) viewport.style.cursor = '';
@@ -12051,6 +12268,9 @@ if __name__ == '__main__':
                 updateDrawZoneIndicator();
                 document.getElementById('regionCanvas').style.pointerEvents = 'none';
             }
+
+            // Show/hide brush cursor circle
+            updateBrushCursorVisibility();
         }
 
         function updateDrawZoneIndicator() {
@@ -12067,11 +12287,78 @@ if __name__ == '__main__':
             } else if (canvasMode === 'erase') {
                 label.textContent = 'Erasing from:';
                 hint.textContent = '(paint over drawn areas to remove them)';
+            } else if (canvasMode === 'spatial-include') {
+                label.textContent = '✅ Including for:';
+                label.style.color = 'var(--accent-green)';
+                hint.textContent = '(paint green areas to KEEP in this zone\'s color match)';
+            } else if (canvasMode === 'spatial-exclude') {
+                label.textContent = '❌ Excluding from:';
+                label.style.color = '#ff4444';
+                hint.textContent = '(paint red areas to REMOVE from this zone\'s color match)';
+            } else if (canvasMode === 'lasso') {
+                label.textContent = '⬡ Lasso for:';
+                label.style.color = 'var(--accent-gold)';
+                hint.textContent = `(click to place vertices, double-click to fill — ${lassoPoints.length} points)`;
             } else {
                 label.textContent = 'Drawing for:';
+                label.style.color = '';
                 hint.textContent = '(select a different zone on the left to switch)';
             }
         }
+
+        // ===== BRUSH CURSOR CIRCLE — visible radius indicator =====
+        function updateBrushCursorVisibility() {
+            const circle = document.getElementById('brushCursorCircle');
+            if (!circle) return;
+            const showCircle = ['brush', 'erase', 'spatial-include', 'spatial-exclude'].includes(canvasMode);
+            circle.style.display = showCircle ? 'block' : 'none';
+            if (showCircle) {
+                // Color the circle based on mode
+                if (canvasMode === 'spatial-include') {
+                    circle.style.borderColor = 'rgba(0,200,100,0.8)';
+                } else if (canvasMode === 'spatial-exclude') {
+                    circle.style.borderColor = 'rgba(220,50,50,0.8)';
+                } else if (canvasMode === 'erase') {
+                    circle.style.borderColor = 'rgba(255,255,255,0.5)';
+                } else {
+                    circle.style.borderColor = 'rgba(255,255,255,0.7)';
+                }
+            }
+        }
+
+        function updateBrushCursorPosition(e) {
+            const circle = document.getElementById('brushCursorCircle');
+            if (!circle || circle.style.display === 'none') return;
+            const canvas = document.getElementById('paintCanvas');
+            if (!canvas) return;
+
+            // Get the brush radius in canvas pixels
+            let radius;
+            if (canvasMode === 'spatial-include' || canvasMode === 'spatial-exclude') {
+                radius = spatialBrushRadius;
+            } else {
+                radius = parseInt(document.getElementById('brushSize')?.value || 20);
+            }
+
+            // Convert canvas pixels to screen pixels using current zoom
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = rect.width / canvas.width;
+            const screenRadius = radius * scaleX;
+            const diameter = screenRadius * 2;
+
+            circle.style.width = diameter + 'px';
+            circle.style.height = diameter + 'px';
+            circle.style.left = (e.clientX - screenRadius) + 'px';
+            circle.style.top = (e.clientY - screenRadius) + 'px';
+        }
+
+        // Attach global mousemove for brush cursor tracking
+        document.addEventListener('mousemove', function (e) {
+            if (['brush', 'erase', 'spatial-include', 'spatial-exclude'].includes(canvasMode)) {
+                updateBrushCursorPosition(e);
+            }
+        });
+
 
         // Cached ImageData of zone overlay for rect preview drag (outer scope so both
         // setupCanvasHandlers internals and drawRectPreview can access it)
@@ -12132,13 +12419,13 @@ if __name__ == '__main__':
             if (selBox) selBox.style.display = 'none';
         }
 
-        // Helper: render region mask overlay pixels onto context
+        // Helper: render region mask overlay pixels onto context (selected zone only)
         function renderRegionOverlayData(ctx, paintCanvas) {
             const imgData = ctx.createImageData(paintCanvas.width, paintCanvas.height);
             const data = imgData.data;
-            for (let zi = 0; zi < zones.length; zi++) {
-                const zone = zones[zi];
-                if (!zone.regionMask) continue;
+            const zi = selectedZoneIndex;
+            const zone = zones[zi];
+            if (zone && zone.regionMask) {
                 const color = ZONE_OVERLAY_COLORS[zi % ZONE_OVERLAY_COLORS.length];
                 for (let i = 0; i < zone.regionMask.length; i++) {
                     if (zone.regionMask[i] > 0) {
@@ -12181,51 +12468,67 @@ if __name__ == '__main__':
             const imgData = ctx.createImageData(paintCanvas.width, paintCanvas.height);
             const data = imgData.data;
 
-            // Draw all zones' regions with different colors
-            for (let zi = 0; zi < zones.length; zi++) {
+            // Draw ONLY the selected zone's region overlay (other zones' overlays are hidden)
+            {
+                const zi = selectedZoneIndex;
                 const zone = zones[zi];
-                if (!zone.regionMask) continue;
-                const color = ZONE_OVERLAY_COLORS[zi % ZONE_OVERLAY_COLORS.length];
-                for (let i = 0; i < zone.regionMask.length; i++) {
-                    if (zone.regionMask[i] > 0) {
-                        const pi = i * 4;
-                        // Blend: if already painted by earlier zone, mix
-                        if (data[pi + 3] > 0) {
-                            data[pi] = Math.min(255, data[pi] + color[0] / 2);
-                            data[pi + 1] = Math.min(255, data[pi + 1] + color[1] / 2);
-                            data[pi + 2] = Math.min(255, data[pi + 2] + color[2] / 2);
-                            data[pi + 3] = Math.min(255, data[pi + 3] + 40);
-                        } else {
+                if (zone && zone.regionMask) {
+                    const color = ZONE_OVERLAY_COLORS[zi % ZONE_OVERLAY_COLORS.length];
+                    for (let i = 0; i < zone.regionMask.length; i++) {
+                        if (zone.regionMask[i] > 0) {
+                            const pi = i * 4;
                             data[pi] = color[0];
                             data[pi + 1] = color[1];
                             data[pi + 2] = color[2];
-                            data[pi + 3] = color[3];
+                            data[pi + 3] = Math.min(255, Math.round(color[3] * overlayOpacityMultiplier));
+                        }
+                    }
+                }
+            }
+
+            // ---- SPATIAL MASK OVERLAY: green=include, red=exclude (selected zone only) ----
+            {
+                const zi = selectedZoneIndex;
+                const zone = zones[zi];
+                if (zone && zone.spatialMask) {
+                    const cw = paintCanvas.width, ch = paintCanvas.height;
+                    for (let i = 0; i < zone.spatialMask.length && i < cw * ch; i++) {
+                        const v = zone.spatialMask[i];
+                        if (v === 0) continue;
+                        const pi = i * 4;
+                        if (v === 1) {
+                            // Include = green overlay
+                            data[pi] = 0; data[pi + 1] = 200; data[pi + 2] = 100; data[pi + 3] = 128;
+                        } else if (v === 2) {
+                            // Exclude = red overlay
+                            data[pi] = 220; data[pi + 1] = 50; data[pi + 2] = 50; data[pi + 3] = 128;
                         }
                     }
                 }
             }
 
 
-            // Draw bright edge outlines for selection visibility
-            for (let zi = 0; zi < zones.length; zi++) {
+            // Draw bright edge outlines for the selected zone only
+            {
+                const zi = selectedZoneIndex;
                 const zone = zones[zi];
-                if (!zone.regionMask) continue;
-                const color = ZONE_OVERLAY_COLORS[zi % ZONE_OVERLAY_COLORS.length];
-                const cw = paintCanvas.width, ch = paintCanvas.height;
-                // Scan edge pixels where mask transitions 0->1
-                for (let y = 0; y < ch; y++) {
-                    for (let x = 0; x < cw; x++) {
-                        const idx = y * cw + x;
-                        if (zone.regionMask[idx] > 0) {
-                            const isEdge = (
-                                x === 0 || x === cw - 1 || y === 0 || y === ch - 1 ||
-                                zone.regionMask[idx - 1] === 0 || zone.regionMask[idx + 1] === 0 ||
-                                zone.regionMask[idx - cw] === 0 || zone.regionMask[idx + cw] === 0
-                            );
-                            if (isEdge) {
-                                const pi = idx * 4;
-                                imgData.data[pi] = 255; imgData.data[pi + 1] = 255;
-                                imgData.data[pi + 2] = 255; imgData.data[pi + 3] = 255;
+                if (zone && zone.regionMask) {
+                    const color = ZONE_OVERLAY_COLORS[zi % ZONE_OVERLAY_COLORS.length];
+                    const cw = paintCanvas.width, ch = paintCanvas.height;
+                    for (let y = 0; y < ch; y++) {
+                        for (let x = 0; x < cw; x++) {
+                            const idx = y * cw + x;
+                            if (zone.regionMask[idx] > 0) {
+                                const isEdge = (
+                                    x === 0 || x === cw - 1 || y === 0 || y === ch - 1 ||
+                                    zone.regionMask[idx - 1] === 0 || zone.regionMask[idx + 1] === 0 ||
+                                    zone.regionMask[idx - cw] === 0 || zone.regionMask[idx + cw] === 0
+                                );
+                                if (isEdge) {
+                                    const pi = idx * 4;
+                                    imgData.data[pi] = 255; imgData.data[pi + 1] = 255;
+                                    imgData.data[pi + 2] = 255; imgData.data[pi + 3] = 255;
+                                }
                             }
                         }
                     }
@@ -12456,6 +12759,462 @@ if __name__ == '__main__':
             showToast('Cleared all drawn regions');
         }
 
+        // ===== SPATIAL MASK — Include/Exclude refinement for color-based zones =====
+        // spatialMask is a Uint8Array: 0=unset, 1=include(green), 2=exclude(red)
+        // Unlike regionMask which REPLACES color detection, spatialMask REFINES it.
+
+        const spatialUndoStack = [];
+        const MAX_SPATIAL_UNDO = 20;
+
+        function pushSpatialUndo(zoneIndex) {
+            const zone = zones[zoneIndex];
+            if (!zone) return;
+            const prev = zone.spatialMask ? new Uint8Array(zone.spatialMask) : null;
+            spatialUndoStack.push({ zoneIndex, prev });
+            if (spatialUndoStack.length > MAX_SPATIAL_UNDO) spatialUndoStack.shift();
+        }
+
+        function undoSpatialStroke() {
+            if (spatialUndoStack.length === 0) { showToast('Nothing to undo'); return; }
+            const entry = spatialUndoStack.pop();
+            const zone = zones[entry.zoneIndex];
+            if (!zone) return;
+            zone.spatialMask = entry.prev;
+            renderRegionOverlay();
+            triggerPreviewRender();
+            showToast(`Undo: reverted spatial mask for Zone ${entry.zoneIndex + 1}`);
+        }
+
+        function paintSpatialCircle(cx, cy, radius, value) {
+            const zone = zones[selectedZoneIndex];
+            if (!zone) return;
+            const canvas = document.getElementById('paintCanvas');
+            if (!canvas) return;
+            const w = canvas.width, h = canvas.height;
+
+            // Initialize mask if needed
+            if (!zone.spatialMask) {
+                zone.spatialMask = new Uint8Array(w * h);
+            }
+
+            // Paint circle
+            const r2 = radius * radius;
+            const x0 = Math.max(0, Math.floor(cx - radius));
+            const x1 = Math.min(w - 1, Math.ceil(cx + radius));
+            const y0 = Math.max(0, Math.floor(cy - radius));
+            const y1 = Math.min(h - 1, Math.ceil(cy + radius));
+            for (let y = y0; y <= y1; y++) {
+                for (let x = x0; x <= x1; x++) {
+                    if ((x - cx) * (x - cx) + (y - cy) * (y - cy) <= r2) {
+                        zone.spatialMask[y * w + x] = value;
+                    }
+                }
+            }
+        }
+
+        function clearSpatialMask(zoneIndex) {
+            const zone = zones[zoneIndex];
+            if (!zone) return;
+            pushSpatialUndo(zoneIndex);
+            zone.spatialMask = null;
+            renderRegionOverlay();
+            triggerPreviewRender();
+            showToast(`Cleared spatial mask for ${zone.name}`);
+        }
+
+        function eraseSpatialCircle(cx, cy, radius) {
+            // Erase = set to 0 (unset)
+            paintSpatialCircle(cx, cy, radius, 0);
+        }
+
+        function toggleSpatialMode(mode) {
+            // mode: 'include', 'exclude', 'erase-spatial', 'off'
+            const cvs = document.getElementById('paintCanvas');
+            if (mode === 'include') {
+                canvasMode = 'spatial-include';
+                if (cvs) cvs.style.cursor = 'crosshair';
+                showToast('Spatial Include: paint areas to KEEP in this zone (green)');
+            } else if (mode === 'exclude') {
+                canvasMode = 'spatial-exclude';
+                if (cvs) cvs.style.cursor = 'crosshair';
+                showToast('Spatial Exclude: paint areas to REMOVE from this zone (red)');
+            } else if (mode === 'erase-spatial') {
+                canvasMode = 'spatial-include'; // reuse include but with value=0
+                // We'll handle erase by checking dedicated button state
+                if (cvs) cvs.style.cursor = 'crosshair';
+                showToast('Spatial Eraser: clear include/exclude marks');
+            } else {
+                canvasMode = 'eyedropper';
+                if (cvs) cvs.style.cursor = 'crosshair';
+            }
+            renderZoneDetail(selectedZoneIndex);
+        }
+
+        function hasSpatialMask(zone) {
+            return zone && zone.spatialMask && zone.spatialMask.some(v => v > 0);
+        }
+
+        // ===== ADVANCED MASK OPERATIONS =====
+
+        // --- INVERT SELECTION --- flip 0↔1 in regionMask
+        function invertRegionMask() {
+            const zone = zones[selectedZoneIndex];
+            if (!zone) return;
+            const canvas = document.getElementById('paintCanvas');
+            if (!canvas) return;
+            const w = canvas.width, h = canvas.height;
+            pushUndo(selectedZoneIndex);
+            if (!zone.regionMask) {
+                // Invert empty → fill everything
+                zone.regionMask = new Uint8Array(w * h).fill(1);
+            } else {
+                for (let i = 0; i < zone.regionMask.length; i++) {
+                    zone.regionMask[i] = zone.regionMask[i] > 0 ? 0 : 1;
+                }
+            }
+            renderRegionOverlay();
+            triggerPreviewRender();
+            showToast(`Inverted selection for Zone ${selectedZoneIndex + 1}`);
+        }
+
+        // --- GROW SELECTION --- morphological dilation by N pixels
+        function growRegionMask(px) {
+            const zone = zones[selectedZoneIndex];
+            if (!zone || !zone.regionMask) { showToast('No region to grow — draw one first'); return; }
+            const canvas = document.getElementById('paintCanvas');
+            if (!canvas) return;
+            const w = canvas.width, h = canvas.height;
+            const n = px || 2;
+            pushUndo(selectedZoneIndex);
+            const src = new Uint8Array(zone.regionMask);
+            for (let y = 0; y < h; y++) {
+                for (let x = 0; x < w; x++) {
+                    if (src[y * w + x] > 0) continue; // already filled
+                    // Check if any filled pixel is within N pixels
+                    let found = false;
+                    const x0 = Math.max(0, x - n), x1 = Math.min(w - 1, x + n);
+                    const y0 = Math.max(0, y - n), y1 = Math.min(h - 1, y + n);
+                    const r2 = n * n;
+                    for (let dy = y0; dy <= y1 && !found; dy++) {
+                        for (let dx = x0; dx <= x1 && !found; dx++) {
+                            if (src[dy * w + dx] > 0 && (dx - x) * (dx - x) + (dy - y) * (dy - y) <= r2) {
+                                found = true;
+                            }
+                        }
+                    }
+                    if (found) zone.regionMask[y * w + x] = 1;
+                }
+            }
+            renderRegionOverlay();
+            triggerPreviewRender();
+            showToast(`Grew selection by ${n}px`);
+        }
+
+        // --- SHRINK SELECTION --- morphological erosion by N pixels
+        function shrinkRegionMask(px) {
+            const zone = zones[selectedZoneIndex];
+            if (!zone || !zone.regionMask) { showToast('No region to shrink'); return; }
+            const canvas = document.getElementById('paintCanvas');
+            if (!canvas) return;
+            const w = canvas.width, h = canvas.height;
+            const n = px || 2;
+            pushUndo(selectedZoneIndex);
+            const src = new Uint8Array(zone.regionMask);
+            for (let y = 0; y < h; y++) {
+                for (let x = 0; x < w; x++) {
+                    if (src[y * w + x] === 0) continue; // already empty
+                    // Check if any empty pixel is within N pixels (= near edge → erode)
+                    let nearEdge = false;
+                    const x0 = Math.max(0, x - n), x1 = Math.min(w - 1, x + n);
+                    const y0 = Math.max(0, y - n), y1 = Math.min(h - 1, y + n);
+                    const r2 = n * n;
+                    for (let dy = y0; dy <= y1 && !nearEdge; dy++) {
+                        for (let dx = x0; dx <= x1 && !nearEdge; dx++) {
+                            if (src[dy * w + dx] === 0 && (dx - x) * (dx - x) + (dy - y) * (dy - y) <= r2) {
+                                nearEdge = true;
+                            }
+                        }
+                    }
+                    if (nearEdge) zone.regionMask[y * w + x] = 0;
+                }
+            }
+            renderRegionOverlay();
+            triggerPreviewRender();
+            showToast(`Shrunk selection by ${n}px`);
+        }
+
+        // --- FILL HOLES --- flood fill from edges to find enclosed gaps
+        function fillRegionHoles() {
+            const zone = zones[selectedZoneIndex];
+            if (!zone || !zone.regionMask) { showToast('No region to fill holes in'); return; }
+            const canvas = document.getElementById('paintCanvas');
+            if (!canvas) return;
+            const w = canvas.width, h = canvas.height;
+            pushUndo(selectedZoneIndex);
+
+            // Flood fill from all edge-touching empty pixels
+            const visited = new Uint8Array(w * h);
+            const stack = [];
+            // Seed from all 4 edges
+            for (let x = 0; x < w; x++) {
+                if (zone.regionMask[x] === 0 && !visited[x]) { stack.push(x); visited[x] = 1; }
+                const bot = (h - 1) * w + x;
+                if (zone.regionMask[bot] === 0 && !visited[bot]) { stack.push(bot); visited[bot] = 1; }
+            }
+            for (let y = 0; y < h; y++) {
+                const left = y * w;
+                if (zone.regionMask[left] === 0 && !visited[left]) { stack.push(left); visited[left] = 1; }
+                const right = y * w + w - 1;
+                if (zone.regionMask[right] === 0 && !visited[right]) { stack.push(right); visited[right] = 1; }
+            }
+            // BFS flood
+            while (stack.length > 0) {
+                const pos = stack.pop();
+                const px = pos % w, py = Math.floor(pos / w);
+                const neighbors = [];
+                if (px > 0) neighbors.push(pos - 1);
+                if (px < w - 1) neighbors.push(pos + 1);
+                if (py > 0) neighbors.push(pos - w);
+                if (py < h - 1) neighbors.push(pos + w);
+                for (const nb of neighbors) {
+                    if (!visited[nb] && zone.regionMask[nb] === 0) {
+                        visited[nb] = 1;
+                        stack.push(nb);
+                    }
+                }
+            }
+            // Any unvisited empty pixel is an enclosed hole → fill it
+            let filled = 0;
+            for (let i = 0; i < w * h; i++) {
+                if (zone.regionMask[i] === 0 && !visited[i]) {
+                    zone.regionMask[i] = 1;
+                    filled++;
+                }
+            }
+            renderRegionOverlay();
+            triggerPreviewRender();
+            showToast(`Filled ${filled.toLocaleString()} hole pixels`);
+        }
+
+        // --- COPY MASK BETWEEN ZONES ---
+        function copyMaskToZone() {
+            const zone = zones[selectedZoneIndex];
+            if (!zone || !zone.regionMask) { showToast('No region mask to copy'); return; }
+            // Build quick zone picker
+            const names = zones.map((z, i) => `${i + 1}: ${z.name}`).filter((_, i) => i !== selectedZoneIndex);
+            const targetStr = prompt(`Copy Zone ${selectedZoneIndex + 1}'s region mask to which zone?\n(${names.join(', ')})`);
+            if (!targetStr) return;
+            const targetIndex = parseInt(targetStr) - 1;
+            if (isNaN(targetIndex) || targetIndex < 0 || targetIndex >= zones.length || targetIndex === selectedZoneIndex) {
+                showToast('Invalid zone number'); return;
+            }
+            pushUndo(targetIndex);
+            zones[targetIndex].regionMask = new Uint8Array(zone.regionMask);
+            renderRegionOverlay();
+            triggerPreviewRender();
+            showToast(`Copied mask from Zone ${selectedZoneIndex + 1} → Zone ${targetIndex + 1}`);
+        }
+
+        // --- MIRROR/FLIP MASK --- horizontal flip
+        function mirrorRegionMask() {
+            const zone = zones[selectedZoneIndex];
+            if (!zone || !zone.regionMask) { showToast('No region to mirror'); return; }
+            const canvas = document.getElementById('paintCanvas');
+            if (!canvas) return;
+            const w = canvas.width, h = canvas.height;
+            pushUndo(selectedZoneIndex);
+            for (let y = 0; y < h; y++) {
+                const row = y * w;
+                for (let x = 0; x < Math.floor(w / 2); x++) {
+                    const left = row + x;
+                    const right = row + w - 1 - x;
+                    const tmp = zone.regionMask[left];
+                    zone.regionMask[left] = zone.regionMask[right];
+                    zone.regionMask[right] = tmp;
+                }
+            }
+            renderRegionOverlay();
+            triggerPreviewRender();
+            showToast(`Mirrored region mask horizontally for Zone ${selectedZoneIndex + 1}`);
+        }
+
+        // --- OVERLAY OPACITY --- adjustable zone overlay transparency
+        let overlayOpacityMultiplier = 1.0; // 0.0 - 2.0 range, 1.0 = default
+
+        function setOverlayOpacity(val) {
+            overlayOpacityMultiplier = parseFloat(val);
+            _doRenderRegionOverlay();
+            document.getElementById('overlayOpacityVal').textContent = Math.round(val * 50) + '%';
+        }
+
+        // --- ZOOM TO SELECTION --- auto-zoom to fit mask bounding box
+        function zoomToSelection() {
+            const zone = zones[selectedZoneIndex];
+            if (!zone || !zone.regionMask) { showToast('No region to zoom to'); return; }
+            const canvas = document.getElementById('paintCanvas');
+            if (!canvas) return;
+            const w = canvas.width, h = canvas.height;
+
+            // Find bounding box
+            let minX = w, maxX = 0, minY = h, maxY = 0;
+            for (let y = 0; y < h; y++) {
+                for (let x = 0; x < w; x++) {
+                    if (zone.regionMask[y * w + x] > 0) {
+                        if (x < minX) minX = x;
+                        if (x > maxX) maxX = x;
+                        if (y < minY) minY = y;
+                        if (y > maxY) maxY = y;
+                    }
+                }
+            }
+            if (maxX < minX) { showToast('Selection is empty'); return; }
+
+            // Calculate required zoom to fit bounding box in viewport
+            const viewport = document.getElementById('canvasViewport');
+            if (!viewport) return;
+            const vpW = viewport.clientWidth - 40;
+            const vpH = viewport.clientHeight - 40;
+            const selW = maxX - minX + 1;
+            const selH = maxY - minY + 1;
+            const zoomX = vpW / selW;
+            const zoomY = vpH / selH;
+            const targetZoom = Math.min(zoomX, zoomY, 8.0); // Cap at 8x
+
+            // Apply zoom
+            currentZoom = Math.max(0.1, targetZoom);
+            applyZoom();
+
+            // Scroll to center of selection
+            setTimeout(() => {
+                const sc = getScrollContainer();
+                if (!sc) return;
+                const centerX = (minX + maxX) / 2;
+                const centerY = (minY + maxY) / 2;
+                sc.scrollLeft = centerX * currentZoom - vpW / 2;
+                sc.scrollTop = centerY * currentZoom - vpH / 2;
+            }, 50);
+
+            showToast(`Zoomed to selection (${selW}×${selH}px)`);
+        }
+
+        // --- LASSO / POLYGON SELECT --- click vertices, fill inside on close
+        let lassoPoints = [];
+        let lassoActive = false;
+
+        function startLasso() {
+            lassoPoints = [];
+            lassoActive = true;
+        }
+
+        function addLassoPoint(x, y) {
+            lassoPoints.push({ x, y });
+            drawLassoPreview();
+        }
+
+        function closeLasso() {
+            if (lassoPoints.length < 3) {
+                showToast('Need at least 3 points for polygon selection');
+                lassoActive = false;
+                lassoPoints = [];
+                return;
+            }
+            const zone = zones[selectedZoneIndex];
+            if (!zone) return;
+            const canvas = document.getElementById('paintCanvas');
+            if (!canvas) return;
+            const w = canvas.width, h = canvas.height;
+            pushUndo(selectedZoneIndex);
+            if (!zone.regionMask) zone.regionMask = new Uint8Array(w * h);
+
+            // Fill polygon using scanline approach
+            // Find bounding box
+            let minX = w, maxX = 0, minY = h, maxY = 0;
+            for (const p of lassoPoints) {
+                if (p.x < minX) minX = Math.floor(p.x);
+                if (p.x > maxX) maxX = Math.ceil(p.x);
+                if (p.y < minY) minY = Math.floor(p.y);
+                if (p.y > maxY) maxY = Math.ceil(p.y);
+            }
+            minX = Math.max(0, minX); maxX = Math.min(w - 1, maxX);
+            minY = Math.max(0, minY); maxY = Math.min(h - 1, maxY);
+
+            // Point-in-polygon test (ray casting)
+            const pts = lassoPoints;
+            const n = pts.length;
+            let filled = 0;
+            for (let y = minY; y <= maxY; y++) {
+                for (let x = minX; x <= maxX; x++) {
+                    let inside = false;
+                    for (let i = 0, j = n - 1; i < n; j = i++) {
+                        const xi = pts[i].x, yi = pts[i].y;
+                        const xj = pts[j].x, yj = pts[j].y;
+                        if ((yi > y) !== (yj > y) && x < (xj - xi) * (y - yi) / (yj - yi) + xi) {
+                            inside = !inside;
+                        }
+                    }
+                    if (inside) {
+                        zone.regionMask[y * w + x] = 1;
+                        filled++;
+                    }
+                }
+            }
+
+            lassoActive = false;
+            lassoPoints = [];
+            hideLassoPreview();
+            renderRegionOverlay();
+            triggerPreviewRender();
+            showToast(`Lasso: filled ${filled.toLocaleString()} pixels`);
+        }
+
+        function drawLassoPreview() {
+            const canvas = document.getElementById('paintCanvas');
+            const regionCanvas = document.getElementById('regionCanvas');
+            if (!canvas || !regionCanvas) return;
+            // Draw lasso preview lines on region canvas overlay
+            _doRenderRegionOverlay(); // Full redraw since we overlay on top
+            if (lassoPoints.length < 2) return;
+            const ctx = regionCanvas.getContext('2d');
+            ctx.save();
+            ctx.strokeStyle = 'rgba(255,255,0,0.9)';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([4, 3]);
+            ctx.beginPath();
+            ctx.moveTo(lassoPoints[0].x, lassoPoints[0].y);
+            for (let i = 1; i < lassoPoints.length; i++) {
+                ctx.lineTo(lassoPoints[i].x, lassoPoints[i].y);
+            }
+            ctx.stroke();
+            // Draw vertices
+            ctx.fillStyle = 'rgba(255,255,0,1)';
+            for (const p of lassoPoints) {
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            // Draw closing line (dashed) from last point to first
+            if (lassoPoints.length >= 3) {
+                ctx.strokeStyle = 'rgba(255,255,0,0.4)';
+                ctx.beginPath();
+                ctx.moveTo(lassoPoints[lassoPoints.length - 1].x, lassoPoints[lassoPoints.length - 1].y);
+                ctx.lineTo(lassoPoints[0].x, lassoPoints[0].y);
+                ctx.stroke();
+            }
+            ctx.restore();
+        }
+
+        function hideLassoPreview() {
+            _doRenderRegionOverlay();
+        }
+
+        function undoLassoPoint() {
+            if (lassoPoints.length > 0) {
+                lassoPoints.pop();
+                drawLassoPreview();
+                showToast(`Lasso: ${lassoPoints.length} points (right-click to undo last)`);
+            }
+        }
+
         function loadPaintImage(input) {
             const file = input.files[0];
             if (!file) return;
@@ -12496,6 +13255,8 @@ if __name__ == '__main__':
                         const empty2 = document.getElementById('paintPreviewEmpty2');
                         if (empty2) empty2.style.display = 'none';
                         document.getElementById('paintPreviewLoaded').style.display = 'flex';
+                        const advBar4 = document.getElementById('advancedToolbar'); if (advBar4) advBar4.style.display = 'flex';
+                        const edInfo4 = document.getElementById('eyedropperInfo'); if (edInfo4) edInfo4.style.display = 'block';
                         document.getElementById('paintDimensions').textContent = `${img.width}x${img.height}`;
                         document.getElementById('paintPreviewStatus').textContent = `(${img.width}x${img.height})`;
                         const canvasInner = document.getElementById('canvasInner');
@@ -12749,6 +13510,49 @@ if __name__ == '__main__':
             }
         }
 
+        // ===== USE REGION — commit lasso/brush drawn region to zone (no color needed) =====
+        function useRegionForZone() {
+            const sel = document.getElementById('eyedropperZoneSelect');
+            const targetIndex = sel ? parseInt(sel.value) : selectedZoneIndex;
+            if (targetIndex < 0 || targetIndex >= zones.length) {
+                showToast('Select a zone first!', true);
+                return;
+            }
+            const zone = zones[targetIndex];
+            if (!zone.regionMask || !zone.regionMask.some(v => v > 0)) {
+                showToast('Draw a region first! Use Lasso, Brush, Rect, or Wand tool to select an area.', true);
+                return;
+            }
+            pushZoneUndo();
+            // Count pixels in the region
+            const pixelCount = zone.regionMask.reduce((sum, v) => sum + (v > 0 ? 1 : 0), 0);
+            const canvas = document.getElementById('paintCanvas');
+            const totalPixels = canvas ? canvas.width * canvas.height : 1;
+            const pct = ((pixelCount / totalPixels) * 100).toFixed(1);
+            // If zone has no color set, that's fine — region_mask bypasses color detection in the engine
+            // Set a marker so the UI knows this zone uses region mode
+            zone.useRegion = true;
+            selectedZoneIndex = targetIndex;
+            renderZones();
+            triggerPreviewRender();
+            updateRegionStatus();
+            showToast(`🎯 Region applied to ${zone.name}: ${pixelCount.toLocaleString()} pixels (${pct}%) — assign a base/finish and hit Render!`);
+        }
+
+        // Update the region status indicator in the bottom bar
+        function updateRegionStatus() {
+            const statusEl = document.getElementById('regionStatus');
+            if (!statusEl) return;
+            const zone = zones[selectedZoneIndex];
+            if (zone && zone.regionMask && zone.regionMask.some(v => v > 0)) {
+                const pixelCount = zone.regionMask.reduce((sum, v) => sum + (v > 0 ? 1 : 0), 0);
+                statusEl.textContent = `Region: ${pixelCount.toLocaleString()}px ✓`;
+                statusEl.style.color = '#cc88ff';
+            } else {
+                statusEl.textContent = '';
+            }
+        }
+
         // ===== LIVE PREVIEW SPLIT VIEW =====
         let splitViewActive = false;
         let previewDebounceTimer = null;
@@ -12911,6 +13715,13 @@ if __name__ == '__main__':
                     const pc = document.getElementById('paintCanvas');
                     if (pc) {
                         zoneObj.region_mask = encodeRegionMaskRLE(z.regionMask, pc.width, pc.height);
+                    }
+                }
+                // Spatial mask RLE (include/exclude refinement)
+                if (z.spatialMask && z.spatialMask.some(v => v > 0)) {
+                    const pc = document.getElementById('paintCanvas');
+                    if (pc) {
+                        zoneObj.spatial_mask = encodeRegionMaskRLE(z.spatialMask, pc.width, pc.height);
                     }
                 }
                 return zoneObj;
@@ -13217,7 +14028,7 @@ if __name__ == '__main__':
                 // BUT: if user is in a drag-based drawing tool, DON'T hijack for pan —
                 // they need left-drag for rect, gradient, brush, erase strokes.
                 // Pan is still available via space+drag, middle-click, or right-click.
-                const drawToolActive = ['brush', 'rect', 'erase'].includes(canvasMode);
+                const drawToolActive = ['brush', 'rect', 'erase', 'spatial-include', 'spatial-exclude', 'lasso'].includes(canvasMode);
                 if (e.button === 0 && canvasOverflows() && !drawToolActive) {
                     pendingPan = true;
                     pendingPanEvent = e;
@@ -13268,6 +14079,7 @@ if __name__ == '__main__':
                             if (cvs) {
                                 if (canvasMode === 'eyedropper') cvs.style.cursor = 'crosshair';
                                 else if (canvasMode === 'wand' || canvasMode === 'selectall' || canvasMode === 'edge') cvs.style.cursor = 'crosshair';
+                                else if (['brush', 'erase', 'spatial-include', 'spatial-exclude'].includes(canvasMode)) cvs.style.cursor = 'none';
                                 else cvs.style.cursor = 'cell';
                             }
                         }
@@ -13486,14 +14298,465 @@ if __name__ == '__main__':
                     ctx.putImageData(id, 0, 0);
                 },
                 chameleon: (ctx, w, h) => {
+                    // Rainbow color bands (high frequency hue rotation)
                     const id = ctx.createImageData(w, h);
                     for (let py = 0; py < h; py++) {
                         for (let px = 0; px < w; px++) {
-                            const angle = Math.sin(py * 0.06 + px * 0.04) * 0.3 + Math.sin(py * 0.03 - px * 0.05) * 0.2;
-                            const hue = (angle + 0.5) * 120 + 100; // green-to-blue shift
-                            const [r, g, b] = _hslToRgb(hue, 50, 50);
+                            const angle = Math.sin(py * 0.5 + px * 0.3) * 0.4 + Math.sin(py * 0.25 - px * 0.4) * 0.3 + Math.sin((py + px) * 0.2) * 0.2;
+                            const hue = ((angle + 1) * 0.5) * 360;
+                            const [r, g, b] = _hslToRgb(hue % 360, 55, 52);
                             const idx = (py * w + px) * 4;
                             id.data[idx] = r; id.data[idx + 1] = g; id.data[idx + 2] = b; id.data[idx + 3] = 255;
+                        }
+                    }
+                    ctx.putImageData(id, 0, 0);
+                },
+                // --- Candy & Pearl Bases ---
+                candy_burgundy: (ctx, w, h) => {
+                    ctx.fillStyle = '#881133'; ctx.fillRect(0, 0, w, h);
+                    // Deep candy darkening + sparkle
+                    const g = ctx.createLinearGradient(0, 0, w, h);
+                    g.addColorStop(0, 'rgba(100,10,30,0.4)'); g.addColorStop(0.5, 'rgba(160,20,50,0.3)'); g.addColorStop(1, 'rgba(90,10,25,0.4)');
+                    ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+                    const rng = _seededRng(7710); const id = ctx.getImageData(0, 0, w, h);
+                    for (let i = 0; i < id.data.length; i += 4) { if (rng() > 0.90) { id.data[i] += 50; id.data[i + 1] += 30; id.data[i + 2] += 20; } }
+                    ctx.putImageData(id, 0, 0);
+                },
+                candy_cobalt: (ctx, w, h) => {
+                    ctx.fillStyle = '#1a2266'; ctx.fillRect(0, 0, w, h);
+                    const g = ctx.createLinearGradient(0, 0, w, h);
+                    g.addColorStop(0, 'rgba(20,30,120,0.4)'); g.addColorStop(0.5, 'rgba(30,50,180,0.3)'); g.addColorStop(1, 'rgba(15,25,100,0.4)');
+                    ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+                    const rng = _seededRng(7711); const id = ctx.getImageData(0, 0, w, h);
+                    for (let i = 0; i < id.data.length; i += 4) { if (rng() > 0.90) { id.data[i] += 20; id.data[i + 1] += 30; id.data[i + 2] += 60; } }
+                    ctx.putImageData(id, 0, 0);
+                },
+                candy_emerald: (ctx, w, h) => {
+                    ctx.fillStyle = '#114422'; ctx.fillRect(0, 0, w, h);
+                    const g = ctx.createLinearGradient(0, 0, w, h);
+                    g.addColorStop(0, 'rgba(10,80,30,0.4)'); g.addColorStop(0.5, 'rgba(20,140,50,0.3)'); g.addColorStop(1, 'rgba(8,70,25,0.4)');
+                    ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+                    const rng = _seededRng(7712); const id = ctx.getImageData(0, 0, w, h);
+                    for (let i = 0; i < id.data.length; i += 4) { if (rng() > 0.90) { id.data[i] += 20; id.data[i + 1] += 50; id.data[i + 2] += 20; } }
+                    ctx.putImageData(id, 0, 0);
+                },
+                moonstone: (ctx, w, h) => {
+                    // Milky white with iridescent color pearls
+                    const g = ctx.createLinearGradient(0, 0, w, h);
+                    g.addColorStop(0, '#d8dce8'); g.addColorStop(0.3, '#e4e0e8'); g.addColorStop(0.6, '#dce8e4'); g.addColorStop(1, '#e4dce8');
+                    ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+                    const rng = _seededRng(7713); const id = ctx.getImageData(0, 0, w, h);
+                    for (let i = 0; i < id.data.length; i += 4) {
+                        if (rng() > 0.92) { id.data[i] += 20; id.data[i + 1] += 15; id.data[i + 2] += 25; }
+                        const n = (rng() - 0.5) * 15; id.data[i] += n; id.data[i + 1] += n + 3; id.data[i + 2] += n + 6;
+                    }
+                    ctx.putImageData(id, 0, 0);
+                },
+                opal: (ctx, w, h) => {
+                    // Multi-color internal play
+                    const id = ctx.createImageData(w, h); const rng = _seededRng(7714);
+                    for (let py = 0; py < h; py++) {
+                        for (let px = 0; px < w; px++) {
+                            const n = Math.sin(py * 0.2 + px * 0.15) * 0.3 + Math.sin(py * 0.1 - px * 0.2) * 0.2 + 0.5;
+                            const r = Math.floor(160 + n * 60 + (rng() > 0.90 ? 40 : 0));
+                            const g = Math.floor(180 + (1 - n) * 50 + (rng() > 0.90 ? 35 : 0));
+                            const b = Math.floor(200 + Math.sin(n * 4) * 40 + (rng() > 0.90 ? 45 : 0));
+                            const idx = (py * w + px) * 4;
+                            id.data[idx] = Math.min(255, r); id.data[idx + 1] = Math.min(255, g); id.data[idx + 2] = Math.min(255, b); id.data[idx + 3] = 255;
+                        }
+                    }
+                    ctx.putImageData(id, 0, 0);
+                },
+                tri_coat_pearl: (ctx, w, h) => {
+                    // Pearl white with sparkle + directional sheen
+                    const g = ctx.createLinearGradient(0, 0, w, h);
+                    g.addColorStop(0, '#dde0ee'); g.addColorStop(0.3, '#eee8f0'); g.addColorStop(0.6, '#e0eaef'); g.addColorStop(1, '#e8e0ee');
+                    ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+                    // Directional sheen band
+                    const hl = ctx.createLinearGradient(0, h * 0.2, 0, h * 0.5);
+                    hl.addColorStop(0, 'rgba(255,255,255,0)'); hl.addColorStop(0.4, 'rgba(255,255,255,0.15)');
+                    hl.addColorStop(0.6, 'rgba(255,255,255,0.15)'); hl.addColorStop(1, 'rgba(255,255,255,0)');
+                    ctx.fillStyle = hl; ctx.fillRect(0, 0, w, h);
+                    // Dense sparkle
+                    const rng = _seededRng(7715); const id = ctx.getImageData(0, 0, w, h);
+                    for (let i = 0; i < id.data.length; i += 4) {
+                        if (rng() > 0.88) { const s = 15 + Math.floor(rng() * 30); id.data[i] += s; id.data[i + 1] += s - 2; id.data[i + 2] += s + 3; }
+                    }
+                    ctx.putImageData(id, 0, 0);
+                },
+                iridescent: (ctx, w, h) => {
+                    const id = ctx.createImageData(w, h);
+                    for (let py = 0; py < h; py++) {
+                        for (let px = 0; px < w; px++) {
+                            const angle = Math.sin(py * 0.3 + px * 0.2) * 0.4 + Math.sin(py * 0.15 - px * 0.25) * 0.3;
+                            const hue = ((angle + 1) * 0.5) * 360;
+                            const [r, g, b] = _hslToRgb(hue % 360, 35, 65);
+                            const idx = (py * w + px) * 4;
+                            id.data[idx] = r; id.data[idx + 1] = g; id.data[idx + 2] = b; id.data[idx + 3] = 255;
+                        }
+                    }
+                    ctx.putImageData(id, 0, 0);
+                },
+                // --- Industrial & Tactical Bases ---
+                mil_spec_od: (ctx, w, h) => {
+                    ctx.fillStyle = '#4a5038'; ctx.fillRect(0, 0, w, h);
+                    const rng = _seededRng(7900); const id = ctx.getImageData(0, 0, w, h);
+                    for (let i = 0; i < id.data.length; i += 4) { const n = (rng() - 0.5) * 8; id.data[i] += n; id.data[i + 1] += n; id.data[i + 2] += n; }
+                    ctx.putImageData(id, 0, 0);
+                },
+                mil_spec_tan: (ctx, w, h) => {
+                    ctx.fillStyle = '#b8a080'; ctx.fillRect(0, 0, w, h);
+                    const rng = _seededRng(7901); const id = ctx.getImageData(0, 0, w, h);
+                    for (let i = 0; i < id.data.length; i += 4) { const n = (rng() - 0.5) * 8; id.data[i] += n; id.data[i + 1] += n; id.data[i + 2] += n; }
+                    ctx.putImageData(id, 0, 0);
+                },
+                armor_plate: (ctx, w, h) => {
+                    ctx.fillStyle = '#505558'; ctx.fillRect(0, 0, w, h);
+                    const rng = _seededRng(7902); ctx.strokeStyle = 'rgba(100,105,110,0.15)'; ctx.lineWidth = 0.5;
+                    for (let y = 0; y < h; y += 3) { const x1 = rng() * 5; ctx.beginPath(); ctx.moveTo(x1, y); ctx.lineTo(w - x1, y); ctx.stroke(); }
+                },
+                submarine_black: (ctx, w, h) => {
+                    ctx.fillStyle = '#0a0a0c'; ctx.fillRect(0, 0, w, h);
+                    ctx.strokeStyle = 'rgba(20,20,25,0.4)'; ctx.lineWidth = 0.5;
+                    for (let x = 0; x < w; x += 6) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke(); }
+                    for (let y = 0; y < h; y += 6) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke(); }
+                },
+                gunship_gray: (ctx, w, h) => {
+                    ctx.fillStyle = '#606468'; ctx.fillRect(0, 0, w, h);
+                    const rng = _seededRng(7903); const id = ctx.getImageData(0, 0, w, h);
+                    for (let i = 0; i < id.data.length; i += 4) { const n = (rng() - 0.5) * 4; id.data[i] += n; id.data[i + 1] += n; id.data[i + 2] += n; }
+                    ctx.putImageData(id, 0, 0);
+                },
+                battleship_gray: (ctx, w, h) => {
+                    ctx.fillStyle = '#6a7078'; ctx.fillRect(0, 0, w, h);
+                    const rng = _seededRng(7904);
+                    for (let i = 0; i < 30; i++) {
+                        ctx.fillStyle = `rgba(55,60,65,${0.2 + rng() * 0.3})`;
+                        ctx.fillRect(rng() * w, rng() * h, 1 + rng() * 2, 1 + rng() * 2);
+                    }
+                },
+                // --- Metallic Standard Bases ---
+                metal_flake_base: (ctx, w, h) => {
+                    const g = ctx.createLinearGradient(0, 0, w, h);
+                    g.addColorStop(0, '#a0a0a5'); g.addColorStop(0.5, '#b0b0b5'); g.addColorStop(1, '#a0a0a5');
+                    ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+                    const rng = _seededRng(7905);
+                    for (let i = 0; i < 60; i++) {
+                        ctx.fillStyle = `rgba(200,200,210,${0.3 + rng() * 0.5})`;
+                        ctx.fillRect(rng() * w, rng() * h, 1, 1);
+                    }
+                },
+                candy_apple: (ctx, w, h) => {
+                    const g = ctx.createLinearGradient(0, 0, w, h);
+                    g.addColorStop(0, '#8a0000'); g.addColorStop(0.3, '#cc1010'); g.addColorStop(0.5, '#dd2020'); g.addColorStop(0.7, '#cc1010'); g.addColorStop(1, '#8a0000');
+                    ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+                },
+                midnight_pearl: (ctx, w, h) => {
+                    ctx.fillStyle = '#181820'; ctx.fillRect(0, 0, w, h);
+                    const rng = _seededRng(7906);
+                    for (let i = 0; i < 25; i++) {
+                        ctx.fillStyle = `rgba(60,60,80,${0.2 + rng() * 0.3})`;
+                        ctx.fillRect(rng() * w, rng() * h, 1, 1);
+                    }
+                },
+                // --- Exotic Metal Bases ---
+                liquid_titanium: (ctx, w, h) => {
+                    const g = ctx.createLinearGradient(0, 0, w, h);
+                    g.addColorStop(0, '#b0bcc5'); g.addColorStop(0.3, '#c8d4dd'); g.addColorStop(0.5, '#d8e0e8'); g.addColorStop(0.7, '#c8d4dd'); g.addColorStop(1, '#b0bcc5');
+                    ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+                    // Caustic flow ripples
+                    for (let y = 0; y < h; y += 3) { const x = Math.sin(y * 0.15) * 8 + w / 2; ctx.strokeStyle = 'rgba(220,230,240,0.15)'; ctx.beginPath(); ctx.moveTo(x - 10, y); ctx.lineTo(x + 10, y); ctx.stroke(); }
+                },
+                tungsten: (ctx, w, h) => {
+                    ctx.fillStyle = '#3a3e45'; ctx.fillRect(0, 0, w, h);
+                    const rng = _seededRng(7840); const id = ctx.getImageData(0, 0, w, h);
+                    for (let i = 0; i < id.data.length; i += 4) { const n = (rng() - 0.5) * 10; id.data[i] += n; id.data[i + 1] += n; id.data[i + 2] += n + 2; }
+                    ctx.putImageData(id, 0, 0);
+                },
+                platinum: (ctx, w, h) => {
+                    const g = ctx.createLinearGradient(0, 0, w, h);
+                    g.addColorStop(0, '#d8d8d5'); g.addColorStop(0.35, '#e8e8e5'); g.addColorStop(0.5, '#f0f0ed'); g.addColorStop(0.65, '#e8e8e5'); g.addColorStop(1, '#d8d8d5');
+                    ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+                },
+                cobalt_metal: (ctx, w, h) => {
+                    const g = ctx.createLinearGradient(0, 0, w * 0.8, h);
+                    g.addColorStop(0, '#4a5570'); g.addColorStop(0.4, '#5a6888'); g.addColorStop(0.6, '#6878a0'); g.addColorStop(1, '#4a5570');
+                    ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+                    const hl = ctx.createLinearGradient(w * 0.3, 0, w * 0.7, h * 0.5);
+                    hl.addColorStop(0, 'rgba(100,130,200,0)'); hl.addColorStop(0.5, 'rgba(100,130,200,0.2)'); hl.addColorStop(1, 'rgba(100,130,200,0)');
+                    ctx.fillStyle = hl; ctx.fillRect(0, 0, w, h);
+                },
+                // --- Extreme & Experimental Bases ---
+                quantum_black: (ctx, w, h) => {
+                    ctx.fillStyle = '#020204'; ctx.fillRect(0, 0, w, h);
+                    const rng = _seededRng(7850);
+                    for (let i = 0; i < 5; i++) { ctx.fillStyle = `rgba(15,15,20,${0.3 + rng() * 0.3})`; ctx.fillRect(rng() * w, rng() * h, 2, 2); }
+                },
+                neutron_star: (ctx, w, h) => {
+                    const g = ctx.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, w * 0.7);
+                    g.addColorStop(0, '#ffffff'); g.addColorStop(0.3, '#f8f8ff'); g.addColorStop(0.6, '#f0f0f8'); g.addColorStop(1, '#e8e8f0');
+                    ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+                },
+                plasma_core: (ctx, w, h) => {
+                    ctx.fillStyle = '#401060'; ctx.fillRect(0, 0, w, h);
+                    const rng = _seededRng(7851);
+                    ctx.lineWidth = 0.8; ctx.strokeStyle = 'rgba(200,80,180,0.4)';
+                    for (let i = 0; i < 12; i++) {
+                        let x = rng() * w, y = rng() * h; ctx.beginPath(); ctx.moveTo(x, y);
+                        for (let j = 0; j < 8; j++) { x += (rng() - 0.5) * 15; y += (rng() - 0.5) * 15; ctx.lineTo(x, y); } ctx.stroke();
+                    }
+                },
+                dark_matter: (ctx, w, h) => {
+                    ctx.fillStyle = '#060608'; ctx.fillRect(0, 0, w, h);
+                    for (let i = 0; i < 6; i++) {
+                        const y = h * (i / 6); const a = i % 2 === 0 ? 'rgba(20,10,40,0.4)' : 'rgba(10,25,30,0.4)';
+                        ctx.fillStyle = a; ctx.fillRect(0, y, w, h / 12);
+                    }
+                },
+                superconductor: (ctx, w, h) => {
+                    const g = ctx.createLinearGradient(0, 0, w, h);
+                    g.addColorStop(0, '#e0e4e8'); g.addColorStop(0.3, '#e8ecf0'); g.addColorStop(0.5, '#f0f4f8'); g.addColorStop(0.7, '#e8ecf0'); g.addColorStop(1, '#e0e4e8');
+                    ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+                    ctx.strokeStyle = 'rgba(100,180,200,0.15)'; ctx.lineWidth = 0.5;
+                    for (let x = 0; x < w; x += 8) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.bezierCurveTo(x + 4, h * 0.3, x - 4, h * 0.6, x, h); ctx.stroke(); }
+                },
+                bioluminescent: (ctx, w, h) => {
+                    ctx.fillStyle = '#0a2020'; ctx.fillRect(0, 0, w, h);
+                    const rng = _seededRng(7852);
+                    for (let i = 0; i < 40; i++) {
+                        const x = rng() * w, y = rng() * h, r = 0.5 + rng() * 2;
+                        ctx.fillStyle = `rgba(40,${150 + Math.floor(rng() * 80)},${120 + Math.floor(rng() * 60)},${0.3 + rng() * 0.4})`;
+                        ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
+                    }
+                },
+                solar_panel: (ctx, w, h) => {
+                    ctx.fillStyle = '#0a1530'; ctx.fillRect(0, 0, w, h);
+                    ctx.strokeStyle = 'rgba(120,120,140,0.3)'; ctx.lineWidth = 0.5;
+                    for (let x = 0; x < w; x += 8) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke(); }
+                    for (let y = 0; y < h; y += 8) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke(); }
+                },
+                holographic_base: (ctx, w, h) => {
+                    const g = ctx.createLinearGradient(0, 0, w, h);
+                    g.addColorStop(0, '#ff4488'); g.addColorStop(0.17, '#ffaa22'); g.addColorStop(0.33, '#44ff44');
+                    g.addColorStop(0.5, '#22ddff'); g.addColorStop(0.67, '#4444ff'); g.addColorStop(0.83, '#aa22ff'); g.addColorStop(1, '#ff4488');
+                    ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+                },
+                // --- Chrome & Mirror Bases ---
+                black_chrome: (ctx, w, h) => {
+                    const g = ctx.createLinearGradient(0, 0, w, h);
+                    g.addColorStop(0, '#0a0a0e'); g.addColorStop(0.35, '#141418'); g.addColorStop(0.5, '#222228'); g.addColorStop(0.65, '#141418'); g.addColorStop(1, '#0a0a0e');
+                    ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+                    const hl = ctx.createLinearGradient(0, h * 0.3, 0, h * 0.5);
+                    hl.addColorStop(0, 'rgba(60,60,70,0)'); hl.addColorStop(0.5, 'rgba(80,80,95,0.3)'); hl.addColorStop(1, 'rgba(60,60,70,0)');
+                    ctx.fillStyle = hl; ctx.fillRect(0, 0, w, h);
+                },
+                blue_chrome: (ctx, w, h) => {
+                    const g = ctx.createLinearGradient(0, 0, w * 0.7, h);
+                    g.addColorStop(0, '#3050aa'); g.addColorStop(0.3, '#5070cc'); g.addColorStop(0.5, '#7090ee'); g.addColorStop(0.7, '#5070cc'); g.addColorStop(1, '#3050aa');
+                    ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+                    const hl = ctx.createLinearGradient(w * 0.2, 0, w * 0.6, h * 0.4);
+                    hl.addColorStop(0, 'rgba(255,255,255,0)'); hl.addColorStop(0.5, 'rgba(200,220,255,0.25)'); hl.addColorStop(1, 'rgba(255,255,255,0)');
+                    ctx.fillStyle = hl; ctx.fillRect(0, 0, w, h);
+                },
+                red_chrome: (ctx, w, h) => {
+                    const g = ctx.createLinearGradient(0, 0, w * 0.7, h);
+                    g.addColorStop(0, '#882020'); g.addColorStop(0.3, '#bb3030'); g.addColorStop(0.5, '#dd4040'); g.addColorStop(0.7, '#bb3030'); g.addColorStop(1, '#882020');
+                    ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+                    const hl = ctx.createLinearGradient(w * 0.2, 0, w * 0.6, h * 0.4);
+                    hl.addColorStop(0, 'rgba(255,255,255,0)'); hl.addColorStop(0.5, 'rgba(255,200,180,0.25)'); hl.addColorStop(1, 'rgba(255,255,255,0)');
+                    ctx.fillStyle = hl; ctx.fillRect(0, 0, w, h);
+                },
+                antique_chrome: (ctx, w, h) => {
+                    const g = ctx.createLinearGradient(0, 0, w, h);
+                    g.addColorStop(0, '#8a8070'); g.addColorStop(0.4, '#9a9080'); g.addColorStop(0.7, '#8a7e6e'); g.addColorStop(1, '#807060');
+                    ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+                    const rng = _seededRng(7830);
+                    for (let i = 0; i < 25; i++) {
+                        const x = rng() * w, y = rng() * h, r = 1 + rng() * 3;
+                        ctx.fillStyle = `rgba(90,80,60,${0.15 + rng() * 0.2})`;
+                        ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
+                    }
+                },
+                // --- Ceramic & Glass Bases ---
+                porcelain: (ctx, w, h) => {
+                    // Bright white porcelain with slight cool blue shimmer
+                    const g = ctx.createLinearGradient(0, 0, w, h);
+                    g.addColorStop(0, '#e8e8f4'); g.addColorStop(0.4, '#f0f0f8'); g.addColorStop(1, '#e5e5f0');
+                    ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+                    // Subtle gloss band
+                    const gl = ctx.createLinearGradient(0, h * 0.3, 0, h * 0.6);
+                    gl.addColorStop(0, 'rgba(255,255,255,0)'); gl.addColorStop(0.5, 'rgba(255,255,255,0.15)'); gl.addColorStop(1, 'rgba(255,255,255,0)');
+                    ctx.fillStyle = gl; ctx.fillRect(0, 0, w, h);
+                },
+                obsidian: (ctx, w, h) => {
+                    // Deep near-black volcanic glass with blue-purple depth
+                    const g = ctx.createLinearGradient(0, 0, w * 0.6, h);
+                    g.addColorStop(0, '#0a0a14'); g.addColorStop(0.4, '#12121e'); g.addColorStop(0.7, '#0e0e18'); g.addColorStop(1, '#08080f');
+                    ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+                    const hl = ctx.createRadialGradient(w * 0.3, h * 0.35, 0, w * 0.3, h * 0.35, w * 0.5);
+                    hl.addColorStop(0, 'rgba(30,25,50,0.3)'); hl.addColorStop(1, 'rgba(10,10,20,0)');
+                    ctx.fillStyle = hl; ctx.fillRect(0, 0, w, h);
+                },
+                crystal_clear: (ctx, w, h) => {
+                    // Pale clear with prismatic sparkle dots
+                    ctx.fillStyle = '#dceef5'; ctx.fillRect(0, 0, w, h);
+                    const rng = _seededRng(7820);
+                    for (let i = 0; i < 30; i++) {
+                        const x = rng() * w, y = rng() * h, r = 0.5 + rng() * 1.5;
+                        const hue = Math.floor(rng() * 360);
+                        ctx.fillStyle = `hsla(${hue}, 60%, 80%, ${0.3 + rng() * 0.3})`;
+                        ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
+                    }
+                },
+                tempered_glass: (ctx, w, h) => {
+                    // Glass with subtle green tint
+                    const g = ctx.createLinearGradient(0, 0, w, h);
+                    g.addColorStop(0, '#c0d8d0'); g.addColorStop(0.5, '#c8e0d8'); g.addColorStop(1, '#b8d0c8');
+                    ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+                    const gl = ctx.createLinearGradient(w * 0.2, 0, w * 0.8, h);
+                    gl.addColorStop(0, 'rgba(255,255,255,0)'); gl.addColorStop(0.5, 'rgba(255,255,255,0.1)'); gl.addColorStop(1, 'rgba(255,255,255,0)');
+                    ctx.fillStyle = gl; ctx.fillRect(0, 0, w, h);
+                },
+                ceramic_matte: (ctx, w, h) => {
+                    // Flat matte ceramic - smooth grey-ish desaturated
+                    ctx.fillStyle = '#8a8a8a'; ctx.fillRect(0, 0, w, h);
+                    const rng = _seededRng(7821); const id = ctx.getImageData(0, 0, w, h);
+                    for (let i = 0; i < id.data.length; i += 4) {
+                        const n = (rng() - 0.5) * 8;
+                        id.data[i] += n; id.data[i + 1] += n; id.data[i + 2] += n;
+                    }
+                    ctx.putImageData(id, 0, 0);
+                },
+                enamel: (ctx, w, h) => {
+                    // Deep glossy enamel - vivid color with wet-look band
+                    const g = ctx.createLinearGradient(0, 0, w, h);
+                    g.addColorStop(0, '#992222'); g.addColorStop(0.3, '#aa2828'); g.addColorStop(0.7, '#881e1e'); g.addColorStop(1, '#992222');
+                    ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+                    const gl = ctx.createLinearGradient(0, h * 0.25, 0, h * 0.55);
+                    gl.addColorStop(0, 'rgba(255,255,255,0)'); gl.addColorStop(0.5, 'rgba(255,255,255,0.12)'); gl.addColorStop(1, 'rgba(255,255,255,0)');
+                    ctx.fillStyle = gl; ctx.fillRect(0, 0, w, h);
+                },
+                // --- Carbon & Composite Bases ---
+                carbon_base: (ctx, w, h) => {
+                    // Dark carbon fiber weave
+                    ctx.fillStyle = '#222'; ctx.fillRect(0, 0, w, h);
+                    const id = ctx.createImageData(w, h);
+                    for (let py = 0; py < h; py++) {
+                        for (let px = 0; px < w; px++) {
+                            const wx = Math.abs(px % 6 - 3) / 3.0;
+                            const wy = Math.abs(py % 6 - 3) / 3.0;
+                            const weave = (wx * 0.5 + wy * 0.5);
+                            const v = Math.floor(30 + weave * 40 + Math.random() * 10);
+                            const idx = (py * w + px) * 4;
+                            id.data[idx] = v; id.data[idx + 1] = v; id.data[idx + 2] = v + 3; id.data[idx + 3] = 255;
+                        }
+                    }
+                    ctx.putImageData(id, 0, 0);
+                },
+                kevlar_base: (ctx, w, h) => {
+                    // Golden kevlar weave
+                    const id = ctx.createImageData(w, h);
+                    for (let py = 0; py < h; py++) {
+                        for (let px = 0; px < w; px++) {
+                            const wx = Math.abs(px % 8 - 4) / 4.0;
+                            const wy = Math.abs(py % 8 - 4) / 4.0;
+                            const weave = wx * 0.6 + wy * 0.4;
+                            const idx = (py * w + px) * 4;
+                            id.data[idx] = Math.floor(130 + weave * 50); id.data[idx + 1] = Math.floor(110 + weave * 40);
+                            id.data[idx + 2] = Math.floor(50 + weave * 20); id.data[idx + 3] = 255;
+                        }
+                    }
+                    ctx.putImageData(id, 0, 0);
+                },
+                fiberglass: (ctx, w, h) => {
+                    // Raw fiberglass — visible random fiber strands over translucent greenish-white
+                    ctx.fillStyle = '#d4ddd0'; ctx.fillRect(0, 0, w, h);
+                    const rng = _seededRng(7800);
+                    // Random fiber strands
+                    ctx.lineWidth = 0.4;
+                    for (let i = 0; i < 80; i++) {
+                        const x1 = rng() * w, y1 = rng() * h;
+                        const angle = rng() * Math.PI;
+                        const len = 8 + rng() * 20;
+                        ctx.strokeStyle = `rgba(180,200,175,${0.15 + rng() * 0.25})`;
+                        ctx.beginPath(); ctx.moveTo(x1, y1);
+                        ctx.lineTo(x1 + Math.cos(angle) * len, y1 + Math.sin(angle) * len);
+                        ctx.stroke();
+                    }
+                    // Slight translucent sheen
+                    const g = ctx.createLinearGradient(0, 0, w, h);
+                    g.addColorStop(0, 'rgba(220,235,225,0.2)'); g.addColorStop(1, 'rgba(200,215,195,0.15)');
+                    ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+                },
+                carbon_ceramic: (ctx, w, h) => {
+                    // Dark grey-blue gritty ceramic
+                    const id = ctx.createImageData(w, h); const rng = _seededRng(7801);
+                    for (let py = 0; py < h; py++) {
+                        for (let px = 0; px < w; px++) {
+                            const grit = (rng() - 0.5) * 25;
+                            const idx = (py * w + px) * 4;
+                            id.data[idx] = Math.floor(55 + grit); id.data[idx + 1] = Math.floor(58 + grit);
+                            id.data[idx + 2] = Math.floor(65 + grit); id.data[idx + 3] = 255;
+                        }
+                    }
+                    ctx.putImageData(id, 0, 0);
+                },
+                aramid: (ctx, w, h) => {
+                    // Golden-yellow tight weave
+                    const id = ctx.createImageData(w, h);
+                    for (let py = 0; py < h; py++) {
+                        for (let px = 0; px < w; px++) {
+                            const wx = Math.abs(px % 4 - 2) / 2.0;
+                            const wy = Math.abs(py % 4 - 2) / 2.0;
+                            const weave = wx * 0.5 + wy * 0.5;
+                            const idx = (py * w + px) * 4;
+                            id.data[idx] = Math.floor(150 + weave * 40); id.data[idx + 1] = Math.floor(125 + weave * 35);
+                            id.data[idx + 2] = Math.floor(40 + weave * 15); id.data[idx + 3] = 255;
+                        }
+                    }
+                    ctx.putImageData(id, 0, 0);
+                },
+                graphene: (ctx, w, h) => {
+                    // Near-black with subtle green-blue sheen
+                    ctx.fillStyle = '#111418'; ctx.fillRect(0, 0, w, h);
+                    const hl = ctx.createLinearGradient(0, h * 0.2, 0, h * 0.6);
+                    hl.addColorStop(0, 'rgba(20,40,35,0)'); hl.addColorStop(0.4, 'rgba(30,60,50,0.3)');
+                    hl.addColorStop(0.6, 'rgba(25,50,55,0.3)'); hl.addColorStop(1, 'rgba(20,40,35,0)');
+                    ctx.fillStyle = hl; ctx.fillRect(0, 0, w, h);
+                },
+                forged_composite: (ctx, w, h) => {
+                    // Dark forged carbon — Lamborghini-style random irregular chunks with strong contrast
+                    ctx.fillStyle = '#1a1a1c'; ctx.fillRect(0, 0, w, h);
+                    const id = ctx.getImageData(0, 0, w, h); const rng = _seededRng(7802);
+                    const noise = _simpleNoise2D(w, h, [3, 6, 12], [0.3, 0.4, 0.3], rng);
+                    for (let i = 0; i < w * h; i++) {
+                        const n = noise[i];
+                        let v;
+                        if (n > 0.3) v = 55 + (rng() - 0.5) * 12;       // light chunks (silver-grey)
+                        else if (n > -0.1) v = 35 + (rng() - 0.5) * 8;  // mid chunks
+                        else v = 18 + (rng() - 0.5) * 6;                 // dark gaps (near-black)
+                        id.data[i * 4] = v; id.data[i * 4 + 1] = v; id.data[i * 4 + 2] = v + 2; id.data[i * 4 + 3] = 255;
+                    }
+                    ctx.putImageData(id, 0, 0);
+                },
+                hybrid_weave: (ctx, w, h) => {
+                    // Alternating carbon (dark) and kevlar (golden) bands
+                    const id = ctx.createImageData(w, h);
+                    for (let py = 0; py < h; py++) {
+                        const isKevlar = (Math.floor(py / 6) % 2) === 1;
+                        for (let px = 0; px < w; px++) {
+                            const wx = Math.abs(px % 6 - 3) / 3.0;
+                            const wy = Math.abs(py % 6 - 3) / 3.0;
+                            const weave = wx * 0.5 + wy * 0.5;
+                            const idx = (py * w + px) * 4;
+                            if (isKevlar) {
+                                id.data[idx] = Math.floor(120 + weave * 40); id.data[idx + 1] = Math.floor(100 + weave * 30);
+                                id.data[idx + 2] = Math.floor(45 + weave * 15);
+                            } else {
+                                const v = Math.floor(30 + weave * 35);
+                                id.data[idx] = v; id.data[idx + 1] = v; id.data[idx + 2] = v + 2;
+                            }
+                            id.data[idx + 3] = 255;
                         }
                     }
                     ctx.putImageData(id, 0, 0);
@@ -13508,12 +14771,15 @@ if __name__ == '__main__':
                     for (let y = 0; y < h; y += 1.5) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke(); }
                 },
                 spectraflame: (ctx, w, h) => {
+                    // Candy-over-chrome: deep saturated + dense sparkle
                     const g = ctx.createLinearGradient(0, 0, w, h);
-                    g.addColorStop(0, '#aa2266'); g.addColorStop(0.3, '#dd3388'); g.addColorStop(0.5, '#ee55aa'); g.addColorStop(0.7, '#cc2277'); g.addColorStop(1, '#bb3380');
+                    g.addColorStop(0, '#771144'); g.addColorStop(0.3, '#cc2266'); g.addColorStop(0.5, '#ee4488'); g.addColorStop(0.7, '#aa1a55'); g.addColorStop(1, '#992255');
                     ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
-                    // Chrome sparkle flecks
+                    // Dense chrome sparkle flecks (Hot Wheels look)
                     const rng = _seededRng(5001); const id = ctx.getImageData(0, 0, w, h);
-                    for (let i = 0; i < id.data.length; i += 4) { const s = rng() > 0.92 ? 60 : 0; id.data[i] += s; id.data[i + 1] += s; id.data[i + 2] += s; }
+                    for (let i = 0; i < id.data.length; i += 4) {
+                        if (rng() > 0.88) { const s = 40 + Math.floor(rng() * 50); id.data[i] += s; id.data[i + 1] += s; id.data[i + 2] += s; }
+                    }
                     ctx.putImageData(id, 0, 0);
                 },
                 frozen_matte: (ctx, w, h) => {
@@ -16364,17 +17630,21 @@ if __name__ == '__main__':
                     ctx.putImageData(id, 0, 0);
                 },
                 neon_glow: (ctx, w, h) => {
+                    // Mask-edge bright green/cyan glow with noise blobs
                     ctx.fillStyle = '#1a1a2a'; ctx.fillRect(0, 0, w, h);
+                    // Edge contour glow
+                    ctx.strokeStyle = 'rgba(40,255,120,0.5)'; ctx.lineWidth = 3;
+                    ctx.strokeRect(4, 4, w - 8, h - 8);
+                    ctx.strokeStyle = 'rgba(40,220,100,0.15)'; ctx.lineWidth = 8;
+                    ctx.strokeRect(2, 2, w - 4, h - 4);
+                    // Interior noise glow blobs
                     const rng = _seededRng(42);
-                    const noise = _simpleNoise2D(w, h, [2, 4, 8], [0.3, 0.4, 0.3], rng);
-                    const id = ctx.getImageData(0, 0, w, h);
-                    for (let i = 0; i < w * h; i++) {
-                        const edge = Math.min(1, Math.abs(noise[i]) * 3);
-                        id.data[i * 4] += Math.floor(edge * 30);
-                        id.data[i * 4 + 1] += Math.floor(edge * 200);
-                        id.data[i * 4 + 2] += Math.floor(edge * 100);
+                    for (let i = 0; i < 8; i++) {
+                        const x = rng() * w, y = rng() * h, r = 5 + rng() * 10;
+                        const g2 = ctx.createRadialGradient(x, y, 0, x, y, r);
+                        g2.addColorStop(0, 'rgba(40,255,120,0.25)'); g2.addColorStop(1, 'rgba(0,0,0,0)');
+                        ctx.fillStyle = g2; ctx.fillRect(0, 0, w, h);
                     }
-                    ctx.putImageData(id, 0, 0);
                 },
                 weathered_paint: (ctx, w, h) => {
                     const id = ctx.createImageData(w, h);
@@ -16585,14 +17855,23 @@ if __name__ == '__main__':
                     ctx.putImageData(id, 0, 0);
                 },
                 radioactive: (ctx, w, h) => {
-                    const id = ctx.createImageData(w, h); const rng = _seededRng(4700);
-                    const noise = _simpleNoise2D(w, h, [4, 8, 16], [0.3, 0.4, 0.3], rng);
-                    for (let i = 0; i < w * h; i++) {
-                        const glow = Math.max(0, Math.min(1, (noise[i] + 0.5) * 1.5));
-                        const r = Math.floor(20 + glow * 40); const g = Math.floor(80 + glow * 175); const b = Math.floor(20 + glow * 40);
-                        id.data[i * 4] = r; id.data[i * 4 + 1] = g; id.data[i * 4 + 2] = b; id.data[i * 4 + 3] = 255;
+                    // Toxic green + concentric radiation rings
+                    ctx.fillStyle = '#001a00'; ctx.fillRect(0, 0, w, h);
+                    const cx = w / 2, cy = h / 2;
+                    // Radiation concentric rings
+                    for (let r = 3; r < w * 0.6; r += 4) {
+                        const alpha = 0.7 - r / (w * 0.6) * 0.5;
+                        ctx.strokeStyle = `rgba(40,220,20,${Math.max(0, alpha)})`;
+                        ctx.lineWidth = 2;
+                        ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.stroke();
                     }
-                    ctx.putImageData(id, 0, 0);
+                    // Green noise overlay
+                    const rng = _seededRng(4700);
+                    for (let i = 0; i < 20; i++) {
+                        const x = rng() * w, y = rng() * h;
+                        ctx.fillStyle = `rgba(80,255,40,${0.05 + rng() * 0.1})`;
+                        ctx.fillRect(x - 2, y - 2, 4, 4);
+                    }
                 },
                 holographic_wrap: (ctx, w, h) => {
                     const id = ctx.createImageData(w, h);
@@ -17926,6 +19205,314 @@ if __name__ == '__main__':
                         ctx.moveTo(i, 0); ctx.lineTo(i + sp / 2, 0);
                         ctx.lineTo(i + sp / 2 + h, h); ctx.lineTo(i + h, h);
                         ctx.closePath(); ctx.fill();
+                    }
+                },
+                // ===== NEON & GLOW PATTERN SWATCHES =====
+                aurora_glow: (ctx, w, h) => {
+                    ctx.fillStyle = '#0a0a1a'; ctx.fillRect(0, 0, w, h);
+                    for (let y = 0; y < h; y++) {
+                        const t = y / h;
+                        const wave = Math.sin(t * Math.PI * 8 + Math.sin(t * 5) * 2) * 0.5 + 0.5;
+                        const r = Math.floor(20 + (1 - wave) * 100);
+                        const g = Math.floor(60 + wave * 150);
+                        const b = Math.floor(40 + (1 - wave) * 120);
+                        ctx.fillStyle = `rgba(${r},${g},${b},0.6)`;
+                        ctx.fillRect(0, y, w, 1);
+                    }
+                },
+                bioluminescent_wave: (ctx, w, h) => {
+                    ctx.fillStyle = '#050a14'; ctx.fillRect(0, 0, w, h);
+                    for (let y = 0; y < h; y++) {
+                        const t = y / h;
+                        const wave = Math.sin(t * Math.PI * 6) * 0.5 + 0.5;
+                        const wave2 = Math.sin(t * Math.PI * 10 - 1.5) * 0.5 + 0.5;
+                        const glow = (wave * 0.6 + wave2 * 0.4);
+                        ctx.fillStyle = `rgba(0,${Math.floor(100 + glow * 155)},${Math.floor(80 + glow * 120)},0.5)`;
+                        ctx.fillRect(0, y, w, 1);
+                    }
+                },
+                blacklight_paint: (ctx, w, h) => {
+                    ctx.fillStyle = '#1a0a2a'; ctx.fillRect(0, 0, w, h);
+                    // Purple UV wash
+                    const g = ctx.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, w * 0.6);
+                    g.addColorStop(0, 'rgba(140,40,255,0.35)'); g.addColorStop(1, 'rgba(80,0,180,0.1)');
+                    ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+                    // Hot UV spots
+                    const rng = _seededRng(700);
+                    for (let i = 0; i < 15; i++) {
+                        ctx.fillStyle = `rgba(180,60,255,${0.15 + rng() * 0.2})`;
+                        ctx.fillRect(rng() * w, rng() * h, 2, 2);
+                    }
+                },
+                cyber_punk: (ctx, w, h) => {
+                    // Magenta left / cyan right split with glitch lines
+                    for (let x = 0; x < w; x++) {
+                        const t = x / w;
+                        if (t < 0.5) {
+                            ctx.fillStyle = `rgba(${Math.floor(120 + (0.5 - t) * 200)},20,${Math.floor(80 + (0.5 - t) * 140)},1)`;
+                        } else {
+                            ctx.fillStyle = `rgba(20,${Math.floor(80 + (t - 0.5) * 200)},${Math.floor(120 + (t - 0.5) * 200)},1)`;
+                        }
+                        ctx.fillRect(x, 0, 1, h);
+                    }
+                    // Glitch lines
+                    const rng = _seededRng(790);
+                    for (let i = 0; i < 4; i++) {
+                        const y = Math.floor(rng() * h);
+                        const gh = 1 + Math.floor(rng() * 2);
+                        ctx.fillStyle = 'rgba(255,255,255,0.3)';
+                        ctx.fillRect(0, y, w, gh);
+                    }
+                },
+                electric_arc: (ctx, w, h) => {
+                    ctx.fillStyle = '#0a0a18'; ctx.fillRect(0, 0, w, h);
+                    const rng = _seededRng(710);
+                    // Draw jagged lightning bolts
+                    for (let bolt = 0; bolt < 3; bolt++) {
+                        let py = Math.floor(rng() * h), px = 0;
+                        ctx.beginPath(); ctx.moveTo(px, py);
+                        for (let s = 0; s < 20; s++) {
+                            px += Math.floor(w / 18);
+                            py += Math.floor((rng() - 0.5) * h * 0.3);
+                            py = Math.max(0, Math.min(h - 1, py));
+                            ctx.lineTo(px, py);
+                        }
+                        // Glow aura
+                        ctx.strokeStyle = 'rgba(80,160,255,0.15)'; ctx.lineWidth = 6; ctx.stroke();
+                        // Core bolt
+                        ctx.strokeStyle = 'rgba(120,200,255,0.6)'; ctx.lineWidth = 2; ctx.stroke();
+                    }
+                },
+                firefly: (ctx, w, h) => {
+                    ctx.fillStyle = '#0a0f08'; ctx.fillRect(0, 0, w, h);
+                    const rng = _seededRng(780);
+                    for (let i = 0; i < 18; i++) {
+                        const x = rng() * w, y = rng() * h;
+                        const r = 3 + rng() * 5;
+                        const g2 = ctx.createRadialGradient(x, y, 0, x, y, r);
+                        g2.addColorStop(0, `rgba(200,230,60,${0.4 + rng() * 0.3})`);
+                        g2.addColorStop(1, 'rgba(0,0,0,0)');
+                        ctx.fillStyle = g2; ctx.fillRect(0, 0, w, h);
+                    }
+                },
+                fluorescent: (ctx, w, h) => {
+                    ctx.fillStyle = '#1a1a20'; ctx.fillRect(0, 0, w, h);
+                    // Greenish-white tube bands
+                    for (let y = 0; y < h; y++) {
+                        const band = Math.sin(y * Math.PI / 4) * 0.5 + 0.5;
+                        const v = Math.floor(140 + band * 80);
+                        ctx.fillStyle = `rgba(${v - 30},${v},${v - 40},0.5)`;
+                        ctx.fillRect(0, y, w, 1);
+                    }
+                },
+                glow_stick: (ctx, w, h) => {
+                    ctx.fillStyle = '#0a1a0a'; ctx.fillRect(0, 0, w, h);
+                    // Bright green edge contour + interior pulse
+                    ctx.strokeStyle = 'rgba(0,255,50,0.5)'; ctx.lineWidth = 3;
+                    ctx.strokeRect(3, 3, w - 6, h - 6);
+                    ctx.strokeStyle = 'rgba(0,200,30,0.12)'; ctx.lineWidth = 8;
+                    ctx.strokeRect(1, 1, w - 2, h - 2);
+                    // Green glow fill
+                    const g = ctx.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, w * 0.5);
+                    g.addColorStop(0, 'rgba(0,200,30,0.25)'); g.addColorStop(1, 'rgba(0,60,10,0.05)');
+                    ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+                },
+                laser_grid: (ctx, w, h) => {
+                    ctx.fillStyle = '#0a0a0a'; ctx.fillRect(0, 0, w, h);
+                    // Green horizontal + vertical grid lines
+                    const spacing = Math.max(3, Math.floor(w / 8));
+                    ctx.strokeStyle = 'rgba(0,220,0,0.5)'; ctx.lineWidth = 1;
+                    for (let x = spacing; x < w; x += spacing) {
+                        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke();
+                    }
+                    for (let y = spacing; y < h; y += spacing) {
+                        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
+                    }
+                    // Bright intersections
+                    for (let x = spacing; x < w; x += spacing) {
+                        for (let y = spacing; y < h; y += spacing) {
+                            ctx.fillStyle = 'rgba(0,255,0,0.4)'; ctx.fillRect(x - 1, y - 1, 3, 3);
+                        }
+                    }
+                },
+                laser_show: (ctx, w, h) => {
+                    ctx.fillStyle = '#0a0a14'; ctx.fillRect(0, 0, w, h);
+                    const cx = w / 2, cy = h / 2;
+                    const rng = _seededRng(730);
+                    for (let i = 0; i < 6; i++) {
+                        const angle = rng() * Math.PI;
+                        const endX = cx + Math.cos(angle) * w;
+                        const endY = cy + Math.sin(angle) * h;
+                        ctx.beginPath(); ctx.moveTo(cx - Math.cos(angle) * w, cy - Math.sin(angle) * h);
+                        ctx.lineTo(endX, endY);
+                        ctx.strokeStyle = 'rgba(200,80,255,0.12)'; ctx.lineWidth = 5; ctx.stroke();
+                        ctx.strokeStyle = `rgba(${150 + rng() * 100},${80 + rng() * 100},${200 + rng() * 55},0.5)`; ctx.lineWidth = 1.5; ctx.stroke();
+                    }
+                },
+                led_matrix: (ctx, w, h) => {
+                    ctx.fillStyle = '#0a0a0a'; ctx.fillRect(0, 0, w, h);
+                    const dot = Math.max(2, Math.floor(w / 10));
+                    const rng = _seededRng(800);
+                    for (let y = dot; y < h; y += dot) {
+                        for (let x = dot; x < w; x += dot) {
+                            const c = Math.floor(rng() * 3);
+                            const r = c === 0 ? 200 : c === 1 ? 60 : 60;
+                            const g = c === 0 ? 60 : c === 1 ? 200 : 100;
+                            const b = c === 0 ? 60 : c === 1 ? 100 : 200;
+                            const g2 = ctx.createRadialGradient(x, y, 0, x, y, dot * 0.35);
+                            g2.addColorStop(0, `rgba(${r},${g},${b},0.6)`); g2.addColorStop(1, 'rgba(0,0,0,0)');
+                            ctx.fillStyle = g2; ctx.fillRect(x - dot / 2, y - dot / 2, dot, dot);
+                        }
+                    }
+                },
+                magnesium_burn: (ctx, w, h) => {
+                    ctx.fillStyle = '#1a1a1a'; ctx.fillRect(0, 0, w, h);
+                    // Large centered white bloom
+                    const g = ctx.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, w * 0.55);
+                    g.addColorStop(0, 'rgba(255,255,255,0.7)');
+                    g.addColorStop(0.3, 'rgba(255,250,240,0.4)');
+                    g.addColorStop(0.7, 'rgba(200,200,220,0.1)');
+                    g.addColorStop(1, 'rgba(0,0,0,0)');
+                    ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+                },
+                neon_sign: (ctx, w, h) => {
+                    ctx.fillStyle = '#1a0a18'; ctx.fillRect(0, 0, w, h);
+                    // Hot pink edge contour glow
+                    ctx.strokeStyle = 'rgba(255,40,120,0.5)'; ctx.lineWidth = 3;
+                    ctx.strokeRect(4, 4, w - 8, h - 8);
+                    ctx.strokeStyle = 'rgba(255,30,100,0.12)'; ctx.lineWidth = 8;
+                    ctx.strokeRect(2, 2, w - 4, h - 4);
+                    // Interior pink glow
+                    const g = ctx.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, w * 0.4);
+                    g.addColorStop(0, 'rgba(255,40,120,0.15)'); g.addColorStop(1, 'rgba(0,0,0,0)');
+                    ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+                },
+                neon_vegas: (ctx, w, h) => {
+                    ctx.fillStyle = '#0a0a0a'; ctx.fillRect(0, 0, w, h);
+                    // Vertical neon color strips
+                    const stripW = Math.max(2, Math.floor(w / 8));
+                    const colors = ['#ff1a55', '#00ff44', '#ffee00', '#0088ff', '#cc00ff', '#ff8800'];
+                    for (let x = 0; x < w; x += stripW) {
+                        const c = colors[Math.floor(x / stripW) % colors.length];
+                        ctx.fillStyle = c + '88'; ctx.fillRect(x, 0, stripW - 1, h);
+                    }
+                },
+                phosphorescent: (ctx, w, h) => {
+                    // Dark bg with green glow brighter at edges (shadow-reactive)
+                    const g = ctx.createLinearGradient(0, 0, w, h);
+                    g.addColorStop(0, '#2a4a2a'); g.addColorStop(0.3, '#0a1a0a');
+                    g.addColorStop(0.7, '#0a1a0a'); g.addColorStop(1, '#2a4a2a');
+                    ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+                    // Edge glow (brighter in dark)
+                    ctx.strokeStyle = 'rgba(50,200,80,0.3)'; ctx.lineWidth = 5;
+                    ctx.strokeRect(2, 2, w - 4, h - 4);
+                },
+                plasma_globe: (ctx, w, h) => {
+                    ctx.fillStyle = '#0a0518'; ctx.fillRect(0, 0, w, h);
+                    const cx = w / 2, cy = h / 2;
+                    // Radial tendrils
+                    for (let i = 0; i < 8; i++) {
+                        const angle = (i / 8) * Math.PI * 2;
+                        ctx.beginPath(); ctx.moveTo(cx, cy);
+                        ctx.lineTo(cx + Math.cos(angle) * w * 0.55, cy + Math.sin(angle) * h * 0.55);
+                        ctx.strokeStyle = 'rgba(140,40,255,0.12)'; ctx.lineWidth = 6; ctx.stroke();
+                        ctx.strokeStyle = 'rgba(180,60,255,0.4)'; ctx.lineWidth = 1.5; ctx.stroke();
+                    }
+                    // Center glow
+                    const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, 5);
+                    g.addColorStop(0, 'rgba(220,140,255,0.6)'); g.addColorStop(1, 'rgba(0,0,0,0)');
+                    ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+                },
+                rave: (ctx, w, h) => {
+                    ctx.fillStyle = '#0a0a0a'; ctx.fillRect(0, 0, w, h);
+                    const rng = _seededRng(750);
+                    const colors = ['#ff0080', '#00ff00', '#0088ff', '#ffff00', '#cc00ff', '#ff4400', '#00ffff', '#ff00ff'];
+                    const bs = Math.max(2, Math.floor(w / 12));
+                    for (let i = 0; i < 40; i++) {
+                        const x = Math.floor(rng() * (w - bs));
+                        const y = Math.floor(rng() * (h - bs));
+                        ctx.fillStyle = colors[Math.floor(rng() * colors.length)] + 'aa';
+                        ctx.fillRect(x, y, bs, bs);
+                    }
+                },
+                scorched: (ctx, w, h) => {
+                    const id = ctx.createImageData(w, h); const rng = _seededRng(810);
+                    const noise = _simpleNoise2D(w, h, [4, 8, 16], [0.3, 0.4, 0.3], rng);
+                    for (let i = 0; i < w * h; i++) {
+                        const burn = Math.max(0, Math.min(1, (noise[i] + 0.3) * 1.2));
+                        const r = Math.floor(60 + burn * 80); const g = Math.floor(30 + burn * 40); const b = Math.floor(10 + burn * 20);
+                        id.data[i * 4] = r; id.data[i * 4 + 1] = g; id.data[i * 4 + 2] = b; id.data[i * 4 + 3] = 255;
+                    }
+                    ctx.putImageData(id, 0, 0);
+                },
+                sodium_lamp: (ctx, w, h) => {
+                    // Flat amber monochromatic wash
+                    const g = ctx.createLinearGradient(0, 0, w, h);
+                    g.addColorStop(0, '#cc8800'); g.addColorStop(0.5, '#aa6600'); g.addColorStop(1, '#bb7700');
+                    ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+                },
+                static: (ctx, w, h) => {
+                    const id = ctx.createImageData(w, h); const rng = _seededRng(820);
+                    for (let i = 0; i < w * h; i++) {
+                        const v = Math.floor(rng() * 200);
+                        id.data[i * 4] = v; id.data[i * 4 + 1] = v; id.data[i * 4 + 2] = v; id.data[i * 4 + 3] = 255;
+                    }
+                    ctx.putImageData(id, 0, 0);
+                },
+                tesla_coil: (ctx, w, h) => {
+                    ctx.fillStyle = '#08081a'; ctx.fillRect(0, 0, w, h);
+                    const rng = _seededRng(760);
+                    // Dense branching arcs from all edges
+                    for (let bolt = 0; bolt < 5; bolt++) {
+                        const edge = bolt % 4;
+                        let py, px;
+                        if (edge === 0) { py = 0; px = Math.floor(rng() * w); }
+                        else if (edge === 1) { py = h - 1; px = Math.floor(rng() * w); }
+                        else if (edge === 2) { py = Math.floor(rng() * h); px = 0; }
+                        else { py = Math.floor(rng() * h); px = w - 1; }
+                        ctx.beginPath(); ctx.moveTo(px, py);
+                        for (let s = 0; s < 15; s++) {
+                            px += Math.floor((rng() - 0.5) * w * 0.15 + (w / 2 - px) * 0.08);
+                            py += Math.floor((rng() - 0.5) * h * 0.15 + (h / 2 - py) * 0.08);
+                            ctx.lineTo(Math.max(0, Math.min(w, px)), Math.max(0, Math.min(h, py)));
+                        }
+                        ctx.strokeStyle = 'rgba(60,40,200,0.1)'; ctx.lineWidth = 5; ctx.stroke();
+                        ctx.strokeStyle = 'rgba(100,60,255,0.45)'; ctx.lineWidth = 1.5; ctx.stroke();
+                    }
+                },
+                tracer_round: (ctx, w, h) => {
+                    ctx.fillStyle = '#1a1208'; ctx.fillRect(0, 0, w, h);
+                    // Diagonal orange streak lines
+                    ctx.strokeStyle = 'rgba(255,160,20,0.12)'; ctx.lineWidth = 5;
+                    for (let i = -2; i < 6; i++) {
+                        ctx.beginPath();
+                        ctx.moveTo(i * w / 4, 0); ctx.lineTo(i * w / 4 + w * 0.6, h);
+                        ctx.stroke();
+                    }
+                    ctx.strokeStyle = 'rgba(255,180,40,0.4)'; ctx.lineWidth = 1.5;
+                    for (let i = -2; i < 6; i++) {
+                        ctx.beginPath();
+                        ctx.moveTo(i * w / 4, 0); ctx.lineTo(i * w / 4 + w * 0.6, h);
+                        ctx.stroke();
+                    }
+                },
+                welding_arc: (ctx, w, h) => {
+                    ctx.fillStyle = '#0a0a1a'; ctx.fillRect(0, 0, w, h);
+                    // Intense blue-white point blooms
+                    const rng = _seededRng(770);
+                    for (let i = 0; i < 3; i++) {
+                        const x = w * 0.2 + rng() * w * 0.6;
+                        const y = h * 0.2 + rng() * h * 0.6;
+                        const g = ctx.createRadialGradient(x, y, 0, x, y, w * 0.25);
+                        g.addColorStop(0, 'rgba(200,210,255,0.6)');
+                        g.addColorStop(0.3, 'rgba(120,140,255,0.2)');
+                        g.addColorStop(1, 'rgba(0,0,0,0)');
+                        ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+                    }
+                    // Sparks
+                    for (let i = 0; i < 15; i++) {
+                        ctx.fillStyle = 'rgba(255,255,255,0.4)';
+                        ctx.fillRect(rng() * w, rng() * h, 1, 1);
                     }
                 },
                 gamma_pulse: (ctx, w, h) => {
@@ -19430,6 +21017,16 @@ if __name__ == '__main__':
                 if ((z.ccQuality ?? 100) !== 100) zoneObj.cc_quality = (z.ccQuality ?? 100) / 100;
                 if (z.blendBase) { zoneObj.blend_base = z.blendBase; zoneObj.blend_dir = z.blendDir || 'horizontal'; zoneObj.blend_amount = (z.blendAmount ?? 50) / 100; }
                 if (z.usePaintReactive && z.paintReactiveColor) { const _pc = z.paintReactiveColor; zoneObj.paint_color = [parseInt(_pc.slice(1, 3), 16) / 255, parseInt(_pc.slice(3, 5), 16) / 255, parseInt(_pc.slice(5, 7), 16) / 255]; }
+                // Region mask RLE
+                if (z.regionMask && z.regionMask.some(v => v > 0)) {
+                    const pc = document.getElementById('paintCanvas');
+                    if (pc) { zoneObj.region_mask = encodeRegionMaskRLE(z.regionMask, pc.width, pc.height); }
+                }
+                // Spatial mask RLE (include/exclude refinement)
+                if (z.spatialMask && z.spatialMask.some(v => v > 0)) {
+                    const pc = document.getElementById('paintCanvas');
+                    if (pc) { zoneObj.spatial_mask = encodeRegionMaskRLE(z.spatialMask, pc.width, pc.height); }
+                }
                 return zoneObj;
             });
 
@@ -19567,12 +21164,13 @@ if __name__ == '__main__':
             // Track job ID for one-click deploy
             lastRenderedJobId = result.job_id || null;
             // Show deploy row and load car list
-            const deployRow = document.getElementById('renderDeployRow');
-            if (deployRow && lastRenderedJobId) {
-                deployRow.style.display = 'block';
-                document.getElementById('deployStatus').textContent = '';
-                loadIracingCars();
-            }
+            // Deploy row removed — render button handles everything
+            // const deployRow = document.getElementById('renderDeployRow');
+            // if (deployRow && lastRenderedJobId) {
+            //     deployRow.style.display = 'block';
+            //     document.getElementById('deployStatus').textContent = '';
+            //     loadIracingCars();
+            // }
 
             // Show paint + spec previews in the results panel WITHOUT touching the source canvas
             const panel = document.getElementById('renderResultsPanel');
@@ -19678,7 +21276,10 @@ if __name__ == '__main__':
                 }
                 // Show live link status
                 if (result.live_link?.success) {
-                    msgParts.push(`<span style="color:var(--accent-blue)"><strong>Live Link:</strong> Pushed to <code>${result.live_link.car}</code> — Alt+Tab + Ctrl+R!</span>`);
+                    // Show the actual output path instead of config car name
+                    const llPath = result.live_link.path || result.live_link.car || '';
+                    const llFolder = llPath.replace(/\\/g, '/').split('/').pop() || result.live_link.car;
+                    msgParts.push(`<span style="color:var(--accent-blue)"><strong>Live Link:</strong> Pushed to <code>${llFolder}</code> — Alt+Tab + Ctrl+R!</span>`);
                 } else if (result.live_link?.error && !result.output_dir?.success) {
                     // Only show live link error if output_dir didn't succeed either
                     msgParts.push(`<span style="color:var(--text-dim)">Live Link: ${result.live_link.error}</span>`);

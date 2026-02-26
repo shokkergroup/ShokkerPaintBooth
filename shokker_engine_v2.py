@@ -1167,45 +1167,43 @@ def paint_none(paint, shape, mask, seed, pm, bb):
     return paint
 
 def paint_subtle_flake(paint, shape, mask, seed, pm, bb):
-    """Fine metallic flake -- subtle sparkle texture on the base paint.
-    Mostly a spec map effect; paint changes are minimal."""
+    """Fine metallic flake -- visible sparkle texture on the base paint."""
     for c in range(3):
         flake = multi_scale_noise(shape, [1, 2, 4], [0.4, 0.35, 0.25], seed + c * 17)
-        paint[:,:,c] = np.clip(paint[:,:,c] + flake * 0.05 * pm * mask, 0, 1)  # Was 0.10
-    paint = np.clip(paint + bb * 0.5 * mask[:,:,np.newaxis], 0, 1)  # Was bb*1.5
+        paint[:,:,c] = np.clip(paint[:,:,c] + flake * 0.10 * pm * mask, 0, 1)
+    paint = np.clip(paint + bb * 0.8 * mask[:,:,np.newaxis], 0, 1)
     return paint
 
 def paint_fine_sparkle(paint, shape, mask, seed, pm, bb):
-    """Fine sparkle points -- candy/pearl glitter effect.
-    Mostly a spec map effect; paint changes are minimal."""
+    """Fine sparkle points -- candy/pearl glitter effect."""
     flake = multi_scale_noise(shape, [1], [1.0], seed + 50)
     h, w = shape
     rng = np.random.RandomState(seed + 77)
     sparkle = rng.random((h, w)).astype(np.float32)
-    sparkle = np.where(sparkle > 0.96, sparkle * 0.10 * pm, 0)  # Was 0.95/0.25
+    sparkle = np.where(sparkle > 0.93, sparkle * 0.15 * pm, 0)  # More visible sparkle dots
     for c in range(3):
-        paint[:,:,c] = np.clip(paint[:,:,c] + flake * 0.04 * pm * mask + sparkle * mask, 0, 1)  # Was 0.08
-    paint = np.clip(paint + bb * 0.5 * mask[:,:,np.newaxis], 0, 1)  # Was bb*1.5
+        paint[:,:,c] = np.clip(paint[:,:,c] + flake * 0.08 * pm * mask + sparkle * mask, 0, 1)
+    paint = np.clip(paint + bb * 0.8 * mask[:,:,np.newaxis], 0, 1)
     return paint
 
 def paint_coarse_flake(paint, shape, mask, seed, pm, bb):
     """Coarse metallic flake -- holographic/prismatic color shift visible in paint.
-    Subtle enough to add sparkle without destroying the base paint design.
+    Visible flake sparkle that adds metallic character to the base paint.
     The spec map handles the real metallic/flake appearance."""
     h, w = shape
     r_flake = multi_scale_noise(shape, [2, 4, 8], [0.3, 0.4, 0.3], seed+11)
     g_flake = multi_scale_noise(shape, [2, 4, 8], [0.3, 0.4, 0.3], seed+22)
     b_flake = multi_scale_noise(shape, [2, 4, 8], [0.3, 0.4, 0.3], seed+33)
-    strength = 0.06 * pm  # Was 0.14 — too aggressive, spec does the real work
+    strength = 0.12 * pm  # Visible flake — this IS the "heavy visible" base
     paint[:,:,0] = np.clip(paint[:,:,0] + r_flake * strength * mask, 0, 1)
     paint[:,:,1] = np.clip(paint[:,:,1] + g_flake * strength * mask, 0, 1)
     paint[:,:,2] = np.clip(paint[:,:,2] + b_flake * strength * mask, 0, 1)
-    # Sparkle glints -- visible bright spots (rare, subtle)
+    # Sparkle glints -- visible bright spots
     rng = np.random.RandomState(seed + 99)
     glint = rng.random((h, w)).astype(np.float32)
-    glint = np.where(glint > 0.96, glint * 0.08 * pm, 0)  # Was 0.94/0.18 — too many/strong
+    glint = np.where(glint > 0.93, glint * 0.15 * pm, 0)  # More frequent, brighter glints
     paint = np.clip(paint + glint[:,:,np.newaxis] * mask[:,:,np.newaxis], 0, 1)
-    paint = np.clip(paint + bb * 0.5 * mask[:,:,np.newaxis], 0, 1)  # Was bb*2.0 — insane
+    paint = np.clip(paint + bb * 0.8 * mask[:,:,np.newaxis], 0, 1)
     return paint
 
 def paint_carbon_darken(paint, shape, mask, seed, pm, bb):
@@ -1730,18 +1728,26 @@ def paint_warm_metal(paint, shape, mask, seed, pm, bb):
     return paint
 
 def paint_chameleon_shift(paint, shape, mask, seed, pm, bb):
-    """Chameleon color-shift — hue rotates across surface based on angle noise."""
+    """Chameleon color-shift — visible smooth color bands rotating hue across surface."""
     h, w = shape
     y, x = get_mgrid((h, w))
-    angle = np.sin(y * 0.015 + x * 0.01) * 0.3 + np.sin(y * 0.008 - x * 0.012) * 0.2
-    angle = angle * pm
-    # Rotate RGB channels based on angle field
-    cos_a = np.cos(angle * np.pi * 2)
-    sin_a = np.sin(angle * np.pi * 2)
+    # Spatial angle field — pm controls BLEND STRENGTH, not frequency
+    # (high pm was wrapping cos/sin too many times, creating noise instead of bands)
+    angle = np.sin(y * 0.08 + x * 0.06) * 0.5 + np.sin(y * 0.04 - x * 0.07) * 0.3
+    angle = angle + np.sin((y + x) * 0.03) * 0.2
+    # Smooth RGB rotation (fixed frequency, pm controls strength)
+    cos_a = np.cos(angle * np.pi * 2.0)
+    sin_a = np.sin(angle * np.pi * 2.0)
     r, g, b = paint[:,:,0].copy(), paint[:,:,1].copy(), paint[:,:,2].copy()
-    paint[:,:,0] = np.clip(r * cos_a + g * sin_a, 0, 1) * mask + r * (1 - mask)
-    paint[:,:,1] = np.clip(g * cos_a + b * sin_a, 0, 1) * mask + g * (1 - mask)
-    paint[:,:,2] = np.clip(b * cos_a + r * sin_a, 0, 1) * mask + b * (1 - mask)
+    # Full hue rotation matrix
+    nr = np.clip(r * (0.33 + 0.67 * cos_a) + g * (0.33 * (1 - cos_a) + 0.58 * sin_a) + b * (0.33 * (1 - cos_a) - 0.58 * sin_a), 0, 1)
+    ng = np.clip(r * (0.33 * (1 - cos_a) - 0.58 * sin_a) + g * (0.33 + 0.67 * cos_a) + b * (0.33 * (1 - cos_a) + 0.58 * sin_a), 0, 1)
+    nb = np.clip(r * (0.33 * (1 - cos_a) + 0.58 * sin_a) + g * (0.33 * (1 - cos_a) - 0.58 * sin_a) + b * (0.33 + 0.67 * cos_a), 0, 1)
+    # pm controls blend strength (capped at full replacement)
+    blend = np.clip(pm * 0.25, 0, 1.0)
+    paint[:,:,0] = nr * blend * mask + r * (1 - blend * mask)
+    paint[:,:,1] = ng * blend * mask + g * (1 - blend * mask)
+    paint[:,:,2] = nb * blend * mask + b * (1 - blend * mask)
     paint = np.clip(paint + bb * 1.5 * mask[:,:,np.newaxis], 0, 1)
     return paint
 
@@ -1990,25 +1996,38 @@ def paint_rust_corrosion(paint, shape, mask, seed, pm, bb):
     return paint
 
 def paint_neon_edge(paint, shape, mask, seed, pm, bb):
-    """Neon glow — edges and features glow bright fluorescent."""
+    """Neon glow — MASK EDGES glow bright fluorescent + large-scale glow blobs.
+    v3: Uses mask gradient (zone boundaries) as edge source instead of paint
+    brightness edges, which are zero on uniformly-painted cars."""
     from PIL import ImageFilter
     h, w = shape
     rng = np.random.RandomState(seed)
-    # Detect edges in paint brightness
-    brightness = (paint[:,:,0]*0.299 + paint[:,:,1]*0.587 + paint[:,:,2]*0.114)
-    bright_img = Image.fromarray((brightness * 255).astype(np.uint8))
-    edges = np.array(bright_img.filter(ImageFilter.FIND_EDGES)).astype(np.float32) / 255.0
-    # Also generate noise-based glow so effect works on uniform paint
-    noise = rng.rand(h, w).astype(np.float32)
-    noise_img = Image.fromarray((noise * 255).astype(np.uint8))
-    noise_edges = np.array(noise_img.filter(ImageFilter.FIND_EDGES)).astype(np.float32) / 255.0
-    # Combine real edges with noise edges as fallback
-    combined = np.clip(edges * 3 + noise_edges * 1.5, 0, 1)
+
+    # === PRIMARY: Mask edge glow (zone boundary edges) ===
+    mask_img = Image.fromarray((mask * 255).astype(np.uint8))
+    mask_edges_raw = np.array(mask_img.filter(ImageFilter.FIND_EDGES)).astype(np.float32) / 255.0
+    # Dilate edges for wider glow band
+    edge_dilated = Image.fromarray((np.clip(mask_edges_raw * 3, 0, 1) * 255).astype(np.uint8))
+    edge_dilated = edge_dilated.filter(ImageFilter.GaussianBlur(radius=max(3, min(h, w) // 80)))
+    mask_edges = np.array(edge_dilated).astype(np.float32) / 255.0
+
+    # === SECONDARY: Large-scale noise glow blobs (fills interior) ===
+    noise = multi_scale_noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + 200)
+    noise = (noise - noise.min()) / (noise.max() - noise.min() + 1e-8)
+    glow_blobs = np.clip((noise - 0.3) * 2.5, 0, 1)
+
+    # === COMBINE: edge glow + interior blobs ===
+    combined = np.clip(mask_edges * 2.0 + glow_blobs * 0.6, 0, 1)
     glow = combined * pm * mask
-    # Strong fluorescent green/cyan glow
-    paint[:,:,0] = np.clip(paint[:,:,0] + glow * 0.15, 0, 1)
-    paint[:,:,1] = np.clip(paint[:,:,1] + glow * 0.65, 0, 1)  # bright green neon
-    paint[:,:,2] = np.clip(paint[:,:,2] + glow * 0.40, 0, 1)  # cyan tint
+
+    # Strong fluorescent green/cyan glow — VERY visible
+    paint[:,:,0] = np.clip(paint[:,:,0] * (1 - glow * 0.3) + glow * 0.10, 0, 1)
+    paint[:,:,1] = np.clip(paint[:,:,1] * (1 - glow * 0.3) + glow * 0.85, 0, 1)  # bright green neon
+    paint[:,:,2] = np.clip(paint[:,:,2] * (1 - glow * 0.3) + glow * 0.55, 0, 1)  # cyan tint
+
+    # White-hot cores where glow is strongest
+    hot_core = np.clip((combined - 0.6) * 4.0, 0, 1) * pm * mask * 0.25
+    paint = np.clip(paint + hot_core[:,:,np.newaxis], 0, 1)
     return paint
 
 def paint_weathered_peel(paint, shape, mask, seed, pm, bb):
@@ -2027,19 +2046,23 @@ def paint_weathered_peel(paint, shape, mask, seed, pm, bb):
 # ================================================================
 
 def paint_spectraflame(paint, shape, mask, seed, pm, bb):
-    """Spectraflame — Hot Wheels candy-over-chrome: deepens color + adds sparkle depth."""
+    """Spectraflame — Hot Wheels candy-over-chrome: deep saturated color + dense sparkle."""
     h, w = shape
-    np.random.seed(seed + 800)
-    # Fine sparkle layer
-    sparkle = np.random.rand(h, w).astype(np.float32)
-    sparkle = np.where(sparkle > 0.97, 1.0, 0.0) * 0.08 * pm
-    # Deep color saturation boost (candy-over-chrome effect)
-    mean_c = (paint[:,:,0] + paint[:,:,1] + paint[:,:,2]) / 3.0
+    rng = np.random.RandomState(seed + 800)
+    # Dense visible sparkle layer (Hot Wheels signature)
+    sparkle = rng.random((h, w)).astype(np.float32)
+    sparkle_bright = np.where(sparkle > 0.90, (sparkle - 0.90) * 3.0 * pm, 0.0)
+    # DEEP color saturation boost (candy effect)
+    gray = (paint[:,:,0] + paint[:,:,1] + paint[:,:,2]) / 3.0
     for c in range(3):
-        diff = paint[:,:,c] - mean_c
-        paint[:,:,c] = np.clip(paint[:,:,c] + diff * 0.3 * pm * mask + sparkle * mask, 0, 1)
-    # Slight brightness boost to show the chrome underneath
-    paint = np.clip(paint + bb * 1.2 * mask[:,:,np.newaxis], 0, 1)
+        diff = paint[:,:,c] - gray
+        paint[:,:,c] = np.clip(paint[:,:,c] + diff * 0.8 * pm * mask, 0, 1)
+    # Darken slightly for candy depth
+    paint = np.clip(paint * (1 - 0.15 * pm * mask[:,:,np.newaxis]), 0, 1)
+    # Apply sparkle on top
+    paint = np.clip(paint + sparkle_bright[:,:,np.newaxis] * mask[:,:,np.newaxis], 0, 1)
+    # Chrome brightness undertone
+    paint = np.clip(paint + bb * 1.5 * mask[:,:,np.newaxis], 0, 1)
     return paint
 
 def paint_rose_gold_tint(paint, shape, mask, seed, pm, bb):
@@ -2103,18 +2126,20 @@ def paint_patina_green(paint, shape, mask, seed, pm, bb):
     return paint
 
 def paint_iridescent_shift(paint, shape, mask, seed, pm, bb):
-    """Iridescent — rainbow hue shifts across surface based on position."""
+    """Iridescent — strong rainbow hue shifts across surface based on position."""
     h, w = shape
-    np.random.seed(seed + 920)
     y = np.linspace(0, 1, h).reshape(h, 1).astype(np.float32)
     x = np.linspace(0, 1, w).reshape(1, w).astype(np.float32)
     angle = np.sin(y * np.pi * 4 + x * np.pi * 3) * 0.5 + 0.5
-    shift_r = np.sin(angle * np.pi * 2) * 0.03 * pm
-    shift_g = np.sin(angle * np.pi * 2 + 2.094) * 0.03 * pm
-    shift_b = np.sin(angle * np.pi * 2 + 4.189) * 0.03 * pm
-    paint[:,:,0] = np.clip(paint[:,:,0] + shift_r * mask, 0, 1)
-    paint[:,:,1] = np.clip(paint[:,:,1] + shift_g * mask, 0, 1)
-    paint[:,:,2] = np.clip(paint[:,:,2] + shift_b * mask, 0, 1)
+    # Strong color shifts — pm controls blend, not frequency
+    blend = np.clip(pm * 0.25, 0, 1.0)
+    shift_r = np.sin(angle * np.pi * 2) * 0.25
+    shift_g = np.sin(angle * np.pi * 2 + 2.094) * 0.25
+    shift_b = np.sin(angle * np.pi * 2 + 4.189) * 0.25
+    r, g, b = paint[:,:,0].copy(), paint[:,:,1].copy(), paint[:,:,2].copy()
+    paint[:,:,0] = np.clip(r + shift_r * blend * mask, 0, 1)
+    paint[:,:,1] = np.clip(g + shift_g * blend * mask, 0, 1)
+    paint[:,:,2] = np.clip(b + shift_b * blend * mask, 0, 1)
     return paint
 
 def paint_raw_aluminum(paint, shape, mask, seed, pm, bb):
@@ -2129,11 +2154,19 @@ def paint_raw_aluminum(paint, shape, mask, seed, pm, bb):
     return paint
 
 def paint_tinted_clearcoat(paint, shape, mask, seed, pm, bb):
-    """Tinted clear — deepens color saturation under clearcoat."""
-    mean_c = (paint[:,:,0] + paint[:,:,1] + paint[:,:,2]) / 3.0
+    """Tinted clear — deep saturated transparent color coat, darkens + richens."""
+    # Strong saturation boost (colored glass over paint)
+    gray = (paint[:,:,0] + paint[:,:,1] + paint[:,:,2]) / 3.0
     for c in range(3):
-        diff = paint[:,:,c] - mean_c
-        paint[:,:,c] = np.clip(paint[:,:,c] + diff * 0.12 * pm * mask, 0, 1)
+        diff = paint[:,:,c] - gray
+        paint[:,:,c] = np.clip(paint[:,:,c] + diff * 0.45 * pm * mask, 0, 1)
+    # Darken for deep tinted glass look
+    paint = np.clip(paint * (1 - 0.12 * pm * mask[:,:,np.newaxis]), 0, 1)
+    # Subtle clearcoat highlight
+    h, w = paint.shape[:2]
+    y = np.linspace(0, 1, h).reshape(h, 1).astype(np.float32)
+    highlight = np.clip(1.0 - np.abs(y - 0.3) * 5, 0, 1) * 0.06 * pm
+    paint = np.clip(paint + highlight[:,:,np.newaxis] * mask[:,:,np.newaxis], 0, 1)
     return paint
 
 def paint_galvanized_speckle(paint, shape, mask, seed, pm, bb):
@@ -3000,17 +3033,17 @@ def paint_prizm_core(paint, shape, mask, seed, pm, bb,
 
 # --- Prizm: Holographic (Full rainbow sweep — the flagship effect) ---
 def paint_prizm_holographic(paint, shape, mask, seed, pm, bb):
-    """Holographic — Full rainbow sweep across panels (Neonizm's signature)"""
+    """Holographic — Full rainbow sweep across panels (VIVID signature effect)"""
     stops = [
-        (0.00, 350, 0.75, 0.82),  # Red-Pink
-        (0.18, 35,  0.80, 0.85),  # Gold
-        (0.36, 120, 0.78, 0.80),  # Green
-        (0.54, 190, 0.82, 0.78),  # Teal
-        (0.72, 250, 0.78, 0.76),  # Blue-Purple
-        (1.00, 310, 0.72, 0.80),  # Magenta
+        (0.00, 350, 0.88, 0.85),  # Red-Pink (vivid)
+        (0.18, 35,  0.90, 0.88),  # Gold (vivid)
+        (0.36, 120, 0.88, 0.84),  # Green (vivid)
+        (0.54, 190, 0.90, 0.82),  # Teal (vivid)
+        (0.72, 250, 0.88, 0.80),  # Blue-Purple (vivid)
+        (1.00, 310, 0.85, 0.84),  # Magenta (vivid)
     ]
     return paint_prizm_core(paint, shape, mask, seed, pm, bb, stops,
-                            flow_complexity=3, flake_intensity=0.03)
+                            flow_complexity=3, flake_intensity=0.04)
 
 def spec_prizm_holographic(shape, mask, seed, sm):
     return spec_prizm(shape, mask, seed, sm, metallic=228, roughness=12, clearcoat=18)
@@ -3439,37 +3472,57 @@ def spec_radioactive(shape, mask, seed, sm):
     return spec
 
 def paint_radioactive(paint, shape, mask, seed, pm, bb):
-    """Radioactive — green glow zones."""
+    """Radioactive — intense toxic green nuclear glow with radiation wave pulses."""
+    h, w = shape
+    # Radiation wave rings from center
+    cy, cx = h / 2.0, w / 2.0
+    y, x = np.mgrid[0:h, 0:w].astype(np.float32)
+    dist = np.sqrt(((y - cy) / h)**2 + ((x - cx) / w)**2)
+    waves = (np.sin(dist * np.pi * 30) * 0.5 + 0.5) * 0.3
+    # Base toxic green glow
     glow = multi_scale_noise(shape, [8, 16, 32], [0.3, 0.4, 0.3], seed + 1700)
     glow_val = np.clip(glow * 0.5 + 0.5, 0, 1)
-    green_glow = glow_val * 0.15 * pm * mask
-    paint[:,:,0] = np.clip(paint[:,:,0] - green_glow * 0.3, 0, 1)
-    paint[:,:,1] = np.clip(paint[:,:,1] + green_glow * 1.0, 0, 1)
-    paint[:,:,2] = np.clip(paint[:,:,2] - green_glow * 0.2, 0, 1)
+    intensity = (glow_val * 0.6 + waves) * pm * mask
+    # Strong toxic green: kill red/blue, boost green hard
+    paint[:,:,0] = np.clip(paint[:,:,0] * (1 - intensity * 0.6), 0, 1)
+    paint[:,:,1] = np.clip(paint[:,:,1] + intensity * 0.50, 0, 1)
+    paint[:,:,2] = np.clip(paint[:,:,2] * (1 - intensity * 0.5) + intensity * 0.08, 0, 1)
+    # Hot spots
+    rng = np.random.RandomState(seed + 1701)
+    spots = np.where(rng.random(shape).astype(np.float32) > 0.97, 0.15 * pm, 0.0)
+    paint[:,:,1] = np.clip(paint[:,:,1] + spots * mask, 0, 1)
     return paint
 
 def spec_holographic(shape, mask, seed, sm):
-    """Holographic full wrap — rainbow metallic shifting across entire surface."""
+    """Holographic full wrap — fine-grained rainbow metallic shifting."""
     spec = np.zeros((shape[0], shape[1], 4), dtype=np.uint8)
     h, w = shape
     y = np.linspace(0, 1, h).reshape(h, 1).astype(np.float32)
     x = np.linspace(0, 1, w).reshape(1, w).astype(np.float32)
-    rainbow = np.sin(y * np.pi * 8 + x * np.pi * 6) * 0.5 + 0.5
-    spec[:,:,0] = np.clip((220 + rainbow * 35) * mask + 5 * (1-mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip((5 + rainbow * 30) * mask + 100 * (1-mask), 0, 255).astype(np.uint8)
+    # Fine holographic: ~40-60 cycles for visible rainbow bands
+    rainbow = (np.sin(y * np.pi * 80 + x * np.pi * 60) * 0.5 + 0.5)
+    rainbow2 = (np.sin(y * np.pi * 40 - x * np.pi * 90) * 0.5 + 0.5)
+    rainbow = (rainbow + rainbow2) / 2.0
+    spec[:,:,0] = np.clip((235 + rainbow * 20) * mask + 5 * (1-mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip((4 + rainbow * 50) * mask + 100 * (1-mask), 0, 255).astype(np.uint8)
     spec[:,:,2] = 16; spec[:,:,3] = 255
     return spec
 
 def paint_holographic_full(paint, shape, mask, seed, pm, bb):
-    """Full holographic — strong rainbow color shift across surface."""
+    """Full holographic — VIVID fine-grained rainbow color shift."""
     h, w = shape
     y = np.linspace(0, 1, h).reshape(h, 1).astype(np.float32)
     x = np.linspace(0, 1, w).reshape(1, w).astype(np.float32)
-    angle = (y * 4 + x * 3) % 1.0
+    # 4 gratings at different angles — ~40-60 cycles for fine holographic bands
+    g1 = (y * 50 + x * 40) % 1.0
+    g2 = (y * 30 - x * 60) % 1.0
+    g3 = ((y + x) * 45) % 1.0
+    g4 = ((y - x * 0.7) * 55) % 1.0
+    angle = (g1 + g2 * 0.6 + g3 * 0.4 + g4 * 0.3) / 2.3
     r_holo = np.sin(angle * np.pi * 2) * 0.5 + 0.5
     g_holo = np.sin(angle * np.pi * 2 + 2.094) * 0.5 + 0.5
     b_holo = np.sin(angle * np.pi * 2 + 4.189) * 0.5 + 0.5
-    blend = 0.2 * pm
+    blend = 0.35 * pm
     paint[:,:,0] = np.clip(paint[:,:,0] * (1 - blend * mask) + r_holo * blend * mask, 0, 1)
     paint[:,:,1] = np.clip(paint[:,:,1] * (1 - blend * mask) + g_holo * blend * mask, 0, 1)
     paint[:,:,2] = np.clip(paint[:,:,2] * (1 - blend * mask) + b_holo * blend * mask, 0, 1)
@@ -5616,16 +5669,19 @@ def paint_shokk_phase(paint, shape, mask, seed, pm, bb):
 # Organized by category, alphabetized within each section. 58 bases total.
 BASE_REGISTRY = {
     # ── STANDARD FINISHES ──────────────────────────────────────────────
-    "ceramic":          {"M": 60,  "R": 8,   "CC": 16, "paint_fn": paint_ceramic_gloss,   "desc": "Ultra-smooth ceramic coating deep wet shine"},
+    "ceramic":          {"M": 60,  "R": 8,   "CC": 16, "paint_fn": paint_ceramic_gloss,   "desc": "Ultra-smooth ceramic coating deep wet shine",
+                         "perlin": True, "perlin_octaves": 2, "perlin_persistence": 0.3, "perlin_lacunarity": 2.0, "noise_M": 30, "noise_R": 15},
     "gloss":            {"M": 0,   "R": 20,  "CC": 16, "paint_fn": paint_none,            "desc": "Standard glossy clearcoat"},
-    "piano_black":      {"M": 5,   "R": 3,   "CC": 16, "paint_fn": paint_none,            "desc": "Deep piano black ultra-gloss mirror finish"},
+    "piano_black":      {"M": 5,   "R": 3,   "CC": 16, "paint_fn": paint_none,            "desc": "Deep piano black ultra-gloss mirror finish",
+                         "perlin": True, "perlin_octaves": 2, "perlin_persistence": 0.3, "perlin_lacunarity": 2.0, "noise_M": 15, "noise_R": 10},
     "satin":            {"M": 0,   "R": 100, "CC": 10, "paint_fn": paint_none,            "desc": "Soft satin partial clearcoat"},
     "silk":             {"M": 30,  "R": 85,  "CC": 16, "paint_fn": paint_silk_sheen,      "desc": "Silky smooth fabric-like sheen"},
     "wet_look":         {"M": 10,  "R": 5,   "CC": 16, "paint_fn": paint_wet_gloss,       "desc": "Deep wet clearcoat show shine"},
     # ── METALLIC & FLAKE ──────────────────────────────────────────────
     "copper":           {"M": 190, "R": 55,  "CC": 16, "paint_fn": paint_warm_metal,      "desc": "Warm oxidized copper metallic",
                          "noise_scales": [4, 8, 16], "noise_weights": [0.3, 0.4, 0.3], "noise_M": 35, "noise_R": 20},
-    "diamond_coat":     {"M": 220, "R": 3,   "CC": 16, "paint_fn": paint_diamond_sparkle, "desc": "Diamond dust ultra-fine sparkle coat"},
+    "diamond_coat":     {"M": 220, "R": 3,   "CC": 16, "paint_fn": paint_diamond_sparkle, "desc": "Diamond dust ultra-fine sparkle coat",
+                         "noise_scales": [1, 2, 3], "noise_weights": [0.6, 0.25, 0.15], "noise_M": 25, "noise_R": 8},
     "electric_ice":     {"M": 240, "R": 10,  "CC": 16, "paint_fn": paint_electric_blue_tint, "desc": "Icy electric blue metallic — cold neon shimmer",
                          "noise_scales": [4, 8, 16], "noise_weights": [0.2, 0.4, 0.4], "noise_M": 15, "noise_R": 8},
     "gunmetal":         {"M": 220, "R": 40,  "CC": 16, "paint_fn": paint_subtle_flake,    "desc": "Dark aggressive blue-gray metallic",
@@ -5643,29 +5699,40 @@ BASE_REGISTRY = {
     "satin_gold":       {"M": 235, "R": 60,  "CC": 0,  "paint_fn": paint_warm_metal,      "desc": "Satin gold metallic warm sheen",
                          "noise_scales": [4, 8, 16], "noise_weights": [0.3, 0.4, 0.3], "noise_M": 15, "noise_R": 18},
     # ── CHROME & MIRROR ───────────────────────────────────────────────
-    "chrome":           {"M": 255, "R": 2,   "CC": 0,  "paint_fn": paint_chrome_brighten, "desc": "Pure mirror chrome"},
-    "dark_chrome":      {"M": 250, "R": 5,   "CC": 0,  "paint_fn": paint_smoked_darken,   "desc": "Smoked dark chrome black mirror"},
-    "mercury":          {"M": 255, "R": 3,   "CC": 0,  "paint_fn": paint_mercury_pool,    "desc": "Liquid mercury pooling mirror — desaturated chrome flow"},
-    "mirror_gold":      {"M": 255, "R": 2,   "CC": 0,  "paint_fn": paint_warm_metal,      "desc": "Pure mirror gold chrome"},
+    "chrome":           {"M": 255, "R": 2,   "CC": 0,  "paint_fn": paint_chrome_brighten, "desc": "Pure mirror chrome",
+                         "noise_scales": [1, 2, 3], "noise_weights": [0.6, 0.25, 0.15], "noise_M": 20, "noise_R": 8},
+    "dark_chrome":      {"M": 250, "R": 5,   "CC": 0,  "paint_fn": paint_smoked_darken,   "desc": "Smoked dark chrome black mirror",
+                         "perlin": True, "perlin_octaves": 3, "perlin_persistence": 0.45, "perlin_lacunarity": 2.0, "noise_M": 35, "noise_R": 12},
+    "mercury":          {"M": 255, "R": 3,   "CC": 0,  "paint_fn": paint_mercury_pool,    "desc": "Liquid mercury pooling mirror — desaturated chrome flow",
+                         "perlin": True, "perlin_octaves": 2, "perlin_persistence": 0.5, "perlin_lacunarity": 1.8, "noise_M": 30, "noise_R": 10},
+    "mirror_gold":      {"M": 255, "R": 2,   "CC": 0,  "paint_fn": paint_warm_metal,      "desc": "Pure mirror gold chrome",
+                         "noise_scales": [2, 4, 8], "noise_weights": [0.4, 0.35, 0.25], "noise_M": 20, "noise_R": 8},
     "satin_chrome":     {"M": 250, "R": 45,  "CC": 0,  "paint_fn": paint_chrome_brighten, "desc": "BMW silky satin chrome",
-                         "noise_scales": [4, 8], "noise_weights": [0.4, 0.6], "noise_M": 0, "noise_R": 15},
-    "surgical_steel":   {"M": 245, "R": 6,   "CC": 0,  "paint_fn": paint_chrome_brighten, "desc": "Medical grade mirror surgical steel"},
+                         "noise_scales": [4, 8], "noise_weights": [0.4, 0.6], "noise_M": 20, "noise_R": 25},
+    "surgical_steel":   {"M": 245, "R": 6,   "CC": 0,  "paint_fn": paint_chrome_brighten, "desc": "Medical grade mirror surgical steel",
+                         "noise_scales": [1, 2, 4], "noise_weights": [0.5, 0.3, 0.2], "noise_M": 15, "noise_R": 8},
     # ── CANDY & CLEARCOAT VARIANTS ────────────────────────────────────
-    "candy":            {"M": 200, "R": 15,  "CC": 16, "paint_fn": paint_fine_sparkle,    "desc": "Deep wet candy transparent glass"},
-    "candy_chrome":     {"M": 250, "R": 4,   "CC": 16, "paint_fn": paint_spectraflame,    "desc": "Candy-tinted chrome — deep color over mirror base"},
+    "candy":            {"M": 200, "R": 15,  "CC": 16, "paint_fn": paint_fine_sparkle,    "desc": "Deep wet candy transparent glass",
+                         "noise_scales": [1, 2, 4], "noise_weights": [0.5, 0.3, 0.2], "noise_M": 35, "noise_R": 15},
+    "candy_chrome":     {"M": 250, "R": 4,   "CC": 16, "paint_fn": paint_spectraflame,    "desc": "Candy-tinted chrome — deep color over mirror base",
+                         "noise_scales": [1, 2, 4], "noise_weights": [0.5, 0.3, 0.2], "noise_M": 60, "noise_R": 15},
     "clear_matte":      {"M": 0,   "R": 160, "CC": 16, "paint_fn": paint_none,            "desc": "Matte clearcoat — flat but protected"},
     "smoked":           {"M": 15,  "R": 10,  "CC": 16, "paint_fn": paint_smoked_darken,   "desc": "Smoked tinted darkened clearcoat"},
-    "spectraflame":     {"M": 245, "R": 8,   "CC": 16, "paint_fn": paint_spectraflame,    "desc": "Hot Wheels candy-over-chrome deep sparkle"},
-    "tinted_clear":     {"M": 40,  "R": 8,   "CC": 16, "paint_fn": paint_tinted_clearcoat,"desc": "Deep tinted clearcoat over base color"},
+    "spectraflame":     {"M": 245, "R": 8,   "CC": 16, "paint_fn": paint_spectraflame,    "desc": "Hot Wheels candy-over-chrome deep sparkle",
+                         "noise_scales": [1, 2, 3], "noise_weights": [0.6, 0.25, 0.15], "noise_M": 80, "noise_R": 25},
+    "tinted_clear":     {"M": 40,  "R": 8,   "CC": 16, "paint_fn": paint_tinted_clearcoat,"desc": "Deep tinted clearcoat over base color",
+                         "perlin": True, "perlin_octaves": 3, "perlin_persistence": 0.4, "perlin_lacunarity": 2.0, "noise_M": 12, "noise_R": 10},
     # ── MATTE & FLAT ─────────────────────────────────────────────────
-    "blackout":         {"M": 30,  "R": 220, "CC": 0,  "paint_fn": paint_none,            "desc": "Stealth murdered-out ultra dark"},
+    "blackout":         {"M": 30,  "R": 220, "CC": 0,  "paint_fn": paint_none,            "desc": "Stealth murdered-out ultra dark",
+                         "perlin": True, "perlin_octaves": 2, "perlin_persistence": 0.3, "perlin_lacunarity": 2.0, "noise_M": 8, "noise_R": 15},
     "flat_black":       {"M": 0,   "R": 250, "CC": 0,  "paint_fn": paint_none,            "desc": "Dead flat zero-sheen black — no reflection at all"},
     "frozen":           {"M": 225, "R": 140, "CC": 0,  "paint_fn": paint_subtle_flake,    "desc": "Frozen icy matte metal",
                          "noise_scales": [8, 16, 32], "noise_weights": [0.3, 0.4, 0.3], "noise_M": 30, "noise_R": 30},
     "frozen_matte":     {"M": 210, "R": 160, "CC": 0,  "paint_fn": paint_subtle_flake,    "desc": "BMW Individual frozen matte metallic",
                          "noise_scales": [8, 16, 32], "noise_weights": [0.3, 0.4, 0.3], "noise_M": 20, "noise_R": 25},
     "matte":            {"M": 0,   "R": 215, "CC": 0,  "paint_fn": paint_none,            "desc": "Flat matte zero shine"},
-    "vantablack":       {"M": 0,   "R": 255, "CC": 0,  "paint_fn": paint_none,            "desc": "Absolute void zero reflection"},
+    "vantablack":       {"M": 0,   "R": 255, "CC": 0,  "paint_fn": paint_none,            "desc": "Absolute void zero reflection",
+                         "noise_scales": [1, 2, 4], "noise_weights": [0.5, 0.3, 0.2], "noise_M": 3, "noise_R": 5},
     "volcanic":         {"M": 80,  "R": 180, "CC": 0,  "paint_fn": paint_volcanic_ash,    "desc": "Volcanic ash coating — dark gritty desaturated matte"},
     # ── BRUSHED & DIRECTIONAL GRAIN ──────────────────────────────────
     "brushed_aluminum": {"M": 230, "R": 55,  "CC": 0,  "paint_fn": paint_brushed_grain,   "desc": "Brushed natural aluminum directional grain",
@@ -5675,10 +5742,14 @@ BASE_REGISTRY = {
     "satin_metal":      {"M": 235, "R": 65,  "CC": 16, "paint_fn": paint_subtle_flake,    "desc": "Subtle brushed satin metallic",
                          "brush_grain": True, "noise_R": 20},
     # ── TACTICAL & INDUSTRIAL ────────────────────────────────────────
-    "cerakote":         {"M": 40,  "R": 130, "CC": 0,  "paint_fn": paint_tactical_flat,   "desc": "Mil-spec ceramic tactical coating"},
-    "duracoat":         {"M": 25,  "R": 170, "CC": 0,  "paint_fn": paint_tactical_flat,   "desc": "Tactical epoxy durable coating"},
-    "powder_coat":      {"M": 20,  "R": 155, "CC": 0,  "paint_fn": paint_none,            "desc": "Thick industrial powder coat finish"},
-    "rugged":           {"M": 50,  "R": 190, "CC": 0,  "paint_fn": paint_tactical_flat,   "desc": "Rugged off-road tactical rough coating"},
+    "cerakote":         {"M": 40,  "R": 130, "CC": 0,  "paint_fn": paint_tactical_flat,   "desc": "Mil-spec ceramic tactical coating",
+                         "perlin": True, "perlin_octaves": 2, "perlin_persistence": 0.4, "perlin_lacunarity": 2.0, "noise_M": 15, "noise_R": 20},
+    "duracoat":         {"M": 25,  "R": 170, "CC": 0,  "paint_fn": paint_tactical_flat,   "desc": "Tactical epoxy durable coating",
+                         "perlin": True, "perlin_octaves": 2, "perlin_persistence": 0.45, "perlin_lacunarity": 2.0, "noise_M": 12, "noise_R": 25},
+    "powder_coat":      {"M": 20,  "R": 155, "CC": 0,  "paint_fn": paint_none,            "desc": "Thick industrial powder coat finish",
+                         "perlin": True, "perlin_octaves": 3, "perlin_persistence": 0.5, "perlin_lacunarity": 2.0, "noise_M": 15, "noise_R": 30},
+    "rugged":           {"M": 50,  "R": 190, "CC": 0,  "paint_fn": paint_tactical_flat,   "desc": "Rugged off-road tactical rough coating",
+                         "perlin": True, "perlin_octaves": 3, "perlin_persistence": 0.6, "perlin_lacunarity": 2.0, "noise_M": 20, "noise_R": 35},
     # ── RAW METAL & WEATHERED ────────────────────────────────────────
     "anodized":         {"M": 170, "R": 80,  "CC": 0,  "paint_fn": paint_subtle_flake,    "desc": "Gritty matte anodized aluminum",
                          "noise_scales": [4, 8, 16], "noise_weights": [0.3, 0.4, 0.3], "noise_M": 20, "noise_R": 25},
@@ -5691,13 +5762,16 @@ BASE_REGISTRY = {
     "patina_bronze":    {"M": 160, "R": 90,  "CC": 0,  "paint_fn": paint_patina_green,    "desc": "Aged oxidized bronze with green patina",
                          "noise_scales": [8, 16, 32], "noise_weights": [0.3, 0.4, 0.3], "noise_M": 30, "noise_R": 35},
     "raw_aluminum":     {"M": 240, "R": 30,  "CC": 0,  "paint_fn": paint_raw_aluminum,    "desc": "Bare unfinished aluminum sheet metal",
-                         "noise_scales": [4, 8], "noise_weights": [0.4, 0.6], "noise_M": 10, "noise_R": 20},
-    "sandblasted":      {"M": 200, "R": 180, "CC": 0,  "paint_fn": paint_none,            "desc": "Raw sandblasted metal rough texture"},
+                         "noise_scales": [4, 8], "noise_weights": [0.4, 0.6], "noise_M": 25, "noise_R": 25},
+    "sandblasted":      {"M": 200, "R": 180, "CC": 0,  "paint_fn": paint_none,            "desc": "Raw sandblasted metal rough texture",
+                         "noise_scales": [2, 4, 8], "noise_weights": [0.3, 0.4, 0.3], "noise_M": 20, "noise_R": 30},
     "titanium_raw":     {"M": 200, "R": 50,  "CC": 0,  "paint_fn": paint_raw_aluminum,    "desc": "Raw unpolished titanium industrial metal",
                          "noise_scales": [4, 8, 16], "noise_weights": [0.3, 0.4, 0.3], "noise_M": 25, "noise_R": 25},
     # ── EXOTIC & COLOR-SHIFT ─────────────────────────────────────────
-    "chameleon":        {"M": 160, "R": 25,  "CC": 16, "paint_fn": paint_chameleon_shift,  "desc": "Dual-tone color-shift angle-dependent"},
-    "iridescent":       {"M": 210, "R": 20,  "CC": 16, "paint_fn": paint_iridescent_shift,"desc": "Rainbow angle-shift iridescent wrap"},
+    "chameleon":        {"M": 160, "R": 25,  "CC": 16, "paint_fn": paint_chameleon_shift,  "desc": "Dual-tone color-shift angle-dependent",
+                         "perlin": True, "perlin_octaves": 3, "perlin_persistence": 0.6, "perlin_lacunarity": 1.8, "noise_M": 60, "noise_R": 35},
+    "iridescent":       {"M": 210, "R": 20,  "CC": 16, "paint_fn": paint_iridescent_shift,"desc": "Rainbow angle-shift iridescent wrap",
+                         "perlin": True, "perlin_octaves": 4, "perlin_persistence": 0.5, "perlin_lacunarity": 2.0, "noise_M": 50, "noise_R": 25},
     # ── WRAP & COATING ───────────────────────────────────────────────
     "liquid_wrap":      {"M": 80,  "R": 110, "CC": 0,  "paint_fn": paint_satin_wrap,      "desc": "Liquid rubber peel coat — textured matte wrap"},
     "primer":           {"M": 0,   "R": 200, "CC": 0,  "paint_fn": paint_primer_flat,     "desc": "Raw flat primer gray zero sheen"},
@@ -6096,18 +6170,28 @@ def _generic_solid_spec_fn(shape, mask, seed, sm, mat_key):
     return spec
 
 def _apply_generic_gradient(paint, shape, mask, c1, c2, direction, seed, pm, bb, mirror=False, rotation=0):
-    """Apply a 2-color gradient to paint. Supports vertical/horizontal/diagonal/radial/mirror + rotation."""
+    """Apply a 2-color gradient to paint. Zone-aware: maps gradient to zone bbox."""
     h, w = shape
     blend = 0.85 * pm
     y, x = np.mgrid[0:h, 0:w]
-    yf = y.astype(np.float32) / max(h - 1, 1)
-    xf = x.astype(np.float32) / max(w - 1, 1)
+    # SMART: map coordinates relative to zone bounding box
+    rows_active = np.any(mask > 0.1, axis=1)
+    cols_active = np.any(mask > 0.1, axis=0)
+    if np.any(rows_active) and np.any(cols_active):
+        r_min, r_max = np.where(rows_active)[0][[0, -1]]
+        c_min, c_max = np.where(cols_active)[0][[0, -1]]
+        bbox_h = max(1, r_max - r_min + 1)
+        bbox_w = max(1, c_max - c_min + 1)
+    else:
+        r_min, c_min = 0, 0
+        bbox_h, bbox_w = h, w
+    yf = (y.astype(np.float32) - r_min) / max(bbox_h - 1, 1)
+    xf = (x.astype(np.float32) - c_min) / max(bbox_w - 1, 1)
     if direction == 'radial':
         cx, cy = 0.5, 0.5
         dist = np.sqrt((xf - cx)**2 + (yf - cy)**2) * 1.414
         t = np.clip(dist, 0, 1)
     else:
-        # Compute base angle from direction name
         if direction == 'horizontal':
             base_angle = 90.0
         elif direction == 'diagonal':
@@ -6118,7 +6202,6 @@ def _apply_generic_gradient(paint, shape, mask, c1, c2, direction, seed, pm, bb,
         rad = np.deg2rad(total_angle)
         _engine_rot_debug(f"ENGINE _apply_generic_gradient: dir={direction}, base_angle={base_angle}, rotation={rotation}, total_angle={total_angle}")
         t = np.cos(rad) * yf + np.sin(rad) * xf
-        # Normalize t to 0-1 range
         t_min, t_max = t.min(), t.max()
         if t_max - t_min > 1e-6:
             t = (t - t_min) / (t_max - t_min)
@@ -6138,13 +6221,23 @@ def _apply_generic_gradient(paint, shape, mask, c1, c2, direction, seed, pm, bb,
     return paint
 
 def _apply_generic_3color_gradient(paint, shape, mask, c1, c2, c3, direction, seed, pm, bb, rotation=0):
-    """Apply a 3-color gradient (c1 -> c2 -> c3) with rotation support."""
+    """Apply a 3-color gradient (c1 -> c2 -> c3). Zone-aware: maps to zone bbox."""
     h, w = shape
     blend = 0.85 * pm
     y, x = np.mgrid[0:h, 0:w]
-    yf = y.astype(np.float32) / max(h - 1, 1)
-    xf = x.astype(np.float32) / max(w - 1, 1)
-    # Compute base angle from direction name
+    # SMART: map coordinates relative to zone bounding box
+    rows_active = np.any(mask > 0.1, axis=1)
+    cols_active = np.any(mask > 0.1, axis=0)
+    if np.any(rows_active) and np.any(cols_active):
+        r_min, r_max = np.where(rows_active)[0][[0, -1]]
+        c_min, c_max = np.where(cols_active)[0][[0, -1]]
+        bbox_h = max(1, r_max - r_min + 1)
+        bbox_w = max(1, c_max - c_min + 1)
+    else:
+        r_min, c_min = 0, 0
+        bbox_h, bbox_w = h, w
+    yf = (y.astype(np.float32) - r_min) / max(bbox_h - 1, 1)
+    xf = (x.astype(np.float32) - c_min) / max(bbox_w - 1, 1)
     if direction == 'horizontal':
         base_angle = 90.0
     elif direction == 'diagonal':
@@ -6154,13 +6247,11 @@ def _apply_generic_3color_gradient(paint, shape, mask, c1, c2, c3, direction, se
     total_angle = base_angle + float(rotation)
     rad = np.deg2rad(total_angle)
     t = np.cos(rad) * yf + np.sin(rad) * xf
-    # Normalize t to 0-1 range
     t_min, t_max = t.min(), t.max()
     if t_max - t_min > 1e-6:
         t = (t - t_min) / (t_max - t_min)
     else:
         t = np.zeros_like(t)
-    # Two-segment interpolation
     seg1 = t < 0.5
     t1 = np.clip(t * 2, 0, 1)
     t2 = np.clip((t - 0.5) * 2, 0, 1)
@@ -6174,13 +6265,24 @@ def _apply_generic_3color_gradient(paint, shape, mask, c1, c2, c3, direction, se
     return paint
 
 def _apply_generic_colorshift(paint, shape, mask, c1, c2, seed, pm, bb):
-    """Apply angle-dependent color shift between c1 and c2."""
+    """Apply angle-dependent color shift. Zone-aware: centers on zone bbox."""
     h, w = shape
     blend = 0.85 * pm
     y, x = np.mgrid[0:h, 0:w]
-    yf = y.astype(np.float32) / max(h - 1, 1)
-    xf = x.astype(np.float32) / max(w - 1, 1)
-    # Angle-based shift using view-angle approximation
+    # SMART: map coordinates relative to zone bounding box center
+    rows_active = np.any(mask > 0.1, axis=1)
+    cols_active = np.any(mask > 0.1, axis=0)
+    if np.any(rows_active) and np.any(cols_active):
+        r_min, r_max = np.where(rows_active)[0][[0, -1]]
+        c_min, c_max = np.where(cols_active)[0][[0, -1]]
+        bbox_h = max(1, r_max - r_min + 1)
+        bbox_w = max(1, c_max - c_min + 1)
+    else:
+        r_min, c_min = 0, 0
+        bbox_h, bbox_w = h, w
+    yf = (y.astype(np.float32) - r_min) / max(bbox_h - 1, 1)
+    xf = (x.astype(np.float32) - c_min) / max(bbox_w - 1, 1)
+    # Angle-based shift using view-angle approximation (centered on zone)
     angle = np.arctan2(yf - 0.5, xf - 0.5)
     shift = (np.sin(angle * 2.0 + seed * 0.1) + 1) * 0.5
     r = c1[0] * (1 - shift) + c2[0] * shift
@@ -6434,6 +6536,49 @@ def _rotate_single_array(arr, angle, shape):
     return rotated
 
 
+def _compute_zone_auto_scale(zone_mask, shape):
+    """Compute an auto-scale factor for patterns based on zone mask coverage area.
+
+    Patterns are generated at full canvas size. When a zone only covers a small
+    area (e.g., a car number or sponsor logo), the pattern tile is too large and
+    the zone only shows a tiny fragment — looks like a solid color.
+
+    This function computes a scale factor that makes patterns visible on small zones
+    by using the zone's bounding box relative to the full canvas.
+
+    Returns a float in [0.15, 1.0]:
+        1.0 = full car (no adjustment needed)
+        0.5 = zone covers ~25% of canvas area
+        0.15 = minimum (prevents extreme tiling / slow renders)
+    """
+    h, w = shape
+    total_area = h * w
+    if total_area == 0:
+        return 1.0
+
+    # Find bounding box of the zone mask
+    rows = np.any(zone_mask > 0.1, axis=1)
+    cols = np.any(zone_mask > 0.1, axis=0)
+    if not np.any(rows) or not np.any(cols):
+        return 1.0  # Empty mask
+
+    r_min, r_max = np.where(rows)[0][[0, -1]]
+    c_min, c_max = np.where(cols)[0][[0, -1]]
+    bbox_h = r_max - r_min + 1
+    bbox_w = c_max - c_min + 1
+    bbox_area = bbox_h * bbox_w
+
+    # Ratio of bbox to full canvas
+    area_ratio = bbox_area / total_area
+    if area_ratio > 0.6:
+        return 1.0  # Large zone — no auto-scaling needed
+
+    # Scale factor: sqrt of area ratio (geometric mean)
+    # This ensures pattern features are proportionally sized to the zone
+    auto_scale = max(0.15, min(1.0, area_ratio ** 0.5))
+    return auto_scale
+
+
 def compose_finish(base_id, pattern_id, shape, mask, seed, sm, scale=1.0, spec_mult=1.0, rotation=0, base_scale=1.0, cc_quality=None, blend_base=None, blend_dir="horizontal", blend_amount=0.5, paint_color=None):
     """Compose a base material + pattern texture into a final spec map.
 
@@ -6477,8 +6622,21 @@ def compose_finish(base_id, pattern_id, shape, mask, seed, sm, scale=1.0, spec_m
         base_shape = shape
 
     # --- Base material with its own noise/grain ---
-    if base.get("brush_grain"):
-        rng = np.random.RandomState(seed)
+    # Each base gets a unique seed offset from its ID so different bases produce
+    # different noise patterns even on the same zone (prevents all candy/pearl looking identical)
+    _base_seed_offset = abs(hash(base_id)) % 10000
+    if base.get("base_spec_fn"):
+        # --- CUSTOM SPEC FUNCTION (material-specific) ---
+        # base_spec_fn returns (M_arr, R_arr) or (M_arr, R_arr, CC_arr) with the
+        # actual material pattern (e.g. carbon weave, forged carbon chunks, kevlar weave)
+        spec_result = base["base_spec_fn"](base_shape, seed + _base_seed_offset, sm, base_M, base_R)
+        if len(spec_result) == 3:
+            M_arr, R_arr, CC_arr = spec_result
+        else:
+            M_arr, R_arr = spec_result
+            CC_arr = None
+    elif base.get("brush_grain"):
+        rng = np.random.RandomState(seed + _base_seed_offset)
         # Horizontal grain: columns vary, rows are constant
         noise = np.tile(rng.randn(1, base_shape[1]) * 0.5, (base_shape[0], 1))
         noise += rng.randn(base_shape[0], base_shape[1]) * 0.2
@@ -6496,7 +6654,7 @@ def compose_finish(base_id, pattern_id, shape, mask, seed, sm, scale=1.0, spec_m
         p_oct = base.get("perlin_octaves", 4)
         p_pers = base.get("perlin_persistence", 0.5)
         p_lac = base.get("perlin_lacunarity", 2.0)
-        noise = perlin_multi_octave(base_shape, octaves=p_oct, persistence=p_pers, lacunarity=p_lac, seed=seed + 200)
+        noise = perlin_multi_octave(base_shape, octaves=p_oct, persistence=p_pers, lacunarity=p_lac, seed=seed + 200 + _base_seed_offset)
         M_arr = base_M + noise * base.get("noise_M", 0) * sm
         R_arr = base_R + noise * base.get("noise_R", 0) * sm
         if base.get("noise_CC", 0) > 0:
@@ -6505,7 +6663,7 @@ def compose_finish(base_id, pattern_id, shape, mask, seed, sm, scale=1.0, spec_m
         else:
             CC_arr = None
     elif "noise_scales" in base:
-        noise = multi_scale_noise(base_shape, base["noise_scales"], base["noise_weights"], seed + 100)
+        noise = multi_scale_noise(base_shape, base["noise_scales"], base["noise_weights"], seed + 100 + _base_seed_offset)
         M_arr = base_M + noise * base.get("noise_M", 0) * sm
         R_arr = base_R + noise * base.get("noise_R", 0) * sm
         if base.get("noise_CC", 0) > 0:
@@ -6539,25 +6697,64 @@ def compose_finish(base_id, pattern_id, shape, mask, seed, sm, scale=1.0, spec_m
 
     # --- GRADIENT SPEC RAMP (v4.0 — SHOKK Shift) ---
     # Blend between primary base and a second base across the zone
+    # SMART: Gradients are computed relative to the zone's bounding box (not full canvas)
+    # so small zones get the full gradient transition within their area.
     if blend_base and blend_base in BASE_REGISTRY and blend_base != base_id:
         base2 = BASE_REGISTRY[blend_base]
         base2_M = float(base2["M"])
         base2_R = float(base2["R"])
         base2_CC = int(base2["CC"]) if base2.get("CC") is not None else 16
         h, w = shape
-        # Build directional gradient mask (0.0 = primary base, 1.0 = blend base)
+
+        # Compute zone bounding box for zone-relative gradient mapping
+        rows_active = np.any(mask > 0.1, axis=1)
+        cols_active = np.any(mask > 0.1, axis=0)
+        if np.any(rows_active) and np.any(cols_active):
+            r_min, r_max = np.where(rows_active)[0][[0, -1]]
+            c_min, c_max = np.where(cols_active)[0][[0, -1]]
+            bbox_h = max(1, r_max - r_min + 1)
+            bbox_w = max(1, c_max - c_min + 1)
+        else:
+            r_min, c_min = 0, 0
+            bbox_h, bbox_w = h, w
+
+        # Build directional gradient mask relative to zone bounding box
+        # (0.0 = primary base, 1.0 = blend base, mapped to zone area)
         if blend_dir == "vertical":
-            grad = np.linspace(0, 1, h, dtype=np.float32)[:, np.newaxis] * np.ones((1, w), dtype=np.float32)
+            # Vertical gradient mapped to zone's vertical extent
+            grad = np.zeros((h, w), dtype=np.float32)
+            zone_grad = np.linspace(0, 1, bbox_h, dtype=np.float32)[:, np.newaxis] * np.ones((1, w), dtype=np.float32)
+            grad[r_min:r_min + bbox_h, :] = zone_grad
+            # Clamp areas outside bbox
+            grad[:r_min, :] = 0.0
+            grad[r_min + bbox_h:, :] = 1.0
         elif blend_dir == "radial":
-            cy, cx = h / 2.0, w / 2.0
+            # Radial gradient centered on zone bounding box center
+            cy = r_min + bbox_h / 2.0
+            cx = c_min + bbox_w / 2.0
             yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
-            grad = np.sqrt((yy - cy)**2 + (xx - cx)**2) / (np.sqrt(cy**2 + cx**2) + 1e-8)
+            # Normalize distance by zone bbox radius (not canvas radius)
+            max_radius = np.sqrt((bbox_h / 2.0)**2 + (bbox_w / 2.0)**2) + 1e-8
+            grad = np.sqrt((yy - cy)**2 + (xx - cx)**2) / max_radius
             grad = np.clip(grad, 0, 1)
         elif blend_dir == "diagonal":
-            grad = np.linspace(0, 1, h, dtype=np.float32)[:, np.newaxis] * 0.5 + \
-                   np.linspace(0, 1, w, dtype=np.float32)[np.newaxis, :] * 0.5
+            # Diagonal gradient mapped to zone bounding box (vectorized)
+            grad = np.zeros((h, w), dtype=np.float32)
+            v_grad = np.linspace(0, 1, bbox_h, dtype=np.float32)[:, np.newaxis]
+            h_grad = np.linspace(0, 1, bbox_w, dtype=np.float32)[np.newaxis, :]
+            grad[r_min:r_min + bbox_h, c_min:c_min + bbox_w] = v_grad * 0.5 + h_grad * 0.5
+            grad[:r_min, :] = 0.0
+            grad[r_min + bbox_h:, :] = 1.0
+            grad[:, :c_min] = 0.0
+            grad[:, c_min + bbox_w:] = 1.0
         else:  # horizontal (default)
-            grad = np.ones((h, 1), dtype=np.float32) * np.linspace(0, 1, w, dtype=np.float32)[np.newaxis, :]
+            # Horizontal gradient mapped to zone's horizontal extent
+            grad = np.zeros((h, w), dtype=np.float32)
+            zone_grad = np.ones((h, 1), dtype=np.float32) * np.linspace(0, 1, bbox_w, dtype=np.float32)[np.newaxis, :]
+            grad[:, c_min:c_min + bbox_w] = zone_grad
+            grad[:, :c_min] = 0.0
+            grad[:, c_min + bbox_w:] = 1.0
+
         # Apply blend curve (blend_amount controls sharpness: <0.5=sharper, >0.5=softer)
         ba = max(0.1, min(3.0, blend_amount * 2.0 + 0.1))
         grad = np.power(grad, ba)
@@ -6941,12 +7138,17 @@ def compose_paint_mod(base_id, pattern_id, paint, shape, mask, seed, pm, bb, sca
     has_pattern = (pattern_id and pattern_id != "none" and pattern_id in PATTERN_REGISTRY)
 
     if base_paint_fn is not paint_none:
+        # Base paint boost: base paint_fns were calibrated with tiny multipliers (0.03-0.15)
+        # that produce nearly invisible changes at raw pm (~1.5). This boost makes ALL base
+        # paint effects visible. Matches _PAT_PAINT_BOOST for patterns.
+        # !! ARCHITECTURE GUARD — If bases are too subtle, increase. If overpowering, decrease.
+        _BASE_PAINT_BOOST = 2.5
         if has_pattern:
             # Reduce base paint effect when pattern also has a paint effect
-            paint = base_paint_fn(paint, shape, hard_mask, seed, pm * 0.7, bb * 0.7)
+            paint = base_paint_fn(paint, shape, hard_mask, seed, pm * _BASE_PAINT_BOOST * 0.7, bb * _BASE_PAINT_BOOST * 0.7)
         else:
-            # No pattern — base runs at full strength
-            paint = base_paint_fn(paint, shape, hard_mask, seed, pm, bb)
+            # No pattern — base runs at full boosted strength
+            paint = base_paint_fn(paint, shape, hard_mask, seed, pm * _BASE_PAINT_BOOST, bb * _BASE_PAINT_BOOST)
 
     if has_pattern:
         pattern = PATTERN_REGISTRY[pattern_id]
@@ -7025,13 +7227,14 @@ def compose_paint_mod_stacked(base_id, all_patterns, paint, shape, mask, seed, p
             if pfn is not paint_none:
                 active_paint_fns += 1
 
-    # Base paint: reduce if any patterns also have paint effects
+    # Base paint: boost to match pattern boost scale
+    _BASE_PAINT_BOOST = 2.5
     if base_paint_fn is not paint_none:
         if has_any_pattern and active_paint_fns > 0:
             atten = 0.6 / max(1, active_paint_fns)
-            paint = base_paint_fn(paint, shape, hard_mask, seed, pm * atten, bb * atten)
+            paint = base_paint_fn(paint, shape, hard_mask, seed, pm * _BASE_PAINT_BOOST * atten, bb * _BASE_PAINT_BOOST * atten)
         else:
-            paint = base_paint_fn(paint, shape, hard_mask, seed, pm, bb)
+            paint = base_paint_fn(paint, shape, hard_mask, seed, pm * _BASE_PAINT_BOOST, bb * _BASE_PAINT_BOOST)
 
     # Each pattern paint: opacity-weighted, attenuated by count
     # Pattern paint boost: same 3.5x global boost as compose_paint_mod (see ARCHITECTURE GUARD there)
@@ -7367,6 +7570,23 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
                 continue
             mask = build_zone_mask(scheme, stats, selector, blur_radius=3)
 
+        # ---- SPATIAL MASK: intersect color mask with drawn include/exclude regions ----
+        # spatial_mask is a 2D numpy array: 0=unset, 1=include, 2=exclude
+        # Unlike region_mask which REPLACES color detection, spatial_mask REFINES it.
+        spatial = zone.get("spatial_mask")
+        if spatial is not None and isinstance(spatial, np.ndarray):
+            # Resize if needed
+            if spatial.shape[0] != h or spatial.shape[1] != w:
+                sm_img = Image.fromarray(spatial.astype(np.uint8))
+                sm_img = sm_img.resize((w, h), Image.NEAREST)
+                spatial = np.array(sm_img).astype(np.uint8)
+            # Exclude: zero out pixels marked as 2
+            mask = np.where(spatial == 2, 0.0, mask)
+            # Include: if ANY pixels are marked as 1, restrict to only those
+            has_include = np.any(spatial == 1)
+            if has_include:
+                mask = np.where(spatial == 1, mask, 0.0)
+
         # Subtract already-claimed areas (higher priority zones come first)
         mask = np.clip(mask - claimed * 0.8, 0, 1)
 
@@ -7517,6 +7737,13 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
             pattern_stack = zone.get("pattern_stack", [])
             primary_pat_opacity = float(zone.get("pattern_opacity", 1.0))
 
+            # SMART AUTO-SCALE: adapt pattern density to zone coverage area
+            # Small zones (car numbers, sponsors) get denser patterns automatically
+            auto_scale = _compute_zone_auto_scale(zone_mask, shape)
+            if auto_scale < 1.0 and pattern_id != "none":
+                print(f"      [{name}] Auto-scale: {auto_scale:.3f} (zone covers {(auto_scale**2)*100:.1f}% of canvas)")
+            zone_scale *= auto_scale  # User slider multiplies on top of auto-scale
+
             # v6.0 advanced finish params
             _z_cc = zone.get("cc_quality"); _z_cc = float(_z_cc) if _z_cc is not None else None
             _z_bb = zone.get("blend_base") or None; _z_bd = zone.get("blend_dir", "horizontal"); _z_ba = float(zone.get("blend_amount", 0.5))
@@ -7540,7 +7767,7 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
                         all_patterns.append({
                             "id": pid,
                             "opacity": float(ps.get("opacity", 1.0)),
-                            "scale": float(ps.get("scale", 1.0)),
+                            "scale": float(ps.get("scale", 1.0)) * auto_scale,  # Auto-scale stack layers too
                             "rotation": float(ps.get("rotation", 0)),
                         })
                 pat_names = " + ".join(f'{p["id"]}@{int(p["opacity"]*100)}%' for p in all_patterns)
@@ -7555,7 +7782,7 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
             else:
                 # SINGLE PATTERN: original path
                 label = f"{base_id}" + (f" + {pattern_id}" if pattern_id != "none" else "")
-                scale_label = f" @{zone_scale:.1f}x" if zone_scale != 1.0 else ""
+                scale_label = f" @{zone_scale:.2f}x" if zone_scale != 1.0 else ""
                 rot_label = f" rot{zone_rotation:.0f}°" if zone_rotation != 0 else ""
                 bs_label = f" base@{zone_base_scale:.2f}x" if zone_base_scale != 1.0 else ""
                 print(f"    [{name}] => {label} ({intensity}){scale_label}{rot_label}{bs_label} [compositing]")
@@ -7569,6 +7796,9 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
             mono_pat = zone.get("pattern", "none")
             mono_pat_scale = float(zone.get("scale", 1.0))
             mono_pat_opacity = float(zone.get("pattern_opacity", 1.0))
+            # SMART AUTO-SCALE for monolithic pattern overlay
+            mono_auto_scale = _compute_zone_auto_scale(zone_mask, shape)
+            mono_pat_scale *= mono_auto_scale
             mono_pat_rotation = float(zone.get("rotation", 0))
             mono_base_scale = float(zone.get("base_scale", 1.0))
             pat_label = f" + {mono_pat}" if mono_pat and mono_pat != "none" else ""
@@ -7828,6 +8058,23 @@ def preview_render(paint_file, zones, seed=51, preview_scale=0.25, import_spec_m
                 continue
             mask = build_zone_mask(scheme, stats, selector, blur_radius=3)
 
+        # ---- SPATIAL MASK: intersect color mask with drawn include/exclude regions ----
+        # spatial_mask is a 2D numpy array: 0=unset, 1=include, 2=exclude
+        # Unlike region_mask which REPLACES color detection, spatial_mask REFINES it.
+        spatial = zone.get("spatial_mask")
+        if spatial is not None and isinstance(spatial, np.ndarray):
+            # Resize to preview resolution if needed
+            if spatial.shape[0] != h or spatial.shape[1] != w:
+                sm_img = Image.fromarray(spatial.astype(np.uint8))
+                sm_img = sm_img.resize((w, h), Image.NEAREST)
+                spatial = np.array(sm_img).astype(np.uint8)
+            # Exclude: zero out pixels marked as 2
+            mask = np.where(spatial == 2, 0.0, mask)
+            # Include: if ANY pixels are marked as 1, restrict to only those
+            has_include = np.any(spatial == 1)
+            if has_include:
+                mask = np.where(spatial == 1, mask, 0.0)
+
         mask = np.clip(mask - claimed * 0.8, 0, 1)
         claimed = np.clip(claimed + mask, 0, 1)
         zone_masks.append(mask)
@@ -7936,6 +8183,10 @@ def preview_render(paint_file, zones, seed=51, preview_scale=0.25, import_spec_m
             pattern_stack = zone.get("pattern_stack", [])
             primary_pat_opacity = float(zone.get("pattern_opacity", 1.0))
 
+            # SMART AUTO-SCALE: adapt pattern density to zone coverage area
+            auto_scale = _compute_zone_auto_scale(zone_mask, shape)
+            zone_scale *= auto_scale
+
             # v6.0 advanced finish params
             _z_cc = zone.get("cc_quality"); _z_cc = float(_z_cc) if _z_cc is not None else None
             _z_bb = zone.get("blend_base") or None; _z_bd = zone.get("blend_dir", "horizontal"); _z_ba = float(zone.get("blend_amount", 0.5))
@@ -7957,7 +8208,7 @@ def preview_render(paint_file, zones, seed=51, preview_scale=0.25, import_spec_m
                         all_patterns.append({
                             "id": pid,
                             "opacity": float(ps.get("opacity", 1.0)),
-                            "scale": float(ps.get("scale", 1.0)),
+                            "scale": float(ps.get("scale", 1.0)) * auto_scale,  # Auto-scale stack layers too
                             "rotation": float(ps.get("rotation", 0)),
                         })
                 if all_patterns:
@@ -7999,6 +8250,8 @@ def preview_render(paint_file, zones, seed=51, preview_scale=0.25, import_spec_m
             if mono_pat and mono_pat != "none" and mono_pat in PATTERN_REGISTRY:
                 mono_scale = float(zone.get("scale", 1.0))
                 mono_opacity = float(zone.get("pattern_opacity", 1.0))
+                # SMART AUTO-SCALE for monolithic pattern overlay
+                mono_scale *= _compute_zone_auto_scale(zone_mask, shape)
                 mono_rotation = float(zone.get("rotation", 0))
                 zone_spec = overlay_pattern_on_spec(zone_spec, mono_pat, shape, zone_mask, seed + i * 13 + 99, sm, mono_scale, mono_opacity, spec_mult=spec_mult, rotation=mono_rotation)
                 paint = overlay_pattern_paint(paint, mono_pat, shape, zone_mask, seed + i * 13 + 99, pm, bb, mono_scale, mono_opacity, rotation=mono_rotation)

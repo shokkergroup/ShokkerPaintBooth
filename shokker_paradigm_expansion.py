@@ -171,10 +171,10 @@ def paint_singularity(paint, shape, mask, seed, pm, bb):
     paint[:, :, 2] = np.clip(paint[:, :, 2] + ring_bright * 0.10 * pm * mask, 0, 1)
 
     # Hot white center of rings
-    ring_core = np.clip((ring_accum - 0.6) * 3.0, 0, 1) * 0.25 * pm
+    ring_core = np.clip((ring_accum - 0.4) * 2.0, 0, 1) * 0.45 * pm
     paint = np.clip(paint + ring_core[:, :, np.newaxis] * mask[:, :, np.newaxis], 0, 1)
 
-    paint = np.clip(paint + bb * 0.2 * mask[:, :, np.newaxis], 0, 1)
+    paint = np.clip(paint + bb * 0.5 * mask[:, :, np.newaxis], 0, 1)
     return paint
 
 
@@ -193,7 +193,7 @@ def paint_bioluminescent(paint, shape, mask, seed, pm, bb):
     cells = np.clip((cell_noise - 0.35) * 3.0, 0, 1)
 
     # Darken non-glowing areas for contrast
-    dark_base = (1 - cells) * 0.20 * pm
+    dark_base = (1 - cells) * 0.25 * pm
     for c in range(3):
         paint[:, :, c] = np.clip(paint[:, :, c] - dark_base * mask, 0, 1)
 
@@ -216,7 +216,7 @@ def paint_bioluminescent(paint, shape, mask, seed, pm, bb):
     bio_spark = np.where((sparkle > 0.96) & (cells > 0.4), 0.22 * pm, 0.0)
     paint = np.clip(paint + bio_spark[:, :, np.newaxis] * mask[:, :, np.newaxis], 0, 1)
 
-    paint = np.clip(paint + bb * 0.3 * mask[:, :, np.newaxis], 0, 1)
+    paint = np.clip(paint + bb * 0.6 * mask[:, :, np.newaxis], 0, 1)
     return paint
 
 
@@ -259,7 +259,7 @@ def paint_liquid_obsidian(paint, shape, mask, seed, pm, bb):
     paint[:, :, 2] = np.clip(paint[:, :, 2] + bound_glow * mask, 0, 1)
     paint = np.clip(paint + bound_glow[:, :, np.newaxis] * 0.3 * mask[:, :, np.newaxis], 0, 1)
 
-    paint = np.clip(paint + bb * 0.2 * mask[:, :, np.newaxis], 0, 1)
+    paint = np.clip(paint + bb * 0.5 * mask[:, :, np.newaxis], 0, 1)
     return paint
 
 # ================================================================
@@ -406,7 +406,7 @@ def paint_dimensional(paint, shape, mask, seed, pm, bb):
     val = np.full_like(hue, 0.5)
     r_i, g_i, b_i = _hsv_to_rgb(hue, sat, val)
 
-    blend = 0.12 * pm
+    blend = 0.30 * pm
     paint[:, :, 0] = np.clip(paint[:, :, 0] * (1 - blend * mask) + r_i * blend * mask, 0, 1)
     paint[:, :, 1] = np.clip(paint[:, :, 1] * (1 - blend * mask) + g_i * blend * mask, 0, 1)
     paint[:, :, 2] = np.clip(paint[:, :, 2] * (1 - blend * mask) + b_i * blend * mask, 0, 1)
@@ -524,25 +524,27 @@ def texture_holographic(shape, mask, seed, sm):
     y, x = _mgrid(shape)
     yf = y.astype(np.float32)
     xf = x.astype(np.float32)
-    # Diagonal diffraction lines at multiple angles
-    g1 = (np.sin(yf * 0.15 + xf * 0.08) * 0.5 + 0.5)
-    g2 = (np.sin(yf * 0.06 - xf * 0.12) * 0.5 + 0.5)
-    g3 = (np.sin((yf + xf) * 0.1) * 0.5 + 0.5)
-    field = (g1 + g2 + g3) / 3.0
-    return {"pattern_val": field, "R_range": -40.0, "M_range": 70.0, "CC": None}
+    # Dense diagonal diffraction lines at multiple angles for rich rainbow
+    g1 = (np.sin(yf * 0.20 + xf * 0.10) * 0.5 + 0.5)
+    g2 = (np.sin(yf * 0.08 - xf * 0.16) * 0.5 + 0.5)
+    g3 = (np.sin((yf + xf) * 0.14) * 0.5 + 0.5)
+    g4 = (np.sin(yf * 0.05 + xf * 0.22) * 0.5 + 0.5)  # Extra grating
+    field = (g1 + g2 + g3 + g4) / 4.0
+    return {"pattern_val": field, "R_range": -70.0, "M_range": 100.0, "CC": None}
 
 def paint_holographic(paint, shape, mask, seed, pm, bb):
     h, w = shape
     y, x = _mgrid(shape)
     yf = y.astype(np.float32)
     xf = x.astype(np.float32)
-    g1 = (np.sin(yf * 0.15 + xf * 0.08) * 0.5 + 0.5)
-    g2 = (np.sin(yf * 0.06 - xf * 0.12) * 0.5 + 0.5)
-    g3 = (np.sin((yf + xf) * 0.1) * 0.5 + 0.5)
-    field = (g1 + g2 + g3) / 3.0
-    # Rainbow shift based on grating position
-    r_s, g_s, b_s = _hsv_to_rgb(field, np.full_like(field, 0.5), np.full_like(field, 0.5))
-    blend = 0.10 * pm
+    g1 = (np.sin(yf * 0.20 + xf * 0.10) * 0.5 + 0.5)
+    g2 = (np.sin(yf * 0.08 - xf * 0.16) * 0.5 + 0.5)
+    g3 = (np.sin((yf + xf) * 0.14) * 0.5 + 0.5)
+    g4 = (np.sin(yf * 0.05 + xf * 0.22) * 0.5 + 0.5)
+    field = (g1 + g2 + g3 + g4) / 4.0
+    # VIVID rainbow shift — high saturation, strong blend
+    r_s, g_s, b_s = _hsv_to_rgb(field, np.full_like(field, 0.88), np.full_like(field, 0.70))
+    blend = 0.30 * pm
     paint[:, :, 0] = np.clip(paint[:, :, 0] * (1 - blend * mask) + r_s * blend * mask, 0, 1)
     paint[:, :, 1] = np.clip(paint[:, :, 1] * (1 - blend * mask) + g_s * blend * mask, 0, 1)
     paint[:, :, 2] = np.clip(paint[:, :, 2] * (1 - blend * mask) + b_s * blend * mask, 0, 1)
@@ -780,7 +782,7 @@ def paint_void(paint, shape, mask, seed, pm, bb):
            np.abs(np.diff(is_void_soft, axis=0, prepend=is_void_soft[:1, :]))
     edge = np.clip(edge * 3, 0, 1) * 0.1 * pm
     paint = np.clip(paint + edge[:, :, np.newaxis] * mask[:, :, np.newaxis], 0, 1)
-    paint = np.clip(paint + bb * 0.3 * mask[:, :, np.newaxis], 0, 1)
+    paint = np.clip(paint + bb * 0.6 * mask[:, :, np.newaxis], 0, 1)
     return paint
 
 
@@ -913,7 +915,7 @@ def paint_quantum(paint, shape, mask, seed, pm, bb):
     sparkle = rng2.random((h, w)).astype(np.float32)
     spark = np.where(sparkle > 0.975, 0.20 * pm, 0.0)
     paint = np.clip(paint + spark[:, :, np.newaxis] * mask[:, :, np.newaxis], 0, 1)
-    paint = np.clip(paint + bb * 0.2 * mask[:, :, np.newaxis], 0, 1)
+    paint = np.clip(paint + bb * 0.5 * mask[:, :, np.newaxis], 0, 1)
     return paint
 
 # ================================================================
@@ -969,7 +971,7 @@ def paint_aurora(paint, shape, mask, seed, pm, bb):
     peak = np.clip((curtain1 - 0.7) * 4, 0, 1) * 0.20 * pm
     paint = np.clip(paint + peak[:, :, np.newaxis] * mask[:, :, np.newaxis], 0, 1)
 
-    paint = np.clip(paint + bb * 0.2 * mask[:, :, np.newaxis], 0, 1)
+    paint = np.clip(paint + bb * 0.5 * mask[:, :, np.newaxis], 0, 1)
     return paint
 
 # ================================================================
@@ -1046,12 +1048,12 @@ def paint_magnetic(paint, shape, mask, seed, pm, bb):
         paint[:, :, c] = np.clip(paint[:, :, c] - line_dark * mask, 0, 1)
 
     # Pole proximity glow — bright white-blue near poles
-    pole_glow = np.clip((mag_acc - 0.5) * 3, 0, 1) * 0.20 * pm
+    pole_glow = np.clip((mag_acc - 0.5) * 3, 0, 1) * 0.30 * pm
     paint[:, :, 1] = np.clip(paint[:, :, 1] + pole_glow * 0.5 * mask, 0, 1)
     paint[:, :, 2] = np.clip(paint[:, :, 2] + pole_glow * mask, 0, 1)
     paint = np.clip(paint + pole_glow[:, :, np.newaxis] * 0.3 * mask[:, :, np.newaxis], 0, 1)
 
-    paint = np.clip(paint + bb * 0.2 * mask[:, :, np.newaxis], 0, 1)
+    paint = np.clip(paint + bb * 0.5 * mask[:, :, np.newaxis], 0, 1)
     return paint
 
 # ================================================================
@@ -1094,7 +1096,7 @@ def paint_ember(paint, shape, mask, seed, pm, bb):
     paint[:, :, 1] = np.clip(paint[:, :, 1] + glow_g * mask, 0, 1)
 
     # White-hot cores
-    white_core = np.clip((heat - 0.8) * 5, 0, 1) * 0.25 * pm
+    white_core = np.clip((heat - 0.8) * 5, 0, 1) * 0.30 * pm
     paint = np.clip(paint + white_core[:, :, np.newaxis] * mask[:, :, np.newaxis], 0, 1)
 
     # Ember sparkle in hot zones
@@ -1102,7 +1104,7 @@ def paint_ember(paint, shape, mask, seed, pm, bb):
     embers = np.where((sparkle > 0.975) & (heat > 0.3), 0.20 * pm, 0.0)
     paint[:, :, 0] = np.clip(paint[:, :, 0] + embers * mask, 0, 1)
 
-    paint = np.clip(paint + bb * 0.15 * mask[:, :, np.newaxis], 0, 1)
+    paint = np.clip(paint + bb * 0.4 * mask[:, :, np.newaxis], 0, 1)
     return paint
 
 
@@ -1158,7 +1160,7 @@ def paint_stealth(paint, shape, mask, seed, pm, bb):
 
     # Slight military green-gray tint
     paint[:, :, 1] = np.clip(paint[:, :, 1] + 0.02 * pm * mask, 0, 1)
-    paint = np.clip(paint + bb * 0.2 * mask[:, :, np.newaxis], 0, 1)
+    paint = np.clip(paint + bb * 0.5 * mask[:, :, np.newaxis], 0, 1)
     return paint
 
 # ================================================================
@@ -1229,7 +1231,7 @@ def paint_glass_armor(paint, shape, mask, seed, pm, bb):
     glass_spark = np.where((sparkle > 0.98) & (glass > 0.5), 0.18 * pm, 0.0)
     paint = np.clip(paint + glass_spark[:, :, np.newaxis] * mask[:, :, np.newaxis], 0, 1)
 
-    paint = np.clip(paint + bb * 0.2 * mask[:, :, np.newaxis], 0, 1)
+    paint = np.clip(paint + bb * 0.5 * mask[:, :, np.newaxis], 0, 1)
     return paint
 
 # ================================================================
@@ -1293,7 +1295,7 @@ def paint_static(paint, shape, mask, seed, pm, bb):
     burst_pop = np.where(bursts > 0.99, 0.25 * pm, 0.0)
     paint = np.clip(paint + burst_pop[:, :, np.newaxis] * mask[:, :, np.newaxis], 0, 1)
 
-    paint = np.clip(paint + bb * 0.2 * mask[:, :, np.newaxis], 0, 1)
+    paint = np.clip(paint + bb * 0.5 * mask[:, :, np.newaxis], 0, 1)
     return paint
 
 # ================================================================
@@ -1357,7 +1359,7 @@ def paint_mercury_pool(paint, shape, mask, seed, pm, bb):
     merc_spark = np.where((sparkle > 0.975) & (pool_smooth > 0.4), 0.22 * pm, 0.0)
     paint = np.clip(paint + merc_spark[:, :, np.newaxis] * mask[:, :, np.newaxis], 0, 1)
 
-    paint = np.clip(paint + bb * 0.2 * mask[:, :, np.newaxis], 0, 1)
+    paint = np.clip(paint + bb * 0.5 * mask[:, :, np.newaxis], 0, 1)
     return paint
 
 # ================================================================
@@ -1389,7 +1391,7 @@ def paint_prismatic(paint, shape, mask, seed, pm, bb):
     prism_spark = np.where(sparkle > 0.975, 0.18 * pm, 0.0)
     paint = np.clip(paint + prism_spark[:, :, np.newaxis] * mask[:, :, np.newaxis], 0, 1)
 
-    paint = np.clip(paint + bb * 0.3 * mask[:, :, np.newaxis], 0, 1)
+    paint = np.clip(paint + bb * 0.6 * mask[:, :, np.newaxis], 0, 1)
     return paint
 
 
@@ -1421,7 +1423,7 @@ def paint_mercury(paint, shape, mask, seed, pm, bb):
     edge = np.clip((gx + gy) * 15, 0, 1) * 0.15 * pm
     paint = np.clip(paint + edge[:, :, np.newaxis] * mask[:, :, np.newaxis], 0, 1)
 
-    paint = np.clip(paint + bb * 0.2 * mask[:, :, np.newaxis], 0, 1)
+    paint = np.clip(paint + bb * 0.5 * mask[:, :, np.newaxis], 0, 1)
     return paint
 
 # ================================================================
@@ -1462,7 +1464,7 @@ def paint_phantom(paint, shape, mask, seed, pm, bb):
     for c in range(3):
         paint[:, :, c] = np.clip(paint[:, :, c] - void * mask, 0, 1)
 
-    paint = np.clip(paint + bb * 0.3 * mask[:, :, np.newaxis], 0, 1)
+    paint = np.clip(paint + bb * 0.6 * mask[:, :, np.newaxis], 0, 1)
     return paint
 
 
@@ -1483,7 +1485,7 @@ def paint_volcanic(paint, shape, mask, seed, pm, bb):
         paint[:, :, c] = np.clip(paint[:, :, c] * (1 - cool * 0.65 * pm * mask), 0, 1)
 
     # Hot lava veins — blazing orange-red-yellow
-    lava = np.clip((heat - 0.45) * 3, 0, 1)
+    lava = np.clip((heat - 0.35) * 3.0, 0, 1) * 0.50 * pm
     paint[:, :, 0] = np.clip(paint[:, :, 0] + lava * 0.40 * pm * mask, 0, 1)
     paint[:, :, 1] = np.clip(paint[:, :, 1] + lava * lava * 0.20 * pm * mask, 0, 1)  # yellow only at hottest
 
@@ -1497,7 +1499,7 @@ def paint_volcanic(paint, shape, mask, seed, pm, bb):
     paint[:, :, 0] = np.clip(paint[:, :, 0] + embers * mask, 0, 1)
     paint[:, :, 1] = np.clip(paint[:, :, 1] + embers * 0.3 * mask, 0, 1)
 
-    paint = np.clip(paint + bb * 0.15 * mask[:, :, np.newaxis], 0, 1)
+    paint = np.clip(paint + bb * 0.4 * mask[:, :, np.newaxis], 0, 1)
     return paint
 
 
@@ -1533,12 +1535,17 @@ def paint_arctic_ice(paint, shape, mask, seed, pm, bb):
     cell_hue = (cell_id % 5).astype(np.float32) / 5.0 * 0.08  # slight per-cell blue variation
     paint[:, :, 2] = np.clip(paint[:, :, 2] + interior * cell_hue * 0.15 * pm * mask, 0, 1)
 
-    # Frost shimmer sparkle
+    # Frost shimmer sparkle — dense crystalline dots
     sparkle = rng.random(shape).astype(np.float32)
-    frost = np.where(sparkle > 0.97, 0.22 * pm, 0.0)
+    frost = np.where(sparkle > 0.92, sparkle * 0.30 * pm, 0)  # 8% of pixels get frost
     paint = np.clip(paint + frost[:, :, np.newaxis] * mask[:, :, np.newaxis], 0, 1)
+    # Dense micro-frost — tiny blue-white dots for crystalline texture
+    micro = rng.random(shape).astype(np.float32)
+    micro_frost = np.where(micro > 0.85, micro * 0.08 * pm, 0)
+    paint[:, :, 2] = np.clip(paint[:, :, 2] + micro_frost * mask, 0, 1)  # Blue micro-dots
+    paint = np.clip(paint + micro_frost[:, :, np.newaxis] * 0.3 * mask[:, :, np.newaxis], 0, 1)
 
-    paint = np.clip(paint + bb * 0.3 * mask[:, :, np.newaxis], 0, 1)
+    paint = np.clip(paint + bb * 0.6 * mask[:, :, np.newaxis], 0, 1)
     return paint
 
 # ================================================================
@@ -1575,7 +1582,7 @@ def paint_carbon_weave(paint, shape, mask, seed, pm, bb):
     valleys = (1 - weave) * 0.04 * pm
     paint[:, :, 2] = np.clip(paint[:, :, 2] + valleys * mask, 0, 1)
 
-    paint = np.clip(paint + bb * 0.2 * mask[:, :, np.newaxis], 0, 1)
+    paint = np.clip(paint + bb * 0.5 * mask[:, :, np.newaxis], 0, 1)
     return paint
 
 
@@ -1617,10 +1624,10 @@ def paint_nebula(paint, shape, mask, seed, pm, bb):
 
     # Bright star sparkles — more frequent, brighter
     stars = rng.random((h, w)).astype(np.float32)
-    star_glow = np.where(stars > 0.99, 0.30 * pm, 0.0)
+    star_glow = np.where(stars > 0.99, 0.45 * pm, 0.0)
     paint = np.clip(paint + star_glow[:, :, np.newaxis] * mask[:, :, np.newaxis], 0, 1)
 
-    paint = np.clip(paint + bb * 0.2 * mask[:, :, np.newaxis], 0, 1)
+    paint = np.clip(paint + bb * 0.5 * mask[:, :, np.newaxis], 0, 1)
     return paint
 
 
@@ -1689,7 +1696,7 @@ def paint_phase_shift(paint, shape, mask, seed, pm, bb):
     cond_spark = np.where((sparkle > 0.98) & (stripe_phase > 0.5), 0.15 * pm, 0.0)
     paint = np.clip(paint + cond_spark[:, :, np.newaxis] * mask[:, :, np.newaxis], 0, 1)
 
-    paint = np.clip(paint + bb * 0.2 * mask[:, :, np.newaxis], 0, 1)
+    paint = np.clip(paint + bb * 0.5 * mask[:, :, np.newaxis], 0, 1)
     return paint
 
 
@@ -1767,7 +1774,7 @@ def paint_gravity_well(paint, shape, mask, seed, pm, bb):
     halo_blue = (1 - well) * 0.06 * pm
     paint[:, :, 2] = np.clip(paint[:, :, 2] + halo_blue * mask, 0, 1)
 
-    paint = np.clip(paint + bb * 0.2 * mask[:, :, np.newaxis], 0, 1)
+    paint = np.clip(paint + bb * 0.5 * mask[:, :, np.newaxis], 0, 1)
     return paint
 
 
@@ -1981,7 +1988,7 @@ def paint_wormhole(paint, shape, mask, seed, pm, bb):
     paint[:, :, 2] = np.clip(paint[:, :, 2] + tunnel * 0.22 * pm * mask, 0, 1)
     paint = np.clip(paint + tunnel[:, :, np.newaxis] * 0.06 * pm * mask[:, :, np.newaxis], 0, 1)
 
-    paint = np.clip(paint + bb * 0.15 * mask[:, :, np.newaxis], 0, 1)
+    paint = np.clip(paint + bb * 0.4 * mask[:, :, np.newaxis], 0, 1)
     return paint
 
 
@@ -2069,7 +2076,7 @@ def paint_crystal_lattice(paint, shape, mask, seed, pm, bb):
     bright_nodes = np.clip((node_sum - 0.6) * 4, 0, 1) * 0.20 * pm
     paint = np.clip(paint + bright_nodes[:, :, np.newaxis] * mask[:, :, np.newaxis], 0, 1)
 
-    paint = np.clip(paint + bb * 0.2 * mask[:, :, np.newaxis], 0, 1)
+    paint = np.clip(paint + bb * 0.5 * mask[:, :, np.newaxis], 0, 1)
     return paint
 
 
@@ -2137,7 +2144,7 @@ def paint_pulse(paint, shape, mask, seed, pm, bb):
     trough_blue = (1 - field) * 0.15 * pm
     paint[:, :, 2] = np.clip(paint[:, :, 2] + trough_blue * mask, 0, 1)
 
-    paint = np.clip(paint + bb * 0.2 * mask[:, :, np.newaxis], 0, 1)
+    paint = np.clip(paint + bb * 0.5 * mask[:, :, np.newaxis], 0, 1)
     return paint
 
 

@@ -550,6 +550,26 @@ def preview_render_endpoint():
                 except Exception:
                     pass  # Skip broken masks
 
+            # Spatial mask — include/exclude refinement for color-based zones
+            # Values: 0=unset, 1=include (green), 2=exclude (red)
+            if z.get("spatial_mask"):
+                try:
+                    import numpy as np
+                    rle = z["spatial_mask"]
+                    if isinstance(rle, str):
+                        rle = json.loads(rle)
+                    rw = rle.get("width", 0)
+                    rh = rle.get("height", 0)
+                    runs = rle.get("runs", [])
+                    flat = np.zeros(rw * rh, dtype=np.uint8)
+                    pos = 0
+                    for run_val, run_len in runs:
+                        flat[pos:pos + run_len] = int(run_val)
+                        pos += run_len
+                    zone_obj["spatial_mask"] = flat.reshape((rh, rw))
+                except Exception:
+                    pass
+
             server_zones.append(zone_obj)
 
         # Import spec map (merge mode)
@@ -723,6 +743,46 @@ def render():
         car_folder_name = cfg.get("active_car", "unknown")
 
         # Run the full pipeline (car + helmet + suit + wear + optional zip)
+        # Decode spatial_mask RLE for each zone before engine call
+        for z in zones:
+            # Decode region_mask RLE (same as preview-render)
+            if z.get("region_mask") and isinstance(z["region_mask"], (dict, str)):
+                try:
+                    import numpy as np
+                    rle = z["region_mask"]
+                    if isinstance(rle, str):
+                        rle = json.loads(rle)
+                    rw = rle.get("width", 0)
+                    rh = rle.get("height", 0)
+                    runs = rle.get("runs", [])
+                    flat = np.zeros(rw * rh, dtype=np.float32)
+                    pos = 0
+                    for run_val, run_len in runs:
+                        flat[pos:pos + run_len] = float(run_val) / 255.0
+                        pos += run_len
+                    z["region_mask"] = flat.reshape((rh, rw))
+                except Exception:
+                    z.pop("region_mask", None)
+
+            # Decode spatial_mask RLE
+            if z.get("spatial_mask") and isinstance(z["spatial_mask"], (dict, str)):
+                try:
+                    import numpy as np
+                    rle = z["spatial_mask"]
+                    if isinstance(rle, str):
+                        rle = json.loads(rle)
+                    rw = rle.get("width", 0)
+                    rh = rle.get("height", 0)
+                    runs = rle.get("runs", [])
+                    flat = np.zeros(rw * rh, dtype=np.uint8)
+                    pos = 0
+                    for run_val, run_len in runs:
+                        flat[pos:pos + run_len] = int(run_val)
+                        pos += run_len
+                    z["spatial_mask"] = flat.reshape((rh, rw))
+                except Exception:
+                    z.pop("spatial_mask", None)
+
         results = engine.full_render_pipeline(
             car_paint_file=actual_paint_file,
             output_dir=job_dir,

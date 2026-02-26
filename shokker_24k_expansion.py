@@ -59,25 +59,27 @@ def make_chrome_tint_fn(r_bias, g_bias, b_bias, blend=0.18):
     return fn
 
 def make_candy_tint_fn(warmth=0.0):
-    """Factory: candy coat — deep transparent tint with sparkle. warmth: -1=cool, 0=neutral, 1=warm"""
+    """Factory: candy coat — deep transparent tint with visible sparkle. warmth: -1=cool, 0=neutral, 1=warm"""
     def fn(paint, shape, mask, seed, pm, bb):
-        # Candy deepens saturation and adds fine sparkle
+        # Strong candy saturation deepening
         gray = paint.mean(axis=2, keepdims=True)
-        sat_boost = 0.15 * pm
+        sat_boost = 0.45 * pm
         paint = np.clip(paint + (paint - gray) * sat_boost * mask[:,:,np.newaxis], 0, 1)
-        # Warm/cool shift
+        # Candy darkening (transparent color over base)
+        paint = np.clip(paint * (1 - 0.10 * pm * mask[:,:,np.newaxis]), 0, 1)
+        # Warm/cool color shift (much stronger)
         if warmth > 0:
-            paint[:,:,0] = np.clip(paint[:,:,0] + 0.03 * warmth * pm * mask, 0, 1)
-            paint[:,:,2] = np.clip(paint[:,:,2] - 0.02 * warmth * pm * mask, 0, 1)
+            paint[:,:,0] = np.clip(paint[:,:,0] + 0.15 * warmth * pm * mask, 0, 1)
+            paint[:,:,2] = np.clip(paint[:,:,2] - 0.10 * warmth * pm * mask, 0, 1)
         elif warmth < 0:
-            paint[:,:,2] = np.clip(paint[:,:,2] + 0.03 * abs(warmth) * pm * mask, 0, 1)
-            paint[:,:,0] = np.clip(paint[:,:,0] - 0.02 * abs(warmth) * pm * mask, 0, 1)
-        # Fine sparkle
+            paint[:,:,2] = np.clip(paint[:,:,2] + 0.15 * abs(warmth) * pm * mask, 0, 1)
+            paint[:,:,0] = np.clip(paint[:,:,0] - 0.10 * abs(warmth) * pm * mask, 0, 1)
+        # Visible sparkle
         rng = np.random.RandomState(seed + 77)
         sparkle = rng.random(shape).astype(np.float32)
-        sparkle = np.where(sparkle > 0.96, sparkle * 0.08 * pm, 0)
+        sparkle = np.where(sparkle > 0.90, (sparkle - 0.90) * 2.5 * pm, 0)
         paint = np.clip(paint + sparkle[:,:,np.newaxis] * mask[:,:,np.newaxis], 0, 1)
-        paint = np.clip(paint + bb * 0.5 * mask[:,:,np.newaxis], 0, 1)
+        paint = np.clip(paint + bb * 0.8 * mask[:,:,np.newaxis], 0, 1)
         return paint
     return fn
 
@@ -137,13 +139,47 @@ def make_vivid_depth_fn(sat_boost=0.12, depth_darken=0.05):
         return paint
     return fn
 
-def make_glow_fn(glow_color, glow_strength=0.06):
-    """Factory: subtle glow/luminescence tint."""
+def make_glow_fn(glow_color, glow_strength=0.18):
+    """Factory: TRUE NEON GLOW with spatial variation.
+    v4: Uses mask-edge glow + noise blobs for actual glowing-material look.
+    Old v1-v3 either tinted imperceptibly or did flat color LERP."""
     def fn(paint, shape, mask, seed, pm, bb):
+        from PIL import Image as _Img, ImageFilter as _Filt
+        h, w = shape
+
+        # === MASK EDGE GLOW: bright glow along zone boundaries ===
+        mask_u8 = (mask * 255).astype(np.uint8)
+        mask_img = _Img.fromarray(mask_u8)
+        edges_raw = np.array(mask_img.filter(_Filt.FIND_EDGES)).astype(np.float32) / 255.0
+        # Dilate for wider glow band
+        edge_bright = np.clip(edges_raw * 3, 0, 1)
+        edge_img = _Img.fromarray((edge_bright * 255).astype(np.uint8))
+        edge_img = edge_img.filter(_Filt.GaussianBlur(radius=max(2, min(h, w) // 100)))
+        mask_edges = np.array(edge_img).astype(np.float32) / 255.0
+
+        # === NOISE GLOW BLOBS: large-scale organic glow variation ===
+        noise = _multi_scale_noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + 600)
+        noise = (noise - noise.min()) / (noise.max() - noise.min() + 1e-8)
+        glow_blobs = np.clip((noise - 0.25) * 2.5, 0, 1)
+
+        # === COMBINE: edges + blobs ===
+        glow_field = np.clip(mask_edges * 1.5 + glow_blobs * 0.7, 0, 1)
+        strength = min(0.70, glow_strength * 3.0) * pm
+        glow = glow_field * strength * mask
+
+        # Apply glow color with spatial variation
         for c in range(3):
-            paint[:,:,c] = np.clip(paint[:,:,c] + glow_color[c] * glow_strength * pm * mask, 0, 1)
-        noise = _multi_scale_noise(shape, [8, 16, 32], [0.3, 0.4, 0.3], seed + 600)
-        paint = np.clip(paint + noise[:,:,np.newaxis] * 0.03 * pm * mask[:,:,np.newaxis], 0, 1)
+            paint[:,:,c] = np.clip(
+                paint[:,:,c] * (1 - glow * 0.5) + glow_color[c] * glow,
+                0, 1)
+
+        # === EMISSION BRIGHTENING where glow is strong ===
+        bright = glow_field * glow_strength * 0.6 * pm * mask
+        paint = np.clip(paint + bright[:,:,np.newaxis], 0, 1)
+
+        # === HOT CORE: white-hot where glow peaks ===
+        hot = np.clip((glow_field - 0.5) * 3.0, 0, 1) * pm * mask * 0.15
+        paint = np.clip(paint + hot[:,:,np.newaxis], 0, 1)
         return paint
     return fn
 
@@ -166,10 +202,69 @@ def make_metallic_tint_fn(r_shift=0, g_shift=0, b_shift=0, flake_str=0.05):
 # ================================================================
 
 # --- Chrome Tints ---
-paint_black_chrome_tint = make_chrome_tint_fn(0.15, 0.15, 0.15, blend=0.25)
-paint_blue_chrome_tint = make_chrome_tint_fn(0.60, 0.70, 0.95, blend=0.18)
-paint_red_chrome_tint = make_chrome_tint_fn(0.95, 0.25, 0.20, blend=0.18)
-paint_antique_patina = make_aged_fn(fade_strength=0.12, roughen=0.06)
+def paint_black_chrome_tint(paint, shape, mask, seed, pm, bb):
+    """Black chrome — deep darkening toward near-black with reflective surface highlights."""
+    h, w = shape
+    blend = 0.20 * pm
+    gray = paint.mean(axis=2, keepdims=True)
+    # Push strongly toward very dark (black chrome is near-black)
+    target = gray * 0.08
+    for c in range(3):
+        paint[:,:,c] = paint[:,:,c] * (1 - blend * mask) + target[:,:,0] * blend * mask
+    # Sharp bright reflection highlights
+    rng = np.random.RandomState(seed + 700)
+    highlight = _multi_scale_noise(shape, [8, 16, 32], [0.3, 0.4, 0.3], seed + 701)
+    bright = np.clip(highlight, 0.3, 1.0) * 0.06 * blend
+    paint = np.clip(paint + bright[:,:,np.newaxis] * mask[:,:,np.newaxis], 0, 1)
+    return paint
+
+def paint_blue_chrome_tint(paint, shape, mask, seed, pm, bb):
+    """Blue chrome — strong blue tint with bright caustic reflections."""
+    h, w = shape
+    blend = 0.20 * pm
+    # Strong blue tint over chrome
+    paint[:,:,0] = np.clip(paint[:,:,0] * (1 - blend * mask * 0.6) + 0.40 * blend * mask * 0.6, 0, 1)
+    paint[:,:,1] = np.clip(paint[:,:,1] * (1 - blend * mask * 0.5) + 0.55 * blend * mask * 0.5, 0, 1)
+    paint[:,:,2] = np.clip(paint[:,:,2] * (1 - blend * mask * 0.4) + 0.95 * blend * mask * 0.4, 0, 1)
+    # Chrome caustic reflections
+    caustic = _multi_scale_noise(shape, [4, 8, 16], [0.3, 0.4, 0.3], seed + 710)
+    paint = np.clip(paint + caustic[:,:,np.newaxis] * 0.06 * blend * mask[:,:,np.newaxis], 0, 1)
+    return paint
+
+def paint_red_chrome_tint(paint, shape, mask, seed, pm, bb):
+    """Red chrome — strong red-copper tint with warm metallic highlights."""
+    h, w = shape
+    blend = 0.20 * pm
+    # Strong red tint
+    paint[:,:,0] = np.clip(paint[:,:,0] * (1 - blend * mask * 0.4) + 0.95 * blend * mask * 0.4, 0, 1)
+    paint[:,:,1] = np.clip(paint[:,:,1] * (1 - blend * mask * 0.6) + 0.18 * blend * mask * 0.6, 0, 1)
+    paint[:,:,2] = np.clip(paint[:,:,2] * (1 - blend * mask * 0.6) + 0.12 * blend * mask * 0.6, 0, 1)
+    # Warm metallic highlight
+    caustic = _multi_scale_noise(shape, [4, 8, 16], [0.3, 0.4, 0.3], seed + 720)
+    warm = np.clip(caustic, 0.2, 1.0) * 0.05 * blend
+    paint[:,:,0] = np.clip(paint[:,:,0] + warm * mask * 1.2, 0, 1)
+    paint[:,:,1] = np.clip(paint[:,:,1] + warm * mask * 0.6, 0, 1)
+    return paint
+
+def paint_antique_patina(paint, shape, mask, seed, pm, bb):
+    """Antique chrome — heavy desaturation + warm yellowing + irregular patina spots."""
+    h, w = shape
+    blend = 0.20 * pm
+    gray = paint.mean(axis=2, keepdims=True)
+    # Desaturate strongly
+    for c in range(3):
+        paint[:,:,c] = paint[:,:,c] * (1 - blend * mask * 0.5) + gray[:,:,0] * blend * mask * 0.5
+    # Warm yellowing (aged chrome turns slightly yellow)
+    paint[:,:,0] = np.clip(paint[:,:,0] + 0.04 * blend * mask, 0, 1)
+    paint[:,:,1] = np.clip(paint[:,:,1] + 0.02 * blend * mask, 0, 1)
+    paint[:,:,2] = np.clip(paint[:,:,2] - 0.02 * blend * mask, 0, 1)
+    # Irregular patina spots
+    rng = np.random.RandomState(seed + 730)
+    patina = rng.random((h, w)).astype(np.float32)
+    spots = np.where(patina > 0.85, (patina - 0.85) * 3.0, 0).astype(np.float32)
+    paint[:,:,1] = np.clip(paint[:,:,1] - spots * 0.08 * blend * mask, 0, 1)
+    paint[:,:,2] = np.clip(paint[:,:,2] - spots * 0.04 * blend * mask, 0, 1)
+    return paint
 
 # --- Candy Variants ---
 paint_candy_depth = make_candy_tint_fn(warmth=0.0)
@@ -179,8 +274,27 @@ paint_candy_cool = make_candy_tint_fn(warmth=-0.8)
 # --- Pearl / Sparkle Variants ---
 paint_dark_sparkle = make_luxury_sparkle_fn(sparkle_density=0.97, sparkle_strength=0.04)
 paint_warm_shimmer = make_luxury_sparkle_fn(sparkle_density=0.96, sparkle_strength=0.05)
-paint_tri_coat_sparkle = make_luxury_sparkle_fn(sparkle_density=0.95, sparkle_strength=0.07)
-paint_dealer_sparkle = make_luxury_sparkle_fn(sparkle_density=0.96, sparkle_strength=0.06)
+def paint_tri_coat_sparkle(paint, shape, mask, seed, pm, bb):
+    """Tri-coat pearl — strong saturation + dense pearlescent sparkle + directional sheen."""
+    h, w = shape
+    # Strong saturation boost (pearl mid-coat)
+    gray = paint.mean(axis=2, keepdims=True)
+    paint = np.clip(paint + (paint - gray) * 0.35 * pm * mask[:,:,np.newaxis], 0, 1)
+    # Dense pearlescent sparkle
+    rng = np.random.RandomState(seed + 900)
+    sparkle = rng.random((h, w)).astype(np.float32)
+    sparkle_bright = np.where(sparkle > 0.88, (sparkle - 0.88) * 2.5 * pm, 0.0)
+    # Pearl iridescence (slight RGB separation in sparkle)
+    paint[:,:,0] = np.clip(paint[:,:,0] + sparkle_bright * mask * 1.0, 0, 1)
+    paint[:,:,1] = np.clip(paint[:,:,1] + np.roll(sparkle_bright, 1, axis=1) * mask * 0.95, 0, 1)
+    paint[:,:,2] = np.clip(paint[:,:,2] + np.roll(sparkle_bright, -1, axis=1) * mask * 1.05, 0, 1)
+    # Directional pearl sheen band
+    y = np.linspace(0, 1, h).reshape(h, 1).astype(np.float32)
+    sheen = np.clip(1.0 - np.abs(y - 0.35) * 4, 0, 1) * 0.08 * pm
+    paint = np.clip(paint + sheen[:,:,np.newaxis] * mask[:,:,np.newaxis], 0, 1)
+    paint = np.clip(paint + bb * 0.6 * mask[:,:,np.newaxis], 0, 1)
+    return paint
+paint_dealer_sparkle = make_luxury_sparkle_fn(sparkle_density=0.93, sparkle_strength=0.12)
 paint_luxury_sparkle = make_luxury_sparkle_fn(sparkle_density=0.97, sparkle_strength=0.05)
 paint_confetti_sparkle = make_luxury_sparkle_fn(sparkle_density=0.93, sparkle_strength=0.10)
 paint_crystal_sparkle = make_luxury_sparkle_fn(sparkle_density=0.98, sparkle_strength=0.04)
@@ -190,19 +304,137 @@ paint_wrap_texture = make_wrap_texture_fn(grain_strength=0.04)
 paint_textured_wrap = make_wrap_texture_fn(grain_strength=0.07)
 paint_brushed_wrap = make_wrap_texture_fn(grain_strength=0.05)
 paint_chrome_wrap = make_chrome_tint_fn(0.88, 0.88, 0.90, blend=0.20)
-paint_stealth_flat = make_tactical_variant_fn(noise_strength=0.02)
+def paint_stealth_flat(paint, shape, mask, seed, pm, bb):
+    """Stealth/gunship — desaturated flat grey with radar-absorbing quality."""
+    h, w = shape
+    blend = 0.20 * pm
+    gray = paint.mean(axis=2, keepdims=True)
+    # Strong desaturation toward neutral grey
+    for c in range(3):
+        paint[:,:,c] = paint[:,:,c] * (1 - blend * mask * 0.5) + gray[:,:,0] * blend * mask * 0.5
+    # Very fine micro-texture (RAM coating surface)
+    rng = np.random.RandomState(seed + 500)
+    micro = (rng.random((h, w)).astype(np.float32) - 0.5) * 0.04
+    paint = np.clip(paint + micro[:,:,np.newaxis] * blend * mask[:,:,np.newaxis], 0, 1)
+    return paint
 
 # --- Tactical / Military ---
-paint_armor_grain = make_tactical_variant_fn(noise_strength=0.05)
-paint_rubber_texture = make_wrap_texture_fn(grain_strength=0.06)
-paint_naval_coat = make_tactical_variant_fn(noise_strength=0.04)
+def paint_armor_grain(paint, shape, mask, seed, pm, bb):
+    """Armor plate — dark steel grey push + rolling mill directional marks."""
+    h, w = shape
+    blend = 0.20 * pm
+    gray = paint.mean(axis=2, keepdims=True)
+    target = gray * 0.3 + 0.15
+    for c in range(3):
+        paint[:,:,c] = paint[:,:,c] * (1 - blend * mask * 0.4) + target[:,:,0] * blend * mask * 0.4
+    rng = np.random.RandomState(seed + 510)
+    y, x = _get_mgrid(shape)
+    marks = np.sin(y * 0.15 + rng.random(1)[0] * 100) * 0.5 + 0.5
+    faint_marks = np.where(marks > 0.85, (marks - 0.85) * 4.0, 0).astype(np.float32) * 0.04
+    paint = np.clip(paint + faint_marks[:,:,np.newaxis] * blend * mask[:,:,np.newaxis], 0, 1)
+    grain = (rng.random((h, w)).astype(np.float32) - 0.5) * 0.06
+    paint = np.clip(paint + grain[:,:,np.newaxis] * blend * mask[:,:,np.newaxis], 0, 1)
+    return paint
 
-# --- Ceramic / Glass ---
-paint_porcelain_smooth = make_luxury_sparkle_fn(sparkle_density=0.99, sparkle_strength=0.02)
-paint_obsidian_depth = make_vivid_depth_fn(sat_boost=0.05, depth_darken=0.08)
-paint_glass_clean = make_luxury_sparkle_fn(sparkle_density=0.99, sparkle_strength=0.01)
-paint_ceramic_flat = make_tactical_variant_fn(noise_strength=0.02)
-paint_enamel_coat = make_luxury_sparkle_fn(sparkle_density=0.98, sparkle_strength=0.03)
+def paint_rubber_texture(paint, shape, mask, seed, pm, bb):
+    """Submarine hull — deep black rubbery coating with acoustic tile pattern."""
+    h, w = shape
+    blend = 0.20 * pm
+    paint = paint * (1 - 0.7 * blend * mask[:,:,np.newaxis])
+    y, x = _get_mgrid(shape)
+    tile_size = 24
+    tile_edge_h = (y % tile_size < 1).astype(np.float32)
+    tile_edge_v = (x % tile_size < 1).astype(np.float32)
+    tiles = np.maximum(tile_edge_h, tile_edge_v) * 0.03
+    paint = np.clip(paint + tiles[:,:,np.newaxis] * blend * mask[:,:,np.newaxis], 0, 1)
+    rng = np.random.RandomState(seed + 520)
+    micro = (rng.random((h, w)).astype(np.float32) - 0.5) * 0.03
+    paint = np.clip(paint + micro[:,:,np.newaxis] * blend * mask[:,:,np.newaxis], 0, 1)
+    return paint
+def paint_crystal_sparkle(paint, shape, mask, seed, pm, bb):
+    """Crystal clear — prismatic micro-sparkle with slight brightening."""
+    blend = 0.20 * pm
+    rng = np.random.RandomState(seed + 600)
+    sparkle = rng.random(shape).astype(np.float32)
+    bright_dots = np.where(sparkle > 0.92, (sparkle - 0.92) * 5.0, 0).astype(np.float32)
+    # Prismatic color scatter
+    paint[:,:,0] = np.clip(paint[:,:,0] + bright_dots * 0.12 * blend * mask, 0, 1)
+    paint[:,:,1] = np.clip(paint[:,:,1] + bright_dots * 0.08 * blend * mask, 0, 1)
+    paint[:,:,2] = np.clip(paint[:,:,2] + bright_dots * 0.15 * blend * mask, 0, 1)
+    # Slight overall brightening (clear coat clarity)
+    paint = np.clip(paint + bb * 0.5 * mask[:,:,np.newaxis], 0, 1)
+    return paint
+def paint_naval_coat(paint, shape, mask, seed, pm, bb):
+    """Battleship gray — blue-grey tint + salt-air micro-pitting."""
+    h, w = shape
+    blend = 0.20 * pm
+    gray = paint.mean(axis=2, keepdims=True)
+    paint[:,:,0] = paint[:,:,0] * (1 - blend * mask * 0.3) + (gray[:,:,0] * 0.45) * blend * mask * 0.3
+    paint[:,:,1] = paint[:,:,1] * (1 - blend * mask * 0.3) + (gray[:,:,0] * 0.48) * blend * mask * 0.3
+    paint[:,:,2] = paint[:,:,2] * (1 - blend * mask * 0.25) + (gray[:,:,0] * 0.55) * blend * mask * 0.25
+    rng = np.random.RandomState(seed + 530)
+    pitting = rng.random((h, w)).astype(np.float32)
+    pits = np.where(pitting > 0.92, (pitting - 0.92) * 6.0, 0).astype(np.float32) * 0.05
+    paint = np.clip(paint - pits[:,:,np.newaxis] * blend * mask[:,:,np.newaxis], 0, 1)
+    return paint
+
+# --- Ceramic & Glass ---
+def paint_porcelain_smooth(paint, shape, mask, seed, pm, bb):
+    """Porcelain — push toward bright white with slight cool blue tint."""
+    blend = 0.20 * pm
+    # Push toward porcelain white (slightly cool/blue)
+    paint[:,:,0] = np.clip(paint[:,:,0] * (1 - blend * mask * 0.4) + 0.90 * blend * mask * 0.4, 0, 1)
+    paint[:,:,1] = np.clip(paint[:,:,1] * (1 - blend * mask * 0.4) + 0.91 * blend * mask * 0.4, 0, 1)
+    paint[:,:,2] = np.clip(paint[:,:,2] * (1 - blend * mask * 0.4) + 0.95 * blend * mask * 0.4, 0, 1)
+    paint = np.clip(paint + bb * 0.4 * mask[:,:,np.newaxis], 0, 1)
+    return paint
+
+def paint_obsidian_depth(paint, shape, mask, seed, pm, bb):
+    """Obsidian volcanic glass — deep black with reflective surface depth."""
+    blend = 0.20 * pm
+    gray = paint.mean(axis=2, keepdims=True)
+    target = gray * 0.10  # Very dark
+    for c in range(3):
+        paint[:,:,c] = paint[:,:,c] * (1 - blend * mask) + target[:,:,0] * blend * mask
+    # Slight blue-purple sheen (obsidian has a slight color)
+    paint[:,:,2] = np.clip(paint[:,:,2] + 0.03 * blend * mask, 0, 1)
+    return paint
+
+def paint_glass_clean(paint, shape, mask, seed, pm, bb):
+    """Tempered glass — slight green tint (real tempered glass has iron-oxide green)."""
+    blend = np.clip(pm * 0.15, 0, 0.6)
+    # Slight green tint
+    paint[:,:,0] = np.clip(paint[:,:,0] * (1 - blend * mask * 0.1), 0, 1)
+    paint[:,:,1] = np.clip(paint[:,:,1] + 0.02 * blend * mask, 0, 1)
+    paint[:,:,2] = np.clip(paint[:,:,2] * (1 - blend * mask * 0.05), 0, 1)
+    paint = np.clip(paint + bb * 0.3 * mask[:,:,np.newaxis], 0, 1)
+    return paint
+
+def paint_ceramic_flat(paint, shape, mask, seed, pm, bb):
+    """Ceramic matte — smooth, slightly desaturated, flat surface."""
+    blend = 0.20 * pm
+    gray = paint.mean(axis=2, keepdims=True)
+    # Desaturate partially (matte ceramic dampens color)
+    for c in range(3):
+        paint[:,:,c] = paint[:,:,c] * (1 - blend * mask * 0.3) + gray[:,:,0] * blend * mask * 0.3
+    # Fine micro-surface noise
+    rng = np.random.RandomState(seed + 610)
+    noise = (rng.random(shape).astype(np.float32) - 0.5) * 0.03
+    paint = np.clip(paint + noise[:,:,np.newaxis] * blend * mask[:,:,np.newaxis], 0, 1)
+    return paint
+
+def paint_enamel_coat(paint, shape, mask, seed, pm, bb):
+    """Hard baked enamel — vivid color with deep glossy wet look."""
+    blend = 0.20 * pm
+    # Boost saturation (enamel has vivid deep color)
+    gray = paint.mean(axis=2, keepdims=True)
+    for c in range(3):
+        diff = paint[:,:,c] - gray[:,:,0]
+        paint[:,:,c] = np.clip(paint[:,:,c] + diff * 0.15 * blend * mask, 0, 1)
+    # Slight darkening for depth
+    paint = np.clip(paint * (1 - 0.05 * blend * mask[:,:,np.newaxis]), 0, 1)
+    paint = np.clip(paint + bb * 0.5 * mask[:,:,np.newaxis], 0, 1)
+    return paint
 
 # --- Racing Heritage ---
 paint_show_polish = make_luxury_sparkle_fn(sparkle_density=0.97, sparkle_strength=0.05)
@@ -215,10 +447,85 @@ paint_asphalt_rough = make_tactical_variant_fn(noise_strength=0.07)
 paint_checker_polish = make_luxury_sparkle_fn(sparkle_density=0.97, sparkle_strength=0.05)
 
 # --- Exotic Metal ---
-paint_liquid_metal_flow = make_chrome_tint_fn(0.85, 0.85, 0.88, blend=0.22)
-paint_dense_metal = make_metallic_tint_fn(r_shift=-0.3, g_shift=-0.3, b_shift=-0.2, flake_str=0.04)
-paint_platinum_sheen = make_chrome_tint_fn(0.92, 0.92, 0.95, blend=0.20)
-paint_cobalt_tint = make_metallic_tint_fn(r_shift=-0.3, g_shift=-0.1, b_shift=0.4, flake_str=0.04)
+def paint_liquid_metal_flow(paint, shape, mask, seed, pm, bb):
+    """Liquid titanium — bright flowing molten metal with rippled caustics."""
+    h, w = shape
+    # Push toward bright silver-blue (titanium color)
+    gray = paint.mean(axis=2, keepdims=True)
+    target = gray * 0.15 + 0.75
+    blend = 0.22 * pm
+    for c in range(3):
+        paint[:,:,c] = paint[:,:,c] * (1 - blend * mask) + target[:,:,0] * blend * mask
+    # Titanium slight blue tint
+    paint[:,:,2] = np.clip(paint[:,:,2] + 0.03 * pm * mask, 0, 1)
+    # Rippled caustic flow pattern
+    y, x = _get_mgrid(shape)
+    flow = np.sin(x * 0.08 + y * 0.04 + np.sin(y * 0.06) * 3.0) * 0.5 + 0.5
+    flow = flow.astype(np.float32)
+    paint = np.clip(paint + flow[:,:,np.newaxis] * 0.06 * pm * mask[:,:,np.newaxis], 0, 1)
+    # Metallic flake + sparkle
+    for c in range(3):
+        flake = _multi_scale_noise(shape, [1, 2, 4], [0.4, 0.35, 0.25], seed + c * 17)
+        paint[:,:,c] = np.clip(paint[:,:,c] + flake * 0.05 * pm * mask, 0, 1)
+    paint = np.clip(paint + bb * 0.5 * mask[:,:,np.newaxis], 0, 1)
+    return paint
+
+def paint_dense_metal(paint, shape, mask, seed, pm, bb):
+    """Tungsten — ultra-dense dark grey-blue heavy metal."""
+    h, w = shape
+    gray = paint.mean(axis=2, keepdims=True)
+    # Dark grey-blue tungsten tint
+    blend = 0.20 * pm
+    target_r = gray * 0.28
+    target_g = gray * 0.30
+    target_b = gray * 0.35
+    paint[:,:,0] = paint[:,:,0] * (1 - blend * mask) + target_r[:,:,0] * blend * mask
+    paint[:,:,1] = paint[:,:,1] * (1 - blend * mask) + target_g[:,:,0] * blend * mask
+    paint[:,:,2] = paint[:,:,2] * (1 - blend * mask) + target_b[:,:,0] * blend * mask
+    # Fine metal grain texture + flake
+    for c in range(3):
+        flake = _multi_scale_noise(shape, [1, 2, 4], [0.4, 0.35, 0.25], seed + c * 17 + 800)
+        paint[:,:,c] = np.clip(paint[:,:,c] + flake * 0.04 * pm * mask, 0, 1)
+    paint = np.clip(paint + bb * 0.5 * mask[:,:,np.newaxis], 0, 1)
+    return paint
+
+def paint_platinum_sheen(paint, shape, mask, seed, pm, bb):
+    """Platinum — bright white-silver metallic with subtle warm undertone."""
+    h, w = shape
+    # Push toward bright platinum white
+    blend = 0.20 * pm
+    for c in range(3):
+        paint[:,:,c] = paint[:,:,c] * (1 - blend * mask * 0.5) + 0.90 * blend * mask * 0.5
+    # Subtle warm undertone
+    paint[:,:,0] = np.clip(paint[:,:,0] + 0.02 * pm * mask, 0, 1)
+    paint[:,:,1] = np.clip(paint[:,:,1] + 0.01 * pm * mask, 0, 1)
+    # Metallic flake + sparkle
+    for c in range(3):
+        flake = _multi_scale_noise(shape, [1, 2, 4], [0.4, 0.35, 0.25], seed + c * 17 + 810)
+        paint[:,:,c] = np.clip(paint[:,:,c] + flake * 0.05 * pm * mask, 0, 1)
+    rng = np.random.RandomState(seed + 811)
+    sparkle = rng.random((h, w)).astype(np.float32)
+    sparkle = np.where(sparkle > 0.96, sparkle * 0.10 * pm, 0).astype(np.float32)
+    for c in range(3):
+        paint[:,:,c] = np.clip(paint[:,:,c] + sparkle * mask, 0, 1)
+    paint = np.clip(paint + bb * 0.5 * mask[:,:,np.newaxis], 0, 1)
+    return paint
+
+def paint_cobalt_tint(paint, shape, mask, seed, pm, bb):
+    """Cobalt metal — strong blue-grey metallic with electric blue highlights."""
+    h, w = shape
+    # Blue-grey cobalt tint
+    blend = 0.20 * pm
+    paint[:,:,0] = np.clip(paint[:,:,0] * (1 - blend * mask * 0.5) + 0.40 * blend * mask * 0.5, 0, 1)
+    paint[:,:,1] = np.clip(paint[:,:,1] * (1 - blend * mask * 0.4) + 0.50 * blend * mask * 0.4, 0, 1)
+    paint[:,:,2] = np.clip(paint[:,:,2] * (1 - blend * mask * 0.3) + 0.75 * blend * mask * 0.3, 0, 1)
+    # Metallic flake with blue bias
+    for c in range(3):
+        flake = _multi_scale_noise(shape, [1, 2, 4], [0.4, 0.35, 0.25], seed + c * 17 + 820)
+        strength = 0.06 if c == 2 else 0.04  # stronger blue channel flake
+        paint[:,:,c] = np.clip(paint[:,:,c] + flake * strength * pm * mask, 0, 1)
+    paint = np.clip(paint + bb * 0.5 * mask[:,:,np.newaxis], 0, 1)
+    return paint
 
 # --- Weathered & Aged ---
 paint_sun_fade = make_aged_fn(fade_strength=0.25, roughen=0.06)
@@ -229,19 +536,476 @@ paint_heavy_patina = make_aged_fn(fade_strength=0.18, roughen=0.07)
 paint_vintage_haze = make_aged_fn(fade_strength=0.10, roughen=0.04)
 
 # --- OEM Automotive ---
-paint_oem_metallic = make_metallic_tint_fn(flake_str=0.04)
-paint_fire_engine_gloss = make_vivid_depth_fn(sat_boost=0.10, depth_darken=0.03)
-paint_reflective_coat = make_luxury_sparkle_fn(sparkle_density=0.95, sparkle_strength=0.08)
+paint_oem_metallic = make_metallic_tint_fn(flake_str=0.08)
+paint_fire_engine_gloss = make_vivid_depth_fn(sat_boost=0.15, depth_darken=0.05)
+paint_reflective_coat = make_luxury_sparkle_fn(sparkle_density=0.93, sparkle_strength=0.12)
+paint_fleet_plain = make_metallic_tint_fn(flake_str=0.02)  # Minimal — fleet vehicles are plain
+paint_taxi_vivid = make_vivid_depth_fn(sat_boost=0.18, depth_darken=0.03)  # Vivid cab yellow
+paint_school_bus_coat = make_vivid_depth_fn(sat_boost=0.12, depth_darken=0.06)  # Thicker enamel
+def paint_police_deepblack(paint, shape, mask, seed, pm, bb):
+    """Police interceptor — ultra-deep wet black with faint metallic sparkle."""
+    gray = paint.mean(axis=2, keepdims=True)
+    paint = paint * (1 - 0.40 * pm * mask[:,:,np.newaxis]) + gray * 0.08 * pm * mask[:,:,np.newaxis]
+    rng = np.random.RandomState(seed + 911)
+    sparkle = rng.random(shape).astype(np.float32)
+    sparkle = np.where(sparkle > 0.97, sparkle * 0.06 * pm, 0)
+    paint = np.clip(paint + sparkle[:,:,np.newaxis] * mask[:,:,np.newaxis], 0, 1)
+    paint = np.clip(paint + bb * 0.3 * mask[:,:,np.newaxis], 0, 1)
+    return paint
 
 # --- Carbon & Composite ---
-paint_carbon_weave_base = make_wrap_texture_fn(grain_strength=0.05)
-paint_kevlar_weave = make_wrap_texture_fn(grain_strength=0.04)
-paint_fiberglass_gel = make_luxury_sparkle_fn(sparkle_density=0.98, sparkle_strength=0.03)
-paint_carbon_ceramic_coat = make_wrap_texture_fn(grain_strength=0.03)
-paint_aramid_weave = make_wrap_texture_fn(grain_strength=0.04)
-paint_graphene_sheen = make_chrome_tint_fn(0.75, 0.75, 0.80, blend=0.15)
-paint_forged_composite_base = make_wrap_texture_fn(grain_strength=0.06)
-paint_hybrid_weave_base = make_wrap_texture_fn(grain_strength=0.05)
+def paint_carbon_weave_base(paint, shape, mask, seed, pm, bb):
+    """Raw carbon fiber — desaturate toward dark grey-black with fine weave grain."""
+    h, w = shape
+    blend = 0.20 * pm
+    gray = paint.mean(axis=2, keepdims=True)
+    # Push toward dark desaturated carbon
+    target = gray * 0.3  # Very dark
+    for c in range(3):
+        paint[:,:,c] = paint[:,:,c] * (1 - blend * mask) + target[:,:,0] * blend * mask
+    # Fine weave grain texture
+    rng = np.random.RandomState(seed + 400)
+    grain = rng.random((h, w)).astype(np.float32)
+    weave_x = np.abs(np.arange(w) % 6 - 3) / 3.0  # 6px weave period
+    weave_y = np.abs(np.arange(h) % 6 - 3) / 3.0
+    weave = (weave_x.reshape(1, w) * 0.5 + weave_y.reshape(h, 1) * 0.5)
+    paint = np.clip(paint + (weave[:,:,np.newaxis] * 0.08 + grain[:,:,np.newaxis] * 0.04) * blend * mask[:,:,np.newaxis], 0, 1)
+    return paint
+
+def paint_kevlar_base_fn(paint, shape, mask, seed, pm, bb):
+    """Kevlar base — warm golden-tan tint with coarser weave grain."""
+    h, w = shape
+    blend = 0.20 * pm
+    # Push toward warm golden-tan
+    paint[:,:,0] = np.clip(paint[:,:,0] * (1 - blend * mask * 0.5) + 0.60 * blend * mask * 0.5, 0, 1)
+    paint[:,:,1] = np.clip(paint[:,:,1] * (1 - blend * mask * 0.5) + 0.50 * blend * mask * 0.5, 0, 1)
+    paint[:,:,2] = np.clip(paint[:,:,2] * (1 - blend * mask * 0.5) + 0.25 * blend * mask * 0.5, 0, 1)
+    # Coarser weave pattern (8px)
+    weave_x = np.abs(np.arange(shape[1]) % 8 - 4) / 4.0
+    weave_y = np.abs(np.arange(shape[0]) % 8 - 4) / 4.0
+    weave = weave_x.reshape(1, shape[1]) * 0.6 + weave_y.reshape(shape[0], 1) * 0.4
+    paint = np.clip(paint + weave[:,:,np.newaxis] * 0.06 * blend * mask[:,:,np.newaxis], 0, 1)
+    return paint
+
+def paint_fiberglass_gel_fn(paint, shape, mask, seed, pm, bb):
+    """Fiberglass gelcoat — translucent milky white-blue shift with subtle texture."""
+    h, w = shape
+    blend = 0.20 * pm
+    # Push toward pale milky blue-white
+    paint[:,:,0] = np.clip(paint[:,:,0] * (1 - blend * mask * 0.4) + 0.75 * blend * mask * 0.4, 0, 1)
+    paint[:,:,1] = np.clip(paint[:,:,1] * (1 - blend * mask * 0.4) + 0.82 * blend * mask * 0.4, 0, 1)
+    paint[:,:,2] = np.clip(paint[:,:,2] * (1 - blend * mask * 0.4) + 0.88 * blend * mask * 0.4, 0, 1)
+    # Subtle fibrous texture
+    rng = np.random.RandomState(seed + 410)
+    fiber_noise = rng.random((h, w)).astype(np.float32) * 0.04
+    paint = np.clip(paint + fiber_noise[:,:,np.newaxis] * blend * mask[:,:,np.newaxis], 0, 1)
+    return paint
+
+def paint_carbon_ceramic_fn(paint, shape, mask, seed, pm, bb):
+    """Carbon ceramic brake rotor — dark grey-blue matte with fine gritty texture."""
+    h, w = shape
+    blend = 0.20 * pm
+    gray = paint.mean(axis=2, keepdims=True)
+    # Push toward dark grey with slight blue
+    target_r = gray * 0.35
+    target_g = gray * 0.37
+    target_b = gray * 0.42
+    paint[:,:,0] = paint[:,:,0] * (1 - blend * mask) + target_r[:,:,0] * blend * mask
+    paint[:,:,1] = paint[:,:,1] * (1 - blend * mask) + target_g[:,:,0] * blend * mask
+    paint[:,:,2] = paint[:,:,2] * (1 - blend * mask) + target_b[:,:,0] * blend * mask
+    # Gritty ceramic texture
+    rng = np.random.RandomState(seed + 420)
+    grit = (rng.random((h, w)).astype(np.float32) - 0.5) * 0.08
+    paint = np.clip(paint + grit[:,:,np.newaxis] * blend * mask[:,:,np.newaxis], 0, 1)
+    return paint
+
+def paint_aramid_weave_fn(paint, shape, mask, seed, pm, bb):
+    """Aramid fiber — golden-yellow warm tint with tight weave texture."""
+    h, w = shape
+    blend = 0.20 * pm
+    # Warm golden-yellow tint
+    paint[:,:,0] = np.clip(paint[:,:,0] * (1 - blend * mask * 0.5) + 0.65 * blend * mask * 0.5, 0, 1)
+    paint[:,:,1] = np.clip(paint[:,:,1] * (1 - blend * mask * 0.5) + 0.55 * blend * mask * 0.5, 0, 1)
+    paint[:,:,2] = np.clip(paint[:,:,2] * (1 - blend * mask * 0.5) + 0.18 * blend * mask * 0.5, 0, 1)
+    # Tight weave (4px)
+    weave_x = np.abs(np.arange(w) % 4 - 2) / 2.0
+    weave_y = np.abs(np.arange(h) % 4 - 2) / 2.0
+    weave = weave_x.reshape(1, w) * 0.5 + weave_y.reshape(h, 1) * 0.5
+    paint = np.clip(paint + weave[:,:,np.newaxis] * 0.05 * blend * mask[:,:,np.newaxis], 0, 1)
+    return paint
+
+def paint_graphene_sheen_fn(paint, shape, mask, seed, pm, bb):
+    """Graphene — ultra-dark near-black with subtle iridescent metallic sheen."""
+    h, w = shape
+    blend = 0.20 * pm
+    gray = paint.mean(axis=2, keepdims=True)
+    # Push toward very dark grey (graphene is near-black)
+    target = gray * 0.15
+    for c in range(3):
+        paint[:,:,c] = paint[:,:,c] * (1 - blend * mask) + target[:,:,0] * blend * mask
+    # Subtle iridescent sheen (different per channel)
+    y = np.linspace(0, 1, h).reshape(h, 1).astype(np.float32)
+    sheen = np.clip(1.0 - np.abs(y - 0.4) * 4, 0, 1) * 0.06 * blend
+    paint[:,:,1] = np.clip(paint[:,:,1] + sheen * mask * 1.2, 0, 1)  # slight green
+    paint[:,:,2] = np.clip(paint[:,:,2] + sheen * mask * 0.8, 0, 1)  # slight blue
+    return paint
+
+def paint_forged_composite_fn(paint, shape, mask, seed, pm, bb):
+    """Forged carbon composite — Lamborghini-style random irregular dark chunks."""
+    h, w = shape
+    blend = 0.20 * pm
+    gray = paint.mean(axis=2, keepdims=True)
+    # Dark base
+    target = gray * 0.25
+    for c in range(3):
+        paint[:,:,c] = paint[:,:,c] * (1 - blend * mask) + target[:,:,0] * blend * mask
+    # Irregular chunk pattern via multi-scale noise
+    chunks = _multi_scale_noise((h, w), [4, 8, 16], [0.3, 0.4, 0.3], seed + 430)
+    # Threshold to create irregular chunk shapes
+    chunk_mask = np.where(chunks > 0.0, 0.08, -0.04).astype(np.float32)
+    paint = np.clip(paint + chunk_mask[:,:,np.newaxis] * blend * mask[:,:,np.newaxis], 0, 1)
+    return paint
+
+def paint_hybrid_weave_fn(paint, shape, mask, seed, pm, bb):
+    """Hybrid carbon-kevlar bi-weave — alternating dark carbon and golden kevlar."""
+    h, w = shape
+    blend = 0.20 * pm
+    # Create alternating bands (carbon=dark, kevlar=golden)
+    band = (np.arange(h) // 6 % 2).reshape(h, 1).astype(np.float32)  # 6px bands
+    # Carbon dark in band=0
+    gray = paint.mean(axis=2, keepdims=True)
+    carbon_r = gray[:,:,0] * 0.30
+    carbon_g = gray[:,:,0] * 0.30
+    carbon_b = gray[:,:,0] * 0.32
+    # Kevlar golden in band=1
+    kevlar_r = paint[:,:,0] * 0.7 + 0.60 * 0.3
+    kevlar_g = paint[:,:,1] * 0.7 + 0.50 * 0.3
+    kevlar_b = paint[:,:,2] * 0.7 + 0.25 * 0.3
+    # Blend based on band
+    for c, (cv, kv) in enumerate([(carbon_r, kevlar_r), (carbon_g, kevlar_g), (carbon_b, kevlar_b)]):
+        mixed = cv * (1 - band) + kv * band
+        paint[:,:,c] = paint[:,:,c] * (1 - blend * mask) + mixed * blend * mask
+    return paint
+
+
+# ================================================================
+# BASE SPEC FUNCTIONS — Material-specific spec map generators
+# ================================================================
+# Each returns (M_arr, R_arr) with the actual material pattern.
+# These replace generic noise with physically accurate patterns.
+
+def _base_spec_carbon_weave(shape, seed, sm, base_M, base_R):
+    """Carbon fiber 2x2 twill weave — classic crosshatch pattern."""
+    h, w = shape
+    y, x = _get_mgrid((h, w))
+    weave_size = 24  # visible threads at car scale
+    tow_x = (x % (weave_size * 2)) / (weave_size * 2)
+    tow_y = (y % (weave_size * 2)) / (weave_size * 2)
+    horiz = np.sin(tow_x * np.pi * 2) * 0.5 + 0.5
+    vert = np.sin(tow_y * np.pi * 2) * 0.5 + 0.5
+    twill_cell = ((x // weave_size + y // weave_size) % 2).astype(np.float32)
+    cf = twill_cell * horiz + (1 - twill_cell) * vert
+    cf = np.clip(cf * 1.3 - 0.15, 0, 1)
+    # Weave peaks = shinier (lower R), valleys = rougher
+    M_arr = np.full(shape, base_M, dtype=np.float32) + cf * 30 * sm
+    R_arr = np.full(shape, base_R, dtype=np.float32) + (1 - cf) * 50 * sm
+    return (M_arr, R_arr)
+
+def _base_spec_kevlar_weave(shape, seed, sm, base_M, base_R):
+    """Kevlar aramid weave — coarser plain weave at 32px, rougher than carbon."""
+    h, w = shape
+    y, x = _get_mgrid((h, w))
+    weave_size = 32  # kevlar is coarser than CF
+    tow_x = (x % (weave_size * 2)) / (weave_size * 2)
+    tow_y = (y % (weave_size * 2)) / (weave_size * 2)
+    horiz = np.sin(tow_x * np.pi * 2) * 0.5 + 0.5
+    vert = np.sin(tow_y * np.pi * 2) * 0.5 + 0.5
+    # Plain weave (each thread crosses over/under alternately)
+    cell = ((x // weave_size + y // weave_size) % 2).astype(np.float32)
+    kv = cell * horiz + (1 - cell) * vert
+    kv = np.clip(kv * 1.15 - 0.08, 0, 1)
+    M_arr = np.full(shape, base_M, dtype=np.float32) + kv * 20 * sm
+    R_arr = np.full(shape, base_R, dtype=np.float32) + (1 - kv) * 40 * sm
+    return (M_arr, R_arr)
+
+def _base_spec_fiberglass(shape, seed, sm, base_M, base_R):
+    """Fiberglass mat — random directional fiber strands creating a rough mat texture."""
+    h, w = shape
+    rng = np.random.RandomState(seed)
+    # Random fibers at various angles
+    fiber_map = np.zeros(shape, dtype=np.float32)
+    n_fibers = max(200, h * w // 500)
+    for _ in range(n_fibers):
+        x0 = rng.randint(0, w)
+        y0 = rng.randint(0, h)
+        angle = rng.random() * np.pi
+        length = rng.randint(10, 50)
+        for t in range(length):
+            fx = int(x0 + np.cos(angle) * t) % w
+            fy = int(y0 + np.sin(angle) * t) % h
+            fiber_map[fy, fx] = min(fiber_map[fy, fx] + 0.15, 1.0)
+    # Smooth slightly to simulate resin filling
+    from scipy.ndimage import uniform_filter
+    fiber_map = uniform_filter(fiber_map, size=3)
+    M_arr = np.full(shape, base_M, dtype=np.float32) + fiber_map * 20 * sm
+    R_arr = np.full(shape, base_R, dtype=np.float32) + fiber_map * 30 * sm
+    return (M_arr, R_arr)
+
+def _base_spec_carbon_ceramic(shape, seed, sm, base_M, base_R):
+    """Carbon ceramic — fine gritty particles with tiny pore variation."""
+    h, w = shape
+    rng = np.random.RandomState(seed)
+    # Fine random grit (ceramic particles)
+    grit = rng.random((h, w)).astype(np.float32)
+    # Add medium-scale pore variation
+    pore_h, pore_w = max(1, h // 8), max(1, w // 8)
+    pores = rng.random((pore_h, pore_w)).astype(np.float32)
+    from PIL import Image as PILImage
+    pores_big = np.array(PILImage.fromarray((pores * 255).astype(np.uint8)).resize((w, h), PILImage.BILINEAR)).astype(np.float32) / 255.0
+    combined = grit * 0.6 + pores_big * 0.4
+    M_arr = np.full(shape, base_M, dtype=np.float32) + combined * 35 * sm
+    R_arr = np.full(shape, base_R, dtype=np.float32) + combined * 25 * sm
+    return (M_arr, R_arr)
+
+def _base_spec_aramid(shape, seed, sm, base_M, base_R):
+    """Aramid — tight 16px plain weave, finer than kevlar."""
+    h, w = shape
+    y, x = _get_mgrid((h, w))
+    weave_size = 16  # aramid is tighter than kevlar
+    tow_x = (x % (weave_size * 2)) / (weave_size * 2)
+    tow_y = (y % (weave_size * 2)) / (weave_size * 2)
+    horiz = np.sin(tow_x * np.pi * 2) * 0.5 + 0.5
+    vert = np.sin(tow_y * np.pi * 2) * 0.5 + 0.5
+    cell = ((x // weave_size + y // weave_size) % 2).astype(np.float32)
+    ar = cell * horiz + (1 - cell) * vert
+    ar = np.clip(ar * 1.2 - 0.1, 0, 1)
+    M_arr = np.full(shape, base_M, dtype=np.float32) + ar * 15 * sm
+    R_arr = np.full(shape, base_R, dtype=np.float32) + (1 - ar) * 35 * sm
+    return (M_arr, R_arr)
+
+def _base_spec_graphene(shape, seed, sm, base_M, base_R):
+    """Graphene — ultra-smooth near-mirror with faint molecular ripple texture."""
+    h, w = shape
+    y = np.linspace(0, 1, h).reshape(h, 1).astype(np.float32)
+    x = np.linspace(0, 1, w).reshape(1, w).astype(np.float32)
+    # Very faint hexagonal-like ripple (graphene lattice analog)
+    ripple = (np.sin(x * 80 * np.pi + y * 46 * np.pi) * 0.3 +
+              np.sin(x * 46 * np.pi - y * 80 * np.pi) * 0.3 +
+              np.sin((x + y) * 55 * np.pi) * 0.2) * 0.5 + 0.5
+    M_arr = np.full(shape, base_M, dtype=np.float32) + ripple * 15 * sm
+    R_arr = np.full(shape, base_R, dtype=np.float32) + ripple * 8 * sm
+    return (M_arr, R_arr)
+
+def _base_spec_forged_composite(shape, seed, sm, base_M, base_R):
+    """Forged carbon composite — irregular chopped fiber chunks with sharp boundaries."""
+    h, w = shape
+    rng = np.random.RandomState(seed)
+    # Large blobs for main chunk shapes
+    s1h, s1w = max(1, h // 24), max(1, w // 24)
+    raw1 = rng.randn(s1h, s1w).astype(np.float32)
+    from PIL import Image as PILImage
+    n1 = np.array(PILImage.fromarray(((raw1 + 3) / 6 * 255).clip(0, 255).astype(np.uint8)).resize((w, h), PILImage.BILINEAR)).astype(np.float32) / 255.0
+    # Medium sub-chunks
+    s2h, s2w = max(1, h // 12), max(1, w // 12)
+    raw2 = rng.randn(s2h, s2w).astype(np.float32)
+    n2 = np.array(PILImage.fromarray(((raw2 + 3) / 6 * 255).clip(0, 255).astype(np.uint8)).resize((w, h), PILImage.BILINEAR)).astype(np.float32) / 255.0
+    # Fine surface grain
+    s3h, s3w = max(1, h // 4), max(1, w // 4)
+    raw3 = rng.randn(s3h, s3w).astype(np.float32)
+    n3 = np.array(PILImage.fromarray(((raw3 + 3) / 6 * 255).clip(0, 255).astype(np.uint8)).resize((w, h), PILImage.BILINEAR)).astype(np.float32) / 255.0
+    combined = n1 * 0.55 + n2 * 0.35 + n3 * 0.10
+    # Quantize into discrete chunks with sharp boundaries
+    num_levels = 10
+    quantised = np.floor(combined * num_levels) / num_levels
+    qmin, qmax = quantised.min(), quantised.max()
+    if qmax > qmin:
+        quantised = (quantised - qmin) / (qmax - qmin)
+    # Each chunk has different metallic/roughness (fiber orientation)
+    M_arr = np.full(shape, base_M, dtype=np.float32) + quantised * 40 * sm
+    R_arr = np.full(shape, base_R, dtype=np.float32) + quantised * 50 * sm + n3 * 8 * sm
+    return (M_arr, R_arr)
+
+def _base_spec_hybrid_weave(shape, seed, sm, base_M, base_R):
+    """Hybrid carbon-kevlar bi-weave — alternating bands of carbon and kevlar weave."""
+    h, w = shape
+    y, x = _get_mgrid((h, w))
+    # Carbon bands: 24px weave
+    cf_size = 24
+    tow_cx = (x % (cf_size * 2)) / (cf_size * 2)
+    tow_cy = (y % (cf_size * 2)) / (cf_size * 2)
+    cf_h = np.sin(tow_cx * np.pi * 2) * 0.5 + 0.5
+    cf_v = np.sin(tow_cy * np.pi * 2) * 0.5 + 0.5
+    cf_cell = ((x // cf_size + y // cf_size) % 2).astype(np.float32)
+    cf = cf_cell * cf_h + (1 - cf_cell) * cf_v
+    # Kevlar bands: 32px weave
+    kv_size = 32
+    tow_kx = (x % (kv_size * 2)) / (kv_size * 2)
+    tow_ky = (y % (kv_size * 2)) / (kv_size * 2)
+    kv_h = np.sin(tow_kx * np.pi * 2) * 0.5 + 0.5
+    kv_v = np.sin(tow_ky * np.pi * 2) * 0.5 + 0.5
+    kv_cell = ((x // kv_size + y // kv_size) % 2).astype(np.float32)
+    kv = kv_cell * kv_h + (1 - kv_cell) * kv_v
+    # Alternating bands (48px per band)
+    band = ((y // 48) % 2).astype(np.float32)
+    weave = cf * (1 - band) + kv * band
+    # Carbon bands: higher M, lower R. Kevlar bands: lower M, higher R
+    M_arr = np.full(shape, base_M, dtype=np.float32) + weave * 25 * sm + (1 - band) * 10
+    R_arr = np.full(shape, base_R, dtype=np.float32) + (1 - weave) * 35 * sm + band * 15
+    return (M_arr, R_arr)
+
+
+# ================================================================
+# EXTREME & EXPERIMENTAL SPEC FUNCTIONS
+# ================================================================
+# Showstopper spec patterns — write dramatic visual patterns into
+# M/R/CC channels of the spec map. These go far beyond subtle noise.
+
+def _base_spec_plasma_core(shape, seed, sm, base_M, base_R):
+    """Plasma core — snaking plasma veins with extreme M/R contrast."""
+    h, w = shape
+    y, x = _get_mgrid(shape)
+    # Plasma veins: sine modulation creates organic flowing paths
+    vein1 = np.sin(x * 0.06 + np.sin(y * 0.04) * 4.0) * 0.5 + 0.5
+    vein2 = np.sin(y * 0.05 + np.sin(x * 0.03) * 5.0) * 0.5 + 0.5
+    veins = np.clip(vein1 * vein2, 0, 1).astype(np.float32)
+    # Hot veins = extremely metallic + very smooth. Rest = rough dark
+    hot = np.where(veins > 0.65, (veins - 0.65) / 0.35, 0).astype(np.float32)
+    M_arr = np.full(shape, base_M * 0.6, dtype=np.float32) + hot * 120 * sm
+    R_arr = np.full(shape, base_R + 60, dtype=np.float32) - hot * 80 * sm
+    R_arr = np.clip(R_arr, 0, 255)
+    return (M_arr, R_arr)
+
+def _base_spec_bioluminescent(shape, seed, sm, base_M, base_R):
+    """Bioluminescent — organic glow waves + scattered luminous dots."""
+    h, w = shape
+    y, x = _get_mgrid(shape)
+    # Organic glow waves
+    glow = np.sin(x * 0.03 + np.sin(y * 0.02) * 5.0) * 0.5 + 0.5
+    glow2 = np.sin(y * 0.025 + np.sin(x * 0.04) * 3.0) * 0.5 + 0.5
+    flow = np.clip(glow * 0.6 + glow2 * 0.4, 0, 1).astype(np.float32)
+    # Luminous dots: bright metallic points scattered across surface
+    rng = np.random.RandomState(seed + 950)
+    dots = rng.random((h, w)).astype(np.float32)
+    bright_dots = np.where(dots > 0.95, (dots - 0.95) * 15.0, 0).astype(np.float32)
+    M_arr = np.full(shape, base_M, dtype=np.float32) + flow * 50 * sm + bright_dots * 100 * sm
+    R_arr = np.full(shape, base_R, dtype=np.float32) + (1 - flow) * 40 * sm - bright_dots * 30 * sm
+    R_arr = np.clip(R_arr, 0, 255)
+    return (M_arr, R_arr)
+
+def _base_spec_holographic(shape, seed, sm, base_M, base_R):
+    """Holographic — diagonal rainbow banding with alternating M/R values."""
+    h, w = shape
+    y, x = _get_mgrid(shape)
+    # Diagonal sweep: many thin bands with different M/R
+    sweep = (x.astype(np.float32) * 0.04 + y.astype(np.float32) * 0.025)
+    # 12 discrete bands (like holographic foil color zones)
+    num_bands = 12
+    band_id = (np.floor(sweep * num_bands) % num_bands).astype(np.float32)
+    band_norm = band_id / num_bands
+    # Each band has different metallic and roughness — creates spectral variation
+    M_wave = np.sin(band_norm * np.pi * 2) * 0.5 + 0.5  # oscillating metallic
+    R_wave = np.cos(band_norm * np.pi * 2 + 1.0) * 0.5 + 0.5  # offset roughness
+    M_arr = np.full(shape, base_M * 0.5, dtype=np.float32) + M_wave.astype(np.float32) * 100 * sm
+    R_arr = np.full(shape, base_R, dtype=np.float32) + R_wave.astype(np.float32) * 60 * sm
+    return (M_arr, R_arr)
+
+def _base_spec_quantum_black(shape, seed, sm, base_M, base_R):
+    """Quantum black — near-zero metallic, almost nothing in spec. Faint dot imperfections."""
+    h, w = shape
+    rng = np.random.RandomState(seed + 960)
+    # Near-zero base with faint random imperfections
+    faint = rng.random((h, w)).astype(np.float32)
+    dots = np.where(faint > 0.97, (faint - 0.97) * 20.0, 0).astype(np.float32)
+    M_arr = np.full(shape, base_M, dtype=np.float32) + dots * 15 * sm
+    R_arr = np.full(shape, base_R, dtype=np.float32) - dots * 10 * sm
+    return (M_arr, R_arr)
+
+def _base_spec_neutron_star(shape, seed, sm, base_M, base_R):
+    """Neutron star — radial concentric pulse waves from center, extreme M."""
+    h, w = shape
+    y, x = _get_mgrid(shape)
+    cx, cy = w / 2.0, h / 2.0
+    dist = np.sqrt((x - cx) ** 2 + (y - cy) ** 2).astype(np.float32)
+    # Concentric rings of varying metallic intensity
+    pulse = (np.sin(dist * 0.04) * 0.5 + 0.5).astype(np.float32)
+    M_arr = np.full(shape, base_M - 30, dtype=np.float32) + pulse * 50 * sm
+    R_arr = np.full(shape, base_R, dtype=np.float32) + (1 - pulse) * 15 * sm
+    return (M_arr, R_arr)
+
+def _base_spec_dark_matter(shape, seed, sm, base_M, base_R):
+    """Dark matter — sharp geometric angular bands with alternating M/R."""
+    h, w = shape
+    y, x = _get_mgrid(shape)
+    angle = (x.astype(np.float32) / max(w, 1) + y.astype(np.float32) / max(h, 1)) * 0.5
+    # Sharp peaked geometric bands
+    band1 = (np.abs(np.sin(angle * np.pi * 8)) ** 4).astype(np.float32)
+    band2 = (np.abs(np.cos(angle * np.pi * 5 + 1.2)) ** 4).astype(np.float32)
+    combined = np.clip(band1 * 0.6 + band2 * 0.4, 0, 1)
+    M_arr = np.full(shape, base_M, dtype=np.float32) + combined * 60 * sm
+    R_arr = np.full(shape, base_R, dtype=np.float32) - combined * 40 * sm
+    R_arr = np.clip(R_arr, 0, 255)
+    return (M_arr, R_arr)
+
+def _base_spec_superconductor(shape, seed, sm, base_M, base_R):
+    """Superconductor — rippling Meissner effect magnetic field lines."""
+    h, w = shape
+    y, x = _get_mgrid(shape)
+    field1 = (np.sin(x * 0.04 + y * 0.02) * np.cos(y * 0.03) * 0.5 + 0.5).astype(np.float32)
+    field2 = (np.sin(x * 0.025 - y * 0.035 + 2.0) * 0.5 + 0.5).astype(np.float32)
+    field = field1 * 0.6 + field2 * 0.4
+    M_arr = np.full(shape, base_M, dtype=np.float32) + field * 30 * sm
+    R_arr = np.full(shape, base_R, dtype=np.float32) + (1 - field) * 20 * sm
+    return (M_arr, R_arr)
+
+def _base_spec_solar_panel(shape, seed, sm, base_M, base_R):
+    """Solar panel — visible photovoltaic grid with bus-bar lines."""
+    h, w = shape
+    y, x = _get_mgrid(shape)
+    cell_size = 40
+    grid_h = (y % cell_size < 2).astype(np.float32)
+    grid_v = (x % cell_size < 2).astype(np.float32)
+    grid = np.maximum(grid_h, grid_v)
+    # Grid bus-bars: high metallic, low roughness (silver conductors)
+    # Cell body: moderate metallic, moderate roughness (silicon)
+    M_arr = np.full(shape, base_M, dtype=np.float32) + grid * 80 * sm
+    R_arr = np.full(shape, base_R, dtype=np.float32) - grid * 35 * sm + (1 - grid) * 15 * sm
+    R_arr = np.clip(R_arr, 0, 255)
+    return (M_arr, R_arr)
+
+# --- INDUSTRIAL & TACTICAL SPEC FUNCTIONS ---
+
+def _base_spec_armor_plate(shape, seed, sm, base_M, base_R):
+    """Armor plate — rolling mill directional marks + heavy metal grain."""
+    h, w = shape
+    y, x = _get_mgrid(shape)
+    rng = np.random.RandomState(seed + 540)
+    # Rolling mill marks (horizontal directional lines)
+    marks = np.sin(y * 0.15 + rng.random(1)[0] * 100) * 0.5 + 0.5
+    mill_lines = np.where(marks > 0.8, (marks - 0.8) * 3.0, 0).astype(np.float32)
+    # Heavy grain
+    grain = rng.random((h, w)).astype(np.float32)
+    M_arr = np.full(shape, base_M, dtype=np.float32) + mill_lines * 35 * sm + grain * 15 * sm
+    R_arr = np.full(shape, base_R, dtype=np.float32) + (1 - mill_lines) * 20 * sm + grain * 15 * sm
+    return (M_arr, R_arr)
+
+def _base_spec_submarine(shape, seed, sm, base_M, base_R):
+    """Submarine hull — acoustic dampening tile grid pattern."""
+    h, w = shape
+    y, x = _get_mgrid(shape)
+    tile_size = 24
+    tile_edge_h = (y % tile_size < 2).astype(np.float32)
+    tile_edge_v = (x % tile_size < 2).astype(np.float32)
+    grid = np.maximum(tile_edge_h, tile_edge_v)
+    # Grid seams: slightly different roughness (rubber gaps between tiles)
+    # Tile body: uniform high roughness (anechoic coating)
+    M_arr = np.full(shape, base_M, dtype=np.float32) + grid * 20 * sm
+    R_arr = np.full(shape, base_R, dtype=np.float32) - grid * 30 * sm
+    R_arr = np.clip(R_arr, 0, 255)
+    # Micro variation within tiles
+    rng = np.random.RandomState(seed + 550)
+    micro = rng.random((h, w)).astype(np.float32) * 8 * sm
+    R_arr = R_arr + micro
+    return (M_arr, R_arr)
 
 # --- Premium Luxury ---
 paint_rosso_depth = make_vivid_depth_fn(sat_boost=0.15, depth_darken=0.06)
@@ -255,30 +1019,42 @@ paint_two_tone_split = make_luxury_sparkle_fn(sparkle_density=0.97, sparkle_stre
 # --- Unique paint functions that need custom logic ---
 
 def paint_moonstone_glow(paint, shape, mask, seed, pm, bb):
-    """Soft translucent milky shimmer — pushes toward pale white with fine glow."""
+    """Moonstone — visible milky translucent shimmer with iridescent color pearls."""
+    h, w = shape
     gray = paint.mean(axis=2, keepdims=True)
-    # Push toward milky white
-    white_blend = 0.12 * pm
-    paint = paint * (1 - white_blend * mask[:,:,np.newaxis]) + 0.90 * white_blend * mask[:,:,np.newaxis]
-    # Soft internal glow noise
-    glow = _multi_scale_noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + 700)
-    paint = np.clip(paint + glow[:,:,np.newaxis] * 0.04 * pm * mask[:,:,np.newaxis], 0, 1)
-    paint = np.clip(paint + bb * 0.5 * mask[:,:,np.newaxis], 0, 1)
+    # Strong milky white push
+    white_blend = 0.35 * pm
+    paint = paint * (1 - white_blend * mask[:,:,np.newaxis]) + 0.88 * white_blend * mask[:,:,np.newaxis]
+    # Soft internal glow with iridescent color pearls
+    glow = _multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.4, 0.3], seed + 700)
+    # Channel-separated glow for iridescence
+    paint[:,:,0] = np.clip(paint[:,:,0] + glow * 0.15 * pm * mask, 0, 1)
+    paint[:,:,1] = np.clip(paint[:,:,1] + glow * 0.18 * pm * mask, 0, 1)
+    paint[:,:,2] = np.clip(paint[:,:,2] + glow * 0.22 * pm * mask, 0, 1)
+    # Fine pearlescent sparkle
+    rng = np.random.RandomState(seed + 701)
+    sparkle = rng.random((h, w)).astype(np.float32)
+    sp = np.where(sparkle > 0.92, (sparkle - 0.92) * 1.5 * pm, 0.0)
+    paint = np.clip(paint + sp[:,:,np.newaxis] * mask[:,:,np.newaxis], 0, 1)
+    paint = np.clip(paint + bb * 0.6 * mask[:,:,np.newaxis], 0, 1)
     return paint
 
 def paint_opal_shift(paint, shape, mask, seed, pm, bb):
-    """Fire opal — multi-color depth with internal color play."""
+    """Fire opal — strong multi-color internal play with visible sparkle."""
     h, w = shape
-    # Per-channel noise for color play
+    # Per-channel noise for dramatic color play
     for c in range(3):
-        noise = _multi_scale_noise(shape, [8, 16, 32], [0.3, 0.4, 0.3], seed + 800 + c * 31)
-        paint[:,:,c] = np.clip(paint[:,:,c] + noise * 0.06 * pm * mask, 0, 1)
-    # Fine sparkle
+        noise = _multi_scale_noise((h, w), [8, 16, 32], [0.3, 0.4, 0.3], seed + 800 + c * 31)
+        paint[:,:,c] = np.clip(paint[:,:,c] + noise * 0.30 * pm * mask, 0, 1)
+    # Dense visible sparkle
     rng = np.random.RandomState(seed + 850)
-    sparkle = rng.random(shape).astype(np.float32)
-    sparkle = np.where(sparkle > 0.96, sparkle * 0.08 * pm, 0)
-    paint = np.clip(paint + sparkle[:,:,np.newaxis] * mask[:,:,np.newaxis], 0, 1)
-    paint = np.clip(paint + bb * 0.5 * mask[:,:,np.newaxis], 0, 1)
+    sparkle = rng.random((h, w)).astype(np.float32)
+    sparkle_bright = np.where(sparkle > 0.90, (sparkle - 0.90) * 2.0 * pm, 0.0)
+    # Iridescent sparkle (each channel slightly offset)
+    paint[:,:,0] = np.clip(paint[:,:,0] + sparkle_bright * mask * 1.1, 0, 1)
+    paint[:,:,1] = np.clip(paint[:,:,1] + sparkle_bright * mask * 0.9, 0, 1)
+    paint[:,:,2] = np.clip(paint[:,:,2] + sparkle_bright * mask * 1.0, 0, 1)
+    paint = np.clip(paint + bb * 0.6 * mask[:,:,np.newaxis], 0, 1)
     return paint
 
 def paint_color_flip(paint, shape, mask, seed, pm, bb):
@@ -563,54 +1339,130 @@ def paint_static_grain(paint, shape, mask, seed, pm, bb):
 # --- Extreme & Experimental ---
 
 def paint_quantum_absorb(paint, shape, mask, seed, pm, bb):
-    """Quantum Black — near-perfect absorption, ultra-dark."""
-    paint = paint * (1 - 0.20 * pm * mask[:,:,np.newaxis])
+    """Quantum Black — near-perfect light absorption, Vantablack-level dark.
+    Only the faintest noise-based highlight bleed reveals it's a surface at all."""
+    h, w = shape
+    blend = 0.20 * pm
+    # EXTREME darkening — 95% light absorption
+    paint = paint * (1 - 0.95 * blend * mask[:,:,np.newaxis])
+    # Faint noise-based highlight bleed (surface imperfections catch microscopic light)
+    rng = np.random.RandomState(seed + 900)
+    bleed = rng.random((h, w)).astype(np.float32)
+    faint = np.where(bleed > 0.97, (bleed - 0.97) * 15.0, 0).astype(np.float32)
+    paint = np.clip(paint + faint[:,:,np.newaxis] * 0.03 * blend * mask[:,:,np.newaxis], 0, 1)
     return paint
 
 def paint_neutron_bright(paint, shape, mask, seed, pm, bb):
-    """Neutron Star — impossibly bright compressed mirror."""
-    blend = 0.25 * pm
+    """Neutron Star — blinding compressed mirror with pulsing radial brightness waves."""
+    h, w = shape
+    blend = 0.20 * pm
+    # Push toward blinding white
     for c in range(3):
-        paint[:,:,c] = paint[:,:,c] * (1 - mask * blend) + 0.98 * mask * blend
+        paint[:,:,c] = paint[:,:,c] * (1 - mask * blend * 0.8) + 0.98 * mask * blend * 0.8
+    # Pulsing radial brightness waves from center
+    y, x = _get_mgrid(shape)
+    cx, cy = w / 2.0, h / 2.0
+    dist = np.sqrt((x - cx) ** 2 + (y - cy) ** 2).astype(np.float32)
+    pulse = (np.sin(dist * 0.05) * 0.5 + 0.5).astype(np.float32)
+    paint = np.clip(paint + pulse[:,:,np.newaxis] * 0.04 * blend * mask[:,:,np.newaxis], 0, 1)
     return paint
 
 def paint_plasma_glow(paint, shape, mask, seed, pm, bb):
-    """Plasma Core — glowing reactor core metallic."""
-    blend = 0.18 * pm
-    for c in range(3):
-        paint[:,:,c] = paint[:,:,c] * (1 - mask * blend) + 0.85 * mask * blend
-    # Purple-blue glow
-    glow = _multi_scale_noise(shape, [8, 16, 32], [0.3, 0.4, 0.3], seed + 1600)
-    paint[:,:,0] = np.clip(paint[:,:,0] + glow * 0.03 * pm * mask, 0, 1)
-    paint[:,:,2] = np.clip(paint[:,:,2] + glow * 0.05 * pm * mask, 0, 1)
+    """Plasma Core — glowing reactor core with plasma veins snaking across surface."""
+    h, w = shape
+    blend = 0.20 * pm
+    # Deep purple-magenta metallic base
+    paint[:,:,0] = np.clip(paint[:,:,0] * (1 - blend * mask * 0.5) + 0.55 * blend * mask * 0.5, 0, 1)
+    paint[:,:,1] = np.clip(paint[:,:,1] * (1 - blend * mask * 0.6) + 0.10 * blend * mask * 0.6, 0, 1)
+    paint[:,:,2] = np.clip(paint[:,:,2] * (1 - blend * mask * 0.4) + 0.80 * blend * mask * 0.4, 0, 1)
+    # Plasma veins that snake across surface
+    y, x = _get_mgrid(shape)
+    vein1 = np.sin(x * 0.06 + np.sin(y * 0.04) * 4.0) * 0.5 + 0.5
+    vein2 = np.sin(y * 0.05 + np.sin(x * 0.03) * 5.0) * 0.5 + 0.5
+    veins = np.clip(vein1 * vein2, 0, 1).astype(np.float32)
+    hot_veins = np.where(veins > 0.7, (veins - 0.7) / 0.3, 0).astype(np.float32)
+    # Veins glow bright magenta-white
+    paint[:,:,0] = np.clip(paint[:,:,0] + hot_veins * 0.15 * blend * mask, 0, 1)
+    paint[:,:,1] = np.clip(paint[:,:,1] + hot_veins * 0.05 * blend * mask, 0, 1)
+    paint[:,:,2] = np.clip(paint[:,:,2] + hot_veins * 0.10 * blend * mask, 0, 1)
     return paint
 
 def paint_dark_matter_shift(paint, shape, mask, seed, pm, bb):
-    """Dark Matter — ultra-dark with hidden angle-dependent reveal."""
-    paint = paint * (1 - 0.15 * pm * mask[:,:,np.newaxis])
-    y, x = _get_mgrid(shape)
+    """Dark Matter — ultra-dark with geometric angular reveal bands that shift color."""
     h, w = shape
-    angle = (x / max(w, 1) + y / max(h, 1)) * 0.5
-    reveal = np.clip(np.sin(angle * np.pi * 4) * 0.5 + 0.5, 0, 1)
-    reveal = np.where(reveal > 0.9, (reveal - 0.9) / 0.1 * 0.04 * pm, 0).astype(np.float32)
-    paint = np.clip(paint + reveal[:,:,np.newaxis] * mask[:,:,np.newaxis], 0, 1)
+    blend = 0.20 * pm
+    # Ultra-dark base
+    paint = paint * (1 - 0.85 * blend * mask[:,:,np.newaxis])
+    # Geometric angular reveal bands
+    y, x = _get_mgrid(shape)
+    angle = (x.astype(np.float32) / max(w, 1) + y.astype(np.float32) / max(h, 1)) * 0.5
+    band1 = np.abs(np.sin(angle * np.pi * 8)) ** 4  # sharp peaked bands
+    band2 = np.abs(np.cos(angle * np.pi * 5 + 1.2)) ** 4
+    # Each band reveals a different color (dark purple / dark teal)
+    paint[:,:,0] = np.clip(paint[:,:,0] + band1.astype(np.float32) * 0.08 * blend * mask, 0, 1)
+    paint[:,:,2] = np.clip(paint[:,:,2] + band1.astype(np.float32) * 0.12 * blend * mask, 0, 1)
+    paint[:,:,1] = np.clip(paint[:,:,1] + band2.astype(np.float32) * 0.06 * blend * mask, 0, 1)
+    paint[:,:,2] = np.clip(paint[:,:,2] + band2.astype(np.float32) * 0.08 * blend * mask, 0, 1)
     return paint
 
-paint_superconductor_mirror = make_chrome_tint_fn(0.96, 0.96, 0.98, blend=0.25)
+def paint_superconductor_mirror(paint, shape, mask, seed, pm, bb):
+    """Superconductor — near-pure mirror with rippling magnetic field lines."""
+    h, w = shape
+    blend = 0.20 * pm
+    # Push toward near-pure mirror white
+    for c in range(3):
+        paint[:,:,c] = paint[:,:,c] * (1 - mask * blend * 0.7) + 0.96 * mask * blend * 0.7
+    # Rippling magnetic field lines (Meissner effect visualization)
+    y, x = _get_mgrid(shape)
+    field1 = np.sin(x * 0.04 + y * 0.02) * np.cos(y * 0.03) * 0.5 + 0.5
+    field2 = np.sin(x * 0.025 - y * 0.035 + 2.0) * 0.5 + 0.5
+    field = (field1 * 0.6 + field2 * 0.4).astype(np.float32)
+    # Field lines show as very faint blue-cyan traces
+    paint[:,:,1] = np.clip(paint[:,:,1] + field * 0.03 * blend * mask, 0, 1)
+    paint[:,:,2] = np.clip(paint[:,:,2] + field * 0.05 * blend * mask, 0, 1)
+    return paint
 
 def paint_bio_glow(paint, shape, mask, seed, pm, bb):
-    """Bioluminescent — soft glow with scattered bright points."""
-    glow = _multi_scale_noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + 1700)
-    # Green-blue glow
-    paint[:,:,1] = np.clip(paint[:,:,1] + glow * 0.04 * pm * mask, 0, 1)
-    paint[:,:,2] = np.clip(paint[:,:,2] + glow * 0.03 * pm * mask, 0, 1)
-    rng = np.random.RandomState(seed + 1750)
-    spots = rng.random(shape).astype(np.float32)
-    spots = np.where(spots > 0.98, 0.06 * pm, 0).astype(np.float32)
-    paint = np.clip(paint + spots[:,:,np.newaxis] * mask[:,:,np.newaxis], 0, 1)
+    """Bioluminescent — deep sea organism with organic glow waves and bright luminous dots."""
+    h, w = shape
+    blend = 0.20 * pm
+    # Deep dark teal-green base (deep sea)
+    gray = paint.mean(axis=2, keepdims=True)
+    paint[:,:,0] = paint[:,:,0] * (1 - blend * mask * 0.6) + (gray[:,:,0] * 0.1) * blend * mask * 0.6
+    paint[:,:,1] = paint[:,:,1] * (1 - blend * mask * 0.4) + (gray[:,:,0] * 0.2 + 0.15) * blend * mask * 0.4
+    paint[:,:,2] = paint[:,:,2] * (1 - blend * mask * 0.4) + (gray[:,:,0] * 0.15 + 0.12) * blend * mask * 0.4
+    # Organic glow waves
+    y, x = _get_mgrid(shape)
+    glow_wave = np.sin(x * 0.03 + np.sin(y * 0.02) * 5.0) * 0.5 + 0.5
+    paint[:,:,1] = np.clip(paint[:,:,1] + glow_wave.astype(np.float32) * 0.08 * blend * mask, 0, 1)
+    paint[:,:,2] = np.clip(paint[:,:,2] + glow_wave.astype(np.float32) * 0.06 * blend * mask, 0, 1)
+    # Scattered bright luminous dots
+    rng = np.random.RandomState(seed + 910)
+    dots = rng.random((h, w)).astype(np.float32)
+    bright_dots = np.where(dots > 0.96, (dots - 0.96) * 12.0, 0).astype(np.float32)
+    paint[:,:,1] = np.clip(paint[:,:,1] + bright_dots * 0.15 * blend * mask, 0, 1)
+    paint[:,:,2] = np.clip(paint[:,:,2] + bright_dots * 0.10 * blend * mask, 0, 1)
     return paint
 
-paint_solar_cell = make_metallic_tint_fn(r_shift=-0.2, g_shift=-0.1, b_shift=0.3, flake_str=0.03)
+def paint_solar_cell(paint, shape, mask, seed, pm, bb):
+    """Solar Panel — dark blue-black photovoltaic with visible cell grid lines."""
+    h, w = shape
+    blend = 0.20 * pm
+    # Dark blue-black solar cell base
+    paint[:,:,0] = np.clip(paint[:,:,0] * (1 - blend * mask * 0.7) + 0.05 * blend * mask * 0.7, 0, 1)
+    paint[:,:,1] = np.clip(paint[:,:,1] * (1 - blend * mask * 0.7) + 0.08 * blend * mask * 0.7, 0, 1)
+    paint[:,:,2] = np.clip(paint[:,:,2] * (1 - blend * mask * 0.5) + 0.25 * blend * mask * 0.5, 0, 1)
+    # Visible photovoltaic grid lines
+    y, x = _get_mgrid(shape)
+    cell_size = 40
+    grid_h = (y % cell_size < 2).astype(np.float32)
+    grid_v = (x % cell_size < 2).astype(np.float32)
+    grid = np.maximum(grid_h, grid_v)
+    # Grid lines are slightly lighter (silver bus-bars)
+    paint[:,:,0] = np.clip(paint[:,:,0] + grid * 0.08 * blend * mask, 0, 1)
+    paint[:,:,1] = np.clip(paint[:,:,1] + grid * 0.08 * blend * mask, 0, 1)
+    paint[:,:,2] = np.clip(paint[:,:,2] + grid * 0.06 * blend * mask, 0, 1)
+    return paint
 def paint_holo_rainbow(paint, shape, mask, seed, pm, bb):
     """Holographic Base — full rainbow prismatic color shift with iridescent bands.
 
@@ -676,27 +1528,38 @@ EXPANSION_BASES = {
     "eggshell":         {"M": 0,   "R": 140, "CC": 8,  "paint_fn": _paint_noop, "desc": "Soft low-sheen like eggshell wall paint"},
     "semi_gloss":       {"M": 0,   "R": 60,  "CC": 16, "paint_fn": _paint_noop, "desc": "Between satin and gloss — utility finish"},
     # Group 2: METALLIC STANDARD (new entries)
-    "metal_flake_base": {"M": 210, "R": 35,  "CC": 16, "paint_fn": "coarse_flake", "desc": "Heavy visible metal flake base coat",
+    "metal_flake_base": {"M": 210, "R": 35,  "CC": 16, "paint_fn": _paint_noop, "desc": "Heavy visible metal flake base coat", "_resolve_paint_fn": "paint_coarse_flake",
                          "noise_scales": [2, 4, 8], "noise_weights": [0.3, 0.4, 0.3], "noise_M": 25, "noise_R": 15},
-    "candy_apple":      {"M": 195, "R": 12,  "CC": 16, "paint_fn": paint_candy_depth, "desc": "Classic candy apple red-style transparent tint"},
+    "candy_apple":      {"M": 195, "R": 12,  "CC": 16, "paint_fn": paint_candy_depth, "desc": "Classic candy apple red-style transparent tint",
+                         "noise_scales": [1, 2, 4], "noise_weights": [0.5, 0.3, 0.2], "noise_M": 40, "noise_R": 12},
     "midnight_pearl":   {"M": 140, "R": 25,  "CC": 16, "paint_fn": paint_dark_sparkle, "desc": "Deep dark pearlescent with hidden sparkle",
                          "noise_scales": [16, 32, 64], "noise_weights": [0.3, 0.4, 0.3], "noise_M": 15, "noise_R": 10},
     "champagne":        {"M": 160, "R": 45,  "CC": 16, "paint_fn": paint_warm_shimmer, "desc": "Warm gold-silver champagne metallic",
                          "noise_scales": [4, 8, 16], "noise_weights": [0.3, 0.4, 0.3], "noise_M": 15, "noise_R": 12},
-    "pewter":           {"M": 175, "R": 70,  "CC": 0,  "paint_fn": "subtle_flake", "desc": "Dark gray aged pewter metallic",
+    "pewter":           {"M": 175, "R": 70,  "CC": 0,  "paint_fn": _paint_noop, "desc": "Dark gray aged pewter metallic", "_resolve_paint_fn": "paint_subtle_flake",
                          "noise_scales": [4, 8, 16], "noise_weights": [0.3, 0.4, 0.3], "noise_M": 20, "noise_R": 20},
     # Group 3: CHROME & MIRROR (new entries)
-    "black_chrome":     {"M": 248, "R": 8,   "CC": 0,  "paint_fn": paint_black_chrome_tint, "desc": "Near-black highly reflective chrome"},
-    "blue_chrome":      {"M": 252, "R": 3,   "CC": 0,  "paint_fn": paint_blue_chrome_tint, "desc": "Tinted blue mirror chrome"},
-    "red_chrome":       {"M": 252, "R": 3,   "CC": 0,  "paint_fn": paint_red_chrome_tint, "desc": "Tinted red mirror chrome"},
-    "antique_chrome":   {"M": 240, "R": 15,  "CC": 0,  "paint_fn": paint_antique_patina, "desc": "Slightly aged imperfect chrome"},
+    "black_chrome":     {"M": 248, "R": 8,   "CC": 0,  "paint_fn": paint_black_chrome_tint, "desc": "Near-black highly reflective chrome",
+                         "perlin": True, "perlin_octaves": 3, "perlin_persistence": 0.4, "perlin_lacunarity": 2.0, "noise_M": 30, "noise_R": 12},
+    "blue_chrome":      {"M": 252, "R": 3,   "CC": 0,  "paint_fn": paint_blue_chrome_tint, "desc": "Tinted blue mirror chrome",
+                         "noise_scales": [1, 2, 4], "noise_weights": [0.5, 0.3, 0.2], "noise_M": 25, "noise_R": 10},
+    "red_chrome":       {"M": 252, "R": 3,   "CC": 0,  "paint_fn": paint_red_chrome_tint, "desc": "Tinted red mirror chrome",
+                         "perlin": True, "perlin_octaves": 2, "perlin_persistence": 0.45, "perlin_lacunarity": 2.0, "noise_M": 25, "noise_R": 10},
+    "antique_chrome":   {"M": 240, "R": 15,  "CC": 0,  "paint_fn": paint_antique_patina, "desc": "Slightly aged imperfect chrome",
+                         "perlin": True, "perlin_octaves": 3, "perlin_persistence": 0.6, "perlin_lacunarity": 2.0, "noise_M": 40, "noise_R": 30},
     # Group 4: CANDY & PEARL (new entries)
-    "candy_burgundy":   {"M": 200, "R": 14,  "CC": 16, "paint_fn": paint_candy_warm, "desc": "Deep burgundy candy transparent coat"},
-    "candy_emerald":    {"M": 200, "R": 14,  "CC": 16, "paint_fn": paint_candy_cool, "desc": "Rich emerald green candy coat"},
-    "candy_cobalt":     {"M": 200, "R": 14,  "CC": 16, "paint_fn": paint_candy_cool, "desc": "Deep cobalt blue candy transparent"},
-    "tri_coat_pearl":   {"M": 130, "R": 25,  "CC": 16, "paint_fn": paint_tri_coat_sparkle, "desc": "Three-stage pearl base+mid+clear"},
-    "moonstone":        {"M": 90,  "R": 35,  "CC": 16, "paint_fn": paint_moonstone_glow, "desc": "Soft translucent milky shimmer"},
-    "opal":             {"M": 110, "R": 30,  "CC": 16, "paint_fn": paint_opal_shift, "desc": "Fire opal multi-color depth"},
+    "candy_burgundy":   {"M": 200, "R": 14,  "CC": 16, "paint_fn": paint_candy_warm, "desc": "Deep burgundy candy transparent coat",
+                         "noise_scales": [1, 2, 4], "noise_weights": [0.5, 0.3, 0.2], "noise_M": 50, "noise_R": 18},
+    "candy_emerald":    {"M": 200, "R": 14,  "CC": 16, "paint_fn": paint_candy_cool, "desc": "Rich emerald green candy coat",
+                         "noise_scales": [1, 2, 4], "noise_weights": [0.5, 0.3, 0.2], "noise_M": 50, "noise_R": 18},
+    "candy_cobalt":     {"M": 200, "R": 14,  "CC": 16, "paint_fn": paint_candy_cool, "desc": "Deep cobalt blue candy transparent",
+                         "noise_scales": [1, 2, 4], "noise_weights": [0.5, 0.3, 0.2], "noise_M": 50, "noise_R": 18},
+    "tri_coat_pearl":   {"M": 130, "R": 25,  "CC": 16, "paint_fn": paint_tri_coat_sparkle, "desc": "Three-stage pearl base+mid+clear",
+                         "noise_scales": [1, 2, 4], "noise_weights": [0.4, 0.35, 0.25], "noise_M": 40, "noise_R": 20},
+    "moonstone":        {"M": 90,  "R": 35,  "CC": 16, "paint_fn": paint_moonstone_glow, "desc": "Soft translucent milky shimmer",
+                         "perlin": True, "perlin_octaves": 3, "perlin_persistence": 0.5, "perlin_lacunarity": 2.0, "noise_M": 25, "noise_R": 30},
+    "opal":             {"M": 110, "R": 30,  "CC": 16, "paint_fn": paint_opal_shift, "desc": "Fire opal multi-color depth",
+                         "perlin": True, "perlin_octaves": 4, "perlin_persistence": 0.55, "perlin_lacunarity": 2.2, "noise_M": 40, "noise_R": 25},
 }
 
 EXPANSION_BASES.update({
@@ -710,31 +1573,42 @@ EXPANSION_BASES.update({
                          "brush_grain": True, "noise_M": 15, "noise_R": 25},
     "stealth_wrap":     {"M": 20,  "R": 200, "CC": 0,  "paint_fn": paint_stealth_flat, "desc": "Ultra-matte radar-absorbing stealth look"},
     # Group 6: INDUSTRIAL & TACTICAL (new entries)
-    "mil_spec_od":      {"M": 15,  "R": 180, "CC": 0,  "paint_fn": paint_armor_grain, "desc": "Olive drab military standard coating"},
-    "mil_spec_tan":     {"M": 15,  "R": 175, "CC": 0,  "paint_fn": paint_armor_grain, "desc": "Desert tan flat tactical coat"},
+    "mil_spec_od":      {"M": 15,  "R": 180, "CC": 0,  "paint_fn": paint_armor_grain, "desc": "Olive drab military standard coating",
+                         "perlin": True, "perlin_octaves": 3, "perlin_persistence": 0.5, "perlin_lacunarity": 2.0, "noise_M": 12, "noise_R": 25},
+    "mil_spec_tan":     {"M": 15,  "R": 175, "CC": 0,  "paint_fn": paint_armor_grain, "desc": "Desert tan flat tactical coat",
+                         "perlin": True, "perlin_octaves": 3, "perlin_persistence": 0.5, "perlin_lacunarity": 2.0, "noise_M": 12, "noise_R": 25},
     "armor_plate":      {"M": 200, "R": 100, "CC": 0,  "paint_fn": paint_armor_grain, "desc": "Heavy rolled steel armor plating",
-                         "noise_scales": [4, 8, 16], "noise_weights": [0.3, 0.4, 0.3], "noise_M": 20, "noise_R": 25},
-    "submarine_black":  {"M": 10,  "R": 210, "CC": 0,  "paint_fn": paint_rubber_texture, "desc": "Anechoic submarine hull coating"},
-    "gunship_gray":     {"M": 30,  "R": 165, "CC": 0,  "paint_fn": paint_stealth_flat, "desc": "Military aircraft flat gray"},
-    "battleship_gray":  {"M": 80,  "R": 140, "CC": 0,  "paint_fn": paint_naval_coat, "desc": "Naval warship haze gray coating"},
+                         "base_spec_fn": _base_spec_armor_plate},
+    "submarine_black":  {"M": 10,  "R": 210, "CC": 0,  "paint_fn": paint_rubber_texture, "desc": "Anechoic submarine hull coating",
+                         "base_spec_fn": _base_spec_submarine},
+    "gunship_gray":     {"M": 30,  "R": 165, "CC": 0,  "paint_fn": paint_stealth_flat, "desc": "Military aircraft flat gray",
+                         "perlin": True, "perlin_octaves": 2, "perlin_persistence": 0.3, "perlin_lacunarity": 2.0, "noise_M": 10, "noise_R": 20},
+    "battleship_gray":  {"M": 80,  "R": 140, "CC": 0,  "paint_fn": paint_naval_coat, "desc": "Naval warship haze gray coating",
+                         "perlin": True, "perlin_octaves": 3, "perlin_persistence": 0.45, "perlin_lacunarity": 2.0, "noise_M": 20, "noise_R": 25},
     # Group 7: CERAMIC & GLASS (new entries)
-    "porcelain":        {"M": 20,  "R": 12,  "CC": 16, "paint_fn": paint_porcelain_smooth, "desc": "White porcelain enamel glassy finish"},
-    "obsidian":         {"M": 40,  "R": 6,   "CC": 16, "paint_fn": paint_obsidian_depth, "desc": "Volcanic glass deep black mirror sheen"},
-    "crystal_clear":    {"M": 5,   "R": 2,   "CC": 16, "paint_fn": paint_crystal_sparkle, "desc": "Optically clear crystal glass coat"},
-    "tempered_glass":   {"M": 30,  "R": 4,   "CC": 16, "paint_fn": paint_glass_clean, "desc": "Safety glass smooth hard surface"},
-    "ceramic_matte":    {"M": 50,  "R": 120, "CC": 0,  "paint_fn": paint_ceramic_flat, "desc": "Matte ceramic nano-coating"},
-    "enamel":           {"M": 10,  "R": 18,  "CC": 16, "paint_fn": paint_enamel_coat, "desc": "Hard baked enamel glossy traditional paint"},
+    "porcelain":        {"M": 20,  "R": 12,  "CC": 16, "paint_fn": paint_porcelain_smooth, "desc": "White porcelain enamel glassy finish",
+                         "perlin": True, "perlin_octaves": 2, "perlin_persistence": 0.4, "perlin_lacunarity": 2.0, "noise_M": 25, "noise_R": 18},
+    "obsidian":         {"M": 40,  "R": 6,   "CC": 16, "paint_fn": paint_obsidian_depth, "desc": "Volcanic glass deep black mirror sheen",
+                         "perlin": True, "perlin_octaves": 3, "perlin_persistence": 0.5, "perlin_lacunarity": 2.0, "noise_M": 45, "noise_R": 15},
+    "crystal_clear":    {"M": 5,   "R": 2,   "CC": 16, "paint_fn": paint_crystal_sparkle, "desc": "Optically clear crystal glass coat",
+                         "noise_scales": [1, 2, 4], "noise_weights": [0.5, 0.3, 0.2], "noise_M": 25, "noise_R": 12},
+    "tempered_glass":   {"M": 30,  "R": 4,   "CC": 16, "paint_fn": paint_glass_clean, "desc": "Safety glass smooth hard surface",
+                         "perlin": True, "perlin_octaves": 2, "perlin_persistence": 0.35, "perlin_lacunarity": 2.0, "noise_M": 30, "noise_R": 12},
+    "ceramic_matte":    {"M": 50,  "R": 120, "CC": 0,  "paint_fn": paint_ceramic_flat, "desc": "Matte ceramic nano-coating",
+                         "perlin": True, "perlin_octaves": 3, "perlin_persistence": 0.5, "perlin_lacunarity": 2.0, "noise_M": 35, "noise_R": 30},
+    "enamel":           {"M": 10,  "R": 18,  "CC": 16, "paint_fn": paint_enamel_coat, "desc": "Hard baked enamel glossy traditional paint",
+                         "perlin": True, "perlin_octaves": 2, "perlin_persistence": 0.4, "perlin_lacunarity": 2.0, "noise_M": 20, "noise_R": 15},
 })
 
 EXPANSION_BASES.update({
     # Group 8: RACING HERITAGE (new entries)
     "race_day_gloss":   {"M": 15,  "R": 10,  "CC": 16, "paint_fn": paint_show_polish, "desc": "Fresh-from-the-trailer showroom glossy"},
     "stock_car_enamel": {"M": 10,  "R": 30,  "CC": 16, "paint_fn": paint_enamel_coat, "desc": "Traditional thick NASCAR enamel paint"},
-    "sprint_car_chrome":{"M": 248, "R": 8,   "CC": 0,  "paint_fn": "chrome_brighten", "desc": "Sprint car bright polished chrome"},
+    "sprint_car_chrome":{"M": 248, "R": 8,   "CC": 0,  "paint_fn": _paint_noop, "desc": "Sprint car bright polished chrome", "_resolve_paint_fn": "paint_chrome_brighten"},
     "dirt_track_satin": {"M": 0,   "R": 110, "CC": 8,  "paint_fn": paint_dirt_subtle, "desc": "Slightly dusty satin from dirt track use"},
-    "endurance_ceramic":{"M": 55,  "R": 12,  "CC": 16, "paint_fn": "ceramic_gloss", "desc": "24hr endurance race ceramic protection"},
+    "endurance_ceramic":{"M": 55,  "R": 12,  "CC": 16, "paint_fn": _paint_noop, "desc": "24hr endurance race ceramic protection", "_resolve_paint_fn": "paint_ceramic_gloss"},
     "rally_mud":        {"M": 30,  "R": 180, "CC": 0,  "paint_fn": paint_mud_splatter, "desc": "Partially mud-splattered rally coating"},
-    "drag_strip_gloss": {"M": 200, "R": 8,   "CC": 16, "paint_fn": "fine_sparkle", "desc": "Ultra-polished quarter-mile show finish",
+    "drag_strip_gloss": {"M": 200, "R": 8,   "CC": 16, "paint_fn": _paint_noop, "desc": "Ultra-polished quarter-mile show finish", "_resolve_paint_fn": "paint_fine_sparkle",
                          "noise_scales": [16, 32, 64], "noise_weights": [0.3, 0.4, 0.3], "noise_M": 15, "noise_R": 8},
     "victory_lane":     {"M": 230, "R": 5,   "CC": 16, "paint_fn": paint_confetti_sparkle, "desc": "Champagne-soaked celebration metallic sparkle"},
     "barn_find":        {"M": 60,  "R": 160, "CC": 0,  "paint_fn": paint_barn_aged, "desc": "Decades-old stored car faded paint"},
@@ -746,11 +1620,14 @@ EXPANSION_BASES.update({
     "asphalt_grind":    {"M": 40,  "R": 200, "CC": 0,  "paint_fn": paint_asphalt_rough, "desc": "Rough asphalt-ground surface texture"},
     "checkered_chrome": {"M": 245, "R": 10,  "CC": 0,  "paint_fn": paint_checker_polish, "desc": "Polished chrome with checkered reflection"},
     # Group 9: EXOTIC METAL (new entries)
-    "liquid_titanium":  {"M": 235, "R": 15,  "CC": 0,  "paint_fn": paint_liquid_metal_flow, "desc": "Molten titanium pooling mirror"},
-    "tungsten":         {"M": 210, "R": 45,  "CC": 0,  "paint_fn": paint_dense_metal, "desc": "Ultra-dense dark gray tungsten"},
-    "platinum":         {"M": 245, "R": 8,   "CC": 0,  "paint_fn": paint_platinum_sheen, "desc": "Pure platinum bright white metal"},
+    "liquid_titanium":  {"M": 235, "R": 15,  "CC": 0,  "paint_fn": paint_liquid_metal_flow, "desc": "Molten titanium pooling mirror",
+                         "perlin": True, "perlin_octaves": 2, "perlin_persistence": 0.5, "perlin_lacunarity": 1.8, "noise_M": 30, "noise_R": 12},
+    "tungsten":         {"M": 210, "R": 45,  "CC": 0,  "paint_fn": paint_dense_metal, "desc": "Ultra-dense dark gray tungsten",
+                         "noise_scales": [2, 4, 8], "noise_weights": [0.4, 0.35, 0.25], "noise_M": 25, "noise_R": 20},
+    "platinum":         {"M": 245, "R": 8,   "CC": 0,  "paint_fn": paint_platinum_sheen, "desc": "Pure platinum bright white metal",
+                         "noise_scales": [1, 2, 4], "noise_weights": [0.5, 0.3, 0.2], "noise_M": 20, "noise_R": 8},
     "cobalt_metal":     {"M": 200, "R": 40,  "CC": 0,  "paint_fn": paint_cobalt_tint, "desc": "Blue-gray cobalt metallic sheen",
-                         "noise_scales": [4, 8, 16], "noise_weights": [0.3, 0.4, 0.3], "noise_M": 20, "noise_R": 15},
+                         "noise_scales": [4, 8, 16], "noise_weights": [0.3, 0.4, 0.3], "noise_M": 25, "noise_R": 18},
     # Group 10: WEATHERED & AGED (new entries)
     "sun_baked":        {"M": 20,  "R": 200, "CC": 0,  "paint_fn": paint_sun_fade, "desc": "UV-damaged sun-faded peeling clear"},
     "salt_corroded":    {"M": 90,  "R": 150, "CC": 0,  "paint_fn": paint_salt_damage, "desc": "Coastal salt air corroded metal"},
@@ -763,25 +1640,41 @@ EXPANSION_BASES.update({
 
 EXPANSION_BASES.update({
     # Group 11: OEM AUTOMOTIVE (new entries)
-    "factory_basecoat": {"M": 120, "R": 40,  "CC": 16, "paint_fn": paint_oem_metallic, "desc": "Standard OEM factory metallic basecoat"},
-    "showroom_clear":   {"M": 5,   "R": 6,   "CC": 16, "paint_fn": paint_show_polish, "desc": "Freshly detailed concours clearcoat"},
-    "fleet_white":      {"M": 0,   "R": 35,  "CC": 16, "paint_fn": _paint_noop, "desc": "Government/fleet plain white gloss"},
-    "taxi_yellow":      {"M": 0,   "R": 25,  "CC": 16, "paint_fn": _paint_noop, "desc": "NYC taxi cab bright yellow gloss"},
-    "school_bus":       {"M": 0,   "R": 40,  "CC": 12, "paint_fn": _paint_noop, "desc": "National school bus chrome yellow"},
-    "fire_engine":      {"M": 5,   "R": 15,  "CC": 16, "paint_fn": paint_fire_engine_gloss, "desc": "Deep wet fire apparatus red gloss"},
-    "ambulance_white":  {"M": 0,   "R": 30,  "CC": 16, "paint_fn": paint_reflective_coat, "desc": "High-visibility emergency white reflective"},
-    "police_black":     {"M": 5,   "R": 8,   "CC": 16, "paint_fn": _paint_noop, "desc": "Law enforcement glossy black"},
+    "factory_basecoat": {"M": 120, "R": 40,  "CC": 16, "paint_fn": paint_oem_metallic, "desc": "Standard OEM factory metallic basecoat",
+                         "noise_scales": [4, 8, 16], "noise_weights": [0.3, 0.4, 0.3], "noise_M": 20, "noise_R": 12},
+    "showroom_clear":   {"M": 5,   "R": 6,   "CC": 16, "paint_fn": paint_show_polish, "desc": "Freshly detailed concours clearcoat",
+                         "perlin": True, "perlin_octaves": 2, "perlin_persistence": 0.3, "perlin_lacunarity": 2.0, "noise_M": 3, "noise_R": 4},
+    "fleet_white":      {"M": 0,   "R": 35,  "CC": 16, "paint_fn": paint_fleet_plain, "desc": "Government/fleet plain white gloss",
+                         "perlin": True, "perlin_octaves": 2, "perlin_persistence": 0.3, "perlin_lacunarity": 2.0, "noise_M": 5, "noise_R": 8},
+    "taxi_yellow":      {"M": 0,   "R": 25,  "CC": 16, "paint_fn": paint_taxi_vivid, "desc": "NYC taxi cab bright yellow gloss",
+                         "perlin": True, "perlin_octaves": 2, "perlin_persistence": 0.35, "perlin_lacunarity": 2.0, "noise_M": 5, "noise_R": 8},
+    "school_bus":       {"M": 0,   "R": 40,  "CC": 12, "paint_fn": paint_school_bus_coat, "desc": "National school bus chrome yellow",
+                         "perlin": True, "perlin_octaves": 3, "perlin_persistence": 0.4, "perlin_lacunarity": 2.0, "noise_M": 8, "noise_R": 12},
+    "fire_engine":      {"M": 5,   "R": 15,  "CC": 16, "paint_fn": paint_fire_engine_gloss, "desc": "Deep wet fire apparatus red gloss",
+                         "perlin": True, "perlin_octaves": 2, "perlin_persistence": 0.3, "perlin_lacunarity": 2.0, "noise_M": 5, "noise_R": 6},
+    "ambulance_white":  {"M": 0,   "R": 30,  "CC": 16, "paint_fn": paint_reflective_coat, "desc": "High-visibility emergency white reflective",
+                         "noise_scales": [8, 16, 32], "noise_weights": [0.4, 0.35, 0.25], "noise_M": 8, "noise_R": 10},
+    "police_black":     {"M": 5,   "R": 8,   "CC": 16, "paint_fn": paint_police_deepblack, "desc": "Law enforcement glossy black",
+                         "perlin": True, "perlin_octaves": 2, "perlin_persistence": 0.25, "perlin_lacunarity": 2.0, "noise_M": 3, "noise_R": 4},
     "dealer_pearl":     {"M": 110, "R": 28,  "CC": 16, "paint_fn": paint_dealer_sparkle, "desc": "Dealer premium tri-coat pearl upgrade",
-                         "noise_scales": [16, 32, 64], "noise_weights": [0.3, 0.4, 0.3], "noise_M": 20, "noise_R": 10},
+                         "noise_scales": [16, 32, 64], "noise_weights": [0.3, 0.4, 0.3], "noise_M": 25, "noise_R": 12},
     # Group 12: CARBON & COMPOSITE (new entries)
-    "carbon_base":      {"M": 100, "R": 60,  "CC": 0,  "paint_fn": paint_carbon_weave_base, "desc": "Raw exposed carbon fiber base material"},
-    "kevlar_base":      {"M": 80,  "R": 90,  "CC": 0,  "paint_fn": paint_kevlar_weave, "desc": "Ballistic kevlar aramid fiber base"},
-    "fiberglass":       {"M": 30,  "R": 80,  "CC": 8,  "paint_fn": paint_fiberglass_gel, "desc": "Raw fiberglass gelcoat semi-gloss"},
-    "carbon_ceramic":   {"M": 110, "R": 40,  "CC": 0,  "paint_fn": paint_carbon_ceramic_coat, "desc": "Brake rotor carbon-ceramic composite"},
-    "aramid":           {"M": 70,  "R": 95,  "CC": 0,  "paint_fn": paint_aramid_weave, "desc": "Woven aramid fiber natural gold-tan"},
-    "graphene":         {"M": 180, "R": 20,  "CC": 0,  "paint_fn": paint_graphene_sheen, "desc": "Single-layer graphene ultra-thin metallic"},
-    "forged_composite": {"M": 90,  "R": 70,  "CC": 0,  "paint_fn": paint_forged_composite_base, "desc": "Lamborghini-style forged carbon composite"},
-    "hybrid_weave":     {"M": 95,  "R": 55,  "CC": 0,  "paint_fn": paint_hybrid_weave_base, "desc": "Carbon-kevlar hybrid bi-weave material"},
+    "carbon_base":      {"M": 100, "R": 60,  "CC": 0,  "paint_fn": paint_carbon_weave_base, "desc": "Raw exposed carbon fiber base material",
+                         "base_spec_fn": _base_spec_carbon_weave},
+    "kevlar_base":      {"M": 80,  "R": 90,  "CC": 0,  "paint_fn": paint_kevlar_base_fn, "desc": "Ballistic kevlar aramid fiber base",
+                         "base_spec_fn": _base_spec_kevlar_weave},
+    "fiberglass":       {"M": 30,  "R": 80,  "CC": 8,  "paint_fn": paint_fiberglass_gel_fn, "desc": "Raw fiberglass gelcoat semi-gloss",
+                         "base_spec_fn": _base_spec_fiberglass},
+    "carbon_ceramic":   {"M": 110, "R": 40,  "CC": 0,  "paint_fn": paint_carbon_ceramic_fn, "desc": "Brake rotor carbon-ceramic composite",
+                         "base_spec_fn": _base_spec_carbon_ceramic},
+    "aramid":           {"M": 70,  "R": 95,  "CC": 0,  "paint_fn": paint_aramid_weave_fn, "desc": "Woven aramid fiber natural gold-tan",
+                         "base_spec_fn": _base_spec_aramid},
+    "graphene":         {"M": 180, "R": 20,  "CC": 0,  "paint_fn": paint_graphene_sheen_fn, "desc": "Single-layer graphene ultra-thin metallic",
+                         "base_spec_fn": _base_spec_graphene},
+    "forged_composite": {"M": 90,  "R": 70,  "CC": 0,  "paint_fn": paint_forged_composite_fn, "desc": "Lamborghini-style forged carbon composite",
+                         "base_spec_fn": _base_spec_forged_composite},
+    "hybrid_weave":     {"M": 95,  "R": 55,  "CC": 0,  "paint_fn": paint_hybrid_weave_fn, "desc": "Carbon-kevlar hybrid bi-weave material",
+                         "base_spec_fn": _base_spec_hybrid_weave},
     # Group 13: PREMIUM LUXURY (new entries — satin_gold already exists)
     "bentley_silver":   {"M": 230, "R": 18,  "CC": 16, "paint_fn": paint_luxury_sparkle, "desc": "Rolls-Royce/Bentley ultra-fine silver"},
     "ferrari_rosso":    {"M": 25,  "R": 10,  "CC": 16, "paint_fn": paint_rosso_depth, "desc": "Ferrari Rosso Corsa deep wet red"},
@@ -799,14 +1692,22 @@ EXPANSION_BASES.update({
     "shokk_void":       {"M": 10,  "R": 240, "CC": 0,  "paint_fn": paint_void_absorb, "desc": "Near-vantablack with subtle edge shimmer"},
     "shokk_static":     {"M": 200, "R": 30,  "CC": 0,  "paint_fn": paint_static_grain, "desc": "Crackling static interference metallic"},
     # Group 15: EXTREME & EXPERIMENTAL (new entries)
-    "quantum_black":    {"M": 5,   "R": 245, "CC": 0,  "paint_fn": paint_quantum_absorb, "desc": "Near-perfect light absorption ultra-black"},
-    "neutron_star":     {"M": 255, "R": 0,   "CC": 0,  "paint_fn": paint_neutron_bright, "desc": "Impossibly bright compressed mirror"},
-    "plasma_core":      {"M": 240, "R": 5,   "CC": 16, "paint_fn": paint_plasma_glow, "desc": "Glowing plasma reactor core metallic"},
-    "dark_matter":      {"M": 30,  "R": 230, "CC": 0,  "paint_fn": paint_dark_matter_shift, "desc": "Ultra-dark with hidden angle-dependent reveal"},
-    "superconductor":   {"M": 250, "R": 2,   "CC": 0,  "paint_fn": paint_superconductor_mirror, "desc": "Perfect zero-resistance mirror surface"},
-    "bioluminescent":   {"M": 60,  "R": 40,  "CC": 16, "paint_fn": paint_bio_glow, "desc": "Deep sea organism soft glow finish"},
-    "solar_panel":      {"M": 140, "R": 50,  "CC": 0,  "paint_fn": paint_solar_cell, "desc": "Photovoltaic solar cell dark blue-black"},
-    "holographic_base": {"M": 200, "R": 10,  "CC": 16, "paint_fn": paint_holo_rainbow, "desc": "Full holographic rainbow prismatic base"},
+    "quantum_black":    {"M": 5,   "R": 245, "CC": 0,  "paint_fn": paint_quantum_absorb, "desc": "Near-perfect light absorption ultra-black",
+                         "base_spec_fn": _base_spec_quantum_black},
+    "neutron_star":     {"M": 255, "R": 0,   "CC": 0,  "paint_fn": paint_neutron_bright, "desc": "Impossibly bright compressed mirror",
+                         "base_spec_fn": _base_spec_neutron_star},
+    "plasma_core":      {"M": 240, "R": 5,   "CC": 16, "paint_fn": paint_plasma_glow, "desc": "Glowing plasma reactor core metallic",
+                         "base_spec_fn": _base_spec_plasma_core},
+    "dark_matter":      {"M": 30,  "R": 230, "CC": 0,  "paint_fn": paint_dark_matter_shift, "desc": "Ultra-dark with hidden angle-dependent reveal",
+                         "base_spec_fn": _base_spec_dark_matter},
+    "superconductor":   {"M": 250, "R": 2,   "CC": 0,  "paint_fn": paint_superconductor_mirror, "desc": "Perfect zero-resistance mirror surface",
+                         "base_spec_fn": _base_spec_superconductor},
+    "bioluminescent":   {"M": 60,  "R": 40,  "CC": 16, "paint_fn": paint_bio_glow, "desc": "Deep sea organism soft glow finish",
+                         "base_spec_fn": _base_spec_bioluminescent},
+    "solar_panel":      {"M": 140, "R": 50,  "CC": 0,  "paint_fn": paint_solar_cell, "desc": "Photovoltaic solar cell dark blue-black",
+                         "base_spec_fn": _base_spec_solar_panel},
+    "holographic_base": {"M": 200, "R": 10,  "CC": 16, "paint_fn": paint_holo_rainbow, "desc": "Full holographic rainbow prismatic base",
+                         "base_spec_fn": _base_spec_holographic},
 })
 
 
@@ -5400,12 +6301,136 @@ spec_plasma_globe = make_effect_spec_fn(100, 30, 16, effect_type="radial")
 spec_firefly = make_flat_spec_fn(40, 60, 0, noise_M=15, noise_scales=[2, 4])
 spec_led_matrix = make_flat_spec_fn(70, 25, 16, noise_M=20, noise_scales=[2, 4, 8])
 spec_cyberpunk = make_flat_spec_fn(90, 30, 16, noise_M=25, noise_R=15, noise_scales=[4, 8, 16])
-paint_neon_vegas = make_colorshift_paint_fn([(0.8, 0.0, 0.3), (0.0, 0.8, 0.0), (0.8, 0.8, 0.0), (0.0, 0.3, 0.8)])
-paint_laser_grid = make_glow_fn([0.0, 0.8, 0.0], glow_strength=0.08)
-paint_plasma_globe = make_glow_fn([0.5, 0.1, 0.8], glow_strength=0.07)
-paint_firefly = make_luxury_sparkle_fn(sparkle_density=0.97, sparkle_strength=0.08)
-paint_led_matrix = make_glow_fn([0.3, 0.6, 0.3], glow_strength=0.06)
-paint_cyberpunk = make_colorshift_paint_fn([(0.7, 0.0, 0.5), (0.0, 0.3, 0.8)])
+def paint_neon_vegas(paint, shape, mask, seed, pm, bb):
+    """Neon Vegas — multi-color neon strip glow like Las Vegas signage."""
+    h, w = shape
+    y = np.linspace(0, 1, h).reshape(h, 1).astype(np.float32)
+    x = np.linspace(0, 1, w).reshape(1, w).astype(np.float32)
+    # Vertical color strips
+    strip = (x * 12) % 1.0
+    blend = 0.25 * pm
+    # Cycle through neon colors
+    r = (np.sin(strip * np.pi * 2) * 0.5 + 0.5) * 0.8
+    g = (np.sin(strip * np.pi * 2 + 2.1) * 0.5 + 0.5) * 0.8
+    b = (np.sin(strip * np.pi * 2 + 4.2) * 0.5 + 0.5) * 0.8
+    paint[:,:,0] = np.clip(paint[:,:,0] * (1 - blend * mask) + r * blend * mask, 0, 1)
+    paint[:,:,1] = np.clip(paint[:,:,1] * (1 - blend * mask) + g * blend * mask, 0, 1)
+    paint[:,:,2] = np.clip(paint[:,:,2] * (1 - blend * mask) + b * blend * mask, 0, 1)
+    return paint
+
+def paint_laser_grid(paint, shape, mask, seed, pm, bb):
+    """Laser Grid — bright green horizontal + vertical grid lines like a laser grid."""
+    h, w = shape
+    y = np.linspace(0, 1, h).reshape(h, 1).astype(np.float32)
+    x = np.linspace(0, 1, w).reshape(1, w).astype(np.float32)
+    # Grid lines — thin bright lines at regular intervals
+    grid_freq = 25  # ~25 lines across surface
+    h_lines = np.clip(1.0 - np.abs(np.sin(y * np.pi * grid_freq)) * 8, 0, 1)
+    v_lines = np.clip(1.0 - np.abs(np.sin(x * np.pi * grid_freq)) * 8, 0, 1)
+    grid = np.clip(h_lines + v_lines, 0, 1)
+    blend = grid * 0.35 * pm * mask
+    # Bright green laser color
+    paint[:,:,0] = np.clip(paint[:,:,0] * (1 - blend * 0.3), 0, 1)
+    paint[:,:,1] = np.clip(paint[:,:,1] + blend * 0.75, 0, 1)
+    paint[:,:,2] = np.clip(paint[:,:,2] * (1 - blend * 0.3), 0, 1)
+    return paint
+
+def paint_plasma_globe(paint, shape, mask, seed, pm, bb):
+    """Plasma Globe — purple/pink tendrils radiating from center like a plasma ball."""
+    h, w = shape
+    cy, cx = h / 2.0, w / 2.0
+    y, x = np.mgrid[0:h, 0:w].astype(np.float32)
+    angle = np.arctan2(y - cy, x - cx)
+    dist = np.sqrt(((y - cy) / h)**2 + ((x - cx) / w)**2)
+    # Radial tendrils via angle-based sine waves
+    n_tendrils = 8
+    tendrils = np.zeros(shape, dtype=np.float32)
+    for i in range(n_tendrils):
+        offset = i * np.pi * 2 / n_tendrils
+        t = np.clip(1.0 - np.abs(np.sin(angle * n_tendrils / 2 + offset)) * 4, 0, 1)
+        t *= np.clip(1.0 - dist * 1.5, 0, 1)  # Fade with distance
+        tendrils = np.clip(tendrils + t, 0, 1)
+    blend = tendrils * 0.30 * pm * mask
+    # Purple/pink plasma color
+    paint[:,:,0] = np.clip(paint[:,:,0] + blend * 0.55, 0, 1)
+    paint[:,:,1] = np.clip(paint[:,:,1] + blend * 0.10, 0, 1)
+    paint[:,:,2] = np.clip(paint[:,:,2] + blend * 0.70, 0, 1)
+    return paint
+
+# (firefly is defined above as full function)
+# paint_firefly already defined above
+
+def paint_led_matrix(paint, shape, mask, seed, pm, bb):
+    """LED Matrix — visible dot/pixel grid pattern like an LED display."""
+    h, w = shape
+    # Pixel grid
+    dot_spacing = max(4, min(h, w) // 60)
+    y, x = np.mgrid[0:h, 0:w].astype(np.float32)
+    dy = (y % dot_spacing) - dot_spacing / 2.0
+    dx = (x % dot_spacing) - dot_spacing / 2.0
+    dot_dist = np.sqrt(dy**2 + dx**2) / (dot_spacing * 0.35)
+    dots = np.clip(1.0 - dot_dist, 0, 1) ** 1.5
+    # Color varies by position
+    hue_shift = ((y // dot_spacing + x // dot_spacing) % 3).astype(np.float32) / 3.0
+    blend = dots * 0.30 * pm * mask
+    paint[:,:,0] = np.clip(paint[:,:,0] + blend * (0.2 + hue_shift * 0.3), 0, 1)
+    paint[:,:,1] = np.clip(paint[:,:,1] + blend * (0.5 - hue_shift * 0.2), 0, 1)
+    paint[:,:,2] = np.clip(paint[:,:,2] + blend * (0.3 + (1 - hue_shift) * 0.3), 0, 1)
+    return paint
+
+def paint_cyberpunk(paint, shape, mask, seed, pm, bb):
+    """Cyberpunk — neon magenta/cyan split with horizontal glitch lines."""
+    h, w = shape
+    y = np.linspace(0, 1, h).reshape(h, 1).astype(np.float32)
+    x = np.linspace(0, 1, w).reshape(1, w).astype(np.float32)
+    # Split: left half magenta, right half cyan
+    split = np.clip((x - 0.5) * 8, -1, 1) * 0.5 + 0.5
+    blend = 0.25 * pm
+    # Magenta (left) / Cyan (right)
+    paint[:,:,0] = np.clip(paint[:,:,0] + (1 - split) * 0.30 * blend * mask, 0, 1)
+    paint[:,:,1] = np.clip(paint[:,:,1] + split * 0.20 * blend * mask, 0, 1)
+    paint[:,:,2] = np.clip(paint[:,:,2] + split * 0.35 * blend * mask + (1 - split) * 0.15 * blend * mask, 0, 1)
+    # Horizontal glitch lines
+    rng = np.random.RandomState(seed + 790)
+    n_glitch = max(3, h // 80)
+    for _ in range(n_glitch):
+        gy = rng.randint(0, h - 4)
+        gh = rng.randint(2, max(3, h // 100))
+        gend = min(h, gy + gh)
+        dx = rng.randint(-w // 10, w // 10)
+        gm = mask[gy:gend, :]
+        for c in range(3):
+            shifted = np.roll(paint[gy:gend, :, c], dx, axis=1)
+            paint[gy:gend, :, c] = np.clip(
+                paint[gy:gend, :, c] * (1 - gm * 0.5 * pm) + shifted * gm * 0.5 * pm, 0, 1)
+    return paint
+def paint_firefly(paint, shape, mask, seed, pm, bb):
+    """Firefly — scattered warm yellow-green point lights like fireflies in the dark."""
+    h, w = shape
+    rng = np.random.RandomState(seed + 780)
+    result = paint.copy()
+    # Slightly darken base for contrast
+    result = np.clip(result * (1 - 0.08 * pm * mask[:,:,np.newaxis]), 0, 1)
+    # Scatter firefly point lights
+    n_flies = max(15, (h * w) // 8000)
+    for _ in range(n_flies):
+        fy = rng.randint(0, h)
+        fx = rng.randint(0, w)
+        if mask[fy, fx] < 0.3:
+            continue
+        # Radial glow from firefly point
+        radius = rng.randint(max(3, min(h, w) // 150), max(5, min(h, w) // 60))
+        brightness = 0.3 + rng.random() * 0.4
+        y_lo = max(0, fy - radius); y_hi = min(h, fy + radius)
+        x_lo = max(0, fx - radius); x_hi = min(w, fx + radius)
+        yy, xx = np.mgrid[y_lo:y_hi, x_lo:x_hi].astype(np.float32)
+        dist = np.sqrt((yy - fy)**2 + (xx - fx)**2) / radius
+        glow = np.clip(1.0 - dist, 0, 1) ** 2 * brightness * pm
+        local_mask = mask[y_lo:y_hi, x_lo:x_hi]
+        result[y_lo:y_hi, x_lo:x_hi, 0] = np.clip(result[y_lo:y_hi, x_lo:x_hi, 0] + glow * 0.6 * local_mask, 0, 1)
+        result[y_lo:y_hi, x_lo:x_hi, 1] = np.clip(result[y_lo:y_hi, x_lo:x_hi, 1] + glow * 0.7 * local_mask, 0, 1)
+        result[y_lo:y_hi, x_lo:x_hi, 2] = np.clip(result[y_lo:y_hi, x_lo:x_hi, 2] + glow * 0.1 * local_mask, 0, 1)
+    return result
 
 # --- Group 11: Texture & Surface (all new) ---
 spec_croc_leather = make_flat_spec_fn(40, 60, 16, noise_R=20, noise_scales=[4, 8, 16])
@@ -6267,19 +7292,236 @@ spec_negative = make_flat_spec_fn(80, 30, 16, noise_M=15, noise_scales=[8, 16])
 spec_parallax = make_effect_spec_fn(70, 30, 16, effect_type="gradient")
 spec_refraction = make_effect_spec_fn(60, 25, 16, effect_type="noise")
 spec_solarization = make_effect_spec_fn(90, 20, 16, effect_type="gradient")
-paint_chromatic_aberration = make_weather_paint_fn(noise_str=0.04, tint_rgb=[0.05, -0.02, 0.05])
-paint_crt_scanline = make_weather_paint_fn(noise_str=0.03, darken=0.04)
-paint_datamosh = make_weather_paint_fn(noise_str=0.06, desat=0.04)
-paint_embossed = make_weather_paint_fn(noise_str=0.03)
-paint_film_burn = make_weather_paint_fn(noise_str=0.04, tint_rgb=[0.05, 0.02, -0.02])
-paint_fish_eye = make_weather_paint_fn(noise_str=0.03)
-paint_halftone = make_weather_paint_fn(noise_str=0.04, desat=0.03)
-paint_kaleidoscope = make_weather_paint_fn(noise_str=0.04)
-paint_long_exposure = make_weather_paint_fn(noise_str=0.03, desat=0.05)
-paint_negative = make_weather_paint_fn(noise_str=0.03, darken=0.03)
-paint_parallax = make_weather_paint_fn(noise_str=0.03)
-paint_refraction = make_weather_paint_fn(noise_str=0.04)
-paint_solarization = make_weather_paint_fn(noise_str=0.04, tint_rgb=[0.03, 0.0, 0.03])
+def paint_chromatic_aberration(paint, shape, mask, seed, pm, bb):
+    """Chromatic Aberration — RGB channel offset for prismatic fringe effect."""
+    h, w = shape
+    offset = max(3, int(w * 0.008))  # ~0.8% of width
+    shifted_r = np.roll(paint[:,:,0], offset, axis=1)
+    shifted_b = np.roll(paint[:,:,2], -offset, axis=1)
+    blend = 0.35 * pm
+    paint[:,:,0] = np.clip(paint[:,:,0] * (1 - blend * mask) + shifted_r * blend * mask, 0, 1)
+    paint[:,:,2] = np.clip(paint[:,:,2] * (1 - blend * mask) + shifted_b * blend * mask, 0, 1)
+    return paint
+
+def paint_crt_scanline(paint, shape, mask, seed, pm, bb):
+    """CRT Scanline — visible horizontal scanline darkening bands."""
+    h, w = shape
+    y = np.arange(h, dtype=np.float32)
+    scanline_freq = max(2, h // 200)  # ~200 scanlines
+    lines = (np.sin(y * np.pi / scanline_freq) * 0.5 + 0.5) ** 2
+    darken = (1.0 - lines * 0.35 * pm)[:, np.newaxis]
+    for c in range(3):
+        paint[:,:,c] = np.clip(paint[:,:,c] * (1 - mask * 0.9 + mask * 0.9 * darken[:,:]), 0, 1)
+    # Slight green tint for CRT feel
+    paint[:,:,1] = np.clip(paint[:,:,1] + 0.03 * pm * mask, 0, 1)
+    return paint
+
+def paint_datamosh(paint, shape, mask, seed, pm, bb):
+    """Datamosh — horizontal band displacement + channel corruption glitch."""
+    h, w = shape
+    rng = np.random.RandomState(seed + 700)
+    result = paint.copy()
+    # Horizontal band displacement — visible glitch strips
+    n_bands = max(5, h // 60)
+    for _ in range(n_bands):
+        band_y = rng.randint(0, h - 20)
+        band_h = rng.randint(8, max(10, h // 20))
+        band_end = min(h, band_y + band_h)
+        dx = rng.randint(-w // 8, w // 8)  # Horizontal shift
+        band_mask = mask[band_y:band_end, :]
+        blend = 0.6 * pm
+        # Shift the band horizontally
+        for c in range(3):
+            shifted = np.roll(paint[band_y:band_end, :, c], dx, axis=1)
+            result[band_y:band_end, :, c] = np.clip(
+                result[band_y:band_end, :, c] * (1 - band_mask * blend) +
+                shifted * band_mask * blend, 0, 1)
+        # Channel swap on some bands for color corruption
+        if rng.random() > 0.5:
+            swap_ch = rng.choice([0, 1, 2], 2, replace=False)
+            temp = result[band_y:band_end, :, swap_ch[0]].copy()
+            result[band_y:band_end, :, swap_ch[0]] = result[band_y:band_end, :, swap_ch[1]]
+            result[band_y:band_end, :, swap_ch[1]] = temp
+    return result
+
+def paint_embossed(paint, shape, mask, seed, pm, bb):
+    """Embossed — raised relief effect via directional light + shadow."""
+    h, w = shape
+    gray = paint[:,:,0] * 0.299 + paint[:,:,1] * 0.587 + paint[:,:,2] * 0.114
+    # Directional emboss: right-down light source
+    shifted = np.roll(np.roll(gray, 1, axis=0), 1, axis=1)
+    emboss = np.clip((gray - shifted) * 3.0 + 0.5, 0, 1)
+    blend = 0.30 * pm
+    for c in range(3):
+        paint[:,:,c] = np.clip(paint[:,:,c] * (1 - mask * blend) + emboss * mask * blend, 0, 1)
+    return paint
+
+def paint_film_burn(paint, shape, mask, seed, pm, bb):
+    """Film Burn — warm amber/orange light leak gradient from edges."""
+    h, w = shape
+    # Radial light leak from top-right corner
+    y, x = np.mgrid[0:h, 0:w].astype(np.float32)
+    dist = np.sqrt((y / h)**2 + ((w - x) / w)**2)
+    burn = np.clip(1.0 - dist * 1.2, 0, 1) ** 1.5
+    blend = 0.25 * pm
+    paint[:,:,0] = np.clip(paint[:,:,0] + burn * 0.35 * blend * mask, 0, 1)  # orange
+    paint[:,:,1] = np.clip(paint[:,:,1] + burn * 0.15 * blend * mask, 0, 1)  # amber
+    paint[:,:,2] = np.clip(paint[:,:,2] - burn * 0.10 * blend * mask, 0, 1)  # reduce blue
+    return paint
+
+def paint_fish_eye(paint, shape, mask, seed, pm, bb):
+    """Fish Eye — barrel distortion warping + edge darkening."""
+    h, w = shape
+    cy, cx = h / 2.0, w / 2.0
+    y, x = np.mgrid[0:h, 0:w].astype(np.float32)
+    # Normalized distance from center
+    ny = (y - cy) / cy
+    nx = (x - cx) / cx
+    dist = np.sqrt(ny**2 + nx**2)
+    # Barrel distortion: bend coordinates outward
+    distortion = 1.0 + dist**2 * 0.3 * pm
+    # Map source coordinates
+    src_y = np.clip((ny / distortion * cy + cy).astype(int), 0, h - 1)
+    src_x = np.clip((nx / distortion * cx + cx).astype(int), 0, w - 1)
+    result = paint.copy()
+    blend = 0.40 * pm
+    for c in range(3):
+        warped = paint[src_y, src_x, c]
+        result[:,:,c] = np.clip(paint[:,:,c] * (1 - mask * blend) + warped * mask * blend, 0, 1)
+    # Edge darkening vignette
+    vignette = np.clip(dist * 0.6, 0, 1) ** 2 * 0.20 * pm
+    result = np.clip(result - vignette[:,:,np.newaxis] * mask[:,:,np.newaxis], 0, 1)
+    return result
+
+def paint_halftone(paint, shape, mask, seed, pm, bb):
+    """Halftone — visible dot grid pattern like newsprint."""
+    h, w = shape
+    dot_size = max(4, min(h, w) // 80)
+    y, x = np.mgrid[0:h, 0:w].astype(np.float32)
+    # Grid of dots
+    dy = (y % dot_size) - dot_size / 2.0
+    dx = (x % dot_size) - dot_size / 2.0
+    dist = np.sqrt(dy**2 + dx**2) / (dot_size / 2.0)
+    # Dot size varies with image brightness
+    gray = paint[:,:,0] * 0.299 + paint[:,:,1] * 0.587 + paint[:,:,2] * 0.114
+    dot_threshold = gray * 1.2
+    dots = np.where(dist < dot_threshold, 1.0, 0.3)
+    blend = 0.30 * pm
+    for c in range(3):
+        paint[:,:,c] = np.clip(paint[:,:,c] * (1 - mask * blend) + paint[:,:,c] * dots * mask * blend, 0, 1)
+    return paint
+
+def paint_kaleidoscope(paint, shape, mask, seed, pm, bb):
+    """Kaleidoscope — radial symmetric color pattern with high saturation."""
+    h, w = shape
+    cy, cx = h / 2.0, w / 2.0
+    y, x = np.mgrid[0:h, 0:w].astype(np.float32)
+    # Polar coordinates from center
+    angle = np.arctan2(y - cy, x - cx)  # -pi to pi
+    dist = np.sqrt(((y - cy) / cy)**2 + ((x - cx) / cx)**2)
+    # Create kaleidoscope: fold angle into 6 symmetric segments
+    n_segments = 6
+    folded = np.abs(((angle / (2 * np.pi) + 0.5) * n_segments) % 1.0 - 0.5) * 2
+    # Rainbow color from folded angle + radial variation
+    hue = (folded + dist * 0.3) % 1.0
+    sat = np.clip(0.7 + dist * 0.3, 0, 1)
+    val = np.clip(0.8 - dist * 0.2, 0.3, 1)
+    # HSV to RGB
+    c = val * sat
+    hp = hue * 6.0
+    x2 = c * (1 - np.abs(hp % 2 - 1))
+    r = np.zeros_like(c); g = np.zeros_like(c); b = np.zeros_like(c)
+    for lo in range(6):
+        m = (hp >= lo) & (hp < lo + 1)
+        if lo == 0: r[m] = c[m]; g[m] = x2[m]
+        elif lo == 1: r[m] = x2[m]; g[m] = c[m]
+        elif lo == 2: g[m] = c[m]; b[m] = x2[m]
+        elif lo == 3: g[m] = x2[m]; b[m] = c[m]
+        elif lo == 4: r[m] = x2[m]; b[m] = c[m]
+        elif lo == 5: r[m] = c[m]; b[m] = x2[m]
+    off = val - c
+    r += off; g += off; b += off
+    blend = 0.30 * pm
+    paint[:,:,0] = np.clip(paint[:,:,0] * (1 - mask * blend) + r * mask * blend, 0, 1)
+    paint[:,:,1] = np.clip(paint[:,:,1] * (1 - mask * blend) + g * mask * blend, 0, 1)
+    paint[:,:,2] = np.clip(paint[:,:,2] * (1 - mask * blend) + b * mask * blend, 0, 1)
+    return paint
+
+def paint_long_exposure(paint, shape, mask, seed, pm, bb):
+    """Long Exposure — horizontal motion blur + light trail brightening."""
+    from PIL import Image as _Img, ImageFilter as _Filt
+    h, w = shape
+    blur_radius = max(2, w // 40)
+    result = paint.copy()
+    blend = 0.35 * pm
+    for c in range(3):
+        ch_img = _Img.fromarray((paint[:,:,c] * 255).astype(np.uint8))
+        # Horizontal-only blur via box blur with tall kernel
+        blurred = ch_img.filter(_Filt.BoxBlur(blur_radius))
+        blurred_arr = np.array(blurred).astype(np.float32) / 255.0
+        result[:,:,c] = np.clip(paint[:,:,c] * (1 - mask * blend) + blurred_arr * mask * blend, 0, 1)
+    # Light trail: brighten the blurred result
+    result = np.clip(result + 0.06 * pm * mask[:,:,np.newaxis], 0, 1)
+    return result
+
+def paint_negative(paint, shape, mask, seed, pm, bb):
+    """Negative — photographic negative color inversion."""
+    blend = 0.50 * pm
+    inverted = 1.0 - paint
+    for c in range(3):
+        paint[:,:,c] = np.clip(paint[:,:,c] * (1 - mask * blend) + inverted[:,:,c] * mask * blend, 0, 1)
+    return paint
+
+def paint_parallax(paint, shape, mask, seed, pm, bb):
+    """Parallax — depth-based brightness layering for pseudo-3D."""
+    h, w = shape
+    gray = paint[:,:,0] * 0.299 + paint[:,:,1] * 0.587 + paint[:,:,2] * 0.114
+    # Create depth layers: bright areas pop forward (brighter), dark areas recede
+    depth = (gray - 0.5) * 2.0  # -1 to +1
+    # Near layer: brighten
+    near_boost = np.clip(depth, 0, 1) * 0.20 * pm
+    # Far layer: darken + desaturate
+    far_darken = np.clip(-depth, 0, 1) * 0.15 * pm
+    # Apply with edge enhancement for depth perception
+    gx = np.abs(np.diff(gray, axis=1, prepend=gray[:, :1]))
+    gy = np.abs(np.diff(gray, axis=0, prepend=gray[:1, :]))
+    edges = np.clip((gx + gy) * 5.0, 0, 1) * 0.10 * pm
+    for c in range(3):
+        paint[:,:,c] = np.clip(paint[:,:,c] + near_boost * mask - far_darken * mask + edges * mask, 0, 1)
+    return paint
+
+def paint_refraction(paint, shape, mask, seed, pm, bb):
+    """Refraction — prismatic color split via per-channel noise displacement."""
+    h, w = shape
+    noise = _multi_scale_noise(shape, [8, 16, 32], [0.3, 0.4, 0.3], seed + 800)
+    noise_norm = (noise - noise.min()) / (noise.max() - noise.min() + 1e-8)
+    # Each channel gets shifted by noise field at different scales
+    blend = 0.30 * pm
+    result = paint.copy()
+    for c in range(3):
+        # Create displaced version via noise-weighted sampling
+        shift_amount = (c - 1) * 0.08  # R:left, G:center, B:right
+        hue_shift = noise_norm * shift_amount * pm
+        result[:,:,c] = np.clip(
+            paint[:,:,c] * (1 - mask * blend) +
+            np.clip(paint[:,:,c] + hue_shift, 0, 1) * mask * blend,
+            0, 1)
+    # Add prismatic edge highlights where noise gradient is strong
+    grad = np.abs(np.diff(noise_norm, axis=1, prepend=noise_norm[:,:1]))
+    prism = np.clip(grad * 8, 0, 1) * 0.08 * pm
+    paint[:,:,0] = np.clip(result[:,:,0] + prism * mask, 0, 1)
+    paint[:,:,1] = result[:,:,1]
+    paint[:,:,2] = np.clip(result[:,:,2] + prism * 0.5 * mask, 0, 1)
+    return paint
+
+def paint_solarization(paint, shape, mask, seed, pm, bb):
+    """Solarization — Sabattier effect: partial inversion at threshold."""
+    blend = 0.40 * pm
+    # Invert only mid-tones (threshold at 0.5)
+    solarized = np.where(paint > 0.5, 1.0 - paint, paint * 2.0)
+    for c in range(3):
+        paint[:,:,c] = np.clip(paint[:,:,c] * (1 - mask * blend) + solarized[:,:,c] * mask * blend, 0, 1)
+    return paint
 
 # --- Racing Legend (10 missing) ---
 spec_burnout_zone = make_flat_spec_fn(160, 25, 16, noise_M=25, noise_R=15, noise_scales=[4, 8])
@@ -6367,37 +7609,352 @@ paint_necrotic = make_aged_fn(fade_strength=0.15, roughen=0.08)
 paint_shadow_realm = make_weather_paint_fn(darken=0.20, desat=0.18)
 paint_spectral = make_weather_paint_fn(darken=0.08, desat=0.12, noise_str=0.04)
 
-# --- Neon & Glow (15 missing) ---
-spec_aurora_glow = make_flat_spec_fn(80, 30, 16, noise_M=20, noise_scales=[8, 16])
-spec_blacklight_paint = make_flat_spec_fn(60, 40, 16, noise_M=20, noise_scales=[4, 8])
-spec_bioluminescent_wave = make_effect_spec_fn(70, 35, 16, effect_type="gradient")
-spec_electric_arc = make_effect_spec_fn(150, 15, 16, effect_type="noise")
-spec_fluorescent = make_flat_spec_fn(50, 30, 16, noise_M=15, noise_scales=[8, 16])
-spec_glow_stick = make_flat_spec_fn(40, 35, 16, noise_M=15, noise_scales=[4, 8])
-spec_laser_show = make_effect_spec_fn(120, 20, 16, effect_type="bands")
-spec_magnesium_burn = make_effect_spec_fn(220, 8, 16, effect_type="noise")
-spec_neon_sign = make_flat_spec_fn(90, 25, 16, noise_M=20, noise_scales=[4, 8])
-spec_phosphorescent = make_flat_spec_fn(60, 40, 16, noise_M=15, noise_scales=[8, 16])
-spec_rave = make_flat_spec_fn(70, 30, 16, noise_M=25, noise_scales=[4, 8])
-spec_sodium_lamp = make_flat_spec_fn(100, 35, 16, noise_M=15, noise_scales=[8, 16])
-spec_tesla_coil = make_effect_spec_fn(160, 15, 16, effect_type="noise")
-spec_tracer_round = make_effect_spec_fn(180, 12, 16, effect_type="gradient")
-spec_welding_arc = make_effect_spec_fn(200, 10, 16, effect_type="noise")
-paint_aurora_glow = make_glow_fn([0.0, 0.5, 0.3], glow_strength=0.07)
-paint_blacklight_paint = make_glow_fn([0.3, 0.0, 0.6], glow_strength=0.08)
-paint_bioluminescent_wave = make_glow_fn([0.0, 0.6, 0.4], glow_strength=0.07)
-paint_electric_arc = make_glow_fn([0.3, 0.5, 0.8], glow_strength=0.08)
-paint_fluorescent = make_glow_fn([0.2, 0.6, 0.1], glow_strength=0.07)
-paint_glow_stick = make_glow_fn([0.1, 0.7, 0.0], glow_strength=0.08)
-paint_laser_show = make_colorshift_paint_fn([(0.8, 0.0, 0.0), (0.0, 0.8, 0.0), (0.0, 0.0, 0.8)])
-paint_magnesium_burn = make_glow_fn([0.8, 0.8, 0.8], glow_strength=0.08)
-paint_neon_sign = make_glow_fn([0.7, 0.0, 0.3], glow_strength=0.07)
-paint_phosphorescent = make_glow_fn([0.1, 0.5, 0.2], glow_strength=0.06)
-paint_rave = make_colorshift_paint_fn([(0.7, 0.0, 0.5), (0.0, 0.7, 0.3), (0.7, 0.7, 0.0)])
-paint_sodium_lamp = make_glow_fn([0.6, 0.4, 0.0], glow_strength=0.06)
-paint_tesla_coil = make_glow_fn([0.2, 0.3, 0.8], glow_strength=0.08)
-paint_tracer_round = make_glow_fn([0.7, 0.4, 0.0], glow_strength=0.08)
-paint_welding_arc = make_glow_fn([0.6, 0.6, 0.8], glow_strength=0.08)
+# --- Neon & Glow (15 missing) — ULTRA LOW ROUGHNESS for glow-like brightness ---
+spec_aurora_glow = make_flat_spec_fn(120, 8, 16, noise_M=25, noise_scales=[8, 16])
+spec_blacklight_paint = make_flat_spec_fn(100, 10, 16, noise_M=20, noise_scales=[4, 8])
+spec_bioluminescent_wave = make_effect_spec_fn(110, 8, 16, effect_type="gradient")
+spec_electric_arc = make_effect_spec_fn(200, 5, 16, effect_type="noise")
+spec_fluorescent = make_flat_spec_fn(90, 10, 16, noise_M=20, noise_scales=[8, 16])
+spec_glow_stick = make_flat_spec_fn(80, 12, 16, noise_M=15, noise_scales=[4, 8])
+spec_laser_show = make_effect_spec_fn(180, 5, 16, effect_type="bands")
+spec_magnesium_burn = make_effect_spec_fn(240, 3, 16, effect_type="noise")
+spec_neon_sign = make_flat_spec_fn(140, 8, 16, noise_M=25, noise_scales=[4, 8])
+spec_phosphorescent = make_flat_spec_fn(100, 12, 16, noise_M=15, noise_scales=[8, 16])
+spec_rave = make_flat_spec_fn(120, 8, 16, noise_M=30, noise_scales=[4, 8])
+spec_sodium_lamp = make_flat_spec_fn(150, 10, 16, noise_M=20, noise_scales=[8, 16])
+spec_tesla_coil = make_effect_spec_fn(200, 5, 16, effect_type="noise")
+spec_tracer_round = make_effect_spec_fn(220, 4, 16, effect_type="gradient")
+spec_welding_arc = make_effect_spec_fn(240, 3, 16, effect_type="noise")
+def paint_aurora_glow(paint, shape, mask, seed, pm, bb):
+    """Aurora Glow — flowing horizontal bands of green/purple/blue like northern lights."""
+    h, w = shape
+    y = np.linspace(0, 1, h).reshape(h, 1).astype(np.float32)
+    x = np.linspace(0, 1, w).reshape(1, w).astype(np.float32)
+    # Multiple wavy horizontal bands at different frequencies
+    wave1 = np.sin(y * np.pi * 20 + np.sin(x * np.pi * 4) * 2) * 0.5 + 0.5
+    wave2 = np.sin(y * np.pi * 35 + np.sin(x * np.pi * 6) * 1.5) * 0.5 + 0.5
+    wave3 = np.sin(y * np.pi * 12 - np.sin(x * np.pi * 3) * 3) * 0.5 + 0.5
+    # Green/teal core with purple edges
+    band = (wave1 + wave2 * 0.5 + wave3 * 0.3) / 1.8
+    blend = 0.30 * pm
+    paint[:,:,0] = np.clip(paint[:,:,0] * (1 - blend * mask) + (0.1 + band * 0.3) * blend * mask, 0, 1)
+    paint[:,:,1] = np.clip(paint[:,:,1] * (1 - blend * mask) + (0.3 + band * 0.6) * blend * mask, 0, 1)
+    paint[:,:,2] = np.clip(paint[:,:,2] * (1 - blend * mask) + (0.2 + (1 - band) * 0.5) * blend * mask, 0, 1)
+    # Brighten band peaks
+    bright = np.clip(band - 0.5, 0, 1) * 0.15 * pm
+    paint = np.clip(paint + bright[:,:,np.newaxis] * mask[:,:,np.newaxis], 0, 1)
+    return paint
+
+def paint_blacklight_paint(paint, shape, mask, seed, pm, bb):
+    """Blacklight Paint — UV reactive: hypersaturate + purple wash with bright hot spots."""
+    h, w = shape
+    # Boost saturation massively
+    gray = (paint[:,:,0] * 0.299 + paint[:,:,1] * 0.587 + paint[:,:,2] * 0.114)[:,:,np.newaxis]
+    saturated = np.clip(paint + (paint - gray) * 1.2 * pm, 0, 1)
+    # Purple UV wash overlay
+    blend = 0.25 * pm
+    saturated[:,:,0] = np.clip(saturated[:,:,0] + 0.15 * blend * mask, 0, 1)
+    saturated[:,:,2] = np.clip(saturated[:,:,2] + 0.25 * blend * mask, 0, 1)
+    paint = np.clip(paint * (1 - blend * mask[:,:,np.newaxis]) + saturated * blend * mask[:,:,np.newaxis], 0, 1)
+    # Bright UV noise spots
+    rng = np.random.RandomState(seed + 700)
+    spots = rng.random(shape).astype(np.float32)
+    hot = np.where(spots > 0.95, 0.18 * pm, 0.0)
+    paint[:,:,2] = np.clip(paint[:,:,2] + hot * mask, 0, 1)
+    return paint
+
+def paint_bioluminescent_wave(paint, shape, mask, seed, pm, bb):
+    """Bioluminescent Wave — horizontal sine wave glow bands in blue-green."""
+    h, w = shape
+    y = np.linspace(0, 1, h).reshape(h, 1).astype(np.float32)
+    x = np.linspace(0, 1, w).reshape(1, w).astype(np.float32)
+    # Organic wave motion
+    wave = np.sin(y * np.pi * 16 + np.sin(x * np.pi * 8) * 1.5) * 0.5 + 0.5
+    wave2 = np.sin(y * np.pi * 24 - x * np.pi * 5) * 0.5 + 0.5
+    glow = np.clip((wave * 0.6 + wave2 * 0.4), 0, 1)
+    blend = 0.30 * pm
+    # Blue-green ocean bioluminescence
+    paint[:,:,0] = np.clip(paint[:,:,0] * (1 - blend * glow * mask), 0, 1)
+    paint[:,:,1] = np.clip(paint[:,:,1] + glow * 0.35 * blend * mask, 0, 1)
+    paint[:,:,2] = np.clip(paint[:,:,2] + glow * 0.25 * blend * mask, 0, 1)
+    return paint
+
+def paint_electric_arc(paint, shape, mask, seed, pm, bb):
+    """Electric Arc — jagged lightning bolt lines crackling across surface."""
+    h, w = shape
+    rng = np.random.RandomState(seed + 710)
+    arc_map = np.zeros(shape, dtype=np.float32)
+    # Generate several lightning bolts
+    n_arcs = max(3, min(h, w) // 200)
+    for _ in range(n_arcs):
+        # Start from random edge point
+        py = rng.randint(0, h)
+        px = 0 if rng.random() > 0.5 else w - 1
+        # Walk across with jagged steps
+        for step in range(max(80, w // 8)):
+            # Jagged movement
+            py = np.clip(py + rng.randint(-6, 7), 0, h - 1)
+            px = np.clip(px + (3 if px < w // 2 else -3), 0, w - 1)
+            # Draw thick bolt
+            y_lo = max(0, py - 2); y_hi = min(h, py + 3)
+            x_lo = max(0, px - 1); x_hi = min(w, px + 2)
+            arc_map[y_lo:y_hi, x_lo:x_hi] = 1.0
+    # Dilate arcs for glow aura
+    from PIL import Image as _Img, ImageFilter as _Filt
+    arc_img = _Img.fromarray((arc_map * 255).astype(np.uint8))
+    glow_img = arc_img.filter(_Filt.GaussianBlur(radius=max(2, min(h, w) // 120)))
+    glow = np.array(glow_img).astype(np.float32) / 255.0
+    combined = np.clip(arc_map * 1.0 + glow * 0.6, 0, 1)
+    blend = combined * 0.40 * pm * mask
+    # Blue-white electrical color
+    paint[:,:,0] = np.clip(paint[:,:,0] + blend * 0.3, 0, 1)
+    paint[:,:,1] = np.clip(paint[:,:,1] + blend * 0.5, 0, 1)
+    paint[:,:,2] = np.clip(paint[:,:,2] + blend * 0.9, 0, 1)
+    return paint
+
+def paint_fluorescent(paint, shape, mask, seed, pm, bb):
+    """Fluorescent — bright flat greenish-white glow with slight tube flicker."""
+    h, w = shape
+    # Harsh flat glow with horizontal tube bands
+    y = np.arange(h, dtype=np.float32)
+    tube_bands = (np.sin(y * np.pi / max(2, h // 12)) * 0.5 + 0.5)[:, np.newaxis]
+    flicker = 0.85 + tube_bands * 0.15
+    blend = 0.25 * pm
+    # Greenish-white fluorescent
+    paint[:,:,0] = np.clip(paint[:,:,0] + 0.15 * blend * mask * flicker[:,:], 0, 1)
+    paint[:,:,1] = np.clip(paint[:,:,1] + 0.30 * blend * mask * flicker[:,:], 0, 1)
+    paint[:,:,2] = np.clip(paint[:,:,2] + 0.08 * blend * mask * flicker[:,:], 0, 1)
+    # Overall brightness boost
+    paint = np.clip(paint + 0.06 * pm * mask[:,:,np.newaxis], 0, 1)
+    return paint
+
+def paint_glow_stick(paint, shape, mask, seed, pm, bb):
+    """Glow Stick — neon green chemical glow with bright contour lines + pulse variation."""
+    from PIL import Image as _Img, ImageFilter as _Filt
+    h, w = shape
+    # Mask edge contours for glow tube effect
+    mask_img = _Img.fromarray((mask * 255).astype(np.uint8))
+    edges = np.array(mask_img.filter(_Filt.FIND_EDGES)).astype(np.float32) / 255.0
+    edge_glow = np.array(_Img.fromarray((np.clip(edges * 3, 0, 1) * 255).astype(np.uint8)).filter(
+        _Filt.GaussianBlur(radius=max(2, min(h, w) // 100)))).astype(np.float32) / 255.0
+    # Pulsing noise variation
+    noise = _multi_scale_noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + 720)
+    pulse = (noise - noise.min()) / (noise.max() - noise.min() + 1e-8)
+    glow = np.clip(edge_glow * 1.5 + pulse * 0.5, 0, 1) * pm * mask
+    # Chemical NEON green — kill red/blue, boost green hard
+    paint[:,:,0] = np.clip(paint[:,:,0] * (1 - glow * 0.5) + glow * 0.03, 0, 1)
+    paint[:,:,1] = np.clip(paint[:,:,1] * (1 - glow * 0.3) + glow * 0.50, 0, 1)
+    paint[:,:,2] = np.clip(paint[:,:,2] * (1 - glow * 0.5), 0, 1)
+    # Bright green core where glow peaks
+    hot = np.clip((glow - 0.4) * 3, 0, 1) * 0.12
+    paint[:,:,1] = np.clip(paint[:,:,1] + hot, 0, 1)
+    return paint
+
+def paint_laser_show(paint, shape, mask, seed, pm, bb):
+    """Laser Show — thin bright beam lines radiating from random points."""
+    h, w = shape
+    rng = np.random.RandomState(seed + 730)
+    beams = np.zeros(shape, dtype=np.float32)
+    n_beams = max(4, min(h, w) // 150)
+    # Generate thin beam lines at various angles
+    for _ in range(n_beams):
+        angle = rng.random() * np.pi
+        cy = rng.randint(h // 4, 3 * h // 4)
+        cx = rng.randint(w // 4, 3 * w // 4)
+        y, x = np.mgrid[0:h, 0:w].astype(np.float32)
+        # Distance from beam line
+        beam_dir_y = np.sin(angle)
+        beam_dir_x = np.cos(angle)
+        cross = np.abs((y - cy) * beam_dir_x - (x - cx) * beam_dir_y)
+        beam = np.clip(1.0 - cross / max(2, min(h, w) // 400), 0, 1)
+        color_idx = rng.randint(0, 3)
+        beams = np.clip(beams + beam, 0, 1)
+    blend = beams * 0.35 * pm * mask
+    # Multi-color laser beams (RGB)
+    paint[:,:,0] = np.clip(paint[:,:,0] + blend * 0.8, 0, 1)
+    paint[:,:,1] = np.clip(paint[:,:,1] + blend * 0.3, 0, 1)
+    paint[:,:,2] = np.clip(paint[:,:,2] + blend * 0.6, 0, 1)
+    return paint
+
+def paint_magnesium_burn(paint, shape, mask, seed, pm, bb):
+    """Magnesium Burn — large centered white-hot bloom covering most of surface."""
+    h, w = shape
+    cy, cx = h * 0.5, w * 0.5  # True center
+    y, x = np.mgrid[0:h, 0:w].astype(np.float32)
+    dist = np.sqrt(((y - cy) / h)**2 + ((x - cx) / w)**2)
+    # Large bloom covering ~80% of surface
+    bloom = np.clip(1.0 - dist * 1.5, 0, 1) ** 1.5
+    # Outer glow ring
+    outer = np.clip(1.0 - dist * 1.0, 0, 1) * 0.3
+    combined = np.clip(bloom + outer, 0, 1)
+    blend = combined * 0.50 * pm * mask
+    # White-hot center with slight blue tint
+    paint[:,:,0] = np.clip(paint[:,:,0] + blend * 0.90, 0, 1)
+    paint[:,:,1] = np.clip(paint[:,:,1] + blend * 0.88, 0, 1)
+    paint[:,:,2] = np.clip(paint[:,:,2] + blend * 0.95, 0, 1)
+    return paint
+
+def paint_neon_sign(paint, shape, mask, seed, pm, bb):
+    """Neon Sign — bright edge contour glow in hot pink, like a neon tube."""
+    from PIL import Image as _Img, ImageFilter as _Filt
+    h, w = shape
+    # Detect mask edges for tube-like contour glow
+    mask_img = _Img.fromarray((mask * 255).astype(np.uint8))
+    edges = np.array(mask_img.filter(_Filt.FIND_EDGES)).astype(np.float32) / 255.0
+    # Widen for neon tube thickness
+    edge_bright = np.clip(edges * 4, 0, 1)
+    edge_img = _Img.fromarray((edge_bright * 255).astype(np.uint8))
+    tube = np.array(edge_img.filter(_Filt.GaussianBlur(radius=max(3, min(h, w) // 60)))).astype(np.float32) / 255.0
+    # Add interior noise glow
+    noise = _multi_scale_noise(shape, [16, 32], [0.5, 0.5], seed + 740)
+    noise_glow = np.clip((noise - noise.min()) / (noise.max() - noise.min() + 1e-8) - 0.4, 0, 1) * 0.4
+    combined = np.clip(tube + noise_glow, 0, 1)
+    blend = combined * 0.40 * pm * mask
+    # Hot pink neon
+    paint[:,:,0] = np.clip(paint[:,:,0] + blend * 0.85, 0, 1)
+    paint[:,:,1] = np.clip(paint[:,:,1] + blend * 0.05, 0, 1)
+    paint[:,:,2] = np.clip(paint[:,:,2] + blend * 0.35, 0, 1)
+    return paint
+
+def paint_phosphorescent(paint, shape, mask, seed, pm, bb):
+    """Phosphorescent — glows brighter in dark areas (stored charge release)."""
+    h, w = shape
+    gray = paint[:,:,0] * 0.299 + paint[:,:,1] * 0.587 + paint[:,:,2] * 0.114
+    # Glow is inverse of brightness — darker areas glow more
+    glow_intensity = np.clip(1.0 - gray * 1.5, 0, 1)
+    blend = glow_intensity * 0.30 * pm * mask
+    # Pale green phosphorescent glow
+    paint[:,:,0] = np.clip(paint[:,:,0] + blend * 0.10, 0, 1)
+    paint[:,:,1] = np.clip(paint[:,:,1] + blend * 0.55, 0, 1)
+    paint[:,:,2] = np.clip(paint[:,:,2] + blend * 0.15, 0, 1)
+    return paint
+
+def paint_rave(paint, shape, mask, seed, pm, bb):
+    """Rave — dense small neon confetti blocks covering the surface."""
+    h, w = shape
+    rng = np.random.RandomState(seed + 750)
+    result = paint.copy()
+    # Much smaller blocks for dense confetti look
+    block_h = max(3, h // 80)
+    block_w = max(3, w // 80)
+    neon_colors = [
+        (1.0, 0.0, 0.5),  (0.0, 1.0, 0.0),  (0.0, 0.5, 1.0),
+        (1.0, 1.0, 0.0),  (0.8, 0.0, 1.0),  (1.0, 0.3, 0.0),
+        (0.0, 1.0, 1.0),  (1.0, 0.0, 1.0),
+    ]
+    # Many blocks for dense coverage
+    n_blocks = max(60, (h * w) // (block_h * block_w * 2))
+    for _ in range(n_blocks):
+        by = rng.randint(0, max(1, h - block_h))
+        bx = rng.randint(0, max(1, w - block_w))
+        color = neon_colors[rng.randint(0, len(neon_colors))]
+        bm = mask[by:by+block_h, bx:bx+block_w]
+        blend = 0.40 * pm
+        for c in range(3):
+            result[by:by+block_h, bx:bx+block_w, c] = np.clip(
+                result[by:by+block_h, bx:bx+block_w, c] * (1 - bm * blend) +
+                color[c] * bm * blend, 0, 1)
+    return result
+
+def paint_sodium_lamp(paint, shape, mask, seed, pm, bb):
+    """Sodium Lamp — flat amber/orange monochromatic wash (street light effect)."""
+    h, w = shape
+    gray = paint[:,:,0] * 0.299 + paint[:,:,1] * 0.587 + paint[:,:,2] * 0.114
+    blend = 0.35 * pm
+    # Convert to amber monochrome
+    amber_r = gray * 0.95
+    amber_g = gray * 0.65
+    amber_b = gray * 0.15
+    paint[:,:,0] = np.clip(paint[:,:,0] * (1 - mask * blend) + amber_r * mask * blend, 0, 1)
+    paint[:,:,1] = np.clip(paint[:,:,1] * (1 - mask * blend) + amber_g * mask * blend, 0, 1)
+    paint[:,:,2] = np.clip(paint[:,:,2] * (1 - mask * blend) + amber_b * mask * blend, 0, 1)
+    return paint
+
+def paint_tesla_coil(paint, shape, mask, seed, pm, bb):
+    """Tesla Coil — dense branching arc discharge covering full surface."""
+    h, w = shape
+    rng = np.random.RandomState(seed + 760)
+    arcs = np.zeros(shape, dtype=np.float32)
+    # Many bolts from ALL edges for full surface coverage
+    n_bolts = max(8, min(h, w) // 80)
+    for i in range(n_bolts):
+        # Alternate start edge: top, bottom, left, right
+        edge = i % 4
+        if edge == 0:  # top
+            py, px = 0, rng.randint(0, w)
+        elif edge == 1:  # bottom
+            py, px = h - 1, rng.randint(0, w)
+        elif edge == 2:  # left
+            py, px = rng.randint(0, h), 0
+        else:  # right
+            py, px = rng.randint(0, h), w - 1
+        # Walk across surface with jagged random walk
+        for step in range(max(100, max(h, w) // 4)):
+            # Move toward center-ish with jag
+            dy = rng.randint(-4, 5) + (1 if py < h // 2 else -1)
+            dx = rng.randint(-4, 5) + (1 if px < w // 2 else -1)
+            py = np.clip(py + dy, 0, h - 1)
+            px = np.clip(px + dx, 0, w - 1)
+            arcs[max(0,py-1):min(h,py+2), max(0,px-1):min(w,px+2)] = 1.0
+            # Branch frequently
+            if rng.random() > 0.80:
+                bpx, bpy = px, py
+                for bs in range(rng.randint(8, 25)):
+                    bpy = np.clip(bpy + rng.randint(-3, 4), 0, h - 1)
+                    bpx = np.clip(bpx + rng.randint(-3, 4), 0, w - 1)
+                    arcs[max(0,bpy-1):min(h,bpy+1), max(0,bpx-1):min(w,bpx+1)] = 0.7
+    # Glow aura
+    from PIL import Image as _Img, ImageFilter as _Filt
+    arc_img = _Img.fromarray((np.clip(arcs, 0, 1) * 255).astype(np.uint8))
+    glow = np.array(arc_img.filter(_Filt.GaussianBlur(radius=max(3, min(h, w) // 100)))).astype(np.float32) / 255.0
+    combined = np.clip(arcs + glow * 0.5, 0, 1) * pm * mask
+    # Blue-purple electrical
+    paint[:,:,0] = np.clip(paint[:,:,0] + combined * 0.25, 0, 1)
+    paint[:,:,1] = np.clip(paint[:,:,1] + combined * 0.15, 0, 1)
+    paint[:,:,2] = np.clip(paint[:,:,2] + combined * 0.80, 0, 1)
+    return paint
+
+def paint_tracer_round(paint, shape, mask, seed, pm, bb):
+    """Tracer Round — bright diagonal streak lines across surface."""
+    h, w = shape
+    y = np.linspace(0, 1, h).reshape(h, 1).astype(np.float32)
+    x = np.linspace(0, 1, w).reshape(1, w).astype(np.float32)
+    # Multiple diagonal streak lines
+    streaks = np.zeros(shape, dtype=np.float32)
+    for offset in [0.0, 0.25, 0.5, 0.75]:
+        line = np.abs((y * 2 + x * 3 + offset) % 1.0 - 0.5) * 2
+        streak = np.clip(1.0 - line * 15, 0, 1)
+        streaks = np.clip(streaks + streak, 0, 1)
+    blend = streaks * 0.35 * pm * mask
+    # Orange-yellow tracer glow
+    paint[:,:,0] = np.clip(paint[:,:,0] + blend * 0.85, 0, 1)
+    paint[:,:,1] = np.clip(paint[:,:,1] + blend * 0.50, 0, 1)
+    paint[:,:,2] = np.clip(paint[:,:,2] + blend * 0.05, 0, 1)
+    return paint
+
+def paint_welding_arc(paint, shape, mask, seed, pm, bb):
+    """Welding Arc — intense blue-white point bloom with scatter sparks."""
+    h, w = shape
+    rng = np.random.RandomState(seed + 770)
+    # Multiple bright arc points
+    n_points = max(2, min(h, w) // 400)
+    bloom = np.zeros(shape, dtype=np.float32)
+    for _ in range(n_points):
+        cy = rng.randint(h // 6, 5 * h // 6)
+        cx = rng.randint(w // 6, 5 * w // 6)
+        y, x = np.mgrid[0:h, 0:w].astype(np.float32)
+        dist = np.sqrt(((y - cy) / h)**2 + ((x - cx) / w)**2)
+        point_bloom = np.clip(1.0 - dist * 5.0, 0, 1) ** 2
+        bloom = np.clip(bloom + point_bloom, 0, 1)
+    # Scatter sparks
+    sparks = rng.random(shape).astype(np.float32)
+    spark_map = np.where(sparks > 0.985, 0.5, 0.0) * mask * pm
+    combined = (bloom * 0.40 * pm * mask) + spark_map
+    # Blue-white arc color
+    paint[:,:,0] = np.clip(paint[:,:,0] + combined * 0.55, 0, 1)
+    paint[:,:,1] = np.clip(paint[:,:,1] + combined * 0.60, 0, 1)
+    paint[:,:,2] = np.clip(paint[:,:,2] + combined * 0.95, 0, 1)
+    return paint
 
 # --- Texture & Surface (4 missing) ---
 spec_granite = make_flat_spec_fn(60, 120, 0, noise_R=30, noise_scales=[2, 4, 8])
@@ -6959,6 +8516,21 @@ def integrate_expansion(engine_module):
                 wrapped_count += 1
     if wrapped_count:
         print(f"[24K Arsenal] Wrapped {wrapped_count} expansion texture_fn entries for engine compatibility")
+    # --- Resolve deferred paint_fn references to actual engine functions ---
+    # Some expansion bases need engine paint functions that aren't importable at
+    # module load time. They use _resolve_paint_fn key with the engine function name.
+    resolved_count = 0
+    for base_id, base_entry in EXPANSION_BASES.items():
+        resolve_name = base_entry.pop("_resolve_paint_fn", None)
+        if resolve_name:
+            engine_fn = getattr(engine_module, resolve_name, None)
+            if engine_fn is not None:
+                base_entry["paint_fn"] = engine_fn
+                resolved_count += 1
+            else:
+                print(f"[24K Arsenal] WARNING: Could not resolve '{resolve_name}' for base '{base_id}'")
+    if resolved_count:
+        print(f"[24K Arsenal] Resolved {resolved_count} deferred paint_fn references to engine functions")
 
     # --- Merge into engine registries ---
     engine_module.BASE_REGISTRY.update(EXPANSION_BASES)

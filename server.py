@@ -49,6 +49,16 @@ CORS(app)
 def _handle_404(e):
     return jsonify({"error": "not_found", "path": request.path}), 404
 
+@app.route('/<path:filename>')
+def serve_static_assets(filename):
+    """Serve JS/CSS assets from the server directory."""
+    if filename.endswith(('.js', '.css', '.png', '.svg', '.ico')):
+        for candidate_dir in [SERVER_DIR, BUNDLE_DIR]:
+            fpath = os.path.join(candidate_dir, filename)
+            if os.path.exists(fpath):
+                return send_file(fpath)
+    return jsonify({"error": "not_found", "path": request.path}), 404
+
 # Folders — handle PyInstaller bundle vs normal Python
 # When frozen (PyInstaller), __file__ is in a temp dir. Use exe location instead.
 if getattr(sys, 'frozen', False):
@@ -290,6 +300,15 @@ def finish_groups():
                     groups.setdefault(key, {}).update(paradigm_groups[key])
         except Exception:
             pass
+        # Merge FUSIONS groups if available
+        try:
+            import shokker_fusions_expansion as _fusions
+            fusion_groups = _fusions.get_fusion_group_map()
+            if "fusions" in fusion_groups:
+                # Add fusions as specials (they render via MONOLITHIC_REGISTRY)
+                groups.setdefault("specials", {}).update(fusion_groups["fusions"])
+        except Exception:
+            pass
         return jsonify({
             "status": "ok",
             "groups": groups,
@@ -297,6 +316,7 @@ def finish_groups():
             "total_bases": len(engine.BASE_REGISTRY),
             "total_patterns": len(engine.PATTERN_REGISTRY),
             "total_specials": len(engine.MONOLITHIC_REGISTRY),
+            "total_fusions": len(getattr(engine, 'FUSION_REGISTRY', {})),
             "total_combinations": len(engine.BASE_REGISTRY) * len(engine.PATTERN_REGISTRY) + len(engine.MONOLITHIC_REGISTRY),
         })
     except ImportError:
@@ -852,9 +872,25 @@ def render():
                     # Back up originals (first time only)
                     backup = os.path.join(target_dir, f"ORIGINAL_{dst_name}")
                     if os.path.exists(dst) and not os.path.exists(backup):
-                        shutil.copy2(dst, backup)
-                    shutil.copy2(src, dst)
-                    pushed.append(dst_name)
+                        try:
+                            shutil.copyfile(dst, backup)
+                        except Exception as e:
+                            logger.warning(f"Could not backup {dst}: {e}")
+                    
+                    # Copy new file over. iRacing locking the file metadata 
+                    # causes standard copy2 to throw [Errno 22] Invalid argument.
+                    # copyfile only copies data and avoids metadata updates.
+                    retries = 3
+                    for attempt in range(retries):
+                        try:
+                            shutil.copyfile(src, dst)
+                            pushed.append(dst_name)
+                            break
+                        except OSError as e:
+                            if attempt < retries - 1:
+                                time.sleep(0.2) # Wait for iRacing to finish reading
+                            else:
+                                raise Exception(f"Failed to push {dst_name} after {retries} attempts: {str(e)}")
             logger.info(f"{label}: pushed {len(pushed)} files to {target_dir}")
             return pushed
 

@@ -1,6 +1,6 @@
 {
   "name": "shokker-paint-booth-ag",
-  "version": "0.2.1",
+  "version": "0.2.3",
   "description": "Shokker Paint Booth AG — iRacing Spec Map Tool",
   "main": "main.js",
   "author": "Shokker Group",
@@ -45,6 +45,26 @@
       {
         "from": "server/paint-booth-v2.html",
         "to": "server/paint-booth-v2.html"
+      },
+      {
+        "from": "server/swatch-upgrades.js",
+        "to": "server/swatch-upgrades.js"
+      },
+      {
+        "from": "server/swatch-upgrades-2.js",
+        "to": "server/swatch-upgrades-2.js"
+      },
+      {
+        "from": "server/swatch-upgrades-3.js",
+        "to": "server/swatch-upgrades-3.js"
+      },
+      {
+        "from": "server/fusion-swatches.js",
+        "to": "server/fusion-swatches.js"
+      },
+      {
+        "from": "server/_ui_finish_data.js",
+        "to": "server/_ui_finish_data.js"
       }
     ],
     "asar": true,

@@ -7,7 +7,7 @@ os.chdir(SERVER_DIR)
 
 # Redirect stdout/stderr to a log file so print() calls don't crash
 log_path = os.path.join(SERVER_DIR, 'server_log.txt')
-log_file = open(log_path, 'w', buffering=1)  # line-buffered
+log_file = open(log_path, 'w', buffering=1, encoding='utf-8', errors='replace')  # UTF-8 prevents emoji crash
 sys.stdout = log_file
 sys.stderr = log_file
 

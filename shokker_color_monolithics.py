@@ -60,6 +60,32 @@ COLOR_PALETTE = {
     "midnight_blue":  (0.04, 0.06, 0.22),   # Deep night blue
     "charcoal":       (0.18, 0.18, 0.20),   # Dark neutral gray
     "cream":          (0.96, 0.94, 0.86),   # Vintage cream/ivory
+    # === EXPANDED PALETTE (matches JS CLR_PALETTE) ===
+    "crimson":        (0.71, 0.08, 0.16),
+    "coral":          (1.00, 0.50, 0.31),
+    "peach":          (1.00, 0.71, 0.51),
+    "amber":          (1.00, 0.75, 0.00),
+    "honey":          (0.92, 0.75, 0.33),
+    "mint":           (0.60, 1.00, 0.60),
+    "sage":           (0.51, 0.69, 0.51),
+    "emerald":        (0.00, 0.61, 0.31),
+    "jade":           (0.00, 0.66, 0.47),
+    "aqua":           (0.00, 0.78, 0.78),
+    "cobalt":         (0.00, 0.28, 0.67),
+    "indigo":         (0.25, 0.00, 0.59),
+    "lavender":       (0.71, 0.51, 0.90),
+    "plum":           (0.56, 0.27, 0.52),
+    "rose":           (1.00, 0.31, 0.47),
+    "blush":          (0.94, 0.63, 0.67),
+    "maroon":         (0.50, 0.00, 0.00),
+    "burgundy":       (0.50, 0.00, 0.13),
+    "chocolate":      (0.48, 0.25, 0.00),
+    "ivory":          (1.00, 1.00, 0.94),
+    "slate":          (0.44, 0.50, 0.56),
+    "graphite":       (0.25, 0.25, 0.25),
+    "pewter":         (0.59, 0.59, 0.65),
+    "champagne":      (0.97, 0.91, 0.81),
+    "titanium":       (0.53, 0.57, 0.61),
 }
 
 
@@ -217,38 +243,68 @@ def _make_gradient_paint(r1, g1, b1, r2, g2, b2, direction="vertical"):
 # FACTORY: Color-Shift Duo (angle-dependent two-tone)
 # ================================================================
 
-def _make_colorshift_spec():
-    """Color-shift spec — high metallic for angle-dependent color visibility."""
+def _make_colorshift_spec_v5():
+    """Color-shift v5 spec — coordinated field-driven M/R/CC variation."""
     def spec_fn(shape, mask, seed, sm):
-        spec = np.zeros((shape[0], shape[1], 4), dtype=np.uint8)
-        noise = _engine.multi_scale_noise(shape, [8, 16, 32], [0.3, 0.4, 0.3], seed + 7600)
-        # High metallic with variation for angle-dependent look
-        spec[:,:,0] = np.clip((210 + noise * 30 * sm) * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-        spec[:,:,1] = np.clip((25 + noise * 15 * sm) * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
-        spec[:,:,2] = 16
-        spec[:,:,3] = 255
-        return spec
+        return _engine.spec_chameleon_v5(shape, mask, seed, sm,
+                                          M_base=215, M_range=35,
+                                          R_base=12, R_range=15,
+                                          CC_base=14, CC_range=12)
     return spec_fn
 
 
-def _make_colorshift_paint(r1, g1, b1, r2, g2, b2):
-    """Factory: simulates angle-dependent color shift using noise as viewing-angle proxy."""
+def _make_colorshift_paint_v5(r1, g1, b1, r2, g2, b2):
+    """V5 Color Shift Duo: two-color shift using panel orientation field +
+    multi-stop HSV ramp + Voronoi micro-flake. Generates 5 color stops
+    that smoothly transition between the two colors via a blended mid-tone.
+    """
+    def _rgb_to_hsv(r, g, b):
+        """Convert single RGB float to HSV (H in degrees, S 0-1, V 0-1)."""
+        mx = max(r, g, b)
+        mn = min(r, g, b)
+        v = mx
+        d = mx - mn
+        s = 0.0 if mx == 0 else d / mx
+        if d == 0:
+            h = 0.0
+        elif mx == r:
+            h = ((g - b) / d) % 6
+        elif mx == g:
+            h = (b - r) / d + 2
+        else:
+            h = (r - g) / d + 4
+        h *= 60
+        if h < 0: h += 360
+        return h, s, v
+
+    h1, s1, v1 = _rgb_to_hsv(r1, g1, b1)
+    h2, s2, v2 = _rgb_to_hsv(r2, g2, b2)
+
+    # Build 5 color stops: color1 → blend → mid → blend → color2
+    dh = h2 - h1
+    if dh > 180: dh -= 360
+    if dh < -180: dh += 360
+    h_mid = (h1 + dh * 0.5) % 360
+    s_mid = (s1 + s2) * 0.5
+    v_mid = max((v1 + v2) * 0.5, 0.55)
+
+    stops = [
+        (0.00, h1, min(s1 + 0.10, 1.0), min(v1 * 0.95 + 0.15, 0.94)),
+        (0.25, (h1 + dh * 0.20) % 360, min(s1 + 0.05, 1.0), min(v1 * 0.90 + 0.18, 0.94)),
+        (0.50, h_mid, min(s_mid + 0.08, 1.0), min(v_mid + 0.10, 0.94)),
+        (0.75, (h1 + dh * 0.80) % 360, min(s2 + 0.05, 1.0), min(v2 * 0.90 + 0.18, 0.94)),
+        (1.00, h2, min(s2 + 0.10, 1.0), min(v2 * 0.95 + 0.15, 0.94)),
+    ]
+
     def paint_fn(paint, shape, mask, seed, pm, bb):
-        h, w = shape
-        m3 = mask[:,:,np.newaxis]
-        blend = 0.85 * pm
-        # Use multi-scale noise as proxy for surface angle variation
-        angle_noise = _engine.multi_scale_noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + 7700)
-        # Smooth transition between two colors
-        shift = np.clip((angle_noise + 0.5) * 1.0, 0, 1)
-        inv = 1.0 - shift
-        tr = r1 * inv + r2 * shift
-        tg = g1 * inv + g2 * shift
-        tb = b1 * inv + b2 * shift
-        paint[:,:,0] = paint[:,:,0] * (1 - mask * blend) + tr * mask * blend
-        paint[:,:,1] = paint[:,:,1] * (1 - mask * blend) + tg * mask * blend
-        paint[:,:,2] = paint[:,:,2] * (1 - mask * blend) + tb * mask * blend
-        return paint
+        return _engine.paint_chameleon_v5_core(
+            paint, shape, mask, seed, pm, bb, stops,
+            flow_complexity=3,
+            flake_intensity=0.035,
+            flake_hue_spread=0.05,
+            blend_strength=0.90,
+            metallic_brighten=0.10
+        )
     return paint_fn
 
 
@@ -387,41 +443,95 @@ def _build_gradient_entries():
 
 
 def _build_colorshift_entries():
-    """Generate ~25 color-shift duo monolithics."""
+    """Generate all 75 color-shift duo monolithics using the v5 engine.
+    This list MUST match the CS_DUO_DEFS in paint-booth-v2.html exactly.
+    """
     COLORSHIFT_DUOS = [
-        # (name, color1, color2)
-        ("cs_fire_ice",       "racing_red",     "sky_blue"),
-        ("cs_sunset_ocean",   "fire_orange",    "royal_blue"),
-        ("cs_gold_emerald",   "gold",           "forest_green"),
-        ("cs_copper_teal",    "copper",         "teal"),
-        ("cs_pink_purple",    "hot_pink",       "purple"),
-        ("cs_lime_blue",      "lime_green",     "royal_blue"),
-        ("cs_red_gold",       "racing_red",     "gold"),
-        ("cs_navy_silver",    "navy",           "silver"),
-        ("cs_violet_teal",    "violet",         "teal"),
-        ("cs_bronze_green",   "bronze",         "forest_green"),
-        ("cs_black_red",      "black",          "racing_red"),
-        ("cs_white_blue",     "white",          "royal_blue"),
-        ("cs_magenta_gold",   "magenta",        "gold"),
-        ("cs_gunmetal_orange", "gunmetal",      "fire_orange"),
-        ("cs_purple_lime",    "purple",         "lime_green"),
-        ("cs_navy_gold",      "navy",           "gold"),
-        ("cs_teal_pink",      "teal",           "hot_pink"),
-        ("cs_red_black",      "racing_red",     "black"),
-        ("cs_blue_orange",    "royal_blue",     "fire_orange"),
-        ("cs_silver_purple",  "silver",         "purple"),
-        ("cs_green_gold",     "forest_green",   "gold"),
-        ("cs_bronze_navy",    "bronze",         "navy"),
-        ("cs_copper_violet",  "copper",         "violet"),
-        ("cs_yellow_blue",    "sunburst_yellow","royal_blue"),
-        ("cs_pink_teal",      "hot_pink",       "teal"),
+        # === ORIGINAL 25 (from HTML lines 7200-7224) ===
+        ("cs_fire_ice",         "racing_red",       "sky_blue"),
+        ("cs_sunset_ocean",     "fire_orange",      "royal_blue"),
+        ("cs_gold_emerald",     "gold",             "forest_green"),
+        ("cs_copper_teal",      "copper",           "teal"),
+        ("cs_pink_purple",      "hot_pink",         "purple"),
+        ("cs_lime_blue",        "lime_green",       "royal_blue"),
+        ("cs_red_gold",         "racing_red",       "gold"),
+        ("cs_navy_silver",      "navy",             "silver"),
+        ("cs_violet_teal",      "violet",           "teal"),
+        ("cs_bronze_green",     "bronze",           "forest_green"),
+        ("cs_black_red",        "black",            "racing_red"),
+        ("cs_white_blue",       "white",            "royal_blue"),
+        ("cs_magenta_gold",     "magenta",          "gold"),
+        ("cs_gunmetal_orange",  "gunmetal",         "fire_orange"),
+        ("cs_purple_lime",      "purple",           "lime_green"),
+        ("cs_navy_gold",        "navy",             "gold"),
+        ("cs_teal_pink",        "teal",             "hot_pink"),
+        ("cs_red_black",        "racing_red",       "black"),
+        ("cs_blue_orange",      "royal_blue",       "fire_orange"),
+        ("cs_silver_purple",    "silver",           "purple"),
+        ("cs_green_gold",       "forest_green",     "gold"),
+        ("cs_bronze_navy",      "bronze",           "navy"),
+        ("cs_copper_violet",    "copper",           "violet"),
+        ("cs_yellow_blue",      "sunburst_yellow",  "royal_blue"),
+        ("cs_pink_teal",        "hot_pink",         "teal"),
+        # === BATCH 2: 30 more (from HTML lines 7226-7255) ===
+        ("cs_orange_purple",    "fire_orange",      "purple"),
+        ("cs_gold_navy",        "gold",             "navy"),
+        ("cs_lime_pink",        "lime_green",       "hot_pink"),
+        ("cs_copper_blue",      "copper",           "royal_blue"),
+        ("cs_white_red",        "white",            "racing_red"),
+        ("cs_black_gold",       "black",            "gold"),
+        ("cs_silver_red",       "silver",           "racing_red"),
+        ("cs_teal_orange",      "teal",             "fire_orange"),
+        ("cs_purple_gold",      "purple",           "gold"),
+        ("cs_navy_orange",      "navy",             "fire_orange"),
+        ("cs_green_blue",       "forest_green",     "royal_blue"),
+        ("cs_bronze_red",       "bronze",           "racing_red"),
+        ("cs_violet_gold",      "violet",           "gold"),
+        ("cs_magenta_teal",     "magenta",          "teal"),
+        ("cs_gunmetal_lime",    "gunmetal",         "lime_green"),
+        ("cs_black_blue",       "black",            "royal_blue"),
+        ("cs_white_green",      "white",            "forest_green"),
+        ("cs_copper_gold",      "copper",           "gold"),
+        ("cs_red_purple",       "racing_red",       "purple"),
+        ("cs_sky_gold",         "sky_blue",         "gold"),
+        ("cs_orange_navy",      "fire_orange",      "navy"),
+        ("cs_lime_violet",      "lime_green",       "violet"),
+        ("cs_silver_teal",      "silver",           "teal"),
+        ("cs_bronze_purple",    "bronze",           "purple"),
+        ("cs_pink_gold",        "hot_pink",         "gold"),
+        ("cs_black_silver",     "black",            "silver"),
+        ("cs_white_purple",     "white",            "purple"),
+        ("cs_copper_lime",      "copper",           "lime_green"),
+        ("cs_magenta_blue",     "magenta",          "royal_blue"),
+        ("cs_gunmetal_gold",    "gunmetal",         "gold"),
+        # === EXPANSION: 20 new (from HTML lines 7257-7276) ===
+        ("cs_crimson_jade",     "crimson",          "jade"),
+        ("cs_coral_cobalt",     "coral",            "cobalt"),
+        ("cs_amber_indigo",     "amber",            "indigo"),
+        ("cs_honey_plum",       "honey",            "plum"),
+        ("cs_mint_maroon",      "mint",             "maroon"),
+        ("cs_rose_emerald",     "rose",             "emerald"),
+        ("cs_slate_amber",      "slate",            "amber"),
+        ("cs_champagne_cobalt", "champagne",        "cobalt"),
+        ("cs_titanium_crimson", "titanium",         "crimson"),
+        ("cs_lavender_jade",    "lavender",         "jade"),
+        ("cs_charcoal_honey",   "charcoal",         "honey"),
+        ("cs_ivory_indigo",     "ivory",            "indigo"),
+        ("cs_peach_cobalt",     "peach",            "cobalt"),
+        ("cs_sage_crimson",     "sage",             "crimson"),
+        ("cs_blush_emerald",    "blush",            "emerald"),
+        ("cs_burgundy_gold",    "burgundy",         "gold"),
+        ("cs_chocolate_mint",   "chocolate",        "mint"),
+        ("cs_pewter_rose",      "pewter",           "rose"),
+        ("cs_graphite_coral",   "graphite",         "coral"),
+        ("cs_aqua_maroon",      "aqua",             "maroon"),
     ]
     entries = {}
-    cs_spec = _make_colorshift_spec()
+    cs_spec = _make_colorshift_spec_v5()
     for name, c1_name, c2_name in COLORSHIFT_DUOS:
         r1, g1, b1 = COLOR_PALETTE[c1_name]
         r2, g2, b2 = COLOR_PALETTE[c2_name]
-        paint_fn = _make_colorshift_paint(r1, g1, b1, r2, g2, b2)
+        paint_fn = _make_colorshift_paint_v5(r1, g1, b1, r2, g2, b2)
         entries[name] = (cs_spec, paint_fn)
     return entries
 
@@ -570,47 +680,97 @@ def get_color_monolithic_metadata():
                         [int(r2*255),int(g2*255),int(b2*255)]],
         }
 
-    # Color-Shift Duo entries
-    CS_DISPLAY = {
-        "cs_fire_ice": "Fire & Ice", "cs_sunset_ocean": "Sunset Ocean",
-        "cs_gold_emerald": "Gold Emerald", "cs_copper_teal": "Copper Teal",
-        "cs_pink_purple": "Pink Purple", "cs_lime_blue": "Lime Blue",
-        "cs_red_gold": "Red Gold", "cs_navy_silver": "Navy Silver",
-        "cs_violet_teal": "Violet Teal", "cs_bronze_green": "Bronze Green",
-        "cs_black_red": "Black Red", "cs_white_blue": "White Blue",
-        "cs_magenta_gold": "Magenta Gold", "cs_gunmetal_orange": "Gunmetal Orange",
-        "cs_purple_lime": "Purple Lime", "cs_navy_gold": "Navy Gold",
-        "cs_teal_pink": "Teal Pink", "cs_red_black": "Red Black",
-        "cs_blue_orange": "Blue Orange", "cs_silver_purple": "Silver Purple",
-        "cs_green_gold": "Green Gold", "cs_bronze_navy": "Bronze Navy",
-        "cs_copper_violet": "Copper Violet", "cs_yellow_blue": "Yellow Blue",
-        "cs_pink_teal": "Pink Teal",
-    }
-    # Get the two colors from the COLORSHIFT_DUOS data
-    CS_COLORS = {
-        "cs_fire_ice": ("racing_red","sky_blue"), "cs_sunset_ocean": ("fire_orange","royal_blue"),
-        "cs_gold_emerald": ("gold","forest_green"), "cs_copper_teal": ("copper","teal"),
-        "cs_pink_purple": ("hot_pink","purple"), "cs_lime_blue": ("lime_green","royal_blue"),
-        "cs_red_gold": ("racing_red","gold"), "cs_navy_silver": ("navy","silver"),
-        "cs_violet_teal": ("violet","teal"), "cs_bronze_green": ("bronze","forest_green"),
-        "cs_black_red": ("black","racing_red"), "cs_white_blue": ("white","royal_blue"),
-        "cs_magenta_gold": ("magenta","gold"), "cs_gunmetal_orange": ("gunmetal","fire_orange"),
-        "cs_purple_lime": ("purple","lime_green"), "cs_navy_gold": ("navy","gold"),
-        "cs_teal_pink": ("teal","hot_pink"), "cs_red_black": ("racing_red","black"),
-        "cs_blue_orange": ("royal_blue","fire_orange"), "cs_silver_purple": ("silver","purple"),
-        "cs_green_gold": ("forest_green","gold"), "cs_bronze_navy": ("bronze","navy"),
-        "cs_copper_violet": ("copper","violet"), "cs_yellow_blue": ("sunburst_yellow","royal_blue"),
-        "cs_pink_teal": ("hot_pink","teal"),
-    }
-    for key, display in CS_DISPLAY.items():
-        c1, c2 = CS_COLORS[key]
-        r1,g1,b1 = COLOR_PALETTE[c1]
-        r2,g2,b2 = COLOR_PALETTE[c2]
+    # Color-Shift Duo entries — auto-generate from build data
+    # Pull the COLORSHIFT_DUOS from _build_colorshift_entries to stay in sync
+    _CS_DUOS_META = [
+        # === ORIGINAL 25 ===
+        ("cs_fire_ice", "Fire & Ice", "racing_red", "sky_blue"),
+        ("cs_sunset_ocean", "Sunset Ocean", "fire_orange", "royal_blue"),
+        ("cs_gold_emerald", "Gold Emerald", "gold", "forest_green"),
+        ("cs_copper_teal", "Copper Teal", "copper", "teal"),
+        ("cs_pink_purple", "Pink Purple", "hot_pink", "purple"),
+        ("cs_lime_blue", "Lime Blue", "lime_green", "royal_blue"),
+        ("cs_red_gold", "Red Gold", "racing_red", "gold"),
+        ("cs_navy_silver", "Navy Silver", "navy", "silver"),
+        ("cs_violet_teal", "Violet Teal", "violet", "teal"),
+        ("cs_bronze_green", "Bronze Green", "bronze", "forest_green"),
+        ("cs_black_red", "Black Red", "black", "racing_red"),
+        ("cs_white_blue", "White Blue", "white", "royal_blue"),
+        ("cs_magenta_gold", "Magenta Gold", "magenta", "gold"),
+        ("cs_gunmetal_orange", "Gunmetal Orange", "gunmetal", "fire_orange"),
+        ("cs_purple_lime", "Purple Lime", "purple", "lime_green"),
+        ("cs_navy_gold", "Navy Gold", "navy", "gold"),
+        ("cs_teal_pink", "Teal Pink", "teal", "hot_pink"),
+        ("cs_red_black", "Red Black", "racing_red", "black"),
+        ("cs_blue_orange", "Blue Orange", "royal_blue", "fire_orange"),
+        ("cs_silver_purple", "Silver Purple", "silver", "purple"),
+        ("cs_green_gold", "Green Gold", "forest_green", "gold"),
+        ("cs_bronze_navy", "Bronze Navy", "bronze", "navy"),
+        ("cs_copper_violet", "Copper Violet", "copper", "violet"),
+        ("cs_yellow_blue", "Yellow Blue", "sunburst_yellow", "royal_blue"),
+        ("cs_pink_teal", "Pink Teal", "hot_pink", "teal"),
+        # === BATCH 2: 30 more ===
+        ("cs_orange_purple", "Orange Purple", "fire_orange", "purple"),
+        ("cs_gold_navy", "Gold Navy", "gold", "navy"),
+        ("cs_lime_pink", "Lime Pink", "lime_green", "hot_pink"),
+        ("cs_copper_blue", "Copper Blue", "copper", "royal_blue"),
+        ("cs_white_red", "White Red", "white", "racing_red"),
+        ("cs_black_gold", "Black Gold", "black", "gold"),
+        ("cs_silver_red", "Silver Red", "silver", "racing_red"),
+        ("cs_teal_orange", "Teal Orange", "teal", "fire_orange"),
+        ("cs_purple_gold", "Purple Gold", "purple", "gold"),
+        ("cs_navy_orange", "Navy Orange", "navy", "fire_orange"),
+        ("cs_green_blue", "Green Blue", "forest_green", "royal_blue"),
+        ("cs_bronze_red", "Bronze Red", "bronze", "racing_red"),
+        ("cs_violet_gold", "Violet Gold", "violet", "gold"),
+        ("cs_magenta_teal", "Magenta Teal", "magenta", "teal"),
+        ("cs_gunmetal_lime", "Gunmetal Lime", "gunmetal", "lime_green"),
+        ("cs_black_blue", "Black Blue", "black", "royal_blue"),
+        ("cs_white_green", "White Green", "white", "forest_green"),
+        ("cs_copper_gold", "Copper Gold", "copper", "gold"),
+        ("cs_red_purple", "Red Purple", "racing_red", "purple"),
+        ("cs_sky_gold", "Sky Gold", "sky_blue", "gold"),
+        ("cs_orange_navy", "Orange Navy", "fire_orange", "navy"),
+        ("cs_lime_violet", "Lime Violet", "lime_green", "violet"),
+        ("cs_silver_teal", "Silver Teal", "silver", "teal"),
+        ("cs_bronze_purple", "Bronze Purple", "bronze", "purple"),
+        ("cs_pink_gold", "Pink Gold", "hot_pink", "gold"),
+        ("cs_black_silver", "Black Silver", "black", "silver"),
+        ("cs_white_purple", "White Purple", "white", "purple"),
+        ("cs_copper_lime", "Copper Lime", "copper", "lime_green"),
+        ("cs_magenta_blue", "Magenta Blue", "magenta", "royal_blue"),
+        ("cs_gunmetal_gold", "Gunmetal Gold", "gunmetal", "gold"),
+        # === EXPANSION: 20 new ===
+        ("cs_crimson_jade", "Crimson Jade", "crimson", "jade"),
+        ("cs_coral_cobalt", "Coral Cobalt", "coral", "cobalt"),
+        ("cs_amber_indigo", "Amber Indigo", "amber", "indigo"),
+        ("cs_honey_plum", "Honey Plum", "honey", "plum"),
+        ("cs_mint_maroon", "Mint Maroon", "mint", "maroon"),
+        ("cs_rose_emerald", "Rose Emerald", "rose", "emerald"),
+        ("cs_slate_amber", "Slate Amber", "slate", "amber"),
+        ("cs_champagne_cobalt", "Champagne Cobalt", "champagne", "cobalt"),
+        ("cs_titanium_crimson", "Titanium Crimson", "titanium", "crimson"),
+        ("cs_lavender_jade", "Lavender Jade", "lavender", "jade"),
+        ("cs_charcoal_honey", "Charcoal Honey", "charcoal", "honey"),
+        ("cs_ivory_indigo", "Ivory Indigo", "ivory", "indigo"),
+        ("cs_peach_cobalt", "Peach Cobalt", "peach", "cobalt"),
+        ("cs_sage_crimson", "Sage Crimson", "sage", "crimson"),
+        ("cs_blush_emerald", "Blush Emerald", "blush", "emerald"),
+        ("cs_burgundy_gold", "Burgundy Gold", "burgundy", "gold"),
+        ("cs_chocolate_mint", "Chocolate Mint", "chocolate", "mint"),
+        ("cs_pewter_rose", "Pewter Rose", "pewter", "rose"),
+        ("cs_graphite_coral", "Graphite Coral", "graphite", "coral"),
+        ("cs_aqua_maroon", "Aqua Maroon", "aqua", "maroon"),
+    ]
+    for key, display, c1, c2 in _CS_DUOS_META:
+        r1, g1, b1 = COLOR_PALETTE[c1]
+        r2, g2, b2 = COLOR_PALETTE[c2]
         meta[key] = {
             "name": display, "category": "Color Shift",
             "swatch": [[int(r1*255),int(g1*255),int(b1*255)],
                         [int(r2*255),int(g2*255),int(b2*255)]],
         }
+
 
     # Multi-Color Pattern entries
     MC_DISPLAY = {

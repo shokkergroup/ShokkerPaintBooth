@@ -200,7 +200,7 @@ def multi_scale_noise(shape, scales, weights, seed=42):
             noise_img = Image.fromarray(
                 ((small_noise + 3) / 6 * 255).clip(0, 255).astype(np.uint8)
             )
-            noise_img = noise_img.resize((w, h), Image.BILINEAR)
+            noise_img = noise_img.resize((int(w), int(h)), Image.BILINEAR)
             noise = np.array(noise_img).astype(np.float32) / 255.0 * 2 - 1
         combined += noise * weight
     return combined / total_weight
@@ -1045,6 +1045,22 @@ def spec_interference(shape, mask, seed, sm):
     spec[:,:,2] = 16; spec[:,:,3] = 255
     return spec
 
+def multi_scale_noise(shape, scales, weights, seed):
+    """Multi-octave Perlin-like noise using PIL resize."""
+    h, w = shape
+    result = np.zeros((h, w), dtype=np.float32)
+    rng = np.random.RandomState(seed)
+    for scale, weight in zip(scales, weights):
+        sh, sw = max(1, int(h) // scale), max(1, int(w) // scale)
+        small = rng.randn(sh, sw).astype(np.float32)
+        img = Image.fromarray(((small - small.min()) / (small.max() - small.min() + 1e-8) * 255).clip(0, 255).astype(np.uint8))
+        # Cast to int to avoid PIL [Errno 22] Invalid argument
+        img = img.resize((int(w), int(h)), Image.BILINEAR)
+        arr = np.array(img).astype(np.float32) / 255.0
+        arr = arr * (small.max() - small.min()) + small.min()
+        result += arr * weight
+    return result
+
 def _forged_carbon_chunks(shape, seed):
     """Generate forged carbon chunk pattern — irregular angular fiber patches.
     Returns a float array [0..1] where different value ranges = different chunks.
@@ -1055,12 +1071,12 @@ def _forged_carbon_chunks(shape, seed):
     s1h, s1w = max(1, h // 24), max(1, w // 24)
     raw1 = rng.randn(s1h, s1w).astype(np.float32)
     img1 = Image.fromarray(((raw1 + 3) / 6 * 255).clip(0, 255).astype(np.uint8))
-    n1 = np.array(img1.resize((w, h), Image.BILINEAR)).astype(np.float32) / 255.0
+    n1 = np.array(img1.resize((int(w), int(h)), Image.BILINEAR)).astype(np.float32) / 255.0
     # Layer 2: medium detail (breaks up the blobs into angular sub-chunks)
     s2h, s2w = max(1, h // 12), max(1, w // 12)
     raw2 = rng.randn(s2h, s2w).astype(np.float32)
     img2 = Image.fromarray(((raw2 + 3) / 6 * 255).clip(0, 255).astype(np.uint8))
-    n2 = np.array(img2.resize((w, h), Image.BILINEAR)).astype(np.float32) / 255.0
+    n2 = np.array(img2.resize((int(w), int(h)), Image.BILINEAR)).astype(np.float32) / 255.0
     # Layer 3: fine grain for surface texture within chunks
     s3h, s3w = max(1, h // 4), max(1, w // 4)
     raw3 = rng.randn(s3h, s3w).astype(np.float32)
@@ -2209,123 +2225,386 @@ def paint_diamond_sparkle(paint, shape, mask, seed, pm, bb):
 
 
 # ================================================================
-# CHAMELEON COLOR-SHIFT FINISHES
-# Strategy: spatial gradient color ramp (multi-directional sine waves + Perlin noise)
-# mapped through HSV hue ramp.  High metallic (M=220) exploits PBR Fresnel for
-# genuine brightness shift at grazing angles; CC=16 adds white specular "flash".
-# Camera motion in replays creates convincing color-shift illusion.
+# CHAMELEON v5 — COORDINATED DUAL-MAP COLOR SHIFT SYSTEM
+#
+# THE SHOKKER INNOVATION: Paint and spec are generated from the
+# SAME master field, creating mathematically coordinated behavior:
+#
+# LAYER 1: Panel direction field (macro color ramp)
+# LAYER 2: Multi-stop thin-film color ramp (physically motivated)
+# LAYER 3: Voronoi micro-flake texture (per-flake hue variation)
+# LAYER 4: Coordinated spec — spatially varied M/R/CC:
+#   - Metallic INVERSELY correlated with field (darker paint = more metal)
+#   - Roughness micro-varied for per-flake reflection differences
+#   - Clearcoat OPPOSING metallic for dual-layer white flash competition
+# LAYER 5: Metallic brightness compensation for iRacing PBR darkening
+#
+# This is NOT a gradient with flat spec. This is genuine differential
+# Fresnel behavior exploiting iRacing's PBR pipeline.
 # ================================================================
 
-def spec_chameleon_pro(shape, mask, seed, sm):
-    """Chameleon spec — ultra-high metallic for Fresnel color shift + sharp reflections."""
-    h, w = shape
-    spec = np.zeros((h, w, 4), dtype=np.uint8)
-    np.random.seed(seed + 700)
-    # M=220 base with smooth multi-octave spatial noise for organic feel
-    m_noise = multi_scale_noise(shape, [8, 16, 32, 64], [0.15, 0.3, 0.35, 0.2], seed + 701)
-    M = np.clip(220 + m_noise * 15 * sm, 180, 250)
-    R = 15  # Very smooth — sharp reflections for mirror-like shift
-    # Clearcoat with subtle spatial variation (16 = max shine)
-    cc_noise = multi_scale_noise(shape, [16, 32, 48], [0.3, 0.4, 0.3], seed + 702)
-    CC = np.clip(16 + cc_noise * 3 * sm, 14, 20)
-    spec[:,:,0] = np.clip(M * mask, 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask, 0, 255).astype(np.uint8)
-    spec[:,:,2] = np.clip(CC * mask, 0, 255).astype(np.uint8)
-    spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
-    return spec
 
-
-def paint_chameleon_gradient(paint, shape, mask, seed, pm, bb, primary_hue, shift_range):
-    """Core chameleon paint — multi-directional sine-wave field mapped through HSV hue ramp.
-
-    primary_hue: starting hue in degrees (0-360)
-    shift_range: degrees of hue shift across the gradient field (+/-)
+def _chameleon_v5_field(shape, seed, flow_complexity=3):
+    """Generate the master panel-orientation field for chameleon v5.
+    
+    Returns normalized 0-1 field. Different UV regions get different values
+    based on simulated 3D surface orientation. This SAME field drives both
+    paint color AND spec channel variation for perfect coordination.
     """
     h, w = shape
     y, x = get_mgrid((h, w))
     yf = y.astype(np.float32)
     xf = x.astype(np.float32)
+    yn = yf / max(h - 1, 1)
+    xn = xf / max(w - 1, 1)
 
-    # Multi-directional sine-wave field — 8 waves at varied angles/frequencies
-    # More waves + higher frequencies = finer, organic color transitions
-    # that wrap smoothly around compound car body curves
-    np.random.seed(seed + 710)
-    field = (
-        # Primary large-scale flow (sets overall gradient direction)
-        np.sin(yf * 0.012 + xf * 0.008) * 0.18 +
-        np.sin(yf * 0.006 - xf * 0.015) * 0.14 +
-        # Medium-scale complexity (breaks up broad bands)
-        np.sin((yf + xf) * 0.022) * 0.15 +
-        np.sin((yf - xf * 0.7) * 0.019) * 0.13 +
-        np.sin(yf * 0.028 + xf * 0.004) * 0.10 +
-        # Fine detail (adds organic micro-variation across panels)
-        np.sin((yf * 0.8 + xf * 1.2) * 0.035) * 0.10 +
-        np.sin((yf * 1.3 - xf * 0.6) * 0.042) * 0.10 +
-        np.sin((yf * 0.5 + xf * 0.9) * 0.055) * 0.10
-    )
+    rng = np.random.RandomState(seed + 8000)
+    angles = rng.uniform(0, 2 * np.pi, 6)
 
-    # Add smooth Perlin-like noise for organic breakup (now BILINEAR, no blocks)
-    noise = multi_scale_noise(shape, [8, 16, 32, 64], [0.2, 0.3, 0.3, 0.2], seed + 711)
-    field = field + noise * 0.20
+    # Primary diagonal sweep — dominant orientation change
+    a1 = angles[0]
+    field = (np.cos(a1) * yn + np.sin(a1) * xn) * 0.30
 
-    # Normalize to 0..1
-    field = (field - field.min()) / (field.max() - field.min() + 1e-8)
+    # Secondary cross-flow — perpendicular variation
+    a2 = angles[1]
+    field = field + (np.cos(a2) * yn + np.sin(a2) * xn) * 0.22
 
-    # Map through HSV hue ramp
-    hue_start = primary_hue / 360.0
-    hue_shift = shift_range / 360.0
-    hue_map = (hue_start + field * hue_shift) % 1.0
+    if flow_complexity >= 2:
+        # Radial component — center vs edges (convex body panels)
+        cy = 0.45 + rng.uniform(-0.08, 0.08)
+        cx = 0.50 + rng.uniform(-0.08, 0.08)
+        dist = np.sqrt((yn - cy)**2 + (xn - cx)**2)
+        field = field + dist * 0.18
 
-    # Convert HSV to RGB — full saturation, high value for vivid color
-    saturation = np.full_like(hue_map, 0.85)
-    value = np.full_like(hue_map, 0.75)
-    r_new, g_new, b_new = hsv_to_rgb_vec(hue_map, saturation, value)
+    if flow_complexity >= 3:
+        # Low-frequency sine undulation for organic curvature
+        for i in range(3):
+            freq = 1.2 + rng.uniform(-0.3, 0.5)
+            phase = angles[2 + i]
+            amp = 0.10 - i * 0.02
+            wave = np.sin((yn * np.cos(phase) + xn * np.sin(phase)) * freq * np.pi)
+            field = field + wave * amp
 
-    # Blend with original paint — pm controls strength (0.7 = strong default)
-    blend = 0.7 * pm
-    for c, ch in enumerate([r_new, g_new, b_new]):
-        paint[:,:,c] = np.clip(
-            paint[:,:,c] * (1 - blend * mask) + ch * blend * mask,
-            0, 1
-        )
+        # Very light noise for organic panel boundary breakup
+        noise = multi_scale_noise(shape, [64, 128, 256], [0.25, 0.40, 0.35], seed + 8001)
+        field = field + noise * 0.05
 
-    # Brightness boost for dark paints to show the shift
-    paint = np.clip(paint + bb * 1.5 * mask[:,:,np.newaxis], 0, 1)
+    # Normalize to 0-1
+    fmin, fmax = field.min(), field.max()
+    field = (field - fmin) / (fmax - fmin + 1e-8)
+    return field
+
+
+def _chameleon_v5_flake(shape, seed, cell_size=5):
+    """Generate Voronoi-like micro-flake cells for paint depth.
+    Returns per-pixel flake value (0-1) and edge detection mask.
+    """
+    h, w = shape
+    rng = np.random.RandomState(seed + 8100)
+    ny = max(1, h // cell_size)
+    nx = max(1, w // cell_size)
+    cell_vals = rng.rand(ny + 2, nx + 2).astype(np.float32)
+    yidx = np.clip(np.arange(h) // cell_size, 0, ny).astype(int)
+    xidx = np.clip(np.arange(w) // cell_size, 0, nx).astype(int)
+    flake = cell_vals[yidx[:, None], xidx[None, :]]
+    # Add fine noise within cells
+    fine = rng.rand(h, w).astype(np.float32) * 0.3
+    flake = flake * 0.7 + fine
+    return flake
+
+
+def _chameleon_v5_color_ramp(field, color_stops):
+    """Map 0-1 field through multi-stop HSV color ramp with smoothstep.
+    color_stops: list of (position, H_deg, S, V). Returns R,G,B float arrays.
+    """
+    stops = sorted(color_stops, key=lambda s: s[0])
+    n = len(stops)
+    h, w = field.shape
+
+    # Convert stops to RGB
+    stop_rgb = []
+    for pos, hue, sat, val in stops:
+        h_arr = np.array([[hue / 360.0]], dtype=np.float32)
+        s_arr = np.array([[sat]], dtype=np.float32)
+        v_arr = np.array([[val]], dtype=np.float32)
+        r, g, b = hsv_to_rgb_vec(h_arr, s_arr, v_arr)
+        stop_rgb.append((float(r[0,0]), float(g[0,0]), float(b[0,0])))
+
+    out_r = np.zeros((h, w), dtype=np.float32)
+    out_g = np.zeros((h, w), dtype=np.float32)
+    out_b = np.zeros((h, w), dtype=np.float32)
+
+    for i in range(n - 1):
+        p0, p1 = stops[i][0], stops[i+1][0]
+        r0, g0, b0 = stop_rgb[i]
+        r1, g1, b1 = stop_rgb[i+1]
+        if i == 0:
+            seg = field <= p1
+        elif i == n - 2:
+            seg = field > p0
+        else:
+            seg = (field > p0) & (field <= p1)
+        if not np.any(seg):
+            continue
+        span = max(p1 - p0, 1e-8)
+        t = np.clip((field[seg] - p0) / span, 0, 1)
+        t = t * t * (3.0 - 2.0 * t)  # smoothstep
+        out_r[seg] = r0 + (r1 - r0) * t
+        out_g[seg] = g0 + (g1 - g0) * t
+        out_b[seg] = b0 + (b1 - b0) * t
+
+    return out_r, out_g, out_b
+
+
+def spec_chameleon_v5(shape, mask, seed, sm, field=None,
+                      M_base=225, M_range=30, R_base=10, R_range=12,
+                      CC_base=16, CC_range=14):
+    """Chameleon v5 COORDINATED spec — spatially varied M/R/CC driven by paint field.
+
+    CRITICAL: M is INVERSELY correlated with field. Where paint is warm/low-field,
+    metallic is higher → stronger Fresnel → color fades to white at grazing.
+    Where paint is cool/high-field, metallic is lower → color HOLDS at grazing.
+    This creates GENUINE differential Fresnel behavior across the car.
+
+    Clearcoat OPPOSES metallic — where M is high (edges), CC is low (colored
+    reflections dominate). Where M is lower (flats), CC is higher (white
+    flash competes). This creates the dual-layer effect of real chameleon paint.
+    """
+    h, w = shape
+    spec = np.zeros((h, w, 4), dtype=np.uint8)
+
+    if field is None:
+        field = _chameleon_v5_field(shape, seed)
+
+    # Metallic: INVERSE of field — darker/warmer paint = more metallic
+    M_arr = M_base + (1.0 - field) * M_range
+
+    # Roughness: low base with micro-flake variation
+    flake = _chameleon_v5_flake(shape, seed + 50, cell_size=5)
+    R_arr = R_base + flake * R_range * sm
+
+    # Clearcoat: OPPOSING metallic — follows field
+    CC_arr = CC_base + field * CC_range
+
+    # Light smooth noise overlay for organic feel
+    m_noise = multi_scale_noise(shape, [32, 64], [0.5, 0.5], seed + 8200)
+    M_arr = M_arr + m_noise * 5 * sm
+    r_noise = multi_scale_noise(shape, [16, 32], [0.5, 0.5], seed + 8210)
+    R_arr = R_arr + r_noise * 3 * sm
+
+    spec[:,:,0] = np.clip(M_arr * mask, 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R_arr * mask, 0, 255).astype(np.uint8)
+    spec[:,:,2] = np.clip(CC_arr * mask, 0, 255).astype(np.uint8)
+    spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
+    return spec
+
+
+def spec_chameleon_pro(shape, mask, seed, sm):
+    """Chameleon spec — backward-compatible wrapper using v5 coordinated system."""
+    return spec_chameleon_v5(shape, mask, seed, sm)
+
+
+def paint_chameleon_v5_core(paint, shape, mask, seed, pm, bb,
+                            color_stops, flow_complexity=3,
+                            flake_intensity=0.04, flake_hue_spread=0.06,
+                            blend_strength=0.93, metallic_brighten=0.12):
+    """Chameleon v5 CORE — coordinated dual-map paint with micro-flake texture.
+
+    This is the heart of the new system:
+    1. Generates panel direction field (same field spec uses)
+    2. Maps multi-stop physically-motivated color ramp through field
+    3. Adds Voronoi micro-flake texture with per-flake hue variation
+    4. Compensates for iRacing metallic PBR darkening
+    5. Blends with original paint at high strength
+
+    color_stops: [(position, H_deg, S, V), ...] — at least 3 stops
+    flake_intensity: brightness variation per flake (0.02-0.08)
+    flake_hue_spread: hue variation per flake in 0-1 range (0.02-0.10)
+    metallic_brighten: compensation for iRacing metallic darkening
+    """
+    h, w = shape
+
+    # Step 1: Generate master field (SAME seed → matches spec)
+    field = _chameleon_v5_field(shape, seed, flow_complexity)
+
+    # Step 2: Map through multi-stop color ramp
+    ramp_r, ramp_g, ramp_b = _chameleon_v5_color_ramp(field, color_stops)
+
+    # Step 3: Add Voronoi micro-flake texture
+    flake = _chameleon_v5_flake(shape, seed, cell_size=5)
+    # Per-flake brightness variation
+    flake_bright = (flake - 0.5) * 2.0 * flake_intensity
+    ramp_r = np.clip(ramp_r + flake_bright, 0, 1)
+    ramp_g = np.clip(ramp_g + flake_bright, 0, 1)
+    ramp_b = np.clip(ramp_b + flake_bright, 0, 1)
+
+    # Per-flake hue shift — each flake catches light at slightly different angle
+    hue_shift = (flake - 0.5) * flake_hue_spread
+    ramp_r = np.clip(ramp_r + hue_shift * 0.8, 0, 1)
+    ramp_g = np.clip(ramp_g - hue_shift * 0.3, 0, 1)
+    ramp_b = np.clip(ramp_b + hue_shift * 0.5, 0, 1)
+
+    # Step 4: Metallic brightness compensation
+    ramp_r = np.clip(ramp_r + metallic_brighten, 0, 1)
+    ramp_g = np.clip(ramp_g + metallic_brighten, 0, 1)
+    ramp_b = np.clip(ramp_b + metallic_brighten, 0, 1)
+
+    # Step 5: Blend with original paint
+    blend = blend_strength * pm
+    mask3 = mask[:, :, np.newaxis]
+    shift_rgb = np.stack([ramp_r, ramp_g, ramp_b], axis=2)
+    paint = paint * (1.0 - blend * mask3) + shift_rgb * blend * mask3
+
+    # Brightness boost for dark source paints
+    paint = np.clip(paint + bb * 1.2 * mask3, 0, 1)
     return paint
 
 
-# --- Chameleon Preset Wrappers ---
+def paint_chameleon_gradient(paint, shape, mask, seed, pm, bb, primary_hue, shift_range):
+    """Backward-compatible wrapper — converts old 2-param HSV ramp to v5 multi-stop.
+    Now generates a 5-stop physically-motivated ramp from the primary hue + shift range.
+    """
+    h_start = primary_hue
+    h_end = primary_hue + shift_range
+    stops = [
+        (0.00, h_start % 360,                  0.88, 0.82),
+        (0.25, (h_start + shift_range*0.25) % 360, 0.90, 0.84),
+        (0.50, (h_start + shift_range*0.50) % 360, 0.92, 0.85),
+        (0.75, (h_start + shift_range*0.75) % 360, 0.90, 0.83),
+        (1.00, h_end % 360,                    0.87, 0.80),
+    ]
+    return paint_chameleon_v5_core(paint, shape, mask, seed, pm, bb, stops)
+
+
+# --- Chameleon Classic Presets (v5 — rich multi-stop ramps) ---
 
 def paint_chameleon_midnight(paint, shape, mask, seed, pm, bb):
-    """Midnight — Purple → Teal → Gold"""
-    return paint_chameleon_gradient(paint, shape, mask, seed, pm, bb, 270, 150)
+    """Midnight — Deep purple → indigo → teal → gold (dark luxury shift)"""
+    stops = [
+        (0.00, 275, 0.85, 0.65),   # Deep Purple
+        (0.25, 245, 0.82, 0.68),   # Indigo
+        (0.50, 195, 0.88, 0.72),   # Teal
+        (0.75, 165, 0.82, 0.76),   # Aqua
+        (1.00, 48,  0.80, 0.82),   # Gold
+    ]
+    return paint_chameleon_v5_core(paint, shape, mask, seed, pm, bb, stops,
+                                   flake_intensity=0.035, flake_hue_spread=0.05)
 
 def paint_chameleon_phoenix(paint, shape, mask, seed, pm, bb):
-    """Phoenix — Red → Orange → Gold"""
-    return paint_chameleon_gradient(paint, shape, mask, seed, pm, bb, 0, 60)
+    """Phoenix — Crimson → red → orange → gold → yellow-green (fire rebirth)"""
+    stops = [
+        (0.00, 345, 0.92, 0.75),   # Crimson
+        (0.20, 8,   0.90, 0.80),   # Red
+        (0.40, 25,  0.88, 0.84),   # Orange
+        (0.60, 42,  0.85, 0.86),   # Gold
+        (0.80, 65,  0.82, 0.84),   # Yellow-Green
+        (1.00, 95,  0.78, 0.80),   # Green
+    ]
+    return paint_chameleon_v5_core(paint, shape, mask, seed, pm, bb, stops,
+                                   flake_intensity=0.045, flake_hue_spread=0.07)
 
 def paint_chameleon_ocean(paint, shape, mask, seed, pm, bb):
-    """Ocean — Blue → Teal → Emerald"""
-    return paint_chameleon_gradient(paint, shape, mask, seed, pm, bb, 220, 100)
+    """Ocean — Teal → cerulean → blue → indigo → violet (deep sea)"""
+    stops = [
+        (0.00, 178, 0.88, 0.78),   # Teal
+        (0.25, 200, 0.90, 0.76),   # Cerulean
+        (0.50, 225, 0.88, 0.74),   # Blue
+        (0.75, 255, 0.85, 0.70),   # Indigo
+        (1.00, 280, 0.82, 0.72),   # Violet
+    ]
+    return paint_chameleon_v5_core(paint, shape, mask, seed, pm, bb, stops,
+                                   flake_intensity=0.035, flake_hue_spread=0.05)
 
 def paint_chameleon_venom(paint, shape, mask, seed, pm, bb):
-    """Venom — Green → Teal → Purple"""
-    return paint_chameleon_gradient(paint, shape, mask, seed, pm, bb, 120, -150)
+    """Venom — Toxic green → teal → blue → purple → magenta (toxic shift)"""
+    stops = [
+        (0.00, 110, 0.92, 0.82),   # Toxic Green
+        (0.25, 155, 0.88, 0.78),   # Teal-Green
+        (0.50, 205, 0.85, 0.74),   # Blue
+        (0.75, 265, 0.88, 0.72),   # Purple
+        (1.00, 310, 0.85, 0.76),   # Magenta
+    ]
+    return paint_chameleon_v5_core(paint, shape, mask, seed, pm, bb, stops,
+                                   flake_intensity=0.04, flake_hue_spread=0.06)
 
 def paint_chameleon_copper(paint, shape, mask, seed, pm, bb):
-    """Copper — Copper → Magenta → Violet"""
-    return paint_chameleon_gradient(paint, shape, mask, seed, pm, bb, 20, 280)
+    """Copper — Copper → rose gold → magenta → violet → teal (full spectrum)"""
+    stops = [
+        (0.00, 22,  0.85, 0.82),   # Copper
+        (0.20, 350, 0.78, 0.80),   # Rose Gold
+        (0.40, 320, 0.82, 0.76),   # Magenta
+        (0.60, 275, 0.85, 0.72),   # Violet
+        (0.80, 220, 0.82, 0.74),   # Blue
+        (1.00, 178, 0.80, 0.76),   # Teal
+    ]
+    return paint_chameleon_v5_core(paint, shape, mask, seed, pm, bb, stops,
+                                   flake_intensity=0.05, flake_hue_spread=0.08)
 
 def paint_chameleon_arctic(paint, shape, mask, seed, pm, bb):
-    """Arctic — Teal → Blue → Purple"""
-    return paint_chameleon_gradient(paint, shape, mask, seed, pm, bb, 180, 90)
+    """Arctic — Silver → ice blue → sky → teal → aqua (frozen metallic)"""
+    stops = [
+        (0.00, 210, 0.20, 0.90),   # Silver (low sat, high value)
+        (0.25, 205, 0.45, 0.87),   # Ice Blue
+        (0.50, 200, 0.65, 0.84),   # Sky Blue
+        (0.75, 188, 0.75, 0.80),   # Teal
+        (1.00, 175, 0.80, 0.78),   # Aqua
+    ]
+    return paint_chameleon_v5_core(paint, shape, mask, seed, pm, bb, stops,
+                                   flow_complexity=2, flake_intensity=0.03,
+                                   flake_hue_spread=0.04, metallic_brighten=0.14)
+
+def paint_chameleon_amethyst(paint, shape, mask, seed, pm, bb):
+    """Amethyst — Deep purple → violet → pink → magenta → rose (jewel shift)"""
+    stops = [
+        (0.00, 270, 0.88, 0.68),   # Deep Purple
+        (0.25, 290, 0.85, 0.72),   # Violet
+        (0.50, 320, 0.82, 0.78),   # Pink
+        (0.75, 340, 0.85, 0.80),   # Magenta
+        (1.00, 355, 0.80, 0.82),   # Rose
+    ]
+    return paint_chameleon_v5_core(paint, shape, mask, seed, pm, bb, stops,
+                                   flake_intensity=0.04, flake_hue_spread=0.06)
+
+def paint_chameleon_emerald(paint, shape, mask, seed, pm, bb):
+    """Emerald — Emerald → teal → cyan → sky blue → sapphire (jewel ocean)"""
+    stops = [
+        (0.00, 145, 0.90, 0.72),   # Emerald
+        (0.25, 170, 0.88, 0.76),   # Teal
+        (0.50, 185, 0.85, 0.78),   # Cyan
+        (0.75, 200, 0.82, 0.80),   # Sky Blue
+        (1.00, 225, 0.85, 0.76),   # Sapphire
+    ]
+    return paint_chameleon_v5_core(paint, shape, mask, seed, pm, bb, stops,
+                                   flake_intensity=0.035, flake_hue_spread=0.05)
+
+def paint_chameleon_obsidian(paint, shape, mask, seed, pm, bb):
+    """Obsidian — Black → deep purple → dark blue → dark teal (stealth shift)"""
+    stops = [
+        (0.00, 270, 0.70, 0.35),   # Near-Black Purple
+        (0.30, 260, 0.75, 0.42),   # Deep Purple
+        (0.55, 235, 0.72, 0.45),   # Dark Blue
+        (0.80, 200, 0.68, 0.42),   # Dark Teal
+        (1.00, 180, 0.65, 0.38),   # Dark Cyan
+    ]
+    return paint_chameleon_v5_core(paint, shape, mask, seed, pm, bb, stops,
+                                   flake_intensity=0.05, flake_hue_spread=0.08,
+                                   blend_strength=0.95, metallic_brighten=0.18)
 
 
 # --- Mystichrome (Ford SVT tribute — 3-color ramp, 240° shift) ---
 
 def paint_mystichrome(paint, shape, mask, seed, pm, bb):
-    """Mystichrome — Green → Blue → Purple (Ford SVT Cobra tribute, 240° shift)"""
-    return paint_chameleon_gradient(paint, shape, mask, seed, pm, bb, 120, 240)
+    """Mystichrome — Green → blue → purple (Ford SVT Cobra tribute, wide shift)"""
+    stops = [
+        (0.00, 140, 0.85, 0.76),   # Forest Green
+        (0.20, 165, 0.88, 0.78),   # Teal
+        (0.40, 200, 0.90, 0.76),   # Blue
+        (0.60, 235, 0.88, 0.74),   # Deep Blue
+        (0.80, 265, 0.85, 0.72),   # Indigo
+        (1.00, 290, 0.82, 0.74),   # Purple
+    ]
+    return paint_chameleon_v5_core(paint, shape, mask, seed, pm, bb, stops,
+                                   flake_intensity=0.04, flake_hue_spread=0.06)
 
 
 # ================================================================
@@ -2620,125 +2899,341 @@ def paint_colorshift_preset(paint, shape, mask, seed, pm, bb,
 
 
 # ================================================================
-# ADAPTIVE PRESETS — "Your color + Fresnel shift direction"
-# These read the zone's existing color and dither two populations.
-# Pop A = zone color (high M, low R) — vivid head-on, fades at grazing
-# Pop B = shifted color (moderate M, higher R) — holds at grazing
+# COLOR SHIFT ADAPTIVE v5 — Zone-reading coordinated dual-map
+#
+# These READ the zone's existing color and build a multi-stop
+# ramp around it using the v5 coordinated system. The spec varies
+# M/R/CC spatially in coordination with the paint field for
+# genuine differential Fresnel behavior.
+#
+# Key difference from old v3 dithering: EVERY pixel gets a rich
+# color from a multi-stop ramp + micro-flake texture + coordinated
+# spec, instead of noisy binary A/B pixel populations.
 # ================================================================
 
-# --- Adaptive: Warm Shift (your color + warm shifted population) ---
+
+def _cs_adaptive_v5(paint, shape, mask, seed, pm, bb,
+                    hue_offsets, sat_curve, val_curve,
+                    flake_intensity=0.04, flake_hue_spread=0.06,
+                    blend_strength=0.93):
+    """Core adaptive color shift — reads zone color, builds v5 ramp from it.
+
+    hue_offsets: list of (position, hue_offset_degrees) — offset from zone hue
+    sat_curve: list of (position, saturation) — saturation at each stop
+    val_curve: list of (position, value) — value at each stop
+    """
+    zone_hue, zone_sat, zone_val = _sample_zone_color(paint, mask)
+
+    # For achromatic zones, inject a base color
+    if zone_sat < 0.15:
+        zone_hue = 0.52  # Default to teal-ish
+        zone_sat = 0.55
+
+    h_deg = zone_hue * 360.0
+
+    # Build color stops from zone hue + offsets
+    stops = []
+    for i, (pos, h_offset) in enumerate(hue_offsets):
+        hue = (h_deg + h_offset) % 360
+        sat = min(zone_sat + sat_curve[i][1], 1.0)
+        val = min(zone_val * 0.82 + val_curve[i][1], 0.94)
+        stops.append((pos, hue, sat, val))
+
+    return paint_chameleon_v5_core(paint, shape, mask, seed, pm, bb, stops,
+                                   flake_intensity=flake_intensity,
+                                   flake_hue_spread=flake_hue_spread,
+                                   blend_strength=blend_strength)
+
+
+def _spec_cs_v5(shape, mask, seed, sm, M_base=228, M_range=25,
+                R_base=10, R_range=10, CC_base=16, CC_range=12):
+    """Coordinated color shift spec — uses v5 field for all CS presets."""
+    return spec_chameleon_v5(shape, mask, seed, sm, field=None,
+                            M_base=M_base, M_range=M_range,
+                            R_base=R_base, R_range=R_range,
+                            CC_base=CC_base, CC_range=CC_range)
+
+
+# --- Adaptive: Warm Shift (+60° warm drift with analogous ramp) ---
 def paint_cs_warm(paint, shape, mask, seed, pm, bb):
-    return paint_colorshift_adaptive(paint, shape, mask, seed, pm, bb,
-                                      hue_shift_degrees=60, shift_strength=0.95)
+    """Warm Shift — reads zone color → builds warm analogous ramp (+60° drift)"""
+    return _cs_adaptive_v5(paint, shape, mask, seed, pm, bb,
+        hue_offsets=[(0.0, 0), (0.25, 15), (0.5, 35), (0.75, 50), (1.0, 65)],
+        sat_curve=[(0, 0.12), (1, 0.15), (2, 0.18), (3, 0.15), (4, 0.10)],
+        val_curve=[(0, 0.20), (1, 0.22), (2, 0.24), (3, 0.22), (4, 0.20)])
 def spec_cs_warm(shape, mask, seed, sm):
-    return spec_colorshift_pro(shape, mask, seed, sm,
-        spec_a={'M': 235, 'R': 8, 'CC': 16}, spec_b={'M': 195, 'R': 25, 'CC': 20})
+    return _spec_cs_v5(shape, mask, seed, sm, M_base=230, M_range=25, CC_range=12)
 
-# --- Adaptive: Cool Shift (your color + cool complement population) ---
+# --- Adaptive: Cool Shift (180° complementary drift) ---
 def paint_cs_cool(paint, shape, mask, seed, pm, bb):
-    return paint_colorshift_adaptive(paint, shape, mask, seed, pm, bb,
-                                      hue_shift_degrees=180, shift_strength=0.95)
+    """Cool Shift — reads zone color → builds complementary ramp (180° drift)"""
+    return _cs_adaptive_v5(paint, shape, mask, seed, pm, bb,
+        hue_offsets=[(0.0, 0), (0.25, 45), (0.5, 90), (0.75, 135), (1.0, 180)],
+        sat_curve=[(0, 0.12), (1, 0.14), (2, 0.16), (3, 0.14), (4, 0.10)],
+        val_curve=[(0, 0.18), (1, 0.20), (2, 0.22), (3, 0.20), (4, 0.18)])
 def spec_cs_cool(shape, mask, seed, sm):
-    return spec_colorshift_pro(shape, mask, seed, sm,
-        spec_a={'M': 235, 'R': 8, 'CC': 16}, spec_b={'M': 195, 'R': 28, 'CC': 22})
+    return _spec_cs_v5(shape, mask, seed, sm, M_base=232, M_range=28, CC_range=14)
 
-# --- Adaptive: Rainbow Shift (your color + full spectrum population) ---
+# --- Adaptive: TRUE Rainbow (full 360° spectrum sweep — every color) ---
 def paint_cs_rainbow(paint, shape, mask, seed, pm, bb):
-    return paint_colorshift_adaptive(paint, shape, mask, seed, pm, bb,
-                                      hue_shift_degrees=240, shift_strength=0.95,
-                                      saturation_boost=0.35)
+    """TRUE Rainbow — full 360° spectral sweep through every color of light"""
+    return _cs_adaptive_v5(paint, shape, mask, seed, pm, bb,
+        hue_offsets=[(0.0, 0), (0.14, 30), (0.28, 60), (0.43, 120),
+                     (0.57, 180), (0.71, 240), (0.86, 300), (1.0, 355)],
+        sat_curve=[(0, 0.20), (1, 0.22), (2, 0.24), (3, 0.25),
+                   (4, 0.24), (5, 0.22), (6, 0.20), (7, 0.18)],
+        val_curve=[(0, 0.22), (1, 0.24), (2, 0.26), (3, 0.26),
+                   (4, 0.26), (5, 0.24), (6, 0.22), (7, 0.20)],
+        flake_intensity=0.05, flake_hue_spread=0.10)
 def spec_cs_rainbow(shape, mask, seed, sm):
-    return spec_colorshift_pro(shape, mask, seed, sm,
-        spec_a={'M': 230, 'R': 8, 'CC': 16}, spec_b={'M': 190, 'R': 30, 'CC': 22})
+    return _spec_cs_v5(shape, mask, seed, sm, M_base=228, M_range=30, CC_range=16)
 
-# --- Adaptive: Subtle Shift (your color + gentle drift) ---
+# --- Adaptive: Subtle Shift (gentle ±20° nudge) ---
 def paint_cs_subtle(paint, shape, mask, seed, pm, bb):
-    return paint_colorshift_adaptive(paint, shape, mask, seed, pm, bb,
-                                      hue_shift_degrees=40, shift_strength=0.85,
-                                      saturation_boost=0.15)
+    """Subtle Shift — barely perceptible color drift for refined taste"""
+    return _cs_adaptive_v5(paint, shape, mask, seed, pm, bb,
+        hue_offsets=[(0.0, -15), (0.25, -5), (0.5, 5), (0.75, 15), (1.0, 25)],
+        sat_curve=[(0, 0.08), (1, 0.10), (2, 0.12), (3, 0.10), (4, 0.08)],
+        val_curve=[(0, 0.15), (1, 0.17), (2, 0.19), (3, 0.17), (4, 0.15)],
+        flake_intensity=0.03, flake_hue_spread=0.04, blend_strength=0.88)
 def spec_cs_subtle(shape, mask, seed, sm):
-    return spec_colorshift_pro(shape, mask, seed, sm,
-        spec_a={'M': 225, 'R': 10, 'CC': 16}, spec_b={'M': 210, 'R': 18, 'CC': 18})
+    return _spec_cs_v5(shape, mask, seed, sm, M_base=222, M_range=18, R_range=8, CC_range=10)
 
-# --- Adaptive: Extreme Shift (your color + dramatic departure) ---
+# --- Adaptive: Extreme Shift (wild 200° departure) ---
 def paint_cs_extreme(paint, shape, mask, seed, pm, bb):
-    return paint_colorshift_adaptive(paint, shape, mask, seed, pm, bb,
-                                      hue_shift_degrees=200, shift_strength=0.95,
-                                      saturation_boost=0.40)
+    """Extreme Shift — dramatic wild color push for maximum visual impact"""
+    return _cs_adaptive_v5(paint, shape, mask, seed, pm, bb,
+        hue_offsets=[(0.0, 0), (0.2, 50), (0.4, 100), (0.6, 150), (0.8, 180), (1.0, 210)],
+        sat_curve=[(0, 0.18), (1, 0.22), (2, 0.25), (3, 0.22), (4, 0.18), (5, 0.15)],
+        val_curve=[(0, 0.20), (1, 0.24), (2, 0.26), (3, 0.24), (4, 0.20), (5, 0.18)],
+        flake_intensity=0.05, flake_hue_spread=0.09, blend_strength=0.95)
 def spec_cs_extreme(shape, mask, seed, sm):
-    return spec_colorshift_pro(shape, mask, seed, sm,
-        spec_a={'M': 240, 'R': 6, 'CC': 16}, spec_b={'M': 185, 'R': 32, 'CC': 24})
+    return _spec_cs_v5(shape, mask, seed, sm, M_base=235, M_range=30, CC_range=16)
 
+# --- Adaptive: Chrome Shift (metallic silver → cool chrome spectrum) ---
+def paint_cs_chrome_shift(paint, shape, mask, seed, pm, bb):
+    """Chrome Shift — silver-to-blue metallic chrome spectrum sweep"""
+    return _cs_adaptive_v5(paint, shape, mask, seed, pm, bb,
+        hue_offsets=[(0.0, -10), (0.25, 0), (0.5, 15), (0.75, 30), (1.0, 50)],
+        sat_curve=[(0, -0.30), (1, -0.25), (2, -0.15), (3, -0.20), (4, -0.25)],
+        val_curve=[(0, 0.35), (1, 0.38), (2, 0.40), (3, 0.38), (4, 0.35)],
+        flake_intensity=0.06, flake_hue_spread=0.03, blend_strength=0.90)
+def spec_cs_chrome_shift(shape, mask, seed, sm):
+    return _spec_cs_v5(shape, mask, seed, sm, M_base=242, M_range=15, R_base=6, R_range=6, CC_range=8)
 
+# --- Adaptive: Complementary (zone color → its 180° complement) ---
+def paint_cs_complementary(paint, shape, mask, seed, pm, bb):
+    """Complementary — reads zone color → sweeps to exact 180° opposite"""
+    return _cs_adaptive_v5(paint, shape, mask, seed, pm, bb,
+        hue_offsets=[(0.0, 0), (0.25, 45), (0.5, 90), (0.75, 135), (1.0, 180)],
+        sat_curve=[(0, 0.12), (1, 0.15), (2, 0.18), (3, 0.15), (4, 0.12)],
+        val_curve=[(0, 0.18), (1, 0.20), (2, 0.22), (3, 0.20), (4, 0.18)])
+def spec_cs_complementary(shape, mask, seed, sm):
+    return _spec_cs_v5(shape, mask, seed, sm, M_base=230, M_range=28, CC_range=14)
+
+# --- Adaptive: Earth (warm natural earth tones — olive, umber, sienna, sage) ---
+def paint_cs_earth(paint, shape, mask, seed, pm, bb):
+    """Earth — natural earth tone spectrum from warm brown through olive to sage"""
+    return _cs_adaptive_v5(paint, shape, mask, seed, pm, bb,
+        hue_offsets=[(0.0, 15), (0.25, 25), (0.5, 40), (0.75, 55), (1.0, 70)],
+        sat_curve=[(0, -0.15), (1, -0.10), (2, -0.05), (3, -0.10), (4, -0.15)],
+        val_curve=[(0, 0.08), (1, 0.12), (2, 0.15), (3, 0.12), (4, 0.08)],
+        flake_intensity=0.03, flake_hue_spread=0.04, blend_strength=0.88)
+def spec_cs_earth(shape, mask, seed, sm):
+    return _spec_cs_v5(shape, mask, seed, sm, M_base=210, M_range=20, R_base=18, R_range=12, CC_base=10, CC_range=8)
+
+# --- Adaptive: Monochrome (single-hue depth — saturation + value variation only) ---
+def paint_cs_monochrome(paint, shape, mask, seed, pm, bb):
+    """Monochrome — stays on the zone's hue but sweeps saturation and value for depth"""
+    return _cs_adaptive_v5(paint, shape, mask, seed, pm, bb,
+        hue_offsets=[(0.0, -5), (0.25, -2), (0.5, 0), (0.75, 2), (1.0, 5)],
+        sat_curve=[(0, -0.10), (1, 0.05), (2, 0.15), (3, 0.05), (4, -0.10)],
+        val_curve=[(0, 0.05), (1, 0.15), (2, 0.28), (3, 0.15), (4, 0.05)],
+        flake_intensity=0.04, flake_hue_spread=0.02, blend_strength=0.90)
+def spec_cs_monochrome(shape, mask, seed, sm):
+    return _spec_cs_v5(shape, mask, seed, sm, M_base=225, M_range=30, R_range=8, CC_range=10)
+
+# --- Adaptive: Neon Shift (electric neon fluorescent sweep) ---
+def paint_cs_neon_shift(paint, shape, mask, seed, pm, bb):
+    """Neon Shift — electric fluorescent neon color sweep from zone base"""
+    return _cs_adaptive_v5(paint, shape, mask, seed, pm, bb,
+        hue_offsets=[(0.0, 0), (0.2, 40), (0.4, 80), (0.6, 140), (0.8, 200), (1.0, 260)],
+        sat_curve=[(0, 0.25), (1, 0.30), (2, 0.32), (3, 0.30), (4, 0.28), (5, 0.25)],
+        val_curve=[(0, 0.28), (1, 0.32), (2, 0.34), (3, 0.32), (4, 0.30), (5, 0.28)],
+        flake_intensity=0.05, flake_hue_spread=0.08, blend_strength=0.95)
+def spec_cs_neon_shift(shape, mask, seed, sm):
+    return _spec_cs_v5(shape, mask, seed, sm, M_base=220, M_range=25, R_base=12, CC_range=18)
+
+# --- Adaptive: Ocean Shift (aquatic blues/teals/greens spectrum) ---
+def paint_cs_ocean_shift(paint, shape, mask, seed, pm, bb):
+    """Ocean Shift — sweeps through aquatic spectrum: teal → cyan → blue → indigo"""
+    return _cs_adaptive_v5(paint, shape, mask, seed, pm, bb,
+        hue_offsets=[(0.0, 0), (0.25, -20), (0.5, -40), (0.75, -55), (1.0, -70)],
+        sat_curve=[(0, 0.12), (1, 0.18), (2, 0.22), (3, 0.18), (4, 0.14)],
+        val_curve=[(0, 0.18), (1, 0.22), (2, 0.24), (3, 0.20), (4, 0.16)],
+        flake_intensity=0.035, flake_hue_spread=0.05)
+def spec_cs_ocean_shift(shape, mask, seed, sm):
+    return _spec_cs_v5(shape, mask, seed, sm, M_base=228, M_range=28, CC_range=14)
+
+# --- Adaptive: Prism Shift (light-through-prism spectral dispersion) ---
+def paint_cs_prism_shift(paint, shape, mask, seed, pm, bb):
+    """Prism Shift — spectral dispersion like white light through a crystal prism"""
+    return _cs_adaptive_v5(paint, shape, mask, seed, pm, bb,
+        hue_offsets=[(0.0, -30), (0.17, 0), (0.33, 30), (0.5, 60),
+                     (0.67, 120), (0.83, 180), (1.0, 240)],
+        sat_curve=[(0, 0.18), (1, 0.22), (2, 0.25), (3, 0.28),
+                   (4, 0.25), (5, 0.22), (6, 0.18)],
+        val_curve=[(0, 0.22), (1, 0.25), (2, 0.28), (3, 0.30),
+                   (4, 0.28), (5, 0.25), (6, 0.22)],
+        flake_intensity=0.05, flake_hue_spread=0.09)
+def spec_cs_prism_shift(shape, mask, seed, sm):
+    return _spec_cs_v5(shape, mask, seed, sm, M_base=225, M_range=30, CC_range=16)
+
+# --- Adaptive: Split Complementary (zone + two split-complement colors) ---
+def paint_cs_split(paint, shape, mask, seed, pm, bb):
+    """Split Complementary — zone color + the two colors flanking its complement"""
+    return _cs_adaptive_v5(paint, shape, mask, seed, pm, bb,
+        hue_offsets=[(0.0, 0), (0.25, 50), (0.5, 150), (0.75, 180), (1.0, 210)],
+        sat_curve=[(0, 0.12), (1, 0.16), (2, 0.20), (3, 0.16), (4, 0.12)],
+        val_curve=[(0, 0.18), (1, 0.22), (2, 0.24), (3, 0.22), (4, 0.18)])
+def spec_cs_split(shape, mask, seed, sm):
+    return _spec_cs_v5(shape, mask, seed, sm, M_base=230, M_range=28, CC_range=14)
+
+# --- Adaptive: Triadic (three-way 120° color triangle from zone) ---
+def paint_cs_triadic(paint, shape, mask, seed, pm, bb):
+    """Triadic — three equidistant colors at 120° intervals from zone hue"""
+    return _cs_adaptive_v5(paint, shape, mask, seed, pm, bb,
+        hue_offsets=[(0.0, 0), (0.2, 40), (0.4, 80), (0.6, 120),
+                     (0.8, 200), (1.0, 240)],
+        sat_curve=[(0, 0.15), (1, 0.18), (2, 0.20), (3, 0.22), (4, 0.20), (5, 0.15)],
+        val_curve=[(0, 0.18), (1, 0.22), (2, 0.24), (3, 0.24), (4, 0.22), (5, 0.18)],
+        flake_intensity=0.045, flake_hue_spread=0.07)
+def spec_cs_triadic(shape, mask, seed, sm):
+    return _spec_cs_v5(shape, mask, seed, sm, M_base=228, M_range=28, CC_range=14)
+
+# --- Adaptive: Vivid (maximum saturation vivid color explosion) ---
+def paint_cs_vivid(paint, shape, mask, seed, pm, bb):
+    """Vivid — maximum saturation electric color sweep for eye-popping impact"""
+    return _cs_adaptive_v5(paint, shape, mask, seed, pm, bb,
+        hue_offsets=[(0.0, 0), (0.2, 25), (0.4, 50), (0.6, 80),
+                     (0.8, 120), (1.0, 160)],
+        sat_curve=[(0, 0.25), (1, 0.28), (2, 0.30), (3, 0.32), (4, 0.28), (5, 0.25)],
+        val_curve=[(0, 0.24), (1, 0.28), (2, 0.30), (3, 0.30), (4, 0.28), (5, 0.24)],
+        flake_intensity=0.05, flake_hue_spread=0.08, blend_strength=0.95)
+def spec_cs_vivid(shape, mask, seed, sm):
+    return _spec_cs_v5(shape, mask, seed, sm, M_base=232, M_range=28, CC_range=14)
+# Each preset defines a 5-6 stop physically-motivated color ramp
+# with coordinated M/R/CC spec for genuine Fresnel behavior.
 # ================================================================
-# PRESET COLOR SHIFTS — Bold fixed two-color Fresnel pairs
-# Each preset defines Color A (dominates head-on) and Color B
-# (emerges at grazing angles). The dither field controls spatial mix.
-# Spec properties differ per population for differential Fresnel.
-# ================================================================
 
-# --- Preset: Emerald (Teal ↔ Purple) ---
+# --- Preset: Emerald (Teal → Cyan → Blue → Indigo → Purple) ---
 def paint_cs_emerald(paint, shape, mask, seed, pm, bb):
-    """Emerald — Teal head-on, Purple at grazing (Mystichrome-style)"""
-    return paint_colorshift_preset(paint, shape, mask, seed, pm, bb,
-        color_a=(165, 0.85, 0.78), color_b=(285, 0.80, 0.75))
+    """Emerald — sweeping teal through blue into purple (Mystichrome-style)"""
+    stops = [
+        (0.00, 165, 0.88, 0.78),   # Teal
+        (0.25, 190, 0.90, 0.76),   # Cyan
+        (0.50, 225, 0.88, 0.74),   # Blue
+        (0.75, 260, 0.85, 0.72),   # Indigo
+        (1.00, 285, 0.82, 0.75),   # Purple
+    ]
+    return paint_chameleon_v5_core(paint, shape, mask, seed, pm, bb, stops,
+                                   flake_intensity=0.04, flake_hue_spread=0.06)
 def spec_cs_emerald(shape, mask, seed, sm):
-    return spec_colorshift_pro(shape, mask, seed, sm,
-        spec_a={'M': 235, 'R': 8, 'CC': 16}, spec_b={'M': 200, 'R': 26, 'CC': 20})
+    return _spec_cs_v5(shape, mask, seed, sm, M_base=230, M_range=28, CC_range=14)
 
-# --- Preset: Inferno (Red ↔ Gold) ---
+# --- Preset: Inferno (Crimson → Red → Orange → Gold → Amber) ---
 def paint_cs_inferno(paint, shape, mask, seed, pm, bb):
-    """Inferno — Red head-on, Gold at grazing (hot metal)"""
-    return paint_colorshift_preset(paint, shape, mask, seed, pm, bb,
-        color_a=(5, 0.88, 0.78), color_b=(48, 0.82, 0.82))
+    """Inferno — blazing fire spectrum from crimson through gold"""
+    stops = [
+        (0.00, 350, 0.92, 0.72),   # Crimson
+        (0.20, 5,   0.90, 0.78),   # Red
+        (0.40, 20,  0.88, 0.82),   # Orange-Red
+        (0.60, 35,  0.85, 0.85),   # Orange
+        (0.80, 45,  0.82, 0.86),   # Gold
+        (1.00, 55,  0.78, 0.84),   # Amber
+    ]
+    return paint_chameleon_v5_core(paint, shape, mask, seed, pm, bb, stops,
+                                   flake_intensity=0.045, flake_hue_spread=0.07)
 def spec_cs_inferno(shape, mask, seed, sm):
-    return spec_colorshift_pro(shape, mask, seed, sm,
-        spec_a={'M': 235, 'R': 8, 'CC': 16}, spec_b={'M': 205, 'R': 22, 'CC': 18})
+    return _spec_cs_v5(shape, mask, seed, sm, M_base=232, M_range=26, CC_range=12)
 
-# --- Preset: Nebula (Purple ↔ Gold) ---
+# --- Preset: Nebula (Deep Purple → Magenta → Rose → Gold → Amber) ---
 def paint_cs_nebula(paint, shape, mask, seed, pm, bb):
-    """Nebula — Purple head-on, Gold at grazing (cosmic luxury)"""
-    return paint_colorshift_preset(paint, shape, mask, seed, pm, bb,
-        color_a=(280, 0.78, 0.72), color_b=(45, 0.82, 0.80))
+    """Nebula — cosmic purple-to-gold luxury with wide gamut"""
+    stops = [
+        (0.00, 280, 0.82, 0.68),   # Deep Purple
+        (0.25, 310, 0.80, 0.72),   # Magenta
+        (0.50, 340, 0.78, 0.76),   # Rose
+        (0.75, 20,  0.80, 0.80),   # Warm Gold
+        (1.00, 45,  0.82, 0.82),   # Amber-Gold
+    ]
+    return paint_chameleon_v5_core(paint, shape, mask, seed, pm, bb, stops,
+                                   flake_intensity=0.04, flake_hue_spread=0.06)
 def spec_cs_nebula(shape, mask, seed, sm):
-    return spec_colorshift_pro(shape, mask, seed, sm,
-        spec_a={'M': 235, 'R': 8, 'CC': 16}, spec_b={'M': 198, 'R': 28, 'CC': 22})
+    return _spec_cs_v5(shape, mask, seed, sm, M_base=228, M_range=30, CC_range=16)
 
-# --- Preset: Deep Ocean (Teal ↔ Deep Indigo) ---
+# --- Preset: Deep Ocean (Teal → Deep Blue → Indigo → Violet → Dark Purple) ---
 def paint_cs_deepocean(paint, shape, mask, seed, pm, bb):
-    """Deep Ocean — Teal head-on, Indigo at grazing"""
-    return paint_colorshift_preset(paint, shape, mask, seed, pm, bb,
-        color_a=(185, 0.82, 0.72), color_b=(260, 0.78, 0.62))
+    """Deep Ocean — abyssal blue-to-purple underwater shift"""
+    stops = [
+        (0.00, 185, 0.85, 0.72),   # Teal
+        (0.25, 210, 0.88, 0.68),   # Deep Blue
+        (0.50, 235, 0.85, 0.64),   # Indigo
+        (0.75, 260, 0.82, 0.62),   # Violet
+        (1.00, 280, 0.78, 0.60),   # Dark Purple
+    ]
+    return paint_chameleon_v5_core(paint, shape, mask, seed, pm, bb, stops,
+                                   flake_intensity=0.035, flake_hue_spread=0.05,
+                                   metallic_brighten=0.14)
 def spec_cs_deepocean(shape, mask, seed, sm):
-    return spec_colorshift_pro(shape, mask, seed, sm,
-        spec_a={'M': 235, 'R': 8, 'CC': 16}, spec_b={'M': 200, 'R': 26, 'CC': 20})
+    return _spec_cs_v5(shape, mask, seed, sm, M_base=230, M_range=28, CC_range=14)
 
-# --- Preset: Supernova (Copper ↔ Teal) ---
+# --- Preset: Supernova (Copper → Gold → Lime → Teal → Cyan) ---
 def paint_cs_supernova(paint, shape, mask, seed, pm, bb):
-    """Supernova — Copper head-on, Teal at grazing (widest shift)"""
-    return paint_colorshift_preset(paint, shape, mask, seed, pm, bb,
-        color_a=(25, 0.82, 0.78), color_b=(175, 0.80, 0.72))
+    """Supernova — widest shift: warm copper sweeping to cool cyan"""
+    stops = [
+        (0.00, 25,  0.85, 0.80),   # Copper
+        (0.20, 45,  0.82, 0.84),   # Gold
+        (0.40, 80,  0.80, 0.82),   # Yellow-Green
+        (0.60, 130, 0.82, 0.78),   # Green
+        (0.80, 165, 0.85, 0.76),   # Teal
+        (1.00, 190, 0.82, 0.74),   # Cyan
+    ]
+    return paint_chameleon_v5_core(paint, shape, mask, seed, pm, bb, stops,
+                                   flake_intensity=0.05, flake_hue_spread=0.08)
 def spec_cs_supernova(shape, mask, seed, sm):
-    return spec_colorshift_pro(shape, mask, seed, sm,
-        spec_a={'M': 240, 'R': 6, 'CC': 16}, spec_b={'M': 190, 'R': 30, 'CC': 22})
+    return _spec_cs_v5(shape, mask, seed, sm, M_base=235, M_range=32, CC_range=16)
 
-# --- Preset: Solar Flare (Gold ↔ Crimson) ---
+# --- Preset: Solar Flare (Gold → Amber → Orange → Red → Crimson) ---
 def paint_cs_solarflare(paint, shape, mask, seed, pm, bb):
-    """Solar Flare — Gold head-on, Crimson at grazing (sunset)"""
-    return paint_colorshift_preset(paint, shape, mask, seed, pm, bb,
-        color_a=(48, 0.85, 0.82), color_b=(350, 0.80, 0.68))
+    """Solar Flare — golden sunrise to blood-red sunset eruption"""
+    stops = [
+        (0.00, 50,  0.88, 0.86),   # Gold
+        (0.25, 35,  0.85, 0.84),   # Amber
+        (0.50, 18,  0.88, 0.80),   # Orange
+        (0.75, 5,   0.90, 0.76),   # Red
+        (1.00, 345, 0.85, 0.68),   # Crimson
+    ]
+    return paint_chameleon_v5_core(paint, shape, mask, seed, pm, bb, stops,
+                                   flake_intensity=0.045, flake_hue_spread=0.07)
 def spec_cs_solarflare(shape, mask, seed, sm):
-    return spec_colorshift_pro(shape, mask, seed, sm,
-        spec_a={'M': 235, 'R': 8, 'CC': 16}, spec_b={'M': 205, 'R': 22, 'CC': 18})
+    return _spec_cs_v5(shape, mask, seed, sm, M_base=230, M_range=26, CC_range=12)
 
-# --- Preset: Mystichrome (Green ↔ Purple, Ford SVT tribute) ---
+# --- Preset: Mystichrome (Green → Teal → Blue → Indigo → Purple) ---
 def paint_cs_mystichrome(paint, shape, mask, seed, pm, bb):
-    """Mystichrome — Green head-on, Purple at grazing (Ford SVT)"""
-    return paint_colorshift_preset(paint, shape, mask, seed, pm, bb,
-        color_a=(140, 0.82, 0.74), color_b=(275, 0.80, 0.72))
+    """Mystichrome — Ford SVT tribute green-to-purple sweep"""
+    stops = [
+        (0.00, 140, 0.85, 0.74),   # Forest Green
+        (0.20, 165, 0.88, 0.76),   # Teal-Green
+        (0.40, 200, 0.90, 0.74),   # Blue
+        (0.60, 235, 0.88, 0.72),   # Deep Blue
+        (0.80, 260, 0.85, 0.70),   # Indigo
+        (1.00, 280, 0.82, 0.72),   # Purple
+    ]
+    return paint_chameleon_v5_core(paint, shape, mask, seed, pm, bb, stops,
+                                   flake_intensity=0.04, flake_hue_spread=0.06)
 def spec_cs_mystichrome(shape, mask, seed, sm):
-    return spec_colorshift_pro(shape, mask, seed, sm,
-        spec_a={'M': 235, 'R': 8, 'CC': 16}, spec_b={'M': 200, 'R': 26, 'CC': 20})
+    return _spec_cs_v5(shape, mask, seed, sm, M_base=232, M_range=28, CC_range=14)
 
 
 # ================================================================
@@ -5665,6 +6160,142 @@ def paint_shokk_phase(paint, shape, mask, seed, pm, bb):
     return paint
 
 
+# ══════════════════════════════════════════════════════════════════════════
+# CLEARCOAT BLEND BASES — 10 extreme paint effects for the Blend Base dropdown
+# These have DRAMATIC, unmissable color transforms designed for blending.
+# ══════════════════════════════════════════════════════════════════════════
+
+def paint_blend_arctic_freeze(paint, shape, mask, seed, pm, bb):
+    """BLEND: Deep icy blue freeze — unmissable cold transformation."""
+    h, w = shape
+    gray = paint.mean(axis=2, keepdims=True)
+    # Heavy desaturation + extreme blue push
+    paint = paint * (1 - 0.65 * pm * mask[:,:,np.newaxis]) + gray * 0.65 * pm * mask[:,:,np.newaxis]
+    paint = np.clip(paint - 0.20 * pm * mask[:,:,np.newaxis], 0, 1)  # darken base
+    paint[:,:,0] = np.clip(paint[:,:,0] - 0.18 * pm * mask, 0, 1)  # kill red
+    paint[:,:,1] = np.clip(paint[:,:,1] + 0.08 * pm * mask, 0, 1)  # slight green for ice
+    paint[:,:,2] = np.clip(paint[:,:,2] + 0.35 * pm * mask, 0, 1)  # massive blue tint
+    paint = np.clip(paint + bb * 0.3 * mask[:,:,np.newaxis], 0, 1)
+    return paint
+
+def paint_blend_inferno(paint, shape, mask, seed, pm, bb):
+    """BLEND: Hot ember red/orange — fiery transformation."""
+    h, w = shape
+    gray = paint.mean(axis=2, keepdims=True)
+    paint = paint * (1 - 0.50 * pm * mask[:,:,np.newaxis]) + gray * 0.50 * pm * mask[:,:,np.newaxis]
+    paint = np.clip(paint - 0.15 * pm * mask[:,:,np.newaxis], 0, 1)  # darken
+    paint[:,:,0] = np.clip(paint[:,:,0] + 0.40 * pm * mask, 0, 1)  # massive red push
+    paint[:,:,1] = np.clip(paint[:,:,1] + 0.15 * pm * mask, 0, 1)  # orange component
+    paint[:,:,2] = np.clip(paint[:,:,2] - 0.25 * pm * mask, 0, 1)  # kill blue
+    paint = np.clip(paint + bb * 0.3 * mask[:,:,np.newaxis], 0, 1)
+    return paint
+
+def paint_blend_toxic(paint, shape, mask, seed, pm, bb):
+    """BLEND: Sickly neon green — toxic radioactive glow."""
+    h, w = shape
+    gray = paint.mean(axis=2, keepdims=True)
+    paint = paint * (1 - 0.55 * pm * mask[:,:,np.newaxis]) + gray * 0.55 * pm * mask[:,:,np.newaxis]
+    paint = np.clip(paint - 0.12 * pm * mask[:,:,np.newaxis], 0, 1)
+    paint[:,:,0] = np.clip(paint[:,:,0] - 0.15 * pm * mask, 0, 1)  # kill red
+    paint[:,:,1] = np.clip(paint[:,:,1] + 0.40 * pm * mask, 0, 1)  # massive green
+    paint[:,:,2] = np.clip(paint[:,:,2] - 0.20 * pm * mask, 0, 1)  # kill blue
+    paint = np.clip(paint + bb * 0.3 * mask[:,:,np.newaxis], 0, 1)
+    return paint
+
+def paint_blend_royal_purple(paint, shape, mask, seed, pm, bb):
+    """BLEND: Deep royal purple — majestic violet transformation."""
+    h, w = shape
+    gray = paint.mean(axis=2, keepdims=True)
+    paint = paint * (1 - 0.50 * pm * mask[:,:,np.newaxis]) + gray * 0.50 * pm * mask[:,:,np.newaxis]
+    paint = np.clip(paint - 0.18 * pm * mask[:,:,np.newaxis], 0, 1)
+    paint[:,:,0] = np.clip(paint[:,:,0] + 0.22 * pm * mask, 0, 1)  # red for purple
+    paint[:,:,1] = np.clip(paint[:,:,1] - 0.20 * pm * mask, 0, 1)  # kill green
+    paint[:,:,2] = np.clip(paint[:,:,2] + 0.35 * pm * mask, 0, 1)  # heavy blue
+    paint = np.clip(paint + bb * 0.3 * mask[:,:,np.newaxis], 0, 1)
+    return paint
+
+def paint_blend_midnight(paint, shape, mask, seed, pm, bb):
+    """BLEND: Near-black midnight — extreme darkening and desaturation."""
+    h, w = shape
+    gray = paint.mean(axis=2, keepdims=True)
+    paint = paint * (1 - 0.70 * pm * mask[:,:,np.newaxis]) + gray * 0.70 * pm * mask[:,:,np.newaxis]
+    paint = np.clip(paint - 0.45 * pm * mask[:,:,np.newaxis], 0, 1)  # extreme darken
+    paint[:,:,2] = np.clip(paint[:,:,2] + 0.05 * pm * mask, 0, 1)  # hint of blue
+    paint = np.clip(paint + bb * 0.2 * mask[:,:,np.newaxis], 0, 1)
+    return paint
+
+def paint_blend_solar_gold(paint, shape, mask, seed, pm, bb):
+    """BLEND: Rich warm gold — luxury golden transformation."""
+    h, w = shape
+    gray = paint.mean(axis=2, keepdims=True)
+    paint = paint * (1 - 0.45 * pm * mask[:,:,np.newaxis]) + gray * 0.45 * pm * mask[:,:,np.newaxis]
+    paint[:,:,0] = np.clip(paint[:,:,0] + 0.30 * pm * mask, 0, 1)  # warm gold red
+    paint[:,:,1] = np.clip(paint[:,:,1] + 0.18 * pm * mask, 0, 1)  # warm gold green
+    paint[:,:,2] = np.clip(paint[:,:,2] - 0.15 * pm * mask, 0, 1)  # kill cool blue
+    paint = np.clip(paint + bb * 0.4 * mask[:,:,np.newaxis], 0, 1)
+    return paint
+
+def paint_blend_blood_wash(paint, shape, mask, seed, pm, bb):
+    """BLEND: Deep blood red wash — dark dramatic crimson."""
+    h, w = shape
+    gray = paint.mean(axis=2, keepdims=True)
+    paint = paint * (1 - 0.55 * pm * mask[:,:,np.newaxis]) + gray * 0.55 * pm * mask[:,:,np.newaxis]
+    paint = np.clip(paint - 0.25 * pm * mask[:,:,np.newaxis], 0, 1)
+    paint[:,:,0] = np.clip(paint[:,:,0] + 0.45 * pm * mask, 0, 1)  # massive red
+    paint[:,:,1] = np.clip(paint[:,:,1] - 0.20 * pm * mask, 0, 1)  # kill green
+    paint[:,:,2] = np.clip(paint[:,:,2] - 0.20 * pm * mask, 0, 1)  # kill blue
+    paint = np.clip(paint + bb * 0.3 * mask[:,:,np.newaxis], 0, 1)
+    return paint
+
+def paint_blend_electric_cyan(paint, shape, mask, seed, pm, bb):
+    """BLEND: Electric cyan shock — vivid teal-blue neon."""
+    h, w = shape
+    gray = paint.mean(axis=2, keepdims=True)
+    paint = paint * (1 - 0.50 * pm * mask[:,:,np.newaxis]) + gray * 0.50 * pm * mask[:,:,np.newaxis]
+    paint[:,:,0] = np.clip(paint[:,:,0] - 0.20 * pm * mask, 0, 1)  # kill red
+    paint[:,:,1] = np.clip(paint[:,:,1] + 0.35 * pm * mask, 0, 1)  # teal green
+    paint[:,:,2] = np.clip(paint[:,:,2] + 0.35 * pm * mask, 0, 1)  # teal blue
+    paint = np.clip(paint + bb * 0.4 * mask[:,:,np.newaxis], 0, 1)
+    return paint
+
+def paint_blend_bronze_heat(paint, shape, mask, seed, pm, bb):
+    """BLEND: Warm bronze patina — aged metallic warmth."""
+    h, w = shape
+    gray = paint.mean(axis=2, keepdims=True)
+    paint = paint * (1 - 0.40 * pm * mask[:,:,np.newaxis]) + gray * 0.40 * pm * mask[:,:,np.newaxis]
+    paint = np.clip(paint - 0.10 * pm * mask[:,:,np.newaxis], 0, 1)
+    paint[:,:,0] = np.clip(paint[:,:,0] + 0.25 * pm * mask, 0, 1)  # bronze red
+    paint[:,:,1] = np.clip(paint[:,:,1] + 0.12 * pm * mask, 0, 1)  # bronze warmth
+    paint[:,:,2] = np.clip(paint[:,:,2] - 0.18 * pm * mask, 0, 1)  # kill cool
+    paint = np.clip(paint + bb * 0.35 * mask[:,:,np.newaxis], 0, 1)
+    return paint
+
+def paint_blend_ghost_silver(paint, shape, mask, seed, pm, bb):
+    """BLEND: Ghostly silver bleach — pale ethereal washout."""
+    h, w = shape
+    gray = paint.mean(axis=2, keepdims=True)
+    # Near-total desaturation + brighten for ghostly silver
+    paint = paint * (1 - 0.75 * pm * mask[:,:,np.newaxis]) + gray * 0.75 * pm * mask[:,:,np.newaxis]
+    paint = np.clip(paint + 0.20 * pm * mask[:,:,np.newaxis], 0, 1)  # brighten (bleach)
+    paint[:,:,2] = np.clip(paint[:,:,2] + 0.08 * pm * mask, 0, 1)  # cool tint
+    paint = np.clip(paint + bb * 0.5 * mask[:,:,np.newaxis], 0, 1)
+    return paint
+
+# Curated blend base entries — these go in BASE_REGISTRY alongside normal bases
+BLEND_BASES = {
+    "cc_arctic_freeze":  {"M": 200, "R": 20, "CC": 16, "paint_fn": paint_blend_arctic_freeze,  "desc": "BLEND: Deep icy blue freeze", "blend_only": True},
+    "cc_inferno":        {"M": 150, "R": 40, "CC": 16, "paint_fn": paint_blend_inferno,         "desc": "BLEND: Hot ember red/orange fire", "blend_only": True},
+    "cc_toxic":          {"M": 100, "R": 60, "CC": 16, "paint_fn": paint_blend_toxic,           "desc": "BLEND: Sickly neon green radioactive", "blend_only": True},
+    "cc_royal_purple":   {"M": 120, "R": 30, "CC": 16, "paint_fn": paint_blend_royal_purple,    "desc": "BLEND: Deep royal purple majestic", "blend_only": True},
+    "cc_midnight":       {"M": 5,   "R": 8,  "CC": 16, "paint_fn": paint_blend_midnight,        "desc": "BLEND: Near-black midnight void", "blend_only": True},
+    "cc_solar_gold":     {"M": 230, "R": 25, "CC": 16, "paint_fn": paint_blend_solar_gold,      "desc": "BLEND: Rich warm luxury gold", "blend_only": True},
+    "cc_blood_wash":     {"M": 80,  "R": 45, "CC": 16, "paint_fn": paint_blend_blood_wash,      "desc": "BLEND: Deep dramatic crimson wash", "blend_only": True},
+    "cc_electric_cyan":  {"M": 180, "R": 15, "CC": 16, "paint_fn": paint_blend_electric_cyan,   "desc": "BLEND: Vivid teal-blue neon shock", "blend_only": True},
+    "cc_bronze_heat":    {"M": 200, "R": 50, "CC": 16, "paint_fn": paint_blend_bronze_heat,     "desc": "BLEND: Warm bronze aged patina", "blend_only": True},
+    "cc_ghost_silver":   {"M": 240, "R": 10, "CC": 16, "paint_fn": paint_blend_ghost_silver,    "desc": "BLEND: Ghostly pale silver bleach", "blend_only": True},
+}
+
+
 # --- BASE MATERIAL REGISTRY ---
 # Organized by category, alphabetized within each section. 58 bases total.
 BASE_REGISTRY = {
@@ -5784,6 +6415,8 @@ BASE_REGISTRY = {
     "terrain_chrome":   {"M": 250, "R": 8,   "CC": 0,  "paint_fn": paint_chrome_brighten, "desc": "Chrome with Perlin terrain-like distortion in roughness",
                          "perlin": True, "perlin_octaves": 5, "perlin_persistence": 0.45, "noise_M": 0, "noise_R": 25},
 }
+# Register clearcoat blend bases into main registry
+BASE_REGISTRY.update(BLEND_BASES)
 
 # --- PATTERN TEXTURE REGISTRY ---
 # !! ARCHITECTURE GUARD — READ BEFORE MODIFYING !!
@@ -6031,22 +6664,35 @@ MONOLITHIC_REGISTRY = {
     "aurora":             (spec_aurora,        paint_aurora),
     "cel_shade":          (spec_cel_shade,     paint_cel_shade),
     "chameleon_arctic":   (spec_chameleon_pro, paint_chameleon_arctic),
+    "chameleon_amethyst": (spec_chameleon_pro, paint_chameleon_amethyst),
     "chameleon_copper":   (spec_chameleon_pro, paint_chameleon_copper),
+    "chameleon_emerald":  (spec_chameleon_pro, paint_chameleon_emerald),
     "chameleon_midnight": (spec_chameleon_pro, paint_chameleon_midnight),
+    "chameleon_obsidian": (spec_chameleon_pro, paint_chameleon_obsidian),
     "chameleon_ocean":    (spec_chameleon_pro, paint_chameleon_ocean),
     "chameleon_phoenix":  (spec_chameleon_pro, paint_chameleon_phoenix),
     "chameleon_venom":    (spec_chameleon_pro, paint_chameleon_venom),
+    "cs_chrome_shift":(spec_cs_chrome_shift, paint_cs_chrome_shift),
+    "cs_complementary":(spec_cs_complementary, paint_cs_complementary),
     "cs_cool":       (spec_cs_cool,      paint_cs_cool),
     "cs_deepocean":  (spec_cs_deepocean,  paint_cs_deepocean),
+    "cs_earth":      (spec_cs_earth,     paint_cs_earth),
     "cs_emerald":    (spec_cs_emerald,    paint_cs_emerald),
     "cs_extreme":    (spec_cs_extreme,   paint_cs_extreme),
     "cs_inferno":    (spec_cs_inferno,    paint_cs_inferno),
+    "cs_monochrome": (spec_cs_monochrome, paint_cs_monochrome),
     "cs_mystichrome":(spec_cs_mystichrome,paint_cs_mystichrome),
     "cs_nebula":     (spec_cs_nebula,     paint_cs_nebula),
+    "cs_neon_shift": (spec_cs_neon_shift, paint_cs_neon_shift),
+    "cs_ocean_shift":(spec_cs_ocean_shift,paint_cs_ocean_shift),
+    "cs_prism_shift":(spec_cs_prism_shift,paint_cs_prism_shift),
     "cs_rainbow":    (spec_cs_rainbow,   paint_cs_rainbow),
     "cs_solarflare": (spec_cs_solarflare, paint_cs_solarflare),
+    "cs_split":      (spec_cs_split,     paint_cs_split),
     "cs_subtle":     (spec_cs_subtle,    paint_cs_subtle),
     "cs_supernova":  (spec_cs_supernova,  paint_cs_supernova),
+    "cs_triadic":    (spec_cs_triadic,   paint_cs_triadic),
+    "cs_vivid":      (spec_cs_vivid,     paint_cs_vivid),
     "cs_warm":       (spec_cs_warm,      paint_cs_warm),
     "ember_glow":   (spec_ember_glow,   paint_ember_glow),
     "frost_bite":   (spec_frost_bite,    paint_subtle_flake),
@@ -6111,6 +6757,15 @@ except ImportError:
     print("[PARADIGM] Module not found — running without impossible materials")
 except Exception as e:
     print(f"[PARADIGM] Load error: {e}")
+
+# --- FUSIONS EXPANSION (150 Paradigm Shift Hybrid Materials) ---
+try:
+    import shokker_fusions_expansion as _fusions
+    _fusions.integrate_fusions(_sys.modules[__name__])
+except ImportError:
+    print("[FUSIONS] Module not found — running without paradigm shift fusions")
+except Exception as e:
+    print(f"[FUSIONS] Load error: {e}")
 
 
 # ================================================================
@@ -6767,22 +7422,25 @@ def compose_finish(base_id, pattern_id, shape, mask, seed, sm, scale=1.0, spec_m
         elif base_CC != base2_CC:
             CC_arr = float(base_CC) * (1.0 - grad) + float(base2_CC) * grad
 
-    # --- PAINT-REACTIVE SPEC (v4.0) ---
+    # --- PAINT-REACTIVE SPEC (v6.1 — BOOSTED) ---
     # Automatically adjust M/R/CC based on underlying paint color
     if paint_color is not None and len(paint_color) >= 3:
         pr, pg, pb = float(paint_color[0]), float(paint_color[1]), float(paint_color[2])
         luminance = 0.299 * pr + 0.587 * pg + 0.114 * pb
-        # Dark colors: +5-15 roughness (real dark paint shows more surface texture)
-        # Light colors: -3-8 roughness (light paint looks smoother under clearcoat)
-        dark_boost = (1.0 - luminance) * 12.0 * sm
+        # BOOSTED: Dark colors: +15-35 roughness (visible texture change on dark paints)
+        dark_boost = (1.0 - luminance) * 35.0 * sm
         R_arr = R_arr + dark_boost
-        # High-saturation colors: slight metallic boost (+5-10) for richer look
+        # BOOSTED: High-saturation colors: +10-30 metallic (vivid metallic boost)
         max_c = max(pr, pg, pb)
         min_c = min(pr, pg, pb)
         saturation = (max_c - min_c) / (max_c + 1e-8)
         if saturation > 0.3:
-            sat_boost = (saturation - 0.3) * 15.0 * sm
+            sat_boost = (saturation - 0.3) * 30.0 * sm
             M_arr = M_arr + sat_boost
+        # NEW: CC luminance reactivity — dark paints get slightly hazier clearcoat
+        if CC_arr is not None and luminance < 0.4:
+            cc_haze = (0.4 - luminance) * 20.0 * sm
+            CC_arr = CC_arr + cc_haze
 
     # --- Apply pattern modulation on top of base ---
     # !! ARCHITECTURE GUARD — DO NOT MODIFY SCALE/ROTATION LOGIC BELOW !!
@@ -6892,10 +7550,75 @@ def compose_finish(base_id, pattern_id, shape, mask, seed, sm, scale=1.0, spec_m
     return spec
 
 
+# ================================================================
+# BLEND MODE HELPERS (v7.0)
+# ================================================================
+
+def _apply_spec_blend_mode(base_val, pattern_contrib, opacity, mode="normal"):
+    """Apply a pattern contribution to a spec channel using the specified blend mode.
+
+    Args:
+        base_val:        np.ndarray — current channel values (M or R)
+        pattern_contrib: np.ndarray — pattern_val * range * sm * spec_mult (the raw delta)
+        opacity:         float — layer opacity (0-1)
+        mode:            str — 'normal', 'multiply', 'screen', or 'overlay'
+
+    Returns:
+        np.ndarray — blended result
+
+    Modes:
+        normal:   Additive (current behavior) — base + delta * opacity
+        multiply: Darkening — base * lerp(1, normalized_pattern, opacity)
+                  Reduces highlights, deepens darks. Great for grime, shadow details.
+        screen:   Lightening — base + delta, but pulls toward max.
+                  Boosts highlights. Great for gloss, shimmer, chrome accents.
+        overlay:  Contrast boost — multiply darks, screen lights; then blend opacity.
+                  Dramatic two-tone effect. Great for metallic flake depth.
+    """
+    if mode == "normal" or mode not in ("multiply", "screen", "overlay"):
+        # Original additive
+        return base_val + pattern_contrib * opacity
+
+    # For non-normal modes, we need the pattern as a 0-1 factor
+    # pattern_contrib can be negative or positive, so normalize
+    p_abs = np.abs(pattern_contrib)
+    p_max = float(np.max(p_abs)) if np.max(p_abs) > 1e-8 else 1.0
+    p_norm = pattern_contrib / p_max  # -1 to +1 range
+    # Convert to 0-1 factor centered on 0.5
+    p_factor = np.clip(p_norm * 0.5 + 0.5, 0, 1)  # 0=fully dark, 1=fully bright
+
+    # Normalize base to 0-255 for blending math
+    b_norm = np.clip(base_val / 255.0, 0, 1)
+
+    if mode == "multiply":
+        # Multiply: base * pattern_factor → darkens where pattern is dark
+        blended_norm = b_norm * (1.0 - opacity + opacity * p_factor * 2.0)
+        return np.clip(blended_norm * 255.0, 0, 255)
+
+    elif mode == "screen":
+        # Screen: 1 - (1-base) * (1-pattern*opacity) → lightens
+        screen_factor = p_factor * opacity
+        blended_norm = 1.0 - (1.0 - b_norm) * (1.0 - screen_factor)
+        return np.clip(blended_norm * 255.0, 0, 255)
+
+    elif mode == "overlay":
+        # Overlay: multiply darks, screen lights
+        # Where base < 0.5: 2 * base * pattern
+        # Where base >= 0.5: 1 - 2*(1-base)*(1-pattern)
+        dark = 2.0 * b_norm * p_factor
+        light = 1.0 - 2.0 * (1.0 - b_norm) * (1.0 - p_factor)
+        overlay_result = np.where(b_norm < 0.5, dark, light)
+        # Blend with opacity
+        blended_norm = b_norm * (1.0 - opacity) + overlay_result * opacity
+        return np.clip(blended_norm * 255.0, 0, 255)
+
+    return base_val + pattern_contrib * opacity  # fallback
+
+
 def compose_finish_stacked(base_id, all_patterns, shape, mask, seed, sm, spec_mult=1.0, base_scale=1.0, cc_quality=None, blend_base=None, blend_dir="horizontal", blend_amount=0.5, paint_color=None):
     """Compose a base material + MULTIPLE stacked patterns into a final spec map.
 
-    all_patterns: list of {"id": str, "opacity": float (0-1), "scale": float, "rotation": float (0-359)}
+    all_patterns: list of {"id": str, "opacity": float (0-1), "scale": float, "rotation": float (0-359), "blend_mode": str}
 
     Blending: Weighted additive — each pattern's contribution is scaled by its opacity.
     v4.0 params: cc_quality, blend_base, blend_dir, blend_amount, paint_color
@@ -6994,18 +7717,21 @@ def compose_finish_stacked(base_id, all_patterns, shape, mask, seed, sm, spec_mu
         elif base_CC != base2_CC:
             CC_arr = float(base_CC) * (1.0 - grad) + float(base2_CC) * grad
 
-    # --- PAINT-REACTIVE SPEC (v4.0) ---
+    # --- PAINT-REACTIVE SPEC (v6.1 — BOOSTED) ---
     if paint_color is not None and len(paint_color) >= 3:
         pr, pg, pb = float(paint_color[0]), float(paint_color[1]), float(paint_color[2])
         luminance = 0.299 * pr + 0.587 * pg + 0.114 * pb
-        dark_boost = (1.0 - luminance) * 12.0 * sm
+        dark_boost = (1.0 - luminance) * 35.0 * sm
         R_arr = R_arr + dark_boost
         max_c = max(pr, pg, pb)
         min_c = min(pr, pg, pb)
         saturation = (max_c - min_c) / (max_c + 1e-8)
         if saturation > 0.3:
-            sat_boost = (saturation - 0.3) * 15.0 * sm
+            sat_boost = (saturation - 0.3) * 30.0 * sm
             M_arr = M_arr + sat_boost
+        if CC_arr is not None and luminance < 0.4:
+            cc_haze = (0.4 - luminance) * 20.0 * sm
+            CC_arr = CC_arr + cc_haze
 
     # --- Stack patterns: weighted additive blend ---
     # Start CC from base (may already be array from CC noise/quality/gradient)
@@ -7080,10 +7806,14 @@ def compose_finish_stacked(base_id, all_patterns, shape, mask, seed, sm, spec_mu
                 R_pv = _rotate_single_array(R_pv, layer_rotation, shape)
             if CC_pv is not None:
                 CC_pv = _rotate_single_array(CC_pv, layer_rotation, shape)
+        # Blend mode: 'normal' (additive, default), 'multiply', 'screen', 'overlay'
+        blend_mode = layer.get("blend_mode", "normal")
 
-        # Weighted additive modulation (spec_mult scales spec punch independently)
-        M_arr = M_arr + M_pv * M_range * sm * opacity * spec_mult
-        R_arr = R_arr + R_pv * R_range * sm * opacity * spec_mult
+        # Apply blend mode to M and R channels
+        M_contrib = M_pv * M_range * sm * spec_mult
+        R_contrib = R_pv * R_range * sm * spec_mult
+        M_arr = _apply_spec_blend_mode(M_arr, M_contrib, opacity, blend_mode)
+        R_arr = _apply_spec_blend_mode(R_arr, R_contrib, opacity, blend_mode)
 
         # CC channel modulation via independent CC pattern
         CC_range = tex.get("CC_range", 0)
@@ -7115,7 +7845,7 @@ def compose_finish_stacked(base_id, all_patterns, shape, mask, seed, sm, spec_mu
     return spec
 
 
-def compose_paint_mod(base_id, pattern_id, paint, shape, mask, seed, pm, bb, scale=1.0, rotation=0):
+def compose_paint_mod(base_id, pattern_id, paint, shape, mask, seed, pm, bb, scale=1.0, rotation=0, blend_base=None, blend_dir="horizontal", blend_amount=0.5):
     """Apply base paint modifier then pattern paint modifier WITH spatial texture blending.
 
     IMPORTANT: Uses a hard mask threshold (0.5) to prevent soft-edge bleeding.
@@ -7129,6 +7859,11 @@ def compose_paint_mod(base_id, pattern_id, paint, shape, mask, seed, pm, bb, sca
     pattern paint effects follow the ACTUAL texture shape instead of random noise.
     Without this, patterns are invisible on color-changing bases because the
     random-noise paint darkening gets lost in the dramatic color shift.
+
+    BLEND BASE PAINT (v6.1): When blend_base is set, we run the second base's
+    paint_fn on a copy of the pre-primary paint, then blend the two paint results
+    using the same directional gradient used in compose_finish for spec blending.
+    This makes Blend Base's color effects VISIBLE (arctic_ice shows blue, etc).
     """
     # Hard threshold the mask to prevent soft-edge bleed into neighboring zones
     hard_mask = np.where(mask > 0.5, mask, 0.0).astype(np.float32)
@@ -7136,6 +7871,15 @@ def compose_paint_mod(base_id, pattern_id, paint, shape, mask, seed, pm, bb, sca
     base = BASE_REGISTRY[base_id]
     base_paint_fn = base.get("paint_fn", paint_none)
     has_pattern = (pattern_id and pattern_id != "none" and pattern_id in PATTERN_REGISTRY)
+
+    # --- BLEND BASE PAINT (v6.1) ---
+    # If a blend_base is set, run BOTH paint functions and blend using directional gradient
+    has_blend = (blend_base and blend_base in BASE_REGISTRY and blend_base != base_id)
+    if blend_base:
+        print(f"    [BLEND DEBUG] blend_base='{blend_base}', in_registry={blend_base in BASE_REGISTRY}, same_as_primary={blend_base == base_id}, has_blend={has_blend}")
+    if has_blend:
+        base2 = BASE_REGISTRY[blend_base]
+        base2_paint_fn = base2.get("paint_fn", paint_none)
 
     if base_paint_fn is not paint_none:
         # Base paint boost: base paint_fns were calibrated with tiny multipliers (0.03-0.15)
@@ -7149,6 +7893,61 @@ def compose_paint_mod(base_id, pattern_id, paint, shape, mask, seed, pm, bb, sca
         else:
             # No pattern — base runs at full boosted strength
             paint = base_paint_fn(paint, shape, hard_mask, seed, pm * _BASE_PAINT_BOOST, bb * _BASE_PAINT_BOOST)
+
+    # --- BLEND BASE PAINT BLENDING (v6.1) ---
+    # Run the second base's paint_fn on a clean copy and blend via directional gradient
+    if has_blend and base2_paint_fn is not paint_none:
+        print(f"    [BLEND PAINT v6.1] base={base_id} + blend={blend_base}, dir={blend_dir}, amount={blend_amount:.2f}")
+        paint_blend = paint.copy()  # Start from current paint (after primary base)
+        # CC blend paint functions are PRE-CALIBRATED for dramatic effect at pm=1.0
+        # Do NOT apply _BASE_PAINT_BOOST — it would push multipliers past 1.0 and invert colors
+        _BLEND_PM = 1.0
+        _BLEND_BB = 1.0
+        paint_blend = base2_paint_fn(paint_blend, shape, hard_mask, seed + 5000, _BLEND_PM, _BLEND_BB)
+
+        # Build directional gradient (same logic as compose_finish)
+        h, w = shape
+        rows_active = np.any(mask > 0.1, axis=1)
+        cols_active = np.any(mask > 0.1, axis=0)
+        if np.any(rows_active) and np.any(cols_active):
+            r_min, r_max = np.where(rows_active)[0][[0, -1]]
+            c_min, c_max = np.where(cols_active)[0][[0, -1]]
+            bbox_h = max(1, r_max - r_min + 1)
+            bbox_w = max(1, c_max - c_min + 1)
+        else:
+            r_min, c_min = 0, 0
+            bbox_h, bbox_w = h, w
+
+        if blend_dir == "vertical":
+            grad = np.zeros((h, w), dtype=np.float32)
+            zone_grad = np.linspace(0, 1, bbox_h, dtype=np.float32)[:, np.newaxis] * np.ones((1, w), dtype=np.float32)
+            grad[r_min:r_min + bbox_h, :] = zone_grad
+            grad[:r_min, :] = 0.0; grad[r_min + bbox_h:, :] = 1.0
+        elif blend_dir == "radial":
+            cy = r_min + bbox_h / 2.0; cx = c_min + bbox_w / 2.0
+            yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+            max_radius = np.sqrt((bbox_h / 2.0)**2 + (bbox_w / 2.0)**2) + 1e-8
+            grad = np.clip(np.sqrt((yy - cy)**2 + (xx - cx)**2) / max_radius, 0, 1)
+        elif blend_dir == "diagonal":
+            grad = np.zeros((h, w), dtype=np.float32)
+            v_grad = np.linspace(0, 1, bbox_h, dtype=np.float32)[:, np.newaxis]
+            h_grad = np.linspace(0, 1, bbox_w, dtype=np.float32)[np.newaxis, :]
+            grad[r_min:r_min + bbox_h, c_min:c_min + bbox_w] = v_grad * 0.5 + h_grad * 0.5
+            grad[:r_min, :] = 0.0; grad[r_min + bbox_h:, :] = 1.0
+        else:  # horizontal
+            grad = np.zeros((h, w), dtype=np.float32)
+            zone_grad = np.ones((h, 1), dtype=np.float32) * np.linspace(0, 1, bbox_w, dtype=np.float32)[np.newaxis, :]
+            grad[:, c_min:c_min + bbox_w] = zone_grad
+            grad[:, :c_min] = 0.0; grad[:, c_min + bbox_w:] = 1.0
+
+        # Apply blend curve
+        ba = max(0.1, min(3.0, blend_amount * 2.0 + 0.1))
+        grad = np.power(grad, ba)
+        # Only blend within the zone mask
+        grad = grad * hard_mask
+        grad_3d = grad[:, :, np.newaxis]
+        # Lerp: primary paint → blend paint across gradient
+        paint = paint * (1.0 - grad_3d) + paint_blend * grad_3d
 
     if has_pattern:
         pattern = PATTERN_REGISTRY[pattern_id]
@@ -7205,18 +8004,25 @@ def compose_paint_mod(base_id, pattern_id, paint, shape, mask, seed, pm, bb, sca
     return paint
 
 
-def compose_paint_mod_stacked(base_id, all_patterns, paint, shape, mask, seed, pm, bb):
+def compose_paint_mod_stacked(base_id, all_patterns, paint, shape, mask, seed, pm, bb, blend_base=None, blend_dir="horizontal", blend_amount=0.5):
     """Apply base paint modifier then MULTIPLE stacked pattern paint modifiers.
 
     Each pattern's paint_fn runs with attenuated strength based on its opacity
     and the total number of active paint functions (prevents over-stacking).
     Uses spatial blending via pattern_val so paint follows actual texture shape.
+    BLEND BASE PAINT (v6.1): Also blends second base's paint_fn via directional gradient.
     """
     hard_mask = np.where(mask > 0.5, mask, 0.0).astype(np.float32)
 
     base = BASE_REGISTRY[base_id]
     base_paint_fn = base.get("paint_fn", paint_none)
     has_any_pattern = len(all_patterns) > 0
+
+    # --- BLEND BASE PAINT (v6.1) ---
+    has_blend = (blend_base and blend_base in BASE_REGISTRY and blend_base != base_id)
+    if has_blend:
+        base2 = BASE_REGISTRY[blend_base]
+        base2_paint_fn = base2.get("paint_fn", paint_none)
 
     # Count how many pattern layers have a non-trivial paint_fn
     active_paint_fns = 0
@@ -7235,6 +8041,40 @@ def compose_paint_mod_stacked(base_id, all_patterns, paint, shape, mask, seed, p
             paint = base_paint_fn(paint, shape, hard_mask, seed, pm * _BASE_PAINT_BOOST * atten, bb * _BASE_PAINT_BOOST * atten)
         else:
             paint = base_paint_fn(paint, shape, hard_mask, seed, pm * _BASE_PAINT_BOOST, bb * _BASE_PAINT_BOOST)
+
+    # --- BLEND BASE PAINT BLENDING (v6.1) ---
+    if has_blend and base2_paint_fn is not paint_none:
+        print(f"    [BLEND PAINT v6.1 STACKED] base={base_id} + blend={blend_base}, dir={blend_dir}, amount={blend_amount:.2f}")
+        paint_blend = paint.copy()
+        paint_blend = base2_paint_fn(paint_blend, shape, hard_mask, seed + 5000, 1.0, 1.0)  # Pre-calibrated, no boost
+        h, w = shape
+        rows_active = np.any(mask > 0.1, axis=1); cols_active = np.any(mask > 0.1, axis=0)
+        if np.any(rows_active) and np.any(cols_active):
+            r_min, r_max = np.where(rows_active)[0][[0, -1]]
+            c_min, c_max = np.where(cols_active)[0][[0, -1]]
+            bbox_h, bbox_w = max(1, r_max - r_min + 1), max(1, c_max - c_min + 1)
+        else:
+            r_min, c_min, bbox_h, bbox_w = 0, 0, h, w
+        if blend_dir == "vertical":
+            grad = np.zeros((h, w), dtype=np.float32)
+            grad[r_min:r_min + bbox_h, :] = np.linspace(0, 1, bbox_h, dtype=np.float32)[:, np.newaxis] * np.ones((1, w), dtype=np.float32)
+            grad[:r_min, :] = 0.0; grad[r_min + bbox_h:, :] = 1.0
+        elif blend_dir == "radial":
+            cy, cx = r_min + bbox_h / 2.0, c_min + bbox_w / 2.0
+            yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+            grad = np.clip(np.sqrt((yy - cy)**2 + (xx - cx)**2) / (np.sqrt((bbox_h/2.0)**2 + (bbox_w/2.0)**2) + 1e-8), 0, 1)
+        elif blend_dir == "diagonal":
+            grad = np.zeros((h, w), dtype=np.float32)
+            grad[r_min:r_min + bbox_h, c_min:c_min + bbox_w] = np.linspace(0, 1, bbox_h, dtype=np.float32)[:, np.newaxis] * 0.5 + np.linspace(0, 1, bbox_w, dtype=np.float32)[np.newaxis, :] * 0.5
+            grad[:r_min, :] = 0.0; grad[r_min + bbox_h:, :] = 1.0
+        else:
+            grad = np.zeros((h, w), dtype=np.float32)
+            grad[:, c_min:c_min + bbox_w] = np.ones((h, 1), dtype=np.float32) * np.linspace(0, 1, bbox_w, dtype=np.float32)[np.newaxis, :]
+            grad[:, :c_min] = 0.0; grad[:, c_min + bbox_w:] = 1.0
+        ba = max(0.1, min(3.0, blend_amount * 2.0 + 0.1))
+        grad = np.power(grad, ba) * hard_mask
+        grad_3d = grad[:, :, np.newaxis]
+        paint = paint * (1.0 - grad_3d) + paint_blend * grad_3d
 
     # Each pattern paint: opacity-weighted, attenuated by count
     # Pattern paint boost: same 3.5x global boost as compose_paint_mod (see ARCHITECTURE GUARD there)
@@ -7750,7 +8590,7 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
             _z_pc = zone.get("paint_color")
             _v6kw = {}
             if _z_cc is not None: _v6kw["cc_quality"] = _z_cc
-            if _z_bb: _v6kw["blend_base"] = _z_bb; _v6kw["blend_dir"] = _z_bd; _v6kw["blend_amount"] = _z_ba
+            if _z_bb: _v6kw["blend_base"] = _z_bb; _v6kw["blend_dir"] = _z_bd; _v6kw["blend_amount"] = _z_ba; print(f"    [{name}] v6.1 BLEND: base={_z_bb}, dir={_z_bd}, amount={_z_ba:.2f}")
             if _z_pc: _v6kw["paint_color"] = _z_pc
 
             if pattern_stack or primary_pat_opacity < 1.0:
@@ -7769,16 +8609,21 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
                             "opacity": float(ps.get("opacity", 1.0)),
                             "scale": float(ps.get("scale", 1.0)) * auto_scale,  # Auto-scale stack layers too
                             "rotation": float(ps.get("rotation", 0)),
+                            "blend_mode": ps.get("blend_mode", "normal"),
                         })
-                pat_names = " + ".join(f'{p["id"]}@{int(p["opacity"]*100)}%' for p in all_patterns)
+                pat_names = " + ".join(f'{p["id"]}@{int(p["opacity"]*100)}%{"["+p.get("blend_mode","normal")+"]" if p.get("blend_mode","normal") != "normal" else ""}' for p in all_patterns)
                 label = f"{base_id} + [{pat_names}]"
                 bs_label = f" base@{zone_base_scale:.2f}x" if zone_base_scale != 1.0 else ""
                 print(f"    [{name}] => {label} ({intensity}){bs_label} [stacked compositing]")
+                # v6.1: build blend paint kwargs
+                _v6paint = {}
+                if _z_bb: _v6paint["blend_base"] = _z_bb; _v6paint["blend_dir"] = _z_bd; _v6paint["blend_amount"] = _z_ba
                 if all_patterns:
                     zone_spec = compose_finish_stacked(base_id, all_patterns, shape, zone_mask, seed + i * 13, sm, spec_mult=spec_mult, base_scale=zone_base_scale, **_v6kw)
-                    paint = compose_paint_mod_stacked(base_id, all_patterns, paint, shape, zone_mask, seed + i * 13, pm, bb)
+                    paint = compose_paint_mod_stacked(base_id, all_patterns, paint, shape, zone_mask, seed + i * 13, pm, bb, **_v6paint)
                 else:
                     zone_spec = compose_finish(base_id, "none", shape, zone_mask, seed + i * 13, sm, spec_mult=spec_mult, base_scale=zone_base_scale, **_v6kw)
+                    paint = compose_paint_mod(base_id, "none", paint, shape, zone_mask, seed + i * 13, pm, bb, **_v6paint)
             else:
                 # SINGLE PATTERN: original path
                 label = f"{base_id}" + (f" + {pattern_id}" if pattern_id != "none" else "")
@@ -7786,8 +8631,10 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
                 rot_label = f" rot{zone_rotation:.0f}°" if zone_rotation != 0 else ""
                 bs_label = f" base@{zone_base_scale:.2f}x" if zone_base_scale != 1.0 else ""
                 print(f"    [{name}] => {label} ({intensity}){scale_label}{rot_label}{bs_label} [compositing]")
+                _v6paint = {}
+                if _z_bb: _v6paint["blend_base"] = _z_bb; _v6paint["blend_dir"] = _z_bd; _v6paint["blend_amount"] = _z_ba
                 zone_spec = compose_finish(base_id, pattern_id, shape, zone_mask, seed + i * 13, sm, scale=zone_scale, spec_mult=spec_mult, rotation=zone_rotation, base_scale=zone_base_scale, **_v6kw)
-                paint = compose_paint_mod(base_id, pattern_id, paint, shape, zone_mask, seed + i * 13, pm, bb, scale=zone_scale, rotation=zone_rotation)
+                paint = compose_paint_mod(base_id, pattern_id, paint, shape, zone_mask, seed + i * 13, pm, bb, scale=zone_scale, rotation=zone_rotation, **_v6paint)
 
         elif finish_name and finish_name in MONOLITHIC_REGISTRY:
             _engine_rot_debug(f"  [{name}] -> PATH 2 (monolithic): finish={finish_name}")
@@ -8210,15 +9057,21 @@ def preview_render(paint_file, zones, seed=51, preview_scale=0.25, import_spec_m
                             "opacity": float(ps.get("opacity", 1.0)),
                             "scale": float(ps.get("scale", 1.0)) * auto_scale,  # Auto-scale stack layers too
                             "rotation": float(ps.get("rotation", 0)),
+                            "blend_mode": ps.get("blend_mode", "normal"),
                         })
+                _v6paint = {}
+                if _z_bb: _v6paint["blend_base"] = _z_bb; _v6paint["blend_dir"] = _z_bd; _v6paint["blend_amount"] = _z_ba
                 if all_patterns:
                     zone_spec = compose_finish_stacked(base_id, all_patterns, shape, zone_mask, seed + i * 13, sm, spec_mult=spec_mult, base_scale=zone_base_scale, **_v6kw)
-                    paint = compose_paint_mod_stacked(base_id, all_patterns, paint, shape, zone_mask, seed + i * 13, pm, bb)
+                    paint = compose_paint_mod_stacked(base_id, all_patterns, paint, shape, zone_mask, seed + i * 13, pm, bb, **_v6paint)
                 else:
                     zone_spec = compose_finish(base_id, "none", shape, zone_mask, seed + i * 13, sm, spec_mult=spec_mult, base_scale=zone_base_scale, **_v6kw)
+                    paint = compose_paint_mod(base_id, "none", paint, shape, zone_mask, seed + i * 13, pm, bb, **_v6paint)
             else:
+                _v6paint = {}
+                if _z_bb: _v6paint["blend_base"] = _z_bb; _v6paint["blend_dir"] = _z_bd; _v6paint["blend_amount"] = _z_ba
                 zone_spec = compose_finish(base_id, pattern_id, shape, zone_mask, seed + i * 13, sm, scale=zone_scale, spec_mult=spec_mult, rotation=zone_rotation, base_scale=zone_base_scale, **_v6kw)
-                paint = compose_paint_mod(base_id, pattern_id, paint, shape, zone_mask, seed + i * 13, pm, bb, scale=zone_scale, rotation=zone_rotation)
+                paint = compose_paint_mod(base_id, pattern_id, paint, shape, zone_mask, seed + i * 13, pm, bb, scale=zone_scale, rotation=zone_rotation, **_v6paint)
 
         elif finish_name and finish_name in MONOLITHIC_REGISTRY:
             _engine_rot_debug(f"DISPATCH: finish={finish_name} -> PATH 2 (MONOLITHIC_REGISTRY) -- NO ROTATION SUPPORT")
@@ -8508,13 +9361,16 @@ def build_helmet_spec(helmet_paint_file, output_dir, zones, iracing_id="23371", 
                             "opacity": float(ps.get("opacity", 1.0)),
                             "scale": float(ps.get("scale", 1.0)),
                             "rotation": float(ps.get("rotation", 0)),
+                            "blend_mode": ps.get("blend_mode", "normal"),
                         })
-                pat_names = " + ".join(f'{p["id"]}@{int(p["opacity"]*100)}%' for p in all_patterns)
+                pat_names = " + ".join(f'{p["id"]}@{int(p["opacity"]*100)}%{"["+p.get("blend_mode","normal")+"]" if p.get("blend_mode","normal") != "normal" else ""}' for p in all_patterns)
                 label = f"{base_id} + [{pat_names}]"
                 print(f"    [{name}] => {label} ({intensity}) [stacked compositing]")
+                _v6paint = {}
+                if _z_bb: _v6paint["blend_base"] = _z_bb; _v6paint["blend_dir"] = _z_bd; _v6paint["blend_amount"] = _z_ba
                 if all_patterns:
                     zone_spec = compose_finish_stacked(base_id, all_patterns, shape, zone_mask, seed + i * 13, sm, spec_mult=spec_mult, base_scale=zone_base_scale, **_v6kw)
-                    paint = compose_paint_mod_stacked(base_id, all_patterns, paint, shape, zone_mask, seed + i * 13, pm, bb)
+                    paint = compose_paint_mod_stacked(base_id, all_patterns, paint, shape, zone_mask, seed + i * 13, pm, bb, **_v6paint)
                 else:
                     zone_spec = compose_finish(base_id, "none", shape, zone_mask, seed + i * 13, sm, spec_mult=spec_mult, base_scale=zone_base_scale, **_v6kw)
             else:
@@ -8523,8 +9379,10 @@ def build_helmet_spec(helmet_paint_file, output_dir, zones, iracing_id="23371", 
                 scale_label = f" @{zone_scale:.1f}x" if zone_scale != 1.0 else ""
                 rot_label = f" rot{zone_rotation:.0f}°" if zone_rotation != 0 else ""
                 print(f"    [{name}] => {label} ({intensity}){scale_label}{rot_label}")
+                _v6paint = {}
+                if _z_bb: _v6paint["blend_base"] = _z_bb; _v6paint["blend_dir"] = _z_bd; _v6paint["blend_amount"] = _z_ba
                 zone_spec = compose_finish(base_id, pattern_id, shape, zone_mask, seed + i * 13, sm, scale=zone_scale, spec_mult=spec_mult, rotation=zone_rotation, base_scale=zone_base_scale, **_v6kw)
-                paint = compose_paint_mod(base_id, pattern_id, paint, shape, zone_mask, seed + i * 13, pm, bb, scale=zone_scale, rotation=zone_rotation)
+                paint = compose_paint_mod(base_id, pattern_id, paint, shape, zone_mask, seed + i * 13, pm, bb, scale=zone_scale, rotation=zone_rotation, **_v6paint)
         elif finish_name and finish_name in MONOLITHIC_REGISTRY:
             spec_fn, paint_fn = MONOLITHIC_REGISTRY[finish_name]
             mono_pat = zone.get("pattern", "none")
@@ -8693,13 +9551,16 @@ def build_suit_spec(suit_paint_file, output_dir, zones, iracing_id="23371", seed
                             "opacity": float(ps.get("opacity", 1.0)),
                             "scale": float(ps.get("scale", 1.0)),
                             "rotation": float(ps.get("rotation", 0)),
+                            "blend_mode": ps.get("blend_mode", "normal"),
                         })
-                pat_names = " + ".join(f'{p["id"]}@{int(p["opacity"]*100)}%' for p in all_patterns)
+                pat_names = " + ".join(f'{p["id"]}@{int(p["opacity"]*100)}%{"["+p.get("blend_mode","normal")+"]" if p.get("blend_mode","normal") != "normal" else ""}' for p in all_patterns)
                 label = f"{base_id} + [{pat_names}]"
                 print(f"    [{name}] => {label} ({intensity}) [stacked compositing]")
+                _v6paint = {}
+                if _z_bb: _v6paint["blend_base"] = _z_bb; _v6paint["blend_dir"] = _z_bd; _v6paint["blend_amount"] = _z_ba
                 if all_patterns:
                     zone_spec = compose_finish_stacked(base_id, all_patterns, shape, zone_mask, seed + i * 13, sm, spec_mult=spec_mult, base_scale=zone_base_scale, **_v6kw)
-                    paint = compose_paint_mod_stacked(base_id, all_patterns, paint, shape, zone_mask, seed + i * 13, pm, bb)
+                    paint = compose_paint_mod_stacked(base_id, all_patterns, paint, shape, zone_mask, seed + i * 13, pm, bb, **_v6paint)
                 else:
                     zone_spec = compose_finish(base_id, "none", shape, zone_mask, seed + i * 13, sm, spec_mult=spec_mult, base_scale=zone_base_scale, **_v6kw)
             else:
@@ -8708,8 +9569,10 @@ def build_suit_spec(suit_paint_file, output_dir, zones, iracing_id="23371", seed
                 scale_label = f" @{zone_scale:.1f}x" if zone_scale != 1.0 else ""
                 rot_label = f" rot{zone_rotation:.0f}°" if zone_rotation != 0 else ""
                 print(f"    [{name}] => {label} ({intensity}){scale_label}{rot_label}")
+                _v6paint = {}
+                if _z_bb: _v6paint["blend_base"] = _z_bb; _v6paint["blend_dir"] = _z_bd; _v6paint["blend_amount"] = _z_ba
                 zone_spec = compose_finish(base_id, pattern_id, shape, zone_mask, seed + i * 13, sm, scale=zone_scale, spec_mult=spec_mult, rotation=zone_rotation, base_scale=zone_base_scale, **_v6kw)
-                paint = compose_paint_mod(base_id, pattern_id, paint, shape, zone_mask, seed + i * 13, pm, bb, scale=zone_scale, rotation=zone_rotation)
+                paint = compose_paint_mod(base_id, pattern_id, paint, shape, zone_mask, seed + i * 13, pm, bb, scale=zone_scale, rotation=zone_rotation, **_v6paint)
         elif finish_name and finish_name in MONOLITHIC_REGISTRY:
             spec_fn, paint_fn = MONOLITHIC_REGISTRY[finish_name]
             mono_pat = zone.get("pattern", "none")

@@ -187,7 +187,7 @@ function showLicenseDialog() {
     // IPC: license dialog sends key back to main process
     ipcMain.once('license-submit', async (_event, key) => {
       debugLog(`[Dialog] Received license-submit with key: ${(key || '').substring(0, 5)}...`);
-      const trimmedKey = (key || '').trim().toUpperCase();
+      const trimmedKey = (key || '').trim();
       if (!trimmedKey) {
         licenseWin.webContents.send('license-error', 'Please enter a license key.');
         // Re-listen since this was a once
@@ -207,7 +207,7 @@ function showLicenseDialog() {
         licenseWin.webContents.send('license-error', result.reason || 'Invalid license key.');
         // Re-register the handler for retry
         const retryHandler = async (_ev, retryKey) => {
-          const rk = (retryKey || '').trim().toUpperCase();
+          const rk = (retryKey || '').trim();
           if (!rk) {
             licenseWin.webContents.send('license-error', 'Please enter a license key.');
             ipcMain.once('license-submit', retryHandler);

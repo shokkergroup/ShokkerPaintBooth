@@ -11,14 +11,16 @@ copy /Y dist\shokker-paint-booth-ag.exe electron-app\server\shokker-paint-booth-
 if errorlevel 1 goto error
 
 echo === 3. Building Electron App ===
+taskkill /F /IM "Shokker Paint Booth AG.exe" /T >nul 2>&1
+taskkill /F /IM "shokker-paint-booth-ag.exe" /T >nul 2>&1
 cd electron-app
 call npm run build > npm_build_log.txt 2>&1
 if errorlevel 1 goto error
 
 echo === 4. Finalizing ===
 cd ..
-copy /Y "electron-app\dist\Shokker Paint Booth Setup 0.2.3.exe" ShokkerPaintBoothAG-0.2.3-Setup.exe
-copy /Y "electron-app\dist\ShokkerPaintBoothAG-0.2.3-Setup.exe" ShokkerPaintBoothAG-0.2.3-Setup.exe
+copy /Y "electron-app\dist\Shokker Paint Booth AG Setup 0.3.0.exe" ShokkerPaintBoothAG-0.3.0-Setup.exe
+copy /Y "electron-app\dist\ShokkerPaintBoothAG-0.3.0-Setup.exe" ShokkerPaintBoothAG-0.3.0-Setup.exe
 echo Pipeline Success! > pipeline_done.txt
 exit /b 0
 

@@ -1,6 +1,6 @@
 {
   "name": "shokker-paint-booth-ag",
-  "version": "0.2.3",
+  "version": "0.3.0",
   "description": "Shokker Paint Booth AG — iRacing Spec Map Tool",
   "main": "main.js",
   "author": "Shokker Group",

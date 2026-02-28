@@ -238,9 +238,12 @@ def _make_ghost_fusion(base_m, base_g, pattern_fn_name, seed_offset=0):
         G = np.full((h, w), float(base_g), dtype=np.float32)
         # Clearcoat: pattern areas get perfect CC=16, non-pattern gets hazed CC
         B = pv * 16.0 + (1 - pv) * 100.0
+        # Make the ghost pattern pop slightly in metallic and roughness as well
+        M = np.clip(M + pv * 60.0 * sm, 0, 255)
+        G = np.clip(G - pv * 30.0 * sm, 0, 255)
         n = _noise(shape, [8, 16], [0.5, 0.5], seed + seed_offset)
-        M = M + n * 8 * sm
-        G = G + n * 6 * sm
+        M = np.clip(M + n * 8 * sm, 0, 255)
+        G = np.clip(G + n * 6 * sm, 0, 255)
         return _spec_out(shape, mask, M, G, B)
 
     def paint_fn(paint, shape, mask, seed, pm, bb):
@@ -555,21 +558,27 @@ spec_weather_volcanic_ash, paint_weather_volcanic_ash = _make_weather_fusion(160
 # ================================================================
 
 def _make_impossible_fusion(base_m, base_g, base_cc, seed_offset=0, noise_m=5, noise_g=3):
-    """Factory: impossible material states that don't exist in nature."""
+    """Factory: physics-defying finishes using extreme frequency noise and glitch aesthetics."""
     def spec_fn(shape, mask, seed, sm):
         h, w = shape
-        n = _noise(shape, [8, 16, 32], [0.3, 0.4, 0.3], seed + seed_offset)
-        M = np.full((h, w), float(base_m), dtype=np.float32) + n * noise_m * sm
-        G = np.full((h, w), float(base_g), dtype=np.float32) + n * noise_g * sm
+        # Extreme frequency noise
+        n1 = _noise(shape, [2, 4, 8, 16, 32], [0.2, 0.3, 0.3, 0.1, 0.1], seed + seed_offset)
+        # Geometric glitch effect (stepped noise)
+        gf = (n1 * 10).astype(np.int32).astype(np.float32) / 10.0
+        n2 = _noise(shape, [1, 3, 7, 15], [0.4, 0.3, 0.2, 0.1], seed + seed_offset + 50)
+        M = np.clip(np.full((h, w), float(base_m), dtype=np.float32) + (gf * 100 - 50) * sm * noise_m/5, 0, 255)
+        G = np.clip(np.full((h, w), float(base_g), dtype=np.float32) + (n2 * 255 - 127) * sm * noise_g/3, 0, 255)
         B = np.full((h, w), float(base_cc), dtype=np.float32)
         return _spec_out(shape, mask, M, G, B)
     def paint_fn(paint, shape, mask, seed, pm, bb):
-        # Impossible materials get a subtle ethereal shimmer
-        n = _noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + seed_offset + 50)
-        shimmer = n * 0.04 * pm
-        paint = np.clip(paint + shimmer[:,:,np.newaxis] * mask[:,:,np.newaxis], 0, 1)
-        paint = np.clip(paint + bb * 0.3 * mask[:,:,np.newaxis], 0, 1)
-        return paint
+        # Impossible paint: hue shifting glitch blocks
+        n = _noise(shape, [8, 16], [0.5, 0.5], seed + seed_offset + 80)
+        glitch = (n * 5).astype(np.int32).astype(np.float32) / 5.0
+        shift = np.clip(glitch * 0.2 * pm, -0.2, 0.2)
+        # Add high-contrast brightness shifting
+        paint = np.clip(paint + shift[:,:,np.newaxis] * mask[:,:,np.newaxis], 0, 1)
+        contrast = np.clip(paint + bb * 0.5 * (glitch * 2 - 1)[:,:,np.newaxis] * mask[:,:,np.newaxis], 0, 1)
+        return contrast
     return spec_fn, paint_fn
 
 spec_impossible_glass_paint, paint_impossible_glass_paint = _make_impossible_fusion(0, 0, 16, 7700, 3, 2)
@@ -790,15 +799,21 @@ def _make_halo_fusion(center_m, halo_m, base_g, base_cc, pattern_type, seed_offs
                 min_d = np.minimum(min_d, d)
             max_r = min(h, w) * 0.08
             dist = np.clip(min_d / max_r, 0, 1)
-        elif pattern_type in ("wave", "crack", "star", "grid", "ripple_ring"):
-            # Simplified: use noise-based edge detection for rim
+        elif pattern_type == "wave":
+            yf, xf = _mgrid(shape)
+            wave = np.sin(yf * 0.025 + xf * 0.01) * 0.4 + np.sin(yf * 0.01 - xf * 0.018) * 0.3
+            dist = 1.0 - np.clip((wave + 0.7) * 0.7, 0, 1)
+        elif pattern_type == "crack":
+            n1 = _noise(shape, [4, 8, 16], [0.3, 0.4, 0.3], seed + seed_offset + 100)
+            n2 = _noise(shape, [3, 6, 12], [0.3, 0.4, 0.3], seed + seed_offset + 200)
+            dist = 1.0 - np.clip(np.exp(-n1**2 * 20) + np.exp(-n2**2 * 20), 0, 1)
+        elif pattern_type in ("star", "grid", "ripple_ring"):
+            # Simplified fallback for remaining
             field = _noise(shape, [8, 16, 32], [0.3, 0.4, 0.3], seed + seed_offset + 100)
             field_norm = np.clip(field * 0.5 + 0.5, 0, 1)
-            # Create "distance from edge" via gradient magnitude
             gy = np.abs(np.diff(field_norm, axis=0, prepend=field_norm[:1,:]))
             gx = np.abs(np.diff(field_norm, axis=1, prepend=field_norm[:,:1]))
-            edge = np.clip((gy + gx) * 8, 0, 1)
-            dist = 1.0 - edge  # edge=halo, interior=center
+            dist = 1.0 - np.clip((gy + gx) * 8, 0, 1)
         else:
             dist = np.zeros((h, w), dtype=np.float32)
 

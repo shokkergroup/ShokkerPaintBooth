@@ -298,6 +298,10 @@
             height: 4px;
         }
 
+        input[type="range"] {
+            touch-action: none;
+        }
+
         .settings-btn-row {
             display: flex;
             gap: 4px;
@@ -7958,7 +7962,14 @@
         const MAX_ZONE_UNDO = 50;
         let undoHistoryPointer = -1; // Current position in history for visual highlighting
 
-        function pushZoneUndo(label) {
+        let undoActiveDragTimer = null;
+        function pushZoneUndo(label, isDrag = false) {
+            if (isDrag && undoActiveDragTimer) {
+                // Extend the timer and skip pushing a new state
+                clearTimeout(undoActiveDragTimer);
+                undoActiveDragTimer = setTimeout(() => { undoActiveDragTimer = null; }, 500);
+                return;
+            }
             zoneRedoStack.length = 0; // Clear redo on new action
             const snapshot = JSON.parse(JSON.stringify(
                 zones.map(z => ({ ...z, regionMask: null })) // Exclude large masks from undo
@@ -7971,6 +7982,10 @@
             if (zoneUndoStack.length > MAX_ZONE_UNDO) zoneUndoStack.shift();
             undoHistoryPointer = zoneUndoStack.length; // Points past top = current state
             renderUndoHistoryPanel();
+
+            if (isDrag) {
+                undoActiveDragTimer = setTimeout(() => { undoActiveDragTimer = null; }, 500);
+            }
         }
 
         function undoZoneChange() {
@@ -10015,7 +10030,7 @@
         }
 
         function setZoneScale(index, val) {
-            pushZoneUndo('Set scale');
+            pushZoneUndo('Set scale', true);
             zones[index].scale = parseFloat(val) || 1.0;
             const label = document.getElementById('detScaleVal' + index) || document.getElementById('scaleVal' + index);
             if (label) label.textContent = zones[index].scale.toFixed(2) + 'x';
@@ -10030,7 +10045,7 @@
         }
 
         function setZoneBaseScale(index, val) {
-            pushZoneUndo('Set base scale');
+            pushZoneUndo('Set base scale', true);
             zones[index].baseScale = parseFloat(val) || 1.0;
             const label = document.getElementById('detBaseScaleVal' + index);
             if (label) label.textContent = zones[index].baseScale.toFixed(1) + 'x';
@@ -10045,7 +10060,7 @@
         }
 
         function setZoneRotation(index, val) {
-            pushZoneUndo('Set rotation');
+            pushZoneUndo('Set rotation', true);
             const v = Math.max(0, Math.min(359, parseInt(val) || 0));
             zones[index].rotation = v;
             // Sync both number inputs and sliders
@@ -10065,7 +10080,7 @@
         }
 
         function setZoneBaseRotation(index, val) {
-            pushZoneUndo('Set base rotation');
+            pushZoneUndo('Set base rotation', true);
             const v = Math.max(0, Math.min(359, parseInt(val) || 0));
             zones[index].baseRotation = v;
             // Sync both number inputs and sliders
@@ -10087,7 +10102,7 @@
 
         // ===== v6.0 ADVANCED FINISH SETTERS =====
         function setZoneCCQuality(index, val) {
-            pushZoneUndo('Set CC quality');
+            pushZoneUndo('Set CC quality', true);
             zones[index].ccQuality = parseInt(val) || 100;
             const label = document.getElementById('detCCQVal' + index);
             if (label) label.textContent = zones[index].ccQuality + '%';
@@ -10347,7 +10362,7 @@
         }
 
         function setCustomIntensity(index, param, value) {
-            pushZoneUndo();
+            pushZoneUndo('Set intensity', true);
             const z = zones[index];
             const v = parseFloat(value);
             // Ensure we're in custom mode
@@ -21338,7 +21353,7 @@ if __name__ == '__main__':
             const serverZones = validZones.map(z => {
                 const zoneObj = { name: z.name, color: formatColorForServer(z.color, z), intensity: z.intensity };
                 if (z.customSpec != null) zoneObj.custom_intensity = { spec: z.customSpec, paint: z.customPaint, bright: z.customBright };
-                if (z.base) { zoneObj.base = z.base; zoneObj.pattern = z.pattern || 'none'; if (z.scale && z.scale !== 1.0) zoneObj.scale = z.scale; if (z.rotation && z.rotation !== 0) zoneObj.rotation = z.rotation; if ((z.patternOpacity ?? 100) !== 100) zoneObj.pattern_opacity = (z.patternOpacity ?? 100) / 100; if (z.patternStack?.length) { const st = z.patternStack.filter(l => l.id && l.id !== 'none'); if (st.length) zoneObj.pattern_stack = st.map(l => ({ id: l.id, opacity: (l.opacity ?? 100) / 100, scale: l.scale || 1.0, rotation: l.rotation || 0, blend_mode: l.blendMode || 'normal' })); } } else if (z.finish) { zoneObj.finish = z.finish; const _fr = z.baseRotation || z.rotation || 0; if (_fr && _fr !== 0) zoneObj.rotation = _fr; const _fm = MONOLITHICS.find(m => m.id === z.finish); if (_fm) { zoneObj.finish_colors = { c1: _fm.swatch || null, c2: _fm.swatch2 || null, c3: _fm.swatch3 || null, ghost: _fm.ghostPattern || null }; } if (z.pattern && z.pattern !== 'none') { zoneObj.pattern = z.pattern; if (z.scale && z.scale !== 1.0) zoneObj.scale = z.scale; if ((z.patternOpacity ?? 100) !== 100) zoneObj.pattern_opacity = (z.patternOpacity ?? 100) / 100; } }
+                if (z.base) { zoneObj.base = z.base; zoneObj.pattern = z.pattern || 'none'; if (z.scale && z.scale !== 1.0) zoneObj.scale = z.scale; if (z.rotation && z.rotation !== 0) zoneObj.rotation = z.rotation; if (z.baseRotation && z.baseRotation !== 0) zoneObj.base_rotation = z.baseRotation; if ((z.patternOpacity ?? 100) !== 100) zoneObj.pattern_opacity = (z.patternOpacity ?? 100) / 100; if (z.patternStack?.length) { const st = z.patternStack.filter(l => l.id && l.id !== 'none'); if (st.length) zoneObj.pattern_stack = st.map(l => ({ id: l.id, opacity: (l.opacity ?? 100) / 100, scale: l.scale || 1.0, rotation: l.rotation || 0, blend_mode: l.blendMode || 'normal' })); } } else if (z.finish) { zoneObj.finish = z.finish; const _fr = z.baseRotation || z.rotation || 0; if (_fr && _fr !== 0) zoneObj.rotation = _fr; const _fm = MONOLITHICS.find(m => m.id === z.finish); if (_fm) { zoneObj.finish_colors = { c1: _fm.swatch || null, c2: _fm.swatch2 || null, c3: _fm.swatch3 || null, ghost: _fm.ghostPattern || null }; } if (z.pattern && z.pattern !== 'none') { zoneObj.pattern = z.pattern; if (z.scale && z.scale !== 1.0) zoneObj.scale = z.scale; if ((z.patternOpacity ?? 100) !== 100) zoneObj.pattern_opacity = (z.patternOpacity ?? 100) / 100; } }
                 if (z.baseScale && z.baseScale !== 1.0) zoneObj.base_scale = z.baseScale;
                 if (z.wear && z.wear > 0) zoneObj.wear_level = z.wear;
                 // v6.0 advanced finish params
@@ -21450,7 +21465,7 @@ if __name__ == '__main__':
             const serverZones = validZones.map(z => {
                 const zoneObj = { name: z.name, color: formatColorForServer(z.color, z), intensity: z.intensity };
                 if (z.customSpec != null) zoneObj.custom_intensity = { spec: z.customSpec, paint: z.customPaint, bright: z.customBright };
-                if (z.base) { zoneObj.base = z.base; zoneObj.pattern = z.pattern || 'none'; if (z.scale && z.scale !== 1.0) zoneObj.scale = z.scale; if (z.rotation && z.rotation !== 0) zoneObj.rotation = z.rotation; if ((z.patternOpacity ?? 100) !== 100) zoneObj.pattern_opacity = (z.patternOpacity ?? 100) / 100; if (z.patternStack?.length) { const st = z.patternStack.filter(l => l.id && l.id !== 'none'); if (st.length) zoneObj.pattern_stack = st.map(l => ({ id: l.id, opacity: (l.opacity ?? 100) / 100, scale: l.scale || 1.0, rotation: l.rotation || 0, blend_mode: l.blendMode || 'normal' })); } } else if (z.finish) { zoneObj.finish = z.finish; const _fr = z.baseRotation || z.rotation || 0; if (_fr && _fr !== 0) zoneObj.rotation = _fr; const _fm = MONOLITHICS.find(m => m.id === z.finish); if (_fm) { zoneObj.finish_colors = { c1: _fm.swatch || null, c2: _fm.swatch2 || null, c3: _fm.swatch3 || null, ghost: _fm.ghostPattern || null }; } if (z.pattern && z.pattern !== 'none') { zoneObj.pattern = z.pattern; if (z.scale && z.scale !== 1.0) zoneObj.scale = z.scale; if ((z.patternOpacity ?? 100) !== 100) zoneObj.pattern_opacity = (z.patternOpacity ?? 100) / 100; } }
+                if (z.base) { zoneObj.base = z.base; zoneObj.pattern = z.pattern || 'none'; if (z.scale && z.scale !== 1.0) zoneObj.scale = z.scale; if (z.rotation && z.rotation !== 0) zoneObj.rotation = z.rotation; if (z.baseRotation && z.baseRotation !== 0) zoneObj.base_rotation = z.baseRotation; if ((z.patternOpacity ?? 100) !== 100) zoneObj.pattern_opacity = (z.patternOpacity ?? 100) / 100; if (z.patternStack?.length) { const st = z.patternStack.filter(l => l.id && l.id !== 'none'); if (st.length) zoneObj.pattern_stack = st.map(l => ({ id: l.id, opacity: (l.opacity ?? 100) / 100, scale: l.scale || 1.0, rotation: l.rotation || 0, blend_mode: l.blendMode || 'normal' })); } } else if (z.finish) { zoneObj.finish = z.finish; const _fr = z.baseRotation || z.rotation || 0; if (_fr && _fr !== 0) zoneObj.rotation = _fr; const _fm = MONOLITHICS.find(m => m.id === z.finish); if (_fm) { zoneObj.finish_colors = { c1: _fm.swatch || null, c2: _fm.swatch2 || null, c3: _fm.swatch3 || null, ghost: _fm.ghostPattern || null }; } if (z.pattern && z.pattern !== 'none') { zoneObj.pattern = z.pattern; if (z.scale && z.scale !== 1.0) zoneObj.scale = z.scale; if ((z.patternOpacity ?? 100) !== 100) zoneObj.pattern_opacity = (z.patternOpacity ?? 100) / 100; } }
                 if (z.baseScale && z.baseScale !== 1.0) zoneObj.base_scale = z.baseScale;
                 if (z.wear && z.wear > 0) zoneObj.wear_level = z.wear;
                 // v6.0 advanced finish params

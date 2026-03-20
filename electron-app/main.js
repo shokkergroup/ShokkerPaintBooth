@@ -166,6 +166,13 @@ function incrementPayhipUsage(licenseKey) {
 
 function showLicenseDialog() {
   return new Promise((resolve) => {
+    let resolved = false;
+    function safeResolve(val) {
+      if (resolved) return;
+      resolved = true;
+      resolve(val);
+    }
+
     const licenseWin = new BrowserWindow({
       width: 520,
       height: 420,
@@ -201,8 +208,9 @@ function showLicenseDialog() {
       if (result.valid) {
         await incrementPayhipUsage(trimmedKey);
         saveLocalLicense(trimmedKey, result.email);
+        // CRITICAL: resolve BEFORE closing to prevent race with 'closed' event
+        safeResolve(true);
         licenseWin.close();
-        resolve(true);
       } else {
         licenseWin.webContents.send('license-error', result.reason || 'Invalid license key.');
         // Re-register the handler for retry
@@ -218,8 +226,8 @@ function showLicenseDialog() {
           if (r2.valid) {
             await incrementPayhipUsage(rk);
             saveLocalLicense(rk, r2.email);
+            safeResolve(true);
             licenseWin.close();
-            resolve(true);
           } else {
             licenseWin.webContents.send('license-error', r2.reason || 'Invalid license key.');
             ipcMain.once('license-submit', retryHandler);
@@ -235,8 +243,8 @@ function showLicenseDialog() {
     });
 
     ipcMain.once('license-quit', () => {
+      safeResolve(false);
       licenseWin.close();
-      resolve(false);
     });
 
     licenseWin.on('closed', () => {
@@ -244,7 +252,7 @@ function showLicenseDialog() {
       ipcMain.removeAllListeners('license-submit');
       ipcMain.removeAllListeners('license-quit');
       ipcMain.removeAllListeners('license-buy');
-      resolve(false);
+      safeResolve(false);
     });
 
     // Load license dialog from local HTML file (data: URLs don't get preload scripts)

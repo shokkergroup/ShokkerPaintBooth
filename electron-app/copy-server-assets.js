@@ -142,4 +142,75 @@ if (fs.existsSync(PYTHON_EXE)) {
   process.exit(1);
 }
 
+// ===== CRITICAL: Verify bundled Python has ALL required packages =====
+// Without these, the server WILL crash on any machine except the dev machine.
+// The bundled Python must be SELF-CONTAINED — no reliance on user site-packages.
+const { execSync } = require('child_process');
+const REQUIRED_PACKAGES = [
+  { module: 'flask', name: 'Flask' },
+  { module: 'flask_cors', name: 'flask-cors' },
+  { module: 'numpy', name: 'numpy' },
+  { module: 'PIL', name: 'Pillow' },
+  { module: 'scipy', name: 'scipy' },
+];
+const SITE_PACKAGES = path.join(PYTHON_DIR, 'Lib', 'site-packages');
+
+console.log('[copy-server] Verifying bundled Python packages...');
+let missingPackages = [];
+
+for (const pkg of REQUIRED_PACKAGES) {
+  // Check if the package directory actually exists in the bundled site-packages
+  // (NOT in the user's global site-packages — that's the bug we're preventing)
+  const pkgDir = path.join(SITE_PACKAGES, pkg.module);
+  const pkgDirAlt = path.join(SITE_PACKAGES, pkg.module.toLowerCase());
+  if (!fs.existsSync(pkgDir) && !fs.existsSync(pkgDirAlt)) {
+    missingPackages.push(pkg);
+  }
+}
+
+if (missingPackages.length > 0) {
+  console.log(`[copy-server] Missing ${missingPackages.length} package(s) in bundled Python. Installing...`);
+  const pipTarget = SITE_PACKAGES;
+  const pipPkgs = missingPackages.map(p => p.name).join(' ');
+  try {
+    execSync(`"${PYTHON_EXE}" -m pip install --target="${pipTarget}" --no-user ${pipPkgs}`, {
+      stdio: 'inherit',
+      timeout: 300000 // 5 min max
+    });
+    console.log('[copy-server] Package installation complete.');
+  } catch (err) {
+    console.error('[copy-server] FATAL: Failed to install packages into bundled Python!');
+    console.error('[copy-server]   ' + err.message);
+    process.exit(1);
+  }
+}
+
+// FINAL VERIFICATION: Actually import each package with PYTHONNOUSERSITE=1
+// This simulates what happens on an end-user's machine with NO Python installed
+console.log('[copy-server] Final verification (simulating clean machine)...');
+let verifyFailed = false;
+for (const pkg of REQUIRED_PACKAGES) {
+  try {
+    execSync(
+      `"${PYTHON_EXE}" -c "import ${pkg.module}"`,
+      { env: { ...process.env, PYTHONNOUSERSITE: '1' }, timeout: 30000, stdio: 'pipe' }
+    );
+    console.log(`  ✓ ${pkg.name}`);
+  } catch (err) {
+    console.error(`  ✗ ${pkg.name} — IMPORT FAILED`);
+    verifyFailed = true;
+  }
+}
+
+if (verifyFailed) {
+  console.error('');
+  console.error('[copy-server] ══════════════════════════════════════════════════════');
+  console.error('[copy-server] FATAL: Bundled Python is missing required packages!');
+  console.error('[copy-server] The installer WILL produce a broken app.');
+  console.error('[copy-server] Fix: pip install --target=server/python/Lib/site-packages <pkg>');
+  console.error('[copy-server] ══════════════════════════════════════════════════════');
+  process.exit(1);
+}
+
+console.log('[copy-server] All packages verified — bundled Python is self-contained.');
 console.log(`[copy-server] Copied ${copied} assets to server/`);

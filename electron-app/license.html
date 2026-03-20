@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Activate</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    background: #0a0a0a;
+    color: #e0e0e0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    padding: 30px;
+    -webkit-app-region: drag;
+  }
+  h1 {
+    font-size: 22px;
+    font-weight: 700;
+    color: #ff3366;
+    margin-bottom: 6px;
+    letter-spacing: 1px;
+  }
+  .subtitle {
+    font-size: 13px;
+    color: #888;
+    margin-bottom: 28px;
+  }
+  .input-group {
+    width: 100%;
+    max-width: 380px;
+    -webkit-app-region: no-drag;
+  }
+  label {
+    display: block;
+    font-size: 12px;
+    color: #aaa;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  input {
+    width: 100%;
+    padding: 12px 14px;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 6px;
+    color: #fff;
+    font-size: 16px;
+    font-family: 'Consolas', 'Courier New', monospace;
+    letter-spacing: 2px;
+    text-align: center;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  input:focus { border-color: #ff3366; }
+  input::placeholder { color: #555; letter-spacing: 1px; font-size: 13px; }
+  .btn-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 18px;
+    width: 100%;
+    max-width: 380px;
+    -webkit-app-region: no-drag;
+  }
+  button {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .btn-activate {
+    background: #ff3366;
+    color: #fff;
+  }
+  .btn-activate:hover { background: #e6295a; }
+  .btn-activate:disabled { background: #663; cursor: wait; }
+  .btn-buy {
+    background: #222;
+    color: #ff3366;
+    border: 1px solid #333;
+  }
+  .btn-buy:hover { background: #2a2a2a; border-color: #ff3366; }
+  .btn-quit {
+    background: transparent;
+    color: #666;
+    font-size: 12px;
+    margin-top: 16px;
+    -webkit-app-region: no-drag;
+    border: none;
+    cursor: pointer;
+    padding: 6px;
+  }
+  .btn-quit:hover { color: #999; }
+  #status {
+    margin-top: 14px;
+    font-size: 13px;
+    min-height: 20px;
+    text-align: center;
+  }
+  .error { color: #ff4466; }
+  .info { color: #66aaff; }
+</style>
+</head>
+<body>
+  <h1>SHOKKER PAINT BOOTH</h1>
+  <div class="subtitle">Enter your license key to activate</div>
+  <div class="input-group">
+    <label>License Key</label>
+    <input type="text" id="keyInput" placeholder="XXXXX-XXXXX-XXXXX-XXXXX" autofocus
+           spellcheck="false" autocomplete="off" />
+  </div>
+  <div class="btn-row">
+    <button class="btn-activate" id="activateBtn" onclick="doActivate()">Activate</button>
+    <button class="btn-buy" onclick="doBuy()">Buy License</button>
+  </div>
+  <div id="status"></div>
+  <button class="btn-quit" onclick="doQuit()">Exit</button>
+  <script>
+    const api = window.electronLicense;
+
+    function doActivate() {
+      const key = document.getElementById('keyInput').value;
+      document.getElementById('activateBtn').disabled = true;
+      document.getElementById('status').className = 'info';
+      document.getElementById('status').textContent = 'Verifying...';
+      if (api && api.ipcRenderer) {
+        api.ipcRenderer.send('license-submit', key);
+      } else {
+        document.getElementById('status').className = 'error';
+        document.getElementById('status').textContent = 'IPC bridge not available';
+        document.getElementById('activateBtn').disabled = false;
+      }
+    }
+
+    function doBuy() {
+      if (api && api.ipcRenderer) api.ipcRenderer.send('license-buy');
+    }
+
+    function doQuit() {
+      if (api && api.ipcRenderer) api.ipcRenderer.send('license-quit');
+    }
+
+    document.getElementById('keyInput').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') doActivate();
+    });
+
+    if (api && api.ipcRenderer) {
+      api.ipcRenderer.on('license-error', (_e, msg) => {
+        document.getElementById('status').className = 'error';
+        document.getElementById('status').textContent = msg;
+        document.getElementById('activateBtn').disabled = false;
+      });
+      api.ipcRenderer.on('license-status', (_e, msg) => {
+        document.getElementById('status').className = 'info';
+        document.getElementById('status').textContent = msg;
+      });
+    }
+  </script>
+</body>
+</html>

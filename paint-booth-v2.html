@@ -1,0 +1,1978 @@
+<!DOCTYPE html>
+<html lang="en">
+<!--
+  SHOKKER PAINT BOOTH V5 — UI shell.
+  Structure: head (CSS + swatch scripts), body (layout, modals, toast), then app scripts 1→6.
+  To change layout/panels: edit body sections. Script load order: 1-data, 2-state-zones, 3-canvas, 4-pattern-renderer, 5-api-render, 6-ui-boot.
+  Map: PROJECT_STRUCTURE.md in this folder.
+-->
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SHOKKER PAINT BOOTH — v6.0 Alpha</title>
+    <link rel="stylesheet" href="paint-booth-v2.css">
+    <script src="fusion-swatches.js"></script>
+    <script src="swatch-upgrades.js"></script>
+    <script src="swatch-upgrades-2.js"></script>
+    <script src="swatch-upgrades-3.js"></script>
+    <style>
+        /* ─── SHOKK LIBRARY STYLES ─────────────────────────── */
+        #shokkLibraryModal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.82);
+            z-index: 12000;
+            display: none;
+            align-items: stretch;
+            justify-content: stretch;
+        }
+
+        .shokk-modal-inner {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-primary, #0e0e16);
+            overflow: hidden;
+        }
+
+        .shokk-modal-toolbar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 20px;
+            background: var(--bg-card, #141420);
+            border-bottom: 1px solid var(--border, #2a2a3a);
+            flex-shrink: 0;
+            flex-wrap: wrap;
+        }
+
+        .shokk-modal-title {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--accent-gold, #ffaa00);
+            letter-spacing: 1px;
+            flex-shrink: 0;
+        }
+
+        .shokk-search {
+            flex: 1;
+            min-width: 160px;
+            background: var(--surface, #1a1a28);
+            border: 1px solid var(--border, #2a2a3a);
+            color: var(--text, #e0e0f0);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+        }
+
+        .shokk-search:focus {
+            outline: none;
+            border-color: var(--accent-gold, #ffaa00);
+        }
+
+        .shokk-modal-path {
+            font-size: 10px;
+            color: var(--text-dim, #777);
+            margin-top: 2px;
+            flex-basis: 100%;
+        }
+
+        #shokkLibraryGrid {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .shokk-section-label {
+            font-size: 9px;
+            font-weight: 800;
+            color: var(--accent-gold, #ffaa00);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 8px 4px 4px;
+            border-bottom: 1px solid var(--border, #2a2a3a);
+            margin-bottom: 4px;
+        }
+
+        .shokk-card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--bg-card, #141420);
+            border: 1px solid var(--border, #2a2a3a);
+            border-radius: 8px;
+            padding: 10px 12px;
+            cursor: pointer;
+            transition: border-color 0.15s, background 0.15s;
+            position: relative;
+        }
+
+        .shokk-card:hover {
+            border-color: var(--accent-gold, #ffaa00);
+            background: rgba(255, 170, 0, 0.05);
+        }
+
+        .shokk-card.selected {
+            border-color: var(--accent-blue, #3366ff);
+            background: rgba(51, 102, 255, 0.12);
+            box-shadow: 0 0 12px rgba(51, 102, 255, 0.2);
+        }
+
+        .shokk-card-thumb {
+            width: 80px;
+            height: 60px;
+            flex-shrink: 0;
+            border-radius: 5px;
+            overflow: hidden;
+            background: #0a0a12;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .shokk-card-preview {
+            width: 80px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+
+        .shokk-card-no-preview {
+            font-size: 28px;
+            opacity: 0.3;
+        }
+
+        .shokk-card-body {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .shokk-card-name {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text, #e0e0f0);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .shokk-card-meta {
+            font-size: 10px;
+            color: var(--text-dim, #777);
+            margin: 2px 0;
+        }
+
+        .shokk-card-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            margin-top: 3px;
+        }
+
+        .shokk-tag {
+            background: rgba(255, 170, 0, 0.12);
+            color: var(--accent-gold, #ffaa00);
+            font-size: 9px;
+            padding: 1px 6px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 170, 0, 0.25);
+        }
+
+        .shokk-card-desc {
+            font-size: 10px;
+            color: var(--text-dim, #777);
+            margin-top: 3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .shokk-card-open {
+            background: var(--accent-gold, #ffaa00);
+            color: #000;
+            border: none;
+            border-radius: 5px;
+            font-size: 11px;
+            font-weight: 800;
+            padding: 6px 14px;
+            cursor: pointer;
+            flex-shrink: 0;
+            transition: opacity 0.15s;
+        }
+
+        .shokk-card-open:hover {
+            opacity: 0.85;
+        }
+
+        .shokk-card-delete {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            background: none;
+            border: none;
+            color: #ff6666;
+            font-size: 13px;
+            cursor: pointer;
+            opacity: 0.5;
+            padding: 2px 5px;
+        }
+
+        .shokk-card-delete:hover {
+            opacity: 1;
+        }
+
+        /* Save SHOKK modal */
+        #saveShokkModal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.75);
+            z-index: 12100;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .shokk-save-inner {
+            background: var(--bg-card, #141420);
+            border: 1px solid var(--border, #2a2a3a);
+            border-radius: 12px;
+            padding: 28px 32px;
+            width: 460px;
+            max-width: 95vw;
+        }
+
+        .shokk-save-title {
+            font-size: 17px;
+            font-weight: 800;
+            color: var(--accent-gold, #ffaa00);
+            margin-bottom: 16px;
+        }
+
+        .shokk-save-row {
+            margin-bottom: 12px;
+        }
+
+        .shokk-save-row label {
+            display: block;
+            font-size: 11px;
+            color: var(--text-dim, #777);
+            margin-bottom: 4px;
+        }
+
+        .shokk-save-row input[type=text],
+        .shokk-save-row textarea {
+            width: 100%;
+            background: var(--surface, #1a1a28);
+            border: 1px solid var(--border, #2a2a3a);
+            color: var(--text, #e0e0f0);
+            padding: 7px 10px;
+            border-radius: 6px;
+            font-size: 13px;
+            box-sizing: border-box;
+        }
+
+        .shokk-save-row textarea {
+            height: 60px;
+            resize: vertical;
+        }
+
+        .shokk-tags-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 4px;
+        }
+
+        .shokk-tag-label {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 11px;
+            background: var(--surface, #1a1a28);
+            border: 1px solid var(--border, #2a2a3a);
+            border-radius: 10px;
+            padding: 3px 10px;
+            cursor: pointer;
+        }
+
+        .shokk-tag-label:has(.shokk-tag-checkbox:checked) {
+            border-color: var(--accent-gold, #ffaa00);
+            background: rgba(255, 170, 0, 0.1);
+            color: var(--accent-gold, #ffaa00);
+        }
+
+        .shokk-save-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 18px;
+            justify-content: flex-end;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ===== HEADER ===== -->
+    <div class="header">
+        <div class="header-brand">
+            <h1>SHOKKER PAINT BOOTH</h1>
+            <div class="subtitle">
+                <span id="liveBuildBadge" class="version-badge" title="Version">v6.0</span>
+                <span id="comboCount" style="display:none;"></span>
+                <span id="b21check" style="display:none;"></span>
+            </div>
+        </div>
+
+        <script>
+            // Session ID for internal tracking only — not displayed
+            window.APP_SESSION_ID = Math.floor(Math.random() * 65536).toString(16).padStart(4, '0').toUpperCase();
+        </script>
+
+        <div class="header-fields">
+            <div class="header-field field-id" id="iracingIdContainer">
+                <label>iRacing User ID</label>
+                <input type="text" id="iracingId" value="" placeholder="e.g. 23371" onchange="updateOutputPath()" title="Your iRacing member number (found in your iRacing account profile). Required for saving car files." style="border: 2px solid var(--accent-orange); background: rgba(255,165,0,0.08);">
+                <div id="iracingIdHint" style="font-size: 8px; color: var(--accent-orange); margin-top: 1px;">Required — your iRacing member number</div>
+            </div>
+            <div class="header-field field-source" style="position: relative;">
+                <label>Source Paint</label>
+                <div class="header-field-row">
+                    <input type="text" id="paintFile" placeholder="Path to paint TGA..." title="The original paint TGA"
+                        onchange="validatePaintPath()" oninput="debouncedValidatePaintPath()"
+                        onfocus="showRecentPaths()" onblur="setTimeout(hideRecentPaths, 200)">
+                    <span class="header-path-status" id="paintPathStatus"></span>
+                    <button class="header-browse-btn" onclick="openPaintFilePicker()"
+                        title="Browse for paint file">📂</button>
+                    <button class="header-browse-btn" onclick="resetSourceBackup()"
+                        title="Reset source backup — use if renders seem stuck or unchanged"
+                        style="font-size:9px; opacity:0.6;">↺</button>
+                </div>
+                <div class="recent-paths-dropdown" id="recentPathsDropdown" style="display: none;"></div>
+            </div>
+            <div class="header-field field-output">
+                <label>iRacing Car Folder</label>
+                <div class="header-field-row">
+                    <input type="text" id="outputDir" value="" placeholder="e.g. C:/Users/.../iRacing/paint/trucks toyotatundra2022"
+                        title="Point to the iRacing car paint FOLDER (not the TGA file). Example: Documents/iRacing/paint/trucks toyotatundra2022">
+                    <button class="header-browse-btn" onclick="openOutputFolderPicker()"
+                        title="Select the iRacing car paint FOLDER (not the TGA file)">📂</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="header-right">
+            <span id="autosaveBadge"
+                style="font-size: 8px; color: var(--accent-green); opacity: 0.4; transition: opacity 0.3s;">Auto-saved</span>
+            <button class="gear-btn" onclick="showShortcutLegend()" title="Keyboard shortcuts (?)"
+                style="font-size:12px; opacity:0.6;">?</button>
+            <button class="gear-btn" id="settingsGearBtn" onclick="toggleSettingsDropdown()" title="Settings">⚙</button>
+            <span id="serverStatus" class="server-status offline" title="Server offline">&#9679;</span>
+        </div>
+
+        <!-- Settings Dropdown -->
+        <div class="settings-dropdown" id="settingsDropdown">
+            <div class="settings-section">
+                <div class="settings-section-title">Options</div>
+                <div class="settings-row">
+                    <input type="checkbox" id="exportZipCheckbox">
+                    <label for="exportZipCheckbox">Export ZIP Package</label>
+                </div>
+                <div class="settings-row">
+                    <button class="btn btn-sm" id="themeToggleBtn" onclick="toggleTheme()"
+                        title="Switch between dark and light theme" style="font-size:10px; padding:2px 10px;">☀
+                        Light</button>
+                </div>
+            </div>
+            <div class="settings-section">
+                <div class="settings-section-title">Import Spec Map (Merge Mode)</div>
+                <div id="importSpecMapStatus" style="font-size: 9px; color: var(--text-dim); margin-bottom: 4px;">No spec map — zones render on default base</div>
+                <div class="settings-btn-row">
+                    <button class="btn btn-sm" onclick="importSpecMapFromFile()"
+                        style="border-color: var(--accent-blue); color: var(--accent-blue);"
+                        title="Browse for an existing spec map TGA to merge on top of">Import TGA</button>
+                    <button class="btn btn-sm" onclick="clearImportedSpecMap()"
+                        style="border-color: #ff6666; color: #ff6666;"
+                        title="Remove imported spec map and render on default base" id="btnClearSpecMap"
+                        disabled>Clear</button>
+                </div>
+                <div style="font-size: 8px; color: var(--text-dim); margin-top: 2px;">Import an existing spec map TGA —
+                    zones paint on top of it instead of the default base</div>
+            </div>
+            <div class="settings-section" id="licenseSection">
+                <div class="settings-section-title">License</div>
+                <div id="licenseStatus" style="margin-bottom:8px; font-size:11px;"></div>
+                <div id="licenseInputRow" style="display:flex; gap:6px; align-items:center;">
+                    <input type="text" id="licenseKeyInput" placeholder="SHOKKER-XXXX-XXXX-XXXX" maxlength="19"
+                        style="flex:1; background:var(--bg-card); border:1px solid var(--border-color); color:var(--text-primary); padding:5px 8px; border-radius:4px; font-family:monospace; font-size:11px; text-transform:uppercase;"
+                        onkeydown="if(event.key==='Enter') activateLicense();">
+                    <button class="btn btn-sm" onclick="activateLicense()"
+                        style="border-color:var(--accent-green); color:var(--accent-green); white-space:nowrap;">Activate</button>
+                </div>
+                <div id="licenseActiveRow" style="display:none; align-items:center; gap:8px;">
+                    <span style="color:var(--accent-green); font-size:12px;">&#10003; Licensed</span>
+                    <span id="licenseMaskedKey"
+                        style="font-family:monospace; font-size:10px; color:var(--text-dim);"></span>
+                    <button class="btn btn-sm" onclick="deactivateLicense()"
+                        style="margin-left:auto; border-color:var(--accent-red); color:var(--accent-red); font-size:9px;">Deactivate</button>
+                </div>
+            </div>
+            <div class="settings-section">
+                <div class="settings-section-title">Auto-Deploy to iRacing</div>
+                <div class="settings-row" id="liveLinkRow">
+                    <input type="checkbox" id="liveLinkCheckbox" onchange="toggleLiveLink(this.checked)">
+                    <label for="liveLinkCheckbox">Auto-deploy after render</label>
+                    <span class="live-link-badge" id="liveLinkBadge" style="display:none;">ACTIVE</span>
+                </div>
+                <div style="font-size: 8px; color: var(--text-dim); margin-top: 2px;">When enabled, car paint + spec files are automatically copied to your iRacing car folder after every render. Just Alt+Tab to iRacing and Ctrl+R to see your new paint.</div>
+            </div>
+            <div class="settings-section">
+                <div class="settings-section-title">Car File Naming</div>
+                <div class="settings-row">
+                    <input type="checkbox" id="useCustomNumberCheckbox" checked
+                        onchange="toggleCustomNumber(this.checked)">
+                    <label for="useCustomNumberCheckbox">I use custom numbers</label>
+                </div>
+                <div style="font-size: 8px; color: var(--text-dim); margin-top: 2px;">Checked = car_num_XXXXX.tga
+                    (custom numbers). Unchecked = car_XXXXX.tga (no custom numbers). Spec map is always
+                    car_spec_XXXXX.tga.</div>
+            </div>
+            <!-- Hidden fields for helmet/suit -->
+            <input type="hidden" id="helmetFile" value="">
+            <input type="hidden" id="suitFile" value="">
+        </div>
+    </div>
+
+    <!-- ===== MAIN LAYOUT ===== -->
+    <div class="main-container">
+
+        <!-- ===== VERTICAL TOOLBAR (far left, Photoshop-style) ===== -->
+        <div class="vertical-toolbar" id="verticalToolbar">
+            <!-- SELECT group -->
+            <div class="vtool-group">
+                <span class="vtool-label" style="color:var(--accent-gold);">Sel</span>
+                <button id="vtModeEyedropper" class="vtool-btn active" onclick="setCanvasMode('eyedropper')" title="Pick Color (P)">🎨</button>
+                <button id="vtModeWand" class="vtool-btn" onclick="setCanvasMode('wand')" title="Magic Wand (W)">🎯</button>
+                <button id="vtModeSelectAll" class="vtool-btn" onclick="setCanvasMode('selectall')" title="Select All Color (A)">⊞</button>
+                <button id="vtModeEdge" class="vtool-btn" onclick="setCanvasMode('edge')" title="Edge Detect (E)">⌖</button>
+            </div>
+            <!-- DRAW group -->
+            <div class="vtool-group">
+                <span class="vtool-label" style="color:var(--accent-blue);">Draw</span>
+                <button id="vtModeBrush" class="vtool-btn" onclick="setCanvasMode('brush')" title="Brush (B)">🖌️</button>
+                <button id="vtModeRect" class="vtool-btn" onclick="setCanvasMode('rect')" title="Rectangle (O)">▭</button>
+                <button id="vtModeLasso" class="vtool-btn" onclick="setCanvasMode('lasso')" title="Lasso (L)">⬡</button>
+                <button id="vtModeErase" class="vtool-btn" onclick="setCanvasMode('erase')" title="Eraser (X)">🧹</button>
+            </div>
+            <!-- SPATIAL group -->
+            <div class="vtool-group">
+                <span class="vtool-label" style="color:var(--accent-green);">Sptl</span>
+                <button id="vtModeSpatialInclude" class="vtool-btn" onclick="setCanvasMode('spatial-include')" title="Include Region">✅</button>
+                <button id="vtModeSpatialExclude" class="vtool-btn" onclick="setCanvasMode('spatial-exclude')" title="Exclude Region">❌</button>
+            </div>
+            <!-- MASK group -->
+            <div class="vtool-group">
+                <span class="vtool-label" style="color:var(--accent-blue);">Mask</span>
+                <button class="vtool-btn" onclick="smoothRegionMask()" title="Smooth Edges">∿</button>
+                <button class="vtool-btn" onclick="invertRegionMask()" title="Invert Mask">⊘</button>
+                <button class="vtool-btn" onclick="toggleCopyMaskDropdown(event)" title="Copy Mask">📋</button>
+                <button class="vtool-btn" onclick="mirrorRegionMask()" title="Mirror Mask">↔</button>
+            </div>
+            <!-- REFINE group -->
+            <div class="vtool-group">
+                <span class="vtool-label" style="color:#cc88ff;">Refn</span>
+                <button class="vtool-btn" onclick="growRegionMask(1)" title="Grow +1">➕</button>
+                <button class="vtool-btn" onclick="shrinkRegionMask(1)" title="Shrink -1">➖</button>
+                <button class="vtool-btn" onclick="fillRegionHoles()" title="Fill Holes">◉</button>
+                <button class="vtool-btn" onclick="featherRegionMask(2)" title="Feather Edges">◇</button>
+            </div>
+            <!-- ACTIONS group -->
+            <div class="vtool-group">
+                <span class="vtool-label" style="color:var(--text-dim);">Act</span>
+                <button class="vtool-btn" onclick="undoDrawStroke()" title="Undo (Ctrl+Z)" style="color:var(--accent-blue);">↩</button>
+                <button class="vtool-btn" onclick="deselectRegion()" title="Deselect">✕</button>
+                <button class="vtool-btn vtool-destructive" onclick="clearZoneRegions(selectedZoneIndex)" title="Clear Region">🗑️</button>
+                <button class="vtool-btn vtool-destructive" onclick="clearAllRegions()" title="Clear All">💥</button>
+            </div>
+        </div>
+
+        <!-- LEFT PANEL: ZONE MANAGER -->
+        <div class="left-panel">
+
+            <!-- ===== FLEET MODE ===== -->
+            <div class="batch-panel" id="fleetPanel" style="display: none;">
+                <div class="batch-panel-header"
+                    onclick="document.getElementById('fleetBody').classList.toggle('collapsed')">
+                    <h4>Fleet Mode — Multi-Car Batch Render</h4>
+                    <span style="font-size: 9px; color: var(--text-dim);" id="fleetCount">(0 cars)</span>
+                </div>
+                <div id="fleetBody">
+                    <div id="fleetList"></div>
+                    <button class="batch-add-btn" onclick="addFleetCar()">+ Add Car</button>
+                    <button class="batch-render-btn" onclick="doFleetRender()" id="btnFleetRender">Render All
+                        Cars</button>
+                    <div class="batch-progress" id="fleetProgress"></div>
+                    <div class="batch-results-grid" id="fleetResults"></div>
+                </div>
+            </div>
+
+            <!-- ===== SEASON MODE ===== -->
+            <div class="batch-panel" id="seasonPanel" style="display: none;">
+                <div class="batch-panel-header"
+                    onclick="document.getElementById('seasonBody').classList.toggle('collapsed')">
+                    <h4>Season Mode — Race-by-Race Variations</h4>
+                    <span style="font-size: 9px; color: var(--text-dim);" id="seasonCount">(0 races)</span>
+                </div>
+                <div id="seasonBody">
+                    <div id="seasonList"></div>
+                    <div style="display: flex; gap: 4px; margin-top: 4px;">
+                        <button class="batch-add-btn" onclick="addSeasonRace()">+ Add Race</button>
+                        <button class="batch-add-btn" onclick="quickFillSeasonWear()"
+                            title="Auto-fill wear from 0 to 100 across all races"
+                            style="border-color: var(--accent-orange); color: var(--accent-orange);">Quick: Wear
+                            Ramp</button>
+                    </div>
+                    <button class="batch-render-btn" onclick="doSeasonRender()" id="btnSeasonRender">Render All
+                        Races</button>
+                    <div class="batch-progress" id="seasonProgress"></div>
+                    <div class="batch-results-grid" id="seasonResults"></div>
+                </div>
+            </div>
+
+            <!-- ===== SPECMAP MODE CONTENT ===== -->
+            <div id="specmapModeContent">
+
+                <!-- Zones Header -->
+                <div class="section-header" onclick="toggleSection('workflow-guide')">
+                    <h3>Zones <span style="color: var(--accent); font-size: 10px;" id="zoneCount">(4)</span></h3>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="font-size: 10px; color: var(--text-dim);">First = Highest Priority</span>
+                        <span class="toggle-icon" id="workflow-guide-toggle"
+                            style="font-size: 9px; color: var(--accent-gold); transform: rotate(-90deg);">&#9660;
+                            How-To</span>
+                    </div>
+                </div>
+
+                <!-- Workflow Guide (collapsible) -->
+                <div class="section-body collapsed" id="workflow-guide-body"
+                    style="padding: 8px 14px; background: rgba(255,170,0,0.04); border-bottom: 1px solid var(--border);">
+                    <div style="font-size: 10px; color: var(--text-dim); line-height: 1.7;">
+                        <div style="color: var(--accent-gold); font-weight: 700; font-size: 11px; margin-bottom: 4px;">
+                            HOW IT WORKS</div>
+                        <div style="margin-bottom: 4px;">Two ways to tell the engine which pixels belong to each zone:
+                        </div>
+                        <div style="padding-left: 8px; border-left: 2px solid var(--accent-green); margin-bottom: 6px;">
+                            <strong style="color: var(--accent-green);">🎨 PICK COLOR</strong> — Best for body paint
+                            (large solid areas)<br>
+                            <span style="padding-left: 12px;">Click a body color on the paint → assign to zone → engine
+                                finds all matching pixels</span>
+                        </div>
+                        <div style="padding-left: 8px; border-left: 2px solid var(--accent-blue); margin-bottom: 6px;">
+                            <strong style="color: var(--accent-blue);">🖌️ DRAW REGION</strong> — Best for numbers,
+                            sponsors, artwork<br>
+                            <span style="padding-left: 12px;">Select a zone → switch to Draw Region or Rectangle → paint
+                                over the area on the UV map</span><br>
+                            <span style="padding-left: 12px;">All drawn pixels get the same finish regardless of their
+                                color</span>
+                        </div>
+                        <div style="padding-left: 8px; border-left: 2px solid #ff66aa; margin-bottom: 6px;">
+                            <strong style="color: #ff66aa;">🎯 MAGIC WAND</strong> — Smart select for numbers, logos,
+                            shapes<br>
+                            <span style="padding-left: 12px;">Click on a number or logo → auto-selects all connected
+                                pixels of similar color</span><br>
+                            <span style="padding-left: 12px;">Shift+click to add more areas. Adjust tolerance slider for
+                                tighter/wider selection. Ctrl+Z to undo.</span>
+                        </div>
+                        <div style="padding-left: 8px; border-left: 2px solid var(--accent-gold); margin-bottom: 6px;">
+                            <strong style="color: var(--accent-gold);">WORKFLOW:</strong><br>
+                            <strong style="color: var(--accent);">1.</strong> Load paint image → <strong
+                                style="color: var(--accent);">2.</strong> Body colors: Pick Color mode, click each body
+                            color → <strong style="color: var(--accent);">3.</strong> Numbers/logos: Magic Wand to
+                            auto-select, or Draw Region to paint manually → <strong
+                                style="color: var(--accent);">4.</strong> Assign finishes → <strong
+                                style="color: var(--accent);">5.</strong> Generate Script
+                        </div>
+                        <div style="color: var(--text-dim); font-size: 9px;">
+                            <strong style="color: var(--accent-gold);">TIP:</strong> Delete zones you don't need (X
+                            button). Custom Art slots are for special elements like a logo S that deserves its own
+                            holographic finish.
+                            <strong style="color: var(--accent-gold);">PRIORITY:</strong> Zone 1 claims pixels first.
+                            Later zones get what's left. Drawn regions ALWAYS win over color picks.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Spec-from-SHOKK indicator: always visible when a spec map is loaded from LOAD SHOKK -->
+                <div id="specFromShokkBanner" style="display: none; margin-bottom: 8px; padding: 8px 10px; background: linear-gradient(135deg, rgba(0,200,80,0.15), rgba(0,150,200,0.08)); border: 1px solid rgba(0,200,80,0.5); border-radius: 6px; font-size: 11px;">
+                    <div style="font-weight: 800; color: var(--accent-green); font-size: 10px; letter-spacing: 0.5px;">✓ SPEC MAP LOADED (Layer 0)</div>
+                    <div id="specFromShokkLabel" style="color: var(--text-dim); font-size: 9px;">From SHOKK — zones paint on top. Render uses this spec.</div>
+                </div>
+                <!-- Zone List -->
+                <div class="zone-list-wrapper" id="zoneList">
+                    <!-- Zones rendered by JS -->
+                </div>
+
+                <!-- Zone Detail Panel (click-to-expand bottom drawer) -->
+                <div class="zone-detail-panel" id="zoneDetailPanel">
+                    <!-- Populated by renderZoneDetail() when a zone is selected -->
+                </div>
+
+                <!-- Zone Actions -->
+                <div class="zone-actions" style="flex-wrap: wrap;">
+                    <button class="btn btn-accent" onclick="addZone()" style="flex-shrink: 0;">+ Add Zone</button>
+                    <button class="btn btn-sm" onclick="restoreAllZones()"
+                        style="font-size: 10px; border-color: var(--accent-green); color: var(--accent-green);"
+                        title="Restore all 10 default zones at their default settings">Restore All</button>
+                    <button class="btn btn-sm" onclick="clearAllZones()" style="font-size: 10px; color: #ff8888;"
+                        title="Reset all zones to defaults">Clear All</button>
+                    <button class="btn btn-sm" onclick="openPresetGallery()" style="font-size: 10px;"
+                        title="Browse preset gallery with previews">Presets</button>
+                    <button class="btn btn-sm" onclick="refreshThumbnails()"
+                        style="font-size: 10px; color: var(--accent-blue);"
+                        title="Clear server thumbnail cache and reload all swatches (use after rebuilding thumbnails or if previews look wrong)">Refresh
+                        thumbnails</button>
+                    <div id="thumbnailWarningBanner" class="thumbnail-warning-banner"
+                        style="display:none; margin:6px 12px; padding:6px 10px; background:rgba(200,120,0,0.2); border:1px solid var(--accent-gold); border-radius:6px; font-size:10px; color:var(--text);">
+                        <span id="thumbnailWarningText"></span>
+                        <button type="button" class="btn btn-sm"
+                            onclick="document.getElementById('thumbnailWarningBanner').style.display='none'"
+                            style="margin-left:8px; font-size:9px;">Dismiss</button>
+                    </div>
+                    <button class="btn btn-sm" onclick="randomizeZone(selectedZoneIndex)" style="font-size: 10px;"
+                        title="Randomize selected zone (R)">Rand</button>
+                    <button class="btn btn-sm" onclick="randomizeAllZones()" style="font-size: 10px;"
+                        title="Randomize ALL zones">Rand All</button>
+                    <button class="btn btn-sm" onclick="applyFinishToAllZones()" style="font-size: 10px;"
+                        title="Apply selected zone's finish to ALL zones">Apply All</button>
+                    <button class="btn btn-sm" onclick="openTemplateLibrary()"
+                        style="font-size: 10px; border-color: var(--accent-gold); color: var(--accent-gold);"
+                        title="Browse pre-built livery layouts">Library</button>
+                    <button class="btn btn-sm" onclick="toggleUndoHistoryPanel()"
+                        style="font-size: 10px; border-color: var(--text-dim); color: var(--text-dim);"
+                        title="Undo History (Ctrl+Z / Ctrl+Y)">&#8634; History</button>
+                    <div class="template-actions">
+                        <button class="template-btn" onclick="saveZoneTemplate()"
+                            title="Save current zone layout as a template">Save Tmpl</button>
+                        <select class="template-btn" id="templateSelect" onchange="loadZoneTemplate(this.value)"
+                            style="max-width: 90px;">
+                            <option value="">Load Tmpl...</option>
+                        </select>
+                        <span
+                            style="display:inline-block; width:1px; height:18px; background:var(--border); margin:0 4px; vertical-align:middle;"></span>
+                        <button class="template-btn" onclick="openShokkLibrary()"
+                            style="border-color:var(--accent-gold,#ffaa00); color:var(--accent-gold,#ffaa00); font-weight:700;"
+                            title="Open SHOKK Library — browse and load saved paint recipe files">LOAD SHOKK</button>
+                        <button class="template-btn" onclick="openSaveShokkDialog()"
+                            style="border-color:#ff8844; color:#ff8844; font-weight:700; background:rgba(255,136,68,0.1);"
+                            title="Save current session as a .shokk file (spec + zones + paint)">💾 Save SHOKK</button>
+                        <span id="shokkSpecStateChip"
+                            style="font-size:9px; padding:3px 7px; border-radius:10px; border:1px solid var(--border); color:var(--text-dim); background:rgba(255,255,255,0.03);"
+                            title="Current SHOKK spec status">SPEC: none</span>
+                        <button class="template-btn" onclick="exportSpecChannels(false)"
+                            style="border-color:var(--accent-blue); color:var(--accent-blue);"
+                            title="Export to folder below: paint_base + 4 spec channel PNGs">🎨 PS Export</button>
+                        <div style="display:flex; align-items:center; gap:4px; flex-wrap:wrap;">
+                            <input type="text" id="leftPanelPsExportFolder" placeholder="PS Export folder"
+                                style="max-width:160px; padding:4px 8px; font-size:10px; background:var(--surface); border:1px solid var(--border); border-radius:4px; color:var(--text);"
+                                title="Folder where PS Export writes files. Shared with LOAD SHOKK library.">
+                            <button type="button" class="template-btn" onclick="browsePsExportFolder('leftPanelPsExportFolder')"
+                                style="font-size:10px; padding:4px 8px;" title="Choose folder in File Explorer">Browse</button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Decals & Numbers: import PNGs, add number decals, drag on canvas -->
+                <div style="padding: 2px 16px 4px 16px;">
+                    <details class="combo-section" id="decalsSection">
+                        <summary style="cursor:pointer; font-size:10px; font-weight:700; color:var(--accent-gold); letter-spacing:0.5px;">
+                            🏁 Decals & Numbers <span id="decalCount" style="color:var(--text-dim); font-weight:400;">(0 layers)</span>
+                        </summary>
+                        <div style="margin-top:6px;">
+                            <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:6px;">
+                                <button type="button" class="btn btn-sm" onclick="importDecal()" title="Import PNG/JPEG as decal layer"
+                                    style="font-size:10px; padding:4px 10px;">📁 Import PNG</button>
+                                <button type="button" class="btn btn-sm" onclick="openNumberGenerator()" title="Add number decal"
+                                    style="font-size:10px; padding:4px 10px; border-color:var(--accent-blue); color:var(--accent-blue);"># Add Number</button>
+                            </div>
+                            <div id="numberGenSection" style="display:none; margin-bottom:8px; padding:8px; background:var(--bg-card); border-radius:6px; border:1px solid var(--border);">
+                                <div style="font-size:9px; font-weight:700; color:var(--text-dim); margin-bottom:4px;">Number style</div>
+                                <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
+                                    <label style="font-size:9px;">Text:</label>
+                                    <input id="numberGenText" type="text" value="23" maxlength="4" style="width:42px; font-size:11px; padding:2px 4px; background:var(--bg-input); color:var(--text); border:1px solid var(--border); border-radius:3px;">
+                                    <label style="font-size:9px;">Color:</label>
+                                    <input id="numberGenColor" type="color" value="#ffffff" style="width:28px; height:20px; padding:0; border:1px solid var(--border); cursor:pointer;">
+                                    <label style="font-size:9px;">Outline:</label>
+                                    <input id="numberGenOutline" type="color" value="#000000" style="width:28px; height:20px; padding:0; border:1px solid var(--border); cursor:pointer;">
+                                    <label style="font-size:9px;">Size:</label>
+                                    <input id="numberGenSize" type="range" min="40" max="300" value="120" oninput="updateNumberPreview()" style="width:50px;">
+                                    <span id="numberGenSizeVal" style="font-size:9px; width:22px;">120</span>
+                                    <select id="numberGenFont" style="font-size:9px; padding:2px 4px; background:var(--bg-input); color:var(--text); border:1px solid var(--border); border-radius:3px;">
+                                        <option value="Helvetica">Helvetica</option>
+                                        <option value="Arial">Arial</option>
+                                        <option value="Impact">Impact</option>
+                                    </select>
+                                    <button type="button" class="btn btn-sm" onclick="addNumberDecal()" style="font-size:9px; padding:2px 8px;">Add</button>
+                                </div>
+                                <div id="numberPreview" style="margin-top:6px; font-weight:900; text-align:center;" title="Preview">23</div>
+                            </div>
+                            <div id="decalLayerList" style="max-height:180px; overflow-y:auto; font-size:9px;"></div>
+                            <div style="font-size:8px; color:var(--text-dim); margin-top:4px;">Drag decals on the car map to position. Scale/opacity/rotation below.</div>
+                        </div>
+                    </details>
+                </div>
+
+                <!-- Spec Stamps: import sponsor/decal PNGs with alpha, apply uniform spec finish -->
+                <div style="padding: 2px 16px 4px 16px;">
+                    <details class="combo-section" id="specStampsSection">
+                        <summary style="cursor:pointer; font-size:10px; font-weight:700; color:var(--accent-gold); letter-spacing:0.5px;">
+                            &#128204; Spec Stamps <span id="stampCount" style="color:var(--text-dim); font-weight:400;">(0 layers)</span>
+                        </summary>
+                        <div style="margin-top:6px;">
+                            <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:6px;">
+                                <button type="button" class="btn btn-sm" onclick="importStamp()" title="Import PNG/TGA with transparency — alpha channel = stamp area"
+                                    style="font-size:10px; padding:4px 10px;">&#128193; Import Stamp</button>
+                                <button type="button" class="btn btn-sm" onclick="clearAllStamps()" title="Remove all stamps"
+                                    style="font-size:10px; padding:4px 10px;">&#128465; Clear All</button>
+                            </div>
+                            <div style="margin-bottom:6px;">
+                                <label style="font-size:9px; color:var(--text-dim);">Stamp Finish:</label>
+                                <select id="stampSpecFinish" onchange="updateStampFinish()" style="font-size:10px; padding:2px 6px; background:var(--bg-input); color:var(--text-main); border:1px solid var(--border); border-radius:3px;">
+                                    <option value="gloss" selected>Gloss</option>
+                                    <option value="matte">Matte</option>
+                                    <option value="satin">Satin</option>
+                                    <option value="metallic">Metallic</option>
+                                    <option value="pearl">Pearl</option>
+                                    <option value="chrome">Chrome</option>
+                                    <option value="satin_metal">Satin Metal</option>
+                                </select>
+                            </div>
+                            <div id="stampLayersList" style="max-height:200px; overflow-y:auto;"></div>
+                            <p style="font-size:8px; color:var(--text-dim); margin:4px 0 0 0;">
+                                Import PNG/TGA with transparent background. Only non-transparent pixels get the chosen spec finish.
+                                Perfect for sponsors, contingencies, numbers &mdash; anything you want specced uniformly on top of your paint.
+                            </p>
+                        </div>
+                    </details>
+                </div>
+
+                <!-- Finish Combo Library -->
+                <div style="padding: 2px 16px 4px 16px;">
+                    <details class="combo-section">
+                        <summary
+                            style="cursor:pointer; font-size:10px; font-weight:700; color:var(--accent-gold); letter-spacing:0.5px;">
+                            &#9733; Finish Combos <span style="color:var(--text-dim); font-weight:400;">(save &amp;
+                                share finishes)</span></summary>
+                        <div style="margin-top:4px;">
+                            <div style="display:flex;gap:4px;margin-bottom:4px;">
+                                <select id="comboDropdown"
+                                    style="flex:1;font-size:10px;padding:3px 4px;background:var(--bg-card);color:var(--text);border:1px solid var(--border);border-radius:4px;"
+                                    onchange="applyCombo(this.value)">
+                                    <option value="">-- Saved Combos --</option>
+                                </select>
+                                <button class="btn btn-sm" onclick="saveCombo()"
+                                    title="Save current zone's finish as a combo"
+                                    style="font-size:9px;padding:2px 6px;">Save</button>
+                                <button class="btn btn-sm" onclick="deleteCombo()" title="Delete selected combo"
+                                    style="font-size:9px;padding:2px 6px;">Del</button>
+                            </div>
+                            <div style="font-size:8px;color:var(--text-dim);margin-top:3px;">Save finish combos for quick recall. Share full designs via Share Preset (.shokker) above.</div>
+                        </div>
+                    </details>
+                </div>
+                <div class="smart-random-row" style="padding: 0 16px;">
+                    <input type="checkbox" id="smartRandomize" checked>
+                    <label for="smartRandomize">Smart Randomize (avoid ugly combos)</label>
+                </div>
+
+                <div class="shortcut-hint">
+                    <kbd>Ctrl+G</kbd> Generate &nbsp; <kbd>Ctrl+S</kbd> Save Config &nbsp; <kbd>R</kbd> Randomize &nbsp;
+                    <kbd>/</kbd> Chat
+                </div>
+
+            </div><!-- /specmapModeContent -->
+
+
+        </div>
+
+        <!-- CENTER PANEL: PAINT CANVAS -->
+        <!-- Zone Editor Floating Panel (sits between left panel and canvas) -->
+        <div class="zone-editor-float" id="zoneEditorFloat"></div>
+        <div class="zone-float-expand-tab" id="zoneFloatExpandTab" onclick="toggleZoneFloat()"
+            title="Show Zone Editor (E)">&#9664;</div>
+
+        <div class="center-panel" id="centerPanel" style="position:relative; transition: padding-left 0.15s ease;">
+
+            <!-- Top toolbar bar -->
+            <div
+                style="display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: var(--bg-card); border-bottom: 1px solid var(--border); flex-shrink: 0; flex-wrap: wrap;">
+                <div id="paintPreviewEmpty2" style="display: flex; align-items: center; gap: 8px;">
+                    <button class="btn btn-sm" onclick="openPaintFilePicker()"
+                        style="padding: 6px 14px; font-size: 13px;">Load Paint Image</button>
+                    <button class="btn btn-sm" onclick="loadBlankCanvas()"
+                        style="padding: 6px 10px; font-size: 12px; border-color:var(--accent-blue); color:var(--accent-blue);"
+                        title="Start with a blank white canvas — build color-shift effects without a car paint file">🎨
+                        Blank Canvas</button>
+                    <span id="paintPreviewStatus" style="color: var(--text-dim); font-size: 11px;">(no image
+                        loaded)</span>
+                </div>
+                <div id="paintPreviewLoaded" style="display: none; flex: 1; width: 100%;">
+                    <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
+                        <label class="btn btn-sm"
+                            style="cursor: pointer; font-size: 11px; padding: 4px 10px; white-space: nowrap;">
+                            Change File
+                            <input type="file" accept=".png,.tga,.jpg,.jpeg,.bmp" style="display:none"
+                                onchange="loadPaintImage(this)">
+                        </label>
+                        <span id="paintDimensions"
+                            style="font-size: 11px; color: var(--text-dim); white-space: nowrap;"></span>
+
+                        <span
+                            style="width: 1px; height: 18px; background: var(--border); margin: 0 4px; display: none;"></span>
+
+                        <!-- Tool parameters (sliders/checkboxes only — tool buttons are in vertical toolbar) -->
+                        <div
+                            style="display:flex; gap:4px; align-items:center; flex-wrap:wrap; flex:1; min-width: 200px;">
+                            <!-- Hidden tool buttons (keep IDs for JS active-state logic) -->
+                            <button id="modeEyedropper" class="draw-tool-btn active" style="display:none;"></button>
+                            <button id="modeWand" class="draw-tool-btn" style="display:none;"></button>
+                            <button id="modeSelectAll" class="draw-tool-btn" style="display:none;"></button>
+                            <button id="modeEdge" class="draw-tool-btn" style="display:none;"></button>
+                            <button id="modeBrush" class="draw-tool-btn" style="display:none;"></button>
+                            <button id="modeRect" class="draw-tool-btn" style="display:none;"></button>
+                            <button id="modeLasso" class="draw-tool-btn" style="display:none;"></button>
+                            <button id="modeErase" class="draw-tool-btn" style="display:none;"></button>
+                            <button id="modeSpatialInclude" class="draw-tool-btn" style="display:none;"></button>
+                            <button id="modeSpatialExclude" class="draw-tool-btn" style="display:none;"></button>
+                            <select id="selectionMode"
+                                style="display:none; font-size:12px; padding:4px; background:var(--surface); color:var(--text); border:1px solid var(--border); margin-left:4px; border-radius:3px; outline:none;"
+                                title="Selection Mode">
+                                <option value="add">Mode: Add (+)</option>
+                                <option value="replace">Mode: Replace</option>
+                                <option value="subtract">Mode: Subtract (-)</option>
+                            </select>
+                            <span id="selectionModifierHint"
+                                style="display:none; font-size:10px; color:var(--text-dim); margin-left:6px; white-space:nowrap;"
+                                title="Modifier keys">Shift+click add, Alt+click subtract</span>
+
+                            <!-- Brush/Wand params -->
+                            <label id="brushSizeLabel"
+                                style="font-size:10px; color:var(--text-dim); white-space:nowrap;">Size:</label>
+                            <input id="brushSize" type="range" min="3" max="300" value="20"
+                                style="width:60px; flex-shrink:0;" title="Brush/eraser size"
+                                oninput="document.getElementById('brushSizeVal').textContent=this.value">
+                            <span id="brushSizeVal" style="font-size:10px; color:var(--text-dim); width:20px;">20</span>
+                            <label id="wandToleranceLabel"
+                                style="font-size:10px; color:var(--text-dim); display:none; white-space:nowrap;">Tolerance:</label>
+                            <input id="wandTolerance" type="range" min="1" max="255" value="32"
+                                style="width:60px; display:none;"
+                                title="Color similarity threshold (higher = more similar colors selected)"
+                                oninput="document.getElementById('wandTolVal').textContent=this.value">
+                            <span id="wandTolVal"
+                                style="font-size:10px; color:var(--text-dim); width:20px; display:none;">32</span>
+                            <label id="wandContiguousLabel"
+                                style="font-size:10px; color:var(--accent-gold); display:none; white-space:nowrap; cursor:pointer; margin-left:6px;"
+                                title="ON = flood fill from click point (Wand). OFF = select ALL matching pixels everywhere (like Select All Color)">
+                                <input id="wandContiguous" type="checkbox" checked
+                                    style="margin-right:2px; vertical-align:middle; cursor:pointer;">Contiguous</label>
+                            <span id="wandSubtractHint" style="display:none;"></span>
+                            <button id="edgePreviewBtn" class="btn btn-sm" onclick="toggleEdgePreview()"
+                                style="display:none; font-size:10px; padding:2px 8px; white-space:nowrap; margin-left:6px; border:1px solid var(--accent-gold); color:var(--accent-gold);"
+                                title="Toggle edge detection preview overlay — shows detected boundaries in red so you can adjust tolerance before clicking">👁
+                                Edge Preview</button>
+                            <label id="spatialSizeLabel"
+                                style="font-size:10px; color:var(--text-dim); display:none; white-space:nowrap; margin-left:4px;">Size:</label>
+                            <input id="spatialBrushSize" type="range" min="3" max="80" value="15" style="width:50px; display:none;"
+                                title="Spatial brush size"
+                                oninput="spatialBrushRadius=parseInt(this.value); document.getElementById('spatialSizeVal').textContent=this.value">
+                            <span id="spatialSizeVal"
+                                style="font-size:10px; color:var(--text-dim); width:18px; display:none;">15</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Secondary Toolbar: Advanced Tools (HIDDEN - moved to vertical toolbar) -->
+            <div id="advancedToolbar"
+                style="display:none !important; align-items:center; gap:4px; padding:6px 14px; background:rgba(17,17,24,0.85); border-bottom:1px solid var(--border); flex-shrink:0; flex-wrap:wrap;">
+                <span
+                    style="font-size:9px; color:var(--accent-green); font-weight:700; white-space:nowrap; margin-right:4px;">SPATIAL</span>
+                <button class="btn btn-sm draw-tool-btn"
+                    onclick="setCanvasMode('spatial-include')"
+                    title="Include brush — paint areas to KEEP in zone's color match (green overlay)"
+                    style="font-size:11px; padding:3px 8px; white-space:nowrap;">✅ Include</button>
+                <button class="btn btn-sm draw-tool-btn"
+                    onclick="setCanvasMode('spatial-exclude')"
+                    title="Exclude brush — paint areas to REMOVE from zone's color match (red overlay)"
+                    style="font-size:11px; padding:3px 8px; white-space:nowrap;">❌ Exclude</button>
+                <label
+                    style="font-size:10px; color:var(--text-dim); display:none; white-space:nowrap; margin-left:4px;">Size:</label>
+                <input type="range" min="3" max="80" value="15" style="width:50px; display:none;"
+                    title="Spatial brush size">
+                <span
+                    style="font-size:10px; color:var(--text-dim); width:18px; display:none;">15</span>
+
+                <span style="width:1px; height:16px; background:var(--border); margin:0 6px; flex-shrink:0;"></span>
+                <span
+                    style="font-size:9px; color:var(--text-dim); font-weight:700; white-space:nowrap; margin-right:4px;">ACTIONS</span>
+                <button class="btn btn-sm" onclick="undoDrawStroke()" title="Undo last stroke (Ctrl+Z)"
+                    style="font-size:11px; padding:3px 8px; border-color:var(--accent-blue); color:var(--accent-blue); white-space:nowrap;">↩
+                    Undo</button>
+                <button class="btn btn-sm" onclick="deselectRegion()"
+                    title="Clear selection for current zone and switch to Pick"
+                    style="font-size:11px; padding:3px 8px; border-color:var(--accent-blue); color:var(--accent-blue); white-space:nowrap;">✕ Deselect</button>
+                <button class="btn btn-sm" onclick="clearZoneRegions(selectedZoneIndex)"
+                    title="Clear drawn regions for current zone"
+                    style="font-size:11px; padding:3px 8px; border-color:#ff4444; color:#ff4444; white-space:nowrap;">🗑️
+                    Region</button>
+                <button class="btn btn-sm" onclick="clearSpatialMask(selectedZoneIndex)"
+                    title="Clear spatial include/exclude for current zone"
+                    style="font-size:11px; padding:3px 8px; border-color:#ff4444; color:#ff4444; white-space:nowrap;">🗑️
+                    Spatial</button>
+                <button class="btn btn-sm" onclick="clearAllRegions()" title="Clear ALL drawn regions"
+                    style="font-size:11px; padding:3px 8px; border-color:#ff4444; color:#ff4444; white-space:nowrap;">Clear
+                    All</button>
+
+                <span style="width:1px; height:16px; background:var(--border); margin:0 6px; flex-shrink:0;"></span>
+                <span
+                    style="font-size:9px; color:#cc88ff; font-weight:700; white-space:nowrap; margin-right:4px;">REFINE</span>
+                <button class="btn btn-sm" onclick="growRegionMask(2)" title="Expand selection outward by 2px"
+                    style="font-size:11px; padding:3px 8px; border-color:#cc88ff; color:#cc88ff; white-space:nowrap;">+
+                    Grow</button>
+                <button class="btn btn-sm" onclick="growRegionMask(1)" title="Expand selection by 1px"
+                    style="font-size:11px; padding:3px 6px; border-color:#cc88ff; color:#cc88ff; white-space:nowrap;">+1</button>
+                <button class="btn btn-sm" onclick="shrinkRegionMask(2)" title="Contract selection inward by 2px"
+                    style="font-size:11px; padding:3px 8px; border-color:#cc88ff; color:#cc88ff; white-space:nowrap;">−
+                    Shrink</button>
+                <button class="btn btn-sm" onclick="shrinkRegionMask(1)" title="Contract selection by 1px"
+                    style="font-size:11px; padding:3px 6px; border-color:#cc88ff; color:#cc88ff; white-space:nowrap;">−1</button>
+                <button class="btn btn-sm" onclick="fillRegionHoles()" title="Fill enclosed holes in selection"
+                    style="font-size:11px; padding:3px 8px; border-color:#cc88ff; color:#cc88ff; white-space:nowrap;">◉
+                    Fill</button>
+                <button class="btn btn-sm" onclick="featherRegionMask(2)" title="Soften selection edges (grow then shrink)"
+                    style="font-size:11px; padding:3px 8px; border-color:#cc88ff; color:#cc88ff; white-space:nowrap;">◇ Feather</button>
+                <button class="btn btn-sm" onclick="smoothRegionMask()" title="Smooth jagged selection edges"
+                    style="font-size:11px; padding:3px 8px; border-color:#cc88ff; color:#cc88ff; white-space:nowrap;">∿ Smooth</button>
+
+                <span style="width:1px; height:16px; background:var(--border); margin:0 6px; flex-shrink:0;"></span>
+                <span
+                    style="font-size:9px; color:var(--accent-blue); font-weight:700; white-space:nowrap; margin-right:4px;">MASK</span>
+                <button class="btn btn-sm" onclick="invertRegionMask()"
+                    title="Invert selection (swap selected/unselected)"
+                    style="font-size:11px; padding:3px 8px; border-color:var(--accent-blue); color:var(--accent-blue); white-space:nowrap;">⊘
+                    Invert</button>
+                <div style="position:relative; display:inline-block;">
+                    <button class="btn btn-sm" onclick="toggleCopyMaskDropdown(event)"
+                        title="Copy this zone's mask to another zone"
+                        style="font-size:11px; padding:3px 8px; border-color:var(--accent-blue); color:var(--accent-blue); white-space:nowrap;">📋
+                        Copy ▾</button>
+                    <div id="copyMaskDropdown"
+                        style="display:none; position:absolute; top:100%; left:0; z-index:999; min-width:140px; background:var(--surface); border:1px solid var(--border); border-radius:6px; box-shadow:0 4px 16px rgba(0,0,0,0.4); padding:4px 0; max-height:200px; overflow-y:auto;">
+                    </div>
+                </div>
+                <button class="btn btn-sm" onclick="mirrorRegionMask()"
+                    title="Mirror mask horizontally (flip left↔right)"
+                    style="font-size:11px; padding:3px 8px; border-color:var(--accent-blue); color:var(--accent-blue); white-space:nowrap;">↔
+                    Mirror</button>
+
+                <span style="width:1px; height:16px; background:var(--border); margin:0 6px; flex-shrink:0;"></span>
+                <span
+                    style="font-size:9px; color:var(--text-dim); font-weight:700; white-space:nowrap; margin-right:4px;">VIEW</span>
+                <button class="btn btn-sm" onclick="zoomToSelection()"
+                    title="Zoom viewport to fit current zone's selection"
+                    style="font-size:11px; padding:3px 8px; white-space:nowrap;">🔍 Zoom</button>
+                <label
+                    style="font-size:10px; color:var(--text-dim); white-space:nowrap; margin-left:4px;">Opacity:</label>
+                <input id="overlayOpacity" type="range" min="0" max="200" value="100" style="width:60px;"
+                    title="Zone overlay opacity (0-100%)" oninput="setOverlayOpacity(this.value / 100)">
+                <span id="overlayOpacityVal" style="font-size:10px; color:var(--text-dim); width:24px;">50%</span>
+            </div>
+
+            <!-- Drawing zone indicator -->
+            <div id="drawZoneIndicator"
+                style="display: none; font-size: 10px; color: var(--accent-gold); padding: 4px 10px; font-weight: 600; align-items: center; gap: 6px; background: rgba(255,170,0,0.06); border-bottom: 1px solid var(--border); flex-shrink: 0;">
+                <span id="drawZoneColorDot"
+                    style="width: 12px; height: 12px; border-radius: 3px; border: 1px solid var(--border); display: inline-block;"></span>
+                <span id="drawZoneLabel">Drawing for:</span> <span id="drawZoneName">—</span>
+                <span id="drawZoneHint" style="font-size: 9px; color: var(--text-dim); font-weight: 400;">(select a
+                    different zone on the left)</span>
+            </div>
+
+            <!-- Brush cursor circle (follows mouse during brush/spatial modes) -->
+            <div id="brushCursorCircle" style="display:none; position:fixed; pointer-events:none; z-index:9999;
+                border:2px solid rgba(255,255,255,0.7); border-radius:50%; mix-blend-mode:difference;"></div>
+
+            <!-- Placement mode banner (GIMP/PS-style: drag on map to position pattern/base overlay) -->
+            <div id="placementBanner"
+                style="display:none; font-size:11px; padding:6px 12px; background:var(--accent-blue); color:#fff; border-bottom:1px solid var(--border); align-items:center; gap:8px; flex-shrink:0;">
+                <span style="font-weight:700;">✋ Place on map:</span>
+                <span id="placementBannerLabel">—</span>
+                <span style="opacity:0.9;">Click and drag anywhere on the <strong>source map</strong> (left) to move it.
+                    Set to None to exit.</span>
+            </div>
+
+            <!-- Paint Canvas Viewport (scrollable/zoomable) -->
+            <div class="canvas-viewport" id="canvasViewport">
+                <div id="paintPreviewEmptyBig" class="onboarding-empty">
+                    <div class="onboarding-icon">🎨</div>
+                    <h2 style="color: var(--accent-gold); font-size: 18px; font-weight: 700; margin-bottom: 16px;">Get
+                        Started</h2>
+                    <div class="onboarding-steps">
+                        <div class="onboarding-step"><span class="step-num">1</span> Load your car's paint TGA file
+                        </div>
+                        <div class="onboarding-step"><span class="step-num">2</span> Click colors on the paint to create
+                            zones</div>
+                        <div class="onboarding-step"><span class="step-num">3</span> Assign finishes from the library
+                            <span style="color:var(--accent-blue);">→</span>
+                        </div>
+                        <div class="onboarding-step"><span class="step-num">4</span> Hit <strong
+                                style="color:var(--success);">RENDER</strong>!</div>
+                    </div>
+                    <button class="btn btn-accent" onclick="openPaintFilePicker()"
+                        style="margin-top: 20px; padding: 10px 24px; font-size: 14px; border-radius: 8px;">
+                        Load Paint Image
+                    </button>
+                </div>
+                <!-- Canvas hint for after paint loaded but no zones with colors -->
+                <div id="canvasHint" class="canvas-hint" style="display: none;">
+                    👆 Click a color on the paint to grab it
+                </div>
+                <div class="split-view-container" id="splitViewContainer">
+                    <div class="split-pane split-source" id="splitSource">
+                        <div class="split-pane-label" id="sourcePaneLabel" style="display:none;">SOURCE</div>
+                        <div class="canvas-inner" id="canvasInner" style="display: none;">
+                            <canvas id="paintCanvas" style="display: block;"></canvas>
+                            <canvas id="regionCanvas"
+                                style="position: absolute; top: 0; left: 0; display: block; pointer-events: none; opacity: 0.85;"></canvas>
+                            <div id="placementMapOverlay" class="placement-map-overlay"
+                                style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5; box-sizing: border-box;">
+                                <div id="placementPatternLayer"
+                                    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; pointer-events: auto; display: none;">
+                                    <img id="placementPatternImg" alt="Pattern layer"
+                                        style="position: absolute; top: 50%; left: 50%; width: 100%; height: 100%; object-fit: none; object-position: center; transform-origin: center center; margin-left: -50%; margin-top: -50%; opacity: 0.85; mix-blend-mode: overlay;" />
+                                </div>
+                                <div id="placementMapOverlayHint"
+                                    style="position: absolute; inset: 0; border: 3px dashed rgba(100, 180, 255, 0.9); background: rgba(0, 40, 80, 0.25); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; pointer-events: none;">
+                                    <span
+                                        style="font-size: 14px; font-weight: 700; color: #fff; text-shadow: 0 1px 2px #000;">Loading
+                                        pattern…</span>
+                                    <span style="font-size: 11px; color: rgba(255,255,255,0.85);">Drag the pattern layer
+                                        to position it</span>
+                                </div>
+                            </div>
+                            <div id="rectSelectionBox"
+                                style="position:absolute;pointer-events:none;display:none;box-sizing:border-box;border:2px dashed #fff;outline:2px dashed #000;outline-offset:-2px;background:rgba(255,200,0,0.18);z-index:10;">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="split-pane split-preview" id="splitPreview" style="display:none;">
+                        <div class="split-pane-label">LIVE PREVIEW <span class="preview-status" id="previewStatus"
+                                onclick="forcePreviewRefresh()" title="Click to refresh preview"></span>
+                            <button id="btnBeforeAfter" class="btn btn-sm" onclick="toggleBeforeAfter()"
+                                style="font-size:8px; padding:1px 6px; margin-left:8px; border-color:var(--accent-gold); color:var(--accent-gold); display:none;"
+                                title="Toggle before/after comparison (hold B key)">B/A</button>
+                            <button id="btnSpecMapInspector" class="btn btn-sm" onclick="openSpecMapInspector()"
+                                style="font-size:8px; padding:1px 6px; margin-left:4px;"
+                                title="Open Spec Map Inspector — see each channel (M/R/G/CC/A) and numeric values">Channels</button>
+                        </div>
+                        <div class="preview-inner">
+                            <div class="preview-dual-pane" id="previewBeforePane"
+                                style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; z-index:10; background:#0a0a14;">
+                                <div class="preview-dual-label" style="color:var(--accent-gold);">BEFORE (Original
+                                    Paint)</div>
+                                <img id="beforePreviewImg" style="max-width:100%; max-height:100%; object-fit:contain;"
+                                    alt="Before">
+                            </div>
+                            <div class="preview-dual-pane" id="previewPaintPane" style="display:none;">
+                                <div class="preview-dual-label">PAINT</div>
+                                <img id="livePreviewImg" alt="Live Preview (Paint)">
+                                <div id="patternActiveBadge"
+                                    style="display:none; position:absolute; bottom:8px; left:8px; background:rgba(51,102,255,0.85); color:#fff; font-size:9px; font-weight:700; padding:2px 8px; border-radius:3px; letter-spacing:0.5px; pointer-events:none; z-index:5;"
+                                    title="Pattern textures modify the spec map (surface lighting). They are fully visible in iRacing's 3D view but subtle in this 2D preview.">
+                                    PATTERN ACTIVE — visible in 3D</div>
+                            </div>
+                            <div class="preview-dual-pane" id="previewSpecPane" style="display:none;"
+                                title="Click to expand/collapse spec map">
+                                <div class="spec-channel-bar" onclick="event.stopPropagation()">
+                                    <button class="spec-channel-btn active" data-ch="all"
+                                        onclick="setSpecChannel('all')">ALL</button>
+                                    <button class="spec-channel-btn" data-ch="r" onclick="setSpecChannel('r')">R
+                                        Metal</button>
+                                    <button class="spec-channel-btn" data-ch="g" onclick="setSpecChannel('g')">G
+                                        Rough</button>
+                                    <button class="spec-channel-btn" data-ch="b" onclick="setSpecChannel('b')">B
+                                        Coat</button>
+                                    <button class="spec-channel-btn" data-ch="a" onclick="setSpecChannel('a')">A
+                                        Mask</button>
+                                </div>
+                                <div onclick="toggleSpecInset()" style="position:relative;">
+                                    <div class="preview-dual-label">SPEC MAP</div>
+                                    <img id="livePreviewSpecImg" alt="Live Preview (Spec Map)">
+                                    <canvas id="specChannelCanvas" style="display:none; width:100%;"></canvas>
+                                </div>
+                            </div>
+                            <div id="previewSpinner" style="display:none;">
+                                <div class="spinner-ring"></div>
+                                <span>Rendering preview...</span>
+                            </div>
+                            <div id="previewEmpty">Configure zones to see live preview</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Floating RENDER Button (PS round-trip moved to LOAD SHOKK / PS Export in left panel) -->
+                <div class="render-float" id="renderFloat">
+                    <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+                        <button class="btn-render" id="btnRender" onclick="safeDoRender()">RENDER</button>
+                    </div>
+                    <div class="render-progress" id="renderProgress">
+                        <div class="render-progress-bar" id="renderProgressBar"></div>
+                    </div>
+                </div>
+                <!-- Zoom Controls -->
+                <div class="zoom-controls" id="zoomControls" style="display: none;">
+                    <button class="zoom-btn" onclick="canvasZoom('out')" title="Zoom Out">−</button>
+                    <span class="zoom-level" id="zoomLevel">100%</span>
+                    <button class="zoom-btn" onclick="canvasZoom('in')" title="Zoom In">+</button>
+                    <button class="zoom-btn" onclick="canvasZoom('fit')" title="Fit to View"
+                        style="font-size: 11px;">FIT</button>
+                    <button class="zoom-btn" onclick="canvasZoom('100')" title="Actual Size"
+                        style="font-size: 11px;">1:1</button>
+                    <button class="compare-btn" id="btnCompare" onclick="toggleCompareMode()" style="display:none;"
+                        title="Before/After comparison slider">Compare</button>
+                    <button class="zoom-btn" id="btnSplitView" onclick="toggleSplitView()"
+                        title="Live Preview split view"
+                        style="font-size: 10px; width: auto; padding: 0 8px; letter-spacing: 0.5px;">SPLIT</button>
+                </div>
+            </div>
+
+            <!-- Render Results Panel (shows after RENDER) -->
+            <div id="renderResultsPanel"
+                style="display: none; padding: 8px; background: #0d0d14; border-top: 2px solid var(--success);">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                    <span style="font-size: 11px; font-weight: 700; color: var(--success); letter-spacing: 1px;">RENDER
+                        RESULTS</span>
+                    <span id="renderElapsed" style="font-size: 10px; color: var(--text-dim);"></span>
+                    <span id="renderWearBadge" class="render-wear-badge" style="display:none;"></span>
+                    <button class="btn btn-sm" style="font-size: 10px; padding: 2px 8px;" onclick="copyTPDescription()"
+                        title="Copy Trading Paints description">📋 Copy TP Desc</button>
+                    <button class="btn btn-sm" id="btnSaveToKeep" style="font-size: 10px; padding: 2px 8px; border-color: var(--accent-gold); color: var(--accent-gold);"
+                        onclick="saveRenderToKeep()" title="Copy current render into Shokker Paint Booth subfolder (kept; not overwritten by next render)">💾 Save to keep</button>
+                    <button class="btn btn-sm" style="font-size: 10px; padding: 2px 8px;"
+                        onclick="closeRenderResults()">Close</button>
+                </div>
+                <!-- Car previews -->
+                <div style="display: flex; gap: 8px; max-height: 250px; overflow: auto;">
+                    <div style="flex: 1; text-align: center;">
+                        <div style="font-size: 9px; color: var(--text-dim); margin-bottom: 3px;">PAINT (car_num)</div>
+                        <img id="renderPaintPreview"
+                            style="max-width: 100%; max-height: 220px; border: 1px solid var(--border); border-radius: 4px;"
+                            alt="Paint Preview">
+                    </div>
+                    <div style="flex: 1; text-align: center;">
+                        <div style="font-size: 9px; color: var(--text-dim); margin-bottom: 3px;">SPEC MAP (car_spec)
+                        </div>
+                        <img id="renderSpecPreview"
+                            style="max-width: 100%; max-height: 220px; border: 1px solid var(--border); border-radius: 4px;"
+                            alt="Spec Preview">
+                    </div>
+                </div>
+                <!-- Helmet + Suit previews (shown when applicable) -->
+                <div id="renderHelmetSuitRow" class="render-extras-row" style="display:none;">
+                    <div id="renderHelmetCol" style="display:none;">
+                        <div class="render-extras-label">HELMET SPEC</div>
+                        <img id="renderHelmetPreview" alt="Helmet Spec Preview">
+                    </div>
+                    <div id="renderSuitCol" style="display:none;">
+                        <div class="render-extras-label">SUIT SPEC</div>
+                        <img id="renderSuitPreview" alt="Suit Spec Preview">
+                    </div>
+                </div>
+                <!-- Night Spec preview (shown when dual spec enabled) -->
+                <div id="renderNightRow" class="render-extras-row" style="display:none;">
+                    <div>
+                        <div class="render-extras-label" style="color: var(--accent-blue);">NIGHT SPEC (enhanced
+                            reflectivity)</div>
+                        <img id="renderNightPreview" alt="Night Spec Preview"
+                            style="max-width: 100%; border-radius: 4px;">
+                    </div>
+                </div>
+                <!-- Export ZIP link -->
+                <div id="renderZipRow" style="display:none; margin-top: 6px; text-align: center;">
+                    <a id="renderZipLink" class="render-zip-link" target="_blank">Download ZIP Package</a>
+                </div>
+                <div id="renderLiveLinkMsg"
+                    style="display: none; margin-top: 6px; padding: 4px 8px; background: rgba(0,255,136,0.1); border: 1px solid var(--success); border-radius: 4px; font-size: 10px; color: var(--success);">
+                </div>
+                <!-- One-Click Deploy to iRacing -->
+                <div id="renderDeployRow"
+                    style="display:none !important; margin-top: 6px; padding: 6px 8px; background: rgba(51,102,255,0.08); border: 1px solid rgba(51,102,255,0.3); border-radius: 4px;">
+                    <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+                        <span
+                            style="font-size:10px; color:var(--accent-blue); font-weight:600; letter-spacing:0.5px;">DEPLOY
+                            TO iRACING</span>
+                        <select id="deployCarSelect"
+                            style="flex:1; min-width:120px; max-width:200px; font-size:10px; padding:2px 4px; background:var(--bg-card); color:var(--text); border:1px solid var(--border); border-radius:3px;">
+                            <option value="">Select car...</option>
+                        </select>
+                        <button class="btn btn-sm" onclick="deployToIracing()"
+                            style="border-color:var(--accent-blue); color:var(--accent-blue); font-size:10px; padding:2px 10px; white-space:nowrap;">Deploy
+                            Now</button>
+                    </div>
+                    <div id="deployStatus" style="font-size:9px; color:var(--text-dim); margin-top:3px;"></div>
+                </div>
+            </div>
+
+            <!-- Render History Strip -->
+            <div id="renderHistoryStrip"
+                style="display:none; padding:4px 8px; background:#08080f; border-top:1px solid var(--border); white-space:nowrap; overflow-x:auto;">
+                <span
+                    style="font-size:9px; color:var(--text-dim); letter-spacing:1px; vertical-align:middle; margin-right:6px;">HISTORY</span>
+                <div id="renderHistoryThumbs" style="display:inline-flex; gap:4px; vertical-align:middle;"></div>
+                <button class="btn btn-sm" onclick="openHistoryGallery()"
+                    style="font-size:8px; padding:1px 6px; vertical-align:middle; margin-left:6px; border-color:var(--accent-blue); color:var(--accent-blue);">Gallery</button>
+            </div>
+
+            <!-- Info bars below canvas -->
+            <div id="canvasBottomBar" style="flex-shrink: 0; transition: padding-left 0.15s;">
+                <!-- Live hover info bar (thin, shows on mousemove) -->
+                <div id="hoverInfo"
+                    style="display: none; padding: 3px 12px; background: rgba(10,10,20,0.95); border-top: 1px solid var(--border);">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div id="hoverSwatch"
+                            style="width: 16px; height: 16px; border-radius: 3px; border: 1px solid var(--border);">
+                        </div>
+                        <span id="hoverHex"
+                            style="font-family: 'Consolas', monospace; font-size: 11px; color: var(--accent-green); font-weight: 600;">#000000</span>
+                        <span id="hoverRGB" style="font-size: 9px; color: var(--text-dim);">RGB(0,0,0)</span>
+                        <span style="font-size: 9px; color: var(--accent-gold); margin-left: auto;">Click to grab</span>
+                    </div>
+                </div>
+                <!-- Clicked color + quick assign panel (compact single strip) -->
+                <div id="eyedropperInfo"
+                    style="display: none; padding: 6px 10px; background: linear-gradient(180deg, #0d0d18, #0a0a12); border-top: 2px solid var(--accent-blue);">
+                    <!-- Single row: swatch | color info | zone controls | finish assign -->
+                    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                        <!-- Color swatch + hex -->
+                        <div id="eyedropperSwatch"
+                            style="width: 30px; height: 30px; border-radius: 5px; border: 2px solid var(--accent-blue); box-shadow: 0 2px 6px rgba(51,102,255,0.2); flex-shrink: 0;">
+                        </div>
+                        <div style="min-width: 70px;">
+                            <div style="font-size: 13px; font-weight: 700; color: var(--accent-green); font-family: 'Consolas', monospace;"
+                                id="eyedropperHex">#000000</div>
+                            <div style="font-size: 9px; color: var(--text-dim); margin-top: -1px;" id="eyedropperRGB">
+                                RGB: (0, 0, 0)</div>
+                        </div>
+                        <!-- Divider -->
+                        <div style="width: 1px; height: 24px; background: var(--border); flex-shrink: 0;"></div>
+
+                        <!-- === SPECMAP BOTTOM BAR CONTROLS === -->
+                        <div id="eyedropperZoneControls"
+                            style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                            <!-- Zone assign -->
+                            <select id="eyedropperZoneSelect"
+                                style="background: var(--bg-card); border: 1px solid var(--border); color: var(--text); padding: 3px 6px; border-radius: 5px; font-size: 10px; font-family: inherit; max-width: 90px;"
+                                onchange="onEyedropperZoneChange(this.value)"></select>
+                            <button class="btn btn-accent btn-sm"
+                                style="font-size: 10px; padding: 3px 8px; white-space: nowrap;"
+                                onclick="addEyedropperColorToZone()"
+                                title="Stack this color into the zone (multi-color)">+Add</button>
+                            <button class="btn btn-sm" style="font-size: 10px; padding: 3px 8px; white-space: nowrap;"
+                                onclick="useEyedropperColor()"
+                                title="Replace zone's color with this single color">Set</button>
+                            <!-- Divider -->
+                            <div style="width: 1px; height: 24px; background: var(--border); flex-shrink: 0;"></div>
+                            <!-- Use Region button — commits lasso/brush region to zone without needing a color -->
+                            <button class="btn btn-sm" id="useRegionBtn"
+                                style="font-size: 10px; padding: 3px 8px; white-space: nowrap; border-color: #cc88ff; color: #cc88ff;"
+                                onclick="useRegionForZone()"
+                                title="Apply the current selection (rect/lasso/brush) to the zone selected on the left — no color needed">🎯
+                                Use Region</button>
+                            <span id="regionStatus"
+                                style="font-size: 9px; color: var(--text-dim); white-space: nowrap;"></span>
+                            <!-- Divider -->
+                            <div style="width: 1px; height: 24px; background: var(--border); flex-shrink: 0;"></div>
+                            <span style="font-size: 9px; color: var(--text-dim);">Edit base &amp; pattern in the zone
+                                panel (click zone number on left)</span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <!-- NLP Chat Bar -->
+        <!-- RIGHT PANEL: FINISH LIBRARY + ACTIONS -->
+        <div class="right-panel">
+
+            <!-- Finish Library Header -->
+            <div class="section-header" style="cursor: default;">
+                <h3>Finish Library</h3>
+                <span style="font-size: 9px; color: var(--text-dim);">Click to assign</span>
+            </div>
+
+            <!-- Finish Search -->
+            <div class="finish-search-bar" style="display:flex; gap:4px; align-items:center;">
+                <input type="text" id="finishSearch" placeholder="Search finishes..."
+                    oninput="filterFinishes(this.value)" style="flex:1;">
+                <button id="btnFavoritesOnly" class="btn btn-sm" onclick="toggleFavoritesOnly()"
+                    title="Show favorites only"
+                    style="font-size:13px; padding:2px 6px; flex-shrink:0; line-height:1;">☆</button>
+            </div>
+
+            <!-- Finish Library -->
+            <div class="finish-library" id="finishLibrary">
+                <!-- Rendered by JS -->
+            </div>
+
+            <!-- Action bar cleaned — Render moved to canvas float, config/modes in gear dropdown -->
+        </div>
+    </div>
+
+    <!-- Finish Hover Popup (positioned via JS) -->
+    <div class="finish-popup" id="finishPopup">
+        <canvas class="finish-popup-preview" id="finishPopupPreview" width="240" height="160"></canvas>
+        <div class="finish-popup-swatch" id="finishPopupSwatch"></div>
+        <div class="finish-popup-name" id="finishPopupName"></div>
+        <div class="finish-popup-desc" id="finishPopupDesc"></div>
+        <div class="finish-popup-cat" id="finishPopupCat"></div>
+        <div class="finish-popup-channels" id="finishPopupChannels"></div>
+    </div>
+
+    <!-- ===== SCRIPT OUTPUT MODAL ===== -->
+    <div class="modal-overlay" id="scriptModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Generated Python Script</h2>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div
+                    style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px; padding: 8px 12px; background: var(--bg-dark); border: 1px solid var(--border); border-radius: 6px;">
+                    <label style="font-size: 11px; color: var(--text-dim); white-space: nowrap;">SCRIPT NAME</label>
+                    <input type="text" id="scriptFilename"
+                        style="flex: 1; background: var(--bg-main); border: 1px solid var(--border); color: var(--text); padding: 6px 10px; border-radius: 4px; font-family: 'Consolas', monospace; font-size: 12px;"
+                        value="shokker_multizone.py">
+                    <span style="font-size: 10px; color: var(--text-dim);">.py auto-added if missing</span>
+                </div>
+                <pre class="script-output" id="scriptOutput"></pre>
+                <div class="modal-instructions">
+                    <strong>How to use:</strong><br>
+                    1. Click <strong>Save Both Files</strong> below — downloads the .py script AND .bat launcher<br>
+                    2. Put both files in the same folder (alongside <code>shokker_engine_v2.py</code> or in your driver
+                    folder)<br>
+                    3. <strong>Double-click the .bat file</strong> to run — it handles everything!<br>
+                    4. Output TGA files land in the iRacing Folder you set above
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-accent" onclick="saveScriptFile(); setTimeout(saveBatLauncher, 500);"
+                    style="background: var(--accent-green); border-color: var(--accent-green);">&#128190; Save Both
+                    Files (.py + .bat)</button>
+                <button class="btn btn-accent" onclick="saveScriptFile()">&#128190; Save .py Only</button>
+                <button class="btn btn-accent" onclick="copyScript()">Copy to Clipboard</button>
+                <span class="copy-feedback" id="copyFeedback">Copied!</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== SPEC MAP INSPECTOR (Channels & Values) ===== -->
+    <div class="modal-overlay" id="specMapInspectorModal"
+        style="display:none; align-items:center; justify-content:center; z-index:10000;"
+        onclick="if(event.target===this)closeSpecMapInspector()">
+        <div class="modal" style="max-width:90vw; max-height:90vh; display:flex; flex-direction:column;"
+            onclick="event.stopPropagation()">
+            <div class="modal-header" style="flex-shrink:0;">
+                <h2 style="font-size:14px;">Spec Map — Channels &amp; Values</h2>
+                <button class="modal-close" onclick="closeSpecMapInspector()">&times;</button>
+            </div>
+            <div class="modal-body" style="flex:1; min-height:0; overflow:auto;">
+                <p id="specMapInspectorHint" style="font-size:11px; color:var(--text-dim); margin-bottom:8px;">Shows how
+                    each channel (Metallic, Roughness, Clearcoat, Mask) is drawn and min/max/mean values. Run a preview
+                    first (SPLIT view + zones) to see data.</p>
+                <div id="specMapInspectorNoData"
+                    style="display:none; padding:16px; background:var(--bg-card); border:1px solid var(--border); border-radius:6px; color:var(--text-dim); font-size:12px;">
+                    No spec map yet. Enable <strong>SPLIT</strong> view and configure at least one zone, then the
+                    preview will render the spec map. Come back here to see each channel and values.</div>
+                <div id="specMapInspectorContent" style="display:none;">
+                    <div class="spec-channel-bar" style="margin-bottom:8px; flex-wrap:wrap;">
+                        <button class="spec-channel-btn active" data-ch="all"
+                            onclick="setSpecMapInspectorChannel('all')">ALL</button>
+                        <button class="spec-channel-btn" data-ch="r" onclick="setSpecMapInspectorChannel('r')">R
+                            Metallic</button>
+                        <button class="spec-channel-btn" data-ch="g" onclick="setSpecMapInspectorChannel('g')">G
+                            Roughness</button>
+                        <button class="spec-channel-btn" data-ch="b" onclick="setSpecMapInspectorChannel('b')">B
+                            Clearcoat</button>
+                        <button class="spec-channel-btn" data-ch="a" onclick="setSpecMapInspectorChannel('a')">A
+                            Mask</button>
+                    </div>
+                    <div
+                        style="position:relative; background:#0a0a12; border:1px solid var(--border); border-radius:6px; min-height:120px;">
+                        <img id="specMapInspectorImg" alt="Spec map"
+                            style="max-width:100%; max-height:320px; display:block;">
+                        <canvas id="specMapInspectorCanvas"
+                            style="display:none; max-width:100%; max-height:320px;"></canvas>
+                    </div>
+                    <div id="specMapInspectorValues" style="margin-top:12px; font-size:11px; font-family:monospace;">
+                        <table style="width:100%; border-collapse:collapse;">
+                            <thead>
+                                <tr>
+                                    <th
+                                        style="text-align:left; padding:4px 8px; border-bottom:1px solid var(--border);">
+                                        Channel</th>
+                                    <th style="padding:4px 8px; border-bottom:1px solid var(--border);">Min</th>
+                                    <th style="padding:4px 8px; border-bottom:1px solid var(--border);">Max</th>
+                                    <th style="padding:4px 8px; border-bottom:1px solid var(--border);">Mean</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="padding:4px 8px; color:#e88;">R (Metallic)</td>
+                                    <td id="specValRMin" style="padding:4px 8px;">—</td>
+                                    <td id="specValRMax" style="padding:4px 8px;">—</td>
+                                    <td id="specValRMean" style="padding:4px 8px;">—</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding:4px 8px; color:#8e8;">G (Roughness)</td>
+                                    <td id="specValGMin" style="padding:4px 8px;">—</td>
+                                    <td id="specValGMax" style="padding:4px 8px;">—</td>
+                                    <td id="specValGMean" style="padding:4px 8px;">—</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding:4px 8px; color:#88e;">B (Clearcoat)</td>
+                                    <td id="specValBMin" style="padding:4px 8px;">—</td>
+                                    <td id="specValBMax" style="padding:4px 8px;">—</td>
+                                    <td id="specValBMean" style="padding:4px 8px;">—</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding:4px 8px; color:#ee8;">A (Spec mask)</td>
+                                    <td id="specValAMin" style="padding:4px 8px;">—</td>
+                                    <td id="specValAMax" style="padding:4px 8px;">—</td>
+                                    <td id="specValAMean" style="padding:4px 8px;">—</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== PRESET GALLERY MODAL ===== -->
+    <div class="preset-gallery-overlay" id="presetGalleryOverlay" onclick="if(event.target===this)closePresetGallery()">
+        <div class="preset-gallery-modal">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <h3 style="color:var(--accent); font-size:14px;">Preset Gallery</h3>
+                <button class="btn btn-sm" onclick="closePresetGallery()" style="font-size:12px;">&times;</button>
+            </div>
+            <div style="font-size:10px; color:var(--text-dim); margin-top:4px;">Click a preset to load it. Each swatch
+                shows the zone finishes.</div>
+            <div class="preset-gallery-grid" id="presetGalleryGrid">
+                <!-- Rendered by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== FINISH BROWSER MODAL ===== -->
+    <div class="finish-browser-overlay" id="finishBrowserOverlay" onclick="if(event.target===this)closeFinishBrowser()">
+        <div class="finish-browser-modal">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                <h3 style="color:var(--accent); font-size:14px; margin:0;">🎨 Finish Catalog <span id="fbOfflineTag"
+                        style="font-size:9px; padding:1px 6px; border-radius:3px; background:rgba(0,200,100,0.15); color:var(--accent-green); margin-left:6px;">OFFLINE
+                        READY</span> <button type="button" class="btn btn-sm" id="fbForReviewBtn"
+                        onclick="openPatternsForReview()" style="margin-left:8px; font-size:10px; padding:2px 8px;"
+                        title="Preview candidate patterns as they would render in the app">📋 For review</button></h3>
+                <div style="display:flex; gap:6px; align-items:center;">
+                    <button class="btn btn-sm" id="fbBackToCatalogBtn" onclick="backToFinishCatalog()"
+                        style="display:none; font-size:10px; padding:2px 8px;" title="Back to finish catalog">←
+                        Catalog</button>
+                    <button class="btn btn-sm" id="fbViewToggle" onclick="toggleFinishBrowserView()"
+                        style="font-size:10px; padding:2px 8px;" title="Toggle Grid / Catalog view">☰ List</button>
+                    <button class="btn btn-sm" onclick="closeFinishBrowser()" style="font-size:14px;">&times;</button>
+                </div>
+            </div>
+            <div class="finish-browser-filters" id="finishBrowserFilters">
+                <select id="fbFilterType" onchange="filterFinishBrowser()">
+                    <option value="all">All Types</option>
+                    <option value="combo">Base + Pattern</option>
+                    <option value="mono">Monolithic</option>
+                </select>
+                <select id="fbFilterBase" onchange="filterFinishBrowser()">
+                    <option value="all">All Bases</option>
+                </select>
+                <select id="fbFilterPattern" onchange="filterFinishBrowser()">
+                    <option value="all">All Patterns</option>
+                </select>
+                <input type="text" id="fbSearch" placeholder="Search finishes..." oninput="filterFinishBrowser()"
+                    style="flex:1; min-width:100px;">
+                <select id="fbSort" onchange="filterFinishBrowser()" style="min-width:80px;">
+                    <option value="default">Default</option>
+                    <option value="az">A → Z</option>
+                    <option value="za">Z → A</option>
+                    <option value="recent">Recent</option>
+                    <option value="favorites">★ Favorites</option>
+                </select>
+                <button class="fb-fav-btn" id="fbFavToggle" onclick="toggleFavoritesFilter()"
+                    title="Show only favorites">★</button>
+            </div>
+            <div id="fbCount" style="font-size:9px; color:var(--text-dim); margin-bottom:4px;"></div>
+            <div class="finish-browser-grid" id="finishBrowserGrid">
+                <!-- Rendered by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== FINISH COMPARE MODAL ===== -->
+    <div class="finish-compare-overlay" id="finishCompareOverlay" onclick="if(event.target===this)closeFinishCompare()">
+        <div class="finish-compare-modal">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                <h3 style="color:var(--accent-blue); font-size:14px; margin:0;">🔍 Finish Comparison</h3>
+                <div>
+                    <button class="btn btn-sm" onclick="addCompareColumn()" style="font-size:10px;">+ Column</button>
+                    <button class="btn btn-sm" onclick="closeFinishCompare()" style="font-size:14px;">&times;</button>
+                </div>
+            </div>
+            <div class="compare-columns" id="compareColumnsContainer">
+                <!-- Rendered by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== TEMPLATE NAME MODAL ===== -->
+    <div class="tmpl-name-overlay" id="tmplNameOverlay" onclick="if(event.target===this)closeTmplNameModal()">
+        <div class="tmpl-name-dialog">
+            <h3>Save Zone Template</h3>
+            <input type="text" id="tmplNameInput" placeholder='e.g. "My 3-Color Layout"' maxlength="60" />
+            <div class="tmpl-name-btns">
+                <button onclick="closeTmplNameModal()">Cancel</button>
+                <button class="save-btn" onclick="confirmSaveTemplate()">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== FILE PICKER MODAL ===== -->
+    <div class="file-picker-overlay" id="filePickerOverlay" onclick="if(event.target===this)closeFilePicker()">
+        <div class="file-picker">
+            <div class="file-picker-header">
+                <h3 id="filePickerTitle">Select File</h3>
+                <button class="modal-close" onclick="closeFilePicker()">&times;</button>
+            </div>
+            <div class="file-picker-breadcrumb" id="filePickerBreadcrumb">
+                <!-- Rendered by JS -->
+            </div>
+            <div class="file-picker-quicknav" id="filePickerQuickNav">
+                <!-- Quick nav buttons rendered by JS -->
+            </div>
+            <div class="file-picker-list" id="filePickerList">
+                <div class="file-picker-loading">Loading...</div>
+            </div>
+            <div class="file-picker-footer">
+                <input type="text" id="filePickerPath" placeholder="Type a path or select from above..."
+                    onkeydown="if(event.key==='Enter'){const v=this.value.trim();if(v)filePickerNavigate(v);}">
+                <button
+                    onclick="const v=document.getElementById('filePickerPath').value.trim();if(v)filePickerNavigate(v);"
+                    style="background:#555;color:#fff;border:none;padding:6px 12px;border-radius:4px;cursor:pointer;font-size:12px;margin-right:4px;"
+                    title="Navigate to typed path">Go</button>
+                <button class="btn-select" id="filePickerSelectBtn" onclick="filePickerSelect()"
+                    disabled>Select</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== TOAST ===== -->
+    <div class="toast" id="toast"></div>
+
+    <!-- App scripts: load order matters (0→1→2→3→4→5→6→7). See PROJECT_STRUCTURE.md for module map. -->
+    <!-- paint-booth-0-finish-data.js = SINGLE SOURCE OF TRUTH for all finish arrays & groups.
+         paint-booth-1-data.js = TGA decoder, server merge, onboarding logic.
+         See FINISH_WIRING_CHECKLIST.md for the full ID contract. -->
+    <script src="paint-booth-0-finish-data.js"></script>
+    <script src="paint-booth-1-data.js"></script>
+    <script src="paint-booth-2-state-zones.js"></script>
+    <script src="paint-booth-3-canvas.js"></script>
+    <script src="paint-booth-4-pattern-renderer.js"></script>
+    <script src="paint-booth-5-api-render.js"></script>
+    <script src="paint-booth-6-ui-boot.js"></script>
+    <script src="paint-booth-7-shokk.js"></script>
+
+    <!-- Undo History Panel (slide-out) -->
+    <div class="undo-history-panel" id="undoHistoryPanel">
+        <div class="undo-history-header">
+            <h3>UNDO HISTORY</h3>
+            <span class="undo-count" id="undoHistoryCount">0 actions</span>
+            <button class="btn btn-sm" onclick="toggleUndoHistoryPanel()"
+                style="font-size:10px; padding:2px 6px; margin-left:8px;" title="Close">&times;</button>
+        </div>
+        <div class="undo-history-actions">
+            <button class="btn btn-sm" onclick="undoZoneChange()" title="Ctrl+Z"
+                style="border-color:var(--accent-gold); color:var(--accent-gold);">&#8617; Undo</button>
+            <button class="btn btn-sm" onclick="redoZoneChange()" title="Ctrl+Y"
+                style="border-color:var(--accent); color:var(--accent);">&#8618; Redo</button>
+            <button class="btn btn-sm" onclick="clearUndoHistory()" title="Clear history"
+                style="border-color:var(--accent-red); color:var(--accent-red); margin-left:auto;">Clear</button>
+        </div>
+        <div class="undo-history-list" id="undoHistoryList">
+            <div style="color:var(--text-dim); font-size:10px; padding:8px; text-align:center;">No history yet.</div>
+        </div>
+    </div>
+
+    <!-- Swatch Picker Popup -->
+    <div class="swatch-popup" id="swatchPopup">
+        <div class="swatch-popup-search">
+            <input type="text" id="swatchSearchInput" placeholder="Filter..." oninput="filterSwatchPopup(this.value)">
+        </div>
+        <div class="swatch-preview-on-paint-row" style="padding:4px 8px; border-bottom:1px solid var(--border);">
+            <button type="button" class="btn btn-sm" id="swatchSeeOnPaintBtn" onclick="openSwatchPreviewFromPicker()"
+                style="font-size:10px; color:var(--accent-blue);"
+                title="Preview the selected finish on your current paint file">See on paint</button>
+        </div>
+        <div class="swatch-popup-grid" id="swatchPopupGrid"></div>
+    </div>
+
+    <!-- Swatch Preview Modal: large swatch + preview on current paint -->
+    <div id="swatchPreviewModal" class="modal-overlay"
+        style="display:none; align-items:center; justify-content:center;">
+        <div class="modal-content" style="max-width:520px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                <h3 id="swatchPreviewModalTitle" style="margin:0; font-size:14px;">Finish preview</h3>
+                <button type="button" class="btn btn-sm" onclick="closeSwatchPreviewModal()">Close</button>
+            </div>
+            <div style="display:flex; gap:12px; flex-wrap:wrap;">
+                <div>
+                    <div style="font-size:10px; color:var(--text-dim); margin-bottom:4px;">Swatch</div>
+                    <img id="swatchPreviewLargeImg" src="" alt="Swatch"
+                        style="width:256px; height:256px; border-radius:8px; border:1px solid var(--border); object-fit:contain; background:#222;">
+                </div>
+                <div style="flex:1; min-width:200px;">
+                    <div style="font-size:10px; color:var(--text-dim); margin-bottom:4px;">On your current paint</div>
+                    <div id="swatchPreviewOnPaintWrap"
+                        style="width:256px; height:256px; border-radius:8px; border:1px solid var(--border); background:#1a1a1a; display:flex; align-items:center; justify-content:center; color:var(--text-dim); font-size:11px; text-align:center; padding:8px;">
+                        Click &quot;Preview on paint&quot; (load a paint file first if needed)
+                    </div>
+                    <button type="button" class="btn btn-sm" id="swatchPreviewOnPaintBtn"
+                        style="margin-top:8px; font-size:10px;">Preview on paint</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== LICENSING & ACTIVATION SYSTEM =====
+        let licenseActive = false;
+
+        function checkLicenseStatus() {
+            fetch('/license')
+                .then(r => r.json())
+                .then(data => {
+                    licenseActive = data.active;
+                    updateLicenseUI(data);
+                })
+                .catch(() => {
+                    // Server not ready yet, try again shortly
+                    setTimeout(checkLicenseStatus, 2000);
+                });
+        }
+
+        function updateLicenseUI(data) {
+            const statusEl = document.getElementById('licenseStatus');
+            const inputRow = document.getElementById('licenseInputRow');
+            const activeRow = document.getElementById('licenseActiveRow');
+            const maskedEl = document.getElementById('licenseMaskedKey');
+
+            // Alpha: Electron app handles Payhip licensing — always show active here
+            statusEl.innerHTML = '<span style="color:var(--accent-green);">&#9679;</span> License Active (Alpha)';
+            if (inputRow) inputRow.style.display = 'none';
+            if (activeRow) activeRow.style.display = 'none';
+            licenseActive = true;
+        }
+
+        function activateLicense() {
+            const input = document.getElementById('licenseKeyInput');
+            const key = (input.value || '').trim().toUpperCase();
+            if (!key) { input.focus(); return; }
+
+            const statusEl = document.getElementById('licenseStatus');
+            statusEl.innerHTML = '<span style="color:var(--text-dim);">Activating...</span>';
+
+            fetch('/license', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ key: key })
+            })
+                .then(r => r.json().then(d => ({ ok: r.ok, data: d })))
+                .then(({ ok, data }) => {
+                    if (ok && data.active) {
+                        updateLicenseUI(data);
+                        input.value = '';
+                        showToast(data.message || 'License activated!', 'success');
+                    } else {
+                        statusEl.innerHTML = '<span style="color:var(--accent-red);">&#9679;</span> ' + (data.error || 'Activation failed');
+                        showToast(data.error || 'Invalid license key', 'error');
+                    }
+                })
+                .catch(err => {
+                    statusEl.innerHTML = '<span style="color:var(--accent-red);">&#9679;</span> Network error';
+                    showToast('Could not reach license server', 'error');
+                });
+        }
+
+        function deactivateLicense() {
+            if (!confirm('Deactivate your license? You will not be able to render until you re-enter a key.')) return;
+
+            fetch('/license/deactivate', { method: 'POST' })
+                .then(r => r.json())
+                .then(data => {
+                    updateLicenseUI(data);
+                    showToast('License deactivated', 'info');
+                })
+                .catch(() => showToast('Deactivation failed', 'error'));
+        }
+
+        // Check license on startup
+        document.addEventListener('DOMContentLoaded', function () {
+            // Slight delay to let server spin up
+            setTimeout(checkLicenseStatus, 500);
+        });
+    </script>
+
+    <!-- Tutorial Overlay -->
+    <div id="tutorialOverlay" class="tutorial-overlay" style="display:none;">
+        <div class="tutorial-backdrop" onclick="skipTutorial()"></div>
+        <div class="tutorial-highlight" id="tutorialHighlight" style="display:none;"></div>
+        <div class="tutorial-tooltip" id="tutorialTooltip">
+            <div class="tutorial-step-indicator" id="tutorialStepIndicator"></div>
+            <h3 id="tutorialTitle"></h3>
+            <p id="tutorialText"></p>
+            <div class="tutorial-btns">
+                <button onclick="skipTutorial()">Skip</button>
+                <button class="primary" onclick="nextTutorialStep()">Next</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== ONBOARDING TUTORIAL MODE =====
+        const TUTORIAL_STEPS = [
+            { title: "Welcome to Shokker Paint Booth!", text: "This quick tour shows you how to create stunning iRacing spec maps in minutes. Let's walk through the basics.", target: null, position: "center" },
+            { title: "Step 1: Load Your Paint", text: "Start by loading your car's paint TGA file. Click the file picker at the top, or use the 'Load Paint Image' button.", target: "#paintFile", position: "below" },
+            { title: "Step 2: Pick Zone Colors", text: "Each zone targets specific pixels on your paint. Click a color on your paint canvas, or use the quick-color buttons (Red, Blue, White, etc.) to tell the zone what to cover.", target: "#zoneList", position: "right" },
+            { title: "Step 3: Assign Finishes", text: "Click the Base swatch to open the finish library. Choose from 155 bases (Chrome, Carbon Fiber, Candy, etc.) and 155 patterns. Mix and match!", target: ".swatch-trigger", position: "right" },
+            { title: "Step 4: Adjust Intensity", text: "Use the Intensity dropdown to control how strong the effect is — 15 presets from 10% to 150%. You can also dial in custom values.", target: ".intensity-select", position: "right" },
+            { title: "Step 5: Live Preview", text: "Enable the split view to see a live preview as you make changes. Paint shows on the left, your rendered spec map on the right.", target: "#splitPreview", position: "left" },
+            { title: "Step 6: Render!", text: "When you're happy, hit the big RENDER button. The engine generates your spec map TGA file, ready to drop into iRacing.", target: "#btnRender", position: "above" },
+            { title: "Pro Tips", text: "Use Randomize to explore wild combos. Link zones to keep finishes in sync. Import an existing spec map to merge with. Hold B to compare before/after. Have fun!", target: null, position: "center" },
+        ];
+
+        let tutorialStep = 0;
+        let tutorialActive = false;
+
+        function startTutorial() {
+            tutorialStep = 0;
+            tutorialActive = true;
+            document.getElementById('tutorialOverlay').style.display = '';
+            document.getElementById('tutorialOverlay').classList.add('active');
+            showTutorialStep();
+        }
+
+        function showTutorialStep() {
+            const step = TUTORIAL_STEPS[tutorialStep];
+            if (!step) { skipTutorial(); return; }
+            const indicator = document.getElementById('tutorialStepIndicator');
+            indicator.textContent = `STEP ${tutorialStep + 1} OF ${TUTORIAL_STEPS.length}`;
+            document.getElementById('tutorialTitle').textContent = step.title;
+            document.getElementById('tutorialText').textContent = step.text;
+            const tooltip = document.getElementById('tutorialTooltip');
+            const highlight = document.getElementById('tutorialHighlight');
+
+            // Position tooltip
+            if (!step.target || step.position === 'center') {
+                highlight.style.display = 'none';
+                tooltip.style.top = '50%'; tooltip.style.left = '50%';
+                tooltip.style.transform = 'translate(-50%, -50%)';
+            } else {
+                const el = document.querySelector(step.target);
+                if (el) {
+                    const rect = el.getBoundingClientRect();
+                    highlight.style.display = '';
+                    highlight.style.top = (rect.top - 4) + 'px';
+                    highlight.style.left = (rect.left - 4) + 'px';
+                    highlight.style.width = (rect.width + 8) + 'px';
+                    highlight.style.height = (rect.height + 8) + 'px';
+                    tooltip.style.transform = '';
+                    if (step.position === 'below') {
+                        tooltip.style.top = (rect.bottom + 12) + 'px';
+                        tooltip.style.left = rect.left + 'px';
+                    } else if (step.position === 'above') {
+                        tooltip.style.top = (rect.top - 160) + 'px';
+                        tooltip.style.left = rect.left + 'px';
+                    } else if (step.position === 'right') {
+                        tooltip.style.top = rect.top + 'px';
+                        tooltip.style.left = (rect.right + 12) + 'px';
+                    } else if (step.position === 'left') {
+                        tooltip.style.top = rect.top + 'px';
+                        tooltip.style.left = (rect.left - 360) + 'px';
+                    }
+                } else {
+                    highlight.style.display = 'none';
+                    tooltip.style.top = '50%'; tooltip.style.left = '50%';
+                    tooltip.style.transform = 'translate(-50%, -50%)';
+                }
+            }
+        }
+
+        function nextTutorialStep() {
+            tutorialStep++;
+            if (tutorialStep >= TUTORIAL_STEPS.length) {
+                skipTutorial();
+                return;
+            }
+            showTutorialStep();
+        }
+
+        function skipTutorial() {
+            tutorialActive = false;
+            document.getElementById('tutorialOverlay').style.display = 'none';
+            document.getElementById('tutorialOverlay').classList.remove('active');
+            document.getElementById('tutorialHighlight').style.display = 'none';
+            localStorage.setItem('shokker_tutorial_done', '1');
+            showToast('Tutorial complete! You can restart it from Settings.');
+        }
+
+        // Tutorial auto-start disabled for Alpha UX.
+    </script>
+
+    <!-- Swatch Hover Popup (for swatch picker grid) -->
+    <div id="swatchHoverPopup">
+        <div class="shp-preview"><canvas id="shpCanvas" width="140" height="140"
+                style="width:140px;height:140px;display:block;border-radius:6px;"></canvas></div>
+        <div class="shp-name" id="shpName"></div>
+        <div class="shp-desc" id="shpDesc"></div>
+        <div class="shp-cat" id="shpCat"></div>
+    </div>
+
+    <!-- ===== SHOKK LIBRARY MODAL ===== -->
+    <div id="shokkLibraryModal" onclick="if(event.target===this)closeShokkLibrary()">
+        <div class="shokk-modal-inner">
+            <div class="shokk-modal-toolbar">
+                <span class="shokk-modal-title">🔥 SHOKK LIBRARY</span>
+                <input class="shokk-search" id="shokkSearchInput" type="text" placeholder="Search by name, author, tag…"
+                    oninput="filterShokkLibrary(this.value)" autocomplete="off">
+                <span id="shokkLibraryStatus" style="font-size:11px; color:var(--text-dim);"></span>
+                <button class="btn btn-sm"
+                    onclick="if(_selectedShokkPath){showShokkImportOptions(_selectedShokkPath)}else{showToast('Select a SHOKK file first',true)}"
+                    style="border-color:var(--accent-green); color:var(--accent-green); font-weight:700;"
+                    title="Open the selected SHOKK file">▶ Open Selected</button>
+                <button class="btn btn-sm" id="shokkPsExportBtn" onclick="exportSpecChannels(true)" disabled
+                    style="border-color:var(--accent-blue); color:var(--accent-blue);"
+                    title="Export selected SHOKK to folder below (paint + 4 spec channel PNGs)">🎨 PS Export</button>
+                <input type="text" id="shokkPsExportFolder" placeholder="PS Export folder (optional)"
+                    style="max-width:200px; padding:4px 8px; font-size:10px; background:var(--surface); border:1px solid var(--border); border-radius:4px; color:var(--text);"
+                    title="Folder where PS Export writes files. Leave blank for default.">
+                <button type="button" class="btn btn-sm" onclick="browsePsExportFolder('shokkPsExportFolder')"
+                    style="font-size:10px; padding:4px 8px;" title="Choose folder in File Explorer">Browse</button>
+                <span
+                    style="display:inline-block; width:1px; height:18px; background:var(--border); margin:0 2px; vertical-align:middle;"></span>
+                <button class="btn btn-sm" onclick="openShokkLibraryFolder()"
+                    style="border-color:var(--accent-blue); color:var(--accent-blue);"
+                    title="Open the SHOKK Library folder in Explorer">📂 Folder</button>
+                <button class="btn btn-sm" onclick="openSaveShokkDialog()"
+                    style="border-color:#ff8844; color:#ff8844; font-weight:700;"
+                    title="Save current session as a .shokk file">💾 Save SHOKK</button>
+                <button class="modal-close" onclick="closeShokkLibrary()" style="margin-left:auto;">&#x2715;</button>
+                <div class="shokk-modal-path">📁 Library: <span id="shokkLibraryPathLabel">Loading…</span></div>
+                <div style="font-size:9px; color:var(--text-dim); flex-basis:100%; padding-top:2px;">
+                    Click to select · Double-click or OPEN to load · Select + PS Export to extract 5 PNGs for Photoshop
+                </div>
+            </div>
+            <div id="shokkLibraryGrid"></div>
+        </div>
+    </div>
+
+    <!-- ===== SAVE SHOKK MODAL ===== -->
+    <div id="saveShokkModal" onclick="if(event.target===this)closeSaveShokkModal()">
+        <div class="shokk-save-inner" onclick="event.stopPropagation()">
+            <div class="shokk-save-title">🔥 Save as SHOKK File</div>
+            <div class="shokk-save-row">
+                <label>Name *</label>
+                <input type="text" id="shokkSaveName" placeholder="e.g. Purple Color Shift v1" maxlength="80">
+            </div>
+            <div class="shokk-save-row">
+                <label>Author</label>
+                <input type="text" id="shokkSaveAuthor" placeholder="Your name / username" maxlength="60">
+            </div>
+            <div class="shokk-save-row">
+                <label>Description</label>
+                <textarea id="shokkSaveDesc" placeholder="Short description of this paint recipe…"
+                    maxlength="300"></textarea>
+            </div>
+            <div class="shokk-save-row">
+                <label>Tags</label>
+                <div class="shokk-tags-grid">
+                    <label class="shokk-tag-label"><input type="checkbox" class="shokk-tag-checkbox"
+                            value="color-shift"> Color Shift</label>
+                    <label class="shokk-tag-label"><input type="checkbox" class="shokk-tag-checkbox" value="chrome">
+                        Chrome</label>
+                    <label class="shokk-tag-label"><input type="checkbox" class="shokk-tag-checkbox" value="matte">
+                        Matte</label>
+                    <label class="shokk-tag-label"><input type="checkbox" class="shokk-tag-checkbox" value="pearl">
+                        Pearl</label>
+                    <label class="shokk-tag-label"><input type="checkbox" class="shokk-tag-checkbox" value="candy">
+                        Candy</label>
+                    <label class="shokk-tag-label"><input type="checkbox" class="shokk-tag-checkbox" value="neon">
+                        Neon</label>
+                    <label class="shokk-tag-label"><input type="checkbox" class="shokk-tag-checkbox" value="dark">
+                        Dark</label>
+                    <label class="shokk-tag-label"><input type="checkbox" class="shokk-tag-checkbox"
+                            value="pattern-based"> Pattern-Based</label>
+                    <label class="shokk-tag-label"><input type="checkbox" class="shokk-tag-checkbox"
+                            value="multi-layer"> Multi-Layer</label>
+                    <label class="shokk-tag-label"><input type="checkbox" class="shokk-tag-checkbox"
+                            value="full-scheme"> Full Scheme</label>
+                </div>
+            </div>
+            <div class="shokk-save-row" style="display:flex; align-items:center; gap:8px;">
+                <input type="checkbox" id="shokkIncludePaint" checked>
+                <label for="shokkIncludePaint" style="display:inline; font-size:12px; color:var(--text);">Include paint
+                    file <span style="color:var(--text-dim);font-size:10px;">(recommended — larger file but fully
+                        shareable)</span></label>
+            </div>
+            <div class="shokk-save-actions">
+                <button class="btn btn-sm" onclick="closeSaveShokkModal()"
+                    style="color:var(--text-dim);">Cancel</button>
+                <button class="btn" onclick="confirmSaveShokk()"
+                    style="background:var(--accent-gold,#ffaa00); color:#000; font-weight:800; border:none; padding:8px 24px; border-radius:6px; font-size:13px; cursor:pointer;">🔥
+                    Save SHOKK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Export to Photoshop modal -->
+    <div class="modal-overlay" id="exportToPhotoshopModal" onclick="if(event.target===this)closeExportToPhotoshopModal()">
+        <div class="modal-inner" style="max-width: 520px;">
+            <div class="modal-title" style="font-size: 14px;">Export to Photoshop</div>
+            <p style="font-size: 11px; color: var(--text-dim); margin: 0 0 14px 0;">Saves paint.tga, spec.tga, paint_base.tga, and spec channels (metallic, roughness, clearcoat, mask) so you can import them in Photoshop however you like. Set the folder once and it will be remembered.</p>
+            <div style="margin-bottom: 12px;">
+                <label style="font-size: 12px; font-weight: 600; color: var(--text); display: block; margin-bottom: 4px;">Car file name</label>
+                <input type="text" id="psExportCarFileName" placeholder="e.g. DLM438-base-001" value=""
+                    class="ps-export-input"
+                    style="width: 100%; padding: 8px 10px; box-sizing: border-box; background: #1a1a28; border: 2px solid rgba(255,170,0,0.5); border-radius: 6px; color: var(--text); font-size: 13px;">
+            </div>
+            <div style="margin-bottom: 14px;">
+                <label style="font-size: 12px; font-weight: 600; color: var(--text); display: block; margin-bottom: 4px;">Export folder</label>
+                <input type="text" id="psExportExchangeFolder" placeholder="e.g. C:\...\ShokkerPaintBooth\PhotoshopExchange"
+                    class="ps-export-input"
+                    style="width: 100%; padding: 8px 10px; box-sizing: border-box; background: #1a1a28; border: 2px solid rgba(255,170,0,0.5); border-radius: 6px; color: var(--text); font-size: 12px;">
+            </div>
+            <div style="display: flex; gap: 8px; justify-content: flex-end;">
+                <button class="btn btn-sm" onclick="closeExportToPhotoshopModal()">Cancel</button>
+                <button class="btn btn-sm" id="btnDoExportToPs" onclick="doExportToPhotoshop()" style="background: var(--accent-gold); color: #000;">Export</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- (Import from Photoshop: simplified to one-click spec import, no modal needed) -->
+
+</body>
+
+</html>

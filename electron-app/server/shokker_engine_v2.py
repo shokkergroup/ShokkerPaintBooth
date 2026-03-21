@@ -5525,6 +5525,25 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
                 print(f"      [{name}] Auto-scale: {auto_scale:.3f} (zone covers {(auto_scale**2)*100:.1f}% of canvas)")
             zone_scale *= auto_scale  # User slider multiplies on top of auto-scale
 
+            # ZONE TARGETING: Fit to Zone bounding box
+            if zone.get("pattern_fit_zone", False) and zone_mask is not None:
+                rows = np.any(zone_mask > 0.1, axis=1)
+                cols = np.any(zone_mask > 0.1, axis=0)
+                if rows.any() and cols.any():
+                    r_min, r_max = np.where(rows)[0][[0, -1]]
+                    c_min, c_max = np.where(cols)[0][[0, -1]]
+                    bbox_h = r_max - r_min + 1
+                    bbox_w = c_max - c_min + 1
+                    bbox_center_y = (r_min + r_max) / 2.0 / h
+                    bbox_center_x = (c_min + c_max) / 2.0 / w
+                    # Override offset to center pattern on zone bbox
+                    zone['pattern_offset_x'] = bbox_center_x
+                    zone['pattern_offset_y'] = bbox_center_y
+                    # Scale pattern to fit the bbox (use the larger dimension ratio)
+                    fit_scale = max(bbox_h / h, bbox_w / w)
+                    zone_scale = zone_scale * fit_scale  # concentrate pattern into zone
+                    print(f"      [{name}] Fit-to-Zone: bbox=({r_min},{c_min})-({r_max},{c_max}), fit_scale={fit_scale:.3f}, center=({bbox_center_x:.3f},{bbox_center_y:.3f})")
+
             # v6.0 advanced finish params
             _z_cc = zone.get("cc_quality"); _z_cc = float(_z_cc) if _z_cc is not None else None
             _z_bb = zone.get("blend_base") or None; _z_bd = zone.get("blend_dir", "horizontal"); _z_ba = float(zone.get("blend_amount", 0.5))

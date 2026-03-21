@@ -368,6 +368,12 @@
         <div class="header-right">
             <span id="autosaveBadge"
                 style="font-size: 8px; color: var(--accent-green); opacity: 0.4; transition: opacity 0.3s;">Auto-saved</span>
+            <button id="easy-mode-btn" onclick="toggleEasyMode()"
+                style="background: #1a1a1a; color: #E87A20; border: 1px solid #333; padding: 4px 12px;
+                       border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold;"
+                title="Toggle between Easy Mode (simplified) and Advanced Mode (full controls)">
+              ⚡ ADVANCED
+            </button>
             <button class="gear-btn" onclick="showShortcutLegend()" title="Keyboard shortcuts (?)"
                 style="font-size:12px; opacity:0.6;">?</button>
             <button class="gear-btn" id="settingsGearBtn" onclick="toggleSettingsDropdown()" title="Settings">⚙</button>
@@ -627,10 +633,10 @@
 
                 <!-- Zone Actions -->
                 <div class="zone-actions" style="flex-wrap: wrap;">
-                    <button class="btn btn-accent" onclick="addZone()" style="flex-shrink: 0;">+ Add Zone</button>
+                    <button class="btn btn-accent" onclick="addZone()" style="flex-shrink: 0;" title="Create a new empty zone">+ Add Zone</button>
                     <button class="btn btn-sm" onclick="restoreAllZones()"
                         style="font-size: 10px; border-color: var(--accent-green); color: var(--accent-green);"
-                        title="Restore all 10 default zones at their default settings">Restore All</button>
+                        title="Restore all zones to their last saved state">Restore All</button>
                     <button class="btn btn-sm" onclick="clearAllZones()" style="font-size: 10px; color: #ff8888;"
                         title="Reset all zones to defaults">Clear All</button>
                     <button class="btn btn-sm" onclick="openPresetGallery()" style="font-size: 10px;"
@@ -647,11 +653,11 @@
                             style="margin-left:8px; font-size:9px;">Dismiss</button>
                     </div>
                     <button class="btn btn-sm" onclick="randomizeZone(selectedZoneIndex)" style="font-size: 10px;"
-                        title="Randomize selected zone (R)">Rand</button>
+                        title="Randomly assign a base and pattern to this zone">Rand</button>
                     <button class="btn btn-sm" onclick="randomizeAllZones()" style="font-size: 10px;"
-                        title="Randomize ALL zones">Rand All</button>
+                        title="Randomize all zones at once">Rand All</button>
                     <button class="btn btn-sm" onclick="applyFinishToAllZones()" style="font-size: 10px;"
-                        title="Apply selected zone's finish to ALL zones">Apply All</button>
+                        title="Apply this zone's finish to all other zones">Apply All</button>
                     <button class="btn btn-sm" onclick="openTemplateLibrary()"
                         style="font-size: 10px; border-color: var(--accent-gold); color: var(--accent-gold);"
                         title="Browse pre-built livery layouts">Library</button>
@@ -676,10 +682,10 @@
                         <span id="shokkSpecStateChip"
                             style="font-size:9px; padding:3px 7px; border-radius:10px; border:1px solid var(--border); color:var(--text-dim); background:rgba(255,255,255,0.03);"
                             title="Current SHOKK spec status">SPEC: none</span>
-                        <button class="template-btn" onclick="exportSpecChannels(false)"
+                        <button class="template-btn ps-export-section" onclick="exportSpecChannels(false)"
                             style="border-color:var(--accent-blue); color:var(--accent-blue);"
                             title="Export to folder below: paint_base + 4 spec channel PNGs">🎨 PS Export</button>
-                        <div style="display:flex; align-items:center; gap:4px; flex-wrap:wrap;">
+                        <div class="ps-export-section" style="display:flex; align-items:center; gap:4px; flex-wrap:wrap;">
                             <input type="text" id="leftPanelPsExportFolder" placeholder="PS Export folder"
                                 style="max-width:160px; padding:4px 8px; font-size:10px; background:var(--surface); border:1px solid var(--border); border-radius:4px; color:var(--text);"
                                 title="Folder where PS Export writes files. Shared with LOAD SHOKK library.">

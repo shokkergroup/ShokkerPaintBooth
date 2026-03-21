@@ -498,6 +498,78 @@ input[type="range"] {
     min-height: 0; /* allow flex children (e.g. zone list) to shrink and receive height */
 }
 
+/* ===== VERTICAL TOOLBAR (between left-panel and center-panel) ===== */
+.vertical-toolbar {
+    width: 38px;
+    flex-shrink: 0;
+    background: var(--bg-card);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 6px 2px;
+    gap: 2px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.vtool-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1px;
+    width: 100%;
+    padding: 3px 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.vtool-group:last-child {
+    border-bottom: none;
+}
+
+.vtool-label {
+    font-size: 7px;
+    font-weight: 700;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 2px;
+    white-space: nowrap;
+}
+
+.vtool-btn {
+    width: 30px;
+    height: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.1s;
+    padding: 0;
+}
+
+.vtool-btn:hover {
+    background: var(--bg-hover);
+    border-color: var(--border);
+    color: var(--text-primary);
+}
+
+.vtool-btn.active {
+    background: rgba(255, 51, 102, 0.15);
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.vtool-btn.vtool-destructive:hover {
+    border-color: #ff4444;
+    color: #ff4444;
+}
+
 .center-panel {
     flex: 1;
     display: flex;
@@ -640,6 +712,24 @@ input[type="range"] {
     overflow-x: hidden;
     padding: 6px 8px;
 }
+
+/* Decals & Numbers list (paint-booth-6-ui-boot.js renderDecalList) */
+.decal-layer-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 6px;
+    margin-bottom: 4px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: 9px;
+}
+.decal-layer-row .decal-thumb { width: 32px; height: 32px; object-fit: contain; border-radius: 2px; border: 1px solid var(--border); }
+.decal-layer-row .decal-name { flex: 0 1 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text); }
+.decal-layer-row .decal-controls { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+.decal-layer-row .decal-controls input[type="range"] { width: 40px; }
+.decal-layer-row .decal-controls button { padding: 2px 6px; font-size: 10px; cursor: pointer; }
 
 .zone-card {
     background: var(--bg-card);
@@ -972,7 +1062,7 @@ input[type="range"] {
     position: absolute;
     top: 0;
     bottom: 0;
-    left: 260px;
+    left: 298px; /* 38px toolbar + 260px left-panel */
     width: 370px;
     background: var(--bg-dark);
     border-right: 2px solid var(--accent-blue);
@@ -1001,7 +1091,7 @@ input[type="range"] {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    left: 260px;
+    left: 298px; /* 38px toolbar + 260px left-panel */
     width: 24px;
     height: 64px;
     background: var(--bg-card);
@@ -1790,6 +1880,22 @@ input[type="range"] {
     flex-shrink: 0;
 }
 
+/* Base overlay layers: larger special color swatches so the full color is visible */
+.overlay-special-row .overlay-special-swatch {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    min-height: 32px;
+    border-radius: 4px;
+    border: 1px solid var(--border, rgba(255, 255, 255, 0.2));
+    flex-shrink: 0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+.zone-editor-float .swatch-trigger .swatch-dot {
+    width: 22px;
+    height: 22px;
+}
+
 .swatch-trigger .swatch-name {
     white-space: nowrap;
     overflow: hidden;
@@ -1808,8 +1914,8 @@ input[type="range"] {
     display: none;
     position: fixed;
     z-index: 2500;
-    width: 340px;
-    max-height: 400px;
+    width: 480px;
+    max-height: 520px;
     background: var(--bg-card);
     border: 1px solid var(--border);
     border-radius: 6px;
@@ -1905,7 +2011,7 @@ input[type="range"] {
 
 .swatch-grid-row {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, 1fr);
     gap: 4px;
     margin-bottom: 4px;
 }
@@ -3002,6 +3108,13 @@ input[type="range"] {
 
 .modal-overlay.active {
     display: flex;
+}
+
+/* Export to Photoshop modal: high-visibility inputs */
+.ps-export-input:focus {
+    outline: none;
+    border-color: var(--accent-gold, #ffaa00) !important;
+    box-shadow: 0 0 0 1px rgba(255, 170, 0, 0.25);
 }
 
 .modal {
@@ -4153,6 +4266,7 @@ kbd {
     border-radius: 50%;
     margin: 0 auto 4px;
     position: relative;
+    overflow: hidden;
     background: conic-gradient(hsl(0, 80%, 50%), hsl(60, 80%, 50%), hsl(120, 80%, 50%),
             hsl(180, 80%, 50%), hsl(240, 80%, 50%), hsl(300, 80%, 50%), hsl(360, 80%, 50%));
 }
@@ -4824,3 +4938,28 @@ kbd {
 }
 
 /* ===== DECAL & NUMBER OVERLAY (DISABLED — future feature) ===== */
+
+/* ===== EASY MODE — hide advanced sections ===== */
+body.easy-mode .overlay-section,
+body.easy-mode .spec-patterns-section,
+body.easy-mode .blend-mode-section,
+body.easy-mode .hsb-controls,
+body.easy-mode .base-position-controls,
+body.easy-mode .base-rotate-scale,
+body.easy-mode .pattern-layer-card,
+body.easy-mode .ps-export-section,
+body.easy-mode .overlay-spec-patterns,
+body.easy-mode .spec-blend-section,
+body.easy-mode .zone-target-mode,
+body.easy-mode .advanced-only {
+    display: none !important;
+}
+
+/* Hide "Add Layer" button wrapper in easy mode */
+body.easy-mode .pattern-stack-add-btn-wrap {
+    display: none !important;
+}
+
+body.easy-mode .easy-mode-label {
+    display: block;
+}

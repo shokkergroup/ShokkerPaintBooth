@@ -51,6 +51,21 @@ let lastRenderedZoneDetailIndex = -1; // used to preserve scroll when re-renderi
 let categoryCollapsed = {};
 let importedSpecMapPath = null;  // Path to imported spec map TGA (merge mode = "Zone 0")
 
+// ===== EASY MODE =====
+let easyMode = false;
+window.easyMode = false;
+window.toggleEasyMode = function() {
+    easyMode = !easyMode;
+    window.easyMode = easyMode;
+    document.body.classList.toggle('easy-mode', easyMode);
+    const btn = document.getElementById('easy-mode-btn');
+    if (btn) {
+        btn.textContent = easyMode ? '🎯 EASY MODE' : '⚡ ADVANCED';
+        btn.style.color = easyMode ? '#00C8C8' : '#E87A20';
+    }
+    renderZones();
+};
+
 /** When non-null, the overlay "From special" picker for this zone+layer is expanded (big grid). Clear on select. */
 let _overlaySpecialPickerExpanded = null; // { zoneIndex: number, layer: 'second'|'third'|'fourth'|'fifth' } | null
 
@@ -506,7 +521,7 @@ function renderZones() {
                     onclick="event.stopPropagation()"
                     onchange="updateZoneName(${i}, this.value)">
                 ${summaryHtml}${regionBadge}
-                <button class="zone-mute-btn${zone.muted ? ' muted' : ''}" onclick="event.stopPropagation(); toggleZoneMute(${i})" title="${zone.muted ? 'Unmute zone (include in render)' : 'Mute zone (exclude from render)'}">${zone.muted ? '&#x1F6AB;' : '&#x1F441;'}</button>
+                <button class="zone-mute-btn${zone.muted ? ' muted' : ''}" onclick="event.stopPropagation(); toggleZoneMute(${i})" title="Temporarily disable this zone without deleting it">${zone.muted ? '&#x1F6AB;' : '&#x1F441;'}</button>
                 <button class="zone-move-btn" onclick="event.stopPropagation(); duplicateZone(${i})" title="Duplicate this zone" style="font-size:12px; padding:1px 5px;">&#x29C9;</button>
                 <div class="zone-reorder-group">
                     <button class="zone-move-btn" onclick="event.stopPropagation(); moveZoneUp(${i})" title="Move zone up (higher priority)"${i === 0 ? ' disabled' : ''}>&#9650;</button>
@@ -705,7 +720,12 @@ function renderZoneDetail(index) {
 
     // Color selector
     const colorStatus = getColorStatusText(zone);
-    html += `<div class="color-selector">
+    html += `<div class="section-collapsible" id="sectionColor${i}">
+    <div class="section-header" onclick="event.stopPropagation(); this.parentElement.classList.toggle('collapsed')">
+        <span class="section-header-label">COLOR</span>
+        <span class="collapse-arrow section-header-arrow">&#9660;</span>
+    </div>
+    <div class="color-selector">
         <div class="color-selector-label">What pixels does this zone cover?</div>
         <div class="color-selector-help">Pick a color below, type a color name, enter a hex code, or use the eyedropper on your paint</div>
         <div class="quick-colors">
@@ -743,19 +763,25 @@ function renderZoneDetail(index) {
             <span class="tol-label">TOL:</span>
             <input class="tolerance-slider" type="range" min="5" max="100" value="${zone.pickerTolerance || 40}"
                 onchange="setPickerTolerance(${i}, this.value)"
-                title="How close a pixel must be to this color (lower = more exact, higher = more forgiving)">
+                title="How loosely colors are matched — low = exact, high = approximate">
             <span class="tolerance-val">&plusmn;${zone.pickerTolerance || 40}</span>
         </div>
         ${renderMultiColorChips(zone, i)}
         <div class="color-status">${colorStatus}</div>
         ${typeof renderHarmonyPanel === 'function' && i === selectedZoneIndex ? renderHarmonyPanel(zone, i) : ''}
+    </div>
     </div>`;
 
-    // Base/Finish row — gold border section
-    html += `<div style="border-left:2px solid var(--accent-gold, #FFB300); padding-left:6px; margin-top:4px; background:rgba(255,179,0,0.03);">`;
+    // Base/Finish row — gold border section (collapsible)
+    html += `<div class="section-collapsible" id="sectionBase${i}">
+    <div class="section-header" onclick="event.stopPropagation(); this.parentElement.classList.toggle('collapsed')">
+        <span class="section-header-label">BASE</span>
+        <span class="collapse-arrow section-header-arrow">&#9660;</span>
+    </div>
+    <div style="border-left:2px solid var(--accent-gold, #FFB300); padding-left:6px; margin-top:4px; background:rgba(255,179,0,0.03);">`;
     html += `<div class="zone-finish-row">
         <label style="color:var(--accent-gold, #FFB300); font-weight:700;">Base</label>
-        <div class="swatch-trigger" onclick="event.stopPropagation(); openSwatchPicker(this, 'base', ${i})" title="${zone.finish ? (MONOLITHICS.find(m => m.id === zone.finish) || {}).desc || '' : zone.base ? (BASES.find(b => b.id === zone.base) || {}).desc || '' : 'Click to select a base finish'}">
+        <div class="swatch-trigger" onclick="event.stopPropagation(); openSwatchPicker(this, 'base', ${i})" title="The base material that defines how light interacts with this zone&#39;s surface">
             ${zone.finish ? renderSwatchDot(zone.finish, getSwatchColor(zone), getZoneColorHex(zone)) : zone.base ? renderSwatchDot(zone.base, getSwatchColor(zone), getZoneColorHex(zone)) : '<div class="swatch-dot" style="background:#333;border-style:dashed;"></div>'}
             <span class="swatch-name">${getBaseName(zone)}</span>
             <span class="swatch-arrow">&#9662;</span>
@@ -800,21 +826,21 @@ function renderZoneDetail(index) {
                 <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); stepZoneBaseColorStrength(${i}, 1)" title="+5%" style="padding:0 4px;font-size:10px;">+</button>
                 <span class="stack-val" id="detBaseColorStrVal${i}">${_baseColorStrengthPct}%</span>
             </div>` : ''}
-            <div style="display:flex; align-items:center; gap:8px; width:100%; flex-wrap:wrap;">
+            <div class="hsb-controls" style="display:flex; align-items:center; gap:8px; width:100%; flex-wrap:wrap;">
                 <span class="stack-label-mini" style="min-width:62px;">Hue Shift</span>
-                <input type="range" min="-180" max="180" step="5" value="${_baseHueOffset}" oninput="setZoneBaseHueOffset(${i}, this.value)" class="stack-slider" title="Shift hue of base color (degrees)">
+                <input type="range" min="-180" max="180" step="5" value="${_baseHueOffset}" oninput="setZoneBaseHueOffset(${i}, this.value)" class="stack-slider" title="Shift all colors around the color wheel — negative = cool, positive = warm">
                 <span class="stack-val" id="detBaseHueVal${i}" style="min-width:32px;">${_baseHueOffset}°</span>
                 <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); setZoneBaseHueOffset(${i}, 0)" title="Reset" style="padding:0 4px;font-size:9px;">↺</button>
             </div>
-            <div style="display:flex; align-items:center; gap:8px; width:100%; flex-wrap:wrap;">
+            <div class="hsb-controls" style="display:flex; align-items:center; gap:8px; width:100%; flex-wrap:wrap;">
                 <span class="stack-label-mini" style="min-width:62px;">Saturation</span>
-                <input type="range" min="-100" max="100" step="5" value="${_baseSatAdj}" oninput="setZoneBaseSaturation(${i}, this.value)" class="stack-slider" title="Adjust color saturation (-100 to +100)">
+                <input type="range" min="-100" max="100" step="5" value="${_baseSatAdj}" oninput="setZoneBaseSaturation(${i}, this.value)" class="stack-slider" title="Color intensity — negative = more grey, positive = more vivid">
                 <span class="stack-val" id="detBaseSatVal${i}" style="min-width:32px;">${_baseSatAdj}</span>
                 <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); setZoneBaseSaturation(${i}, 0)" title="Reset" style="padding:0 4px;font-size:9px;">↺</button>
             </div>
-            <div style="display:flex; align-items:center; gap:8px; width:100%; flex-wrap:wrap;">
+            <div class="hsb-controls" style="display:flex; align-items:center; gap:8px; width:100%; flex-wrap:wrap;">
                 <span class="stack-label-mini" style="min-width:62px;">Brightness</span>
-                <input type="range" min="-100" max="100" step="5" value="${_baseBrightAdj}" oninput="setZoneBaseBrightness(${i}, this.value)" class="stack-slider" title="Adjust brightness (-100 to +100)">
+                <input type="range" min="-100" max="100" step="5" value="${_baseBrightAdj}" oninput="setZoneBaseBrightness(${i}, this.value)" class="stack-slider" title="Overall lightness — negative = darker, positive = brighter">
                 <span class="stack-val" id="detBaseBrightVal${i}" style="min-width:32px;">${_baseBrightAdj}</span>
                 <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); setZoneBaseBrightness(${i}, 0)" title="Reset" style="padding:0 4px;font-size:9px;">↺</button>
             </div>
@@ -828,7 +854,15 @@ function renderZoneDetail(index) {
         const specStack = zone.specPatternStack || [];
         const specStackActive = specStack.length > 0;
         const MAX_SPEC_PATTERN_LAYERS = 5;
-        specPatternsHtml += `<div class="pattern-stack-section" style="border-top:1px solid var(--border);margin-top:6px;padding-top:6px; border-left:2px solid #ff4444; background:rgba(255,68,68,0.04);">
+        specPatternsHtml += `<div class="section-collapsible" id="sectionSpecPatterns${i}">
+        <div class="section-header" onclick="event.stopPropagation(); this.parentElement.classList.toggle('collapsed')">
+            <span class="section-header-label" style="display:flex;align-items:center;">SPEC PATTERNS
+                <span class="whats-this" onclick="event.stopPropagation(); var p=this.nextElementSibling; p.style.display=p.style.display===\'none\'?\'block\':\'none\';" title="Click for explanation">?</span>
+                <div class="whats-this-panel" style="display:none; font-weight:normal; letter-spacing:0; font-size:11px;">Procedurally generated texture overlays that modulate your spec map channels (Metallic, Roughness, Clearcoat) independently. Stack up to 5 for complex material surfaces.</div>
+            </span>
+            <span class="collapse-arrow section-header-arrow">&#9660;</span>
+        </div>
+        <div class="pattern-stack-section spec-patterns-section" style="border-top:1px solid var(--border);margin-top:6px;padding-top:6px; border-left:2px solid #ff4444; background:rgba(255,68,68,0.04);">
             <div class="pattern-stack-header" style="color:#ff4444;font-size:10px;">
                 &#9670; Spec Patterns
                 <span style="font-size:9px;color:var(--text-dim);margin-left:4px;">stackable spec map overlays</span>
@@ -907,18 +941,19 @@ function renderZoneDetail(index) {
             specPatternsHtml += '<div style="font-size:9px; color:var(--text-dim); margin-top:4px;">Maximum 5 spec pattern layers reached.</div>';
         }
 
-        specPatternsHtml += `</div></div>`;
+        specPatternsHtml += `</div></div>
+        </div>`;
     }
 
     // Base rotation, scale, strength + base position (horizontal rows under BASE)
     if (zone.base || zone.finish) {
-        html += `<div class="zone-finish-row zone-base-rotate-row" style="padding-left:24px; flex-direction: column; align-items: stretch;">
+        html += `<div class="zone-finish-row zone-base-rotate-row base-rotate-scale" style="padding-left:24px; flex-direction: column; align-items: stretch;">
             <div style="display:flex; flex-wrap: wrap; gap: 8px 12px; width: 100%;">
                 <div class="stack-control-group" style="flex: 1; min-width: 120px;">
                     <span class="stack-label-mini">Base Rotate</span>
                     <input type="range" min="0" max="359" step="1" value="${zone.baseRotation || 0}"
                         oninput="setZoneBaseRotation(${i}, this.value)"
-                        class="stack-slider" title="Rotate base material (degrees)">
+                        class="stack-slider" title="Rotate the base material in degrees">
                     <input type="number" min="0" max="359" step="1" value="${zone.baseRotation || 0}"
                         onchange="setZoneBaseRotation(${i}, this.value)"
                         oninput="setZoneBaseRotation(${i}, this.value)"
@@ -932,7 +967,7 @@ function renderZoneDetail(index) {
                     <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); stepZoneBaseScale(${i}, -1)" title="-1 step (5%)" style="padding:0 4px;font-size:10px;">−</button>
                     <input type="range" min="100" max="1000" step="5" value="${Math.round((zone.baseScale || 1.0) * 100)}"
                         oninput="setZoneBaseScale(${i}, parseFloat(this.value)/100)"
-                        class="stack-slider" title="Scale (5% steps)">
+                        class="stack-slider" title="Scale the base material texture">
                     <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); stepZoneBaseScale(${i}, 1)" title="+1 step (5%)" style="padding:0 4px;font-size:10px;">+</button>
                     <span class="stack-val" id="detBaseScaleVal${i}">${(zone.baseScale || 1.0).toFixed(2)}x</span>
                     <button class="btn btn-sm" onclick="event.stopPropagation(); resetZoneBaseScale(${i})" title="Reset to 1.0x" style="padding:0px 4px; font-size:9px; line-height:1.2;">↺</button>
@@ -942,7 +977,7 @@ function renderZoneDetail(index) {
                     <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); stepZoneBaseStrength(${i}, -1)" title="-5%" style="padding:0 4px;font-size:10px;">−</button>
                     <input type="range" min="0" max="100" step="5" value="${Math.round((zone.baseStrength ?? 1) * 100)}"
                         oninput="setZoneBaseStrength(${i}, this.value)"
-                        class="stack-slider" title="Base material intensity (5% steps)">
+                        class="stack-slider" title="How strongly the base affects the spec map — 0% = no effect, 100% = full">
                     <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); stepZoneBaseStrength(${i}, 1)" title="+5%" style="padding:0 4px;font-size:10px;">+</button>
                     <span class="stack-val" id="detBaseStrVal${i}">${Math.round((zone.baseStrength ?? 1) * 100)}%</span>
                 </div>
@@ -951,13 +986,15 @@ function renderZoneDetail(index) {
                     <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); stepZoneBaseSpecStrength(${i}, -1)" title="-5%" style="padding:0 4px;font-size:10px;">−</button>
                     <input type="range" min="0" max="100" step="5" value="${Math.round((zone.baseSpecStrength ?? 1) * 100)}"
                         oninput="setZoneBaseSpecStrength(${i}, this.value)"
-                        class="stack-slider" title="Base physical finish intensity (5% steps)">
+                        class="stack-slider" title="Overall strength of the spec map output">
                     <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); stepZoneBaseSpecStrength(${i}, 1)" title="+5%" style="padding:0 4px;font-size:10px;">+</button>
                     <span class="stack-val" id="detBaseSpecStrVal${i}">${Math.round((zone.baseSpecStrength ?? 1) * 100)}%</span>
                 </div>
-                <div class="stack-control-group" style="flex: 1; min-width: 140px;">
-                    <span class="stack-label-mini">Spec Blend</span>
-                    <select class="mini-select" style="min-width:100px;font-size:10px;" onchange="setZoneBaseSpecBlendMode(${i}, this.value)" title="How the base spec (metallic/roughness) blends with pattern spec">
+                <div class="stack-control-group spec-blend-section" style="flex: 1; min-width: 140px;">
+                    <span class="stack-label-mini" style="display:flex;align-items:center;gap:2px;">Spec Blend
+                        <span class="whats-this" onclick="event.stopPropagation(); var p=document.getElementById('specBlendHelp${i}'); p.style.display=p.style.display===\'none\'?\'block\':\'none\';" title="Click for explanation">?</span>
+                    </span>
+                    <select class="mini-select" style="min-width:100px;font-size:10px;" onchange="setZoneBaseSpecBlendMode(${i}, this.value)" title="How spec patterns combine with the base — Normal, Multiply, Screen, Overlay, etc.">
                         <option value="normal" ${(zone.baseSpecBlendMode || 'normal') === 'normal' ? 'selected' : ''}>Normal</option>
                         <option value="multiply" ${zone.baseSpecBlendMode === 'multiply' ? 'selected' : ''}>Multiply</option>
                         <option value="screen" ${zone.baseSpecBlendMode === 'screen' ? 'selected' : ''}>Screen</option>
@@ -965,9 +1002,10 @@ function renderZoneDetail(index) {
                         <option value="hardlight" ${zone.baseSpecBlendMode === 'hardlight' ? 'selected' : ''}>Hard Light</option>
                         <option value="softlight" ${zone.baseSpecBlendMode === 'softlight' ? 'selected' : ''}>Soft Light</option>
                     </select>
+                    <div id="specBlendHelp${i}" class="whats-this-panel" style="display:none; width:100%; margin-top:4px;">Controls how spec pattern values combine with the base spec — Normal replaces, Multiply darkens, Screen brightens, Overlay enhances contrast.</div>
                 </div>
             </div>
-            <div style="display:flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; width: 100%; margin-top: 6px;">
+            <div class="base-position-controls" style="display:flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; width: 100%; margin-top: 6px;">
                 <span class="stack-label-mini" style="white-space:nowrap;">Base position</span>
                 <div class="stack-control-group" style="flex: 1; min-width: 90px;">
                     <span class="stack-label-mini">Pos X</span>
@@ -1012,9 +1050,14 @@ function renderZoneDetail(index) {
                     // Inject spec patterns HTML (moved here from above BASE controls)
                     pHtml += specPatternsHtml;
 
-                    pHtml += `<div style="border-left:2px dotted #22c55e; padding-left:6px; margin-top:6px; background:rgba(34,197,94,0.03);">`;
+                    pHtml += `<div class="section-collapsible" id="sectionPattern${i}">
+                    <div class="section-header" onclick="event.stopPropagation(); this.parentElement.classList.toggle('collapsed')">
+                        <span class="section-header-label">PATTERN</span>
+                        <span class="collapse-arrow section-header-arrow">&#9660;</span>
+                    </div>
+                    <div style="border-left:2px dotted #22c55e; padding-left:6px; margin-top:6px; background:rgba(34,197,94,0.03);">`;
                     pHtml += `<span class="stack-label-mini" style="margin-bottom:4px; color:#22c55e;">Pattern 1 on this Layer/Zone</span>
-                    <div class="swatch-trigger" onclick="event.stopPropagation(); openSwatchPicker(this, 'pattern', ${i})" style="display:inline-flex;align-items:center;gap:6px;margin-bottom:6px;">
+                    <div class="swatch-trigger" onclick="event.stopPropagation(); openSwatchPicker(this, 'pattern', ${i})" style="display:inline-flex;align-items:center;gap:6px;margin-bottom:6px;" title="Visual texture pattern that tiles across the zone">
                         ${hasPrimaryPattern ? renderSwatchDot(zone.pattern, getPatternSwatchColor(zone.pattern), getZoneColorHex(zone)) : '<div class="swatch-dot" style="background:#333;border-style:dashed;"></div>'}
                         <span class="swatch-name">${getPatternName(zone.pattern)}</span>
                         <span class="swatch-arrow">&#9662;</span>
@@ -1024,31 +1067,42 @@ function renderZoneDetail(index) {
                         pHtml += `
                         <div class="stack-control-group"><span class="stack-label-mini">Opacity</span>
                             <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); stepZonePatternOpacity(${i}, -1)" title="-5%" style="padding:0 4px;font-size:10px;">−</button>
-                            <input type="range" min="0" max="100" step="5" value="${zone.patternOpacity ?? 100}" oninput="setZonePatternOpacity(${i}, this.value)" class="stack-slider">
+                            <input type="range" min="0" max="100" step="5" value="${zone.patternOpacity ?? 100}" oninput="setZonePatternOpacity(${i}, this.value)" class="stack-slider" title="How visible the pattern is — 0% = invisible, 100% = full">
                             <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); stepZonePatternOpacity(${i}, 1)" title="+5%" style="padding:0 4px;font-size:10px;">+</button>
                             <span class="stack-val" id="detPatOpVal${i}">${zone.patternOpacity ?? 100}%</span></div>
                         <div class="stack-control-group"><span class="stack-label-mini">Scale</span>
                             <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); stepZoneScale(${i}, -1)" title="-1 step (5%)" style="padding:0 4px;font-size:10px;">−</button>
-                            <input type="range" min="10" max="400" step="5" value="${Math.round((zone.scale || 1.0) * 100)}" oninput="setZoneScale(${i}, parseFloat(this.value)/100)" class="stack-slider">
+                            <input type="range" min="10" max="400" step="5" value="${Math.round((zone.scale || 1.0) * 100)}" oninput="setZoneScale(${i}, parseFloat(this.value)/100)" class="stack-slider" title="Pattern size — smaller values = more repetitions, larger = zoomed in">
                             <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); stepZoneScale(${i}, 1)" title="+1 step (5%)" style="padding:0 4px;font-size:10px;">+</button>
                             <span class="stack-val" id="detScaleVal${i}">${(zone.scale || 1.0).toFixed(2)}x</span>
                             <button class="btn btn-sm" onclick="event.stopPropagation(); resetZoneScale(${i})" title="Reset" style="padding:0 4px;font-size:9px;">↺</button></div>
                         <div class="stack-control-group"><span class="stack-label-mini">Rotate</span>
                             <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); stepZoneRotation(${i}, -1)" title="-1°" style="padding:0 4px;font-size:10px;">−</button>
-                            <input type="range" min="0" max="359" step="1" value="${zone.rotation || 0}" oninput="setZoneRotation(${i}, this.value)" class="stack-slider">
+                            <input type="range" min="0" max="359" step="1" value="${zone.rotation || 0}" oninput="setZoneRotation(${i}, this.value)" class="stack-slider" title="Rotate the pattern in degrees (0-359)">
                             <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); stepZoneRotation(${i}, 1)" title="+1°" style="padding:0 4px;font-size:10px;">+</button>
                             <input type="number" min="0" max="359" value="${zone.rotation || 0}" onchange="setZoneRotation(${i}, this.value)" id="detRotVal${i}" style="width:42px;font-size:10px;text-align:center;padding:1px 2px;background:var(--bg-input);color:var(--text);border:1px solid var(--border);border-radius:3px;">
                             <span style="font-size:10px;color:var(--text-dim);">°</span>
                             <button class="btn btn-sm" onclick="event.stopPropagation(); resetZoneRotation(${i})" style="padding:0 4px;font-size:9px;">↺</button></div>
+                        <div class="zone-target-mode" style="margin: 6px 0; display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
+                            <label style="color: #aaa; font-size: 11px; white-space: nowrap;">Pattern Placement:</label>
+                            <select onchange="zones[${i}].patternFitZone = this.value === 'fit'; renderZones();"
+                                    style="background: #1a1a1a; color: #ccc; border: 1px solid #333; padding: 2px 6px; font-size: 11px;"
+                                    title="Full Canvas tiles across the whole car; Fit to Zone concentrates the pattern into just this zone">
+                                <option value="normal" ${!(zone.patternFitZone) ? 'selected' : ''}>Full Canvas (Normal)</option>
+                                <option value="fit" ${zone.patternFitZone ? 'selected' : ''}>Fit to Zone</option>
+                            </select>
+                            <span class="whats-this" onclick="event.stopPropagation(); var p=this.nextElementSibling; p.style.display=p.style.display===\'none\'?\'block\':\'none\';" title="Click for explanation">?</span>
+                            <div class="whats-this-panel" style="display:none; width:100%;">Concentrates the pattern into just this zone&#39;s area instead of spreading across the full canvas. Great for small zones like car numbers.</div>
+                        </div>
                         <div class="stack-control-group"><span class="stack-label-mini">Position X</span>
-                            <input type="range" min="0" max="100" step="1" value="${Math.round((zone.patternOffsetX ?? 0.5) * 100)}" oninput="setZonePatternOffsetX(${i}, this.value)" class="stack-slider">
-                            <span class="stack-val" id="detPatPosXVal${i}">${Math.round((zone.patternOffsetX ?? 0.5) * 100)}%</span></div>
+                            <input type="range" min="0" max="100" step="1" value="${Math.round((zone.patternOffsetX ?? 0.5) * 100)}" oninput="setZonePatternOffsetX(${i}, this.value)" class="stack-slider" title="Slide the pattern left/right across the canvas" ${zone.patternFitZone ? 'disabled style="opacity:0.35;pointer-events:none;"' : ''}>
+                            <span class="stack-val" id="detPatPosXVal${i}" ${zone.patternFitZone ? 'style="opacity:0.35;"' : ''}>${Math.round((zone.patternOffsetX ?? 0.5) * 100)}%</span></div>
                         <div class="stack-control-group"><span class="stack-label-mini">Position Y</span>
-                            <input type="range" min="0" max="100" step="1" value="${Math.round((zone.patternOffsetY ?? 0.5) * 100)}" oninput="setZonePatternOffsetY(${i}, this.value)" class="stack-slider">
-                            <span class="stack-val" id="detPatPosYVal${i}">${Math.round((zone.patternOffsetY ?? 0.5) * 100)}%</span></div>
+                            <input type="range" min="0" max="100" step="1" value="${Math.round((zone.patternOffsetY ?? 0.5) * 100)}" oninput="setZonePatternOffsetY(${i}, this.value)" class="stack-slider" title="Slide the pattern up/down across the canvas" ${zone.patternFitZone ? 'disabled style="opacity:0.35;pointer-events:none;"' : ''}>
+                            <span class="stack-val" id="detPatPosYVal${i}" ${zone.patternFitZone ? 'style="opacity:0.35;"' : ''}>${Math.round((zone.patternOffsetY ?? 0.5) * 100)}%</span></div>
                         <div class="stack-control-group" style="flex-wrap:wrap; gap:6px;">
-                            <label style="display:flex;align-items:center;gap:4px;cursor:pointer;font-size:10px;"><input type="checkbox" ${(zone.patternFlipH || false) ? 'checked' : ''} onchange="setZonePatternFlipH(${i}, this.checked)"> Flip H</label>
-                            <label style="display:flex;align-items:center;gap:4px;cursor:pointer;font-size:10px;"><input type="checkbox" ${(zone.patternFlipV || false) ? 'checked' : ''} onchange="setZonePatternFlipV(${i}, this.checked)"> Flip V</label>
+                            <label style="display:flex;align-items:center;gap:4px;cursor:pointer;font-size:10px;" title="Mirror the pattern horizontally"><input type="checkbox" ${(zone.patternFlipH || false) ? 'checked' : ''} onchange="setZonePatternFlipH(${i}, this.checked)"> Flip H</label>
+                            <label style="display:flex;align-items:center;gap:4px;cursor:pointer;font-size:10px;" title="Mirror the pattern vertically"><input type="checkbox" ${(zone.patternFlipV || false) ? 'checked' : ''} onchange="setZonePatternFlipV(${i}, this.checked)"> Flip V</label>
                         </div>
                         <div class="stack-control-group"><span class="stack-label-mini">Strength</span>
                             <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); stepZonePatternSpecMult(${i}, -1)" title="-5%" style="padding:0 4px;font-size:10px;">−</button>
@@ -1058,7 +1112,7 @@ function renderZoneDetail(index) {
                     }
 
                     (zone.patternStack || []).forEach((layer, li) => {
-                        pHtml += `<div class="pattern-layer-card" data-layer-idx="${li}" data-zone-idx="${i}" style="margin-top: 8px; border-top: 1px dotted var(--border,#2a2a4a); padding-top: 8px;">
+                        pHtml += `<div class="pattern-layer-card pattern-stack-section" data-layer-idx="${li}" data-zone-idx="${i}" style="margin-top: 8px; border-top: 1px dotted var(--border,#2a2a4a); padding-top: 8px;">
                             <div class="pattern-layer-card-header">
                                 <span class="stack-label-mini" style="margin-bottom:0px; color:var(--accent-green);">Pattern ${li + 2} on this Layer/Zone</span>
                                 <div class="swatch-trigger" onclick="event.stopPropagation(); openSwatchPicker(this, 'stackPattern', ${i}, ${li})" style="display:inline-flex;align-items:center;gap:6px;margin-bottom:0px;">
@@ -1116,22 +1170,32 @@ function renderZoneDetail(index) {
                     });
 
                     if ((zone.patternStack || []).length < MAX_PATTERN_STACK_LAYERS) {
-                        pHtml += `<div style="margin-top: 8px;">
+                        pHtml += `<div class="pattern-stack-add-btn-wrap" style="margin-top: 8px;">
                             <button type="button" class="btn btn-sm stack-add-btn" onclick="event.stopPropagation(); addPatternLayer(${i})" title="Add another pattern to this layer">+ Add Layer</button>
                         </div>`;
                     }
 
-                    pHtml += `</div>`; // close green dotted Pattern 1 section
+                    pHtml += `</div>`; // close green dotted Pattern 1 section inner div
+                    pHtml += `</div>`; // close section-collapsible PATTERN wrapper
                     return pHtml;
                 })()}
             </div>
         </div>`;
-        html += `</div>`; // close gold BASE section
+        html += `</div>`; // close gold BASE section inner div
+        html += `</div>`; // close section-collapsible BASE wrapper
     }
 
     // ===== ⚗️ BASE OVERLAY LAYER (Dual Material Blend) - available for ALL base layers and monolithics =====
     if (zone.base || zone.finish) {
-        html += `<div class="pattern-stack-section" style="border-top:1px solid var(--border);margin-top:6px;padding-top:6px;">
+        html += `<div class="section-collapsible" id="sectionOverlays${i}">
+        <div class="section-header" onclick="event.stopPropagation(); this.parentElement.classList.toggle('collapsed')">
+            <span class="section-header-label">OVERLAYS
+                <span class="whats-this" onclick="event.stopPropagation(); var p=this.nextElementSibling; p.style.display=p.style.display===\'none\'?\'block\':\'none\';" title="Click for explanation">?</span>
+                <div class="whats-this-panel" style="display:none; font-weight:normal; letter-spacing:0; font-size:11px;">Stack additional base finishes on top of your primary base. Each overlay has its own pattern, blend mode, and opacity. Think of them as Photoshop layers for spec maps.</div>
+            </span>
+            <span class="collapse-arrow section-header-arrow">&#9660;</span>
+        </div>
+        <div class="pattern-stack-section overlay-section" style="border-top:1px solid var(--border);margin-top:6px;padding-top:6px;">
             <div class="pattern-stack-header" style="color:#c084fc;font-size:10px;">
                 ⚗️ Base Overlay Layer
                 <span style="font-size:9px;color:var(--text-dim);margin-left:4px;">blend a 2nd material into this zone</span>
@@ -1192,7 +1256,7 @@ function renderZoneDetail(index) {
                     const ovSpecStack = zone.overlaySpecPatternStack || [];
                     const ovSpecStackActive = ovSpecStack.length > 0;
                     const MAX_OVERLAY_SPEC_PATTERN_LAYERS = 3;
-                    let ovSpHtml = `<div style="border-top:1px solid #c084fc33;margin-top:6px;padding-top:6px;">
+                    let ovSpHtml = `<div class="overlay-spec-patterns" style="border-top:1px solid #c084fc33;margin-top:6px;padding-top:6px;">
                         <div style="color:#c084fc;font-size:10px;margin-bottom:4px;">
                             &#9670; Overlay Spec Patterns
                             <span style="font-size:9px;color:var(--text-dim);margin-left:4px;">spec overlays for 2nd base</span>
@@ -1274,7 +1338,7 @@ function renderZoneDetail(index) {
                     return ovSpHtml;
                 })() : ''}
                 ${(zone.secondBase || zone.secondBaseColorSource) ? `
-                <div class="stack-control-group" style="margin-top:4px;align-items:flex-start;">
+                <div class="stack-control-group blend-mode-section" style="margin-top:4px;align-items:flex-start;">
                     <span class="stack-label-mini" style="padding-top:2px;">Blend Mode</span>
                     <div style="display:flex;flex-direction:column;gap:2px;font-size:10px;">
                         <label style="display:flex;align-items:center;gap:4px;cursor:pointer;">
@@ -1389,7 +1453,7 @@ function renderZoneDetail(index) {
         </div>`;
 
         // 3rd Base Overlay (rollback: server omits when ENABLE_THIRD_BASE_OVERLAY=False)
-        html += `<div class="base-overlay-section" style="margin-top:6px;">
+        html += `<div class="base-overlay-section overlay-section" style="margin-top:6px;">
             <div class="base-overlay-header" style="background:var(--bg-card,#16162a);padding:4px 8px;border-radius:4px;border:1px solid var(--border,#2a2a4a);">
                 <span class="stack-label-mini">3rd Base Overlay</span>
                 ${(zone.thirdBase || zone.thirdBaseColorSource) ? `<span style="font-size:9px;margin-left:auto;color:#a78bfa;">● ACTIVE</span>` : ''}
@@ -1519,7 +1583,7 @@ function renderZoneDetail(index) {
                 </div>
                 ` : ''}
                 <!-- 4th Base Overlay (same structure as 2nd/3rd) -->
-                <div class="base-overlay-section" style="margin-top:6px;">
+                <div class="base-overlay-section overlay-section" style="margin-top:6px;">
                     <div class="base-overlay-header" style="background:var(--bg-card,#16162a);padding:4px 8px;border-radius:4px;border:1px solid var(--border,#2a2a4a);">
                         <span class="stack-label-mini">4th Base Overlay</span>
                         ${(zone.fourthBase || zone.fourthBaseColorSource) ? `<span style="font-size:9px;margin-left:auto;color:#a78bfa;">● ACTIVE</span>` : ''}
@@ -1637,7 +1701,7 @@ function renderZoneDetail(index) {
                     </div>
                 </div>
                 <!-- 5th Base Overlay (same structure as 2nd/3rd) -->
-                <div class="base-overlay-section" style="margin-top:6px;">
+                <div class="base-overlay-section overlay-section" style="margin-top:6px;">
                     <div class="base-overlay-header" style="background:var(--bg-card,#16162a);padding:4px 8px;border-radius:4px;border:1px solid var(--border,#2a2a4a);">
                         <span class="stack-label-mini">5th Base Overlay</span>
                         ${(zone.fifthBase || zone.fifthBaseColorSource) ? `<span style="font-size:9px;margin-left:auto;color:#a78bfa;">● ACTIVE</span>` : ''}
@@ -1755,6 +1819,7 @@ function renderZoneDetail(index) {
                     </div>
                 </div>
             </div>
+        </div>
         </div>`;
     }
 
@@ -1779,10 +1844,11 @@ function renderZoneDetail(index) {
         </div>
         
         <div class="intensity-slider-row" style="margin-top:2px;">
-            <label title="Master PBR Intensity - Scales overall finish effect strength">Master PBR</label>
-            <input type="range" min="0" max="100" step="1" value="${parseInt(zone.intensity) || 100}" 
-                oninput="setZoneIntensity(${i}, this.value, true); document.getElementById('detIntVal${i}').textContent=this.value+'%'" 
-                style="flex:1;">
+            <label title="Zone intensity — controls the overall strength of all effects in this zone">Master PBR</label>
+            <input type="range" min="0" max="100" step="1" value="${parseInt(zone.intensity) || 100}"
+                oninput="setZoneIntensity(${i}, this.value, true); document.getElementById('detIntVal${i}').textContent=this.value+'%'"
+                style="flex:1;"
+                title="Zone intensity — controls the overall strength of all effects in this zone">
             <span class="slider-val" id="detIntVal${i}">${parseInt(zone.intensity) || 100}%</span>
         </div>
 
@@ -2466,6 +2532,7 @@ function addZone(skipUndo) {
         muted: false,
         patternOffsetX: 0.5,
         patternOffsetY: 0.5,
+        patternFitZone: false,
         patternFlipH: false,
         patternFlipV: false,
         baseOffsetX: 0.5,

@@ -4938,3 +4938,101 @@ kbd {
 }
 
 /* ===== DECAL & NUMBER OVERLAY (DISABLED — future feature) ===== */
+
+/* ===== EASY MODE — hide advanced sections ===== */
+body.easy-mode .overlay-section,
+body.easy-mode .spec-patterns-section,
+body.easy-mode .blend-mode-section,
+body.easy-mode .hsb-controls,
+body.easy-mode .base-position-controls,
+body.easy-mode .base-rotate-scale,
+body.easy-mode .pattern-layer-card,
+body.easy-mode .ps-export-section,
+body.easy-mode .overlay-spec-patterns,
+body.easy-mode .spec-blend-section,
+body.easy-mode .zone-target-mode,
+body.easy-mode .advanced-only {
+    display: none !important;
+}
+
+/* Hide "Add Layer" button wrapper in easy mode */
+body.easy-mode .pattern-stack-add-btn-wrap {
+    display: none !important;
+}
+
+body.easy-mode .easy-mode-label {
+    display: block;
+}
+
+/* ===== COLLAPSIBLE SECTION HEADERS (zone detail panel) ===== */
+.section-collapsible.collapsed > *:not(.section-header) {
+    display: none !important;
+}
+.section-collapsible.collapsed .collapse-arrow {
+    transform: rotate(-90deg);
+}
+.collapse-arrow {
+    transition: transform 0.2s ease;
+    display: inline-block;
+}
+/* Override only within section-collapsible to avoid conflict with global .section-header */
+.section-collapsible > .section-header {
+    cursor: pointer;
+    padding: 4px 8px;
+    background: #1a1a1a;
+    border-bottom: 1px solid #333;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    user-select: none;
+    margin: 4px 0 4px 0;
+    border-radius: 3px;
+}
+.section-collapsible > .section-header:hover {
+    background: #222;
+}
+.section-header-label {
+    color: #E87A20;
+    font-weight: bold;
+    font-size: 12px;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.section-header-arrow {
+    color: #666;
+    font-size: 10px;
+}
+
+/* ===== WHAT'S THIS PANELS ===== */
+.whats-this {
+    cursor: help;
+    color: #00C8C8;
+    font-size: 11px;
+    margin-left: 6px;
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    line-height: 14px;
+    text-align: center;
+    border: 1px solid #00C8C8;
+    border-radius: 50%;
+    font-weight: bold;
+    vertical-align: middle;
+    flex-shrink: 0;
+}
+.whats-this:hover {
+    background: rgba(0, 200, 200, 0.15);
+}
+.whats-this-panel {
+    display: none;
+    background: #1a1a2a;
+    border: 1px solid #00C8C8;
+    border-radius: 4px;
+    padding: 8px 10px;
+    margin: 4px 0;
+    color: #ccc;
+    font-size: 11px;
+    line-height: 1.4;
+}

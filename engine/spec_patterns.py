@@ -38,6 +38,8 @@ CONVENIENCE:
 26. multi_band_spec     — combo of bands + flakes + depth, outputs 0-255
 """
 import numpy as np
+from scipy.ndimage import gaussian_filter
+from scipy.spatial import cKDTree
 
 
 # ---------------------------------------------------------------------------
@@ -112,37 +114,37 @@ def flake_scatter(shape, seed, sm, density=0.02, flake_radius=2,
                   intensity_range=(0.3, 1.0)):
     """
     Sparse bright spots simulating metallic flake particles.
-    Uses vectorized stamp placement for performance.
+    Vectorized: scatter all flakes onto sparse canvas, Gaussian-blur for glow.
     """
     h, w = shape
     if sm < 0.001:
         return _flat(shape)
 
-    rng = np.random.RandomState(seed)
+    rng = np.random.default_rng(seed)
     eff_density = density * sm
     num_flakes = min(int(h * w * eff_density), 50000)
     if num_flakes < 1:
         return _flat(shape)
 
-    fy = rng.randint(0, h, size=num_flakes)
-    fx = rng.randint(0, w, size=num_flakes)
+    fy = rng.integers(0, h, size=num_flakes)
+    fx = rng.integers(0, w, size=num_flakes)
     lo, hi = intensity_range
     intensities = rng.uniform(lo, hi, size=num_flakes).astype(np.float32)
 
-    result = _flat(shape)
-    r = max(1, int(flake_radius))
-    for i in range(num_flakes):
-        y, x = int(fy[i]), int(fx[i])
-        y0, y1 = max(0, y - r), min(h, y + r + 1)
-        x0, x1 = max(0, x - r), min(w, x + r + 1)
-        yy = np.arange(y0, y1, dtype=np.float32) - y
-        xl = np.arange(x0, x1, dtype=np.float32) - x
-        dsq = yy[:, np.newaxis]**2 + xl[np.newaxis, :]**2
-        falloff = np.clip(1.0 - dsq / (r*r + 0.1), 0, 1)
-        stamp = 0.5 + (intensities[i] - 0.5) * falloff * sm
-        result[y0:y1, x0:x1] = np.maximum(result[y0:y1, x0:x1], stamp)
+    # Scatter all flake intensities onto canvas in one pass
+    canvas = np.zeros(shape, dtype=np.float32)
+    np.add.at(canvas, (fy, fx), intensities)
+    canvas = np.clip(canvas, 0.0, 1.0)
 
-    return result.astype(np.float32)
+    # One Gaussian blur pass produces radial glow around every flake
+    sigma = max(0.5, flake_radius * 0.6)
+    blurred = gaussian_filter(canvas, sigma=sigma)
+    bmax = blurred.max()
+    if bmax > 1e-7:
+        blurred = blurred / bmax
+
+    result = 0.5 + blurred * 0.5 * sm
+    return result.clip(0.0, 1.0).astype(np.float32)
 
 
 # ============================================================================
@@ -344,48 +346,43 @@ def concentric_ripple(shape, seed, sm, num_centers=3, ring_freq=15.0,
 def hex_cells(shape, seed, sm, cell_size=20, edge_width=0.15):
     """
     Hexagonal honeycomb grid. Each cell gets a random value.
-    Edges between cells are visible as transitions.
-    Good for: carbon fiber hex, metallic hex flake, scale patterns.
+    Vectorized Voronoi via cKDTree: all hex centers built as arrays,
+    nearest-2 query in one call. No Python loops over cells or pixels.
     """
     h, w = shape
     if sm < 0.001:
         return _flat(shape)
 
-    rng = np.random.RandomState(seed)
+    rng = np.random.default_rng(seed)
     cs = max(4, cell_size)
-    # Hex grid dimensions
-    ny = max(2, int(h / (cs * 0.866)) + 2)
-    nx = max(2, int(w / cs) + 2)
-
-    # Cell center values
-    cell_vals = rng.uniform(0.2, 0.8, size=(ny, nx)).astype(np.float32)
-
-    yy = np.arange(h, dtype=np.float32)
-    xx = np.arange(w, dtype=np.float32)
-
-    # Hex grid: offset every other row
     row_h = cs * 0.866  # sqrt(3)/2
-    result = np.zeros(shape, dtype=np.float32)
-    min_dist = np.full(shape, 1e6, dtype=np.float32)
-    nearest_val = np.full(shape, 0.5, dtype=np.float32)
 
-    # Check nearest hex center for each pixel (vectorized per center)
-    for iy in range(ny):
-        for ix in range(nx):
-            cy = iy * row_h
-            cx = ix * cs + (cs * 0.5 if iy % 2 else 0)
-            dy = (yy[:, np.newaxis] - cy) / row_h
-            dx = (xx[np.newaxis, :] - cx) / cs
-            d = dy**2 + dx**2
-            closer = d < min_dist
-            nearest_val = np.where(closer, cell_vals[iy % ny, ix % nx], nearest_val)
-            min_dist = np.minimum(min_dist, d)
+    ny = max(2, int(h / row_h) + 3)
+    nx = max(2, int(w / cs) + 3)
+    iy_arr = np.arange(ny)
+    ix_arr = np.arange(nx)
+    IY, IX = np.meshgrid(iy_arr, ix_arr, indexing='ij')
+    center_y = IY.astype(np.float64) * row_h
+    center_x = IX.astype(np.float64) * cs + (cs * 0.5) * (IY % 2).astype(np.float64)
+    cell_vals = rng.uniform(0.2, 0.8, size=(ny, nx)).astype(np.float32).ravel()
 
-    # Edge detection: where distance to center is high = edge zone
-    edge_factor = np.clip(min_dist / (edge_width + 0.01), 0, 1)
-    # Blend between cell value and edge value (edges trend toward 0.3)
+    centers = np.column_stack([center_y.ravel(), center_x.ravel()])  # (N, 2)
+    tree = cKDTree(centers)
+
+    # Pixel query grid
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float64)
+    pts = np.column_stack([yy.ravel(), xx.ravel()])  # (h*w, 2)
+
+    # Query 2 nearest neighbors for edge detection
+    dists, idxs = tree.query(pts, k=2, workers=-1)   # (h*w, 2)
+    d1 = dists[:, 0].reshape(shape).astype(np.float32)
+    d2 = dists[:, 1].reshape(shape).astype(np.float32)
+    nearest_val = cell_vals[idxs[:, 0]].reshape(shape)
+
+    # Normalize distances by cell radius for edge_width parameter
+    d1_n = d1 / cs
+    edge_factor = np.clip(d1_n / (edge_width + 0.01), 0, 1)
     result = nearest_val * (1 - edge_factor * 0.4) + 0.3 * edge_factor * 0.4
-
     return _sm_scale(_normalize(result), sm).astype(np.float32)
 
 
@@ -457,11 +454,23 @@ def cloud_wisps(shape, seed, sm, num_octaves=5, lacunarity=2.0, persistence=0.5)
         a2 = rng.uniform(0, 2*np.pi)
         a3 = rng.uniform(0, 2*np.pi)
         a4 = rng.uniform(0, 2*np.pi)
-        # 2D value noise approximation via sin products
-        n = (np.sin(yy[:, np.newaxis] * freq * np.pi * 2 + a1) *
-             np.sin(xx[np.newaxis, :] * freq * np.pi * 2 + a2) * 0.5 +
-             np.sin(yy[:, np.newaxis] * freq * np.pi * 1.7 + a3) *
-             np.cos(xx[np.newaxis, :] * freq * np.pi * 2.3 + a4) * 0.5)
+        # Per-octave random rotation angles to break axis-aligned diagonal stripe bias
+        rot1 = rng.uniform(0, 2*np.pi)
+        rot2 = rng.uniform(0, 2*np.pi)
+        c1, s1 = np.cos(rot1), np.sin(rot1)
+        c2, s2 = np.cos(rot2), np.sin(rot2)
+        # Rotate coordinates for each sub-noise component
+        yy_g = yy[:, np.newaxis]
+        xx_g = xx[np.newaxis, :]
+        u1 = yy_g * c1 + xx_g * s1
+        v1 = -yy_g * s1 + xx_g * c1
+        u2 = yy_g * c2 + xx_g * s2
+        v2 = -yy_g * s2 + xx_g * c2
+        # 2D value noise approximation via sin products on rotated coords
+        n = (np.sin(u1 * freq * np.pi * 2 + a1) *
+             np.sin(v1 * freq * np.pi * 2 + a2) * 0.5 +
+             np.sin(u2 * freq * np.pi * 1.7 + a3) *
+             np.cos(v2 * freq * np.pi * 2.3 + a4) * 0.5)
         result += n * amplitude
         freq *= lacunarity
         amplitude *= persistence
@@ -794,42 +803,43 @@ def moire_overlay(shape, seed, sm, grid1_freq=20, grid2_freq=21, grid2_angle=0.0
 
 def pebble_grain(shape, seed, sm, pebble_size=15, roundness=0.7):
     """
-    Large rounded bumps like leather grain, pebbled rubber, or
-    hammered metal. Bigger and softer than orange_peel_texture.
+    Large rounded bumps like leather grain, pebbled rubber, or hammered metal.
+    Vectorized grid-jitter Voronoi via cKDTree: one center per grid cell,
+    nearest-neighbor query in one call — no per-center Python loops.
     """
     h, w = shape
     if sm < 0.001:
         return _flat(shape)
 
-    rng = np.random.RandomState(seed)
+    rng = np.random.default_rng(seed)
     ps = max(4, pebble_size)
-    # Use Voronoi-like approach: random centers, each pixel gets value
-    # based on distance to nearest center
-    n = max(8, (h * w) // (ps * ps))
-    n = min(n, 2000)
-    cy = rng.uniform(0, h, size=n).astype(np.float32)
-    cx = rng.uniform(0, w, size=n).astype(np.float32)
-    pebble_height = rng.uniform(0.3, 0.8, size=n).astype(np.float32)
-
-    yy = np.arange(h, dtype=np.float32)
-    xx = np.arange(w, dtype=np.float32)
-
-    # Find nearest center and distance
-    min_dist = np.full(shape, 1e6, dtype=np.float32)
-    nearest_h = np.full(shape, 0.5, dtype=np.float32)
-
-    for i in range(n):
-        d = np.sqrt((yy[:, np.newaxis] - cy[i])**2 +
-                     (xx[np.newaxis, :] - cx[i])**2)
-        closer = d < min_dist
-        nearest_h = np.where(closer, pebble_height[i], nearest_h)
-        min_dist = np.where(closer, d, min_dist)
-
-    # Pebble profile: rounded dome shape based on distance to center
     pebble_radius = ps * 0.6
+
+    ny = max(2, h // ps + 2)
+    nx = max(2, w // ps + 2)
+
+    jitter_y = rng.uniform(0.1, 0.9, size=(ny, nx))
+    jitter_x = rng.uniform(0.1, 0.9, size=(ny, nx))
+    pebble_height = rng.uniform(0.3, 0.8, size=(ny, nx)).astype(np.float32).ravel()
+
+    iy_arr = np.arange(ny, dtype=np.float64)
+    ix_arr = np.arange(nx, dtype=np.float64)
+    IY, IX = np.meshgrid(iy_arr, ix_arr, indexing='ij')
+    center_y = (IY + jitter_y) * ps
+    center_x = (IX + jitter_x) * ps
+
+    centers = np.column_stack([center_y.ravel(), center_x.ravel()])
+    tree = cKDTree(centers)
+
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float64)
+    pts = np.column_stack([yy.ravel(), xx.ravel()])
+
+    dists, idxs = tree.query(pts, k=1, workers=-1)
+    min_dist = dists.reshape(shape).astype(np.float32)
+    nearest_h = pebble_height[idxs].reshape(shape)
+
     dome = np.clip(1.0 - (min_dist / pebble_radius) ** roundness, 0, 1)
     result = nearest_h * dome + 0.2 * (1 - dome)
-
     return _sm_scale(_normalize(result), sm).astype(np.float32)
 
 
@@ -1005,64 +1015,72 @@ def electric_branches(shape, seed, sm, num_trees=3, branch_depth=6,
                       thickness=0.008):
     """
     Branching tree/lightning patterns (Lichtenberg figures).
-    Recursive branching from random root points.
-    Simulates electrical discharge, frost crystals, or vein networks.
+    Vectorized: collect all segments iteratively (capped), then draw each segment
+    onto a sparse canvas via rasterized line sampling, apply Gaussian blur for glow.
     """
     h, w = shape
     if sm < 0.001:
         return _flat(shape)
 
-    rng = np.random.RandomState(seed)
-    yy = np.arange(h, dtype=np.float32) / h
-    xx = np.arange(w, dtype=np.float32) / w
+    rng = np.random.default_rng(seed)
+    MAX_SEGS = 2000   # cap to prevent exponential blowup
 
-    result = np.full(shape, 0.3, dtype=np.float32)
+    # --- Phase 1: collect segments iteratively (stack-based) ---
+    segments = []  # (y0, x0, y1, x1, thickness_norm, intensity)
 
-    def _draw_branch(y0, x0, angle, length, depth, intensity):
-        """Draw a branch as a line with falloff and spawn sub-branches."""
-        if depth <= 0 or length < 0.005:
-            return
-        # End point
-        y1 = y0 + np.sin(angle) * length
-        x1 = x0 + np.cos(angle) * length
-
-        # Distance from each pixel to the line segment
-        # Parameterize: P = (y0,x0) + t*(dy,dx), t clamped to [0,1]
-        dy, dx = y1 - y0, x1 - x0
-        seg_len = max(np.sqrt(dy**2 + dx**2), 1e-6)
-
-        t = ((yy[:, np.newaxis] - y0) * dy + (xx[np.newaxis, :] - x0) * dx) / (seg_len**2)
-        t = np.clip(t, 0, 1)
-        closest_y = y0 + t * dy
-        closest_x = x0 + t * dx
-        dist = np.sqrt((yy[:, np.newaxis] - closest_y)**2 +
-                        (xx[np.newaxis, :] - closest_x)**2)
-
-        # Glow around branch
-        thick = thickness * (depth / branch_depth)  # Thinner for deeper branches
-        glow = np.exp(-(dist / max(thick, 0.001))**2) * intensity
-        result[:] = np.maximum(result, 0.3 + glow * 0.7)
-
-        # Spawn sub-branches
-        num_children = rng.randint(1, 4)
-        for _ in range(num_children):
-            child_angle = angle + rng.uniform(-0.8, 0.8)
-            child_length = length * rng.uniform(0.4, 0.7)
-            child_intensity = intensity * rng.uniform(0.5, 0.85)
-            # Branch from a random point along parent
-            branch_t = rng.uniform(0.3, 0.9)
-            by = y0 + dy * branch_t
-            bx = x0 + dx * branch_t
-            _draw_branch(by, bx, child_angle, child_length, depth - 1, child_intensity)
-
-    # Create trees from random root points
+    stack = []
     for _ in range(num_trees):
         root_y = rng.uniform(0.2, 0.8)
         root_x = rng.uniform(0.2, 0.8)
         root_angle = rng.uniform(0, 2 * np.pi)
         root_length = rng.uniform(0.15, 0.35)
-        _draw_branch(root_y, root_x, root_angle, root_length,
-                     branch_depth, rng.uniform(0.6, 1.0))
+        stack.append((root_y, root_x, root_angle, root_length, branch_depth, rng.uniform(0.6, 1.0)))
+
+    while stack and len(segments) < MAX_SEGS:
+        y0, x0, angle, length, depth, intensity = stack.pop()
+        if depth <= 0 or length < 0.005:
+            continue
+        y1 = y0 + np.sin(angle) * length
+        x1 = x0 + np.cos(angle) * length
+        thick = max(thickness * (depth / max(branch_depth, 1)), 0.001)
+        dy_seg = y1 - y0; dx_seg = x1 - x0
+        segments.append((y0, x0, y1, x1, thick, intensity))
+
+        num_children = int(rng.integers(1, 4))
+        for _ in range(num_children):
+            child_angle = angle + rng.uniform(-0.8, 0.8)
+            child_length = length * rng.uniform(0.4, 0.7)
+            child_intensity = intensity * rng.uniform(0.5, 0.85)
+            branch_t = rng.uniform(0.3, 0.9)
+            by = y0 + dy_seg * branch_t
+            bx = x0 + dx_seg * branch_t
+            stack.append((by, bx, child_angle, child_length, depth - 1, child_intensity))
+
+    if not segments:
+        return _flat(shape)
+
+    # --- Phase 2: rasterize segments onto a sparse canvas, then Gaussian blur ---
+    canvas = np.zeros(shape, dtype=np.float32)
+    inten_canvas = np.zeros(shape, dtype=np.float32)
+
+    for (y0, x0, y1, x1, thick, inten) in segments:
+        # Rasterize this line segment using Bresenham-style sampling
+        py0 = int(np.clip(y0 * h, 0, h - 1))
+        px0 = int(np.clip(x0 * w, 0, w - 1))
+        py1 = int(np.clip(y1 * h, 0, h - 1))
+        px1 = int(np.clip(x1 * w, 0, w - 1))
+        n_steps = max(abs(py1 - py0), abs(px1 - px0), 1)
+        ts = np.linspace(0, 1, n_steps + 1)
+        ys = np.clip((py0 + (py1 - py0) * ts).astype(np.int32), 0, h - 1)
+        xs = np.clip((px0 + (px1 - px0) * ts).astype(np.int32), 0, w - 1)
+        np.maximum.at(canvas, (ys, xs), inten)
+
+    # Gaussian blur for glow — sigma proportional to mean thickness
+    mean_thick = float(np.mean([s[4] for s in segments]))
+    sigma = max(mean_thick * min(h, w) * 0.5, 1.5)
+    blurred = gaussian_filter(canvas, sigma=sigma)
+    result = np.maximum(canvas * 0.4, blurred)
+    result = 0.3 + result * 0.7
 
     return _sm_scale(_normalize(result), sm).astype(np.float32)
 
@@ -1086,7 +1104,9 @@ def multi_band_spec(shape, seed, sm, base_val, variation, num_bands=30,
     combined = _normalize(combined)
     result = base_val + (combined - 0.5) * 2.0 * variation * sm
 
-    return np.clip(result, 0, 255).astype(np.float32)
+    # Normalize to [0,1] to match all other pattern functions
+    result_01 = np.clip(result / 255.0, 0.0, 1.0)
+    return _sm_scale(result_01, sm).astype(np.float32)
 
 
 # ============================================================================
@@ -1351,9 +1371,11 @@ def prismatic_shatter(shape, seed, sm, num_shards=60, **kwargs):
         closest = np.where(mask, i, closest)
         min_dist = np.minimum(min_dist, d)
 
-    # Angular gradient within each shard
+    # Angular gradient within each shard — normalize to [0,1] to avoid wild oscillation
     shard_angle = angles[closest]
-    grad = np.sin((xx * np.cos(shard_angle) + yy * np.sin(shard_angle)) * 0.1) * 0.5 + 0.5
+    xx_n = xx / w
+    yy_n = yy / h
+    grad = np.sin((xx_n * np.cos(shard_angle) + yy_n * np.sin(shard_angle)) * np.pi) * 0.5 + 0.5
 
     # Edge darkening (fracture lines)
     edge = np.clip((np.sqrt(second_dist) - np.sqrt(min_dist)) / 3.0, 0, 1)
@@ -1367,51 +1389,67 @@ def prismatic_shatter(shape, seed, sm, num_shards=60, **kwargs):
 # ============================================================================
 
 def neural_dendrite(shape, seed, sm, num_neurons=5, branch_depth=7, **kwargs):
-    """Branching neural dendrite trees — synaptic network visualization."""
+    """
+    Branching neural dendrite trees — synaptic network visualization.
+    Vectorized: collect segments iteratively (capped), rasterize to sparse canvas,
+    apply Gaussian blur for soft dendritic glow. Fast on any resolution.
+    """
     h, w = shape
     if sm < 0.001:
         return _flat(shape)
-    rng = np.random.RandomState(seed)
-    result = np.zeros(shape, dtype=np.float32)
+    rng = np.random.default_rng(seed)
+    MAX_SEGS = 3000  # cap against exponential blowup
 
-    def _draw_branch(x, y, angle, length, thickness, depth):
-        if depth <= 0 or length < 2:
-            return
-        steps = int(length)
-        for s in range(steps):
-            px = int(x + s * np.cos(angle))
-            py = int(y + s * np.sin(angle))
-            r = max(1, int(thickness))
-            for dy in range(-r, r+1):
-                for dx in range(-r, r+1):
-                    if dx*dx + dy*dy <= r*r:
-                        yy, xx2 = py + dy, px + dx
-                        if 0 <= yy < h and 0 <= xx2 < w:
-                            val = 1.0 - (dx*dx + dy*dy) / (r*r + 1)
-                            result[yy, xx2] = max(result[yy, xx2], val * 0.8)
-        ex = x + length * np.cos(angle)
-        ey = y + length * np.sin(angle)
-        # Branch into 2-3 children
-        n_children = rng.randint(2, 4)
-        for _ in range(n_children):
-            child_angle = angle + rng.uniform(-0.7, 0.7)
-            child_len = length * rng.uniform(0.5, 0.75)
-            child_thick = thickness * 0.65
-            _draw_branch(ex, ey, child_angle, child_len, child_thick, depth - 1)
+    # --- Phase 1: collect segments and body centers via iterative stack ---
+    segments = []  # (ax, ay, bx, by, thickness_px, brightness)
+    bodies   = []
 
     for _ in range(num_neurons):
-        sx, sy = rng.rand() * w, rng.rand() * h
-        for arm in range(rng.randint(3, 7)):
+        sx, sy = rng.uniform(0, w), rng.uniform(0, h)
+        bodies.append((sx, sy))
+        n_arms = int(rng.integers(3, 7))
+        arm_stack = []
+        for _ in range(n_arms):
             angle = rng.uniform(0, 2 * np.pi)
-            _draw_branch(sx, sy, angle, rng.uniform(30, 80), 3.0, branch_depth)
-        # Cell body glow
-        for dy in range(-8, 9):
-            for dx in range(-8, 9):
-                yy, xx2 = int(sy) + dy, int(sx) + dx
-                if 0 <= yy < h and 0 <= xx2 < w:
-                    d = np.sqrt(dx*dx + dy*dy)
-                    result[yy, xx2] = max(result[yy, xx2], np.exp(-d*d / 18.0))
+            arm_stack.append((sx, sy, angle, rng.uniform(30, 80), 3.0, branch_depth))
 
+        while arm_stack and len(segments) < MAX_SEGS:
+            x, y, angle, length, thickness, depth = arm_stack.pop()
+            if depth <= 0 or length < 2:
+                continue
+            ex = x + length * np.cos(angle)
+            ey = y + length * np.sin(angle)
+            bright = 0.8 * (depth / max(branch_depth, 1))
+            segments.append((x, y, ex, ey, max(thickness, 1.0), bright))
+            n_children = int(rng.integers(2, 4))
+            for _ in range(n_children):
+                child_angle = angle + rng.uniform(-0.7, 0.7)
+                child_len   = length * rng.uniform(0.5, 0.75)
+                arm_stack.append((ex, ey, child_angle, child_len, thickness * 0.65, depth - 1))
+
+    # --- Phase 2: rasterize all segments onto a sparse canvas ---
+    canvas = np.zeros(shape, dtype=np.float32)
+
+    for (ax, ay, bx, by, thick, bright) in segments:
+        py0 = int(np.clip(ay, 0, h - 1))
+        px0 = int(np.clip(ax, 0, w - 1))
+        py1 = int(np.clip(by, 0, h - 1))
+        px1 = int(np.clip(bx, 0, w - 1))
+        n_steps = max(abs(py1 - py0), abs(px1 - px0), 1)
+        ts = np.linspace(0, 1, n_steps + 1)
+        ys = np.clip((py0 + (py1 - py0) * ts).astype(np.int32), 0, h - 1)
+        xs = np.clip((px0 + (px1 - px0) * ts).astype(np.int32), 0, w - 1)
+        np.maximum.at(canvas, (ys, xs), bright)
+
+    # Cell body markers
+    for sx, sy in bodies:
+        iy = int(np.clip(sy, 0, h - 1))
+        ix = int(np.clip(sx, 0, w - 1))
+        canvas[iy, ix] = max(canvas[iy, ix], 1.0)
+
+    # Gaussian blur adds soft dendritic glow halo
+    blurred = gaussian_filter(canvas, sigma=3.0)
+    result = np.maximum(canvas, blurred)
     return _sm_scale(_normalize(result), sm)
 
 
@@ -1625,8 +1663,10 @@ def sand_dune(shape, seed, sm, dune_freq=15.0, wind_angle=0.3, **kwargs):
     # Primary dunes with asymmetric profile (gentle windward, steep lee)
     dune = u * dune_freq
     profile = np.mod(dune, 1.0)
-    # Asymmetric: gradual rise then sharp drop
-    primary = np.where(profile < 0.7, profile / 0.7, (1.0 - profile) / 0.3)
+    # Asymmetric: gradual rise then sharp drop — both sides normalized to [0,1]
+    gentle = np.clip(profile / 0.7, 0, 1)
+    steep = np.clip((1.0 - profile) / (1.0 - 0.7), 0, 1)
+    primary = np.where(profile < 0.7, gentle, steep)
 
     # Secondary ripples (smaller scale)
     v = -X * np.sin(wind_angle) + Y * np.cos(wind_angle)
@@ -1644,43 +1684,64 @@ def sand_dune(shape, seed, sm, dune_freq=15.0, wind_angle=0.3, **kwargs):
 # ============================================================================
 
 def circuit_trace(shape, seed, sm, trace_count=40, **kwargs):
-    """PCB circuit traces — Manhattan-routed conductive paths with pads."""
+    """
+    PCB circuit traces — Manhattan-routed conductive paths with pads.
+    Vectorized: traces filled via numpy slice assignment; pads via vectorized
+    circular mask per pad; glow halo via Gaussian blur of bright regions.
+    """
     h, w = shape
     if sm < 0.001:
         return _flat(shape)
-    rng = np.random.RandomState(seed)
-    result = np.full(shape, 0.15, dtype=np.float32)  # Dark substrate
+    rng = np.random.default_rng(seed)
+    result = np.full(shape, 0.15, dtype=np.float32)
+
+    pad_centers = []  # (y, x, pad_r, brightness)
 
     for _ in range(trace_count):
-        x, y = rng.randint(0, w), rng.randint(0, h)
-        thickness = rng.randint(1, 4)
-        brightness = rng.uniform(0.6, 1.0)
-        segments = rng.randint(3, 10)
+        x = int(rng.integers(0, w))
+        y = int(rng.integers(0, h))
+        thickness = int(rng.integers(1, 4))
+        brightness = float(rng.uniform(0.6, 1.0))
+        num_segs = int(rng.integers(3, 10))
 
-        for _ in range(segments):
-            direction = rng.choice(['h', 'v'])
-            length = rng.randint(10, 80)
+        for _ in range(num_segs):
+            go_horiz = rng.random() < 0.5
+            length = int(rng.integers(10, 80))
+            sign = 1 if rng.random() < 0.5 else -1
 
-            if direction == 'h':
-                x2 = np.clip(x + rng.choice([-1, 1]) * length, 0, w-1)
-                y1, y2_t = max(0, y-thickness), min(h, y+thickness+1)
-                x_lo, x_hi = int(min(x, x2)), int(max(x, x2))
-                result[y1:y2_t, x_lo:x_hi] = brightness
-                x = int(x2)
+            if go_horiz:
+                x2 = int(np.clip(x + sign * length, 0, w - 1))
+                y0c = max(0, y - thickness)
+                y1c = min(h, y + thickness + 1)
+                x_lo = min(x, x2); x_hi = max(x, x2)
+                result[y0c:y1c, x_lo:x_hi] = brightness
+                x = x2
             else:
-                y2 = np.clip(y + rng.choice([-1, 1]) * length, 0, h-1)
-                x1, x2_t = max(0, x-thickness), min(w, x+thickness+1)
-                y_lo, y_hi = int(min(y, y2)), int(max(y, y2))
-                result[y_lo:y_hi, x1:x2_t] = brightness
-                y = int(y2)
+                y2 = int(np.clip(y + sign * length, 0, h - 1))
+                x0c = max(0, x - thickness)
+                x1c = min(w, x + thickness + 1)
+                y_lo = min(y, y2); y_hi = max(y, y2)
+                result[y_lo:y_hi, x0c:x1c] = brightness
+                y = y2
 
-        # Solder pad at endpoints
-        pad_r = thickness + 2
-        for dy in range(-pad_r, pad_r+1):
-            for dx in range(-pad_r, pad_r+1):
-                py2, px2 = y + dy, x + dx
-                if 0 <= py2 < h and 0 <= px2 < w and dx*dx + dy*dy <= pad_r*pad_r:
-                    result[py2, px2] = min(1.0, brightness + 0.15)
+        pad_centers.append((y, x, thickness + 2, brightness))
+
+    # Vectorized circular pad rendering
+    for (py, px, pad_r, brightness) in pad_centers:
+        y0p = max(0, py - pad_r); y1p = min(h, py + pad_r + 1)
+        x0p = max(0, px - pad_r); x1p = min(w, px + pad_r + 1)
+        dy_arr = np.arange(y0p, y1p, dtype=np.float32) - py
+        dx_arr = np.arange(x0p, x1p, dtype=np.float32) - px
+        dsq = dy_arr[:, np.newaxis]**2 + dx_arr[np.newaxis, :]**2
+        mask = dsq <= pad_r * pad_r
+        sub = result[y0p:y1p, x0p:x1p]
+        sub[mask] = np.maximum(sub[mask], min(1.0, brightness + 0.15))
+        result[y0p:y1p, x0p:x1p] = sub
+
+    # Subtle glow halo via Gaussian blur of bright trace regions
+    bright_mask = (result > 0.5).astype(np.float32)
+    glow = gaussian_filter(bright_mask, sigma=2.0) * 0.25
+    result = np.clip(result + glow, 0.0, 1.0)
 
     return _sm_scale(_normalize(result), sm)
 
@@ -1773,38 +1834,61 @@ def meteor_impact(shape, seed, sm, num_craters=3, **kwargs):
 # ============================================================================
 
 def fungal_network(shape, seed, sm, num_hyphae=60, **kwargs):
-    """Mycelium fungal network — delicate interconnected branching threads."""
+    """
+    Mycelium fungal network — delicate interconnected branching threads.
+    Vectorized: accumulate all random-walk path pixel coords into arrays,
+    scatter brightness values to canvas, apply one Gaussian blur for glow.
+    """
     h, w = shape
     if sm < 0.001:
         return _flat(shape)
-    rng = np.random.RandomState(seed)
-    result = np.full(shape, 0.1, dtype=np.float32)
+    rng = np.random.default_rng(seed)
+
+    all_y = []
+    all_x = []
+    all_v = []
 
     for _ in range(num_hyphae):
-        x, y = rng.rand() * w, rng.rand() * h
+        x = rng.uniform(0, w)
+        y = rng.uniform(0, h)
         angle = rng.uniform(0, 2 * np.pi)
         speed = rng.uniform(1.5, 4.0)
         brightness = rng.uniform(0.5, 1.0)
-        length = rng.randint(40, 150)
+        length = int(rng.integers(40, 150))
+
+        delta_angles = rng.uniform(-0.4, 0.4, size=length)
+        branch_mask  = rng.random(size=length) < 0.03
+        branch_signs = rng.choice([-1.0, 1.0], size=length)
+        branch_mags  = rng.uniform(0.5, 1.2, size=length)
 
         for step in range(length):
-            px, py = int(x) % w, int(y) % h
-            # Glow around hypha
-            for dy in range(-2, 3):
-                for dx in range(-2, 3):
-                    yy2, xx2 = (py + dy) % h, (px + dx) % w
-                    d = np.sqrt(dx*dx + dy*dy)
-                    glow = brightness * np.exp(-d * 0.8)
-                    result[yy2, xx2] = max(result[yy2, xx2], glow)
+            all_y.append(int(y) % h)
+            all_x.append(int(x) % w)
+            all_v.append(brightness)
 
-            # Random walk with momentum
-            angle += rng.uniform(-0.4, 0.4)
+            angle += delta_angles[step]
+            if branch_mask[step]:
+                angle += branch_signs[step] * branch_mags[step]
             x += np.cos(angle) * speed
             y += np.sin(angle) * speed
 
-            # Occasional branching
-            if rng.rand() < 0.03:
-                angle += rng.choice([-1.0, 1.0]) * rng.uniform(0.5, 1.2)
+    if not all_y:
+        return _flat(shape)
+
+    canvas = np.zeros(shape, dtype=np.float32)
+    ys = np.array(all_y, dtype=np.int32)
+    xs = np.array(all_x, dtype=np.int32)
+    vs = np.array(all_v, dtype=np.float32)
+    np.add.at(canvas, (ys, xs), vs)
+    canvas = np.clip(canvas, 0.0, 1.0)
+
+    # Gaussian blur for soft glow around hyphae
+    blurred = gaussian_filter(canvas, sigma=2.0)
+    result = np.maximum(canvas * 0.6, blurred)
+    bmax = result.max()
+    if bmax > 1e-7:
+        result = result / bmax
+    result = result * 0.9 + 0.1   # floor at 0.1
 
     return _sm_scale(_normalize(result), sm)
 
@@ -1829,11 +1913,13 @@ def gravity_well(shape, seed, sm, num_wells=2, **kwargs):
     bg_y = np.sin(Y * grid_freq) * 0.5 + 0.5
     bg = (bg_x + bg_y) * 0.5
 
-    # Warp field from gravity wells
+    # Warp field from gravity wells — store coordinates for reuse
     warp_x = np.zeros(shape, dtype=np.float32)
     warp_y = np.zeros(shape, dtype=np.float32)
+    well_coords = []
     for _ in range(num_wells):
         wx, wy = rng.uniform(-0.5, 0.5), rng.uniform(-0.5, 0.5)
+        well_coords.append((wx, wy))
         mass = rng.uniform(0.05, 0.2)
         dx, dy = X - wx, Y - wy
         r = np.sqrt(dx**2 + dy**2) + 0.01
@@ -1848,10 +1934,9 @@ def gravity_well(shape, seed, sm, num_wells=2, **kwargs):
     warped_bg_y = np.sin(warped_Y * grid_freq) * 0.5 + 0.5
     warped_bg = (warped_bg_x + warped_bg_y) * 0.5
 
-    # Accretion ring brightness near event horizon
+    # Accretion ring brightness near event horizon — reuse stored well coordinates
     accretion = np.zeros(shape, dtype=np.float32)
-    for _ in range(num_wells):
-        wx, wy = rng.uniform(-0.5, 0.5), rng.uniform(-0.5, 0.5)
+    for wx, wy in well_coords:
         r = np.sqrt((X - wx)**2 + (Y - wy)**2) + 1e-7
         ring = np.exp(-((r - 0.08) / 0.03)**2) * 0.6
         accretion += ring
@@ -1893,11 +1978,11 @@ def sonic_boom(shape, seed, sm, num_sources=3, **kwargs):
 
         # Shockwave rings along cone
         shock = np.exp(-cone_dist**2 * 200.0) * cone_mask
-        # Expanding rings behind
+        # Expanding rings behind — reduced frequency to reduce aliasing
         r = np.sqrt(dx**2 + dy**2)
-        rings = np.sin(r * 30.0 - along * 15.0) * 0.3 * cone_mask * np.exp(-cone_dist * 5.0)
+        rings = np.sin(r * 15.0 - along * 15.0) * 0.3 * cone_mask * np.exp(-cone_dist * 5.0)
 
-        result += shock + np.clip(rings, 0, 1) * 0.5
+        result += shock + rings * 0.5
 
     return _sm_scale(_normalize(result), sm)
 
@@ -1907,50 +1992,70 @@ def sonic_boom(shape, seed, sm, num_sources=3, **kwargs):
 # ============================================================================
 
 def crystal_growth(shape, seed, sm, num_seeds_pts=4, growth_steps=200, **kwargs):
-    """Dendritic crystal growth — frost/snowflake branching solidification."""
+    """
+    Dendritic crystal growth — frost/snowflake branching solidification.
+    Vectorized: pre-compute arm + branch paths as numpy arrays, scatter to canvas,
+    Gaussian blur for soft crystalline glow. Coordinate swap bug (y,x) is fixed.
+    """
     h, w = shape
     if sm < 0.001:
         return _flat(shape)
-    rng = np.random.RandomState(seed)
-    result = np.zeros(shape, dtype=np.float32)
+    rng = np.random.default_rng(seed)
 
-    # Use 6-fold symmetry growth simulation
-    for s in range(num_seeds_pts):
-        cx, cy = rng.randint(20, w-20), rng.randint(20, h-20)
-        angle = rng.uniform(0, np.pi / 3)
-        num_arms = 6
+    canvas = np.zeros(shape, dtype=np.float32)
+    all_y = []
+    all_x = []
+    all_v = []
 
-        for arm in range(num_arms):
-            arm_angle = angle + arm * np.pi / 3
+    for _ in range(num_seeds_pts):
+        cx = int(rng.integers(20, max(21, w - 20)))
+        cy = int(rng.integers(20, max(21, h - 20)))
+        base_angle = rng.uniform(0, np.pi / 3)
+
+        for arm in range(6):
+            arm_angle = base_angle + arm * np.pi / 3
+            rand_dx = rng.uniform(-0.3, 0.3, size=growth_steps)
+            rand_dy = rng.uniform(-0.3, 0.3, size=growth_steps)
+            branch_mask  = rng.random(size=growth_steps) < 0.08
+            branch_sides = rng.choice([-1, 1], size=growth_steps)
+            branch_lens  = rng.integers(10, 40, size=growth_steps)
+
             x, y = float(cx), float(cy)
-            branch_prob = 0.08
-
             for step in range(growth_steps):
-                px, py = int(x) % w, int(y) % h
                 val = 1.0 - step / growth_steps * 0.5
-                for dy in range(-1, 2):
-                    for dx in range(-1, 2):
-                        yy2 = (py + dy) % h
-                        xx2 = (px + dx) % w
-                        result[yy2, xx2] = max(result[yy2, xx2], val * np.exp(-(dx*dx+dy*dy)*0.5))
+                # Correct indexing: row=y, col=x
+                py_i = int(y) % h
+                px_i = int(x) % w
+                all_y.append(py_i)
+                all_x.append(px_i)
+                all_v.append(val)
 
-                # Advance with slight randomness
-                x += np.cos(arm_angle) * 1.5 + rng.uniform(-0.3, 0.3)
-                y += np.sin(arm_angle) * 1.5 + rng.uniform(-0.3, 0.3)
+                # Side branch: vectorized path
+                if branch_mask[step]:
+                    b_angle = arm_angle + branch_sides[step] * np.pi / 3
+                    b_len = int(branch_lens[step])
+                    if b_len > 0:
+                        steps_arr = np.arange(b_len, dtype=np.float32)
+                        bx_arr = x + np.cos(b_angle) * 1.2 * steps_arr
+                        by_arr = y + np.sin(b_angle) * 1.2 * steps_arr
+                        bval_arr = val * (1.0 - steps_arr / b_len) * 0.7
+                        bpy = by_arr.astype(np.int32) % h
+                        bpx = bx_arr.astype(np.int32) % w
+                        all_y.extend(bpy.tolist())
+                        all_x.extend(bpx.tolist())
+                        all_v.extend(bval_arr.tolist())
 
-                # Side branches
-                if rng.rand() < branch_prob:
-                    side = rng.choice([-1, 1])
-                    bx, by = x, y
-                    b_angle = arm_angle + side * np.pi / 3
-                    b_len = rng.randint(10, 40)
-                    for bs in range(b_len):
-                        bpx, bpy = int(bx) % w, int(by) % h
-                        bval = val * (1.0 - bs / b_len) * 0.7
-                        result[bpy, bpx] = max(result[bpy, bpx], bval)
-                        bx += np.cos(b_angle) * 1.2
-                        by += np.sin(b_angle) * 1.2
+                x += np.cos(arm_angle) * 1.5 + rand_dx[step]
+                y += np.sin(arm_angle) * 1.5 + rand_dy[step]
 
+    if all_y:
+        ys = np.array(all_y, dtype=np.int32)
+        xs = np.array(all_x, dtype=np.int32)
+        vs = np.array(all_v, dtype=np.float32)
+        np.maximum.at(canvas, (ys, xs), vs)
+
+    blurred = gaussian_filter(canvas, sigma=1.5)
+    result = np.maximum(canvas, blurred * 0.7)
     return _sm_scale(_normalize(result), sm)
 
 
@@ -1982,8 +2087,8 @@ def smoke_tendril(shape, seed, sm, num_plumes=6, **kwargs):
             phase = rng.uniform(0, 2 * np.pi)
             centerline += np.sin(yy * freq * 2 * np.pi + phase) * amp
 
-        # Width expands as smoke rises
-        plume_width = width_base + (1.0 - yy) * 0.08
+        # Width expands as smoke rises — narrow at source (bottom), wide at dispersal (top)
+        plume_width = width_base + yy * 0.08
         dist_from_center = np.abs(X - centerline[:, np.newaxis])
         plume = np.exp(-(dist_from_center / plume_width[:, np.newaxis])**2)
 
@@ -1999,53 +2104,67 @@ def smoke_tendril(shape, seed, sm, num_plumes=6, **kwargs):
 # ============================================================================
 
 def fractal_discharge(shape, seed, sm, num_bolts=4, depth=8, **kwargs):
-    """Recursive fractal electrical discharge — dense branching energy patterns."""
+    """
+    Recursive fractal electrical discharge — dense branching energy patterns.
+    Vectorized: build segments iteratively via midpoint displacement (capped),
+    rasterize onto a sparse canvas, Gaussian blur for electric glow.
+    """
     h, w = shape
     if sm < 0.001:
         return _flat(shape)
-    rng = np.random.RandomState(seed)
-    result = np.zeros(shape, dtype=np.float32)
+    rng = np.random.default_rng(seed)
+    MAX_SEGS = 4000  # cap against exponential growth
 
-    def _bolt(x1, y1, x2, y2, brightness, depth_left):
-        if depth_left <= 0:
-            return
-        # Midpoint displacement
-        mx = (x1 + x2) / 2 + rng.uniform(-1, 1) * abs(x2 - x1) * 0.4
-        my = (y1 + y2) / 2 + rng.uniform(-1, 1) * abs(y2 - y1) * 0.4
-        mx = np.clip(mx, 0, w-1)
-        my = np.clip(my, 0, h-1)
-
-        # Draw line segment
-        steps = max(int(np.sqrt((mx-x1)**2 + (my-y1)**2)), 1)
-        for s in range(steps):
-            t = s / steps
-            px = int(x1 + (mx - x1) * t) % w
-            py = int(y1 + (my - y1) * t) % h
-            r = max(1, int(brightness * 2.5))
-            for dy in range(-r, r+1):
-                for dx in range(-r, r+1):
-                    yy2 = (py + dy) % h
-                    xx2 = (px + dx) % w
-                    d = np.sqrt(dx*dx + dy*dy)
-                    glow = brightness * np.exp(-d * 0.7)
-                    result[yy2, xx2] = max(result[yy2, xx2], glow)
-
-        _bolt(x1, y1, mx, my, brightness * 0.85, depth_left - 1)
-        _bolt(mx, my, x2, y2, brightness * 0.85, depth_left - 1)
-
-        # Side branch
-        if rng.rand() < 0.35:
-            bx = mx + rng.uniform(-40, 40)
-            by = my + rng.uniform(-40, 40)
-            _bolt(mx, my, np.clip(bx, 0, w-1), np.clip(by, 0, h-1),
-                  brightness * 0.5, depth_left - 2)
+    # --- Phase 1: collect segments via iterative stack ---
+    segments = []  # (x1, y1, x2, y2, brightness)
 
     for _ in range(num_bolts):
         x1 = rng.uniform(0, w)
-        y1 = rng.choice([0, h-1]) if rng.rand() > 0.5 else rng.uniform(0, h)
+        y1 = float(rng.choice([0.0, float(h - 1)])) if rng.random() > 0.5 else rng.uniform(0, h)
         x2 = rng.uniform(0, w)
         y2 = rng.uniform(0, h)
-        _bolt(x1, y1, x2, y2, 1.0, depth)
+
+        stack = [(x1, y1, x2, y2, 1.0, depth)]
+        while stack and len(segments) < MAX_SEGS:
+            sx1, sy1, sx2, sy2, br, dl = stack.pop()
+            if dl <= 0:
+                continue
+            mx = (sx1 + sx2) / 2 + rng.uniform(-1, 1) * abs(sx2 - sx1) * 0.4
+            my = (sy1 + sy2) / 2 + rng.uniform(-1, 1) * abs(sy2 - sy1) * 0.4
+            mx = float(np.clip(mx, 0, w - 1))
+            my = float(np.clip(my, 0, h - 1))
+
+            segments.append((sx1, sy1, mx, my, br))
+            segments.append((mx, my, sx2, sy2, br))
+
+            stack.append((sx1, sy1, mx, my, br * 0.85, dl - 1))
+            stack.append((mx, my, sx2, sy2, br * 0.85, dl - 1))
+
+            if rng.random() < 0.35:
+                bx = float(np.clip(mx + rng.uniform(-40, 40), 0, w - 1))
+                by_s = float(np.clip(my + rng.uniform(-40, 40), 0, h - 1))
+                stack.append((mx, my, bx, by_s, br * 0.5, dl - 2))
+
+    if not segments:
+        return _flat(shape)
+
+    # --- Phase 2: rasterize all segments to a sparse canvas ---
+    canvas = np.zeros(shape, dtype=np.float32)
+
+    for (sx1, sy1, sx2, sy2, br) in segments:
+        py0 = int(np.clip(sy1, 0, h - 1))
+        px0 = int(np.clip(sx1, 0, w - 1))
+        py1 = int(np.clip(sy2, 0, h - 1))
+        px1 = int(np.clip(sx2, 0, w - 1))
+        n_steps = max(abs(py1 - py0), abs(px1 - px0), 1)
+        ts = np.linspace(0, 1, n_steps + 1)
+        ys = np.clip((py0 + (py1 - py0) * ts).astype(np.int32), 0, h - 1)
+        xs = np.clip((px0 + (px1 - px0) * ts).astype(np.int32), 0, w - 1)
+        np.maximum.at(canvas, (ys, xs), br)
+
+    # Gaussian blur for electric glow/corona effect
+    blurred = gaussian_filter(canvas, sigma=3.0)
+    result = np.maximum(canvas * 0.5, blurred)
 
     return _sm_scale(_normalize(result), sm)
 

@@ -2500,7 +2500,9 @@
 
             let wheelDots = dotAt(h, hex); // current color
             harmonies.complementary.forEach(c => { wheelDots += dotAt(hexToHSL(c).h, c); });
+            harmonies.analogous.forEach(c => { wheelDots += dotAt(hexToHSL(c).h, c); });
             harmonies.triadic.forEach(c => { wheelDots += dotAt(hexToHSL(c).h, c); });
+            harmonies.split.forEach(c => { wheelDots += dotAt(hexToHSL(c).h, c); });
 
             function chipRow(label, colors) {
                 const chips = colors.map(c =>
@@ -2526,23 +2528,29 @@
         }
 
         function applyHarmonyColor(fromZoneIndex, hex) {
-            // Apply to the NEXT zone that doesn't have a color yet, or prompt
+            // Find first truly empty zone (no color in any mode)
             let targetIdx = -1;
             for (let i = 0; i < zones.length; i++) {
-                if (i !== fromZoneIndex && (zones[i].colorMode === 'none' || zones[i].color === null)) {
+                if (i !== fromZoneIndex &&
+                    (zones[i].colorMode === 'none' || (zones[i].color === null && (!zones[i].colors || zones[i].colors.length === 0)))) {
                     targetIdx = i;
                     break;
                 }
             }
             if (targetIdx === -1) {
-                // All zones have colors, apply to next zone after current
+                // All zones have colors — apply to next zone (with confirmation via toast)
                 targetIdx = (fromZoneIndex + 1) % zones.length;
-                if (targetIdx === fromZoneIndex) return;
+                if (targetIdx === fromZoneIndex) {
+                    showToast('Only one zone exists — add another zone first', true);
+                    return;
+                }
+                showToast(`Replacing color on Zone ${targetIdx + 1}: ${zones[targetIdx].name} with ${hex}`);
             }
 
             const r = parseInt(hex.substr(1, 2), 16);
             const g = parseInt(hex.substr(3, 2), 16);
             const b = parseInt(hex.substr(5, 2), 16);
+            pushZoneUndo('Harmony color apply');
             zones[targetIdx].pickerColor = hex;
             zones[targetIdx].color = { color_rgb: [r, g, b], tolerance: zones[targetIdx].pickerTolerance || 40 };
             zones[targetIdx].colorMode = 'picker';

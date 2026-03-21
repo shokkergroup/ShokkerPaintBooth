@@ -1077,8 +1077,8 @@ if __name__ == '__main__':
                     const val = canvasMode === 'brush' ? 1 : 0;
                     paintRegionCircle(pos.x, pos.y, radius, val);
                     _fastOverlayArc(pos.x, pos.y, radius, val); // fast GPU draw - no full ImageData rebuild
-                } else if ((canvasMode === 'spatial-include' || canvasMode === 'spatial-exclude') && isDrawing) {
-                    const val = canvasMode === 'spatial-include' ? 1 : 2;
+                } else if ((canvasMode === 'spatial-include' || canvasMode === 'spatial-exclude' || canvasMode === 'spatial-erase') && isDrawing) {
+                    const val = canvasMode === 'spatial-include' ? 1 : (canvasMode === 'spatial-exclude' ? 2 : 0);
                     paintSpatialCircle(pos.x, pos.y, spatialBrushRadius, val);
                     renderRegionOverlay();
                 } else if (canvasMode === 'rect' && isDrawing && rectStart) {
@@ -1215,10 +1215,10 @@ if __name__ == '__main__':
                     // (RAF-wrapped renderRegionOverlay() is async and may not run in time,
                     //  leaving regionCanvas at default 300×150 → tiny dots bug)
                     _doRenderRegionOverlay();
-                } else if (canvasMode === 'spatial-include' || canvasMode === 'spatial-exclude') {
+                } else if (canvasMode === 'spatial-include' || canvasMode === 'spatial-exclude' || canvasMode === 'spatial-erase') {
                     pushSpatialUndo(selectedZoneIndex);
                     isDrawing = true;
-                    const val = canvasMode === 'spatial-include' ? 1 : 2;
+                    const val = canvasMode === 'spatial-include' ? 1 : (canvasMode === 'spatial-exclude' ? 2 : 0);
                     paintSpatialCircle(pos.x, pos.y, spatialBrushRadius, val);
                     _doRenderRegionOverlay();
                 } else if (canvasMode === 'lasso') {
@@ -1398,7 +1398,8 @@ if __name__ == '__main__':
                 eyedropper: 'vtModeEyedropper', brush: 'vtModeBrush', rect: 'vtModeRect',
                 erase: 'vtModeErase', wand: 'vtModeWand', selectall: 'vtModeSelectAll',
                 edge: 'vtModeEdge', 'spatial-include': 'vtModeSpatialInclude',
-                'spatial-exclude': 'vtModeSpatialExclude', lasso: 'vtModeLasso'
+                'spatial-exclude': 'vtModeSpatialExclude', 'spatial-erase': 'vtModeSpatialErase',
+                lasso: 'vtModeLasso'
             }[mode];
             document.getElementById(vtBtnId)?.classList.add('active');
             // Reset lasso state when switching away
@@ -1407,7 +1408,7 @@ if __name__ == '__main__':
             // Toggle tool-specific controls
             const showBrush = (mode === 'brush' || mode === 'erase');
             const showWand = (mode === 'wand' || mode === 'selectall' || mode === 'edge' || mode === 'rect');
-            const showSpatial = (mode === 'spatial-include' || mode === 'spatial-exclude');
+            const showSpatial = (mode === 'spatial-include' || mode === 'spatial-exclude' || mode === 'spatial-erase');
             document.getElementById('brushSizeLabel').style.display = showBrush ? '' : 'none';
             document.getElementById('brushSize').style.display = showBrush ? '' : 'none';
             document.getElementById('brushSizeVal').style.display = showBrush ? '' : 'none';
@@ -1431,6 +1432,11 @@ if __name__ == '__main__':
             document.getElementById('spatialSizeLabel').style.display = showSpatial ? '' : 'none';
             document.getElementById('spatialBrushSize').style.display = showSpatial ? '' : 'none';
             document.getElementById('spatialSizeVal').style.display = showSpatial ? '' : 'none';
+            // Show erase buttons contextually
+            const spatialEraseBtn = document.getElementById('spatialEraseBtn');
+            if (spatialEraseBtn) spatialEraseBtn.style.display = showSpatial ? '' : 'none';
+            const drawEraseBtn = document.getElementById('drawEraseBtn');
+            if (drawEraseBtn) drawEraseBtn.style.display = (showWand || mode === 'brush' || mode === 'rect' || mode === 'lasso') ? '' : 'none';
 
             // Edge preview button: only visible in edge mode
             const edgeBtn = document.getElementById('edgePreviewBtn');
@@ -1446,7 +1452,7 @@ if __name__ == '__main__':
                 if (viewport) viewport.style.cursor = '';
                 document.getElementById('drawZoneIndicator').style.display = 'none';
                 document.getElementById('regionCanvas').style.pointerEvents = 'none';
-            } else if (showSpatial) {
+            } else if (showSpatial || mode === 'spatial-erase') {
                 canvas.style.cursor = 'none'; // Hide native cursor, use brush circle
                 if (viewport) viewport.style.cursor = '';
                 document.getElementById('drawZoneIndicator').style.display = 'flex';

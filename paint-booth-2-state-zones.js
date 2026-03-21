@@ -565,12 +565,20 @@ function renderMultiColorChips(zone, zoneIndex) {
 
     let chips = colors.map((c, ci) => {
         const hex = c.hex || '#???';
-        return `<span style="display: inline-flex; align-items: center; gap: 3px; background: var(--bg-dark); border: 1px solid var(--border); border-radius: 4px; padding: 2px 6px; font-size: 10px;">
-            <span style="width: 14px; height: 14px; border-radius: 3px; background: ${hex}; border: 1px solid var(--border); display: inline-block;"></span>
-            <span style="font-family: 'Consolas', monospace; color: var(--accent-green);">${hex.toUpperCase()}</span>
-            <span style="color: var(--text-dim); font-size: 9px;">±${c.tolerance}</span>
-            <button onclick="event.stopPropagation(); removeColorFromZone(${zoneIndex}, ${ci})" style="background:none; border:none; color:#ff4444; cursor:pointer; font-size:12px; padding:0 2px; line-height:1;" title="Remove this color">&times;</button>
-        </span>`;
+        return `<div style="display: flex; flex-direction: column; gap: 2px; background: var(--bg-dark); border: 1px solid var(--border); border-radius: 4px; padding: 3px 6px; font-size: 10px;">
+            <div style="display: flex; align-items: center; gap: 3px;">
+                <span style="width: 14px; height: 14px; border-radius: 3px; background: ${hex}; border: 1px solid var(--border); display: inline-block;"></span>
+                <span style="font-family: 'Consolas', monospace; color: var(--accent-green);">${hex.toUpperCase()}</span>
+                <button onclick="event.stopPropagation(); removeColorFromZone(${zoneIndex}, ${ci})" style="background:none; border:none; color:#ff4444; cursor:pointer; font-size:12px; padding:0 2px; line-height:1;" title="Remove this color">&times;</button>
+            </div>
+            <div style="display: flex; align-items: center; gap: 3px;">
+                <span style="font-size:8px; color:var(--text-dim);">TOL:</span>
+                <input type="range" min="5" max="100" value="${c.tolerance || 40}" style="width:60px; height:10px;"
+                    oninput="updateColorTolerance(${zoneIndex}, ${ci}, parseInt(this.value)); this.nextElementSibling.textContent='±'+this.value"
+                    title="Tolerance for this specific color">
+                <span style="font-size:8px; color:var(--text-dim); min-width:18px;">±${c.tolerance || 40}</span>
+            </div>
+        </div>`;
     }).join('');
 
     return `<div style="display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; align-items: center;">
@@ -612,6 +620,15 @@ function removeColorFromZone(zoneIndex, colorIndex) {
         zone.color = zone.colors;
     }
     renderZones();
+}
+
+function updateColorTolerance(zoneIndex, colorIndex, value) {
+    const zone = zones[zoneIndex];
+    if (zone.colors && zone.colors[colorIndex]) {
+        zone.colors[colorIndex].tolerance = value;
+        zone.color = zone.colors;
+        triggerPreviewRender();
+    }
 }
 
 function clearZoneColors(zoneIndex) {
@@ -709,6 +726,7 @@ function renderZoneDetail(index) {
                 value="${zone.colorMode === 'text' ? escapeHtml(String(zone.color)) : ''}"
                 onchange="setTextColor(${i}, this.value)"
                 onfocus="this.select()">
+            <span style="font-size:7px; color:var(--text-dim); margin-left:4px;" title="Text colors use hue-range matching which is approximate. For precise selection, use the hex/eyedropper picker below or the color buttons above.">&#9432; approximate</span>
         </div>
         <div class="color-hex-row">
             <span class="hex-label">HEX / Eyedropper:</span>
@@ -730,20 +748,21 @@ function renderZoneDetail(index) {
         </div>
         ${renderMultiColorChips(zone, i)}
         <div class="color-status">${colorStatus}</div>
-        ${typeof renderHarmonyPanel === 'function' ? renderHarmonyPanel(zone, i) : ''}
+        ${typeof renderHarmonyPanel === 'function' && i === selectedZoneIndex ? renderHarmonyPanel(zone, i) : ''}
     </div>`;
 
-    // Base/Finish row
+    // Base/Finish row — gold border section
+    html += `<div style="border-left:2px solid var(--accent-gold, #FFB300); padding-left:6px; margin-top:4px; background:rgba(255,179,0,0.03);">`;
     html += `<div class="zone-finish-row">
-        <label>Base</label>
+        <label style="color:var(--accent-gold, #FFB300); font-weight:700;">Base</label>
         <div class="swatch-trigger" onclick="event.stopPropagation(); openSwatchPicker(this, 'base', ${i})" title="${zone.finish ? (MONOLITHICS.find(m => m.id === zone.finish) || {}).desc || '' : zone.base ? (BASES.find(b => b.id === zone.base) || {}).desc || '' : 'Click to select a base finish'}">
             ${zone.finish ? renderSwatchDot(zone.finish, getSwatchColor(zone), getZoneColorHex(zone)) : zone.base ? renderSwatchDot(zone.base, getSwatchColor(zone), getZoneColorHex(zone)) : '<div class="swatch-dot" style="background:#333;border-style:dashed;"></div>'}
             <span class="swatch-name">${getBaseName(zone)}</span>
             <span class="swatch-arrow">&#9662;</span>
         </div>
         <span class="lock-toggle${zone.lockBase ? ' locked' : ''}" onclick="event.stopPropagation(); toggleLock(${i},'lockBase')" title="Lock base during randomize">${zone.lockBase ? '&#128274;' : '&#128275;'}</span>
-        <button class="btn btn-sm" onclick="event.stopPropagation(); openFinishBrowser(${i})" title="Browse all finishes visually" style="padding:1px 4px; font-size:9px; margin-left:2px;">🎨</button>
-        <button class="btn btn-sm" onclick="event.stopPropagation(); openFinishCompare(${i})" title="Compare finishes side-by-side" style="padding:1px 4px; font-size:9px;">🔍</button>
+        <button class="btn btn-sm" onclick="event.stopPropagation(); openFinishBrowser(${i})" title="Opens a full-screen gallery of all finishes with thumbnail previews. Filter by type, search by name, click to apply." style="padding:1px 6px; font-size:9px; margin-left:2px; border-color:var(--accent-gold); color:var(--accent-gold);">🎨 Browse</button>
+        <button class="btn btn-sm" onclick="event.stopPropagation(); openFinishCompare(${i})" title="Compare two finishes side-by-side on your car" style="padding:1px 6px; font-size:9px; border-color:var(--accent-blue); color:var(--accent-blue);">🔍 Compare</button>
     </div>`;
 
     if (zone.base || zone.finish) {
@@ -803,15 +822,17 @@ function renderZoneDetail(index) {
     }
 
     // ===== SPEC PATTERN OVERLAYS =====
+    // Build spec patterns HTML here, but inject it AFTER base rotate/scale/strength block
+    let specPatternsHtml = '';
     if (zone.base || zone.finish) {
         const specStack = zone.specPatternStack || [];
         const specStackActive = specStack.length > 0;
         const MAX_SPEC_PATTERN_LAYERS = 5;
-        html += `<div class="pattern-stack-section" style="border-top:1px solid var(--border);margin-top:6px;padding-top:6px;">
-            <div class="pattern-stack-header" style="color:#f59e0b;font-size:10px;">
+        specPatternsHtml += `<div class="pattern-stack-section" style="border-top:1px solid var(--border);margin-top:6px;padding-top:6px; border-left:2px solid #ff4444; background:rgba(255,68,68,0.04);">
+            <div class="pattern-stack-header" style="color:#ff4444;font-size:10px;">
                 &#9670; Spec Patterns
                 <span style="font-size:9px;color:var(--text-dim);margin-left:4px;">stackable spec map overlays</span>
-                ${specStackActive ? '<span style="font-size:9px;margin-left:auto;color:#f59e0b;">&#9679; ACTIVE (' + specStack.length + ')</span>' : ''}
+                ${specStackActive ? '<span style="font-size:9px;margin-left:auto;color:#ff4444;">&#9679; ACTIVE (' + specStack.length + ')</span>' : ''}
             </div>
             <div style="padding:4px 8px;">`;
 
@@ -821,9 +842,9 @@ function renderZoneDetail(index) {
             const chM = (sp.channels || 'MR').includes('M');
             const chR = (sp.channels || 'MR').includes('R');
             const chCC = (sp.channels || 'MR').includes('CC');
-            html += `<div style="margin-bottom:6px; padding:6px 8px; background:var(--bg-card,#16162a); border:1px solid var(--border,#2a2a4a); border-radius:4px;">
+            specPatternsHtml += `<div style="margin-bottom:6px; padding:6px 8px; background:var(--bg-card,#16162a); border:1px solid var(--border,#2a2a4a); border-radius:4px;">
                 <div style="display:flex; align-items:center; gap:6px; margin-bottom:4px;">
-                    <span style="font-size:10px; color:#f59e0b; font-weight:bold;">${si + 1}.</span>
+                    <span style="font-size:10px; color:#ff4444; font-weight:bold;">${si + 1}.</span>
                     <span style="font-size:10px; color:var(--text);">${spName}</span>
                     <span style="font-size:8px; color:var(--text-dim);">${spDef ? spDef.desc : ''}</span>
                     <button class="btn btn-sm" onclick="event.stopPropagation(); removeSpecPatternLayer(${i}, ${si})" title="Remove" style="margin-left:auto; padding:0px 5px; font-size:9px; line-height:1.2;">&times;</button>
@@ -866,10 +887,10 @@ function renderZoneDetail(index) {
         });
 
         if (specStack.length < MAX_SPEC_PATTERN_LAYERS) {
-            html += `<div style="margin-top:4px;">
+            specPatternsHtml += `<div style="margin-top:4px;">
                 <div id="specPatternGrid${i}" style="display:none; flex-wrap:wrap; gap:4px; max-height:200px; overflow-y:auto; padding:4px; background:var(--bg-card,#16162a); border:1px solid var(--border,#2a2a4a); border-radius:4px;">`;
             (typeof SPEC_PATTERNS !== 'undefined' ? SPEC_PATTERNS : []).forEach(sp => {
-                html += `<div onclick="addSpecPatternLayer(${i}, '${sp.id}'); document.getElementById('specPatternGrid${i}').style.display='none';"
+                specPatternsHtml += `<div onclick="addSpecPatternLayer(${i}, '${sp.id}'); document.getElementById('specPatternGrid${i}').style.display='none';"
                     style="cursor:pointer; width:128px; padding:3px; background:var(--bg-input,#1a1a2e); border:1px solid var(--border,#333); border-radius:3px; text-align:center; transition:border-color 0.15s;"
                     onmouseover="this.style.borderColor='#f59e0b'" onmouseout="this.style.borderColor='var(--border,#333)'"
                     title="${sp.desc}">
@@ -877,16 +898,16 @@ function renderZoneDetail(index) {
                     <div style="font-size:8px; color:var(--text,#e0e0e0); margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${sp.name}</div>
                 </div>`;
             });
-            html += `</div>
-                <button onclick="const g=document.getElementById('specPatternGrid${i}'); g.style.display=g.style.display==='none'?'flex':'none';" class="btn btn-sm" style="width:100%; font-size:10px; padding:4px 6px; border:1px solid #f59e0b44; color:#f59e0b; margin-top:4px;">
+            specPatternsHtml += `</div>
+                <button onclick="const g=document.getElementById('specPatternGrid${i}'); g.style.display=g.style.display==='none'?'flex':'none';" class="btn btn-sm" style="width:100%; font-size:10px; padding:4px 6px; border:1px solid #ff444444; color:#ff4444; margin-top:4px;">
                     + Add Spec Pattern (click to browse)
                 </button>
             </div>`;
         } else {
-            html += '<div style="font-size:9px; color:var(--text-dim); margin-top:4px;">Maximum 5 spec pattern layers reached.</div>';
+            specPatternsHtml += '<div style="font-size:9px; color:var(--text-dim); margin-top:4px;">Maximum 5 spec pattern layers reached.</div>';
         }
 
-        html += `</div></div>`;
+        specPatternsHtml += `</div></div>`;
     }
 
     // Base rotation, scale, strength + base position (horizontal rows under BASE)
@@ -988,7 +1009,11 @@ function renderZoneDetail(index) {
                         <div style="font-size:9px; color:var(--text-dim); margin-top:4px; width:100%;">When active, the <strong>source map</strong> gets a blue border - click and drag there to move.</div>
                     </div>` : '';
 
-                    pHtml += `<span class="stack-label-mini" style="margin-bottom:4px; color:#c084fc;">Pattern 1 on this Layer/Zone</span>
+                    // Inject spec patterns HTML (moved here from above BASE controls)
+                    pHtml += specPatternsHtml;
+
+                    pHtml += `<div style="border-left:2px dotted #22c55e; padding-left:6px; margin-top:6px; background:rgba(34,197,94,0.03);">`;
+                    pHtml += `<span class="stack-label-mini" style="margin-bottom:4px; color:#22c55e;">Pattern 1 on this Layer/Zone</span>
                     <div class="swatch-trigger" onclick="event.stopPropagation(); openSwatchPicker(this, 'pattern', ${i})" style="display:inline-flex;align-items:center;gap:6px;margin-bottom:6px;">
                         ${hasPrimaryPattern ? renderSwatchDot(zone.pattern, getPatternSwatchColor(zone.pattern), getZoneColorHex(zone)) : '<div class="swatch-dot" style="background:#333;border-style:dashed;"></div>'}
                         <span class="swatch-name">${getPatternName(zone.pattern)}</span>
@@ -1096,10 +1121,12 @@ function renderZoneDetail(index) {
                         </div>`;
                     }
 
+                    pHtml += `</div>`; // close green dotted Pattern 1 section
                     return pHtml;
                 })()}
             </div>
         </div>`;
+        html += `</div>`; // close gold BASE section
     }
 
     // ===== ⚗️ BASE OVERLAY LAYER (Dual Material Blend) - available for ALL base layers and monolithics =====
@@ -3834,6 +3861,16 @@ function setZoneSecondBase(index, val) {
         }
         // Default to 100% strength when first adding an overlay so it's visible immediately
         if (!zones[index].secondBaseStrength) zones[index].secondBaseStrength = 1.0;
+        // Default blend mode to pattern-pop with harden when first set
+        if (!zones[index].secondBaseBlendMode) zones[index].secondBaseBlendMode = 'pattern-vivid';
+        if (zones[index].secondBaseHarden === undefined) zones[index].secondBaseHarden = true;
+        // Default color source to "Same As Overlay"
+        if (!zones[index].secondBaseColorSource) {
+            zones[index].secondBaseColorSource = 'overlay';
+            const display = typeof getOverlayBaseDisplay !== 'undefined' && getOverlayBaseDisplay(val);
+            const hex = (display && display.swatch) ? (display.swatch.startsWith('#') ? display.swatch : '#' + display.swatch) : '#c9a227';
+            zones[index].secondBaseColor = hex;
+        }
     }
     renderZoneDetail(index);
     triggerPreviewRender();
@@ -3974,14 +4011,21 @@ function setZoneThirdBase(index, val) {
             zones[index].thirdBaseColor = hex;
         }
         if (!zones[index].thirdBaseStrength) zones[index].thirdBaseStrength = 1.0;
+        // Default blend mode and color source for 3rd overlay
+        if (!zones[index].thirdBaseBlendMode) zones[index].thirdBaseBlendMode = 'pattern-vivid';
+        if (zones[index].thirdBaseHarden === undefined) zones[index].thirdBaseHarden = true;
+        if (!zones[index].thirdBaseColorSource) {
+            zones[index].thirdBaseColorSource = 'overlay';
+            const display = typeof getOverlayBaseDisplay !== 'undefined' && getOverlayBaseDisplay(val);
+            const hex = (display && display.swatch) ? (display.swatch.startsWith('#') ? display.swatch : '#' + display.swatch) : '#c9a227';
+            zones[index].thirdBaseColor = hex;
+        }
         if (!zones[index].thirdBasePattern && val) zones[index].thirdBasePattern = (() => {
             const z = zones[index];
-            const used = new Set([z.secondBasePattern, z.thirdBasePattern, z.fourthBasePattern, z.fifthBasePattern].filter(x => x && x !== 'none'));
             const s = z.patternStack || [];
-            let avail = [''];
-            if (s[0] && s[0].id && s[0].id !== 'none') avail.push(s[0].id);
-            if (s[1] && s[1].id && s[1].id !== 'none') avail.push(s[1].id);
-            for (const p of avail) if (!used.has(p)) return p;
+            // Default to Pattern 2 if it exists, otherwise Pattern 1
+            if (s[1] && s[1].id && s[1].id !== 'none') return s[1].id;
+            if (s[0] && s[0].id && s[0].id !== 'none') return s[0].id;
             return '';
         })();
     }

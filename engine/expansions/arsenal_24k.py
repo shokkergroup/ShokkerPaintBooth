@@ -11401,6 +11401,38 @@ def get_expansion_group_map():
     return {"bases": bases_groups, "patterns": patterns_groups, "specials": specials_groups}
 
 
+# ============================================================
+# Aurora & Chromatic Flow — paint functions imported from engine.chameleon
+# ============================================================
+def _get_aurora_paint_fn(name):
+    """Lazy import aurora paint function from engine.chameleon."""
+    import engine.chameleon as _cham
+    return getattr(_cham, name)
+
+def _aurora_paint_wrapper(fn_name):
+    """Create a wrapper that lazy-imports the aurora paint function."""
+    def wrapper(paint, shape, mask, seed, pm, bb):
+        fn = _get_aurora_paint_fn(fn_name)
+        return fn(paint, shape, mask, seed, pm, bb)
+    wrapper.__name__ = fn_name
+    return wrapper
+
+# Register all 10 aurora finishes
+for _aurora_id, _aurora_fn_name in [
+    ("aurora_borealis", "paint_aurora_borealis"),
+    ("aurora_solar_wind", "paint_aurora_solar_wind"),
+    ("aurora_nebula", "paint_aurora_nebula"),
+    ("aurora_chromatic_surge", "paint_aurora_chromatic_surge"),
+    ("aurora_frozen_flame", "paint_aurora_frozen_flame"),
+    ("aurora_deep_ocean", "paint_aurora_deep_ocean"),
+    ("aurora_volcanic", "paint_aurora_volcanic"),
+    ("aurora_ethereal", "paint_aurora_ethereal"),
+    ("aurora_toxic_current", "paint_aurora_toxic_current"),
+    ("aurora_midnight_silk", "paint_aurora_midnight_silk"),
+]:
+    EXPANSION_MONOLITHICS[_aurora_id] = (_spec_chameleon_24k, _aurora_paint_wrapper(_aurora_fn_name))
+
+
 def get_expansion_counts():
     """Quick count check for validation."""
     return {

@@ -4266,6 +4266,7 @@ kbd {
     border-radius: 50%;
     margin: 0 auto 4px;
     position: relative;
+    overflow: hidden;
     background: conic-gradient(hsl(0, 80%, 50%), hsl(60, 80%, 50%), hsl(120, 80%, 50%),
             hsl(180, 80%, 50%), hsl(240, 80%, 50%), hsl(300, 80%, 50%), hsl(360, 80%, 50%));
 }

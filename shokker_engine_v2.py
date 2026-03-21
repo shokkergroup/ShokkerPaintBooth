@@ -4086,6 +4086,415 @@ def texture_molecular_v2(shape, mask, seed, sm):
     return {"pattern_val": pv, "R_range": -60.0, "M_range": 80.0, "CC": None}
 
 
+# ---------------------------------------------------------------------------
+# V5.3 DEDICATED TEXTURE FUNCTIONS (15 rewritten patterns)
+# Each replaces a generic/shared texture_fn with a visually accurate version.
+# ---------------------------------------------------------------------------
+
+def texture_aero_flow_v2(shape, mask, seed, sm):
+    """Aerodynamic flow lines with curl-noise distortion."""
+    h, w = shape
+    rng = np.random.default_rng(seed + 7000)
+    y, x = get_mgrid((h, w))
+    yf = y.astype(np.float32) / max(h, 1)
+    xf = x.astype(np.float32) / max(w, 1)
+    # Base horizontal flow lines
+    freq_y = 30.0
+    flow = np.sin(yf * freq_y * np.pi) * 0.5 + 0.5
+    # Curl-noise distortion: use multi-scale noise to displace y coordinate
+    n1 = multi_scale_noise(shape, [8, 16, 32], [0.3, 0.4, 0.3], seed + 7001)
+    n2 = multi_scale_noise(shape, [4, 8, 16], [0.25, 0.45, 0.3], seed + 7002)
+    # Vertical wobble displacement
+    displacement = n1 * 0.15 + n2 * 0.08
+    yf_warped = yf + displacement
+    flow_warped = np.sin(yf_warped * freq_y * np.pi) * 0.5 + 0.5
+    # Add horizontal streaking via x-frequency modulation
+    streak = np.sin(xf * 6.0 * np.pi + n1 * 4.0) * 0.3 + 0.7
+    pattern = np.clip(flow_warped * streak, 0, 1).astype(np.float32)
+    return {"pattern_val": pattern, "R_range": -85.0, "M_range": 75.0, "CC": 0}
+
+
+def texture_aztec_steps_v2(shape, mask, seed, sm):
+    """Nested concentric rectangles creating stepped pyramid motif, tiled."""
+    h, w = shape
+    rng = np.random.default_rng(seed + 7010)
+    y, x = get_mgrid((h, w))
+    cell_size = max(40, min(h, w) // 10)
+    # Local coordinates within each tile cell [0..1]
+    lx = (x.astype(np.float32) % cell_size) / cell_size
+    ly = (y.astype(np.float32) % cell_size) / cell_size
+    # Concentric rectangular distance (Chebyshev from center)
+    rect_dist = np.maximum(np.abs(lx - 0.5), np.abs(ly - 0.5))
+    # Quantize into stepped bands
+    n_steps = 6
+    stepped = np.floor(rect_dist * n_steps * 2.0).astype(np.int32)
+    pattern = (stepped % 2).astype(np.float32)
+    return {"pattern_val": pattern, "R_range": 68.0, "M_range": -38.0, "CC": None}
+
+
+def texture_bamboo_stalk_v2(shape, mask, seed, sm):
+    """Wide vertical bamboo stalks with horizontal node joints and grain noise."""
+    h, w = shape
+    rng = np.random.default_rng(seed + 7020)
+    y, x = get_mgrid((h, w))
+    xf = x.astype(np.float32)
+    yf = y.astype(np.float32)
+    # Wide vertical stalks (~20px)
+    stalk_period = max(30, w // 16)
+    stalk_width = stalk_period * 0.6
+    x_in_cell = xf % stalk_period
+    stalk_mask = np.clip(1.0 - np.abs(x_in_cell - stalk_period * 0.5) / (stalk_width * 0.5), 0, 1)
+    stalk_mask = np.where(stalk_mask > 0, 1.0, 0.0).astype(np.float32)
+    # Horizontal node joints every ~60px
+    node_period = max(50, h // 8)
+    node_band = np.abs(yf % node_period - node_period * 0.5)
+    node_line = np.where(node_band < 2.5, 1.0, 0.0).astype(np.float32)
+    # Subtle grain noise on stalk surface
+    grain = multi_scale_noise(shape, [2, 4, 8], [0.3, 0.4, 0.3], seed + 7021)
+    grain = grain * 0.15 + 0.85  # subtle variation 0.7-1.0
+    # Combine: stalk body with grain, plus joint lines
+    pattern = stalk_mask * grain
+    pattern = np.clip(pattern + node_line * stalk_mask * 0.4, 0, 1).astype(np.float32)
+    return {"pattern_val": pattern, "R_range": -70.0, "M_range": 55.0, "CC": 0}
+
+
+def texture_hibiscus_v2(shape, mask, seed, sm):
+    """5-petal hibiscus flower using rose curve r=cos(5*theta), tiled."""
+    h, w = shape
+    rng = np.random.default_rng(seed + 7030)
+    y, x = get_mgrid((h, w))
+    cell_size = max(60, min(h, w) // 6)
+    # Local coordinates centered in each tile cell
+    lx = (x.astype(np.float32) % cell_size) - cell_size * 0.5
+    ly = (y.astype(np.float32) % cell_size) - cell_size * 0.5
+    # Polar coordinates
+    r = np.sqrt(lx ** 2 + ly ** 2) / (cell_size * 0.45)
+    theta = np.arctan2(ly, lx)
+    # Rose curve: r_rose = cos(5 * theta) → 5 petals
+    r_rose = np.abs(np.cos(2.5 * theta))  # 5-petal rose
+    # Petal mask: bright where r < r_rose
+    petal = np.clip(1.0 - (r / (r_rose + 0.05)) * 1.2, 0, 1)
+    # Add center dot
+    center = np.clip(1.0 - r * 5.0, 0, 1)
+    pattern = np.clip(petal + center * 0.5, 0, 1).astype(np.float32)
+    return {"pattern_val": pattern, "R_range": 50.0, "M_range": -30.0, "CC": None}
+
+
+def texture_iron_cross_v2(shape, mask, seed, sm):
+    """Flared 4-arm Iron Cross with arms narrowing toward tips, tiled in cells."""
+    h, w = shape
+    rng = np.random.default_rng(seed + 7040)
+    y, x = get_mgrid((h, w))
+    cell_size = max(50, min(h, w) // 8)
+    # Local coordinates centered [-0.5, 0.5]
+    lx = (x.astype(np.float32) % cell_size) / cell_size - 0.5
+    ly = (y.astype(np.float32) % cell_size) / cell_size - 0.5
+    ax, ay = np.abs(lx), np.abs(ly)
+    # Central diamond: abs(x)+abs(y) < radius
+    diamond = (ax + ay < 0.22).astype(np.float32)
+    # Four rectangular arms that narrow: arm width tapers with distance
+    arm_len = 0.45
+    arm_base_w = 0.14
+    arm_tip_w = 0.04
+    # Horizontal arms
+    h_arm_dist = ax
+    h_arm_width = arm_base_w + (arm_tip_w - arm_base_w) * (h_arm_dist / arm_len)
+    h_arm = ((ax < arm_len) & (ay < h_arm_width)).astype(np.float32)
+    # Vertical arms
+    v_arm_dist = ay
+    v_arm_width = arm_base_w + (arm_tip_w - arm_base_w) * (v_arm_dist / arm_len)
+    v_arm = ((ay < arm_len) & (ax < v_arm_width)).astype(np.float32)
+    pattern = np.clip(diamond + h_arm + v_arm, 0, 1).astype(np.float32)
+    return {"pattern_val": pattern, "R_range": 72.0, "M_range": -50.0, "CC": None}
+
+
+def texture_gothic_scroll_v2(shape, mask, seed, sm):
+    """Curling spiral scrollwork using parametric spirals arranged symmetrically."""
+    h, w = shape
+    rng = np.random.default_rng(seed + 7050)
+    y, x = get_mgrid((h, w))
+    cell_size = max(80, min(h, w) // 5)
+    lx = (x.astype(np.float32) % cell_size) - cell_size * 0.5
+    ly = (y.astype(np.float32) % cell_size) - cell_size * 0.5
+    r = np.sqrt(lx ** 2 + ly ** 2) / (cell_size * 0.5) + 1e-8
+    theta = np.arctan2(ly, lx)
+    # Archimedean spiral: r = a + b*theta
+    # Distance from spiral arm: measure sin(theta - r * k)
+    k_spiral = 6.0
+    scroll1 = np.sin(theta - r * k_spiral * np.pi) * 0.5 + 0.5
+    scroll2 = np.sin(-theta - r * k_spiral * np.pi + np.pi * 0.5) * 0.5 + 0.5
+    # Combine symmetric pair
+    combined = np.minimum(scroll1, scroll2)
+    # Sharpen scrollwork lines
+    line = np.where(combined < 0.35, 1.0, 0.0).astype(np.float32)
+    # Fade edges for filigree softness
+    edge_fade = np.clip(1.0 - r * 0.3, 0.3, 1.0)
+    pattern = (line * edge_fade).astype(np.float32)
+    return {"pattern_val": pattern, "R_range": 60.0, "M_range": -45.0, "CC": None}
+
+
+def texture_drift_marks_v2(shape, mask, seed, sm):
+    """Wide diagonal rubber drift streaks with soft edges, irregular spacing."""
+    h, w = shape
+    rng = np.random.default_rng(seed + 7060)
+    y, x = get_mgrid((h, w))
+    yf = y.astype(np.float32)
+    xf = x.astype(np.float32)
+    # Diagonal projection at ~30 degrees
+    diag = xf * 0.87 + yf * 0.5
+    # Generate multiple wide streaks at irregular intervals
+    n_streaks = rng.integers(6, 12)
+    total_span = np.sqrt(float(h ** 2 + w ** 2))
+    positions = np.sort(rng.uniform(0, total_span, n_streaks))
+    widths = rng.uniform(25, 50, n_streaks)
+    pattern = np.zeros((h, w), dtype=np.float32)
+    for i in range(n_streaks):
+        dist_from_center = np.abs(diag - positions[i])
+        half_w = widths[i] * 0.5
+        # Soft-edged streak using smoothstep
+        t = np.clip(dist_from_center / half_w, 0, 1)
+        streak = 1.0 - t * t * (3.0 - 2.0 * t)  # smoothstep falloff
+        pattern = np.maximum(pattern, streak)
+    # Add slight noise for rubber texture
+    grain = multi_scale_noise(shape, [2, 4], [0.5, 0.5], seed + 7061)
+    pattern = np.clip(pattern * (0.85 + grain * 0.15), 0, 1).astype(np.float32)
+    return {"pattern_val": pattern, "R_range": -90.0, "M_range": 70.0, "CC": 0}
+
+
+def texture_caustic_v2(shape, mask, seed, sm):
+    """Multi-source interference pattern with 8-12 random point sources, bright peaks."""
+    h, w = shape
+    rng = np.random.default_rng(seed + 7070)
+    y, x = get_mgrid((h, w))
+    yf = y.astype(np.float32)
+    xf = x.astype(np.float32)
+    n_sources = rng.integers(8, 13)
+    src_y = rng.uniform(0, h, n_sources).astype(np.float32)
+    src_x = rng.uniform(0, w, n_sources).astype(np.float32)
+    freq = rng.uniform(0.08, 0.15, n_sources).astype(np.float32)
+    # Sum of sine waves from each point source
+    wave_sum = np.zeros((h, w), dtype=np.float32)
+    for i in range(n_sources):
+        dist = np.sqrt((yf - src_y[i]) ** 2 + (xf - src_x[i]) ** 2)
+        wave_sum += np.sin(dist * freq[i] * 2.0 * np.pi) * 0.5 + 0.5
+    # Normalize and enhance bright intersection peaks
+    wave_sum = wave_sum / n_sources
+    # Square to emphasize constructive interference peaks
+    pattern = np.clip(wave_sum ** 2 * 2.5, 0, 1).astype(np.float32)
+    return {"pattern_val": pattern, "R_range": -70.0, "M_range": 55.0, "CC": 0}
+
+
+def texture_frost_crystal_v2(shape, mask, seed, sm):
+    """Hexagonal grid with dendritic branches growing from vertices at 60-deg angles."""
+    h, w = shape
+    rng = np.random.default_rng(seed + 7080)
+    y, x = get_mgrid((h, w))
+    yf = y.astype(np.float32)
+    xf = x.astype(np.float32)
+    # Hexagonal grid parameters
+    hex_size = max(40, min(h, w) // 8)
+    # Hex grid: offset every other row
+    row = np.floor(yf / (hex_size * 0.866)).astype(np.int32)
+    x_offset = np.where(row % 2 == 0, 0.0, hex_size * 0.5)
+    # Distance to nearest hex center
+    hx = ((xf + x_offset) % hex_size) - hex_size * 0.5
+    hy = (yf % (hex_size * 0.866)) - hex_size * 0.433
+    dist_center = np.sqrt(hx ** 2 + hy ** 2)
+    # Angle from hex center
+    angle = np.arctan2(hy, hx)
+    # Dendritic branches at 60-degree intervals (6-fold symmetry)
+    branch_angle = np.abs(np.sin(angle * 3.0))  # peaks at 0, 60, 120, ... deg
+    # Branch mask: thin lines radiating from center
+    branch_width = hex_size * 0.04
+    branch_mask = np.where(branch_angle < 0.15, 1.0, 0.0).astype(np.float32)
+    # Sub-branches: secondary branching at smaller scale
+    sub_branch = np.abs(np.sin(angle * 6.0 + dist_center * 0.3))
+    sub_mask = np.where((sub_branch < 0.12) & (dist_center > hex_size * 0.15), 0.7, 0.0)
+    # Combine: hex edge + branches + sub-branches
+    hex_edge = np.clip(1.0 - np.abs(dist_center - hex_size * 0.4) / (hex_size * 0.05), 0, 1)
+    crystal = np.clip(branch_mask + sub_mask.astype(np.float32) + hex_edge * 0.6, 0, 1)
+    # Fade with distance from center for crystal look
+    fade = np.clip(1.0 - dist_center / (hex_size * 0.5), 0.1, 1.0)
+    pattern = np.clip(crystal * fade, 0, 1).astype(np.float32)
+    return {"pattern_val": pattern, "R_range": -80.0, "M_range": 60.0, "CC": None}
+
+
+def texture_glitch_scan_v2(shape, mask, seed, sm):
+    """Horizontal bands with random x-offset displacement, scanline flicker, binary noise."""
+    h, w = shape
+    rng = np.random.default_rng(seed + 7090)
+    y, x = get_mgrid((h, w))
+    yf = y.astype(np.float32)
+    xf = x.astype(np.float32)
+    # Divide into horizontal bands of varying height
+    band_height = max(4, h // 60)
+    band_idx = (yf / band_height).astype(np.int32)
+    n_bands = int(np.ceil(h / band_height)) + 1
+    # Random x-displacement per band
+    offsets = rng.integers(-w // 6, w // 6, n_bands)
+    # Build offset map
+    offset_map = np.zeros((h, w), dtype=np.float32)
+    for i in range(n_bands):
+        band_mask = (band_idx == i)
+        offset_map = np.where(band_mask, float(offsets[i % n_bands]), offset_map)
+    # Displaced x coordinate
+    x_displaced = (xf + offset_map) % w
+    # Scanline flicker: thin horizontal lines
+    scanline = ((yf.astype(np.int32) % 3) == 0).astype(np.float32) * 0.3
+    # Binary threshold noise from displaced coordinates
+    noise_seed = seed + 7091
+    # Create block noise using displaced coordinates
+    block_w = max(6, w // 80)
+    block_h = band_height
+    bx = (x_displaced / block_w).astype(np.int32)
+    by = (yf / block_h).astype(np.int32)
+    # Hash-based pseudo-random binary values
+    hash_val = ((bx * 73856093) ^ (by * 19349663) ^ noise_seed) % 1000
+    binary = (hash_val > 500).astype(np.float32)
+    # Combine: binary blocks + scanline flicker
+    pattern = np.clip(binary * 0.8 + scanline, 0, 1).astype(np.float32)
+    return {"pattern_val": pattern, "R_range": -75.0, "M_range": 65.0, "CC": 0}
+
+
+def texture_corrugated_v2(shape, mask, seed, sm):
+    """Smooth sine-wave corrugation cross-section with smoothstep transitions."""
+    h, w = shape
+    rng = np.random.default_rng(seed + 7100)
+    y, x = get_mgrid((h, w))
+    yf = y.astype(np.float32)
+    # Corrugation frequency
+    freq = max(15, h // 20)
+    phase = yf / freq * np.pi * 2.0
+    # Raw sine wave
+    raw = np.sin(phase) * 0.5 + 0.5
+    # Smoothstep for rounded ridges: 3t^2 - 2t^3
+    t = raw
+    smooth = t * t * (3.0 - 2.0 * t)
+    pattern = smooth.astype(np.float32)
+    return {"pattern_val": pattern, "R_range": -100.0, "M_range": 90.0, "CC": 0}
+
+
+def texture_herringbone_v2(shape, mask, seed, sm):
+    """Proper V-stitch herringbone with short diagonal segments alternating in 2x2 cells."""
+    h, w = shape
+    rng = np.random.default_rng(seed + 7110)
+    y, x = get_mgrid((h, w))
+    # Cell dimensions: each cell contains one diagonal segment
+    cell_w = max(12, w // 40)
+    cell_h = max(20, h // 25)
+    # Which cell
+    cx = (x.astype(np.float32) / cell_w).astype(np.int32)
+    cy = (y.astype(np.float32) / cell_h).astype(np.int32)
+    # Local coordinates within cell [0, 1]
+    lx = (x.astype(np.float32) % cell_w) / cell_w
+    ly = (y.astype(np.float32) % cell_h) / cell_h
+    # Alternating diagonal direction in checkerboard pattern
+    direction = ((cx + cy) % 2).astype(np.float32)  # 0 or 1
+    # Diagonal line: for direction 0: y = x, for direction 1: y = 1-x
+    diag_0 = np.abs(ly - lx)
+    diag_1 = np.abs(ly - (1.0 - lx))
+    diag = np.where(direction < 0.5, diag_0, diag_1)
+    # Line thickness
+    thickness = 0.2
+    line = np.clip(1.0 - diag / thickness, 0, 1).astype(np.float32)
+    return {"pattern_val": line, "R_range": 72.0, "M_range": -42.0, "CC": None}
+
+
+def texture_dazzle_v2(shape, mask, seed, sm):
+    """Sharp geometric Voronoi patches with binary coloring overlaid with angled stripes."""
+    h, w = shape
+    rng = np.random.default_rng(seed + 7120)
+    y, x = get_mgrid((h, w))
+    yf = y.astype(np.float32)
+    xf = x.astype(np.float32)
+    # Voronoi cells
+    n_pts = max(25, int(h * w / 3000))
+    n_pts = min(n_pts, 150)
+    cell_id = _voronoi_cells_fast(shape, n_pts, 7120, seed)
+    # Binary coloring per cell
+    cell_color = (cell_id * 73856093 + seed) % 2
+    voronoi_binary = cell_color.astype(np.float32)
+    # Angled stripe field overlay
+    angle1 = rng.uniform(0.3, 1.2)
+    stripe1 = np.sin((xf * np.cos(angle1) + yf * np.sin(angle1)) * 0.08 * np.pi) > 0
+    angle2 = rng.uniform(-1.2, -0.3)
+    stripe2 = np.sin((xf * np.cos(angle2) + yf * np.sin(angle2)) * 0.12 * np.pi) > 0
+    stripe_xor = (stripe1.astype(np.int32) ^ stripe2.astype(np.int32)).astype(np.float32)
+    # Combine: XOR voronoi with stripe field for dazzle camo
+    pattern = ((voronoi_binary.astype(np.int32) ^ stripe_xor.astype(np.int32)) % 2).astype(np.float32)
+    return {"pattern_val": pattern, "R_range": 60.0, "M_range": -80.0, "CC": 0}
+
+
+def texture_leopard_rosette_v2(shape, mask, seed, sm):
+    """Leopard rosette open rings using abs(dist - ring_radius) < thickness."""
+    h, w = shape
+    rng = np.random.default_rng(seed + 7130)
+    y, x = get_mgrid((h, w))
+    yf = y.astype(np.float32)
+    xf = x.astype(np.float32)
+    # Work at 1/4 resolution for speed, then upscale
+    ds = max(1, min(4, h // 256))
+    sh, sw = h // ds, w // ds
+    ys = np.arange(sh, dtype=np.float32) * ds
+    xs = np.arange(sw, dtype=np.float32) * ds
+    yg, xg = np.meshgrid(ys, xs, indexing='ij')
+    # Scatter rosette centers in jittered grid
+    cell_size = max(35, min(h, w) // 10)
+    n_y = int(np.ceil(h / cell_size)) + 2
+    n_x = int(np.ceil(w / cell_size)) + 2
+    pat_small = np.zeros((sh, sw), dtype=np.float32)
+    for iy in range(n_y):
+        for ix in range(n_x):
+            cy = iy * cell_size + rng.uniform(-cell_size * 0.25, cell_size * 0.25)
+            cx_v = ix * cell_size + rng.uniform(-cell_size * 0.25, cell_size * 0.25)
+            ring_r = rng.uniform(cell_size * 0.25, cell_size * 0.4)
+            thickness = rng.uniform(2.5, 4.5)
+            # Quick bounding-box skip
+            margin = ring_r + thickness + 2
+            if cy + margin < 0 or cy - margin > h or cx_v + margin < 0 or cx_v - margin > w:
+                continue
+            dist = np.sqrt((yg - cy) ** 2 + (xg - cx_v) ** 2)
+            ring = np.clip(1.0 - np.abs(dist - ring_r) / thickness, 0, 1)
+            center_dot = np.clip(1.0 - dist / (ring_r * 0.25 + 1e-6), 0, 1) * 0.6
+            pat_small = np.maximum(pat_small, np.maximum(ring, center_dot))
+    # Upscale to full resolution
+    if ds > 1:
+        from PIL import Image as _PILImg
+        pat_img = _PILImg.fromarray((np.clip(pat_small, 0, 1) * 255).astype(np.uint8))
+        pattern = np.array(pat_img.resize((w, h), _PILImg.BILINEAR), dtype=np.float32) / 255.0
+    else:
+        pattern = np.clip(pat_small, 0, 1).astype(np.float32)
+    return {"pattern_val": pattern, "R_range": 40.0, "M_range": -25.0, "CC": None}
+
+
+def texture_aurora_bands_v2(shape, mask, seed, sm):
+    """Multi-frequency flowing curtain bands with vertical fade and horizontal shimmer."""
+    h, w = shape
+    rng = np.random.default_rng(seed + 7140)
+    y, x = get_mgrid((h, w))
+    yf = y.astype(np.float32) / max(h, 1)
+    xf = x.astype(np.float32) / max(w, 1)
+    # Vertical fade: bright at top, fading to dark at bottom
+    v_fade = np.clip(1.0 - yf * 1.3, 0, 1) ** 0.7
+    # Multi-frequency horizontal curtain waves
+    n1 = multi_scale_noise(shape, [8, 16, 32], [0.3, 0.4, 0.3], seed + 7141)
+    curtain = np.zeros((h, w), dtype=np.float32)
+    freqs = [3.0, 5.0, 8.0, 13.0]
+    amps = [0.35, 0.3, 0.2, 0.15]
+    for freq, amp in zip(freqs, amps):
+        phase = rng.uniform(0, 2 * np.pi)
+        # Horizontally stretched noise displacement
+        displacement = n1 * 0.3
+        wave = np.sin((xf + displacement) * freq * np.pi * 2.0 + phase)
+        curtain += wave * amp
+    curtain = curtain * 0.5 + 0.5  # normalize to [0,1]
+    # Horizontal shimmer via stretched noise
+    shimmer = multi_scale_noise(shape, [4, 8, 16], [0.3, 0.4, 0.3], seed + 7142)
+    shimmer = shimmer * 0.15 + 0.85
+    pattern = np.clip(curtain * v_fade * shimmer, 0, 1).astype(np.float32)
+    return {"pattern_val": pattern, "R_range": -60.0, "M_range": 50.0, "CC": None}
+
+
 # --- PATTERN TEXTURE REGISTRY ---
 # !! ARCHITECTURE GUARD - READ BEFORE MODIFYING !!
 # See ARCHITECTURE.md for full documentation.
@@ -4099,14 +4508,14 @@ def texture_molecular_v2(shape, mask, seed, sm):
 #   DO NOT modify the shared texture_fn - it breaks every other pattern using it.
 PATTERN_REGISTRY = {
     "acid_wash":         {"texture_fn": texture_acid_wash,        "paint_fn": paint_acid_etch,        "variable_cc": True,  "desc": "Corroded acid-etched surface"},
-    "aero_flow": {"texture_fn": texture_pinstripe_diagonal, "paint_fn": paint_pinstripe, "variable_cc": False, "desc": "Aerodynamic flow visualization streaks"},
+    "aero_flow": {"texture_fn": texture_aero_flow_v2, "paint_fn": paint_pinstripe, "variable_cc": False, "desc": "Aerodynamic flow visualization streaks"},
     "argyle": {"texture_fn": texture_plaid, "paint_fn": paint_plaid_tint, "variable_cc": False, "desc": "Diamond/rhombus overlapping argyle"},
     "art_deco": {"texture_fn": texture_art_deco_fan, "paint_fn": paint_chevron_contrast, "variable_cc": False, "desc": "1920s geometric fan/sunburst motif"},
     "asphalt_texture": {"texture_fn": texture_asphalt_v2, "paint_fn": paint_static_noise_grain, "variable_cc": False, "desc": "Road surface aggregate texture"},
     "atomic_orbital": {"texture_fn": texture_ripple_dense, "paint_fn": paint_ripple_reflect, "variable_cc": False, "desc": "Electron cloud probability orbital rings"},
-    "aurora_bands": {"texture_fn": texture_wave_gentle, "paint_fn": paint_wave_shimmer, "variable_cc": False, "desc": "Northern lights wavy curtain bands"},
-    "aztec": {"texture_fn": texture_aztec_steps, "paint_fn": paint_chevron_contrast, "variable_cc": False, "desc": "Angular stepped Aztec geometric blocks"},
-    "bamboo_stalk": {"texture_fn": texture_pinstripe_vertical, "paint_fn": paint_pinstripe, "variable_cc": False, "desc": "Vertical bamboo stalks with joints"},
+    "aurora_bands": {"texture_fn": texture_aurora_bands_v2, "paint_fn": paint_wave_shimmer, "variable_cc": False, "desc": "Northern lights wavy curtain bands"},
+    "aztec": {"texture_fn": texture_aztec_steps_v2, "paint_fn": paint_chevron_contrast, "variable_cc": False, "desc": "Angular stepped Aztec geometric blocks"},
+    "bamboo_stalk": {"texture_fn": texture_bamboo_stalk_v2, "paint_fn": paint_pinstripe, "variable_cc": False, "desc": "Vertical bamboo stalks with joints"},
     "barbed_wire":       {"texture_fn": texture_barbed_wire,     "paint_fn": paint_barbed_scratch,   "variable_cc": False, "desc": "Twisted wire with barb spikes"},
     "basket_weave": {"texture_fn": texture_basket_weave, "paint_fn": paint_carbon_darken, "variable_cc": False, "desc": "Over-under basket weave pattern"},
     "battle_worn":       {"texture_fn": texture_battle_worn,      "paint_fn": paint_scratch_marks,    "variable_cc": True,  "desc": "Scratched weathered damage"},
@@ -4121,7 +4530,7 @@ PATTERN_REGISTRY = {
     "bullet_holes": {"texture_fn": texture_fracture, "paint_fn": paint_fracture_damage, "variable_cc": True, "desc": "Scattered impact penetration holes"},
     "camo":              {"texture_fn": texture_camo,            "paint_fn": paint_camo_pattern,     "variable_cc": False, "desc": "Digital splinter camouflage blocks"},
     "carbon_fiber":      {"texture_fn": texture_carbon_fiber,     "paint_fn": paint_carbon_darken,    "variable_cc": False, "desc": "Woven 2x2 twill weave"},
-    "caustic": {"texture_fn": texture_ripple_dense, "paint_fn": paint_ripple_reflect, "variable_cc": False, "desc": "Underwater dancing light caustic pools"},
+    "caustic": {"texture_fn": texture_caustic_v2, "paint_fn": paint_ripple_reflect, "variable_cc": False, "desc": "Underwater dancing light caustic pools"},
     "celtic_knot":       {"texture_fn": texture_celtic_knot,    "paint_fn": paint_celtic_emboss,    "variable_cc": False, "desc": "Interwoven flowing band knot pattern"},
     "chainlink": {"texture_fn": texture_chainlink, "paint_fn": paint_hex_emboss, "variable_cc": False, "desc": "Chain-link fence diagonal wire grid"},
     "chainmail":         {"texture_fn": texture_chainmail,       "paint_fn": paint_chainmail_emboss, "variable_cc": False, "desc": "Interlocking metal ring mesh"},
@@ -4130,19 +4539,19 @@ PATTERN_REGISTRY = {
     "circuit_board":     {"texture_fn": texture_circuit_board,   "paint_fn": paint_circuit_glow,     "variable_cc": False, "desc": "PCB trace lines with pads and vias"},
     "circuitboard": {"texture_fn": texture_circuit_board, "paint_fn": paint_circuit_glow, "variable_cc": False, "desc": "PCB trace pattern metallic traces"},
     "classic_hotrod": {"texture_fn": texture_flame_sweep, "paint_fn": paint_lava_glow, "variable_cc": True, "desc": "[Legacy] Classic hot rod - superseded by flame_hotrod_classic"},
-    "corrugated": {"texture_fn": texture_grating_heavy, "paint_fn": paint_pinstripe, "variable_cc": False, "desc": "Corrugated sheet metal parallel ridges"},
+    "corrugated": {"texture_fn": texture_corrugated_v2, "paint_fn": paint_pinstripe, "variable_cc": False, "desc": "Corrugated sheet metal parallel ridges"},
     "cracked_ice":       {"texture_fn": texture_cracked_ice,      "paint_fn": paint_ice_cracks,       "variable_cc": False, "desc": "Frozen crack network"},
     "crocodile": {"texture_fn": texture_dragon_scale, "paint_fn": paint_scale_pattern, "variable_cc": False, "desc": "Deep embossed crocodile hide scales"},
     "crosshatch":        {"texture_fn": texture_crosshatch_fine, "paint_fn": paint_crosshatch_ink,   "variable_cc": False, "desc": "Overlapping diagonal pen stroke lines"},
     # "damascus" REMOVED - Artistic & Cultural replaced by image-based (engine/registry.py)
     "data_stream": {"texture_fn": texture_data_stream, "paint_fn": paint_hologram_lines, "variable_cc": False, "desc": "Flowing horizontal data packet streams"},
-    "dazzle":            {"texture_fn": texture_dazzle,          "paint_fn": paint_dazzle_contrast,  "variable_cc": False, "desc": "Bold Voronoi B/W dazzle camo patches"},
+    "dazzle":            {"texture_fn": texture_dazzle_v2,          "paint_fn": paint_dazzle_contrast,  "variable_cc": False, "desc": "Bold Voronoi B/W dazzle camo patches"},
     # "denim" REMOVED - Artistic & Cultural replaced by image-based (engine/registry.py)
     "diamond_plate":     {"texture_fn": texture_diamond_plate,    "paint_fn": paint_diamond_emboss,   "variable_cc": False, "desc": "Industrial raised diamond tread"},
     "dimensional": {"texture_fn": texture_interference, "paint_fn": paint_interference_shift, "variable_cc": False, "desc": "Newtons rings thin-film interference"},
     "dna_helix": {"texture_fn": texture_dna_helix_v2, "paint_fn": paint_wave_shimmer, "variable_cc": False, "desc": "Double-helix DNA strand spiral"},
     # "dragon_scale" REMOVED - Artistic & Cultural image-based (engine/registry.py)
-    "drift_marks": {"texture_fn": texture_tire_tread, "paint_fn": paint_tread_darken, "variable_cc": False, "desc": "Sideways drift tire trail marks"},
+    "drift_marks": {"texture_fn": texture_drift_marks_v2, "paint_fn": paint_tread_darken, "variable_cc": False, "desc": "Sideways drift tire trail marks"},
     "ekg": {"texture_fn": texture_ekg_v2, "paint_fn": paint_wave_shimmer, "variable_cc": False, "desc": "Heartbeat EKG monitor line pulse"},
     "ember_mesh":        {"texture_fn": texture_ember_mesh,    "paint_fn": paint_ember_mesh_glow,  "variable_cc": False, "desc": "Glowing hot wire grid with ember nodes"},
     "ember_scatter": {"texture_fn": texture_ember_scatter_v2, "paint_fn": paint_stardust_sparkle, "variable_cc": False, "desc": "Floating glowing embers scattered"},
@@ -4159,14 +4568,14 @@ PATTERN_REGISTRY = {
     "fractal_3": {"texture_fn": texture_fractal_3, "paint_fn": paint_plasma_veins, "variable_cc": False, "desc": "Dense interwoven fractal network"},
     "fracture":          {"texture_fn": texture_fracture,      "paint_fn": paint_fracture_damage,  "variable_cc": True,  "desc": "Shattered impact glass with radial crack network"},
     "fresnel_ghost": {"texture_fn": texture_hex_honeycomb, "paint_fn": paint_hex_emboss, "variable_cc": False, "desc": "Hidden hex pattern Fresnel amplification"},
-    "frost_crystal":     {"texture_fn": texture_frost_crystal,  "paint_fn": paint_frost_crystal,    "variable_cc": False, "desc": "Ice crystal branching fractals"},
+    "frost_crystal":     {"texture_fn": texture_frost_crystal_v2,  "paint_fn": paint_frost_crystal,    "variable_cc": False, "desc": "Ice crystal branching fractals"},
     "g_force": {"texture_fn": texture_battle_worn, "paint_fn": paint_scratch_marks, "variable_cc": True, "desc": "Acceleration force vector compression"},
     "ghost_flames": {"texture_fn": texture_plasma_soft, "paint_fn": paint_plasma_veins, "variable_cc": False, "desc": "[Legacy] Ghost flames - superseded by flame_ghost"},
     "giraffe": {"texture_fn": texture_giraffe, "paint_fn": paint_leopard_spots, "variable_cc": False, "desc": "Irregular polygon giraffe spot patches"},
     "glacier_crack": {"texture_fn": texture_cracked_ice, "paint_fn": paint_ice_cracks, "variable_cc": False, "desc": "Deep blue-white glacial ice fissures"},
-    "glitch_scan": {"texture_fn": texture_circuit_dense, "paint_fn": paint_hologram_lines, "variable_cc": False, "desc": "Horizontal glitch scanline displacement"},
+    "glitch_scan": {"texture_fn": texture_glitch_scan_v2, "paint_fn": paint_hologram_lines, "variable_cc": False, "desc": "Horizontal glitch scanline displacement"},
     "gothic_cross": {"texture_fn": texture_gothic_cross_v2, "paint_fn": paint_celtic_emboss, "variable_cc": False, "desc": "Ornate gothic cathedral cross grid"},
-    "gothic_scroll": {"texture_fn": texture_tribal_scroll, "paint_fn": paint_damascus_layer, "variable_cc": False, "desc": "Flowing dark ornamental scroll filigree"},
+    "gothic_scroll": {"texture_fn": texture_gothic_scroll_v2, "paint_fn": paint_damascus_layer, "variable_cc": False, "desc": "Flowing dark ornamental scroll filigree"},
     "grating": {"texture_fn": texture_grating_heavy, "paint_fn": paint_pinstripe, "variable_cc": False, "desc": "Industrial floor grating parallel bars"},
     "greek_key": {"texture_fn": texture_tribal_meander, "paint_fn": paint_chevron_contrast, "variable_cc": False, "desc": "Continuous right-angle meander border"},
     "grip_tape": {"texture_fn": texture_static_noise, "paint_fn": paint_static_noise_grain, "variable_cc": False, "desc": "Coarse skateboard grip tape texture"},
@@ -4174,23 +4583,23 @@ PATTERN_REGISTRY = {
     "halfpipe": {"texture_fn": texture_wave_gentle, "paint_fn": paint_wave_shimmer, "variable_cc": False, "desc": "Curved halfpipe ramp cross-section"},
     "hammered":          {"texture_fn": texture_hammered,         "paint_fn": paint_hammered_dimples, "variable_cc": False, "desc": "Hand-hammered dimple pattern"},
     "hellfire": {"texture_fn": texture_flame_aggressive, "paint_fn": paint_lava_glow, "variable_cc": True, "desc": "[Legacy] Hellfire - superseded by flame_hellfire_column"},
-    "herringbone": {"texture_fn": texture_herringbone, "paint_fn": paint_chevron_contrast, "variable_cc": False, "desc": "V-shaped zigzag brick/tile pattern"},
+    "herringbone": {"texture_fn": texture_herringbone_v2, "paint_fn": paint_chevron_contrast, "variable_cc": False, "desc": "V-shaped zigzag brick/tile pattern"},
     "hex_mesh":          {"texture_fn": texture_hex_mesh,         "paint_fn": paint_hex_emboss,       "variable_cc": False, "desc": "Honeycomb wire grid"},
-    "hibiscus": {"texture_fn": texture_tribal_knot_dense, "paint_fn": paint_celtic_emboss, "variable_cc": False, "desc": "Hawaiian hibiscus flower pattern"},
+    "hibiscus": {"texture_fn": texture_hibiscus_v2, "paint_fn": paint_celtic_emboss, "variable_cc": False, "desc": "Hawaiian hibiscus flower pattern"},
     "hologram":          {"texture_fn": texture_hologram,         "paint_fn": paint_hologram_lines,   "variable_cc": False, "desc": "Horizontal scanline projection"},
     "holographic": {"texture_fn": texture_holographic_flake, "paint_fn": paint_coarse_flake, "variable_cc": False, "desc": "Hologram diffraction grating rainbow"},
     "holographic_flake": {"texture_fn": texture_holographic_flake,"paint_fn": paint_coarse_flake,     "variable_cc": False, "desc": "Rainbow prismatic micro-grid flake"},
     "houndstooth":       {"texture_fn": texture_houndstooth,    "paint_fn": paint_houndstooth_contrast, "variable_cc": False, "desc": "Classic houndstooth check textile"},
     "inferno": {"texture_fn": texture_flame_wild, "paint_fn": paint_lava_glow, "variable_cc": True, "desc": "[Legacy] Inferno - superseded by flame_inferno_wall"},
     "interference":      {"texture_fn": texture_interference,     "paint_fn": paint_interference_shift,"variable_cc": False, "desc": "Flowing rainbow wave bands"},
-    "iron_cross": {"texture_fn": texture_tribal_bands, "paint_fn": paint_celtic_emboss, "variable_cc": False, "desc": "Bold Iron Cross motif array"},
+    "iron_cross": {"texture_fn": texture_iron_cross_v2, "paint_fn": paint_celtic_emboss, "variable_cc": False, "desc": "Bold Iron Cross motif array"},
     # "japanese_wave" REMOVED - Artistic & Cultural image-based (engine/registry.py)
     "kevlar_weave": {"texture_fn": texture_kevlar_weave, "paint_fn": paint_carbon_darken, "variable_cc": False, "desc": "Tight aramid fiber golden weave"},
     "knurled": {"texture_fn": texture_crosshatch, "paint_fn": paint_crosshatch_ink, "variable_cc": False, "desc": "Machine knurling diagonal cross-hatch"},
     "lap_counter": {"texture_fn": texture_pinstripe_fine, "paint_fn": paint_pinstripe, "variable_cc": False, "desc": "Repeating tally mark lap counter"},
     "lava_flow":         {"texture_fn": texture_lava_flow,       "paint_fn": paint_lava_glow,        "variable_cc": True,  "desc": "Flowing molten rock with hot cracks"},
     "leather_grain": {"texture_fn": texture_hammered, "paint_fn": paint_hammered_dimples, "variable_cc": False, "desc": "Natural grain leather pebble texture"},
-    "leopard":           {"texture_fn": texture_leopard_sparse,  "paint_fn": paint_leopard_spots,    "variable_cc": False, "desc": "Organic leopard rosette spots"},
+    "leopard":           {"texture_fn": texture_leopard_rosette_v2,  "paint_fn": paint_leopard_spots,    "variable_cc": False, "desc": "Organic leopard rosette spots"},
     "lightning":         {"texture_fn": texture_lightning_soft,    "paint_fn": paint_lightning_glow,   "variable_cc": False, "desc": "Forked lightning bolt paths"},
     "magma_crack":       {"texture_fn": texture_magma_crack,     "paint_fn": paint_magma_glow,       "variable_cc": False, "desc": "Voronoi boundary cracks with orange lava glow"},
     # "mandala" REMOVED - Artistic & Cultural image-based (engine/registry.py)

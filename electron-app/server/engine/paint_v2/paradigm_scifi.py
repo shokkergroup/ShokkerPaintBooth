@@ -243,55 +243,84 @@ def spec_neutron_star(shape, seed, sm, base_m, base_r):
 
 def paint_plasma_core_v2(paint, shape, mask, seed, pm, bb):
     """
-    Plasma via Lorentz force field simulation. Swirling patterns
-    from magnetic pinch effect with thermal radiation colors.
+    Reactor core plasma: intense blue-white center with electric arcs radiating
+    outward, surrounded by purple-blue plasma glow and magnetic confinement rings.
     """
+    if pm == 0.0:
+        return paint
     h, w = shape[:2] if len(shape) > 2 else shape
     y, x = get_mgrid((h, w))
-    
+
     cy, cx = h / 2.0, w / 2.0
     dy, dx = y - cy, x - cx
     r = np.sqrt(dy ** 2 + dx ** 2) + 1e-8
     theta = np.arctan2(dy, dx)
-    
-    # Azimuthal pinch (m=2 mode)
-    pinch_m2 = np.cos(theta * 2 + r * 0.05)
-    
-    # Radial oscillations (pressure waves)
-    pressure = np.sin(r * 0.1) * np.exp(-r / (h * 0.4))
-    
-    # Turbulent mixing
-    turb = multi_scale_noise((h, w), [4, 8], [0.5, 0.5], seed + 2007)
-    
-    # Plasma temperature: combine pinch + pressure + turbulence
-    plasma = np.abs(pinch_m2) * (1.0 + turb) * (0.5 + pressure)
-    
-    # Hot plasma colors: white->yellow->red
+    max_r = np.sqrt(cy ** 2 + cx ** 2)
+    r_norm = r / max_r
+
+    # Intense blue-white reactor core (center hotspot)
+    core_intensity = np.exp(-(r_norm / 0.15) ** 2)  # tight bright core
+
+    # Electric arcs radiating outward (thin bright filaments)
+    n_arcs = 8
+    arc_base = np.zeros((h, w), dtype=np.float32)
+    rng = np.random.RandomState(seed + 2007)
+    for i in range(n_arcs):
+        arc_angle = rng.uniform(0, 2 * np.pi)
+        arc_width = rng.uniform(0.08, 0.15)
+        # Arc follows a wiggly path from center outward
+        wiggle = multi_scale_noise((h, w), [4, 8], [0.6, 0.4], seed + 2007 + i * 10)
+        angular_dist = np.abs(np.sin((theta - arc_angle + wiggle * 0.3) * 0.5))
+        arc = np.exp(-(angular_dist / arc_width) ** 2) * np.exp(-r_norm * 1.2)
+        arc_base += arc
+    arc_base = np.clip(arc_base, 0, 1)
+
+    # Plasma glow field (purple-blue, turbulent)
+    turb1 = multi_scale_noise((h, w), [4, 8, 16], [0.3, 0.4, 0.3], seed + 2008)
+    turb2 = multi_scale_noise((h, w), [2, 4], [0.6, 0.4], seed + 2009)
+    glow = np.clip((turb1 * 0.5 + 0.5) * np.exp(-r_norm * 0.8), 0, 1)
+
+    # Magnetic confinement rings
+    ring1 = np.exp(-((r_norm - 0.35) / 0.04) ** 2) * 0.5
+    ring2 = np.exp(-((r_norm - 0.6) / 0.05) ** 2) * 0.3
+
+    # Color mapping: core=white-blue, arcs=electric blue, glow=purple-blue
     result = paint.copy()
-    blend = mask[:, :] * pm * 0.75
-    result[:, :, 0] = np.clip(paint[:, :, 0] * (1 - blend) + 
-                               plasma * blend, 0, 1)
-    result[:, :, 1] = np.clip(paint[:, :, 1] * (1 - blend) + 
-                               plasma * blend * 0.6, 0, 1)
-    result[:, :, 2] = np.clip(paint[:, :, 2] * (1 - blend) + 
-                               plasma * blend * 0.2, 0, 1)
-    
+    blend = mask[:, :] * pm * 0.85
+    # Core: intense blue-white
+    result[:, :, 0] = np.clip(paint[:, :, 0] * (1 - blend) +
+                               blend * (core_intensity * 0.9 + arc_base * 0.5 + glow * 0.15 + ring1 * 0.3 + ring2 * 0.2), 0, 1)
+    result[:, :, 1] = np.clip(paint[:, :, 1] * (1 - blend) +
+                               blend * (core_intensity * 0.85 + arc_base * 0.6 + glow * 0.1 + ring1 * 0.35 + ring2 * 0.25), 0, 1)
+    result[:, :, 2] = np.clip(paint[:, :, 2] * (1 - blend) +
+                               blend * (core_intensity * 0.95 + arc_base * 0.9 + glow * 0.45 + ring1 * 0.6 + ring2 * 0.5), 0, 1)
+
     return result.astype(np.float32)
 
 
 def spec_plasma_core(shape, seed, sm, base_m, base_r):
     """
-    Plasma spec: high metallic (ionized gas conducts),
-    medium roughness (turbulent fluctuations), high clearcoat (radiation).
+    Plasma core spec: glowing core with electric arc metallic highlights,
+    smooth in hot zones, rough in turbulent outer plasma.
     """
     h, w = shape
-    fluc = multi_scale_noise((h, w), [2, 4, 8], [0.4, 0.3, 0.3], seed + 2008)
-    
-    M = np.clip(0.7 + fluc * 0.25 * 255.0, 0, 255)
-    R = np.clip(0.4 + fluc * 0.2 * 255.0, 0, 255)
-    CC = np.clip(0.75 + fluc * 0.2 * 255.0, 16, 255)
-    
-    return M.astype(np.float32), R.astype(np.float32), CC.astype(np.float32)
+    y, x = get_mgrid((h, w))
+    cy, cx = h / 2.0, w / 2.0
+    r = np.sqrt((y - cy) ** 2 + (x - cx) ** 2) + 1e-8
+    r_norm = r / np.sqrt(cy ** 2 + cx ** 2)
+    core = np.exp(-(r_norm / 0.15) ** 2)
+    turb = multi_scale_noise((h, w), [2, 4, 8], [0.4, 0.3, 0.3], seed + 2008)
+    arc_noise = multi_scale_noise((h, w), [1, 2], [0.6, 0.4], seed + 2010)
+    arc_spots = np.clip((arc_noise - 0.5) * 3.0, 0, 1)
+
+    # M: core is dielectric (glowing), arcs are metallic, plasma is moderate
+    M = np.clip(core * 40.0 + (1.0 - core) * 180.0 * sm + arc_spots * 75.0 * sm, 0, 255).astype(np.float32)
+    # R: core is very smooth (hot), outer is turbulent/rough
+    R = np.clip(3.0 + (1.0 - core) * 60.0 * sm + turb * 25.0 * sm - arc_spots * 20.0, 0, 255).astype(np.float32)
+    # CC: core is glossy, outer plasma has more diffusion
+    CC = np.clip(16.0 + (1.0 - core) * 40.0 * sm + turb * 15.0 * sm, 16, 255).astype(np.float32)
+
+    return M, R, CC
 
 
 # ============================================================================
@@ -886,55 +915,72 @@ def spec_carbon_weave(shape, seed, sm, base_m, base_r):
 
 def paint_nebula_v2(paint, shape, mask, seed, pm, bb):
     """
-    Nebula via ionized gas emission spectrum.
-    Creates diffuse multi-colored gas clouds with filamentary structure.
+    Cosmic nebula with fine metallic sparkle (stellar dust), wisps of colored gas,
+    scattered star-like flakes, and deep color variation. Much more sparkle and depth.
     """
+    if pm == 0.0:
+        return paint
     h, w = shape[:2] if len(shape) > 2 else shape
     y, x = get_mgrid((h, w))
-    
+
     cy, cx = h / 2.0, w / 2.0
     dy, dx = y - cy, x - cx
     r = np.sqrt(dy ** 2 + dx ** 2) + 1e-8
     theta = np.arctan2(dy, dx)
-    
-    # Filamentary structure (magnetic field lines)
-    filament = np.sin(theta * 5 + r * 0.04) * np.exp(-r / (h * 0.5))
-    # Density + fine structure (more dynamic)
-    density = multi_scale_noise((h, w), [4, 8, 16, 32], [0.35, 0.3, 0.25, 0.1], seed + 2030)
-    gas_cloud = np.clip(density * (0.5 + np.abs(filament) * 0.5), 0, 1)
-    
-    # Ionization: H-alpha (red), OIII (teal/blue), NII (magenta) - vivid nebula palette
-    h_alpha = np.exp(-r / (h * 0.4))
-    oiii = np.exp(-r / (h * 0.28))
-    nii = 1.0 - np.exp(-r / (h * 0.5))
-    # Subtle angle-based shift for more depth
-    angle_shift = 0.5 + 0.3 * np.sin(theta * 3 + seed * 0.01)
-    
+
+    # Multi-scale gas cloud structure (billowing nebula wisps)
+    gas1 = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.35, 0.35], seed + 2030)
+    gas2 = multi_scale_noise((h, w), [8, 16, 32], [0.35, 0.35, 0.3], seed + 2031)
+    gas = np.clip((gas1 + gas2) * 0.5, 0, 1)
+
+    # Filamentary wisps (magnetic field-guided gas strands)
+    filament1 = np.sin(theta * 4 + r * 0.03 + gas1 * 3.0) * 0.5 + 0.5
+    filament2 = np.sin(theta * 6 - r * 0.02 + gas2 * 2.5) * 0.5 + 0.5
+    wisps = np.clip(filament1 * filament2, 0, 1)
+
+    # Star-like flake sparkle (tiny bright scattered points)
+    sparkle_noise = multi_scale_noise((h, w), [1, 2], [0.5, 0.5], seed + 2032)
+    stars = np.clip((sparkle_noise - 0.82) * 12.0, 0, 1)  # sparse bright points
+
+    # Multi-color nebula palette: H-alpha red, OIII teal, SII violet, gold dust
+    color_phase = multi_scale_noise((h, w), [8, 16, 32], [0.3, 0.4, 0.3], seed + 2033)
+    # Four-color nebula zones
+    t = np.clip(color_phase * 0.5 + 0.5, 0, 1)
+    neb_r = np.clip(0.4 * np.sin(t * np.pi * 2.0 + 0.0) ** 2 + wisps * 0.2 + stars * 0.8, 0, 1)
+    neb_g = np.clip(0.25 * np.sin(t * np.pi * 2.0 + 2.1) ** 2 + wisps * 0.15 + stars * 0.75, 0, 1)
+    neb_b = np.clip(0.5 * np.sin(t * np.pi * 2.0 + 4.2) ** 2 + wisps * 0.3 + stars * 0.9, 0, 1)
+
+    # Depth darkening in dust lanes
+    dust = multi_scale_noise((h, w), [4, 8], [0.6, 0.4], seed + 2034)
+    dust_lane = np.clip((dust - 0.55) * 3.0, 0, 1) * 0.4
+
     result = paint.copy()
-    blend = np.clip(mask[:, :] * pm * 0.75, 0, 1)
-    result[:, :, 0] = np.clip(paint[:, :, 0] * (1 - blend) + blend * gas_cloud * (0.35 * h_alpha + 0.25 * nii * angle_shift), 0, 1)
-    result[:, :, 1] = np.clip(paint[:, :, 1] * (1 - blend) + blend * gas_cloud * (0.12 + 0.15 * oiii), 0, 1)
-    result[:, :, 2] = np.clip(paint[:, :, 2] * (1 - blend) + blend * gas_cloud * (0.4 * oiii + 0.2 * nii), 0, 1)
+    blend = np.clip(mask[:, :] * pm * 0.80, 0, 1)
+    result[:, :, 0] = np.clip(paint[:, :, 0] * (1 - blend) + blend * gas * (neb_r - dust_lane * 0.3), 0, 1)
+    result[:, :, 1] = np.clip(paint[:, :, 1] * (1 - blend) + blend * gas * (neb_g - dust_lane * 0.2), 0, 1)
+    result[:, :, 2] = np.clip(paint[:, :, 2] * (1 - blend) + blend * gas * (neb_b - dust_lane * 0.1), 0, 1)
     return result.astype(np.float32)
 
 
 def spec_nebula(shape, seed, sm, base_m, base_r):
-    """Nebula: gas cloud with dense bright cores, dark dust lanes, and star-birth zones."""
+    """Nebula spec: cosmic dust sparkle, star flakes, gas wisps with depth variation."""
     h, w = shape[:2] if len(shape) > 2 else shape
     # Gas cloud density — large billowing structures
     gas = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.4, 0.3], seed + 4200)
     # Dust lane structures — darker filaments threading through
     dust = multi_scale_noise((h, w), [4, 8, 16], [0.4, 0.35, 0.25], seed + 4210)
     dust_lane = np.clip((dust - 0.4) * 3.0, 0, 1)
-    # Star-birth hot spots — tiny bright metallic points
-    stars = multi_scale_noise((h, w), [1, 2], [0.6, 0.4], seed + 4215)
-    hot_spots = np.clip((stars - 0.85) * 8.0, 0, 1)
-    # M: mostly dielectric gas, metallic at star-birth points
-    M = np.clip(hot_spots * 200.0 + gas * 30.0, 0, 255).astype(np.float32)
-    # R: diffuse gas cloud, smoother near hot spots
-    R = np.clip(80.0 + (1.0 - gas) * 120.0 - hot_spots * 70.0 + dust_lane * 40.0, 0, 255).astype(np.float32)
-    # CC: variable — clear near stars, foggy in dust lanes
-    CC = np.clip(16.0 + dust_lane * 100.0 + (1.0 - gas) * 60.0 - hot_spots * 30.0, 16, 255).astype(np.float32)
+    # Star-birth hot spots — tiny bright metallic points (cosmic dust sparkle)
+    stars_coarse = multi_scale_noise((h, w), [1, 2], [0.6, 0.4], seed + 4215)
+    stars_fine = multi_scale_noise((h, w), [1, 2], [0.5, 0.5], seed + 4216)
+    hot_spots = np.clip((stars_coarse - 0.80) * 8.0, 0, 1)  # more frequent sparkle
+    micro_flake = np.clip((stars_fine - 0.70) * 5.0, 0, 1)  # fine metallic dust
+    # M: sparkle and micro-flake metallic, moderate in gas
+    M = np.clip(hot_spots * 220.0 + micro_flake * 120.0 * sm + gas * 40.0 * sm, 0, 255).astype(np.float32)
+    # R: smooth at star points (reflective), rough in gas, very rough in dust
+    R = np.clip(60.0 + (1.0 - gas) * 100.0 * sm - hot_spots * 55.0 - micro_flake * 30.0 + dust_lane * 50.0 * sm, 0, 255).astype(np.float32)
+    # CC: clear near stars, foggy in dust lanes
+    CC = np.clip(16.0 + dust_lane * 80.0 * sm + (1.0 - gas) * 40.0 * sm - hot_spots * 20.0, 16, 255).astype(np.float32)
     return M, R, _cc_clamp(CC)
 
 

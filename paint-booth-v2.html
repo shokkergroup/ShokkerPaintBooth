@@ -378,15 +378,19 @@
         <div class="settings-dropdown" id="settingsDropdown">
             <div class="settings-section">
                 <div class="settings-section-title">Options</div>
-                <div class="settings-row">
-                    <input type="checkbox" id="exportZipCheckbox">
-                    <label for="exportZipCheckbox">Export ZIP Package</label>
+                <div class="settings-row" style="flex-direction:column; align-items:flex-start; gap:2px;">
+                    <div style="display:flex; align-items:center; gap:6px;">
+                        <input type="checkbox" id="exportZipCheckbox">
+                        <label for="exportZipCheckbox">Export ZIP Package</label>
+                    </div>
+                    <div style="font-size:8px; color:var(--text-dim); padding-left:20px;">Bundles paint TGA + spec TGA + preview into a single .zip on every render. Saves to your output folder.</div>
                 </div>
-                <div class="settings-row">
+                <!-- Light mode disabled - needs rework before re-enabling -->
+                <!-- <div class="settings-row">
                     <button class="btn btn-sm" id="themeToggleBtn" onclick="toggleTheme()"
                         title="Switch between dark and light theme" style="font-size:10px; padding:2px 10px;">☀
                         Light</button>
-                </div>
+                </div> -->
             </div>
             <div class="settings-section">
                 <div class="settings-section-title">Import Spec Map (Merge Mode)</div>
@@ -400,8 +404,7 @@
                         title="Remove imported spec map and render on default base" id="btnClearSpecMap"
                         disabled>Clear</button>
                 </div>
-                <div style="font-size: 8px; color: var(--text-dim); margin-top: 2px;">Import an existing spec map TGA —
-                    zones paint on top of it instead of the default base</div>
+                <div style="font-size: 8px; color: var(--text-dim); margin-top: 2px;">Import an existing spec map TGA — zones paint ON TOP of it. Areas NOT covered by any zone keep the imported spec. If a zone uses "Everything" or "Remaining" it will cover the entire imported spec.</div>
             </div>
             <div class="settings-section" id="licenseSection">
                 <div class="settings-section-title">License</div>
@@ -473,6 +476,7 @@
                 <span class="vtool-label" style="color:var(--accent-green);">Sptl</span>
                 <button id="vtModeSpatialInclude" class="vtool-btn" onclick="setCanvasMode('spatial-include')" title="Include Region">✅</button>
                 <button id="vtModeSpatialExclude" class="vtool-btn" onclick="setCanvasMode('spatial-exclude')" title="Exclude Region">❌</button>
+                <button id="vtModeSpatialErase" class="vtool-btn" onclick="setCanvasMode('spatial-erase')" title="Erase Spatial Strokes" style="color:#ff4444;">🧹</button>
             </div>
             <!-- MASK group -->
             <div class="vtool-group">
@@ -684,6 +688,10 @@
                         </div>
                     </div>
                 </div>
+                <!-- Placeholder warning for unfinished sections -->
+                <div style="margin: 8px 16px 2px 16px; padding: 4px 8px; background: rgba(255,40,40,0.12); border: 1px solid rgba(255,60,60,0.35); border-radius: 4px; text-align: center;">
+                    <span style="font-size: 9px; font-weight: 700; color: #ff4444; letter-spacing: 1px; text-transform: uppercase;">&#9888; Placeholder / Coming Soon</span>
+                </div>
                 <!-- Decals & Numbers: import PNGs, add number decals, drag on canvas -->
                 <div style="padding: 2px 16px 4px 16px;">
                     <details class="combo-section" id="decalsSection">
@@ -889,6 +897,12 @@
                                 oninput="spatialBrushRadius=parseInt(this.value); document.getElementById('spatialSizeVal').textContent=this.value">
                             <span id="spatialSizeVal"
                                 style="font-size:10px; color:var(--text-dim); width:18px; display:none;">15</span>
+                            <button id="spatialEraseBtn" class="btn btn-sm" onclick="setCanvasMode('spatial-erase')"
+                                style="display:none; font-size:10px; padding:2px 8px; white-space:nowrap; margin-left:4px; border:1px solid #ff4444; color:#ff4444;"
+                                title="Erase spatial include/exclude strokes">🧹 Erase</button>
+                            <button id="drawEraseBtn" class="btn btn-sm" onclick="setCanvasMode('erase')"
+                                style="display:none; font-size:10px; padding:2px 8px; white-space:nowrap; margin-left:4px; border:1px solid #ff4444; color:#ff4444;"
+                                title="Erase brush/wand/region strokes">🧹 Erase</button>
                         </div>
                     </div>
                 </div>

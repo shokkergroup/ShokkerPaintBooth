@@ -455,15 +455,17 @@ const ShokkerAPI = {
         // const comboEl = document.getElementById('comboCount');
         if (llRow && this.config) {
             llRow.style.display = 'flex';
-            const cb = document.getElementById('liveLinkCheckbox');
             const badge = document.getElementById('liveLinkBadge');
-            if (cb) cb.checked = this.config.live_link_enabled || false;
+            if (!this._liveLinkSynced) {
+                const cb = document.getElementById('liveLinkCheckbox');
+                if (cb) { cb.checked = this.config.live_link_enabled || false; this._liveLinkSynced = true; }
+            }
             if (badge) badge.style.display = this.config.live_link_enabled ? 'inline' : 'none';
         }
-        // Sync car file naming checkbox from saved config
-        if (this.config) {
+        // Sync car file naming checkbox from saved config (only on first load, not every poll)
+        if (this.config && !this._customNumberSynced) {
             const cnCb = document.getElementById('useCustomNumberCheckbox');
-            if (cnCb) cnCb.checked = this.config.use_custom_number !== false;
+            if (cnCb) { cnCb.checked = this.config.use_custom_number !== false; this._customNumberSynced = true; }
         }
     },
 
@@ -1557,7 +1559,10 @@ async function doRender() {
 
     // Import spec map (merge mode) — from SHOKK or manual import; use window fallback so SHOKK-loaded spec is never missed
     const activeSpecPath = (typeof importedSpecMapPath !== 'undefined' && importedSpecMapPath) ? importedSpecMapPath : (window.importedSpecMapPath || null);
-    if (activeSpecPath) extras.import_spec_map = activeSpecPath;
+    if (activeSpecPath) {
+        extras.import_spec_map = activeSpecPath;
+        console.log('[doRender] Merge mode: imported spec map =', activeSpecPath);
+    }
 
     // Decals: composite paint + decals and send as image so render includes them
     if (typeof compositeDecalsForRender === 'function' && typeof decalLayers !== 'undefined' && decalLayers.length > 0) {

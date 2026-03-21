@@ -1671,7 +1671,8 @@ def preview_render_endpoint():
             return jsonify({"error": f"Paint file not found: {paint_file}"}), 404
 
         zones = data.get("zones", [])
-        if not zones:
+        import_spec_map_early = data.get("import_spec_map")
+        if not zones and not import_spec_map_early:
             return jsonify({"error": "No zones provided"}), 400
 
         seed = data.get("seed", 51)
@@ -1976,7 +1977,8 @@ def render():
             return jsonify({"error": f"Paint file not found: {paint_file}"}), 404
 
         zones = data.get("zones", [])
-        if not zones:
+        import_spec_map_early = data.get("import_spec_map")
+        if not zones and not import_spec_map_early:
             return jsonify({"error": "No zones provided"}), 400
 
         iracing_id = data.get("iracing_id", "00000")
@@ -2421,7 +2423,8 @@ def export_to_photoshop():
             return jsonify({"error": f"Paint file not found: {paint_file}"}), 404
 
         zones = data.get("zones", [])
-        if not zones:
+        import_spec_map_early = data.get("import_spec_map")
+        if not zones and not import_spec_map_early:
             return jsonify({"error": "No zones provided"}), 400
 
         car_file_name = (data.get("car_file_name") or "shokker_export").strip()

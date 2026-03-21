@@ -336,18 +336,42 @@ def spec_perlin(shape, seed, sm, base_m, base_r):
 # ============================================================================
 
 def paint_orange_peel_gloss_v2(paint, shape, mask, seed, pm, bb):
-    contrasted = np.clip((paint - 0.5) * 1.04 + 0.5, 0, 1)
-    return contrasted * mask[:,:,np.newaxis] + paint * (1 - mask[:,:,np.newaxis])
+    """Orange peel gloss: visible dimple texture simulating spray coating micro-texture."""
+    if pm == 0.0:
+        return paint
+    h, w = shape[:2] if len(shape) > 2 else shape
+    # Generate cellular dimple pattern (orange peel texture)
+    # Use two scales of noise to create 6-8px cell-like bumps
+    dimple_coarse = multi_scale_noise((h, w), [4, 8], [0.5, 0.5], seed + 8800)
+    dimple_fine = multi_scale_noise((h, w), [2, 4], [0.6, 0.4], seed + 8801)
+    # Create cellular bumps via thresholded noise
+    cells = np.sin(dimple_coarse * np.pi * 12.0) * 0.5 + 0.5  # ~6-8px cells
+    cells = cells * (0.8 + dimple_fine * 0.2)  # modulate with finer detail
+    # Orange peel effect: subtle brightness variation following cell pattern
+    texture = cells * 0.12 * pm  # visible but not overwhelming
+    # Apply dimple texture to paint (highlights on dimple peaks, darker in valleys)
+    contrasted = np.clip((paint - 0.5) * 1.06 + 0.5, 0, 1)  # slightly more contrast than before
+    effect = np.clip(contrasted + texture[:,:,np.newaxis] - 0.06, 0, 1)
+    result = effect * mask[:,:,np.newaxis] + paint * (1 - mask[:,:,np.newaxis])
+    return np.clip(result, 0, 1).astype(np.float32)
 
 def spec_orange_peel_gloss(shape, seed, sm, base_m, base_r):
-    """Returns (M, R, CC)."""
+    """Orange peel spec: fine cellular bumps (6-8px cells) simulating spray coating micro-texture."""
     h, w = shape
-    metal = np.full((h, w), base_m / 255.0, dtype=np.float32)
-    spec  = np.full((h, w), base_r / 255.0, dtype=np.float32)
-    cc    = np.full((h, w), 16.0 / 255.0,   dtype=np.float32)
-    return (np.clip(metal * 255, 0, 255).astype(np.float32),
-            np.clip(spec  * 255, 0, 255).astype(np.float32),
-            np.clip(cc    * 255, 0, 255).astype(np.float32))
+    # Cellular orange peel texture in spec (this IS the orange peel finish)
+    dimple_coarse = multi_scale_noise((h, w), [4, 8], [0.5, 0.5], seed + 8800)
+    dimple_fine = multi_scale_noise((h, w), [2, 4], [0.6, 0.4], seed + 8801)
+    # Cell pattern: sine-based creates regular bumps
+    cells = np.sin(dimple_coarse * np.pi * 12.0) * 0.5 + 0.5
+    cells = cells * (0.8 + dimple_fine * 0.2)
+    # M: base metallic with slight cell variation
+    M = np.clip(base_m + cells * 15.0 * sm - 7.0, 0, 255).astype(np.float32)
+    # R: the key channel - orange peel creates roughness variation (bumpy micro-texture)
+    # Peaks are smoother (light catches), valleys are rougher
+    R = np.clip(base_r + (1.0 - cells) * 30.0 * sm + cells * 5.0 * sm, 0, 255).astype(np.float32)
+    # CC: standard glossy with micro-texture variation
+    CC = np.clip(16.0 + (1.0 - cells) * 12.0 * sm, 16, 255).astype(np.float32)
+    return M, R, CC
 
 
 # ============================================================================

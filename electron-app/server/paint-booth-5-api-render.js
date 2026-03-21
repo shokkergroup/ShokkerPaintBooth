@@ -793,6 +793,7 @@ async function doFleetRender() {
             if (z.secondBasePatternHarden != null) zoneObj.second_base_pattern_harden = !!z.secondBasePatternHarden;
             zoneObj.second_base_pattern_offset_x = Math.max(0, Math.min(1, Number(z.secondBasePatternOffsetX ?? 0.5)));
             zoneObj.second_base_pattern_offset_y = Math.max(0, Math.min(1, Number(z.secondBasePatternOffsetY ?? 0.5)));
+            if (z.secondBaseFitZone) zoneObj.second_base_fit_zone = true;
         }
         if ((z.thirdBase || z.thirdBaseColorSource) && (z.thirdBaseStrength || 0) > 0) {
             const _tbColor = (z.thirdBaseColor || '#ffffff').toString();
@@ -814,6 +815,7 @@ async function doFleetRender() {
             if (z.thirdBasePatternHarden != null) zoneObj.third_base_pattern_harden = !!z.thirdBasePatternHarden;
             zoneObj.third_base_pattern_offset_x = Math.max(0, Math.min(1, Number(z.thirdBasePatternOffsetX ?? 0.5)));
             zoneObj.third_base_pattern_offset_y = Math.max(0, Math.min(1, Number(z.thirdBasePatternOffsetY ?? 0.5)));
+            if (z.thirdBaseFitZone) zoneObj.third_base_fit_zone = true;
         }
         if ((z.fourthBase || z.fourthBaseColorSource) && (z.fourthBaseStrength || 0) > 0) {
             const _fbColor = (z.fourthBaseColor || '#ffffff').toString();
@@ -833,6 +835,7 @@ async function doFleetRender() {
             zoneObj.fourth_base_pattern_strength = Math.max(0, Math.min(2, Number(z.fourthBasePatternStrength ?? 1)));
             zoneObj.fourth_base_pattern_offset_x = Math.max(0, Math.min(1, Number(z.fourthBasePatternOffsetX ?? 0.5)));
             zoneObj.fourth_base_pattern_offset_y = Math.max(0, Math.min(1, Number(z.fourthBasePatternOffsetY ?? 0.5)));
+            if (z.fourthBaseFitZone) zoneObj.fourth_base_fit_zone = true;
         }
         if ((z.fifthBase || z.fifthBaseColorSource) && (z.fifthBaseStrength || 0) > 0) {
             const _fifColor = (z.fifthBaseColor || '#ffffff').toString();
@@ -852,6 +855,7 @@ async function doFleetRender() {
             zoneObj.fifth_base_pattern_strength = Math.max(0, Math.min(2, Number(z.fifthBasePatternStrength ?? 1)));
             zoneObj.fifth_base_pattern_offset_x = Math.max(0, Math.min(1, Number(z.fifthBasePatternOffsetX ?? 0.5)));
             zoneObj.fifth_base_pattern_offset_y = Math.max(0, Math.min(1, Number(z.fifthBasePatternOffsetY ?? 0.5)));
+            if (z.fifthBaseFitZone) zoneObj.fifth_base_fit_zone = true;
         }
         return zoneObj;
     });
@@ -1030,6 +1034,7 @@ async function doSeasonRender() {
             if (z.secondBasePatternHarden != null) zoneObj.second_base_pattern_harden = !!z.secondBasePatternHarden;
             zoneObj.second_base_pattern_offset_x = Math.max(0, Math.min(1, Number(z.secondBasePatternOffsetX ?? 0.5)));
             zoneObj.second_base_pattern_offset_y = Math.max(0, Math.min(1, Number(z.secondBasePatternOffsetY ?? 0.5)));
+            if (z.secondBaseFitZone) zoneObj.second_base_fit_zone = true;
         }
         if ((z.thirdBase || z.thirdBaseColorSource) && (z.thirdBaseStrength || 0) > 0) {
             const _tbColor = (z.thirdBaseColor || '#ffffff').toString();
@@ -1051,6 +1056,7 @@ async function doSeasonRender() {
             if (z.thirdBasePatternHarden != null) zoneObj.third_base_pattern_harden = !!z.thirdBasePatternHarden;
             zoneObj.third_base_pattern_offset_x = Math.max(0, Math.min(1, Number(z.thirdBasePatternOffsetX ?? 0.5)));
             zoneObj.third_base_pattern_offset_y = Math.max(0, Math.min(1, Number(z.thirdBasePatternOffsetY ?? 0.5)));
+            if (z.thirdBaseFitZone) zoneObj.third_base_fit_zone = true;
         }
         if ((z.fourthBase || z.fourthBaseColorSource) && (z.fourthBaseStrength || 0) > 0) {
             const _fbColor = (z.fourthBaseColor || '#ffffff').toString();
@@ -1070,6 +1076,7 @@ async function doSeasonRender() {
             zoneObj.fourth_base_pattern_strength = Math.max(0, Math.min(2, Number(z.fourthBasePatternStrength ?? 1)));
             zoneObj.fourth_base_pattern_offset_x = Math.max(0, Math.min(1, Number(z.fourthBasePatternOffsetX ?? 0.5)));
             zoneObj.fourth_base_pattern_offset_y = Math.max(0, Math.min(1, Number(z.fourthBasePatternOffsetY ?? 0.5)));
+            if (z.fourthBaseFitZone) zoneObj.fourth_base_fit_zone = true;
         }
         if ((z.fifthBase || z.fifthBaseColorSource) && (z.fifthBaseStrength || 0) > 0) {
             const _fifColor = (z.fifthBaseColor || '#ffffff').toString();
@@ -1089,6 +1096,7 @@ async function doSeasonRender() {
             zoneObj.fifth_base_pattern_strength = Math.max(0, Math.min(2, Number(z.fifthBasePatternStrength ?? 1)));
             zoneObj.fifth_base_pattern_offset_x = Math.max(0, Math.min(1, Number(z.fifthBasePatternOffsetX ?? 0.5)));
             zoneObj.fifth_base_pattern_offset_y = Math.max(0, Math.min(1, Number(z.fifthBasePatternOffsetY ?? 0.5)));
+            if (z.fifthBaseFitZone) zoneObj.fifth_base_fit_zone = true;
         }
         return zoneObj;
     });
@@ -1318,6 +1326,7 @@ function buildServerZonesForRender(zones) {
             if (z.secondBasePatternHarden != null) zoneObj.second_base_pattern_harden = !!z.secondBasePatternHarden;
             zoneObj.second_base_pattern_offset_x = Math.max(0, Math.min(1, Number(z.secondBasePatternOffsetX ?? 0.5)));
             zoneObj.second_base_pattern_offset_y = Math.max(0, Math.min(1, Number(z.secondBasePatternOffsetY ?? 0.5)));
+            if (z.secondBaseFitZone) zoneObj.second_base_fit_zone = true;
         }
         if ((z.thirdBase || z.thirdBaseColorSource) && (z.thirdBaseStrength || 0) > 0) {
             const _tbColor = (z.thirdBaseColor || '#ffffff').toString();
@@ -1339,6 +1348,7 @@ function buildServerZonesForRender(zones) {
             if (z.thirdBasePatternHarden != null) zoneObj.third_base_pattern_harden = !!z.thirdBasePatternHarden;
             zoneObj.third_base_pattern_offset_x = Math.max(0, Math.min(1, Number(z.thirdBasePatternOffsetX ?? 0.5)));
             zoneObj.third_base_pattern_offset_y = Math.max(0, Math.min(1, Number(z.thirdBasePatternOffsetY ?? 0.5)));
+            if (z.thirdBaseFitZone) zoneObj.third_base_fit_zone = true;
         }
         if ((z.fourthBase || z.fourthBaseColorSource) && (z.fourthBaseStrength || 0) > 0) {
             const _fbColor = (z.fourthBaseColor || '#ffffff').toString();
@@ -1360,6 +1370,7 @@ function buildServerZonesForRender(zones) {
             if (z.fourthBasePatternHarden != null) zoneObj.fourth_base_pattern_harden = !!z.fourthBasePatternHarden;
             zoneObj.fourth_base_pattern_offset_x = Math.max(0, Math.min(1, Number(z.fourthBasePatternOffsetX ?? 0.5)));
             zoneObj.fourth_base_pattern_offset_y = Math.max(0, Math.min(1, Number(z.fourthBasePatternOffsetY ?? 0.5)));
+            if (z.fourthBaseFitZone) zoneObj.fourth_base_fit_zone = true;
         }
         if ((z.fifthBase || z.fifthBaseColorSource) && (z.fifthBaseStrength || 0) > 0) {
             const _fifColor = (z.fifthBaseColor || '#ffffff').toString();
@@ -1381,6 +1392,7 @@ function buildServerZonesForRender(zones) {
             if (z.fifthBasePatternHarden != null) zoneObj.fifth_base_pattern_harden = !!z.fifthBasePatternHarden;
             zoneObj.fifth_base_pattern_offset_x = Math.max(0, Math.min(1, Number(z.fifthBasePatternOffsetX ?? 0.5)));
             zoneObj.fifth_base_pattern_offset_y = Math.max(0, Math.min(1, Number(z.fifthBasePatternOffsetY ?? 0.5)));
+            if (z.fifthBaseFitZone) zoneObj.fifth_base_fit_zone = true;
         }
         const hasSpatialRefinement = z.spatialMask && z.spatialMask.some(v => v > 0);
         if (!hasSpatialRefinement && z.regionMask && z.regionMask.some(v => v > 0)) {

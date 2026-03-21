@@ -5526,6 +5526,9 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
             zone_scale *= auto_scale  # User slider multiplies on top of auto-scale
 
             # ZONE TARGETING: Fit to Zone bounding box
+            # Concentrates the entire pattern into the zone's bounding box.
+            # Without this, small zones (car numbers, logos) only see a tiny crop
+            # of a full-canvas pattern. With it, the whole pattern squeezes into the zone.
             if zone.get("pattern_fit_zone", False) and zone_mask is not None:
                 rows = np.any(zone_mask > 0.1, axis=1)
                 cols = np.any(zone_mask > 0.1, axis=0)
@@ -5539,10 +5542,12 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
                     # Override offset to center pattern on zone bbox
                     zone['pattern_offset_x'] = bbox_center_x
                     zone['pattern_offset_y'] = bbox_center_y
-                    # Scale pattern to fit the bbox (use the larger dimension ratio)
-                    fit_scale = max(bbox_h / h, bbox_w / w)
-                    zone_scale = zone_scale * fit_scale  # concentrate pattern into zone
-                    print(f"      [{name}] Fit-to-Zone: bbox=({r_min},{c_min})-({r_max},{c_max}), fit_scale={fit_scale:.3f}, center=({bbox_center_x:.3f},{bbox_center_y:.3f})")
+                    # ZOOM IN so the pattern fills just the bbox area
+                    # fit_ratio < 1.0 for small zones; dividing by it zooms in
+                    fit_ratio = max(bbox_h / h, bbox_w / w)
+                    if fit_ratio > 0.01:
+                        zone_scale = zone_scale / fit_ratio  # zoom in to concentrate
+                    print(f"      [{name}] Fit-to-Zone: bbox=({r_min},{c_min})-({r_max},{c_max}), fit_ratio={fit_ratio:.3f}, effective_scale={zone_scale:.3f}, center=({bbox_center_x:.3f},{bbox_center_y:.3f})")
 
             # v6.0 advanced finish params
             _z_cc = zone.get("cc_quality"); _z_cc = float(_z_cc) if _z_cc is not None else None
@@ -5592,8 +5597,24 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
                 _v6kw["second_base_pattern_strength"] = float(zone.get("second_base_pattern_strength", 1.0))
                 _v6kw["second_base_pattern_invert"] = bool(zone.get("second_base_pattern_invert", False))
                 _v6kw["second_base_pattern_harden"] = bool(zone.get("second_base_pattern_harden", False))
-                _v6kw["second_base_pattern_offset_x"] = max(0.0, min(1.0, float(zone.get("second_base_pattern_offset_x", 0.5))))
-                _v6kw["second_base_pattern_offset_y"] = max(0.0, min(1.0, float(zone.get("second_base_pattern_offset_y", 0.5))))
+                _sb_ox = max(0.0, min(1.0, float(zone.get("second_base_pattern_offset_x", 0.5))))
+                _sb_oy = max(0.0, min(1.0, float(zone.get("second_base_pattern_offset_y", 0.5))))
+                _sb_pscale = _v6kw["second_base_pattern_scale"]
+                # Fit-to-Zone for 2nd base overlay
+                if zone.get("second_base_fit_zone", False) and zone_mask is not None:
+                    _ftrows = np.any(zone_mask > 0.1, axis=1)
+                    _ftcols = np.any(zone_mask > 0.1, axis=0)
+                    if _ftrows.any() and _ftcols.any():
+                        _ftr_min, _ftr_max = np.where(_ftrows)[0][[0, -1]]
+                        _ftc_min, _ftc_max = np.where(_ftcols)[0][[0, -1]]
+                        _ft_ratio = max((_ftr_max - _ftr_min + 1) / h, (_ftc_max - _ftc_min + 1) / w)
+                        if _ft_ratio > 0.01:
+                            _sb_ox = (_ftc_min + _ftc_max) / 2.0 / w
+                            _sb_oy = (_ftr_min + _ftr_max) / 2.0 / h
+                            _sb_pscale = _sb_pscale / _ft_ratio
+                _v6kw["second_base_pattern_offset_x"] = _sb_ox
+                _v6kw["second_base_pattern_offset_y"] = _sb_oy
+                _v6kw["second_base_pattern_scale"] = _sb_pscale
             _v6kw["second_base_color_source"] = zone.get("second_base_color_source")
             _z_tb = zone.get("third_base")
             if _z_tb:
@@ -5611,8 +5632,24 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
                 _v6kw["third_base_pattern_strength"] = float(zone.get("third_base_pattern_strength", 1.0))
                 _v6kw["third_base_pattern_invert"] = bool(zone.get("third_base_pattern_invert", False))
                 _v6kw["third_base_pattern_harden"] = bool(zone.get("third_base_pattern_harden", False))
-                _v6kw["third_base_pattern_offset_x"] = max(0.0, min(1.0, float(zone.get("third_base_pattern_offset_x", 0.5))))
-                _v6kw["third_base_pattern_offset_y"] = max(0.0, min(1.0, float(zone.get("third_base_pattern_offset_y", 0.5))))
+                _tb_ox = max(0.0, min(1.0, float(zone.get("third_base_pattern_offset_x", 0.5))))
+                _tb_oy = max(0.0, min(1.0, float(zone.get("third_base_pattern_offset_y", 0.5))))
+                _tb_pscale = _v6kw["third_base_pattern_scale"]
+                # Fit-to-Zone for 3rd base overlay
+                if zone.get("third_base_fit_zone", False) and zone_mask is not None:
+                    _ftrows = np.any(zone_mask > 0.1, axis=1)
+                    _ftcols = np.any(zone_mask > 0.1, axis=0)
+                    if _ftrows.any() and _ftcols.any():
+                        _ftr_min, _ftr_max = np.where(_ftrows)[0][[0, -1]]
+                        _ftc_min, _ftc_max = np.where(_ftcols)[0][[0, -1]]
+                        _ft_ratio = max((_ftr_max - _ftr_min + 1) / h, (_ftc_max - _ftc_min + 1) / w)
+                        if _ft_ratio > 0.01:
+                            _tb_ox = (_ftc_min + _ftc_max) / 2.0 / w
+                            _tb_oy = (_ftr_min + _ftr_max) / 2.0 / h
+                            _tb_pscale = _tb_pscale / _ft_ratio
+                _v6kw["third_base_pattern_offset_x"] = _tb_ox
+                _v6kw["third_base_pattern_offset_y"] = _tb_oy
+                _v6kw["third_base_pattern_scale"] = _tb_pscale
             _v6kw["third_base_color_source"] = zone.get("third_base_color_source")
             _z_fb = zone.get("fourth_base")
             if _z_fb:
@@ -5630,8 +5667,24 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
                 _v6kw["fourth_base_pattern_strength"] = float(zone.get("fourth_base_pattern_strength", 1.0))
                 _v6kw["fourth_base_pattern_invert"] = bool(zone.get("fourth_base_pattern_invert", False))
                 _v6kw["fourth_base_pattern_harden"] = bool(zone.get("fourth_base_pattern_harden", False))
-                _v6kw["fourth_base_pattern_offset_x"] = max(0.0, min(1.0, float(zone.get("fourth_base_pattern_offset_x", 0.5))))
-                _v6kw["fourth_base_pattern_offset_y"] = max(0.0, min(1.0, float(zone.get("fourth_base_pattern_offset_y", 0.5))))
+                _fb_ox = max(0.0, min(1.0, float(zone.get("fourth_base_pattern_offset_x", 0.5))))
+                _fb_oy = max(0.0, min(1.0, float(zone.get("fourth_base_pattern_offset_y", 0.5))))
+                _fb_pscale = _v6kw["fourth_base_pattern_scale"]
+                # Fit-to-Zone for 4th base overlay
+                if zone.get("fourth_base_fit_zone", False) and zone_mask is not None:
+                    _ftrows = np.any(zone_mask > 0.1, axis=1)
+                    _ftcols = np.any(zone_mask > 0.1, axis=0)
+                    if _ftrows.any() and _ftcols.any():
+                        _ftr_min, _ftr_max = np.where(_ftrows)[0][[0, -1]]
+                        _ftc_min, _ftc_max = np.where(_ftcols)[0][[0, -1]]
+                        _ft_ratio = max((_ftr_max - _ftr_min + 1) / h, (_ftc_max - _ftc_min + 1) / w)
+                        if _ft_ratio > 0.01:
+                            _fb_ox = (_ftc_min + _ftc_max) / 2.0 / w
+                            _fb_oy = (_ftr_min + _ftr_max) / 2.0 / h
+                            _fb_pscale = _fb_pscale / _ft_ratio
+                _v6kw["fourth_base_pattern_offset_x"] = _fb_ox
+                _v6kw["fourth_base_pattern_offset_y"] = _fb_oy
+                _v6kw["fourth_base_pattern_scale"] = _fb_pscale
             _v6kw["fourth_base_color_source"] = zone.get("fourth_base_color_source")
             _z_fif = zone.get("fifth_base")
             if _z_fif:
@@ -5649,8 +5702,24 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
                 _v6kw["fifth_base_pattern_strength"] = float(zone.get("fifth_base_pattern_strength", 1.0))
                 _v6kw["fifth_base_pattern_invert"] = bool(zone.get("fifth_base_pattern_invert", False))
                 _v6kw["fifth_base_pattern_harden"] = bool(zone.get("fifth_base_pattern_harden", False))
-                _v6kw["fifth_base_pattern_offset_x"] = max(0.0, min(1.0, float(zone.get("fifth_base_pattern_offset_x", 0.5))))
-                _v6kw["fifth_base_pattern_offset_y"] = max(0.0, min(1.0, float(zone.get("fifth_base_pattern_offset_y", 0.5))))
+                _fif_ox = max(0.0, min(1.0, float(zone.get("fifth_base_pattern_offset_x", 0.5))))
+                _fif_oy = max(0.0, min(1.0, float(zone.get("fifth_base_pattern_offset_y", 0.5))))
+                _fif_pscale = _v6kw["fifth_base_pattern_scale"]
+                # Fit-to-Zone for 5th base overlay
+                if zone.get("fifth_base_fit_zone", False) and zone_mask is not None:
+                    _ftrows = np.any(zone_mask > 0.1, axis=1)
+                    _ftcols = np.any(zone_mask > 0.1, axis=0)
+                    if _ftrows.any() and _ftcols.any():
+                        _ftr_min, _ftr_max = np.where(_ftrows)[0][[0, -1]]
+                        _ftc_min, _ftc_max = np.where(_ftcols)[0][[0, -1]]
+                        _ft_ratio = max((_ftr_max - _ftr_min + 1) / h, (_ftc_max - _ftc_min + 1) / w)
+                        if _ft_ratio > 0.01:
+                            _fif_ox = (_ftc_min + _ftc_max) / 2.0 / w
+                            _fif_oy = (_ftr_min + _ftr_max) / 2.0 / h
+                            _fif_pscale = _fif_pscale / _ft_ratio
+                _v6kw["fifth_base_pattern_offset_x"] = _fif_ox
+                _v6kw["fifth_base_pattern_offset_y"] = _fif_oy
+                _v6kw["fifth_base_pattern_scale"] = _fif_pscale
             _v6kw["fifth_base_color_source"] = zone.get("fifth_base_color_source")
             _v6kw["monolithic_registry"] = MONOLITHIC_REGISTRY
 
@@ -5841,6 +5910,18 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
                     _sb_pat_str = max(0.0, min(2.0, float(zone.get("second_base_pattern_strength", 1.0))))
                     _sb_pat_ox = max(0.0, min(1.0, float(zone.get("second_base_pattern_offset_x", 0.5))))
                     _sb_pat_oy = max(0.0, min(1.0, float(zone.get("second_base_pattern_offset_y", 0.5))))
+                    # Fit-to-Zone for 2nd base overlay (monolithic path)
+                    if zone.get("second_base_fit_zone", False) and zone_mask is not None:
+                        _ftrows = np.any(zone_mask > 0.1, axis=1)
+                        _ftcols = np.any(zone_mask > 0.1, axis=0)
+                        if _ftrows.any() and _ftcols.any():
+                            _ftr_min, _ftr_max = np.where(_ftrows)[0][[0, -1]]
+                            _ftc_min, _ftc_max = np.where(_ftcols)[0][[0, -1]]
+                            _ft_ratio = max((_ftr_max - _ftr_min + 1) / h, (_ftc_max - _ftc_min + 1) / w)
+                            if _ft_ratio > 0.01:
+                                _sb_pat_ox = (_ftc_min + _ftc_max) / 2.0 / w
+                                _sb_pat_oy = (_ftr_min + _ftr_max) / 2.0 / h
+                                _sb_pat_scale = _sb_pat_scale / _ft_ratio
                     _pat_mask = _get_pattern_mask(_pat_id, shape, zone_mask, seed + i * 13, sm, scale=_sb_pat_scale, rotation=_sb_pat_rot, opacity=_sb_pat_op, strength=_sb_pat_str, offset_x=_sb_pat_ox, offset_y=_sb_pat_oy) if _sb_needs_mask and _pat_id else None
                     if _pat_mask is not None:
                         if zone.get("second_base_pattern_invert"):
@@ -6429,8 +6510,24 @@ def build_helmet_spec(helmet_paint_file, output_dir, zones, iracing_id="23371", 
                 _v6kw["second_base_pattern_strength"] = float(zone.get("second_base_pattern_strength", 1.0))
                 _v6kw["second_base_pattern_invert"] = bool(zone.get("second_base_pattern_invert", False))
                 _v6kw["second_base_pattern_harden"] = bool(zone.get("second_base_pattern_harden", False))
-                _v6kw["second_base_pattern_offset_x"] = max(0.0, min(1.0, float(zone.get("second_base_pattern_offset_x", 0.5))))
-                _v6kw["second_base_pattern_offset_y"] = max(0.0, min(1.0, float(zone.get("second_base_pattern_offset_y", 0.5))))
+                _sb_oxN = max(0.0, min(1.0, float(zone.get("second_base_pattern_offset_x", 0.5))))
+                _sb_oyN = max(0.0, min(1.0, float(zone.get("second_base_pattern_offset_y", 0.5))))
+                _sb_pscaleN = _v6kw["second_base_pattern_scale"]
+                # Fit-to-Zone for 2nd base overlay
+                if zone.get("second_base_fit_zone", False) and zone_mask is not None:
+                    _ftrows = np.any(zone_mask > 0.1, axis=1)
+                    _ftcols = np.any(zone_mask > 0.1, axis=0)
+                    if _ftrows.any() and _ftcols.any():
+                        _ftr_min, _ftr_max = np.where(_ftrows)[0][[0, -1]]
+                        _ftc_min, _ftc_max = np.where(_ftcols)[0][[0, -1]]
+                        _ft_ratio = max((_ftr_max - _ftr_min + 1) / h, (_ftc_max - _ftc_min + 1) / w)
+                        if _ft_ratio > 0.01:
+                            _sb_oxN = (_ftc_min + _ftc_max) / 2.0 / w
+                            _sb_oyN = (_ftr_min + _ftr_max) / 2.0 / h
+                            _sb_pscaleN = _sb_pscaleN / _ft_ratio
+                _v6kw["second_base_pattern_offset_x"] = _sb_oxN
+                _v6kw["second_base_pattern_offset_y"] = _sb_oyN
+                _v6kw["second_base_pattern_scale"] = _sb_pscaleN
             _v6kw["second_base_color_source"] = zone.get("second_base_color_source")
             _z_tb = zone.get("third_base")
             if _z_tb:
@@ -6448,8 +6545,24 @@ def build_helmet_spec(helmet_paint_file, output_dir, zones, iracing_id="23371", 
                 _v6kw["third_base_pattern_strength"] = float(zone.get("third_base_pattern_strength", 1.0))
                 _v6kw["third_base_pattern_invert"] = bool(zone.get("third_base_pattern_invert", False))
                 _v6kw["third_base_pattern_harden"] = bool(zone.get("third_base_pattern_harden", False))
-                _v6kw["third_base_pattern_offset_x"] = max(0.0, min(1.0, float(zone.get("third_base_pattern_offset_x", 0.5))))
-                _v6kw["third_base_pattern_offset_y"] = max(0.0, min(1.0, float(zone.get("third_base_pattern_offset_y", 0.5))))
+                _tb_oxN = max(0.0, min(1.0, float(zone.get("third_base_pattern_offset_x", 0.5))))
+                _tb_oyN = max(0.0, min(1.0, float(zone.get("third_base_pattern_offset_y", 0.5))))
+                _tb_pscaleN = _v6kw["third_base_pattern_scale"]
+                # Fit-to-Zone for 3rd base overlay
+                if zone.get("third_base_fit_zone", False) and zone_mask is not None:
+                    _ftrows = np.any(zone_mask > 0.1, axis=1)
+                    _ftcols = np.any(zone_mask > 0.1, axis=0)
+                    if _ftrows.any() and _ftcols.any():
+                        _ftr_min, _ftr_max = np.where(_ftrows)[0][[0, -1]]
+                        _ftc_min, _ftc_max = np.where(_ftcols)[0][[0, -1]]
+                        _ft_ratio = max((_ftr_max - _ftr_min + 1) / h, (_ftc_max - _ftc_min + 1) / w)
+                        if _ft_ratio > 0.01:
+                            _tb_oxN = (_ftc_min + _ftc_max) / 2.0 / w
+                            _tb_oyN = (_ftr_min + _ftr_max) / 2.0 / h
+                            _tb_pscaleN = _tb_pscaleN / _ft_ratio
+                _v6kw["third_base_pattern_offset_x"] = _tb_oxN
+                _v6kw["third_base_pattern_offset_y"] = _tb_oyN
+                _v6kw["third_base_pattern_scale"] = _tb_pscaleN
             _v6kw["third_base_color_source"] = zone.get("third_base_color_source")
             _z_fb = zone.get("fourth_base")
             if _z_fb:
@@ -6467,8 +6580,24 @@ def build_helmet_spec(helmet_paint_file, output_dir, zones, iracing_id="23371", 
                 _v6kw["fourth_base_pattern_strength"] = float(zone.get("fourth_base_pattern_strength", 1.0))
                 _v6kw["fourth_base_pattern_invert"] = bool(zone.get("fourth_base_pattern_invert", False))
                 _v6kw["fourth_base_pattern_harden"] = bool(zone.get("fourth_base_pattern_harden", False))
-                _v6kw["fourth_base_pattern_offset_x"] = max(0.0, min(1.0, float(zone.get("fourth_base_pattern_offset_x", 0.5))))
-                _v6kw["fourth_base_pattern_offset_y"] = max(0.0, min(1.0, float(zone.get("fourth_base_pattern_offset_y", 0.5))))
+                _fb_oxN = max(0.0, min(1.0, float(zone.get("fourth_base_pattern_offset_x", 0.5))))
+                _fb_oyN = max(0.0, min(1.0, float(zone.get("fourth_base_pattern_offset_y", 0.5))))
+                _fb_pscaleN = _v6kw["fourth_base_pattern_scale"]
+                # Fit-to-Zone for 4th base overlay
+                if zone.get("fourth_base_fit_zone", False) and zone_mask is not None:
+                    _ftrows = np.any(zone_mask > 0.1, axis=1)
+                    _ftcols = np.any(zone_mask > 0.1, axis=0)
+                    if _ftrows.any() and _ftcols.any():
+                        _ftr_min, _ftr_max = np.where(_ftrows)[0][[0, -1]]
+                        _ftc_min, _ftc_max = np.where(_ftcols)[0][[0, -1]]
+                        _ft_ratio = max((_ftr_max - _ftr_min + 1) / h, (_ftc_max - _ftc_min + 1) / w)
+                        if _ft_ratio > 0.01:
+                            _fb_oxN = (_ftc_min + _ftc_max) / 2.0 / w
+                            _fb_oyN = (_ftr_min + _ftr_max) / 2.0 / h
+                            _fb_pscaleN = _fb_pscaleN / _ft_ratio
+                _v6kw["fourth_base_pattern_offset_x"] = _fb_oxN
+                _v6kw["fourth_base_pattern_offset_y"] = _fb_oyN
+                _v6kw["fourth_base_pattern_scale"] = _fb_pscaleN
             _v6kw["fourth_base_color_source"] = zone.get("fourth_base_color_source")
             _z_fif = zone.get("fifth_base")
             if _z_fif:
@@ -6486,8 +6615,24 @@ def build_helmet_spec(helmet_paint_file, output_dir, zones, iracing_id="23371", 
                 _v6kw["fifth_base_pattern_strength"] = float(zone.get("fifth_base_pattern_strength", 1.0))
                 _v6kw["fifth_base_pattern_invert"] = bool(zone.get("fifth_base_pattern_invert", False))
                 _v6kw["fifth_base_pattern_harden"] = bool(zone.get("fifth_base_pattern_harden", False))
-                _v6kw["fifth_base_pattern_offset_x"] = max(0.0, min(1.0, float(zone.get("fifth_base_pattern_offset_x", 0.5))))
-                _v6kw["fifth_base_pattern_offset_y"] = max(0.0, min(1.0, float(zone.get("fifth_base_pattern_offset_y", 0.5))))
+                _fif_oxN = max(0.0, min(1.0, float(zone.get("fifth_base_pattern_offset_x", 0.5))))
+                _fif_oyN = max(0.0, min(1.0, float(zone.get("fifth_base_pattern_offset_y", 0.5))))
+                _fif_pscaleN = _v6kw["fifth_base_pattern_scale"]
+                # Fit-to-Zone for 5th base overlay
+                if zone.get("fifth_base_fit_zone", False) and zone_mask is not None:
+                    _ftrows = np.any(zone_mask > 0.1, axis=1)
+                    _ftcols = np.any(zone_mask > 0.1, axis=0)
+                    if _ftrows.any() and _ftcols.any():
+                        _ftr_min, _ftr_max = np.where(_ftrows)[0][[0, -1]]
+                        _ftc_min, _ftc_max = np.where(_ftcols)[0][[0, -1]]
+                        _ft_ratio = max((_ftr_max - _ftr_min + 1) / h, (_ftc_max - _ftc_min + 1) / w)
+                        if _ft_ratio > 0.01:
+                            _fif_oxN = (_ftc_min + _ftc_max) / 2.0 / w
+                            _fif_oyN = (_ftr_min + _ftr_max) / 2.0 / h
+                            _fif_pscaleN = _fif_pscaleN / _ft_ratio
+                _v6kw["fifth_base_pattern_offset_x"] = _fif_oxN
+                _v6kw["fifth_base_pattern_offset_y"] = _fif_oyN
+                _v6kw["fifth_base_pattern_scale"] = _fif_pscaleN
             _v6kw["fifth_base_color_source"] = zone.get("fifth_base_color_source")
             _v6kw["monolithic_registry"] = MONOLITHIC_REGISTRY
 
@@ -6755,8 +6900,24 @@ def build_suit_spec(suit_paint_file, output_dir, zones, iracing_id="23371", seed
                 _v6kw["second_base_pattern_strength"] = float(zone.get("second_base_pattern_strength", 1.0))
                 _v6kw["second_base_pattern_invert"] = bool(zone.get("second_base_pattern_invert", False))
                 _v6kw["second_base_pattern_harden"] = bool(zone.get("second_base_pattern_harden", False))
-                _v6kw["second_base_pattern_offset_x"] = max(0.0, min(1.0, float(zone.get("second_base_pattern_offset_x", 0.5))))
-                _v6kw["second_base_pattern_offset_y"] = max(0.0, min(1.0, float(zone.get("second_base_pattern_offset_y", 0.5))))
+                _sb_oxN = max(0.0, min(1.0, float(zone.get("second_base_pattern_offset_x", 0.5))))
+                _sb_oyN = max(0.0, min(1.0, float(zone.get("second_base_pattern_offset_y", 0.5))))
+                _sb_pscaleN = _v6kw["second_base_pattern_scale"]
+                # Fit-to-Zone for 2nd base overlay
+                if zone.get("second_base_fit_zone", False) and zone_mask is not None:
+                    _ftrows = np.any(zone_mask > 0.1, axis=1)
+                    _ftcols = np.any(zone_mask > 0.1, axis=0)
+                    if _ftrows.any() and _ftcols.any():
+                        _ftr_min, _ftr_max = np.where(_ftrows)[0][[0, -1]]
+                        _ftc_min, _ftc_max = np.where(_ftcols)[0][[0, -1]]
+                        _ft_ratio = max((_ftr_max - _ftr_min + 1) / h, (_ftc_max - _ftc_min + 1) / w)
+                        if _ft_ratio > 0.01:
+                            _sb_oxN = (_ftc_min + _ftc_max) / 2.0 / w
+                            _sb_oyN = (_ftr_min + _ftr_max) / 2.0 / h
+                            _sb_pscaleN = _sb_pscaleN / _ft_ratio
+                _v6kw["second_base_pattern_offset_x"] = _sb_oxN
+                _v6kw["second_base_pattern_offset_y"] = _sb_oyN
+                _v6kw["second_base_pattern_scale"] = _sb_pscaleN
             _v6kw["second_base_color_source"] = zone.get("second_base_color_source")
             _z_tb = zone.get("third_base")
             if _z_tb:
@@ -6774,8 +6935,24 @@ def build_suit_spec(suit_paint_file, output_dir, zones, iracing_id="23371", seed
                 _v6kw["third_base_pattern_strength"] = float(zone.get("third_base_pattern_strength", 1.0))
                 _v6kw["third_base_pattern_invert"] = bool(zone.get("third_base_pattern_invert", False))
                 _v6kw["third_base_pattern_harden"] = bool(zone.get("third_base_pattern_harden", False))
-                _v6kw["third_base_pattern_offset_x"] = max(0.0, min(1.0, float(zone.get("third_base_pattern_offset_x", 0.5))))
-                _v6kw["third_base_pattern_offset_y"] = max(0.0, min(1.0, float(zone.get("third_base_pattern_offset_y", 0.5))))
+                _tb_oxN = max(0.0, min(1.0, float(zone.get("third_base_pattern_offset_x", 0.5))))
+                _tb_oyN = max(0.0, min(1.0, float(zone.get("third_base_pattern_offset_y", 0.5))))
+                _tb_pscaleN = _v6kw["third_base_pattern_scale"]
+                # Fit-to-Zone for 3rd base overlay
+                if zone.get("third_base_fit_zone", False) and zone_mask is not None:
+                    _ftrows = np.any(zone_mask > 0.1, axis=1)
+                    _ftcols = np.any(zone_mask > 0.1, axis=0)
+                    if _ftrows.any() and _ftcols.any():
+                        _ftr_min, _ftr_max = np.where(_ftrows)[0][[0, -1]]
+                        _ftc_min, _ftc_max = np.where(_ftcols)[0][[0, -1]]
+                        _ft_ratio = max((_ftr_max - _ftr_min + 1) / h, (_ftc_max - _ftc_min + 1) / w)
+                        if _ft_ratio > 0.01:
+                            _tb_oxN = (_ftc_min + _ftc_max) / 2.0 / w
+                            _tb_oyN = (_ftr_min + _ftr_max) / 2.0 / h
+                            _tb_pscaleN = _tb_pscaleN / _ft_ratio
+                _v6kw["third_base_pattern_offset_x"] = _tb_oxN
+                _v6kw["third_base_pattern_offset_y"] = _tb_oyN
+                _v6kw["third_base_pattern_scale"] = _tb_pscaleN
             _v6kw["third_base_color_source"] = zone.get("third_base_color_source")
             _z_fb = zone.get("fourth_base")
             if _z_fb:
@@ -6793,8 +6970,24 @@ def build_suit_spec(suit_paint_file, output_dir, zones, iracing_id="23371", seed
                 _v6kw["fourth_base_pattern_strength"] = float(zone.get("fourth_base_pattern_strength", 1.0))
                 _v6kw["fourth_base_pattern_invert"] = bool(zone.get("fourth_base_pattern_invert", False))
                 _v6kw["fourth_base_pattern_harden"] = bool(zone.get("fourth_base_pattern_harden", False))
-                _v6kw["fourth_base_pattern_offset_x"] = max(0.0, min(1.0, float(zone.get("fourth_base_pattern_offset_x", 0.5))))
-                _v6kw["fourth_base_pattern_offset_y"] = max(0.0, min(1.0, float(zone.get("fourth_base_pattern_offset_y", 0.5))))
+                _fb_oxN = max(0.0, min(1.0, float(zone.get("fourth_base_pattern_offset_x", 0.5))))
+                _fb_oyN = max(0.0, min(1.0, float(zone.get("fourth_base_pattern_offset_y", 0.5))))
+                _fb_pscaleN = _v6kw["fourth_base_pattern_scale"]
+                # Fit-to-Zone for 4th base overlay
+                if zone.get("fourth_base_fit_zone", False) and zone_mask is not None:
+                    _ftrows = np.any(zone_mask > 0.1, axis=1)
+                    _ftcols = np.any(zone_mask > 0.1, axis=0)
+                    if _ftrows.any() and _ftcols.any():
+                        _ftr_min, _ftr_max = np.where(_ftrows)[0][[0, -1]]
+                        _ftc_min, _ftc_max = np.where(_ftcols)[0][[0, -1]]
+                        _ft_ratio = max((_ftr_max - _ftr_min + 1) / h, (_ftc_max - _ftc_min + 1) / w)
+                        if _ft_ratio > 0.01:
+                            _fb_oxN = (_ftc_min + _ftc_max) / 2.0 / w
+                            _fb_oyN = (_ftr_min + _ftr_max) / 2.0 / h
+                            _fb_pscaleN = _fb_pscaleN / _ft_ratio
+                _v6kw["fourth_base_pattern_offset_x"] = _fb_oxN
+                _v6kw["fourth_base_pattern_offset_y"] = _fb_oyN
+                _v6kw["fourth_base_pattern_scale"] = _fb_pscaleN
             _v6kw["fourth_base_color_source"] = zone.get("fourth_base_color_source")
             _z_fif = zone.get("fifth_base")
             if _z_fif:
@@ -6812,8 +7005,24 @@ def build_suit_spec(suit_paint_file, output_dir, zones, iracing_id="23371", seed
                 _v6kw["fifth_base_pattern_strength"] = float(zone.get("fifth_base_pattern_strength", 1.0))
                 _v6kw["fifth_base_pattern_invert"] = bool(zone.get("fifth_base_pattern_invert", False))
                 _v6kw["fifth_base_pattern_harden"] = bool(zone.get("fifth_base_pattern_harden", False))
-                _v6kw["fifth_base_pattern_offset_x"] = max(0.0, min(1.0, float(zone.get("fifth_base_pattern_offset_x", 0.5))))
-                _v6kw["fifth_base_pattern_offset_y"] = max(0.0, min(1.0, float(zone.get("fifth_base_pattern_offset_y", 0.5))))
+                _fif_oxN = max(0.0, min(1.0, float(zone.get("fifth_base_pattern_offset_x", 0.5))))
+                _fif_oyN = max(0.0, min(1.0, float(zone.get("fifth_base_pattern_offset_y", 0.5))))
+                _fif_pscaleN = _v6kw["fifth_base_pattern_scale"]
+                # Fit-to-Zone for 5th base overlay
+                if zone.get("fifth_base_fit_zone", False) and zone_mask is not None:
+                    _ftrows = np.any(zone_mask > 0.1, axis=1)
+                    _ftcols = np.any(zone_mask > 0.1, axis=0)
+                    if _ftrows.any() and _ftcols.any():
+                        _ftr_min, _ftr_max = np.where(_ftrows)[0][[0, -1]]
+                        _ftc_min, _ftc_max = np.where(_ftcols)[0][[0, -1]]
+                        _ft_ratio = max((_ftr_max - _ftr_min + 1) / h, (_ftc_max - _ftc_min + 1) / w)
+                        if _ft_ratio > 0.01:
+                            _fif_oxN = (_ftc_min + _ftc_max) / 2.0 / w
+                            _fif_oyN = (_ftr_min + _ftr_max) / 2.0 / h
+                            _fif_pscaleN = _fif_pscaleN / _ft_ratio
+                _v6kw["fifth_base_pattern_offset_x"] = _fif_oxN
+                _v6kw["fifth_base_pattern_offset_y"] = _fif_oyN
+                _v6kw["fifth_base_pattern_scale"] = _fif_pscaleN
             _v6kw["fifth_base_color_source"] = zone.get("fifth_base_color_source")
             _v6kw["monolithic_registry"] = MONOLITHIC_REGISTRY
 

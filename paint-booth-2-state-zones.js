@@ -1436,6 +1436,14 @@ function renderZoneDetail(index) {
                         <input type="range" min="0" max="100" step="5" value="${Math.round((zone.secondBasePatternStrength ?? 1) * 100)}" oninput="setZoneSecondBasePatternStrength(${i}, this.value)" class="stack-slider">
                         <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); stepZoneSecondBasePatternStrength(${i}, 1)" title="+5%" style="padding:0 4px;font-size:10px;">+</button>
                         <span class="stack-val" id="detSBPatStrVal${i}">${Math.round((zone.secondBasePatternStrength ?? 1) * 100)}%</span></div>
+                    <div class="zone-target-mode" style="margin: 6px 0; display: flex; gap: 6px; align-items: center;">
+                        <label style="color: #aaa; font-size: 11px;">Overlay Placement:</label>
+                        <select onchange="zones[${i}].secondBaseFitZone = this.value === 'fit'; renderZones();"
+                                style="background: #1a1a1a; color: #ccc; border: 1px solid #333; padding: 2px 6px; font-size: 11px;">
+                            <option value="normal" ${!zone.secondBaseFitZone ? 'selected' : ''}>Full Canvas</option>
+                            <option value="fit" ${zone.secondBaseFitZone ? 'selected' : ''}>Fit to Zone</option>
+                        </select>
+                    </div>
                     <div class="stack-control-group"><span class="stack-label-mini">Position X</span>
                         <input type="range" min="0" max="100" step="1" value="${Math.round((zone.secondBasePatternOffsetX ?? 0.5) * 100)}" oninput="setZoneSecondBasePatternOffsetX(${i}, this.value)" class="stack-slider" title="Pan overlay pattern left/right">
                         <span class="stack-val" id="detSBPatPosXVal${i}">${Math.round((zone.secondBasePatternOffsetX ?? 0.5) * 100)}%</span></div>
@@ -1569,6 +1577,14 @@ function renderZoneDetail(index) {
                         <input type="range" min="0" max="100" step="5" value="${Math.round((zone.thirdBasePatternStrength ?? 1) * 100)}" oninput="setZoneThirdBasePatternStrength(${i}, this.value)" class="stack-slider">
                         <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); stepZoneThirdBasePatternStrength(${i}, 1)" title="+5%" style="padding:0 4px;font-size:10px;">+</button>
                         <span class="stack-val" id="detTBPatStrVal${i}">${Math.round((zone.thirdBasePatternStrength ?? 1) * 100)}%</span></div>
+                    <div class="zone-target-mode" style="margin: 6px 0; display: flex; gap: 6px; align-items: center;">
+                        <label style="color: #aaa; font-size: 11px;">Overlay Placement:</label>
+                        <select onchange="zones[${i}].thirdBaseFitZone = this.value === 'fit'; renderZones();"
+                                style="background: #1a1a1a; color: #ccc; border: 1px solid #333; padding: 2px 6px; font-size: 11px;">
+                            <option value="normal" ${!zone.thirdBaseFitZone ? 'selected' : ''}>Full Canvas</option>
+                            <option value="fit" ${zone.thirdBaseFitZone ? 'selected' : ''}>Fit to Zone</option>
+                        </select>
+                    </div>
                     <div class="stack-control-group"><span class="stack-label-mini">Position X</span>
                         <input type="range" min="0" max="100" step="1" value="${Math.round((zone.thirdBasePatternOffsetX ?? 0.5) * 100)}" oninput="setZoneThirdBasePatternOffsetX(${i}, this.value)" class="stack-slider" title="Pan overlay pattern left/right">
                         <span class="stack-val" id="detTBPatPosXVal${i}">${Math.round((zone.thirdBasePatternOffsetX ?? 0.5) * 100)}%</span></div>
@@ -1687,6 +1703,14 @@ function renderZoneDetail(index) {
                                 <input type="range" min="0" max="100" step="5" value="${Math.round((zone.fourthBasePatternStrength ?? 1) * 100)}" oninput="setZoneFourthBasePatternStrength(${i}, this.value)" class="stack-slider">
                                 <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); stepZoneFourthBasePatternStrength(${i}, 1)" title="+5%" style="padding:0 4px;font-size:10px;">+</button>
                                 <span class="stack-val" id="detFBPatStrVal${i}">${Math.round((zone.fourthBasePatternStrength ?? 1) * 100)}%</span></div>
+                            <div class="zone-target-mode" style="margin: 6px 0; display: flex; gap: 6px; align-items: center;">
+                                <label style="color: #aaa; font-size: 11px;">Overlay Placement:</label>
+                                <select onchange="zones[${i}].fourthBaseFitZone = this.value === 'fit'; renderZones();"
+                                        style="background: #1a1a1a; color: #ccc; border: 1px solid #333; padding: 2px 6px; font-size: 11px;">
+                                    <option value="normal" ${!zone.fourthBaseFitZone ? 'selected' : ''}>Full Canvas</option>
+                                    <option value="fit" ${zone.fourthBaseFitZone ? 'selected' : ''}>Fit to Zone</option>
+                                </select>
+                            </div>
                             <div class="stack-control-group"><span class="stack-label-mini">Position X</span>
                                 <input type="range" min="0" max="100" step="1" value="${Math.round((zone.fourthBasePatternOffsetX ?? 0.5) * 100)}" oninput="setZoneFourthBasePatternOffsetX(${i}, this.value)" class="stack-slider" title="Pan overlay pattern left/right">
                                 <span class="stack-val" id="detFBPatPosXVal${i}">${Math.round((zone.fourthBasePatternOffsetX ?? 0.5) * 100)}%</span></div>
@@ -1805,6 +1829,14 @@ function renderZoneDetail(index) {
                                 <input type="range" min="0" max="100" step="5" value="${Math.round((zone.fifthBasePatternStrength ?? 1) * 100)}" oninput="setZoneFifthBasePatternStrength(${i}, this.value)" class="stack-slider">
                                 <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); stepZoneFifthBasePatternStrength(${i}, 1)" title="+5%" style="padding:0 4px;font-size:10px;">+</button>
                                 <span class="stack-val" id="detFifPatStrVal${i}">${Math.round((zone.fifthBasePatternStrength ?? 1) * 100)}%</span></div>
+                            <div class="zone-target-mode" style="margin: 6px 0; display: flex; gap: 6px; align-items: center;">
+                                <label style="color: #aaa; font-size: 11px;">Overlay Placement:</label>
+                                <select onchange="zones[${i}].fifthBaseFitZone = this.value === 'fit'; renderZones();"
+                                        style="background: #1a1a1a; color: #ccc; border: 1px solid #333; padding: 2px 6px; font-size: 11px;">
+                                    <option value="normal" ${!zone.fifthBaseFitZone ? 'selected' : ''}>Full Canvas</option>
+                                    <option value="fit" ${zone.fifthBaseFitZone ? 'selected' : ''}>Fit to Zone</option>
+                                </select>
+                            </div>
                             <div class="stack-control-group"><span class="stack-label-mini">Position X</span>
                                 <input type="range" min="0" max="100" step="1" value="${Math.round((zone.fifthBasePatternOffsetX ?? 0.5) * 100)}" oninput="setZoneFifthBasePatternOffsetX(${i}, this.value)" class="stack-slider" title="Pan overlay pattern left/right">
                                 <span class="stack-val" id="detFifPatPosXVal${i}">${Math.round((zone.fifthBasePatternOffsetX ?? 0.5) * 100)}%</span></div>
@@ -2556,6 +2588,7 @@ function addZone(skipUndo) {
         secondBasePatternHarden: false,
         secondBasePatternOffsetX: 0.5,
         secondBasePatternOffsetY: 0.5,
+        secondBaseFitZone: false,
         secondBaseColorSource: null,
         thirdBase: null,
         thirdBaseColor: '#ffffff',
@@ -2572,6 +2605,7 @@ function addZone(skipUndo) {
         thirdBasePatternHarden: false,
         thirdBasePatternOffsetX: 0.5,
         thirdBasePatternOffsetY: 0.5,
+        thirdBaseFitZone: false,
         thirdBaseColorSource: null,
         fourthBase: null,
         fourthBaseColor: '#ffffff',
@@ -2588,6 +2622,7 @@ function addZone(skipUndo) {
         fourthBasePatternHarden: false,
         fourthBasePatternOffsetX: 0.5,
         fourthBasePatternOffsetY: 0.5,
+        fourthBaseFitZone: false,
         fourthBaseColorSource: null,
         fifthBase: null,
         fifthBaseColor: '#ffffff',
@@ -2604,6 +2639,7 @@ function addZone(skipUndo) {
         fifthBasePatternHarden: false,
         fifthBasePatternOffsetX: 0.5,
         fifthBasePatternOffsetY: 0.5,
+        fifthBaseFitZone: false,
         fifthBaseColorSource: null,
         baseStrength: 1,
         baseSpecBlendMode: 'normal',

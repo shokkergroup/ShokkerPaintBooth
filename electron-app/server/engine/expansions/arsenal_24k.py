@@ -11259,6 +11259,37 @@ def integrate_expansion(engine_module):
     engine_module.PATTERN_REGISTRY.update(EXPANSION_PATTERNS)
     engine_module.MONOLITHIC_REGISTRY.update(EXPANSION_MONOLITHICS)
 
+    # --- Register Aurora & Chromatic Flow using already-initialized engine module ---
+    # CRITICAL: Aurora paint functions live in engine/chameleon.py. That module is loaded
+    # by shokker_engine_v2 as "__shokker_chameleon__" (via importlib.util) and its paint_*
+    # functions are injected directly into engine_module via globals().update(_ch_fns).
+    # We must NOT use "import engine.chameleon" here — that would import a DIFFERENT,
+    # uninitialized module instance where _engine=None, causing AttributeError at render time.
+    # Instead, look up the functions directly from engine_module (already injected).
+    _aurora_id_map = [
+        ("aurora_borealis",       "paint_aurora_borealis"),
+        ("aurora_solar_wind",     "paint_aurora_solar_wind"),
+        ("aurora_nebula",         "paint_aurora_nebula"),
+        ("aurora_chromatic_surge","paint_aurora_chromatic_surge"),
+        ("aurora_frozen_flame",   "paint_aurora_frozen_flame"),
+        ("aurora_deep_ocean",     "paint_aurora_deep_ocean"),
+        ("aurora_volcanic",       "paint_aurora_volcanic"),
+        ("aurora_ethereal",       "paint_aurora_ethereal"),
+        ("aurora_toxic_current",  "paint_aurora_toxic_current"),
+        ("aurora_midnight_silk",  "paint_aurora_midnight_silk"),
+    ]
+    _aurora_registered = 0
+    for _aid, _afn in _aurora_id_map:
+        _paint_fn = getattr(engine_module, _afn, None)
+        if _paint_fn is not None:
+            engine_module.MONOLITHIC_REGISTRY[_aid] = (_spec_chameleon_24k, _paint_fn)
+            _aurora_registered += 1
+        else:
+            print(f"[24K Arsenal] WARNING: Aurora paint fn '{_afn}' not found in engine — "
+                  f"chameleon module may not be loaded. '{_aid}' will have no color.")
+    if _aurora_registered:
+        print(f"[24K Arsenal] Registered {_aurora_registered}/10 Aurora & Chromatic Flow finishes")
+
     # --- Sort registries alphabetically after merge ---
     for reg_name in ('BASE_REGISTRY', 'PATTERN_REGISTRY', 'MONOLITHIC_REGISTRY'):
         reg = getattr(engine_module, reg_name, None)
@@ -11402,35 +11433,17 @@ def get_expansion_group_map():
 
 
 # ============================================================
-# Aurora & Chromatic Flow — paint functions imported from engine.chameleon
+# Aurora & Chromatic Flow — registered inside integrate_expansion()
 # ============================================================
-def _get_aurora_paint_fn(name):
-    """Lazy import aurora paint function from engine.chameleon."""
-    import engine.chameleon as _cham
-    return getattr(_cham, name)
-
-def _aurora_paint_wrapper(fn_name):
-    """Create a wrapper that lazy-imports the aurora paint function."""
-    def wrapper(paint, shape, mask, seed, pm, bb):
-        fn = _get_aurora_paint_fn(fn_name)
-        return fn(paint, shape, mask, seed, pm, bb)
-    wrapper.__name__ = fn_name
-    return wrapper
-
-# Register all 10 aurora finishes
-for _aurora_id, _aurora_fn_name in [
-    ("aurora_borealis", "paint_aurora_borealis"),
-    ("aurora_solar_wind", "paint_aurora_solar_wind"),
-    ("aurora_nebula", "paint_aurora_nebula"),
-    ("aurora_chromatic_surge", "paint_aurora_chromatic_surge"),
-    ("aurora_frozen_flame", "paint_aurora_frozen_flame"),
-    ("aurora_deep_ocean", "paint_aurora_deep_ocean"),
-    ("aurora_volcanic", "paint_aurora_volcanic"),
-    ("aurora_ethereal", "paint_aurora_ethereal"),
-    ("aurora_toxic_current", "paint_aurora_toxic_current"),
-    ("aurora_midnight_silk", "paint_aurora_midnight_silk"),
-]:
-    EXPANSION_MONOLITHICS[_aurora_id] = (_spec_chameleon_24k, _aurora_paint_wrapper(_aurora_fn_name))
+# NOTE: Aurora paint functions are NOT registered here at module scope.
+# They are registered inside integrate_expansion() where we have a reference
+# to the already-initialized engine_module, so we can look up the paint
+# functions that were injected by integrate_chameleon (via globals().update).
+#
+# DO NOT use "import engine.chameleon" here — it produces a separate,
+# uninitialized module instance (_engine=None) and breaks rendering.
+#
+# The aurora ID → paint function name map is defined in integrate_expansion().
 
 
 def get_expansion_counts():

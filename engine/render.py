@@ -157,43 +157,44 @@ def _load_color_image_pattern(image_path, shape, scale=1.0, rotation=0.0):
         from PIL import Image
         img_rgba = Image.open(abs_path).convert("RGBA")
         rgba = np.array(img_rgba, dtype=np.float32) / 255.0
-        
+
         ih, iw = rgba.shape[0], rgba.shape[1]
-        
-        # At scale=1.0: fit image to (h,w). If smaller: tile to fill; if larger: scale down to fit canvas (e.g. 4K -> 2048x2048).
-        if abs(use_scale - 1.0) <= 0.01:
-            if ih < h or iw < w:
-                n_h = max(1, (h + ih - 1) // ih)
-                n_w = max(1, (w + iw - 1) // iw)
-                rgba = np.tile(rgba, (n_h, n_w, 1))[:h, :w, :]
-            elif ih > h or iw > w:
-                if rgba.shape[0] != h or rgba.shape[1] != w:
-                    import cv2
-                    rgba = cv2.resize(rgba, (w, h), interpolation=cv2.INTER_AREA)
-        else:
-            # Match original grayscale logic:
-            # 1. Expand drawing canvas by 1/scale so we can tile it or crop from it
-            gen_h, gen_w = max(4, int(h / use_scale)), max(4, int(w / use_scale))
-            
+
+        # STEP 1: Always normalize to canvas size first (the "1.0x" baseline).
+        # Small images get tiled to fill; large images get shrunk to fit.
+        if ih < h or iw < w:
+            n_h = max(1, (h + ih - 1) // ih)
+            n_w = max(1, (w + iw - 1) // iw)
+            rgba = np.tile(rgba, (n_h, n_w, 1))[:h, :w, :]
+        elif ih > h or iw > w:
+            import cv2
+            rgba = cv2.resize(rgba, (w, h), interpolation=cv2.INTER_AREA)
+        # rgba is now exactly (h, w, 4) — the "1.0x" view.
+
+        # STEP 2: Apply scale relative to the normalized baseline.
+        # scale < 1.0 = shrink motifs (more repetitions); scale > 1.0 = zoom in (bigger).
+        if abs(use_scale - 1.0) > 0.01:
+            import cv2
             if use_scale < 1.0:
-                # scale < 1.0: tile in expanded canvas
-                n_h = max(1, (gen_h + ih - 1) // ih)
-                n_w = max(1, (gen_w + iw - 1) // iw)
-                rgba = np.tile(rgba, (n_h, n_w, 1))[:gen_h, :gen_w, :]
+                # Shrink the normalized pattern, then tile to fill canvas
+                tile_h = max(4, int(h * use_scale))
+                tile_w = max(4, int(w * use_scale))
+                small = cv2.resize(rgba, (tile_w, tile_h), interpolation=cv2.INTER_AREA)
+                n_h = max(1, (h + tile_h - 1) // tile_h)
+                n_w = max(1, (w + tile_w - 1) // tile_w)
+                rgba = np.tile(small, (n_h, n_w, 1))[:h, :w, :]
             else:
-                # scale > 1.0: crop from center of image array (treating image as repeating pattern first if smaller)
-                if ih < gen_h or iw < gen_w:
-                    n_h = max(1, (gen_h + ih - 1) // ih)
-                    n_w = max(1, (gen_w + iw - 1) // iw)
-                    rgba = np.tile(rgba, (n_h, n_w, 1))
-                curr_h, curr_w = rgba.shape[0], rgba.shape[1]
-                y0, x0 = max(0, (curr_h - gen_h) // 2), max(0, (curr_w - gen_w) // 2)
-                rgba = rgba[y0:y0+gen_h, x0:x0+gen_w, :]
-                
-            # Resize the scaled canvas back down/up to actual render window shape
-            if rgba.shape[0] != h or rgba.shape[1] != w:
-                import cv2
-                rgba = cv2.resize(rgba, (w, h), interpolation=cv2.INTER_AREA if use_scale < 1.0 else cv2.INTER_LINEAR)
+                # Zoom in: crop center of the normalized pattern, then resize back to canvas
+                crop_h = max(4, int(h / use_scale))
+                crop_w = max(4, int(w / use_scale))
+                y0 = max(0, (h - crop_h) // 2)
+                x0 = max(0, (w - crop_w) // 2)
+                rgba = rgba[y0:y0+crop_h, x0:x0+crop_w, :]
+                rgba = cv2.resize(rgba, (w, h), interpolation=cv2.INTER_LINEAR)
+
+        if rgba.shape[0] != h or rgba.shape[1] != w:
+            import cv2
+            rgba = cv2.resize(rgba, (w, h), interpolation=cv2.INTER_LINEAR)
         
         if abs(use_rot) > 0.5:
             from engine.core import _rotate_single_array

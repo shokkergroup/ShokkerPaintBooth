@@ -7,5 +7,5 @@
   },
   "active_car": "trucks silverado2019",
   "live_link_enabled": true,
-  "use_custom_number": false
+  "use_custom_number": true
 }

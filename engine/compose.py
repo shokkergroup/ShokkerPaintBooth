@@ -549,7 +549,11 @@ def compose_finish(base_id, pattern_id, shape, mask, seed, sm, scale=1.0, spec_m
             R_pv = tex.get("R_pattern", pv)
             CC_pv = tex.get("CC_pattern", None)
 
-            if scale != 1.0 and scale > 0:
+            # NOTE: M_pv/R_pv/CC_pv scaling was ALREADY handled by _scale_pattern_output above (line 534).
+            # The tex dict entries (M_extra, R_extra, CC) were scaled there. M_pv/R_pv now come from
+            # tex.get("M_pattern", pv) which are already scaled. DO NOT double-scale.
+            # Only scale if M_pv/R_pv are freshly generated arrays NOT from the scaled tex dict.
+            if False and scale != 1.0 and scale > 0:  # DISABLED — was causing double-scale bug
                 if M_pv is not pv:
                     if scale < 1.0:
                         M_pv = _tile_fractional(M_pv, 1.0 / scale, shape[0], shape[1])

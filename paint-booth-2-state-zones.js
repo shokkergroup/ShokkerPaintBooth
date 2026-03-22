@@ -1463,12 +1463,13 @@ function renderZoneDetail(index) {
                         <input type="range" min="0" max="100" step="5" value="${Math.round((zone.secondBasePatternStrength ?? 1) * 100)}" oninput="setZoneSecondBasePatternStrength(${i}, this.value)" class="stack-slider">
                         <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); stepZoneSecondBasePatternStrength(${i}, 1)" title="+5%" style="padding:0 4px;font-size:10px;">+</button>
                         <span class="stack-val" id="detSBPatStrVal${i}">${Math.round((zone.secondBasePatternStrength ?? 1) * 100)}%</span></div>
-                    <div class="zone-target-mode" style="margin: 6px 0; display: flex; gap: 6px; align-items: center;">
+                    <div class="zone-target-mode" style="margin: 6px 0; display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
                         <label style="color: #aaa; font-size: 11px;">Overlay Placement:</label>
-                        <select onchange="zones[${i}].secondBaseFitZone = this.value === 'fit'; renderZones();"
+                        <select onchange="if(this.value==='manual'){activateManualPlacement(${i},'second_base');}else{zones[${i}].secondBaseFitZone = this.value === 'fit'; renderZones();}"
                                 style="background: #1a1a1a; color: #ccc; border: 1px solid #333; padding: 2px 6px; font-size: 11px;">
                             <option value="normal" ${!zone.secondBaseFitZone ? 'selected' : ''}>Full Canvas</option>
                             <option value="fit" ${zone.secondBaseFitZone ? 'selected' : ''}>Fit to Zone</option>
+                            <option value="manual">Manual Placement</option>
                         </select>
                     </div>
                     <div class="stack-control-group"><span class="stack-label-mini">Position X</span>
@@ -1604,12 +1605,13 @@ function renderZoneDetail(index) {
                         <input type="range" min="0" max="100" step="5" value="${Math.round((zone.thirdBasePatternStrength ?? 1) * 100)}" oninput="setZoneThirdBasePatternStrength(${i}, this.value)" class="stack-slider">
                         <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); stepZoneThirdBasePatternStrength(${i}, 1)" title="+5%" style="padding:0 4px;font-size:10px;">+</button>
                         <span class="stack-val" id="detTBPatStrVal${i}">${Math.round((zone.thirdBasePatternStrength ?? 1) * 100)}%</span></div>
-                    <div class="zone-target-mode" style="margin: 6px 0; display: flex; gap: 6px; align-items: center;">
+                    <div class="zone-target-mode" style="margin: 6px 0; display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
                         <label style="color: #aaa; font-size: 11px;">Overlay Placement:</label>
-                        <select onchange="zones[${i}].thirdBaseFitZone = this.value === 'fit'; renderZones();"
+                        <select onchange="if(this.value==='manual'){activateManualPlacement(${i},'third_base');}else{zones[${i}].thirdBaseFitZone = this.value === 'fit'; renderZones();}"
                                 style="background: #1a1a1a; color: #ccc; border: 1px solid #333; padding: 2px 6px; font-size: 11px;">
                             <option value="normal" ${!zone.thirdBaseFitZone ? 'selected' : ''}>Full Canvas</option>
                             <option value="fit" ${zone.thirdBaseFitZone ? 'selected' : ''}>Fit to Zone</option>
+                            <option value="manual">Manual Placement</option>
                         </select>
                     </div>
                     <div class="stack-control-group"><span class="stack-label-mini">Position X</span>
@@ -1730,12 +1732,13 @@ function renderZoneDetail(index) {
                                 <input type="range" min="0" max="100" step="5" value="${Math.round((zone.fourthBasePatternStrength ?? 1) * 100)}" oninput="setZoneFourthBasePatternStrength(${i}, this.value)" class="stack-slider">
                                 <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); stepZoneFourthBasePatternStrength(${i}, 1)" title="+5%" style="padding:0 4px;font-size:10px;">+</button>
                                 <span class="stack-val" id="detFBPatStrVal${i}">${Math.round((zone.fourthBasePatternStrength ?? 1) * 100)}%</span></div>
-                            <div class="zone-target-mode" style="margin: 6px 0; display: flex; gap: 6px; align-items: center;">
+                            <div class="zone-target-mode" style="margin: 6px 0; display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
                                 <label style="color: #aaa; font-size: 11px;">Overlay Placement:</label>
-                                <select onchange="zones[${i}].fourthBaseFitZone = this.value === 'fit'; renderZones();"
+                                <select onchange="if(this.value==='manual'){activateManualPlacement(${i},'fourth_base');}else{zones[${i}].fourthBaseFitZone = this.value === 'fit'; renderZones();}"
                                         style="background: #1a1a1a; color: #ccc; border: 1px solid #333; padding: 2px 6px; font-size: 11px;">
                                     <option value="normal" ${!zone.fourthBaseFitZone ? 'selected' : ''}>Full Canvas</option>
                                     <option value="fit" ${zone.fourthBaseFitZone ? 'selected' : ''}>Fit to Zone</option>
+                                    <option value="manual">Manual Placement</option>
                                 </select>
                             </div>
                             <div class="stack-control-group"><span class="stack-label-mini">Position X</span>
@@ -1856,12 +1859,13 @@ function renderZoneDetail(index) {
                                 <input type="range" min="0" max="100" step="5" value="${Math.round((zone.fifthBasePatternStrength ?? 1) * 100)}" oninput="setZoneFifthBasePatternStrength(${i}, this.value)" class="stack-slider">
                                 <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); stepZoneFifthBasePatternStrength(${i}, 1)" title="+5%" style="padding:0 4px;font-size:10px;">+</button>
                                 <span class="stack-val" id="detFifPatStrVal${i}">${Math.round((zone.fifthBasePatternStrength ?? 1) * 100)}%</span></div>
-                            <div class="zone-target-mode" style="margin: 6px 0; display: flex; gap: 6px; align-items: center;">
+                            <div class="zone-target-mode" style="margin: 6px 0; display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
                                 <label style="color: #aaa; font-size: 11px;">Overlay Placement:</label>
-                                <select onchange="zones[${i}].fifthBaseFitZone = this.value === 'fit'; renderZones();"
+                                <select onchange="if(this.value==='manual'){activateManualPlacement(${i},'fifth_base');}else{zones[${i}].fifthBaseFitZone = this.value === 'fit'; renderZones();}"
                                         style="background: #1a1a1a; color: #ccc; border: 1px solid #333; padding: 2px 6px; font-size: 11px;">
                                     <option value="normal" ${!zone.fifthBaseFitZone ? 'selected' : ''}>Full Canvas</option>
                                     <option value="fit" ${zone.fifthBaseFitZone ? 'selected' : ''}>Fit to Zone</option>
+                                    <option value="manual">Manual Placement</option>
                                 </select>
                             </div>
                             <div class="stack-control-group"><span class="stack-label-mini">Position X</span>
@@ -4329,10 +4333,10 @@ function alignSecondBaseOverlayWithSelectedPattern(index) {
     const z = zones[index];
     if (!z || !z.secondBase) return;
     pushZoneUndo('', true);
-    
+
     const targetPatId = z.secondBasePattern || '';
     let sx = 1.0, rot = 0, px = 0.5, py = 0.5;
-    
+
     if (!targetPatId || targetPatId === 'none') {
         sx = z.scale ?? 1.0;
         rot = z.rotation ?? 0;
@@ -4346,8 +4350,8 @@ function alignSecondBaseOverlayWithSelectedPattern(index) {
         if (pat) {
             sx = pat.scale ?? 1.0;
             rot = pat.rotation ?? 0;
-            px = pat.patternOffsetX ?? 0.5;
-            py = pat.patternOffsetY ?? 0.5;
+            px = pat.offsetX ?? 0.5;
+            py = pat.offsetY ?? 0.5;
             foundInStack = true;
         }
         // Check if it matches the primary pattern (Pattern 1) — stored directly on z, not in patternStack
@@ -4634,10 +4638,10 @@ function alignFourthBaseOverlayWithSelectedPattern(index) {
     const z = zones[index];
     if (!z || !z.fourthBase) return;
     pushZoneUndo('', true);
-    
+
     const targetPatId = z.fourthBasePattern || '';
     let sx = 1.0, rot = 0, px = 0.5, py = 0.5;
-    
+
     if (!targetPatId || targetPatId === 'none') {
         sx = z.scale ?? 1.0;
         rot = z.rotation ?? 0;
@@ -4651,8 +4655,8 @@ function alignFourthBaseOverlayWithSelectedPattern(index) {
         if (pat) {
             sx = pat.scale ?? 1.0;
             rot = pat.rotation ?? 0;
-            px = pat.patternOffsetX ?? 0.5;
-            py = pat.patternOffsetY ?? 0.5;
+            px = pat.offsetX ?? 0.5;
+            py = pat.offsetY ?? 0.5;
             foundInStack = true;
         }
         // Check if it matches the primary pattern (Pattern 1) — stored directly on z, not in patternStack
@@ -4849,10 +4853,10 @@ function alignFifthBaseOverlayWithSelectedPattern(index) {
     const z = zones[index];
     if (!z || !z.fifthBase) return;
     pushZoneUndo('', true);
-    
+
     const targetPatId = z.fifthBasePattern || '';
     let sx = 1.0, rot = 0, px = 0.5, py = 0.5;
-    
+
     if (!targetPatId || targetPatId === 'none') {
         sx = z.scale ?? 1.0;
         rot = z.rotation ?? 0;
@@ -4866,8 +4870,8 @@ function alignFifthBaseOverlayWithSelectedPattern(index) {
         if (pat) {
             sx = pat.scale ?? 1.0;
             rot = pat.rotation ?? 0;
-            px = pat.patternOffsetX ?? 0.5;
-            py = pat.patternOffsetY ?? 0.5;
+            px = pat.offsetX ?? 0.5;
+            py = pat.offsetY ?? 0.5;
             foundInStack = true;
         }
         // Check if it matches the primary pattern (Pattern 1) — stored directly on z, not in patternStack
@@ -4918,10 +4922,10 @@ function alignThirdBaseOverlayWithSelectedPattern(index) {
     const z = zones[index];
     if (!z || !z.thirdBase) return;
     pushZoneUndo('', true);
-    
+
     const targetPatId = z.thirdBasePattern || '';
     let sx = 1.0, rot = 0, px = 0.5, py = 0.5;
-    
+
     if (!targetPatId || targetPatId === 'none') {
         sx = z.scale ?? 1.0;
         rot = z.rotation ?? 0;
@@ -4935,8 +4939,8 @@ function alignThirdBaseOverlayWithSelectedPattern(index) {
         if (pat) {
             sx = pat.scale ?? 1.0;
             rot = pat.rotation ?? 0;
-            px = pat.patternOffsetX ?? 0.5;
-            py = pat.patternOffsetY ?? 0.5;
+            px = pat.offsetX ?? 0.5;
+            py = pat.offsetY ?? 0.5;
             foundInStack = true;
         }
         // Check if it matches the primary pattern (Pattern 1) — stored directly on z, not in patternStack
@@ -5129,7 +5133,7 @@ function addPatternLayer(zoneIdx) {
     pushZoneUndo();
     if (!zones[zoneIdx].patternStack) zones[zoneIdx].patternStack = [];
     if (zones[zoneIdx].patternStack.length >= MAX_PATTERN_STACK_LAYERS) { showToast(`Max ${MAX_PATTERN_LAYERS_PER_ZONE} patterns (Pattern 1 + ${MAX_PATTERN_STACK_LAYERS} layers)`, true); return; }
-    zones[zoneIdx].patternStack.push({ id: 'none', opacity: 100, scale: 1.0, rotation: 0, blendMode: 'normal' });
+    zones[zoneIdx].patternStack.push({ id: 'none', opacity: 100, scale: 1.0, rotation: 0, blendMode: 'normal', offsetX: 0.5, offsetY: 0.5 });
     renderZones();
     triggerPreviewRender();
 }

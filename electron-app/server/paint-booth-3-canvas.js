@@ -873,6 +873,17 @@ if __name__ == '__main__':
             // Update banner
             if (typeof updatePlacementBanner === 'function') updatePlacementBanner();
 
+            // Auto-enable split view for live feedback during placement
+            if (typeof splitViewActive !== 'undefined' && !splitViewActive) {
+                if (typeof toggleSplitView === 'function') {
+                    toggleSplitView();
+                } else {
+                    // Fallback: find and click the split button
+                    const splitBtn = document.getElementById('splitViewBtn') || document.querySelector('[onclick*="toggleSplit"]');
+                    if (splitBtn) splitBtn.click();
+                }
+            }
+
             // Toast
             const layerName = placementLayer.replace(/_/g, ' ');
             showToast('Manual Placement active for ' + layerName + ' — drag to position, scroll to resize, Shift+drag to rotate', 'info');
@@ -1426,6 +1437,9 @@ if __name__ == '__main__':
                     clearTimeout(placementPreviewTimer);
                     placementPreviewTimer = null;
                     if (typeof triggerPreviewRender === 'function') triggerPreviewRender();
+                    if (typeof showToast === 'function') {
+                        showToast('Position saved — will apply on next render', 'success');
+                    }
                     canvas.style.cursor = (typeof placementLayer !== 'undefined' && placementLayer !== 'none') ? 'grab' : '';
                     return;
                 }
@@ -1515,6 +1529,9 @@ if __name__ == '__main__':
                     clearTimeout(placementPreviewTimer);
                     placementPreviewTimer = null;
                     if (typeof triggerPreviewRender === 'function') triggerPreviewRender();
+                    if (typeof showToast === 'function') {
+                        showToast('Position saved — will apply on next render', 'success');
+                    }
                     const cvs = document.getElementById('paintCanvas');
                     if (cvs) cvs.style.cursor = (typeof placementLayer !== 'undefined' && placementLayer !== 'none') ? 'grab' : '';
                     return;
@@ -3585,7 +3602,8 @@ if __name__ == '__main__':
         }
 
         function triggerPreviewRender() {
-            if (!splitViewActive) return;
+            // Allow preview during manual placement even if split view is off
+            if (!splitViewActive && placementLayer === 'none') return;
 
             const hash = getZoneConfigHash();
             if (hash === lastPreviewZoneHash) return;  // Nothing actually changed

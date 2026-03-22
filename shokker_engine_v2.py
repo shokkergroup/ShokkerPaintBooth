@@ -5144,7 +5144,7 @@ def overlay_pattern_paint(paint, pattern_id, shape, mask, seed, pm, bb, scale=1.
 # MULTI-ZONE BUILD - THE CORE (FIXED!)
 # ================================================================
 
-def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51, save_debug_images=False, import_spec_map=None, car_prefix="car_num", stamp_image=None, stamp_spec_finish="gloss", preview_mode=False, decal_spec_finishes=None, decal_paint_path=None):
+def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51, save_debug_images=False, import_spec_map=None, car_prefix="car_num", stamp_image=None, stamp_spec_finish="gloss", preview_mode=False, decal_spec_finishes=None, decal_paint_path=None, decal_mask_base64=None):
     """
     Apply different finishes to different color-detected zones.
 
@@ -6160,12 +6160,33 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
                 "f_gel_coat": spec_gloss,
                 "f_baked_enamel": spec_gloss,
             }
-            # Load the composited paint (paint + decals baked in) — alpha = decal mask
+            # Load the composited paint (paint + decals baked in)
             decal_comp = Image.open(decal_paint_path).convert('RGBA')
             if decal_comp.size != (w, h):
                 decal_comp = decal_comp.resize((w, h), Image.LANCZOS)
             decal_arr = np.array(decal_comp)
-            decal_alpha = decal_arr[:, :, 3].astype(np.float32) / 255.0  # 0-1 mask
+
+            # Prefer the separate decal-only alpha mask sent from the client.
+            # The composite image has a fully-opaque paint background so its alpha
+            # channel is 255 everywhere — useless as a mask. The dedicated mask
+            # encodes only the decal pixels as grey values, which is what we need.
+            if decal_mask_base64:
+                try:
+                    import base64 as _b64, io as _io
+                    _raw = decal_mask_base64
+                    if ',' in _raw:
+                        _raw = _raw.split(',', 1)[1]
+                    mask_img = Image.open(_io.BytesIO(_b64.b64decode(_raw))).convert('L')
+                    if mask_img.size != (w, h):
+                        mask_img = mask_img.resize((w, h), Image.LANCZOS)
+                    decal_alpha = np.array(mask_img, dtype=np.float32) / 255.0
+                    print(f"  Decal spec: using dedicated alpha mask ({decal_alpha.max():.3f} max)")
+                except Exception as _me:
+                    print(f"  Decal spec: mask decode failed ({_me}), falling back to composite alpha")
+                    decal_alpha = decal_arr[:, :, 3].astype(np.float32) / 255.0
+            else:
+                # Fallback: extract alpha from composite (may be all-255 if paint has opaque bg)
+                decal_alpha = decal_arr[:, :, 3].astype(np.float32) / 255.0
 
             if decal_alpha.max() > 0.01:
                 # Use the first entry's spec finish for all decal areas
@@ -6309,7 +6330,7 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
 # ================================================================
 
 def preview_render(paint_file, zones, seed=51, preview_scale=0.25, import_spec_map=None,
-                   decal_spec_finishes=None, decal_paint_path=None):
+                   decal_spec_finishes=None, decal_paint_path=None, decal_mask_base64=None):
     """Live preview: runs the FULL render pipeline at reduced resolution.
 
     Uses build_multi_zone with preview_mode=True so the preview matches
@@ -6389,6 +6410,7 @@ def preview_render(paint_file, zones, seed=51, preview_scale=0.25, import_spec_m
             preview_mode=True,
             decal_spec_finishes=decal_spec_finishes,
             decal_paint_path=preview_decal_path,
+            decal_mask_base64=decal_mask_base64,
         )
         paint_rgb, combined_spec = result
     except Exception as e:
@@ -7330,7 +7352,7 @@ def build_suit_spec(suit_paint_file, output_dir, zones, iracing_id="23371", seed
 def build_matching_set(car_paint_file, output_dir, zones, iracing_id="23371", seed=51,
                        helmet_paint_file=None, suit_paint_file=None, import_spec_map=None, car_prefix="car_num",
                        stamp_image=None, stamp_spec_finish="gloss",
-                       decal_spec_finishes=None, decal_paint_path=None):
+                       decal_spec_finishes=None, decal_paint_path=None, decal_mask_base64=None):
     """Build car + matching helmet + matching suit in one call.
 
     If helmet/suit paint files are provided, applies the SAME zone config
@@ -7351,7 +7373,8 @@ def build_matching_set(car_paint_file, output_dir, zones, iracing_id="23371", se
     car_paint, car_spec, zone_masks = build_multi_zone(
         car_paint_file, output_dir, zones, iracing_id, seed, import_spec_map=import_spec_map, car_prefix=car_prefix,
         stamp_image=stamp_image, stamp_spec_finish=stamp_spec_finish,
-        decal_spec_finishes=decal_spec_finishes, decal_paint_path=decal_paint_path)
+        decal_spec_finishes=decal_spec_finishes, decal_paint_path=decal_paint_path,
+        decal_mask_base64=decal_mask_base64)
     results["car_paint"] = car_paint
     results["car_spec"] = car_spec
 
@@ -7662,7 +7685,7 @@ def full_render_pipeline(car_paint_file, output_dir, zones, iracing_id="23371",
                          wear_level=0, car_folder_name=None, export_zip=True,
                          dual_spec=False, night_boost=0.7, import_spec_map=None,
                          car_prefix="car_num", stamp_image=None, stamp_spec_finish="gloss",
-                         decal_spec_finishes=None, decal_paint_path=None):
+                         decal_spec_finishes=None, decal_paint_path=None, decal_mask_base64=None):
     """The ultimate one-call render pipeline.
 
     1. Builds car spec map + paint modifications
@@ -7687,7 +7710,8 @@ def full_render_pipeline(car_paint_file, output_dir, zones, iracing_id="23371",
         car_paint_file, output_dir, zones, iracing_id, seed,
         helmet_paint_file, suit_paint_file, import_spec_map=import_spec_map,
         car_prefix=car_prefix, stamp_image=stamp_image, stamp_spec_finish=stamp_spec_finish,
-        decal_spec_finishes=decal_spec_finishes, decal_paint_path=decal_paint_path
+        decal_spec_finishes=decal_spec_finishes, decal_paint_path=decal_paint_path,
+        decal_mask_base64=decal_mask_base64
     )
     print(f"  Step 1 (matching set): {time.time()-t_step1:.1f}s")
 

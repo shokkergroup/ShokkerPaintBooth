@@ -3583,17 +3583,65 @@ function setPlacementLayer(layer) {
     const cvs = document.getElementById('paintCanvas');
     if (cvs) cvs.style.cursor = placementLayer !== 'none' ? 'grab' : '';
 }
+// Debounce timer for re-fetching the pattern overlay image
+var _placementPatternRefetchTimer = null;
+
+function _buildPlacementPatternUrl(z, canvas) {
+    const pat = z.pattern && z.pattern !== 'none' ? z.pattern : null;
+    if (!pat || !canvas || canvas.width <= 0 || canvas.height <= 0) return null;
+    if (typeof ShokkerAPI === 'undefined' || !ShokkerAPI.baseUrl) return null;
+    const sc = z.scale ?? 1;
+    const rot = z.rotation ?? 0;
+    const flipH = z.patternFlipH ? 1 : 0;
+    const flipV = z.patternFlipV ? 1 : 0;
+    return ShokkerAPI.baseUrl + '/api/pattern-layer?pattern=' + encodeURIComponent(pat)
+        + '&w=' + canvas.width + '&h=' + canvas.height
+        + '&scale=' + sc + '&rotation=' + rot
+        + '&flip_h=' + flipH + '&flip_v=' + flipV + '&seed=42';
+}
+
 function applyPlacementPatternTransform() {
     const img = document.getElementById('placementPatternImg');
     const z = zones[selectedZoneIndex];
     if (!img || !z || placementLayer !== 'pattern') return;
+
+    // Only apply CSS translation for the drag offset —
+    // scale and rotation are baked into the fetched image.
     const ox = (0.5 - (z.patternOffsetX ?? 0.5)) * 100;
     const oy = (0.5 - (z.patternOffsetY ?? 0.5)) * 100;
-    const rot = z.rotation ?? 0;
-    const sc = z.scale ?? 1;
-    const flipX = z.patternFlipH ? -1 : 1;
-    const flipY = z.patternFlipV ? -1 : 1;
-    img.style.transform = `translate(${ox}%, ${oy}%) rotate(${rot}deg) scale(${sc}) scaleX(${flipX}) scaleY(${flipY})`;
+    img.style.transform = `translate(${ox}%, ${oy}%)`;
+
+    // Re-fetch the pattern at the current scale/rotation (debounced so rapid
+    // scroll-wheel changes don't flood the server with requests).
+    const canvas = document.getElementById('paintCanvas');
+    const newUrl = _buildPlacementPatternUrl(z, canvas);
+    if (!newUrl) return;
+
+    // If scale/rotation changed (URL differs), schedule a re-fetch
+    if (img._lastPlacementUrl !== newUrl) {
+        clearTimeout(_placementPatternRefetchTimer);
+        _placementPatternRefetchTimer = setTimeout(function () {
+            if (!img) return;
+            const hint = document.getElementById('placementMapOverlayHint');
+            if (hint) {
+                hint.style.display = 'flex';
+                const msg = hint.querySelector('span:first-child');
+                if (msg) msg.textContent = 'Loading pattern…';
+            }
+            img._lastPlacementUrl = newUrl;
+            img.onload = function () {
+                if (hint) hint.style.display = 'none';
+                // Re-apply translation only (scale/rotation now baked in)
+                const z2 = zones[selectedZoneIndex];
+                if (z2) {
+                    const ox2 = (0.5 - (z2.patternOffsetX ?? 0.5)) * 100;
+                    const oy2 = (0.5 - (z2.patternOffsetY ?? 0.5)) * 100;
+                    img.style.transform = `translate(${ox2}%, ${oy2}%)`;
+                }
+            };
+            img.src = newUrl;
+        }, 120);
+    }
 }
 
 function updatePlacementBanner() {
@@ -3623,7 +3671,8 @@ function updatePlacementBanner() {
             hint.style.display = 'flex';
             hint.querySelector('span:first-child').textContent = 'Loading pattern…';
             patternLayerDiv.style.display = 'block';
-            const url = ShokkerAPI.baseUrl + '/api/pattern-layer?pattern=' + encodeURIComponent(pat) + '&w=' + canvas.width + '&h=' + canvas.height + '&scale=1&rotation=0&seed=42';
+            const url = _buildPlacementPatternUrl(z, canvas) || (ShokkerAPI.baseUrl + '/api/pattern-layer?pattern=' + encodeURIComponent(pat) + '&w=' + canvas.width + '&h=' + canvas.height + '&scale=1&rotation=0&seed=42');
+            patternImg._lastPlacementUrl = url;
             patternImg.onload = function () {
                 hint.style.display = 'none';
                 applyPlacementPatternTransform();

@@ -1681,6 +1681,7 @@ def preview_render_endpoint():
 
         # Decal spec finishes (list of {specFinish: "gloss"} for non-"none" decals)
         decal_spec_finishes = data.get("decal_spec_finishes", [])
+        decal_mask_base64 = data.get("decal_mask_base64")  # separate decal-only alpha mask
         decal_paint_path_preview = None  # set below if paint_image_base64 is decoded
 
         # If client sent a composited paint (paint + baked-in decals), decode and use it
@@ -1909,6 +1910,7 @@ def preview_render_endpoint():
             import_spec_map=import_spec_map,
             decal_spec_finishes=decal_spec_finishes if decal_spec_finishes else None,
             decal_paint_path=decal_paint_path_preview,
+            decal_mask_base64=decal_mask_base64 or None,
         )
 
         # Convert paint to base64 PNG (main preview)
@@ -2040,6 +2042,7 @@ def render():
 
         # Decal spec finishes (list of {specFinish: "gloss"} for non-"none" decals)
         decal_spec_finishes = data.get("decal_spec_finishes", [])
+        decal_mask_base64 = data.get("decal_mask_base64")  # separate decal-only alpha mask
         decal_paint_path = None  # set below if paint_image_base64 is decoded
 
         # Validate optional files
@@ -2212,6 +2215,7 @@ def render():
             stamp_spec_finish=stamp_spec_finish,
             decal_spec_finishes=decal_spec_finishes if decal_spec_finishes else None,
             decal_paint_path=decal_paint_path,
+            decal_mask_base64=decal_mask_base64 or None,
         )
 
         elapsed = time.time() - start

@@ -4085,6 +4085,7 @@ if __name__ == '__main__':
                     z.scale = Math.max(0.1, Math.min(4.0, (z.scale || 1.0) + delta));
                     if (typeof renderZones === 'function') renderZones();
                     if (typeof triggerPreviewRender === 'function') triggerPreviewRender();
+                    if (typeof applyPlacementPatternTransform === 'function') applyPlacementPatternTransform();
                     return;
                 }
 

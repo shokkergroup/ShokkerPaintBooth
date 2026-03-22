@@ -327,6 +327,37 @@
             return c;
         }
 
+        function compositeDecalMaskForRender() {
+            // Returns a base64 PNG of just the decal alpha mask (grayscale).
+            // Drawing only decals onto a transparent canvas, then extracting the alpha channel.
+            // This is sent alongside the composite as decal_mask_base64 so the engine
+            // can correctly identify which pixels are decals vs. paint background.
+            const paintCanvas = document.getElementById('paintCanvas');
+            if (!paintCanvas || decalLayers.length === 0) return null;
+
+            // Draw only decals onto a blank (fully transparent) canvas
+            const maskCanvas = document.createElement('canvas');
+            maskCanvas.width = paintCanvas.width;
+            maskCanvas.height = paintCanvas.height;
+            const maskCtx = maskCanvas.getContext('2d');
+            // Leave background transparent — draw only decals
+            drawDecalsOnContext(maskCtx, maskCanvas.width, maskCanvas.height);
+
+            // Extract alpha channel → grayscale PNG
+            const imgData = maskCtx.getImageData(0, 0, maskCanvas.width, maskCanvas.height);
+            const d = imgData.data;
+            // Write alpha into R/G/B so the image reads as a proper grayscale mask
+            for (let i = 0; i < d.length; i += 4) {
+                const a = d[i + 3];
+                d[i] = a;
+                d[i + 1] = a;
+                d[i + 2] = a;
+                d[i + 3] = 255;
+            }
+            maskCtx.putImageData(imgData, 0, 0);
+            return maskCanvas.toDataURL('image/png');
+        }
+
         // Number generator
         function openNumberGenerator() {
             const sec = document.getElementById('numberGenSection');

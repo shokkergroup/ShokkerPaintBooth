@@ -1475,6 +1475,11 @@ async function doExportToPhotoshop() {
     if (typeof compositeDecalsForRender === 'function' && typeof decalLayers !== 'undefined' && decalLayers.length > 0) {
         const compositeCanvas = compositeDecalsForRender();
         if (compositeCanvas) extras.paint_image_base64 = compositeCanvas.toDataURL('image/png');
+        // Also send the decal-only alpha mask for correct spec stamping
+        if (typeof compositeDecalMaskForRender === 'function') {
+            const maskDataUrl = compositeDecalMaskForRender();
+            if (maskDataUrl) extras.decal_mask_base64 = maskDataUrl;
+        }
     }
     // Spec Stamps for PS export
     if (typeof compositeStampsForRender === 'function' && typeof window.stampLayers !== 'undefined' && window.stampLayers.length > 0) {
@@ -1612,6 +1617,12 @@ async function doRender() {
         if (compositeCanvas) {
             const dataUrl = compositeCanvas.toDataURL('image/png');
             extras.paint_image_base64 = dataUrl;
+        }
+        // Send separate decal-only alpha mask so the engine can correctly identify
+        // decal pixels without relying on the composite image alpha (which is 255 everywhere)
+        if (typeof compositeDecalMaskForRender === 'function') {
+            const maskDataUrl = compositeDecalMaskForRender();
+            if (maskDataUrl) extras.decal_mask_base64 = maskDataUrl;
         }
         // Send per-decal spec finish info to server
         const decalSpecs = decalLayers

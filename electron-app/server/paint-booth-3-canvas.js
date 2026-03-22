@@ -457,6 +457,10 @@ if __name__ == '__main__':
 
                         setupCanvasHandlers(canvas);
                         canvasZoom('fit');
+                        // Auto-enable split view when paint is loaded
+                        if (!splitViewActive) {
+                            setTimeout(() => toggleSplitView(), 200);
+                        }
                         showToast(`Loaded ${fileName} as source paint + preview!`);
                     };
                     img.src = e.target.result;
@@ -785,6 +789,10 @@ if __name__ == '__main__':
 
                     setupCanvasHandlers(canvas);
                     canvasZoom('fit');
+                    // Auto-enable split view when paint is loaded
+                    if (!splitViewActive) {
+                        setTimeout(() => toggleSplitView(), 200);
+                    }
                     showToast(`Preview loaded: ${img.width}x${img.height}`);
                     URL.revokeObjectURL(url);
                 };
@@ -842,6 +850,25 @@ if __name__ == '__main__':
         }
 
         // ===== PAINT PREVIEW & EYEDROPPER =====
+
+        // Activate Manual Placement mode for a zone — enables drag-to-position on the preview canvas
+        function activateManualPlacement(zoneIndex) {
+            // Select the zone so placement drag targets it
+            if (typeof selectZone === 'function') selectZone(zoneIndex);
+
+            // Set placementLayer so canvas drag handlers know to reposition the pattern
+            placementLayer = 'pattern';
+
+            // Show visual feedback
+            if (typeof showToast === 'function') showToast('Manual Placement active — drag on the preview to position the pattern. Scroll to resize. Shift+drag to rotate.');
+
+            // Update canvas cursor
+            const canvas = document.getElementById('paintCanvas');
+            if (canvas) canvas.style.cursor = 'move';
+
+            // Update placement banner if it exists
+            if (typeof updatePlacementBanner === 'function') updatePlacementBanner();
+        }
 
         // Shared: set up hover + click + draw handlers on the canvas
         function setupCanvasHandlers(canvas) {
@@ -2886,6 +2913,10 @@ if __name__ == '__main__':
 
                         setupCanvasHandlers(canvas);
                         canvasZoom('fit');
+                        // Auto-enable split view when paint is loaded
+                        if (!splitViewActive) {
+                            setTimeout(() => toggleSplitView(), 200);
+                        }
                         showToast('Paint loaded! Hover to see colors, click to grab one.');
                     };
                     img.src = e.target.result;
@@ -2950,6 +2981,10 @@ if __name__ == '__main__':
                         const zoomCtrl = document.getElementById('zoomControls'); if (zoomCtrl) zoomCtrl.style.display = 'flex';
                         setupCanvasHandlers(canvas);
                         canvasZoom('fit');
+                        // Auto-enable split view when paint is loaded
+                        if (!splitViewActive) {
+                            setTimeout(() => toggleSplitView(), 200);
+                        }
                         if (typeof showToast === 'function') showToast('Paint loaded!');
                     };
                     img.src = e.target.result;
@@ -3293,6 +3328,55 @@ if __name__ == '__main__':
             if (splitViewActive) {
                 triggerPreviewRender();
             }
+        }
+
+        // ===== PREVIEW LIGHTBOX =====
+        let lightboxMode = 'paint';
+
+        function openPreviewLightbox(mode) {
+            const lb = document.getElementById('previewLightbox');
+            if (!lb) return;
+            lb.style.display = 'block';
+            showLightbox(mode || 'paint');
+            document.addEventListener('keydown', lightboxKeyHandler);
+        }
+
+        function showLightbox(mode, channel) {
+            lightboxMode = mode || 'paint';
+            const img = document.getElementById('lightboxImg');
+            const paintBtn = document.getElementById('lightboxPaintBtn');
+            const specBtn = document.getElementById('lightboxSpecBtn');
+            const chBtns = ['lightboxChAll','lightboxChR','lightboxChG','lightboxChB'];
+
+            if (lightboxMode === 'paint') {
+                const src = document.getElementById('livePreviewImg');
+                if (src) img.src = src.src;
+                paintBtn.style.borderColor = '#E87A20';
+                paintBtn.style.color = '#E87A20';
+                specBtn.style.borderColor = '#333';
+                specBtn.style.color = '#00C8C8';
+                chBtns.forEach(id => { const b = document.getElementById(id); if (b) b.style.display = 'none'; });
+            } else {
+                const src = document.getElementById('livePreviewSpecImg');
+                if (src) img.src = src.src;
+                specBtn.style.borderColor = '#00C8C8';
+                specBtn.style.color = '#00C8C8';
+                paintBtn.style.borderColor = '#333';
+                paintBtn.style.color = '#E87A20';
+                chBtns.forEach(id => { const b = document.getElementById(id); if (b) b.style.display = ''; });
+            }
+        }
+
+        function closePreviewLightbox() {
+            const lb = document.getElementById('previewLightbox');
+            if (lb) lb.style.display = 'none';
+            document.removeEventListener('keydown', lightboxKeyHandler);
+        }
+
+        function lightboxKeyHandler(e) {
+            if (e.key === 'Escape') closePreviewLightbox();
+            if (e.key === 'p' || e.key === 'P') showLightbox('paint');
+            if (e.key === 's' || e.key === 'S') showLightbox('spec');
         }
 
         function getZoneConfigHash() {
@@ -3850,6 +3934,20 @@ if __name__ == '__main__':
             // Zooms toward the mouse cursor position for intuitive navigation
             viewport.addEventListener('wheel', (e) => {
                 if (!document.getElementById('paintCanvas')?.width) return;
+
+                // If Manual Placement is active, scroll adjusts pattern scale instead of zooming
+                if (typeof placementLayer !== 'undefined' && placementLayer === 'pattern' &&
+                    typeof selectedZoneIndex !== 'undefined' && zones && zones[selectedZoneIndex] &&
+                    zones[selectedZoneIndex].patternPlacement === 'manual') {
+                    e.preventDefault();
+                    const z = zones[selectedZoneIndex];
+                    const delta = e.deltaY > 0 ? -0.05 : 0.05;
+                    z.scale = Math.max(0.1, Math.min(4.0, (z.scale || 1.0) + delta));
+                    if (typeof renderZones === 'function') renderZones();
+                    if (typeof triggerPreviewRender === 'function') triggerPreviewRender();
+                    return;
+                }
+
                 e.preventDefault();
 
                 const oldZoom = currentZoom;

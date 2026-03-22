@@ -745,7 +745,8 @@ async function doFleetRender() {
         }
         if (z.base || (z.finish && z.pattern && z.pattern !== 'none')) zoneObj.pattern_spec_mult = Number(z.patternSpecMult ?? 1);
         if (z.base || (z.finish && z.pattern && z.pattern !== 'none')) { zoneObj.pattern_offset_x = Math.max(0, Math.min(1, Number(z.patternOffsetX ?? 0.5))); zoneObj.pattern_offset_y = Math.max(0, Math.min(1, Number(z.patternOffsetY ?? 0.5))); zoneObj.pattern_flip_h = !!z.patternFlipH; zoneObj.pattern_flip_v = !!z.patternFlipV; }
-        if (z.patternFitZone) zoneObj.pattern_fit_zone = true;
+        if (z.patternPlacement === 'fit' || z.patternFitZone) zoneObj.pattern_fit_zone = true;
+        if (z.patternPlacement === 'manual') zoneObj.pattern_manual = true;
         if (z.base || z.finish) { zoneObj.base_offset_x = Math.max(0, Math.min(1, Number(z.baseOffsetX ?? 0.5))); zoneObj.base_offset_y = Math.max(0, Math.min(1, Number(z.baseOffsetY ?? 0.5))); zoneObj.base_rotation = Number(z.baseRotation ?? 0); zoneObj.base_flip_h = !!z.baseFlipH; zoneObj.base_flip_v = !!z.baseFlipV; }
         if (z.wear && z.wear > 0) zoneObj.wear_level = z.wear;
         // Spec pattern overlays
@@ -986,7 +987,8 @@ async function doSeasonRender() {
         }
         if (z.base || (z.finish && z.pattern && z.pattern !== 'none')) zoneObj.pattern_spec_mult = Number(z.patternSpecMult ?? 1);
         if (z.base || (z.finish && z.pattern && z.pattern !== 'none')) { zoneObj.pattern_offset_x = Math.max(0, Math.min(1, Number(z.patternOffsetX ?? 0.5))); zoneObj.pattern_offset_y = Math.max(0, Math.min(1, Number(z.patternOffsetY ?? 0.5))); zoneObj.pattern_flip_h = !!z.patternFlipH; zoneObj.pattern_flip_v = !!z.patternFlipV; }
-        if (z.patternFitZone) zoneObj.pattern_fit_zone = true;
+        if (z.patternPlacement === 'fit' || z.patternFitZone) zoneObj.pattern_fit_zone = true;
+        if (z.patternPlacement === 'manual') zoneObj.pattern_manual = true;
         if (z.base || z.finish) { zoneObj.base_offset_x = Math.max(0, Math.min(1, Number(z.baseOffsetX ?? 0.5))); zoneObj.base_offset_y = Math.max(0, Math.min(1, Number(z.baseOffsetY ?? 0.5))); zoneObj.base_rotation = Number(z.baseRotation ?? 0); zoneObj.base_flip_h = !!z.baseFlipH; zoneObj.base_flip_v = !!z.baseFlipV; }
         if (z.wear && z.wear > 0) zoneObj.wear_level = z.wear;
         // Spec pattern overlays
@@ -1266,7 +1268,8 @@ function buildServerZonesForRender(zones) {
             zoneObj.pattern_flip_h = !!z.patternFlipH;
             zoneObj.pattern_flip_v = !!z.patternFlipV;
         }
-        if (z.patternFitZone) zoneObj.pattern_fit_zone = true;
+        if (z.patternPlacement === 'fit' || z.patternFitZone) zoneObj.pattern_fit_zone = true;
+        if (z.patternPlacement === 'manual') zoneObj.pattern_manual = true;
         if (z.base || z.finish) {
             zoneObj.base_offset_x = Math.max(0, Math.min(1, Number(z.baseOffsetX ?? 0.5)));
             zoneObj.base_offset_y = Math.max(0, Math.min(1, Number(z.baseOffsetY ?? 0.5)));

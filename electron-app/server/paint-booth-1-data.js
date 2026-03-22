@@ -169,6 +169,10 @@ function loadDecodedImageToCanvas(width, height, rgbaData, fileName) {
 
     setupCanvasHandlers(canvas);
     canvasZoom('fit');
+    // Auto-enable split view when paint is loaded
+    if (typeof splitViewActive !== 'undefined' && !splitViewActive) {
+        setTimeout(() => { if (typeof toggleSplitView === 'function') toggleSplitView(); }, 200);
+    }
     // Capture before image for Before/After comparison
     if (typeof captureBeforeImage === 'function') captureBeforeImage();
     showToast(`Loaded ${fileName} (${width}x${height}, TGA decoded)`);

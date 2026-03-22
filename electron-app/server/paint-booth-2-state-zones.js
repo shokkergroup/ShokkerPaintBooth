@@ -1085,21 +1085,22 @@ function renderZoneDetail(index) {
                             <button class="btn btn-sm" onclick="event.stopPropagation(); resetZoneRotation(${i})" style="padding:0 4px;font-size:9px;">↺</button></div>
                         <div class="zone-target-mode" style="margin: 6px 0; display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
                             <label style="color: #aaa; font-size: 11px; white-space: nowrap;">Pattern Placement:</label>
-                            <select onchange="zones[${i}].patternFitZone = this.value === 'fit'; renderZones();"
+                            <select onchange="zones[${i}].patternPlacement = this.value; if(this.value === 'manual') { activateManualPlacement(${i}); } renderZones();"
                                     style="background: #1a1a1a; color: #ccc; border: 1px solid #333; padding: 2px 6px; font-size: 11px;"
-                                    title="Full Canvas tiles across the whole car; Fit to Zone concentrates the pattern into just this zone">
-                                <option value="normal" ${!(zone.patternFitZone) ? 'selected' : ''}>Full Canvas (Normal)</option>
-                                <option value="fit" ${zone.patternFitZone ? 'selected' : ''}>Fit to Zone</option>
+                                    title="Full Canvas tiles across the whole car; Fit to Zone concentrates the pattern into just this zone; Manual lets you drag to position">
+                                <option value="normal" ${zone.patternPlacement !== 'fit' && zone.patternPlacement !== 'manual' ? 'selected' : ''}>Full Canvas (Normal)</option>
+                                <option value="fit" ${zone.patternPlacement === 'fit' ? 'selected' : ''}>Fit to Zone</option>
+                                <option value="manual" ${zone.patternPlacement === 'manual' ? 'selected' : ''}>Manual Placement</option>
                             </select>
                             <span class="whats-this" onclick="event.stopPropagation(); var p=this.nextElementSibling; p.style.display=p.style.display===\'none\'?\'block\':\'none\';" title="Click for explanation">?</span>
-                            <div class="whats-this-panel" style="display:none; width:100%;">Concentrates the pattern into just this zone&#39;s area instead of spreading across the full canvas. Great for small zones like car numbers.</div>
+                            <div class="whats-this-panel" style="display:none; width:100%;">Concentrates the pattern into just this zone&#39;s area instead of spreading across the full canvas. Great for small zones like car numbers. Manual lets you drag on the preview to position it.</div>
                         </div>
                         <div class="stack-control-group"><span class="stack-label-mini">Position X</span>
-                            <input type="range" min="0" max="100" step="1" value="${Math.round((zone.patternOffsetX ?? 0.5) * 100)}" oninput="setZonePatternOffsetX(${i}, this.value)" class="stack-slider" title="Slide the pattern left/right across the canvas" ${zone.patternFitZone ? 'disabled style="opacity:0.35;pointer-events:none;"' : ''}>
-                            <span class="stack-val" id="detPatPosXVal${i}" ${zone.patternFitZone ? 'style="opacity:0.35;"' : ''}>${Math.round((zone.patternOffsetX ?? 0.5) * 100)}%</span></div>
+                            <input type="range" min="0" max="100" step="1" value="${Math.round((zone.patternOffsetX ?? 0.5) * 100)}" oninput="setZonePatternOffsetX(${i}, this.value)" class="stack-slider" title="Slide the pattern left/right across the canvas" ${zone.patternPlacement === 'fit' ? 'disabled style="opacity:0.35;pointer-events:none;"' : ''}>
+                            <span class="stack-val" id="detPatPosXVal${i}" ${zone.patternPlacement === 'fit' ? 'style="opacity:0.35;"' : ''}>${Math.round((zone.patternOffsetX ?? 0.5) * 100)}%</span></div>
                         <div class="stack-control-group"><span class="stack-label-mini">Position Y</span>
-                            <input type="range" min="0" max="100" step="1" value="${Math.round((zone.patternOffsetY ?? 0.5) * 100)}" oninput="setZonePatternOffsetY(${i}, this.value)" class="stack-slider" title="Slide the pattern up/down across the canvas" ${zone.patternFitZone ? 'disabled style="opacity:0.35;pointer-events:none;"' : ''}>
-                            <span class="stack-val" id="detPatPosYVal${i}" ${zone.patternFitZone ? 'style="opacity:0.35;"' : ''}>${Math.round((zone.patternOffsetY ?? 0.5) * 100)}%</span></div>
+                            <input type="range" min="0" max="100" step="1" value="${Math.round((zone.patternOffsetY ?? 0.5) * 100)}" oninput="setZonePatternOffsetY(${i}, this.value)" class="stack-slider" title="Slide the pattern up/down across the canvas" ${zone.patternPlacement === 'fit' ? 'disabled style="opacity:0.35;pointer-events:none;"' : ''}>
+                            <span class="stack-val" id="detPatPosYVal${i}" ${zone.patternPlacement === 'fit' ? 'style="opacity:0.35;"' : ''}>${Math.round((zone.patternOffsetY ?? 0.5) * 100)}%</span></div>
                         <div class="stack-control-group" style="flex-wrap:wrap; gap:6px;">
                             <label style="display:flex;align-items:center;gap:4px;cursor:pointer;font-size:10px;" title="Mirror the pattern horizontally"><input type="checkbox" ${(zone.patternFlipH || false) ? 'checked' : ''} onchange="setZonePatternFlipH(${i}, this.checked)"> Flip H</label>
                             <label style="display:flex;align-items:center;gap:4px;cursor:pointer;font-size:10px;" title="Mirror the pattern vertically"><input type="checkbox" ${(zone.patternFlipV || false) ? 'checked' : ''} onchange="setZonePatternFlipV(${i}, this.checked)"> Flip V</label>
@@ -2564,7 +2565,7 @@ function addZone(skipUndo) {
         muted: false,
         patternOffsetX: 0.5,
         patternOffsetY: 0.5,
-        patternFitZone: false,
+        patternPlacement: 'normal',  // 'normal' | 'fit' | 'manual'
         patternFlipH: false,
         patternFlipV: false,
         baseOffsetX: 0.5,

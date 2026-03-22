@@ -978,6 +978,11 @@ def compose_finish_stacked(base_id, all_patterns, shape, mask, seed, sm, spec_mu
                     pv = (pv - pv_min) / (pv_max - pv_min)
                 else:
                     pv = np.zeros_like(pv)
+                # Per-pattern offset (supports Fit-to-Zone and Manual Placement)
+                _img_ox = float(layer.get("offset_x", pattern_offset_x))
+                _img_oy = float(layer.get("offset_y", pattern_offset_y))
+                if abs(_img_ox - 0.5) > 0.001 or abs(_img_oy - 0.5) > 0.001:
+                    _apply_pattern_offset(pv, shape, _img_ox, _img_oy)
                 # Mask the pattern so it only affects pixels INSIDE the zone
                 pv_masked = pv * mask
                 M_contrib = pv_masked * 50.0 * pattern_sm_eff * spec_mult
@@ -1027,6 +1032,17 @@ def compose_finish_stacked(base_id, all_patterns, shape, mask, seed, sm, spec_mu
             if CC_pv is not None:
                 CC_pv = _rotate_single_array(CC_pv, layer_rotation, shape)
         blend_mode = layer.get("blend_mode", "normal")
+        # Per-pattern offset (supports Fit-to-Zone bbox-center and Manual Placement)
+        _p_ox = float(layer.get("offset_x", pattern_offset_x))
+        _p_oy = float(layer.get("offset_y", pattern_offset_y))
+        if abs(_p_ox - 0.5) > 0.001 or abs(_p_oy - 0.5) > 0.001:
+            _apply_pattern_offset(pv, shape, _p_ox, _p_oy)
+            if M_pv is not pv:
+                _apply_pattern_offset(M_pv, shape, _p_ox, _p_oy)
+            if R_pv is not pv:
+                _apply_pattern_offset(R_pv, shape, _p_ox, _p_oy)
+            if CC_pv is not None:
+                _apply_pattern_offset(CC_pv, shape, _p_ox, _p_oy)
         # Master spec blend mode overrides per-layer blend when set
         _effective_spec_blend = base_spec_blend_mode if base_spec_blend_mode != "normal" else blend_mode
         M_contrib = M_pv * M_range * pattern_sm_eff * spec_mult
@@ -1797,7 +1813,9 @@ def compose_paint_mod_stacked(base_id, all_patterns, paint, shape, mask, seed, p
                               fifth_base_pattern_offset_x=0.5, fifth_base_pattern_offset_y=0.5,
                               base_strength=1.0, base_spec_strength=1.0, spec_mult=1.0,
                               base_offset_x=0.5, base_offset_y=0.5, base_rotation=0.0,
-                              base_flip_h=False, base_flip_v=False, **kwargs):
+                              base_flip_h=False, base_flip_v=False,
+                              pattern_offset_x=0.5, pattern_offset_y=0.5,
+                              **kwargs):
     """Apply base paint modifier then MULTIPLE stacked pattern paint modifiers.
     When second_base_color_source (etc.) is 'mono:xyz', overlay color comes from that special's paint_fn."""
     from engine.registry import BASE_REGISTRY, PATTERN_REGISTRY
@@ -1931,9 +1949,15 @@ def compose_paint_mod_stacked(base_id, all_patterns, paint, shape, mask, seed, p
         image_path = pattern.get("image_path")
         if image_path:
             from engine.render import _load_image_pattern, _load_color_image_pattern
+            _img_ox_stk = float(layer.get("offset_x", pattern_offset_x))
+            _img_oy_stk = float(layer.get("offset_y", pattern_offset_y))
             # Get the full color version
             rgba = _load_color_image_pattern(image_path, shape, scale=scale, rotation=rotation)
             if rgba is not None:
+                # Per-pattern offset (supports Fit-to-Zone and Manual Placement)
+                if abs(_img_ox_stk - 0.5) > 0.001 or abs(_img_oy_stk - 0.5) > 0.001:
+                    for _ch in range(rgba.shape[2]):
+                        _apply_pattern_offset(rgba[:, :, _ch], shape, _img_ox_stk, _img_oy_stk)
                 r, g, b, alpha = rgba[:, :, 0], rgba[:, :, 1], rgba[:, :, 2], rgba[:, :, 3]
                 # Scale alpha by opacity, zone pattern_intensity, and mask (5% = hint, 100% = full)
                 alpha_3d = (alpha[:, :, np.newaxis] * opacity * _pi_stk) * hard_mask[:, :, np.newaxis]
@@ -1950,6 +1974,8 @@ def compose_paint_mod_stacked(base_id, all_patterns, paint, shape, mask, seed, p
                         pv = (pv - pv_min) / (pv_max - pv_min)
                     else:
                         pv = np.ones_like(pv) * 0.5
+                    if abs(_img_ox_stk - 0.5) > 0.001 or abs(_img_oy_stk - 0.5) > 0.001:
+                        _apply_pattern_offset(pv, shape, _img_ox_stk, _img_oy_stk)
                     pv_3d = (pv[:, :, np.newaxis] * opacity * _pi_stk * spec_mult * 0.35)
                     # Mask so pattern only modifies paint INSIDE the zone
                     mask_3d = hard_mask[:, :, np.newaxis]
@@ -1975,6 +2001,11 @@ def compose_paint_mod_stacked(base_id, all_patterns, paint, shape, mask, seed, p
                     rot_angle = rotation % 360
                     if rot_angle != 0:
                         pv = _rotate_single_array(pv, rot_angle, shape)
+                    # Per-pattern offset (supports Fit-to-Zone and Manual Placement)
+                    _tex_ox_stk = float(layer.get("offset_x", pattern_offset_x))
+                    _tex_oy_stk = float(layer.get("offset_y", pattern_offset_y))
+                    if abs(_tex_ox_stk - 0.5) > 0.001 or abs(_tex_oy_stk - 0.5) > 0.001:
+                        _apply_pattern_offset(pv, shape, _tex_ox_stk, _tex_oy_stk)
                     pv_min, pv_max = float(pv.min()), float(pv.max())
                     if pv_max - pv_min > 1e-8:
                         pv = (pv - pv_min) / (pv_max - pv_min)

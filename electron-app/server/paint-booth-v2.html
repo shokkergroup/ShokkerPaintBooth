@@ -1107,7 +1107,7 @@
                             </div>
                             <div class="preview-dual-pane" id="previewPaintPane" style="display:none;">
                                 <div class="preview-dual-label">PAINT</div>
-                                <img id="livePreviewImg" alt="Live Preview (Paint)">
+                                <img id="livePreviewImg" alt="Live Preview (Paint)" onclick="openPreviewLightbox('paint')" style="cursor:zoom-in;">
                                 <div id="patternActiveBadge"
                                     style="display:none; position:absolute; bottom:8px; left:8px; background:rgba(51,102,255,0.85); color:#fff; font-size:9px; font-weight:700; padding:2px 8px; border-radius:3px; letter-spacing:0.5px; pointer-events:none; z-index:5;"
                                     title="Pattern textures modify the spec map (surface lighting). They are fully visible in iRacing's 3D view but subtle in this 2D preview.">
@@ -1127,7 +1127,7 @@
                                     <button class="spec-channel-btn" data-ch="a" onclick="setSpecChannel('a')">A
                                         Mask</button>
                                 </div>
-                                <div onclick="toggleSpecInset()" style="position:relative;">
+                                <div onclick="openPreviewLightbox('spec')" style="position:relative; cursor:zoom-in;">
                                     <div class="preview-dual-label">SPEC MAP</div>
                                     <img id="livePreviewSpecImg" alt="Live Preview (Spec Map)">
                                     <canvas id="specChannelCanvas" style="display:none; width:100%;"></canvas>
@@ -1992,6 +1992,25 @@
     </div>
 
     <!-- (Import from Photoshop: simplified to one-click spec import, no modal needed) -->
+
+    <!-- Preview Lightbox -->
+    <div id="previewLightbox" onclick="closePreviewLightbox()" style="display:none; position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,0.95); cursor:pointer; backdrop-filter:blur(4px);">
+      <div style="position:absolute; top:12px; right:16px; display:flex; gap:8px; z-index:10000;">
+        <button id="lightboxPaintBtn" onclick="event.stopPropagation(); showLightbox('paint')"
+                style="background:#1a1a1a; color:#E87A20; border:1px solid #E87A20; padding:6px 16px; border-radius:4px; cursor:pointer; font-size:12px; font-weight:bold;">PAINT</button>
+        <button id="lightboxSpecBtn" onclick="event.stopPropagation(); showLightbox('spec')"
+                style="background:#1a1a1a; color:#00C8C8; border:1px solid #333; padding:6px 16px; border-radius:4px; cursor:pointer; font-size:12px;">SPEC MAP</button>
+        <button onclick="closePreviewLightbox()"
+                style="background:#1a1a1a; color:#ff4444; border:1px solid #333; padding:6px 12px; border-radius:4px; cursor:pointer; font-size:14px; font-weight:bold;">&#x2715;</button>
+      </div>
+      <div style="position:absolute; bottom:12px; left:50%; transform:translateX(-50%); display:flex; gap:8px; z-index:10000;">
+        <button id="lightboxChAll" onclick="event.stopPropagation(); showLightbox('spec','all')" style="background:#1a1a1a; color:#ccc; border:1px solid #333; padding:4px 10px; border-radius:3px; cursor:pointer; font-size:10px; display:none;">ALL</button>
+        <button id="lightboxChR" onclick="event.stopPropagation(); showLightbox('spec','r')" style="background:#1a1a1a; color:#ff6666; border:1px solid #333; padding:4px 10px; border-radius:3px; cursor:pointer; font-size:10px; display:none;">R Metal</button>
+        <button id="lightboxChG" onclick="event.stopPropagation(); showLightbox('spec','g')" style="background:#1a1a1a; color:#66ff66; border:1px solid #333; padding:4px 10px; border-radius:3px; cursor:pointer; font-size:10px; display:none;">G Rough</button>
+        <button id="lightboxChB" onclick="event.stopPropagation(); showLightbox('spec','b')" style="background:#1a1a1a; color:#6666ff; border:1px solid #333; padding:4px 10px; border-radius:3px; cursor:pointer; font-size:10px; display:none;">B Coat</button>
+      </div>
+      <img id="lightboxImg" onclick="event.stopPropagation();" style="max-width:92vw; max-height:88vh; object-fit:contain; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); border:1px solid #333; border-radius:4px;">
+    </div>
 
 </body>
 

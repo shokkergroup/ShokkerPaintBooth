@@ -5523,13 +5523,13 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
             auto_scale = _compute_zone_auto_scale(zone_mask, shape)
             if auto_scale < 1.0 and pattern_id != "none":
                 print(f"      [{name}] Auto-scale: {auto_scale:.3f} (zone covers {(auto_scale**2)*100:.1f}% of canvas)")
-            if not zone.get("pattern_fit_zone", False): zone_scale *= auto_scale  # User slider multiplies on top of auto-scale
+            if not zone.get("pattern_fit_zone", False) and zone.get("pattern_placement") != "fit": zone_scale *= auto_scale  # User slider multiplies on top of auto-scale
 
             # ZONE TARGETING: Fit to Zone bounding box
             # Concentrates the entire pattern into the zone's bounding box.
             # Without this, small zones (car numbers, logos) only see a tiny crop
             # of a full-canvas pattern. With it, the whole pattern squeezes into the zone.
-            if zone.get("pattern_fit_zone", False) and zone_mask is not None:
+            if (zone.get("pattern_fit_zone", False) or zone.get("pattern_placement") == "fit") and zone_mask is not None:
                 rows = np.any(zone_mask > 0.1, axis=1)
                 cols = np.any(zone_mask > 0.1, axis=0)
                 if rows.any() and cols.any():
@@ -5731,7 +5731,9 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
                 stack_ids = {ps.get("id") for ps in pattern_stack[:3] if ps.get("id") and ps.get("id") != "none"}
                 all_patterns = []
                 if pattern_id and pattern_id != "none" and pattern_id not in stack_ids:
-                    all_patterns.append({"id": pattern_id, "opacity": primary_pat_opacity, "scale": zone_scale, "rotation": zone_rotation})
+                    all_patterns.append({"id": pattern_id, "opacity": primary_pat_opacity, "scale": zone_scale, "rotation": zone_rotation,
+                                         "offset_x": float(zone.get("pattern_offset_x", 0.5)),
+                                         "offset_y": float(zone.get("pattern_offset_y", 0.5))})
                 for ps in pattern_stack[:3]:  # Max 3 additional
                     pid = ps.get("id", "none")
                     if pid != "none" and pid in PATTERN_REGISTRY:
@@ -5759,6 +5761,8 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
                 _v6paint["base_rotation"] = _v6kw.get("base_rotation", 0)
                 _v6paint["base_flip_h"] = _v6kw.get("base_flip_h", False)
                 _v6paint["base_flip_v"] = _v6kw.get("base_flip_v", False)
+                _v6paint["pattern_offset_x"] = _v6kw.get("pattern_offset_x", 0.5)
+                _v6paint["pattern_offset_y"] = _v6kw.get("pattern_offset_y", 0.5)
                 if all_patterns:
                     zone_spec = compose_finish_stacked(base_id, all_patterns, shape, zone_mask, seed + i * 13, sm, spec_mult=spec_mult, base_scale=zone_base_scale, **_v6kw)
                     paint = compose_paint_mod_stacked(base_id, all_patterns, paint, shape, zone_mask, seed + i * 13, pm, bb, **_v6paint)
@@ -6698,7 +6702,9 @@ def build_helmet_spec(helmet_paint_file, output_dir, zones, iracing_id="23371", 
                 stack_ids = {ps.get("id") for ps in pattern_stack[:3] if ps.get("id") and ps.get("id") != "none"}
                 all_patterns = []
                 if pattern_id and pattern_id != "none" and pattern_id not in stack_ids:
-                    all_patterns.append({"id": pattern_id, "opacity": primary_pat_opacity, "scale": zone_scale, "rotation": zone_rotation})
+                    all_patterns.append({"id": pattern_id, "opacity": primary_pat_opacity, "scale": zone_scale, "rotation": zone_rotation,
+                                         "offset_x": float(zone.get("pattern_offset_x", 0.5)),
+                                         "offset_y": float(zone.get("pattern_offset_y", 0.5))})
                 for ps in pattern_stack[:3]:  # Max 3 additional
                     pid = ps.get("id", "none")
                     if pid != "none" and pid in PATTERN_REGISTRY:
@@ -6724,6 +6730,8 @@ def build_helmet_spec(helmet_paint_file, output_dir, zones, iracing_id="23371", 
                 _v6paint["base_rotation"] = _v6kw.get("base_rotation", 0)
                 _v6paint["base_flip_h"] = _v6kw.get("base_flip_h", False)
                 _v6paint["base_flip_v"] = _v6kw.get("base_flip_v", False)
+                _v6paint["pattern_offset_x"] = _v6kw.get("pattern_offset_x", 0.5)
+                _v6paint["pattern_offset_y"] = _v6kw.get("pattern_offset_y", 0.5)
                 if all_patterns:
                     zone_spec = compose_finish_stacked(base_id, all_patterns, shape, zone_mask, seed + i * 13, sm, spec_mult=spec_mult, base_scale=zone_base_scale, **_v6kw)
                     paint = compose_paint_mod_stacked(base_id, all_patterns, paint, shape, zone_mask, seed + i * 13, pm, bb, **_v6paint)
@@ -7098,7 +7106,9 @@ def build_suit_spec(suit_paint_file, output_dir, zones, iracing_id="23371", seed
                 stack_ids = {ps.get("id") for ps in pattern_stack[:3] if ps.get("id") and ps.get("id") != "none"}
                 all_patterns = []
                 if pattern_id and pattern_id != "none" and pattern_id not in stack_ids:
-                    all_patterns.append({"id": pattern_id, "opacity": primary_pat_opacity, "scale": zone_scale, "rotation": zone_rotation})
+                    all_patterns.append({"id": pattern_id, "opacity": primary_pat_opacity, "scale": zone_scale, "rotation": zone_rotation,
+                                         "offset_x": float(zone.get("pattern_offset_x", 0.5)),
+                                         "offset_y": float(zone.get("pattern_offset_y", 0.5))})
                 for ps in pattern_stack[:3]:  # Max 3 additional
                     pid = ps.get("id", "none")
                     if pid != "none" and pid in PATTERN_REGISTRY:
@@ -7124,6 +7134,8 @@ def build_suit_spec(suit_paint_file, output_dir, zones, iracing_id="23371", seed
                 _v6paint["base_rotation"] = _v6kw.get("base_rotation", 0)
                 _v6paint["base_flip_h"] = _v6kw.get("base_flip_h", False)
                 _v6paint["base_flip_v"] = _v6kw.get("base_flip_v", False)
+                _v6paint["pattern_offset_x"] = _v6kw.get("pattern_offset_x", 0.5)
+                _v6paint["pattern_offset_y"] = _v6kw.get("pattern_offset_y", 0.5)
                 if all_patterns:
                     zone_spec = compose_finish_stacked(base_id, all_patterns, shape, zone_mask, seed + i * 13, sm, spec_mult=spec_mult, base_scale=zone_base_scale, **_v6kw)
                     paint = compose_paint_mod_stacked(base_id, all_patterns, paint, shape, zone_mask, seed + i * 13, pm, bb, **_v6paint)

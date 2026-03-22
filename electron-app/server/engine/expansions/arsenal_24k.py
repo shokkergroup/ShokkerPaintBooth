@@ -11290,6 +11290,296 @@ def integrate_expansion(engine_module):
     if _aurora_registered:
         print(f"[24K Arsenal] Registered {_aurora_registered}/10 Aurora & Chromatic Flow finishes")
 
+    # --- Register Chromatic Flake monolithic finishes ---
+    # Factory-generated multi-color micro-flake effects. Each palette has 4-5 colors
+    # distributed via multi-scale noise creating subtle color shifting across the canvas.
+    # Uses local _multi_scale_noise (already defined in this module) — NOT engine.chameleon.
+
+    def _chromatic_flake_paint(paint, shape, mask, seed, pm, bb,
+                               colors, flake_scale=3, cluster_scale=30, flow_scale=200):
+        """Chromatic Flake paint — replace color with multi-color micro-flake pattern."""
+        if pm < 0.01:
+            return paint
+        h, w = shape[:2] if len(shape) > 2 else shape
+        rng = np.random.RandomState(seed)
+
+        # Fine flakes — per-pixel random assignment weighted by cluster noise
+        fine_noise = rng.rand(h, w).astype(np.float32)
+
+        # Medium clusters — which color dominates in each region
+        cluster = _multi_scale_noise((h, w), [cluster_scale, cluster_scale * 2],
+                                     [0.7, 0.3], seed + 100)
+
+        # Large flow — overall color gradient across the car
+        flow = _multi_scale_noise((h, w), [flow_scale, int(flow_scale * 1.5)],
+                                  [0.8, 0.2], seed + 200)
+
+        # Combine: flow for primary tendency, cluster for variation, fine for flakes
+        combined = flow * 0.5 + cluster * 0.3 + fine_noise * 0.2
+
+        # Quantize into color bins
+        n_colors = len(colors)
+        color_idx = np.clip((combined * n_colors).astype(np.int32), 0, n_colors - 1)
+
+        # Build recolored paint (colors are 0-255 int, paint is 0-1 float)
+        result = paint.copy()
+        for i, (r, g, b) in enumerate(colors):
+            cmask = (color_idx == i)
+            result[cmask, 0] = r / 255.0
+            result[cmask, 1] = g / 255.0
+            result[cmask, 2] = b / 255.0
+
+        # Blend with original paint using pm, respect zone mask
+        out = paint.copy()
+        m3 = mask[:, :, np.newaxis] if mask.ndim == 2 else mask
+        blended = paint[:, :, :3] * (1.0 - pm) + result[:, :, :3] * pm
+        out[:, :, :3] = blended * m3 + paint[:, :, :3] * (1.0 - m3)
+        # Apply brightness boost
+        out = np.clip(out + bb * 0.4 * m3, 0, 1)
+        return out
+
+    def _chromatic_flake_spec(shape, mask, seed, sm,
+                              colors, spec_profiles,
+                              flake_scale=3, cluster_scale=30, flow_scale=200):
+        """Chromatic Flake spec — per-color M/R/CC values aligned with paint noise."""
+        h, w = shape[:2] if len(shape) > 2 else shape
+        rng = np.random.RandomState(seed)
+
+        # Reproduce the same noise fields as paint to keep colors aligned
+        fine_noise = rng.rand(h, w).astype(np.float32)
+        cluster = _multi_scale_noise((h, w), [cluster_scale, cluster_scale * 2],
+                                     [0.7, 0.3], seed + 100)
+        flow = _multi_scale_noise((h, w), [flow_scale, int(flow_scale * 1.5)],
+                                  [0.8, 0.2], seed + 200)
+        combined = flow * 0.5 + cluster * 0.3 + fine_noise * 0.2
+        n_colors = len(colors)
+        color_idx = np.clip((combined * n_colors).astype(np.int32), 0, n_colors - 1)
+
+        # Build spec arrays
+        spec = np.zeros((h, w, 4), dtype=np.uint8)
+        # Add per-pixel noise for sparkle variation
+        sparkle = _multi_scale_noise((h, w), [2, 4], [0.6, 0.4], seed + 300)
+
+        for i, (base_M, base_R, base_CC) in enumerate(spec_profiles):
+            cmask = (color_idx == i)
+            spec[cmask, 0] = np.clip(base_M + sparkle[cmask] * 15 * sm, 0, 255).astype(np.uint8)
+            spec[cmask, 1] = np.clip(base_R + sparkle[cmask] * 10 * sm, 0, 255).astype(np.uint8)
+            spec[cmask, 2] = np.clip(base_CC, 16, 255).astype(np.uint8)
+
+        # Alpha channel from mask
+        spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
+        return spec
+
+    # 30 Chromatic Flake palette presets
+    # Each: (id, display_name, desc, swatch, colors_rgb_list, spec_profiles_list)
+    #   colors: list of (R, G, B) 0-255
+    #   spec_profiles: list of (M, R, CC) per color
+    _CF_PRESETS = [
+        ("cf_midnight_galaxy", "Midnight Galaxy",
+         "Deep navy, electric purple, teal, silver, dark magenta micro-flake shimmer",
+         "#1a1a44",
+         [(20, 20, 60), (100, 30, 180), (30, 140, 140), (180, 180, 195), (120, 20, 90)],
+         [(160, 15, 18), (140, 20, 20), (150, 12, 18), (200, 8, 16), (130, 22, 20)]),
+
+        ("cf_volcanic_ember", "Volcanic Ember",
+         "Deep red, burnt orange, gold, charcoal, crimson multi-flake fire shimmer",
+         "#8b2500",
+         [(140, 20, 10), (180, 90, 20), (210, 180, 50), (50, 45, 40), (170, 20, 30)],
+         [(120, 30, 22), (130, 25, 20), (170, 15, 18), (60, 50, 30), (110, 35, 22)]),
+
+        ("cf_arctic_aurora", "Arctic Aurora",
+         "Ice blue, mint green, lavender, white, pale cyan crystalline flake",
+         "#c8e8ff",
+         [(180, 210, 240), (160, 230, 190), (190, 170, 220), (240, 240, 245), (180, 230, 235)],
+         [(180, 10, 16), (160, 12, 16), (170, 14, 18), (210, 6, 16), (175, 10, 16)]),
+
+        ("cf_black_opal", "Black Opal",
+         "Black, deep green, deep blue, purple flash, copper — precious stone flake",
+         "#0a0a12",
+         [(15, 15, 18), (10, 60, 30), (15, 20, 70), (80, 20, 100), (160, 100, 50)],
+         [(200, 8, 16), (180, 12, 18), (190, 10, 16), (160, 18, 20), (170, 15, 18)]),
+
+        ("cf_dragon_scale", "Dragon Scale",
+         "Emerald, gold, dark red, bronze, olive — ancient reptilian flake",
+         "#2a6030",
+         [(20, 120, 40), (200, 180, 50), (120, 20, 15), (160, 120, 60), (90, 100, 40)],
+         [(150, 18, 20), (180, 12, 18), (110, 30, 24), (160, 15, 18), (120, 25, 22)]),
+
+        ("cf_toxic_nebula", "Toxic Nebula",
+         "Neon green, black, electric purple, acid yellow, dark teal biohazard flake",
+         "#22cc44",
+         [(50, 240, 60), (15, 15, 15), (130, 30, 200), (220, 230, 30), (20, 80, 70)],
+         [(140, 20, 20), (40, 50, 30), (130, 22, 20), (160, 15, 18), (100, 30, 24)]),
+
+        ("cf_rose_gold_dust", "Rose Gold Dust",
+         "Rose pink, gold, copper, cream, blush — luxury micro-flake dust",
+         "#e8a0a0",
+         [(210, 150, 150), (210, 185, 80), (190, 120, 70), (240, 230, 210), (220, 175, 165)],
+         [(180, 10, 16), (190, 8, 16), (170, 12, 18), (160, 14, 16), (175, 10, 16)]),
+
+        ("cf_deep_space", "Deep Space",
+         "Black, deep blue, purple, silver sparkle, dark teal — cosmic void flake",
+         "#0a0a1a",
+         [(10, 10, 15), (15, 20, 60), (50, 15, 70), (170, 175, 185), (15, 50, 55)],
+         [(180, 10, 16), (170, 12, 18), (150, 16, 20), (210, 6, 16), (140, 18, 20)]),
+
+        ("cf_phoenix_feather", "Phoenix Feather",
+         "Orange, red, gold, amber, dark scarlet — burning plumage flake",
+         "#ee6622",
+         [(230, 120, 20), (200, 30, 20), (220, 190, 50), (210, 160, 40), (130, 15, 15)],
+         [(150, 18, 20), (120, 28, 24), (180, 10, 16), (160, 14, 18), (100, 35, 26)]),
+
+        ("cf_frozen_mercury", "Frozen Mercury",
+         "Silver, ice blue, platinum, pearl white, steel grey — liquid metal flake",
+         "#c8ccd0",
+         [(190, 195, 200), (180, 210, 230), (210, 210, 215), (235, 235, 238), (140, 145, 155)],
+         [(220, 5, 16), (200, 8, 16), (230, 4, 16), (210, 6, 16), (190, 10, 16)]),
+
+        ("cf_jungle_venom", "Jungle Venom",
+         "Dark green, lime, black, gold, toxic yellow — serpent scale flake",
+         "#1a4020",
+         [(20, 60, 15), (120, 210, 40), (12, 12, 12), (190, 170, 40), (200, 210, 30)],
+         [(130, 22, 22), (150, 15, 18), (50, 45, 28), (170, 12, 18), (155, 14, 18)]),
+
+        ("cf_cobalt_storm", "Cobalt Storm",
+         "Deep blue, electric blue, slate, silver, navy — thunderstorm flake",
+         "#1a2266",
+         [(20, 25, 90), (40, 100, 220), (100, 105, 115), (180, 185, 195), (15, 18, 55)],
+         [(170, 12, 18), (160, 15, 18), (140, 20, 22), (200, 8, 16), (150, 16, 20)]),
+
+        ("cf_sunset_strip", "Sunset Strip",
+         "Coral, magenta, gold, peach, deep orange — Hollywood boulevard flake",
+         "#ee6655",
+         [(230, 110, 90), (200, 50, 120), (220, 190, 60), (240, 190, 160), (210, 100, 30)],
+         [(160, 14, 18), (140, 20, 20), (180, 10, 16), (170, 12, 16), (150, 16, 18)]),
+
+        ("cf_absinthe_dreams", "Absinthe Dreams",
+         "Chartreuse, dark green, gold, emerald, black — green fairy flake",
+         "#88aa20",
+         [(160, 200, 20), (20, 60, 20), (200, 180, 50), (30, 140, 60), (15, 15, 10)],
+         [(150, 15, 18), (110, 28, 24), (175, 10, 16), (140, 18, 20), (50, 45, 28)]),
+
+        ("cf_titanium_rain", "Titanium Rain",
+         "Gunmetal, silver, dark grey, blue-grey, platinum — industrial metal flake",
+         "#707880",
+         [(90, 95, 100), (180, 185, 190), (60, 62, 65), (100, 110, 125), (210, 212, 218)],
+         [(200, 8, 16), (215, 6, 16), (160, 18, 20), (180, 12, 18), (225, 4, 16)]),
+
+        ("cf_blood_moon", "Blood Moon",
+         "Dark crimson, orange, black, deep red, rust — lunar eclipse flake",
+         "#550808",
+         [(100, 10, 10), (190, 100, 20), (12, 10, 10), (130, 15, 12), (150, 70, 30)],
+         [(110, 30, 24), (150, 18, 20), (40, 50, 30), (100, 35, 26), (130, 22, 22)]),
+
+        ("cf_peacock_strut", "Peacock Strut",
+         "Teal, royal blue, emerald, gold, deep purple — iridescent feather flake",
+         "#1a8888",
+         [(30, 140, 140), (40, 50, 170), (30, 150, 60), (200, 180, 50), (60, 20, 110)],
+         [(170, 12, 18), (160, 14, 18), (150, 16, 20), (185, 10, 16), (140, 20, 20)]),
+
+        ("cf_champagne_frost", "Champagne Frost",
+         "Pale gold, cream, silver, champagne, pearl — elegant celebration flake",
+         "#e8dcc0",
+         [(220, 200, 150), (240, 235, 220), (195, 200, 205), (215, 195, 145), (230, 228, 225)],
+         [(195, 8, 16), (180, 10, 16), (210, 6, 16), (190, 8, 16), (200, 7, 16)]),
+
+        ("cf_neon_viper", "Neon Viper",
+         "Hot pink, electric blue, neon green, black, purple — aggressive neon flake",
+         "#ee22aa",
+         [(240, 40, 160), (30, 100, 230), (50, 240, 60), (15, 12, 18), (140, 30, 190)],
+         [(150, 16, 18), (160, 14, 18), (145, 18, 20), (40, 48, 28), (135, 20, 20)]),
+
+        ("cf_obsidian_fire", "Obsidian Fire",
+         "Black, dark red, orange glow, charcoal, ember — volcanic glass flake",
+         "#1a0808",
+         [(12, 10, 10), (100, 15, 10), (210, 120, 20), (45, 42, 40), (180, 60, 15)],
+         [(180, 10, 16), (110, 30, 24), (160, 15, 18), (80, 35, 26), (140, 20, 20)]),
+
+        ("cf_mermaid_scale", "Mermaid Scale",
+         "Aqua, purple, teal, silver, seafoam — underwater shimmer flake",
+         "#44ccbb",
+         [(80, 210, 210), (130, 60, 170), (40, 150, 140), (190, 195, 200), (140, 220, 200)],
+         [(170, 12, 18), (145, 18, 20), (155, 15, 18), (205, 7, 16), (165, 12, 18)]),
+
+        ("cf_carbon_prizm", "Carbon Prizm",
+         "Charcoal base with subtle rainbow color-shift micro-flake",
+         "#333340",
+         [(55, 52, 58), (60, 50, 50), (50, 55, 60), (58, 50, 55), (52, 58, 52)],
+         [(160, 18, 20), (155, 20, 22), (165, 16, 20), (150, 22, 22), (158, 19, 20)]),
+
+        ("cf_molten_copper", "Molten Copper",
+         "Copper, bronze, gold, burnt orange, dark brown — liquid forge flake",
+         "#cc7744",
+         [(190, 110, 50), (160, 120, 60), (210, 180, 50), (180, 90, 20), (70, 40, 20)],
+         [(175, 12, 18), (165, 14, 18), (185, 10, 16), (155, 18, 20), (100, 30, 24)]),
+
+        ("cf_electric_storm", "Electric Storm",
+         "Purple, electric blue, white flash, dark grey, violet — lightning flake",
+         "#6644cc",
+         [(100, 40, 180), (40, 100, 230), (230, 235, 240), (55, 55, 60), (130, 60, 170)],
+         [(150, 16, 18), (165, 12, 18), (220, 5, 16), (100, 28, 24), (140, 18, 20)]),
+
+        ("cf_desert_mirage", "Desert Mirage",
+         "Sand gold, terracotta, dusty rose, sage, camel — arid shimmer flake",
+         "#ccaa77",
+         [(200, 175, 110), (180, 100, 70), (190, 150, 140), (140, 160, 120), (195, 170, 130)],
+         [(150, 18, 20), (130, 24, 24), (155, 16, 18), (135, 22, 22), (148, 18, 20)]),
+
+        ("cf_venom_strike", "Venom Strike",
+         "Acid green, black, neon yellow, dark emerald, lime — toxic attack flake",
+         "#44ee22",
+         [(80, 220, 30), (10, 12, 8), (210, 230, 20), (15, 70, 25), (140, 220, 50)],
+         [(145, 18, 20), (40, 48, 28), (160, 14, 18), (110, 28, 24), (150, 16, 18)]),
+
+        ("cf_sapphire_ice", "Sapphire Ice",
+         "Deep sapphire, ice blue, white, crystal blue, navy — frozen gem flake",
+         "#2244aa",
+         [(25, 40, 140), (180, 215, 240), (235, 238, 242), (80, 150, 210), (15, 20, 65)],
+         [(180, 10, 16), (195, 8, 16), (215, 5, 16), (175, 12, 18), (160, 15, 18)]),
+
+        ("cf_inferno_chrome", "Inferno Chrome",
+         "Chrome silver, fire red, orange, gold, dark steel — blazing metal flake",
+         "#cc4422",
+         [(195, 200, 205), (200, 35, 15), (225, 130, 20), (215, 185, 50), (80, 82, 88)],
+         [(225, 5, 16), (120, 28, 24), (155, 16, 18), (180, 10, 16), (180, 12, 18)]),
+
+        ("cf_phantom_violet", "Phantom Violet",
+         "Deep violet, silver, black, lavender, dark purple — spectral flake",
+         "#3a1870",
+         [(60, 20, 100), (185, 188, 195), (12, 10, 15), (170, 150, 200), (45, 15, 75)],
+         [(150, 16, 18), (210, 6, 16), (50, 45, 28), (165, 12, 18), (130, 22, 22)]),
+
+        ("cf_solar_flare", "Solar Flare",
+         "Bright gold, white-hot, amber, orange, deep yellow — stellar eruption flake",
+         "#eeaa22",
+         [(230, 200, 40), (245, 240, 220), (210, 160, 40), (230, 140, 25), (220, 200, 30)],
+         [(190, 8, 16), (225, 4, 16), (175, 12, 18), (165, 14, 18), (185, 10, 16)]),
+    ]
+
+    # Factory: generate paint_fn and spec_fn closures for each preset
+    _cf_registered = 0
+    for _cf_id, _cf_name, _cf_desc, _cf_swatch, _cf_colors, _cf_specs in _CF_PRESETS:
+        # Capture loop variables in default args
+        def _make_cf_paint(colors=_cf_colors):
+            def _paint(paint, shape, mask, seed, pm, bb):
+                return _chromatic_flake_paint(paint, shape, mask, seed, pm, bb, colors)
+            _paint.__name__ = f"paint_{_cf_id}"
+            return _paint
+
+        def _make_cf_spec(colors=_cf_colors, spec_profiles=_cf_specs):
+            def _spec(shape, mask, seed, sm):
+                return _chromatic_flake_spec(shape, mask, seed, sm, colors, spec_profiles)
+            _spec.__name__ = f"spec_{_cf_id}"
+            return _spec
+
+        _pf = _make_cf_paint()
+        _sf = _make_cf_spec()
+        engine_module.MONOLITHIC_REGISTRY[_cf_id] = (_sf, _pf)
+        _cf_registered += 1
+
+    if _cf_registered:
+        print(f"[24K Arsenal] Registered {_cf_registered}/30 Chromatic Flake finishes")
+
     # --- Sort registries alphabetically after merge ---
     for reg_name in ('BASE_REGISTRY', 'PATTERN_REGISTRY', 'MONOLITHIC_REGISTRY'):
         reg = getattr(engine_module, reg_name, None)

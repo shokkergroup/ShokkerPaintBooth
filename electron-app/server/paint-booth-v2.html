@@ -1062,7 +1062,18 @@
                 <div class="split-view-container" id="splitViewContainer">
                     <div class="split-pane split-source" id="splitSource">
                         <div class="split-pane-label" id="sourcePaneLabel" style="display:none;">SOURCE</div>
-                        <div class="canvas-inner" id="canvasInner" style="display: none;">
+                        <div class="canvas-inner" id="canvasInner" style="display: none; position: relative;">
+                            <div id="placement-tools-bar" style="display:none; position:absolute; top:6px; left:50%; transform:translateX(-50%);
+                                 z-index:100; background:#111; border:1px solid #00C8C8; border-radius:6px; padding:4px 10px;
+                                 gap:8px; align-items:center; white-space:nowrap; box-shadow:0 2px 10px rgba(0,200,200,0.3);">
+                                <span style="color:#00C8C8; font-size:11px; font-weight:bold;">MANUAL PLACEMENT</span>
+                                <button onclick="manualPlacementFlipH()" title="Flip Horizontal" style="background:#1a1a1a; color:#ccc; border:1px solid #333; padding:3px 8px; cursor:pointer; font-size:12px; border-radius:3px;">&#x2194; Flip H</button>
+                                <button onclick="manualPlacementFlipV()" title="Flip Vertical" style="background:#1a1a1a; color:#ccc; border:1px solid #333; padding:3px 8px; cursor:pointer; font-size:12px; border-radius:3px;">&#x2195; Flip V</button>
+                                <button onclick="manualPlacementRotateCW()" title="Rotate 90° Clockwise" style="background:#1a1a1a; color:#ccc; border:1px solid #333; padding:3px 8px; cursor:pointer; font-size:12px; border-radius:3px;">&#x21BB; +90°</button>
+                                <button onclick="manualPlacementRotateCCW()" title="Rotate 90° Counter-clockwise" style="background:#1a1a1a; color:#ccc; border:1px solid #333; padding:3px 8px; cursor:pointer; font-size:12px; border-radius:3px;">&#x21BA; -90°</button>
+                                <button onclick="manualPlacementReset()" title="Reset to center" style="background:#1a1a1a; color:#ccc; border:1px solid #333; padding:3px 8px; cursor:pointer; font-size:12px; border-radius:3px;">&#x27F2; Reset</button>
+                                <button onclick="deactivateManualPlacement(); renderZones();" title="Exit Manual Placement" style="background:#8B0000; color:#fff; border:1px solid #333; padding:3px 8px; cursor:pointer; font-size:12px; border-radius:3px;">&#x2715; Done</button>
+                            </div>
                             <canvas id="paintCanvas" style="display: block;"></canvas>
                             <canvas id="regionCanvas"
                                 style="position: absolute; top: 0; left: 0; display: block; pointer-events: none; opacity: 0.85;"></canvas>

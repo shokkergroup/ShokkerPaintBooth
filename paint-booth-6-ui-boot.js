@@ -201,13 +201,11 @@
                     style="background:#1a1a1a; color:#ccc; border:1px solid #333; padding:2px 4px; font-size:10px; width:100%;"
                     title="Apply a spec finish to just this decal's pixels">
               <option value="none" ${(!d.specFinish || d.specFinish === 'none') ? 'selected' : ''}>No Spec Finish</option>
-              <option value="gloss" ${d.specFinish === 'gloss' ? 'selected' : ''}>Gloss</option>
-              <option value="matte" ${d.specFinish === 'matte' ? 'selected' : ''}>Matte</option>
-              <option value="satin" ${d.specFinish === 'satin' ? 'selected' : ''}>Satin</option>
-              <option value="metallic" ${d.specFinish === 'metallic' ? 'selected' : ''}>Metallic</option>
-              <option value="pearl" ${d.specFinish === 'pearl' ? 'selected' : ''}>Pearl</option>
-              <option value="chrome" ${d.specFinish === 'chrome' ? 'selected' : ''}>Chrome</option>
-              <option value="satin_metal" ${d.specFinish === 'satin_metal' ? 'selected' : ''}>Satin Metal</option>
+              ${(() => {
+                const foundationIds = (window.BASE_GROUPS && window.BASE_GROUPS['Foundation']) || [];
+                const foundationBases = foundationIds.map(id => (window.BASES || []).find(b => b.id === id)).filter(Boolean);
+                return foundationBases.map(b => `<option value="${b.id}" ${d.specFinish === b.id ? 'selected' : ''}>${b.name}</option>`).join('');
+              })()}
             </select>
         </div>`;
             });

@@ -6115,8 +6115,10 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
         t_decal_spec = time.time()
         try:
             from engine.spec_paint import (spec_gloss, spec_matte, spec_satin,
-                spec_metallic, spec_pearl, spec_chrome, spec_satin_metal)
+                spec_metallic, spec_pearl, spec_chrome, spec_satin_metal,
+                spec_carbon_fiber, spec_brushed_titanium, spec_anodized, spec_frozen)
             DECAL_SPEC_MAP = {
+                # Original 7 hardcoded finishes
                 "gloss": spec_gloss,
                 "matte": spec_matte,
                 "satin": spec_satin,
@@ -6124,6 +6126,39 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
                 "pearl": spec_pearl,
                 "chrome": spec_chrome,
                 "satin_metal": spec_satin_metal,
+                # Foundation base IDs — classic finishes
+                "clear_matte": spec_matte,
+                "eggshell": spec_matte,
+                "flat_black": spec_matte,
+                "primer": spec_matte,
+                "semi_gloss": spec_gloss,
+                "silk": spec_satin,
+                "wet_look": spec_gloss,
+                "scuffed_satin": spec_satin,
+                "chalky_base": spec_matte,
+                "living_matte": spec_matte,
+                "ceramic": spec_satin,
+                "piano_black": spec_gloss,
+                # Foundation f_ prefixed bases
+                "f_pure_white": spec_gloss,
+                "f_pure_black": spec_matte,
+                "f_neutral_grey": spec_satin,
+                "f_soft_gloss": spec_gloss,
+                "f_soft_matte": spec_matte,
+                "f_clear_satin": spec_satin,
+                "f_warm_white": spec_gloss,
+                "f_chrome": spec_chrome,
+                "f_satin_chrome": spec_satin_metal,
+                "f_metallic": spec_metallic,
+                "f_pearl": spec_pearl,
+                "f_carbon_fiber": spec_carbon_fiber,
+                "f_brushed": spec_brushed_titanium,
+                "f_frozen": spec_frozen,
+                "f_powder_coat": spec_matte,
+                "f_anodized": spec_anodized,
+                "f_vinyl_wrap": spec_satin,
+                "f_gel_coat": spec_gloss,
+                "f_baked_enamel": spec_gloss,
             }
             # Load the composited paint (paint + decals baked in) — alpha = decal mask
             decal_comp = Image.open(decal_paint_path).convert('RGBA')

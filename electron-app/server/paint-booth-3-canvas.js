@@ -857,18 +857,91 @@ if __name__ == '__main__':
             if (typeof selectZone === 'function') selectZone(zoneIndex);
 
             // Set placementLayer so canvas drag handlers know to reposition the pattern
-            placementLayer = 'pattern';
+            // Only default to 'pattern' if no explicit layer was set before calling
+            if (typeof placementLayer === 'undefined' || placementLayer === 'none') {
+                placementLayer = 'pattern';
+            }
 
             // Show visual feedback
-            if (typeof showToast === 'function') showToast('Manual Placement active — drag on the preview to position the pattern. Scroll to resize. Shift+drag to rotate.');
+            if (typeof showToast === 'function') showToast('Manual Placement active — drag on the preview to position. Scroll to resize. Shift+drag to rotate.');
 
             // Update canvas cursor
             const canvas = document.getElementById('paintCanvas');
             if (canvas) canvas.style.cursor = 'move';
 
+            // Show the floating tools bar
+            const toolsBar = document.getElementById('placement-tools-bar');
+            if (toolsBar) toolsBar.style.display = 'flex';
+
             // Update placement banner if it exists
             if (typeof updatePlacementBanner === 'function') updatePlacementBanner();
         }
+
+        // Deactivate Manual Placement mode — hides tools bar and resets cursor
+        function deactivateManualPlacement() {
+            placementLayer = 'none';
+            const toolsBar = document.getElementById('placement-tools-bar');
+            if (toolsBar) toolsBar.style.display = 'none';
+            const paintCanvas = document.getElementById('paintCanvas');
+            if (paintCanvas) paintCanvas.style.cursor = '';
+            if (typeof updatePlacementBanner === 'function') updatePlacementBanner();
+        }
+        window.deactivateManualPlacement = deactivateManualPlacement;
+
+        // ===== FLOATING TOOLS BAR HANDLERS =====
+        window.manualPlacementFlipH = function() {
+            const z = zones[selectedZoneIndex];
+            if (!z) return;
+            if (placementLayer === 'pattern') z.patternFlipH = !z.patternFlipH;
+            else if (placementLayer === 'base') z.baseFlipH = !z.baseFlipH;
+            else if (placementLayer === 'second_base') z.secondBasePatternFlipH = !z.secondBasePatternFlipH;
+            triggerPreviewRender();
+            renderZones();
+        };
+
+        window.manualPlacementFlipV = function() {
+            const z = zones[selectedZoneIndex];
+            if (!z) return;
+            if (placementLayer === 'pattern') z.patternFlipV = !z.patternFlipV;
+            else if (placementLayer === 'base') z.baseFlipV = !z.baseFlipV;
+            else if (placementLayer === 'second_base') z.secondBasePatternFlipV = !z.secondBasePatternFlipV;
+            triggerPreviewRender();
+            renderZones();
+        };
+
+        window.manualPlacementRotateCW = function() {
+            const z = zones[selectedZoneIndex];
+            if (!z) return;
+            if (placementLayer === 'pattern') z.rotation = ((z.rotation || 0) + 90) % 360;
+            else if (placementLayer === 'base') z.baseRotation = ((z.baseRotation || 0) + 90) % 360;
+            else if (placementLayer === 'second_base') z.secondBasePatternRotation = (((z.secondBasePatternRotation || 0) + 90) % 360);
+            triggerPreviewRender();
+            renderZones();
+        };
+
+        window.manualPlacementRotateCCW = function() {
+            const z = zones[selectedZoneIndex];
+            if (!z) return;
+            if (placementLayer === 'pattern') z.rotation = (((z.rotation || 0) - 90) + 360) % 360;
+            else if (placementLayer === 'base') z.baseRotation = (((z.baseRotation || 0) - 90) + 360) % 360;
+            else if (placementLayer === 'second_base') z.secondBasePatternRotation = (((z.secondBasePatternRotation || 0) - 90) + 360) % 360;
+            triggerPreviewRender();
+            renderZones();
+        };
+
+        window.manualPlacementReset = function() {
+            const z = zones[selectedZoneIndex];
+            if (!z) return;
+            if (placementLayer === 'pattern') {
+                z.patternOffsetX = 0.5; z.patternOffsetY = 0.5; z.scale = 1.0; z.rotation = 0; z.patternFlipH = false; z.patternFlipV = false;
+            } else if (placementLayer === 'base') {
+                z.baseOffsetX = 0.5; z.baseOffsetY = 0.5; z.baseScale = 1.0; z.baseRotation = 0; z.baseFlipH = false; z.baseFlipV = false;
+            } else if (placementLayer === 'second_base') {
+                z.secondBasePatternOffsetX = 0.5; z.secondBasePatternOffsetY = 0.5; z.secondBasePatternScale = 1.0; z.secondBasePatternRotation = 0;
+            }
+            triggerPreviewRender();
+            renderZones();
+        };
 
         // Shared: set up hover + click + draw handlers on the canvas
         function setupCanvasHandlers(canvas) {

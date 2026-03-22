@@ -917,6 +917,20 @@ function renderZoneDetail(index) {
                         <label style="display:inline-flex;align-items:center;gap:2px;cursor:pointer;font-size:9px;"><input type="checkbox" ${chCC ? 'checked' : ''} onchange="toggleSpecPatternChannel(${i}, ${si}, 'CC', this.checked)"> CC</label>
                     </div>
                 </div>
+                <div style="margin-top:4px; display:flex; gap:4px; align-items:center; flex-wrap:wrap;">
+                    <label style="color:#888; font-size:10px;">Pos X</label>
+                    <input type="range" min="0" max="100" value="${Math.round((sp.offsetX||0.5)*100)}"
+                           onchange="zones[${i}].specPatternStack[${si}].offsetX=this.value/100; triggerPreviewRender();" style="width:60px;">
+                    <label style="color:#888; font-size:10px;">Pos Y</label>
+                    <input type="range" min="0" max="100" value="${Math.round((sp.offsetY||0.5)*100)}"
+                           onchange="zones[${i}].specPatternStack[${si}].offsetY=this.value/100; triggerPreviewRender();" style="width:60px;">
+                    <label style="color:#888; font-size:10px;">Scale</label>
+                    <input type="range" min="10" max="400" value="${Math.round((sp.scale||1)*100)}"
+                           onchange="zones[${i}].specPatternStack[${si}].scale=this.value/100; triggerPreviewRender();" style="width:60px;">
+                    <label style="color:#888; font-size:10px;">Rot</label>
+                    <input type="range" min="0" max="359" value="${sp.rotation||0}"
+                           onchange="zones[${i}].specPatternStack[${si}].rotation=parseInt(this.value); triggerPreviewRender();" style="width:60px;">
+                </div>
             </div>`;
         });
 
@@ -1004,6 +1018,13 @@ function renderZoneDetail(index) {
                     </select>
                     <div id="specBlendHelp${i}" class="whats-this-panel" style="display:none; width:100%; margin-top:4px;">Controls how spec pattern values combine with the base spec — Normal replaces, Multiply darkens, Screen brightens, Overlay enhances contrast.</div>
                 </div>
+            </div>
+            <div class="base-placement-mode" style="margin:6px 0; display:flex; gap:6px; align-items:center;">
+                <label style="color:#aaa; font-size:11px;">Base Placement:</label>
+                <select onchange="zones[${i}].basePlacement=this.value; if(this.value==='manual'){placementLayer='base'; activateManualPlacement(${i});} renderZones();" style="background:#1a1a1a; color:#ccc; border:1px solid #333; padding:2px 6px; font-size:11px;">
+                    <option value="normal" ${(zone.basePlacement||'normal')!=='manual'?'selected':''}>Full Canvas</option>
+                    <option value="manual" ${zone.basePlacement==='manual'?'selected':''}>Manual Placement</option>
+                </select>
             </div>
             <div class="base-position-controls" style="display:flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; width: 100%; margin-top: 6px;">
                 <span class="stack-label-mini" style="white-space:nowrap;">Base position</span>
@@ -2573,6 +2594,7 @@ function addZone(skipUndo) {
         baseRotation: 0,
         baseFlipH: false,
         baseFlipV: false,
+        basePlacement: 'normal',
         baseColorMode: 'source',
         baseColor: '#ffffff',
         baseColorSource: null,
@@ -4310,14 +4332,27 @@ function alignSecondBaseOverlayWithSelectedPattern(index) {
         px = z.patternOffsetX ?? 0.5;
         py = z.patternOffsetY ?? 0.5;
     } else {
+        // Check patternStack first (Pattern 2, 3, 4 — the stacked additional patterns)
         const stack = z.patternStack || [];
-        const pat = stack.find(p => p.id === targetPatId) || stack[0];
+        let foundInStack = false;
+        const pat = stack.find(p => p.id === targetPatId);
         if (pat) {
             sx = pat.scale ?? 1.0;
             rot = pat.rotation ?? 0;
             px = pat.patternOffsetX ?? 0.5;
             py = pat.patternOffsetY ?? 0.5;
-        } else {
+            foundInStack = true;
+        }
+        // Check if it matches the primary pattern (Pattern 1) — stored directly on z, not in patternStack
+        if (!foundInStack && z.pattern && z.pattern === z.secondBasePattern) {
+            sx = z.scale ?? 1.0;
+            rot = z.rotation ?? 0;
+            px = z.patternOffsetX ?? 0.5;
+            py = z.patternOffsetY ?? 0.5;
+            foundInStack = true;
+        }
+        if (!foundInStack) {
+            // Fall back to primary pattern position as best guess
             sx = z.scale ?? 1.0;
             rot = z.rotation ?? 0;
             px = z.patternOffsetX ?? 0.5;
@@ -4602,14 +4637,27 @@ function alignFourthBaseOverlayWithSelectedPattern(index) {
         px = z.patternOffsetX ?? 0.5;
         py = z.patternOffsetY ?? 0.5;
     } else {
+        // Check patternStack first (Pattern 2, 3, 4 — the stacked additional patterns)
         const stack = z.patternStack || [];
-        const pat = stack.find(p => p.id === targetPatId) || stack[0];
+        let foundInStack = false;
+        const pat = stack.find(p => p.id === targetPatId);
         if (pat) {
             sx = pat.scale ?? 1.0;
             rot = pat.rotation ?? 0;
             px = pat.patternOffsetX ?? 0.5;
             py = pat.patternOffsetY ?? 0.5;
-        } else {
+            foundInStack = true;
+        }
+        // Check if it matches the primary pattern (Pattern 1) — stored directly on z, not in patternStack
+        if (!foundInStack && z.pattern && z.pattern === z.fourthBasePattern) {
+            sx = z.scale ?? 1.0;
+            rot = z.rotation ?? 0;
+            px = z.patternOffsetX ?? 0.5;
+            py = z.patternOffsetY ?? 0.5;
+            foundInStack = true;
+        }
+        if (!foundInStack) {
+            // Fall back to primary pattern position as best guess
             sx = z.scale ?? 1.0;
             rot = z.rotation ?? 0;
             px = z.patternOffsetX ?? 0.5;
@@ -4804,14 +4852,27 @@ function alignFifthBaseOverlayWithSelectedPattern(index) {
         px = z.patternOffsetX ?? 0.5;
         py = z.patternOffsetY ?? 0.5;
     } else {
+        // Check patternStack first (Pattern 2, 3, 4 — the stacked additional patterns)
         const stack = z.patternStack || [];
-        const pat = stack.find(p => p.id === targetPatId) || stack[0];
+        let foundInStack = false;
+        const pat = stack.find(p => p.id === targetPatId);
         if (pat) {
             sx = pat.scale ?? 1.0;
             rot = pat.rotation ?? 0;
             px = pat.patternOffsetX ?? 0.5;
             py = pat.patternOffsetY ?? 0.5;
-        } else {
+            foundInStack = true;
+        }
+        // Check if it matches the primary pattern (Pattern 1) — stored directly on z, not in patternStack
+        if (!foundInStack && z.pattern && z.pattern === z.fifthBasePattern) {
+            sx = z.scale ?? 1.0;
+            rot = z.rotation ?? 0;
+            px = z.patternOffsetX ?? 0.5;
+            py = z.patternOffsetY ?? 0.5;
+            foundInStack = true;
+        }
+        if (!foundInStack) {
+            // Fall back to primary pattern position as best guess
             sx = z.scale ?? 1.0;
             rot = z.rotation ?? 0;
             px = z.patternOffsetX ?? 0.5;
@@ -4860,14 +4921,27 @@ function alignThirdBaseOverlayWithSelectedPattern(index) {
         px = z.patternOffsetX ?? 0.5;
         py = z.patternOffsetY ?? 0.5;
     } else {
+        // Check patternStack first (Pattern 2, 3, 4 — the stacked additional patterns)
         const stack = z.patternStack || [];
-        const pat = stack.find(p => p.id === targetPatId) || stack[0];
+        let foundInStack = false;
+        const pat = stack.find(p => p.id === targetPatId);
         if (pat) {
             sx = pat.scale ?? 1.0;
             rot = pat.rotation ?? 0;
             px = pat.patternOffsetX ?? 0.5;
             py = pat.patternOffsetY ?? 0.5;
-        } else {
+            foundInStack = true;
+        }
+        // Check if it matches the primary pattern (Pattern 1) — stored directly on z, not in patternStack
+        if (!foundInStack && z.pattern && z.pattern === z.thirdBasePattern) {
+            sx = z.scale ?? 1.0;
+            rot = z.rotation ?? 0;
+            px = z.patternOffsetX ?? 0.5;
+            py = z.patternOffsetY ?? 0.5;
+            foundInStack = true;
+        }
+        if (!foundInStack) {
+            // Fall back to primary pattern position as best guess
             sx = z.scale ?? 1.0;
             rot = z.rotation ?? 0;
             px = z.patternOffsetX ?? 0.5;
@@ -5142,7 +5216,12 @@ function addSpecPatternLayer(zoneIdx, patternId) {
         blendMode: 'normal',
         channels: 'MR',
         range: 40,
-        params: spDef ? JSON.parse(JSON.stringify(spDef.defaults || {})) : {}
+        params: spDef ? JSON.parse(JSON.stringify(spDef.defaults || {})) : {},
+        offsetX: 0.5,
+        offsetY: 0.5,
+        scale: 1.0,
+        rotation: 0,
+        placement: 'normal'
     });
     renderZones();
     triggerPreviewRender();

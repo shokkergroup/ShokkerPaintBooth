@@ -482,8 +482,24 @@ def compose_finish(base_id, pattern_id, shape, mask, seed, sm, scale=1.0, spec_m
             sp_params = sp_layer.get("params", {})
             # Which channels to affect (default: M and R)
             sp_channels = sp_layer.get("channels", "MR")  # "M", "R", "CC", "MR", "MRC", etc.
+            # Position/transform params
+            sp_offset_x = float(sp_layer.get("offset_x", 0.5))
+            sp_offset_y = float(sp_layer.get("offset_y", 0.5))
+            sp_scale = float(sp_layer.get("scale", 1.0))
+            sp_rotation = float(sp_layer.get("rotation", 0))
             # Generate pattern (returns 0-1 float32 array)
             sp_arr = sp_fn(base_shape, seed + 5000 + hash(sp_name) % 10000, _sm_base, **sp_params)
+            # Apply scale, rotation, and offset transforms
+            if abs(sp_scale - 1.0) > 0.01:
+                h, w = base_shape[0], base_shape[1]
+                if sp_scale < 1.0:
+                    sp_arr = _tile_fractional(sp_arr, 1.0 / sp_scale, h, w)
+                else:
+                    sp_arr = _crop_center_array(sp_arr, sp_scale, h, w)
+            if abs(sp_rotation) > 0.5:
+                sp_arr = _rotate_single_array(sp_arr, sp_rotation, base_shape)
+            if abs(sp_offset_x - 0.5) > 0.01 or abs(sp_offset_y - 0.5) > 0.01:
+                _apply_pattern_offset(sp_arr, base_shape, sp_offset_x, sp_offset_y)
             # Convert 0-1 pattern to spec-range contribution
             # Pattern centered at 0.5 means no change; >0.5 = increase, <0.5 = decrease
             sp_delta = (sp_arr - 0.5) * 2.0  # -1 to +1 range
@@ -937,8 +953,24 @@ def compose_finish_stacked(base_id, all_patterns, shape, mask, seed, sm, spec_mu
             sp_params = sp_layer.get("params", {})
             # Which channels to affect (default: M and R)
             sp_channels = sp_layer.get("channels", "MR")  # "M", "R", "CC", "MR", "MRC", etc.
+            # Position/transform params
+            sp_offset_x = float(sp_layer.get("offset_x", 0.5))
+            sp_offset_y = float(sp_layer.get("offset_y", 0.5))
+            sp_scale = float(sp_layer.get("scale", 1.0))
+            sp_rotation = float(sp_layer.get("rotation", 0))
             # Generate pattern (returns 0-1 float32 array)
             sp_arr = sp_fn(base_shape, seed + 5000 + hash(sp_name) % 10000, _sm_base, **sp_params)
+            # Apply scale, rotation, and offset transforms
+            if abs(sp_scale - 1.0) > 0.01:
+                h, w = base_shape[0], base_shape[1]
+                if sp_scale < 1.0:
+                    sp_arr = _tile_fractional(sp_arr, 1.0 / sp_scale, h, w)
+                else:
+                    sp_arr = _crop_center_array(sp_arr, sp_scale, h, w)
+            if abs(sp_rotation) > 0.5:
+                sp_arr = _rotate_single_array(sp_arr, sp_rotation, base_shape)
+            if abs(sp_offset_x - 0.5) > 0.01 or abs(sp_offset_y - 0.5) > 0.01:
+                _apply_pattern_offset(sp_arr, base_shape, sp_offset_x, sp_offset_y)
             # Convert 0-1 pattern to spec-range contribution
             # Pattern centered at 0.5 means no change; >0.5 = increase, <0.5 = decrease
             sp_delta = (sp_arr - 0.5) * 2.0  # -1 to +1 range

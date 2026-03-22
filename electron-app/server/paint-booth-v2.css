@@ -5041,3 +5041,55 @@ body.easy-mode .easy-mode-label {
     font-size: 11px;
     line-height: 1.4;
 }
+
+/* Spec Pattern thumbnail grid - 3 per row */
+.spec-pattern-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    padding: 4px;
+}
+
+.spec-pattern-thumb-card {
+    position: relative;
+    cursor: pointer;
+    border: 1px solid #333;
+    border-radius: 4px;
+    overflow: visible;
+    transition: border-color 0.2s;
+}
+
+.spec-pattern-thumb-card:hover {
+    border-color: #E87A20;
+}
+
+.spec-pattern-thumb-card img,
+.spec-pattern-thumb-card canvas {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 3px;
+}
+
+.spec-pattern-thumb-card .thumb-label {
+    font-size: 8px;
+    color: #aaa;
+    text-align: center;
+    padding: 2px 0;
+    background: rgba(0,0,0,0.7);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Spec pattern hover zoom popup */
+.spec-thumb-popup {
+    position: fixed;
+    z-index: 9999;
+    border: 2px solid #E87A20;
+    border-radius: 6px;
+    background: #0a0a0a;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.9);
+    pointer-events: none;
+    padding: 4px;
+}

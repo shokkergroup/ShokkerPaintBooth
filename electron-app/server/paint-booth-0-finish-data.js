@@ -1136,6 +1136,24 @@ const SPEC_PATTERNS = [
     { id: "crystal_growth", name: "Crystal Growth", desc: "Dendritic frost crystallization — 6-fold branching symmetry", category: "Crystalline", defaults: { num_seeds_pts: 4, growth_steps: 200 } },
     { id: "smoke_tendril", name: "Smoke Tendril", desc: "Rising smoke plumes with turbulent billowing expansion", category: "Coating", defaults: { num_plumes: 6 } },
     { id: "fractal_discharge", name: "Fractal Discharge", desc: "Recursive branching electrical discharge — dense energy web", category: "Optical", defaults: { num_bolts: 4, depth: 8 } },
+    // --- NEW PATTERNS (51-65) ---
+    // Sparkle / Flake variants
+    { id: "diamond_dust", name: "Diamond Dust", desc: "Thousands of tiny bright points on a dark field — crushed diamond ultra-fine sparkle", category: "Sparkle", defaults: { density: 0.003 } },
+    { id: "metallic_sand", name: "Metallic Sand", desc: "Fine 2px block-quantized metallic sand particles — slightly larger than diamond dust", category: "Sparkle", defaults: { block_size: 2 } },
+    { id: "holographic_flake", name: "Holographic Flake", desc: "Iridescent flakes with position-modulated brightness — rainbow prismatic scatter", category: "Sparkle", defaults: { density: 0.004, freq_x: 12.0, freq_y: 9.0 } },
+    { id: "crystal_shimmer", name: "Crystal Shimmer", desc: "Small Voronoi facets with edge darkening — angular crystal reflections", category: "Sparkle", defaults: { cell_size: 10, edge_width: 0.25 } },
+    { id: "stardust_fine", name: "Stardust Fine", desc: "Extremely fine high-density sparkle — like a star-filled night sky", category: "Sparkle", defaults: { density: 0.012 } },
+    { id: "pearl_micro", name: "Pearl Micro", desc: "Soft pearlescent micro-texture — smooth undulating mother-of-pearl iridescence", category: "Sparkle", defaults: { octaves: 4 } },
+    { id: "gold_flake", name: "Gold Flake", desc: "Large sparse irregular gold-leaf style flakes — bright fragments on a dark field", category: "Sparkle", defaults: { density1: 0.35, density2: 0.3 } },
+    { id: "brushed_sparkle", name: "Brushed Sparkle", desc: "Directional anisotropic brushed grain with embedded random sparkle points", category: "Sparkle", defaults: { sparkle_density: 0.002 } },
+    { id: "crushed_glass", name: "Crushed Glass", desc: "Jagged angular bright fragments — sharp high-frequency thresholding, not smooth", category: "Sparkle", defaults: { threshold_hi: 0.72 } },
+    { id: "prismatic_dust", name: "Prismatic Dust", desc: "Multi-frequency scatter overlaid with sin(dist) interference rings — prismatic halo effect", category: "Sparkle", defaults: { scatter_density: 0.005, ring_freq: 18.0 } },
+    // Banded row variants
+    { id: "chevron_bands", name: "Chevron Bands", desc: "V-shaped chevron bands — arrowhead striping using y + abs(x-center) coordinate", category: "Structure", defaults: { num_bands: 20, v_angle: 0.6 } },
+    { id: "wave_bands", name: "Wave Bands", desc: "Sinusoidal wavy bands — undulating stripes using y + sin(x * freq) coordinate", category: "Structure", defaults: { num_bands: 18, wave_freq: 3.0, wave_amp: 0.12 } },
+    { id: "gradient_bands", name: "Gradient Bands", desc: "Bands that fade bright-to-dark internally — fmod banding with within-band gradient", category: "Structure", defaults: { num_bands: 16 } },
+    { id: "split_bands", name: "Split Bands", desc: "Alternating thick bright and thin dark bands — two-weight stripe pattern", category: "Structure", defaults: { thick_count: 10, thin_count: 10 } },
+    { id: "diagonal_bands", name: "Diagonal Bands", desc: "45-degree angled bands — diagonal projection coordinate for true angular stripes", category: "Structure", defaults: { num_bands: 20, angle_deg: 45.0 } },
     // Chromatic Flake — multi-color micro-flake shimmer (30 palettes)
     { id: "cf_midnight_galaxy", name: "CF: Midnight Galaxy", desc: "Deep navy, electric purple, teal, silver, dark magenta micro-flake shimmer", swatch: "#1a1a44" },
     { id: "cf_volcanic_ember", name: "CF: Volcanic Ember", desc: "Deep red, burnt orange, gold, charcoal, crimson multi-flake fire shimmer", swatch: "#8b2500" },

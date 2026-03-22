@@ -2170,6 +2170,442 @@ def fractal_discharge(shape, seed, sm, num_bolts=4, depth=8, **kwargs):
 
 
 # ============================================================================
+# 51. DIAMOND DUST — very fine dense sparkle on dark field
+# ============================================================================
+
+def diamond_dust(shape, seed, sm, density=0.003):
+    """
+    Thousands of tiny bright points on a near-black field.
+    Like crushed diamonds: high-contrast ultra-fine sparkle.
+    """
+    h, w = shape
+    if sm < 0.001:
+        return _flat(shape)
+    rng = np.random.default_rng(seed)
+    raw = rng.random((h, w)).astype(np.float32)
+    threshold = 1.0 - density
+    sparkle = np.where(raw > threshold, raw, 0.05).astype(np.float32)
+    # Tiny blur for pixel-wide glow
+    sparkle = gaussian_filter(sparkle, sigma=0.4)
+    return _sm_scale(_normalize(sparkle), sm).astype(np.float32)
+
+
+# ============================================================================
+# 52. METALLIC SAND — fine 2px block-quantized metallic particles
+# ============================================================================
+
+def metallic_sand(shape, seed, sm, block_size=2):
+    """
+    Sand-like metallic particles: 2px block-quantized grid, each block gets
+    an independent random brightness — slightly larger than diamond_dust.
+    """
+    h, w = shape
+    if sm < 0.001:
+        return _flat(shape)
+    rng = np.random.default_rng(seed)
+    bs = max(1, block_size)
+    ny, nx = max(1, (h + bs - 1) // bs), max(1, (w + bs - 1) // bs)
+    blocks = rng.random((ny, nx)).astype(np.float32)
+    # Expand blocks to full image
+    yi = np.clip(np.arange(h) // bs, 0, ny - 1)
+    xi = np.clip(np.arange(w) // bs, 0, nx - 1)
+    result = blocks[yi[:, np.newaxis], xi[np.newaxis, :]]
+    # Add per-pixel micro-variation
+    result += rng.uniform(-0.08, 0.08, size=(h, w)).astype(np.float32)
+    return _sm_scale(_normalize(result), sm).astype(np.float32)
+
+
+# ============================================================================
+# 53. HOLOGRAPHIC FLAKE — iridescent scatter with sinusoidal position modulation
+# ============================================================================
+
+def holographic_flake(shape, seed, sm, density=0.004, freq_x=12.0, freq_y=9.0):
+    """
+    Iridescent flakes: random scatter modulated by sin(x)*sin(y) so brightness
+    varies smoothly across the image — rainbow-like prismatic variation.
+    """
+    h, w = shape
+    if sm < 0.001:
+        return _flat(shape)
+    rng = np.random.default_rng(seed)
+    # Base scatter
+    raw = rng.random((h, w)).astype(np.float32)
+    threshold = 1.0 - density
+    sparkle = np.where(raw > threshold, 1.0, 0.0).astype(np.float32)
+    # Position-dependent brightness modulation
+    yy = np.arange(h, dtype=np.float32) / h
+    xx = np.arange(w, dtype=np.float32) / w
+    ph1, ph2 = rng.uniform(0, 2 * np.pi, 2)
+    mod = (np.sin(xx[np.newaxis, :] * freq_x * np.pi + ph1) *
+           np.sin(yy[:, np.newaxis] * freq_y * np.pi + ph2)) * 0.5 + 0.5
+    result = sparkle * (0.4 + 0.6 * mod) + 0.06
+    blurred = gaussian_filter(result, sigma=0.6)
+    return _sm_scale(_normalize(blurred), sm).astype(np.float32)
+
+
+# ============================================================================
+# 54. CRYSTAL SHIMMER — small Voronoi cells with edge darkening
+# ============================================================================
+
+def crystal_shimmer(shape, seed, sm, cell_size=10, edge_width=0.25):
+    """
+    Faceted crystal-like sparkle: small Voronoi cells (8-12px) each get a random
+    brightness; cell edges are darkened to simulate angular facet boundaries.
+    """
+    h, w = shape
+    if sm < 0.001:
+        return _flat(shape)
+    rng = np.random.default_rng(seed)
+    cs = max(4, cell_size)
+    ny = max(2, h // cs + 2)
+    nx = max(2, w // cs + 2)
+    iy_arr = np.arange(ny)
+    ix_arr = np.arange(nx)
+    IY, IX = np.meshgrid(iy_arr, ix_arr, indexing='ij')
+    center_y = (IY.astype(np.float64) + rng.uniform(0.1, 0.9, (ny, nx))) * cs
+    center_x = (IX.astype(np.float64) + rng.uniform(0.1, 0.9, (ny, nx))) * cs
+    cell_vals = rng.uniform(0.15, 0.95, (ny, nx)).astype(np.float32).ravel()
+    centers = np.column_stack([center_y.ravel(), center_x.ravel()])
+    tree = cKDTree(centers)
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float64)
+    pts = np.column_stack([yy.ravel(), xx.ravel()])
+    dists, idxs = tree.query(pts, k=2, workers=-1)
+    d1 = dists[:, 0].reshape(shape).astype(np.float32)
+    d2 = dists[:, 1].reshape(shape).astype(np.float32)
+    nearest_val = cell_vals[idxs[:, 0]].reshape(shape)
+    edge_factor = np.clip((d2 - d1) / (edge_width * cs + 0.01), 0, 1)
+    result = nearest_val * (0.5 + 0.5 * edge_factor)
+    return _sm_scale(_normalize(result), sm).astype(np.float32)
+
+
+# ============================================================================
+# 55. STARDUST FINE — extremely fine high-density night-sky sparkle
+# ============================================================================
+
+def stardust_fine(shape, seed, sm, density=0.012):
+    """
+    Smaller and denser than diamond_dust — like looking at a star-filled night sky.
+    Per-pixel random with very low threshold, sub-pixel blur for soft glow.
+    """
+    h, w = shape
+    if sm < 0.001:
+        return _flat(shape)
+    rng = np.random.default_rng(seed)
+    raw = rng.random((h, w)).astype(np.float32)
+    threshold = 1.0 - density
+    # Variable intensity per star
+    intensity = rng.uniform(0.3, 1.0, (h, w)).astype(np.float32)
+    sparkle = np.where(raw > threshold, intensity, 0.04).astype(np.float32)
+    sparkle = gaussian_filter(sparkle, sigma=0.3)
+    return _sm_scale(_normalize(sparkle), sm).astype(np.float32)
+
+
+# ============================================================================
+# 56. PEARL MICRO — soft pearlescent micro-texture with sine harmonics
+# ============================================================================
+
+def pearl_micro(shape, seed, sm, octaves=4):
+    """
+    Soft undulating pearlescent brightness like mother-of-pearl.
+    Multiple low-frequency sine harmonics combine for smooth iridescent variation.
+    """
+    h, w = shape
+    if sm < 0.001:
+        return _flat(shape)
+    rng = np.random.RandomState(seed)
+    yy = np.arange(h, dtype=np.float32) / h
+    xx = np.arange(w, dtype=np.float32) / w
+    result = np.zeros(shape, dtype=np.float32)
+    amp = 1.0
+    for i in range(octaves):
+        freq = 2.0 ** i * rng.uniform(1.5, 3.5)
+        ph_y, ph_x = rng.uniform(0, 2 * np.pi), rng.uniform(0, 2 * np.pi)
+        a = rng.uniform(0, np.pi)
+        proj = yy[:, np.newaxis] * np.cos(a) + xx[np.newaxis, :] * np.sin(a)
+        result += amp * np.sin(proj * freq * np.pi + ph_y)
+        amp *= 0.55
+    result = result * 0.5 + 0.5
+    return _sm_scale(_normalize(result), sm).astype(np.float32)
+
+
+# ============================================================================
+# 57. GOLD FLAKE — large sparse gold-leaf style irregular flakes
+# ============================================================================
+
+def gold_flake(shape, seed, sm, density1=0.35, density2=0.3):
+    """
+    Sparse large flakes using two-noise thresholding for irregular blob shapes.
+    Bright flakes on a medium-dark field — gold-leaf style.
+    """
+    h, w = shape
+    if sm < 0.001:
+        return _flat(shape)
+    rng = np.random.RandomState(seed)
+    # Two independent noise fields: intersect them to get irregular blob shapes
+    def _smooth_noise(freq, phase_seed):
+        yy = np.arange(h, dtype=np.float32) / h
+        xx = np.arange(w, dtype=np.float32) / w
+        ps = np.random.RandomState(phase_seed)
+        n = np.zeros(shape, dtype=np.float32)
+        for _ in range(3):
+            fy, fx = ps.uniform(freq * 0.5, freq * 1.5), ps.uniform(freq * 0.5, freq * 1.5)
+            n += np.sin(yy[:, np.newaxis] * fy * np.pi + ps.uniform(0, 6.28)) * \
+                 np.sin(xx[np.newaxis, :] * fx * np.pi + ps.uniform(0, 6.28))
+        return _normalize(n)
+
+    n1 = _smooth_noise(8.0, seed)
+    n2 = _smooth_noise(10.0, seed + 1337)
+    flakes = ((n1 > (1.0 - density1)) & (n2 > (1.0 - density2))).astype(np.float32)
+    base = np.full(shape, 0.22, dtype=np.float32)
+    result = base + flakes * 0.78
+    return _sm_scale(_normalize(result), sm).astype(np.float32)
+
+
+# ============================================================================
+# 58. BRUSHED SPARKLE — directional anisotropic noise + embedded sparkle points
+# ============================================================================
+
+def brushed_sparkle(shape, seed, sm, sparkle_density=0.002):
+    """
+    Brushed metal texture with embedded sparkle: horizontally stretched noise
+    creates the grain, random bright points add the sparkle on top.
+    """
+    h, w = shape
+    if sm < 0.001:
+        return _flat(shape)
+    rng = np.random.RandomState(seed)
+    rng2 = np.random.default_rng(seed + 42)
+    # Horizontal brushed grain: row-correlated noise
+    base = rng.uniform(0.3, 0.7, size=h).astype(np.float32)
+    # Smooth the rows
+    kernel = np.ones(max(3, h // 80), dtype=np.float32)
+    kernel /= kernel.sum()
+    base = np.convolve(base, kernel, mode='same')
+    grain = base[:, np.newaxis] + rng.uniform(-0.04, 0.04, size=(h, w)).astype(np.float32)
+    grain = _normalize(grain)
+    # Embedded sparkle
+    raw = rng2.random((h, w)).astype(np.float32)
+    threshold = 1.0 - sparkle_density
+    sparkle = np.where(raw > threshold, 1.0, 0.0).astype(np.float32)
+    sparkle = gaussian_filter(sparkle, sigma=0.5)
+    result = grain * 0.75 + sparkle * 0.25
+    return _sm_scale(_normalize(result), sm).astype(np.float32)
+
+
+# ============================================================================
+# 59. CRUSHED GLASS — jagged angular bright fragments via sharp thresholding
+# ============================================================================
+
+def crushed_glass(shape, seed, sm, threshold_hi=0.72):
+    """
+    Jagged irregular bright fragments — high-frequency noise with sharp threshold
+    creates angular bright shapes. Not smooth: harsh glass-shard edges.
+    """
+    h, w = shape
+    if sm < 0.001:
+        return _flat(shape)
+    rng = np.random.RandomState(seed)
+    yy = np.arange(h, dtype=np.float32) / h
+    xx = np.arange(w, dtype=np.float32) / w
+    field = np.zeros(shape, dtype=np.float32)
+    for _ in range(6):
+        fy, fx = rng.uniform(20, 60), rng.uniform(20, 60)
+        py, px = rng.uniform(0, 2 * np.pi), rng.uniform(0, 2 * np.pi)
+        field += np.sin(yy[:, np.newaxis] * fy * np.pi + py) * \
+                 np.sin(xx[np.newaxis, :] * fx * np.pi + px)
+    field = _normalize(field)
+    # Hard threshold for angular bright fragments
+    bright = np.where(field > threshold_hi, field, 0.08).astype(np.float32)
+    return _sm_scale(_normalize(bright), sm).astype(np.float32)
+
+
+# ============================================================================
+# 60. PRISMATIC DUST — multi-frequency sparkle + sin(dist) ring interference
+# ============================================================================
+
+def prismatic_dust(shape, seed, sm, scatter_density=0.005, ring_freq=18.0):
+    """
+    Fine scatter combined with sin(dist) rings from a center point — creates
+    a prismatic interference halo overlaid on random sparkle dust.
+    """
+    h, w = shape
+    if sm < 0.001:
+        return _flat(shape)
+    rng = np.random.default_rng(seed)
+    rng2 = np.random.RandomState(seed)
+    # Scatter layer
+    raw = rng.random((h, w)).astype(np.float32)
+    threshold = 1.0 - scatter_density
+    scatter = np.where(raw > threshold, 1.0, 0.05).astype(np.float32)
+    scatter = gaussian_filter(scatter, sigma=0.4)
+    # Prismatic ring layer from a random center
+    cy, cx = rng2.uniform(0.3, 0.7), rng2.uniform(0.3, 0.7)
+    yy = np.arange(h, dtype=np.float32) / h
+    xx = np.arange(w, dtype=np.float32) / w
+    dist = np.sqrt(((yy[:, np.newaxis] - cy) * 2)**2 +
+                   ((xx[np.newaxis, :] - cx) * 2)**2)
+    rings = (np.sin(dist * ring_freq * np.pi) * 0.5 + 0.5).astype(np.float32)
+    result = scatter * 0.55 + rings * 0.45
+    return _sm_scale(_normalize(result), sm).astype(np.float32)
+
+
+# ============================================================================
+# 61. CHEVRON BANDS — V-shaped horizontal bands
+# ============================================================================
+
+def chevron_bands(shape, seed, sm, num_bands=20, v_angle=0.6, palette_size=8):
+    """
+    V-shaped bands: y + abs(x - w/2) * angle defines the band coordinate.
+    Produces a chevron / arrowhead striping effect across the surface.
+    """
+    h, w = shape
+    if sm < 0.001:
+        return _flat(shape)
+    rng = np.random.RandomState(seed)
+    palette = np.linspace(0.15, 0.85, palette_size, dtype=np.float32)
+    rng.shuffle(palette)
+    yy = np.arange(h, dtype=np.float32)
+    xx = np.arange(w, dtype=np.float32)
+    # Chevron coordinate
+    coord = yy[:, np.newaxis] + np.abs(xx[np.newaxis, :] - w / 2.0) * v_angle
+    # Normalize to [0, num_bands] and pick palette
+    band_width = h / num_bands
+    band_idx = (coord / band_width).astype(np.int32) % palette_size
+    result = palette[band_idx]
+    # Feather within band
+    frac = (coord / band_width) - np.floor(coord / band_width)
+    feather = np.where(frac < 0.15, frac / 0.15,
+              np.where(frac > 0.85, (1.0 - frac) / 0.15, 1.0)).astype(np.float32)
+    result = result * feather + result.mean() * (1.0 - feather)
+    return _sm_scale(_normalize(result), sm).astype(np.float32)
+
+
+# ============================================================================
+# 62. WAVE BANDS — sinusoidal wavy horizontal bands
+# ============================================================================
+
+def wave_bands(shape, seed, sm, num_bands=18, wave_freq=3.0, wave_amp=0.12,
+               palette_size=8):
+    """
+    Sinusoidal wavy bands: y + sin(x * freq) * amplitude as band coordinate.
+    Bands undulate left-right for an organic flowing stripe pattern.
+    """
+    h, w = shape
+    if sm < 0.001:
+        return _flat(shape)
+    rng = np.random.RandomState(seed)
+    palette = np.linspace(0.15, 0.85, palette_size, dtype=np.float32)
+    rng.shuffle(palette)
+    yy = np.arange(h, dtype=np.float32)
+    xx = np.arange(w, dtype=np.float32) / w  # normalize x to 0-1
+    ph = rng.uniform(0, 2 * np.pi)
+    wave = np.sin(xx[np.newaxis, :] * wave_freq * np.pi * 2 + ph) * (wave_amp * h)
+    coord = yy[:, np.newaxis] + wave
+    band_width = h / num_bands
+    band_idx = (np.abs(coord) / band_width).astype(np.int32) % palette_size
+    result = palette[band_idx]
+    frac = (np.abs(coord) / band_width) - np.floor(np.abs(coord) / band_width)
+    feather = np.where(frac < 0.1, frac / 0.1,
+              np.where(frac > 0.9, (1.0 - frac) / 0.1, 1.0)).astype(np.float32)
+    result = result * feather + result.mean() * (1.0 - feather)
+    return _sm_scale(_normalize(result), sm).astype(np.float32)
+
+
+# ============================================================================
+# 63. GRADIENT BANDS — bands with internal bright-to-dark gradient
+# ============================================================================
+
+def gradient_bands(shape, seed, sm, num_bands=16, palette_size=6):
+    """
+    Each band fades from bright to dark across its width using fmod for banding
+    and the fractional position within the band for the internal gradient.
+    """
+    h, w = shape
+    if sm < 0.001:
+        return _flat(shape)
+    rng = np.random.RandomState(seed)
+    palette = np.linspace(0.2, 0.85, palette_size, dtype=np.float32)
+    rng.shuffle(palette)
+    band_width = h / num_bands
+    yy = np.arange(h, dtype=np.float32)
+    # Fractional position within each band [0, 1)
+    frac = (yy / band_width) - np.floor(yy / band_width)
+    # Band index
+    band_idx = (np.floor(yy / band_width).astype(np.int32)) % palette_size
+    base_val = palette[band_idx]
+    # Gradient: bright at start of band (frac=0), dark at end (frac=1)
+    gradient = base_val * (1.0 - frac * 0.65)
+    result = gradient[:, np.newaxis] * np.ones(w, dtype=np.float32)[np.newaxis, :]
+    # Add slight warp noise
+    noise = rng.uniform(-0.03, 0.03, size=w).astype(np.float32)
+    result += noise[np.newaxis, :]
+    return _sm_scale(_normalize(result), sm).astype(np.float32)
+
+
+# ============================================================================
+# 64. SPLIT BANDS — alternating thick/thin bands with different intensities
+# ============================================================================
+
+def split_bands(shape, seed, sm, thick_count=10, thin_count=10,
+                thick_bright=0.82, thin_bright=0.35):
+    """
+    Alternating thick bright bands and thin dark bands.
+    Every pair: one wide high-value band followed by one narrow low-value band.
+    """
+    h, w = shape
+    if sm < 0.001:
+        return _flat(shape)
+    rng = np.random.RandomState(seed)
+    # Build a 1D band map
+    total_pairs = (thick_count + thin_count) // 2
+    pair_height = h / max(1, total_pairs)
+    thick_frac = thick_count / max(1, thick_count + thin_count)
+    yy = np.arange(h, dtype=np.float32)
+    pair_pos = (yy / pair_height) - np.floor(yy / pair_height)
+    is_thick = pair_pos < thick_frac
+    bright_jitter = rng.uniform(-0.06, 0.06, size=h).astype(np.float32)
+    row_val = np.where(is_thick,
+                       thick_bright + bright_jitter,
+                       thin_bright + bright_jitter * 0.5).astype(np.float32)
+    result = row_val[:, np.newaxis] * np.ones(w, dtype=np.float32)[np.newaxis, :]
+    # Add slight column noise
+    result += rng.uniform(-0.02, 0.02, size=(h, w)).astype(np.float32)
+    return _sm_scale(_normalize(result), sm).astype(np.float32)
+
+
+# ============================================================================
+# 65. DIAGONAL BANDS — 45-degree angled bands
+# ============================================================================
+
+def diagonal_bands(shape, seed, sm, num_bands=20, palette_size=8, angle_deg=45.0):
+    """
+    Bands running at an angle (default 45°). Band coordinate is
+    (x*cos(a) + y*sin(a)) / sqrt(2) for true diagonal width independence.
+    """
+    h, w = shape
+    if sm < 0.001:
+        return _flat(shape)
+    rng = np.random.RandomState(seed)
+    palette = np.linspace(0.15, 0.85, palette_size, dtype=np.float32)
+    rng.shuffle(palette)
+    angle = np.deg2rad(angle_deg + rng.uniform(-5, 5))
+    yy = np.arange(h, dtype=np.float32)
+    xx = np.arange(w, dtype=np.float32)
+    # Projected diagonal coordinate
+    coord = yy[:, np.newaxis] * np.sin(angle) + xx[np.newaxis, :] * np.cos(angle)
+    # Normalize so num_bands fits across the diagonal span
+    span = h * np.sin(angle) + w * np.cos(angle)
+    band_width = span / num_bands
+    band_idx = (np.abs(coord) / band_width).astype(np.int32) % palette_size
+    result = palette[band_idx]
+    frac = (np.abs(coord) / band_width) - np.floor(np.abs(coord) / band_width)
+    feather = np.where(frac < 0.12, frac / 0.12,
+              np.where(frac > 0.88, (1.0 - frac) / 0.12, 1.0)).astype(np.float32)
+    result = result * feather + result.mean() * (1.0 - feather)
+    return _sm_scale(_normalize(result), sm).astype(np.float32)
+
+
+# ============================================================================
 # PATTERN CATALOG — for programmatic access
 # ============================================================================
 
@@ -2225,6 +2661,22 @@ PATTERN_CATALOG = {
     "crystal_growth": crystal_growth,
     "smoke_tendril": smoke_tendril,
     "fractal_discharge": fractal_discharge,
+    # --- NEW PATTERNS (51-65) ---
+    "diamond_dust": diamond_dust,
+    "metallic_sand": metallic_sand,
+    "holographic_flake": holographic_flake,
+    "crystal_shimmer": crystal_shimmer,
+    "stardust_fine": stardust_fine,
+    "pearl_micro": pearl_micro,
+    "gold_flake": gold_flake,
+    "brushed_sparkle": brushed_sparkle,
+    "crushed_glass": crushed_glass,
+    "prismatic_dust": prismatic_dust,
+    "chevron_bands": chevron_bands,
+    "wave_bands": wave_bands,
+    "gradient_bands": gradient_bands,
+    "split_bands": split_bands,
+    "diagonal_bands": diagonal_bands,
 }
 
 # Category suggestions for which patterns work best with which finish types

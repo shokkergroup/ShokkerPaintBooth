@@ -1081,6 +1081,20 @@ if __name__ == '__main__':
                     const val = canvasMode === 'spatial-include' ? 1 : (canvasMode === 'spatial-exclude' ? 2 : 0);
                     paintSpatialCircle(pos.x, pos.y, spatialBrushRadius, val);
                     renderRegionOverlay();
+                } else if (canvasMode === 'lasso' && isDrawing && lassoMouseDownPos) {
+                    const dist = Math.sqrt((pos.x - lassoMouseDownPos.x) ** 2 + (pos.y - lassoMouseDownPos.y) ** 2);
+                    if (!lassoFreehandDrawing && dist >= 5) {
+                        // Start freehand mode: add the initial mousedown point first
+                        lassoFreehandDrawing = true;
+                        addLassoPoint(lassoMouseDownPos.x, lassoMouseDownPos.y);
+                    }
+                    if (lassoFreehandDrawing) {
+                        const lastPt = lassoPoints[lassoPoints.length - 1];
+                        const ptDist = Math.sqrt((pos.x - lastPt.x) ** 2 + (pos.y - lastPt.y) ** 2);
+                        if (ptDist >= 5) { // Add point every 5 pixels
+                            addLassoPoint(pos.x, pos.y);
+                        }
+                    }
                 } else if (canvasMode === 'rect' && isDrawing && rectStart) {
                     // Use clamped coords so drag pins to canvas edge instead of dying
                     let cpos = getPixelAtClamped(e);
@@ -1224,11 +1238,11 @@ if __name__ == '__main__':
                 } else if (canvasMode === 'lasso') {
                     // Right-click undoes last lasso point
                     if (e.button === 2) { undoLassoPoint(); return; }
-                    addLassoPoint(pos.x, pos.y);
-                    // Double-click closes the lasso
-                    if (e.detail >= 2 && lassoPoints.length >= 3) {
-                        closeLasso();
-                    }
+                    // Save mousedown position for drag-vs-click detection
+                    lassoMouseDownPos = { x: pos.x, y: pos.y };
+                    isDrawing = true;
+                    // Freehand mode starts on mousemove (see mousemove handler below)
+                    // Click behavior (no drag): handled in mouseup when not freehand
                 } else if (canvasMode === 'rect') {
                     pushUndo(selectedZoneIndex); // Save state before rect draw
                     isDrawing = true;
@@ -1307,6 +1321,8 @@ if __name__ == '__main__':
                     _rectZoneCache = null;
                     hideRectPreview();
                     renderRegionOverlay();
+                    // Force immediate overlay re-render (bypass RAF throttle)
+                    setTimeout(() => { _doRenderRegionOverlay(); }, 30);
                 }
                 // Brush/erase: full re-render once at stroke end so edges and multi-zone
                 // overlaps are drawn correctly (fast arc path skips those)
@@ -1315,6 +1331,26 @@ if __name__ == '__main__':
                 }
                 if ((canvasMode === 'spatial-include' || canvasMode === 'spatial-exclude') && isDrawing) {
                     _doRenderRegionOverlay();
+                }
+                if (canvasMode === 'lasso' && isDrawing) {
+                    if (lassoFreehandDrawing) {
+                        // Freehand drag completed — auto-close if enough points
+                        if (lassoPoints.length >= 3) {
+                            closeLasso();
+                        }
+                        lassoFreehandDrawing = false;
+                    } else if (lassoMouseDownPos) {
+                        // Click (no drag) — use existing click-by-click behavior
+                        const pos2 = getPixelAt(e);
+                        if (pos2) {
+                            addLassoPoint(pos2.x, pos2.y);
+                            // Double-click closes the lasso
+                            if (e.detail >= 2 && lassoPoints.length >= 3) {
+                                closeLasso();
+                            }
+                        }
+                    }
+                    lassoMouseDownPos = null;
                 }
                 isDrawing = false;
             };
@@ -1375,6 +1411,8 @@ if __name__ == '__main__':
                     _rectZoneCache = null;
                     hideRectPreview();
                     renderRegionOverlay();
+                    // Force immediate overlay re-render (bypass RAF throttle)
+                    setTimeout(() => { _doRenderRegionOverlay(); }, 30);
                     isDrawing = false;
                 }
             });
@@ -1419,6 +1457,11 @@ if __name__ == '__main__':
             const showSelMode = (mode === 'wand' || mode === 'selectall' || mode === 'edge' || mode === 'rect' || mode === 'lasso');
             const selModeEl = document.getElementById('selectionMode');
             if (selModeEl) selModeEl.style.display = showSelMode ? '' : 'none';
+            // Rect tool defaults to additive so multiple rectangles can be drawn
+            if (mode === 'rect') {
+                const selMode = document.getElementById('selectionMode');
+                if (selMode && selMode.value === 'replace') selMode.value = 'add';
+            }
             const modifierHint = document.getElementById('selectionModifierHint');
             if (modifierHint) modifierHint.style.display = showSelMode ? '' : 'none';
             // Contiguous checkbox only for wand/selectall, not edge/rect
@@ -2648,6 +2691,8 @@ if __name__ == '__main__':
         // --- LASSO / POLYGON SELECT --- click vertices, fill inside on close
         let lassoPoints = [];
         let lassoActive = false;
+        let lassoFreehandDrawing = false;
+        let lassoMouseDownPos = null;
 
         function startLasso() {
             lassoPoints = [];
@@ -2776,9 +2821,11 @@ if __name__ == '__main__':
 
         // Expose for Escape key: cancel active lasso (used by cancelCanvasOperation in 2-state-zones)
         window.cancelLasso = function () {
-            if (!lassoActive && lassoPoints.length === 0) return false;
+            if (!lassoActive && lassoPoints.length === 0 && !lassoFreehandDrawing) return false;
             lassoActive = false;
             lassoPoints = [];
+            lassoFreehandDrawing = false;
+            lassoMouseDownPos = null;
             hideLassoPreview();
             return true;
         };

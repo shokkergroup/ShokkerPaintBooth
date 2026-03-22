@@ -2007,6 +2007,10 @@ def render():
         stamp_spec_finish = data.get("stamp_spec_finish", "gloss")
         stamp_image_path = None
 
+        # Decal spec finishes (list of {specFinish: "gloss"} for non-"none" decals)
+        decal_spec_finishes = data.get("decal_spec_finishes", [])
+        decal_paint_path = None  # set below if paint_image_base64 is decoded
+
         # Validate optional files
         if helmet_paint and not os.path.exists(helmet_paint):
             helmet_paint = None
@@ -2031,8 +2035,11 @@ def render():
                     f.write(buf)
                 paint_file = decal_paint_path
                 logger.info(f"Job {job_id}: Using composited paint (decals) from client")
+                if decal_spec_finishes:
+                    logger.info(f"Job {job_id}: {len(decal_spec_finishes)} decal spec finish(es) will be applied")
             except Exception as e:
                 logger.warning(f"Job {job_id}: Failed to decode paint_image_base64: {e}")
+                decal_paint_path = None
                 if not paint_file or not os.path.exists(paint_file):
                     return jsonify({"error": "Invalid paint_image_base64 and no valid paint_file"}), 400
 
@@ -2172,6 +2179,8 @@ def render():
             car_prefix=car_prefix,
             stamp_image=stamp_image_path,
             stamp_spec_finish=stamp_spec_finish,
+            decal_spec_finishes=decal_spec_finishes if decal_spec_finishes else None,
+            decal_paint_path=decal_paint_path,
         )
 
         elapsed = time.time() - start
@@ -3280,6 +3289,58 @@ def upload_spec_map():
 
     except Exception as e:
         logger.error(f"Spec map upload error: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/upload-tga-decal', methods=['POST'])
+def upload_tga_decal():
+    """Convert an uploaded TGA file to PNG for use as a decal.
+    Accepts multipart form POST with a 'file' field containing a .tga file.
+    Returns: {"success": true, "png_base64": "data:image/png;base64,...", "width": N, "height": N}
+    """
+    try:
+        from PIL import Image as PILImage
+        import tempfile, uuid
+
+        if 'file' not in request.files:
+            return jsonify({"error": "No file uploaded"}), 400
+        f = request.files['file']
+        if not f.filename.lower().endswith('.tga'):
+            return jsonify({"error": "File must be a TGA"}), 400
+
+        # Save TGA temporarily
+        temp_tga = os.path.join(tempfile.gettempdir(), f"decal_{uuid.uuid4().hex}.tga")
+        f.save(temp_tga)
+
+        # Convert to RGBA PNG
+        img = PILImage.open(temp_tga).convert('RGBA')
+        temp_png = temp_tga.replace('.tga', '.png')
+        img.save(temp_png, 'PNG')
+
+        # Clean up TGA
+        try:
+            os.remove(temp_tga)
+        except Exception:
+            pass
+
+        # Read PNG as base64
+        with open(temp_png, 'rb') as pf:
+            png_b64 = base64.b64encode(pf.read()).decode('utf-8')
+
+        try:
+            os.remove(temp_png)
+        except Exception:
+            pass
+
+        logger.info(f"TGA decal uploaded: {f.filename} -> {img.width}x{img.height} PNG")
+        return jsonify({
+            "success": True,
+            "png_base64": f"data:image/png;base64,{png_b64}",
+            "width": img.width,
+            "height": img.height,
+        })
+    except Exception as e:
+        logger.error(f"TGA decal upload error: {e}")
         return jsonify({"error": str(e)}), 500
 
 

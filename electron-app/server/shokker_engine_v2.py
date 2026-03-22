@@ -5144,7 +5144,7 @@ def overlay_pattern_paint(paint, pattern_id, shape, mask, seed, pm, bb, scale=1.
 # MULTI-ZONE BUILD - THE CORE (FIXED!)
 # ================================================================
 
-def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51, save_debug_images=False, import_spec_map=None, car_prefix="car_num", stamp_image=None, stamp_spec_finish="gloss", preview_mode=False):
+def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51, save_debug_images=False, import_spec_map=None, car_prefix="car_num", stamp_image=None, stamp_spec_finish="gloss", preview_mode=False, decal_spec_finishes=None, decal_paint_path=None):
     """
     Apply different finishes to different color-detected zones.
 
@@ -5523,7 +5523,7 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
             auto_scale = _compute_zone_auto_scale(zone_mask, shape)
             if auto_scale < 1.0 and pattern_id != "none":
                 print(f"      [{name}] Auto-scale: {auto_scale:.3f} (zone covers {(auto_scale**2)*100:.1f}% of canvas)")
-            zone_scale *= auto_scale  # User slider multiplies on top of auto-scale
+            if not zone.get("pattern_fit_zone", False): zone_scale *= auto_scale  # User slider multiplies on top of auto-scale
 
             # ZONE TARGETING: Fit to Zone bounding box
             # Concentrates the entire pattern into the zone's bounding box.
@@ -5547,6 +5547,7 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
                     fit_ratio = max(bbox_h / h, bbox_w / w)
                     if fit_ratio > 0.01:
                         zone_scale = zone_scale / fit_ratio  # zoom in to concentrate
+                        zone_scale = min(zone_scale, 8.0)  # Prevent over-zoom
                     print(f"      [{name}] Fit-to-Zone: bbox=({r_min},{c_min})-({r_max},{c_max}), fit_ratio={fit_ratio:.3f}, effective_scale={zone_scale:.3f}, center=({bbox_center_x:.3f},{bbox_center_y:.3f})")
 
             # v6.0 advanced finish params
@@ -5753,6 +5754,11 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
                 if _z_fb or _v6kw.get("fourth_base_color_source"): _v6paint["fourth_base"] = _z_fb; _v6paint["fourth_base_color_source"] = _v6kw.get("fourth_base_color_source"); _v6paint["fourth_base_color"] = _v6kw.get("fourth_base_color", [1.0, 1.0, 1.0]); _v6paint["fourth_base_strength"] = _v6kw.get("fourth_base_strength", 0.0); _v6paint["fourth_base_spec_strength"] = _v6kw.get("fourth_base_spec_strength", 1.0); _v6paint["fourth_base_blend_mode"] = _v6kw.get("fourth_base_blend_mode", "noise"); _v6paint["fourth_base_noise_scale"] = _v6kw.get("fourth_base_noise_scale", 24); _v6paint["fourth_base_scale"] = _v6kw.get("fourth_base_scale", 1.0); _v6paint["fourth_base_pattern"] = _v6kw.get("fourth_base_pattern"); _v6paint["fourth_base_pattern_scale"] = _v6kw.get("fourth_base_pattern_scale", 1.0); _v6paint["fourth_base_pattern_rotation"] = _v6kw.get("fourth_base_pattern_rotation", 0.0); _v6paint["fourth_base_pattern_opacity"] = _v6kw.get("fourth_base_pattern_opacity", 1.0); _v6paint["fourth_base_pattern_strength"] = _v6kw.get("fourth_base_pattern_strength", 1.0); _v6paint["fourth_base_pattern_invert"] = _v6kw.get("fourth_base_pattern_invert", False); _v6paint["fourth_base_pattern_harden"] = _v6kw.get("fourth_base_pattern_harden", False); _v6paint["fourth_base_pattern_offset_x"] = _v6kw.get("fourth_base_pattern_offset_x", 0.5); _v6paint["fourth_base_pattern_offset_y"] = _v6kw.get("fourth_base_pattern_offset_y", 0.5)
                 if _z_fif or _v6kw.get("fifth_base_color_source"): _v6paint["fifth_base"] = _z_fif; _v6paint["fifth_base_color_source"] = _v6kw.get("fifth_base_color_source"); _v6paint["fifth_base_color"] = _v6kw.get("fifth_base_color", [1.0, 1.0, 1.0]); _v6paint["fifth_base_strength"] = _v6kw.get("fifth_base_strength", 0.0); _v6paint["fifth_base_spec_strength"] = _v6kw.get("fifth_base_spec_strength", 1.0); _v6paint["fifth_base_blend_mode"] = _v6kw.get("fifth_base_blend_mode", "noise"); _v6paint["fifth_base_noise_scale"] = _v6kw.get("fifth_base_noise_scale", 24); _v6paint["fifth_base_scale"] = _v6kw.get("fifth_base_scale", 1.0); _v6paint["fifth_base_pattern"] = _v6kw.get("fifth_base_pattern"); _v6paint["fifth_base_pattern_scale"] = _v6kw.get("fifth_base_pattern_scale", 1.0); _v6paint["fifth_base_pattern_rotation"] = _v6kw.get("fifth_base_pattern_rotation", 0.0); _v6paint["fifth_base_pattern_opacity"] = _v6kw.get("fifth_base_pattern_opacity", 1.0); _v6paint["fifth_base_pattern_strength"] = _v6kw.get("fifth_base_pattern_strength", 1.0); _v6paint["fifth_base_pattern_invert"] = _v6kw.get("fifth_base_pattern_invert", False); _v6paint["fifth_base_pattern_harden"] = _v6kw.get("fifth_base_pattern_harden", False); _v6paint["fifth_base_pattern_offset_x"] = _v6kw.get("fifth_base_pattern_offset_x", 0.5); _v6paint["fifth_base_pattern_offset_y"] = _v6kw.get("fifth_base_pattern_offset_y", 0.5)
                 _v6paint["monolithic_registry"] = _v6kw.get("monolithic_registry")
+                _v6paint["base_offset_x"] = _v6kw.get("base_offset_x", 0.5)
+                _v6paint["base_offset_y"] = _v6kw.get("base_offset_y", 0.5)
+                _v6paint["base_rotation"] = _v6kw.get("base_rotation", 0)
+                _v6paint["base_flip_h"] = _v6kw.get("base_flip_h", False)
+                _v6paint["base_flip_v"] = _v6kw.get("base_flip_v", False)
                 if all_patterns:
                     zone_spec = compose_finish_stacked(base_id, all_patterns, shape, zone_mask, seed + i * 13, sm, spec_mult=spec_mult, base_scale=zone_base_scale, **_v6kw)
                     paint = compose_paint_mod_stacked(base_id, all_patterns, paint, shape, zone_mask, seed + i * 13, pm, bb, **_v6paint)
@@ -5773,6 +5779,11 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
                 if _z_fb or _v6kw.get("fourth_base_color_source"): _v6paint["fourth_base"] = _z_fb; _v6paint["fourth_base_color_source"] = _v6kw.get("fourth_base_color_source"); _v6paint["fourth_base_color"] = _v6kw.get("fourth_base_color", [1.0, 1.0, 1.0]); _v6paint["fourth_base_strength"] = _v6kw.get("fourth_base_strength", 0.0); _v6paint["fourth_base_spec_strength"] = _v6kw.get("fourth_base_spec_strength", 1.0); _v6paint["fourth_base_blend_mode"] = _v6kw.get("fourth_base_blend_mode", "noise"); _v6paint["fourth_base_noise_scale"] = _v6kw.get("fourth_base_noise_scale", 24); _v6paint["fourth_base_scale"] = _v6kw.get("fourth_base_scale", 1.0); _v6paint["fourth_base_pattern"] = _v6kw.get("fourth_base_pattern"); _v6paint["fourth_base_pattern_scale"] = _v6kw.get("fourth_base_pattern_scale", 1.0); _v6paint["fourth_base_pattern_rotation"] = _v6kw.get("fourth_base_pattern_rotation", 0.0); _v6paint["fourth_base_pattern_opacity"] = _v6kw.get("fourth_base_pattern_opacity", 1.0); _v6paint["fourth_base_pattern_strength"] = _v6kw.get("fourth_base_pattern_strength", 1.0); _v6paint["fourth_base_pattern_invert"] = _v6kw.get("fourth_base_pattern_invert", False); _v6paint["fourth_base_pattern_harden"] = _v6kw.get("fourth_base_pattern_harden", False); _v6paint["fourth_base_pattern_offset_x"] = _v6kw.get("fourth_base_pattern_offset_x", 0.5); _v6paint["fourth_base_pattern_offset_y"] = _v6kw.get("fourth_base_pattern_offset_y", 0.5)
                 if _z_fif or _v6kw.get("fifth_base_color_source"): _v6paint["fifth_base"] = _z_fif; _v6paint["fifth_base_color_source"] = _v6kw.get("fifth_base_color_source"); _v6paint["fifth_base_color"] = _v6kw.get("fifth_base_color", [1.0, 1.0, 1.0]); _v6paint["fifth_base_strength"] = _v6kw.get("fifth_base_strength", 0.0); _v6paint["fifth_base_spec_strength"] = _v6kw.get("fifth_base_spec_strength", 1.0); _v6paint["fifth_base_blend_mode"] = _v6kw.get("fifth_base_blend_mode", "noise"); _v6paint["fifth_base_noise_scale"] = _v6kw.get("fifth_base_noise_scale", 24); _v6paint["fifth_base_scale"] = _v6kw.get("fifth_base_scale", 1.0); _v6paint["fifth_base_pattern"] = _v6kw.get("fifth_base_pattern"); _v6paint["fifth_base_pattern_scale"] = _v6kw.get("fifth_base_pattern_scale", 1.0); _v6paint["fifth_base_pattern_rotation"] = _v6kw.get("fifth_base_pattern_rotation", 0.0); _v6paint["fifth_base_pattern_opacity"] = _v6kw.get("fifth_base_pattern_opacity", 1.0); _v6paint["fifth_base_pattern_strength"] = _v6kw.get("fifth_base_pattern_strength", 1.0); _v6paint["fifth_base_pattern_invert"] = _v6kw.get("fifth_base_pattern_invert", False); _v6paint["fifth_base_pattern_harden"] = _v6kw.get("fifth_base_pattern_harden", False); _v6paint["fifth_base_pattern_offset_x"] = _v6kw.get("fifth_base_pattern_offset_x", 0.5); _v6paint["fifth_base_pattern_offset_y"] = _v6kw.get("fifth_base_pattern_offset_y", 0.5)
                 _v6paint["monolithic_registry"] = _v6kw.get("monolithic_registry")
+                _v6paint["base_offset_x"] = _v6kw.get("base_offset_x", 0.5)
+                _v6paint["base_offset_y"] = _v6kw.get("base_offset_y", 0.5)
+                _v6paint["base_rotation"] = _v6kw.get("base_rotation", 0)
+                _v6paint["base_flip_h"] = _v6kw.get("base_flip_h", False)
+                _v6paint["base_flip_v"] = _v6kw.get("base_flip_v", False)
                 zone_spec = compose_finish(base_id, pattern_id, shape, zone_mask, seed + i * 13, sm, scale=zone_scale, spec_mult=spec_mult, rotation=zone_rotation, base_scale=zone_base_scale, **_v6kw)
                 paint = compose_paint_mod(base_id, pattern_id, paint, shape, zone_mask, seed + i * 13, pm, bb, scale=zone_scale, rotation=zone_rotation, **_v6paint)
 
@@ -6093,6 +6104,51 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
         print(f"  Batched wear applied in {time.time()-t_wear:.2f}s")
 
     print(f"  All finishes applied: {time.time()-t_finishes:.2f}s")
+
+    # ---- DECAL SPEC FINISHES: Apply spec to decal regions ----
+    if decal_spec_finishes and decal_paint_path and os.path.exists(decal_paint_path):
+        print(f"\n  Applying decal spec finishes ({len(decal_spec_finishes)} entries)...")
+        t_decal_spec = time.time()
+        try:
+            from engine.spec_paint import (spec_gloss, spec_matte, spec_satin,
+                spec_metallic, spec_pearl, spec_chrome, spec_satin_metal)
+            DECAL_SPEC_MAP = {
+                "gloss": spec_gloss,
+                "matte": spec_matte,
+                "satin": spec_satin,
+                "metallic": spec_metallic,
+                "pearl": spec_pearl,
+                "chrome": spec_chrome,
+                "satin_metal": spec_satin_metal,
+            }
+            # Load the composited paint (paint + decals baked in) — alpha = decal mask
+            decal_comp = Image.open(decal_paint_path).convert('RGBA')
+            if decal_comp.size != (w, h):
+                decal_comp = decal_comp.resize((w, h), Image.LANCZOS)
+            decal_arr = np.array(decal_comp)
+            decal_alpha = decal_arr[:, :, 3].astype(np.float32) / 255.0  # 0-1 mask
+
+            if decal_alpha.max() > 0.01:
+                # Use the first entry's spec finish for all decal areas
+                # (all decals currently share one spec finish setting)
+                spec_name = decal_spec_finishes[0].get("specFinish", "gloss")
+                spec_fn = DECAL_SPEC_MAP.get(spec_name, spec_gloss)
+                decal_spec = spec_fn((h, w), decal_alpha, seed + 7777, 1.0)
+
+                # Blend decal spec onto combined_spec using decal alpha
+                alpha4 = decal_alpha[:, :, np.newaxis]
+                combined_spec = (
+                    combined_spec.astype(np.float32) * (1.0 - alpha4) +
+                    decal_spec.astype(np.float32) * alpha4
+                ).astype(np.uint8)
+
+                decal_px = int(np.sum(decal_alpha > 0.01))
+                print(f"  Decal spec applied: {decal_px:,} pixels, finish={spec_name}")
+            else:
+                print(f"  Decal spec skipped: no visible decal pixels in alpha channel")
+        except Exception as e:
+            print(f"  Decal Spec ERROR: {e}")
+        print(f"  Decal spec time: {time.time()-t_decal_spec:.2f}s")
 
     # ---- SPEC STAMPS: Apply stamp overlays on top of ALL zones ----
     if stamp_image and os.path.exists(stamp_image):
@@ -6663,6 +6719,11 @@ def build_helmet_spec(helmet_paint_file, output_dir, zones, iracing_id="23371", 
                 if _z_fb or _v6kw.get("fourth_base_color_source"): _v6paint["fourth_base"] = _z_fb; _v6paint["fourth_base_color_source"] = _v6kw.get("fourth_base_color_source"); _v6paint["fourth_base_color"] = _v6kw.get("fourth_base_color", [1.0, 1.0, 1.0]); _v6paint["fourth_base_strength"] = _v6kw.get("fourth_base_strength", 0.0); _v6paint["fourth_base_spec_strength"] = _v6kw.get("fourth_base_spec_strength", 1.0); _v6paint["fourth_base_blend_mode"] = _v6kw.get("fourth_base_blend_mode", "noise"); _v6paint["fourth_base_noise_scale"] = _v6kw.get("fourth_base_noise_scale", 24); _v6paint["fourth_base_scale"] = _v6kw.get("fourth_base_scale", 1.0); _v6paint["fourth_base_pattern"] = _v6kw.get("fourth_base_pattern"); _v6paint["fourth_base_pattern_scale"] = _v6kw.get("fourth_base_pattern_scale", 1.0); _v6paint["fourth_base_pattern_rotation"] = _v6kw.get("fourth_base_pattern_rotation", 0.0); _v6paint["fourth_base_pattern_opacity"] = _v6kw.get("fourth_base_pattern_opacity", 1.0); _v6paint["fourth_base_pattern_strength"] = _v6kw.get("fourth_base_pattern_strength", 1.0); _v6paint["fourth_base_pattern_invert"] = _v6kw.get("fourth_base_pattern_invert", False); _v6paint["fourth_base_pattern_harden"] = _v6kw.get("fourth_base_pattern_harden", False); _v6paint["fourth_base_pattern_offset_x"] = _v6kw.get("fourth_base_pattern_offset_x", 0.5); _v6paint["fourth_base_pattern_offset_y"] = _v6kw.get("fourth_base_pattern_offset_y", 0.5)
                 if _z_fif or _v6kw.get("fifth_base_color_source"): _v6paint["fifth_base"] = _z_fif; _v6paint["fifth_base_color_source"] = _v6kw.get("fifth_base_color_source"); _v6paint["fifth_base_color"] = _v6kw.get("fifth_base_color", [1.0, 1.0, 1.0]); _v6paint["fifth_base_strength"] = _v6kw.get("fifth_base_strength", 0.0); _v6paint["fifth_base_spec_strength"] = _v6kw.get("fifth_base_spec_strength", 1.0); _v6paint["fifth_base_blend_mode"] = _v6kw.get("fifth_base_blend_mode", "noise"); _v6paint["fifth_base_noise_scale"] = _v6kw.get("fifth_base_noise_scale", 24); _v6paint["fifth_base_scale"] = _v6kw.get("fifth_base_scale", 1.0); _v6paint["fifth_base_pattern"] = _v6kw.get("fifth_base_pattern"); _v6paint["fifth_base_pattern_scale"] = _v6kw.get("fifth_base_pattern_scale", 1.0); _v6paint["fifth_base_pattern_rotation"] = _v6kw.get("fifth_base_pattern_rotation", 0.0); _v6paint["fifth_base_pattern_opacity"] = _v6kw.get("fifth_base_pattern_opacity", 1.0); _v6paint["fifth_base_pattern_strength"] = _v6kw.get("fifth_base_pattern_strength", 1.0); _v6paint["fifth_base_pattern_invert"] = _v6kw.get("fifth_base_pattern_invert", False); _v6paint["fifth_base_pattern_harden"] = _v6kw.get("fifth_base_pattern_harden", False); _v6paint["fifth_base_pattern_offset_x"] = _v6kw.get("fifth_base_pattern_offset_x", 0.5); _v6paint["fifth_base_pattern_offset_y"] = _v6kw.get("fifth_base_pattern_offset_y", 0.5)
                 _v6paint["monolithic_registry"] = _v6kw.get("monolithic_registry")
+                _v6paint["base_offset_x"] = _v6kw.get("base_offset_x", 0.5)
+                _v6paint["base_offset_y"] = _v6kw.get("base_offset_y", 0.5)
+                _v6paint["base_rotation"] = _v6kw.get("base_rotation", 0)
+                _v6paint["base_flip_h"] = _v6kw.get("base_flip_h", False)
+                _v6paint["base_flip_v"] = _v6kw.get("base_flip_v", False)
                 if all_patterns:
                     zone_spec = compose_finish_stacked(base_id, all_patterns, shape, zone_mask, seed + i * 13, sm, spec_mult=spec_mult, base_scale=zone_base_scale, **_v6kw)
                     paint = compose_paint_mod_stacked(base_id, all_patterns, paint, shape, zone_mask, seed + i * 13, pm, bb, **_v6paint)
@@ -6682,6 +6743,11 @@ def build_helmet_spec(helmet_paint_file, output_dir, zones, iracing_id="23371", 
                 if _z_fb or _v6kw.get("fourth_base_color_source"): _v6paint["fourth_base"] = _z_fb; _v6paint["fourth_base_color_source"] = _v6kw.get("fourth_base_color_source"); _v6paint["fourth_base_color"] = _v6kw.get("fourth_base_color", [1.0, 1.0, 1.0]); _v6paint["fourth_base_strength"] = _v6kw.get("fourth_base_strength", 0.0); _v6paint["fourth_base_spec_strength"] = _v6kw.get("fourth_base_spec_strength", 1.0); _v6paint["fourth_base_blend_mode"] = _v6kw.get("fourth_base_blend_mode", "noise"); _v6paint["fourth_base_noise_scale"] = _v6kw.get("fourth_base_noise_scale", 24); _v6paint["fourth_base_scale"] = _v6kw.get("fourth_base_scale", 1.0); _v6paint["fourth_base_pattern"] = _v6kw.get("fourth_base_pattern"); _v6paint["fourth_base_pattern_scale"] = _v6kw.get("fourth_base_pattern_scale", 1.0); _v6paint["fourth_base_pattern_rotation"] = _v6kw.get("fourth_base_pattern_rotation", 0.0); _v6paint["fourth_base_pattern_opacity"] = _v6kw.get("fourth_base_pattern_opacity", 1.0); _v6paint["fourth_base_pattern_strength"] = _v6kw.get("fourth_base_pattern_strength", 1.0); _v6paint["fourth_base_pattern_invert"] = _v6kw.get("fourth_base_pattern_invert", False); _v6paint["fourth_base_pattern_harden"] = _v6kw.get("fourth_base_pattern_harden", False); _v6paint["fourth_base_pattern_offset_x"] = _v6kw.get("fourth_base_pattern_offset_x", 0.5); _v6paint["fourth_base_pattern_offset_y"] = _v6kw.get("fourth_base_pattern_offset_y", 0.5)
                 if _z_fif or _v6kw.get("fifth_base_color_source"): _v6paint["fifth_base"] = _z_fif; _v6paint["fifth_base_color_source"] = _v6kw.get("fifth_base_color_source"); _v6paint["fifth_base_color"] = _v6kw.get("fifth_base_color", [1.0, 1.0, 1.0]); _v6paint["fifth_base_strength"] = _v6kw.get("fifth_base_strength", 0.0); _v6paint["fifth_base_spec_strength"] = _v6kw.get("fifth_base_spec_strength", 1.0); _v6paint["fifth_base_blend_mode"] = _v6kw.get("fifth_base_blend_mode", "noise"); _v6paint["fifth_base_noise_scale"] = _v6kw.get("fifth_base_noise_scale", 24); _v6paint["fifth_base_scale"] = _v6kw.get("fifth_base_scale", 1.0); _v6paint["fifth_base_pattern"] = _v6kw.get("fifth_base_pattern"); _v6paint["fifth_base_pattern_scale"] = _v6kw.get("fifth_base_pattern_scale", 1.0); _v6paint["fifth_base_pattern_rotation"] = _v6kw.get("fifth_base_pattern_rotation", 0.0); _v6paint["fifth_base_pattern_opacity"] = _v6kw.get("fifth_base_pattern_opacity", 1.0); _v6paint["fifth_base_pattern_strength"] = _v6kw.get("fifth_base_pattern_strength", 1.0); _v6paint["fifth_base_pattern_invert"] = _v6kw.get("fifth_base_pattern_invert", False); _v6paint["fifth_base_pattern_harden"] = _v6kw.get("fifth_base_pattern_harden", False); _v6paint["fifth_base_pattern_offset_x"] = _v6kw.get("fifth_base_pattern_offset_x", 0.5); _v6paint["fifth_base_pattern_offset_y"] = _v6kw.get("fifth_base_pattern_offset_y", 0.5)
                 _v6paint["monolithic_registry"] = _v6kw.get("monolithic_registry")
+                _v6paint["base_offset_x"] = _v6kw.get("base_offset_x", 0.5)
+                _v6paint["base_offset_y"] = _v6kw.get("base_offset_y", 0.5)
+                _v6paint["base_rotation"] = _v6kw.get("base_rotation", 0)
+                _v6paint["base_flip_h"] = _v6kw.get("base_flip_h", False)
+                _v6paint["base_flip_v"] = _v6kw.get("base_flip_v", False)
                 zone_spec = compose_finish(base_id, pattern_id, shape, zone_mask, seed + i * 13, sm, scale=zone_scale, spec_mult=spec_mult, rotation=zone_rotation, base_scale=zone_base_scale, **_v6kw)
                 paint = compose_paint_mod(base_id, pattern_id, paint, shape, zone_mask, seed + i * 13, pm, bb, scale=zone_scale, rotation=zone_rotation, **_v6paint)
         elif finish_name and zone.get("finish_colors") and (
@@ -7053,6 +7119,11 @@ def build_suit_spec(suit_paint_file, output_dir, zones, iracing_id="23371", seed
                 if _z_fb or _v6kw.get("fourth_base_color_source"): _v6paint["fourth_base"] = _z_fb; _v6paint["fourth_base_color_source"] = _v6kw.get("fourth_base_color_source"); _v6paint["fourth_base_color"] = _v6kw.get("fourth_base_color", [1.0, 1.0, 1.0]); _v6paint["fourth_base_strength"] = _v6kw.get("fourth_base_strength", 0.0); _v6paint["fourth_base_spec_strength"] = _v6kw.get("fourth_base_spec_strength", 1.0); _v6paint["fourth_base_blend_mode"] = _v6kw.get("fourth_base_blend_mode", "noise"); _v6paint["fourth_base_noise_scale"] = _v6kw.get("fourth_base_noise_scale", 24); _v6paint["fourth_base_scale"] = _v6kw.get("fourth_base_scale", 1.0); _v6paint["fourth_base_pattern"] = _v6kw.get("fourth_base_pattern"); _v6paint["fourth_base_pattern_scale"] = _v6kw.get("fourth_base_pattern_scale", 1.0); _v6paint["fourth_base_pattern_rotation"] = _v6kw.get("fourth_base_pattern_rotation", 0.0); _v6paint["fourth_base_pattern_opacity"] = _v6kw.get("fourth_base_pattern_opacity", 1.0); _v6paint["fourth_base_pattern_strength"] = _v6kw.get("fourth_base_pattern_strength", 1.0); _v6paint["fourth_base_pattern_invert"] = _v6kw.get("fourth_base_pattern_invert", False); _v6paint["fourth_base_pattern_harden"] = _v6kw.get("fourth_base_pattern_harden", False); _v6paint["fourth_base_pattern_offset_x"] = _v6kw.get("fourth_base_pattern_offset_x", 0.5); _v6paint["fourth_base_pattern_offset_y"] = _v6kw.get("fourth_base_pattern_offset_y", 0.5)
                 if _z_fif or _v6kw.get("fifth_base_color_source"): _v6paint["fifth_base"] = _z_fif; _v6paint["fifth_base_color_source"] = _v6kw.get("fifth_base_color_source"); _v6paint["fifth_base_color"] = _v6kw.get("fifth_base_color", [1.0, 1.0, 1.0]); _v6paint["fifth_base_strength"] = _v6kw.get("fifth_base_strength", 0.0); _v6paint["fifth_base_spec_strength"] = _v6kw.get("fifth_base_spec_strength", 1.0); _v6paint["fifth_base_blend_mode"] = _v6kw.get("fifth_base_blend_mode", "noise"); _v6paint["fifth_base_noise_scale"] = _v6kw.get("fifth_base_noise_scale", 24); _v6paint["fifth_base_scale"] = _v6kw.get("fifth_base_scale", 1.0); _v6paint["fifth_base_pattern"] = _v6kw.get("fifth_base_pattern"); _v6paint["fifth_base_pattern_scale"] = _v6kw.get("fifth_base_pattern_scale", 1.0); _v6paint["fifth_base_pattern_rotation"] = _v6kw.get("fifth_base_pattern_rotation", 0.0); _v6paint["fifth_base_pattern_opacity"] = _v6kw.get("fifth_base_pattern_opacity", 1.0); _v6paint["fifth_base_pattern_strength"] = _v6kw.get("fifth_base_pattern_strength", 1.0); _v6paint["fifth_base_pattern_invert"] = _v6kw.get("fifth_base_pattern_invert", False); _v6paint["fifth_base_pattern_harden"] = _v6kw.get("fifth_base_pattern_harden", False); _v6paint["fifth_base_pattern_offset_x"] = _v6kw.get("fifth_base_pattern_offset_x", 0.5); _v6paint["fifth_base_pattern_offset_y"] = _v6kw.get("fifth_base_pattern_offset_y", 0.5)
                 _v6paint["monolithic_registry"] = _v6kw.get("monolithic_registry")
+                _v6paint["base_offset_x"] = _v6kw.get("base_offset_x", 0.5)
+                _v6paint["base_offset_y"] = _v6kw.get("base_offset_y", 0.5)
+                _v6paint["base_rotation"] = _v6kw.get("base_rotation", 0)
+                _v6paint["base_flip_h"] = _v6kw.get("base_flip_h", False)
+                _v6paint["base_flip_v"] = _v6kw.get("base_flip_v", False)
                 if all_patterns:
                     zone_spec = compose_finish_stacked(base_id, all_patterns, shape, zone_mask, seed + i * 13, sm, spec_mult=spec_mult, base_scale=zone_base_scale, **_v6kw)
                     paint = compose_paint_mod_stacked(base_id, all_patterns, paint, shape, zone_mask, seed + i * 13, pm, bb, **_v6paint)
@@ -7072,6 +7143,11 @@ def build_suit_spec(suit_paint_file, output_dir, zones, iracing_id="23371", seed
                 if _z_fb or _v6kw.get("fourth_base_color_source"): _v6paint["fourth_base"] = _z_fb; _v6paint["fourth_base_color_source"] = _v6kw.get("fourth_base_color_source"); _v6paint["fourth_base_color"] = _v6kw.get("fourth_base_color", [1.0, 1.0, 1.0]); _v6paint["fourth_base_strength"] = _v6kw.get("fourth_base_strength", 0.0); _v6paint["fourth_base_spec_strength"] = _v6kw.get("fourth_base_spec_strength", 1.0); _v6paint["fourth_base_blend_mode"] = _v6kw.get("fourth_base_blend_mode", "noise"); _v6paint["fourth_base_noise_scale"] = _v6kw.get("fourth_base_noise_scale", 24); _v6paint["fourth_base_scale"] = _v6kw.get("fourth_base_scale", 1.0); _v6paint["fourth_base_pattern"] = _v6kw.get("fourth_base_pattern"); _v6paint["fourth_base_pattern_scale"] = _v6kw.get("fourth_base_pattern_scale", 1.0); _v6paint["fourth_base_pattern_rotation"] = _v6kw.get("fourth_base_pattern_rotation", 0.0); _v6paint["fourth_base_pattern_opacity"] = _v6kw.get("fourth_base_pattern_opacity", 1.0); _v6paint["fourth_base_pattern_strength"] = _v6kw.get("fourth_base_pattern_strength", 1.0); _v6paint["fourth_base_pattern_invert"] = _v6kw.get("fourth_base_pattern_invert", False); _v6paint["fourth_base_pattern_harden"] = _v6kw.get("fourth_base_pattern_harden", False); _v6paint["fourth_base_pattern_offset_x"] = _v6kw.get("fourth_base_pattern_offset_x", 0.5); _v6paint["fourth_base_pattern_offset_y"] = _v6kw.get("fourth_base_pattern_offset_y", 0.5)
                 if _z_fif or _v6kw.get("fifth_base_color_source"): _v6paint["fifth_base"] = _z_fif; _v6paint["fifth_base_color_source"] = _v6kw.get("fifth_base_color_source"); _v6paint["fifth_base_color"] = _v6kw.get("fifth_base_color", [1.0, 1.0, 1.0]); _v6paint["fifth_base_strength"] = _v6kw.get("fifth_base_strength", 0.0); _v6paint["fifth_base_spec_strength"] = _v6kw.get("fifth_base_spec_strength", 1.0); _v6paint["fifth_base_blend_mode"] = _v6kw.get("fifth_base_blend_mode", "noise"); _v6paint["fifth_base_noise_scale"] = _v6kw.get("fifth_base_noise_scale", 24); _v6paint["fifth_base_scale"] = _v6kw.get("fifth_base_scale", 1.0); _v6paint["fifth_base_pattern"] = _v6kw.get("fifth_base_pattern"); _v6paint["fifth_base_pattern_scale"] = _v6kw.get("fifth_base_pattern_scale", 1.0); _v6paint["fifth_base_pattern_rotation"] = _v6kw.get("fifth_base_pattern_rotation", 0.0); _v6paint["fifth_base_pattern_opacity"] = _v6kw.get("fifth_base_pattern_opacity", 1.0); _v6paint["fifth_base_pattern_strength"] = _v6kw.get("fifth_base_pattern_strength", 1.0); _v6paint["fifth_base_pattern_invert"] = _v6kw.get("fifth_base_pattern_invert", False); _v6paint["fifth_base_pattern_harden"] = _v6kw.get("fifth_base_pattern_harden", False); _v6paint["fifth_base_pattern_offset_x"] = _v6kw.get("fifth_base_pattern_offset_x", 0.5); _v6paint["fifth_base_pattern_offset_y"] = _v6kw.get("fifth_base_pattern_offset_y", 0.5)
                 _v6paint["monolithic_registry"] = _v6kw.get("monolithic_registry")
+                _v6paint["base_offset_x"] = _v6kw.get("base_offset_x", 0.5)
+                _v6paint["base_offset_y"] = _v6kw.get("base_offset_y", 0.5)
+                _v6paint["base_rotation"] = _v6kw.get("base_rotation", 0)
+                _v6paint["base_flip_h"] = _v6kw.get("base_flip_h", False)
+                _v6paint["base_flip_v"] = _v6kw.get("base_flip_v", False)
                 zone_spec = compose_finish(base_id, pattern_id, shape, zone_mask, seed + i * 13, sm, scale=zone_scale, spec_mult=spec_mult, rotation=zone_rotation, base_scale=zone_base_scale, **_v6kw)
                 paint = compose_paint_mod(base_id, pattern_id, paint, shape, zone_mask, seed + i * 13, pm, bb, scale=zone_scale, rotation=zone_rotation, **_v6paint)
         elif finish_name and zone.get("finish_colors") and (
@@ -7184,7 +7260,8 @@ def build_suit_spec(suit_paint_file, output_dir, zones, iracing_id="23371", seed
 
 def build_matching_set(car_paint_file, output_dir, zones, iracing_id="23371", seed=51,
                        helmet_paint_file=None, suit_paint_file=None, import_spec_map=None, car_prefix="car_num",
-                       stamp_image=None, stamp_spec_finish="gloss"):
+                       stamp_image=None, stamp_spec_finish="gloss",
+                       decal_spec_finishes=None, decal_paint_path=None):
     """Build car + matching helmet + matching suit in one call.
 
     If helmet/suit paint files are provided, applies the SAME zone config
@@ -7204,7 +7281,8 @@ def build_matching_set(car_paint_file, output_dir, zones, iracing_id="23371", se
     # 1. Build car (always)
     car_paint, car_spec, zone_masks = build_multi_zone(
         car_paint_file, output_dir, zones, iracing_id, seed, import_spec_map=import_spec_map, car_prefix=car_prefix,
-        stamp_image=stamp_image, stamp_spec_finish=stamp_spec_finish)
+        stamp_image=stamp_image, stamp_spec_finish=stamp_spec_finish,
+        decal_spec_finishes=decal_spec_finishes, decal_paint_path=decal_paint_path)
     results["car_paint"] = car_paint
     results["car_spec"] = car_spec
 
@@ -7514,7 +7592,8 @@ def full_render_pipeline(car_paint_file, output_dir, zones, iracing_id="23371",
                          seed=51, helmet_paint_file=None, suit_paint_file=None,
                          wear_level=0, car_folder_name=None, export_zip=True,
                          dual_spec=False, night_boost=0.7, import_spec_map=None,
-                         car_prefix="car_num", stamp_image=None, stamp_spec_finish="gloss"):
+                         car_prefix="car_num", stamp_image=None, stamp_spec_finish="gloss",
+                         decal_spec_finishes=None, decal_paint_path=None):
     """The ultimate one-call render pipeline.
 
     1. Builds car spec map + paint modifications
@@ -7538,7 +7617,8 @@ def full_render_pipeline(car_paint_file, output_dir, zones, iracing_id="23371",
     results = build_matching_set(
         car_paint_file, output_dir, zones, iracing_id, seed,
         helmet_paint_file, suit_paint_file, import_spec_map=import_spec_map,
-        car_prefix=car_prefix, stamp_image=stamp_image, stamp_spec_finish=stamp_spec_finish
+        car_prefix=car_prefix, stamp_image=stamp_image, stamp_spec_finish=stamp_spec_finish,
+        decal_spec_finishes=decal_spec_finishes, decal_paint_path=decal_paint_path
     )
     print(f"  Step 1 (matching set): {time.time()-t_step1:.1f}s")
 

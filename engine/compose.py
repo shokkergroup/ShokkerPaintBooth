@@ -1323,7 +1323,9 @@ def compose_paint_mod(base_id, pattern_id, paint, shape, mask, seed, pm, bb, sca
                       fifth_base_pattern_offset_x=0.5, fifth_base_pattern_offset_y=0.5,
                       monolithic_registry=None, base_strength=1.0, base_spec_strength=1.0, spec_mult=1.0,
                       pattern_intensity=1.0,
-                      base_hue_offset=0, base_saturation_adjust=0, base_brightness_adjust=0):
+                      base_hue_offset=0, base_saturation_adjust=0, base_brightness_adjust=0,
+                      base_offset_x=0.5, base_offset_y=0.5, base_rotation=0.0,
+                      base_flip_h=False, base_flip_v=False):
     """Apply base paint modifier then pattern paint modifier WITH spatial texture blending.
     pattern_intensity 0-1: 5%% = hint, 100%% = full (linear; avoids flip below 50%%).
     When second_base_color_source (etc.) is 'mono:xyz', the overlay color comes from that special's paint_fn (gradients, color shifts, etc.)."""
@@ -1376,6 +1378,21 @@ def compose_paint_mod(base_id, pattern_id, paint, shape, mask, seed, pm, bb, sca
             _paint_after_base[:, :, :3] * _str_w
             + paint[:, :, :3] * (1.0 - _str_w)
         ) * _mask3 + paint[:, :, :3] * (1.0 - _mask3)
+
+    # Base transforms (offset, rotation, flip) applied to paint channels
+    _bo_x = max(0.0, min(1.0, float(base_offset_x if base_offset_x is not None else 0.5)))
+    _bo_y = max(0.0, min(1.0, float(base_offset_y if base_offset_y is not None else 0.5)))
+    if abs(_bo_x - 0.5) > 0.001 or abs(_bo_y - 0.5) > 0.001:
+        for ch in range(min(3, paint.shape[2])):
+            _apply_pattern_offset(paint[:, :, ch], shape, _bo_x, _bo_y)
+    _bro = float(base_rotation if base_rotation is not None else 0) % 360.0
+    if abs(_bro) > 0.5:
+        for ch in range(min(3, paint.shape[2])):
+            paint[:, :, ch] = _rotate_single_array(paint[:, :, ch], _bro, shape)
+    if base_flip_h:
+        paint = np.fliplr(paint).copy()
+    if base_flip_v:
+        paint = np.flipud(paint).copy()
 
     if has_blend and base2_paint_fn is not paint_none:
         print(f"    [BLEND PAINT v6.1] base={base_id} + blend={blend_base}, dir={blend_dir}, amount={blend_amount:.2f}")
@@ -1778,7 +1795,9 @@ def compose_paint_mod_stacked(base_id, all_patterns, paint, shape, mask, seed, p
                               fifth_base_pattern_opacity=1.0, fifth_base_pattern_strength=1.0,
                               fifth_base_pattern_invert=False, fifth_base_pattern_harden=False,
                               fifth_base_pattern_offset_x=0.5, fifth_base_pattern_offset_y=0.5,
-                              base_strength=1.0, base_spec_strength=1.0, spec_mult=1.0, **kwargs):
+                              base_strength=1.0, base_spec_strength=1.0, spec_mult=1.0,
+                              base_offset_x=0.5, base_offset_y=0.5, base_rotation=0.0,
+                              base_flip_h=False, base_flip_v=False, **kwargs):
     """Apply base paint modifier then MULTIPLE stacked pattern paint modifiers.
     When second_base_color_source (etc.) is 'mono:xyz', overlay color comes from that special's paint_fn."""
     from engine.registry import BASE_REGISTRY, PATTERN_REGISTRY
@@ -1845,6 +1864,21 @@ def compose_paint_mod_stacked(base_id, all_patterns, paint, shape, mask, seed, p
             + paint[:, :, :3] * (1.0 - _str_w)
         ) * _mask3 + paint[:, :, :3] * (1.0 - _mask3)
 
+
+    # Base transforms (offset, rotation, flip) applied to paint channels
+    _bo_x_stk = max(0.0, min(1.0, float(base_offset_x if base_offset_x is not None else 0.5)))
+    _bo_y_stk = max(0.0, min(1.0, float(base_offset_y if base_offset_y is not None else 0.5)))
+    if abs(_bo_x_stk - 0.5) > 0.001 or abs(_bo_y_stk - 0.5) > 0.001:
+        for ch in range(min(3, paint.shape[2])):
+            _apply_pattern_offset(paint[:, :, ch], shape, _bo_x_stk, _bo_y_stk)
+    _bro_stk = float(base_rotation if base_rotation is not None else 0) % 360.0
+    if abs(_bro_stk) > 0.5:
+        for ch in range(min(3, paint.shape[2])):
+            paint[:, :, ch] = _rotate_single_array(paint[:, :, ch], _bro_stk, shape)
+    if base_flip_h:
+        paint = np.fliplr(paint).copy()
+    if base_flip_v:
+        paint = np.flipud(paint).copy()
 
     if has_blend and base2_paint_fn is not paint_none:
         print(f"    [BLEND PAINT v6.1 STACKED] base={base_id} + blend={blend_base}, dir={blend_dir}, amount={blend_amount:.2f}")

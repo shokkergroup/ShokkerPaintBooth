@@ -1586,6 +1586,13 @@ async function doRender() {
             const dataUrl = compositeCanvas.toDataURL('image/png');
             extras.paint_image_base64 = dataUrl;
         }
+        // Send per-decal spec finish info to server
+        const decalSpecs = decalLayers
+            .filter(dl => dl.visible && dl.specFinish && dl.specFinish !== 'none')
+            .map(dl => ({ specFinish: dl.specFinish }));
+        if (decalSpecs.length > 0) {
+            extras.decal_spec_finishes = decalSpecs;
+        }
     }
 
     // Spec Stamps: composite stamp images and send to server

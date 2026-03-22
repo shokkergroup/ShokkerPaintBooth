@@ -96,7 +96,11 @@
                 const img = new Image();
                 img.onload = () => {
                     const { w: cw, h: ch } = getPaintCanvasSize();
-                    const scale = 0.5;
+                    // Smart scale: full-size images import at 1.0, oversized get scaled to fit
+                    let scale = 1.0;
+                    if (img.width > cw * 1.5 || img.height > ch * 1.5) {
+                        scale = Math.min(cw / img.width, ch / img.height) * 0.9;
+                    }
                     const dw = img.width * scale, dh = img.height * scale;
                     const x = Math.max(0, (cw - dw) / 2);
                     const y = Math.max(0, (ch - dh) / 2);
@@ -110,6 +114,7 @@
                         visible: true,
                         flipH: false,
                         flipV: false,
+                        specFinish: 'none',
                     });
                     selectedDecalIndex = decalLayers.length - 1;
                     renderDecalList();
@@ -192,6 +197,18 @@
                 <button onclick="toggleDecalVisibility(${idx})" title="Toggle visibility">${d.visible ? '&#x1F441;' : '&#x1F6AB;'}</button>
                 <button onclick="removeDecal(${idx})" title="Remove">&times;</button>
             </div>
+            <select onchange="decalLayers[${idx}].specFinish = this.value; renderDecalOverlay();"
+                    style="background:#1a1a1a; color:#ccc; border:1px solid #333; padding:2px 4px; font-size:10px; width:100%;"
+                    title="Apply a spec finish to just this decal's pixels">
+              <option value="none" ${(!d.specFinish || d.specFinish === 'none') ? 'selected' : ''}>No Spec Finish</option>
+              <option value="gloss" ${d.specFinish === 'gloss' ? 'selected' : ''}>Gloss</option>
+              <option value="matte" ${d.specFinish === 'matte' ? 'selected' : ''}>Matte</option>
+              <option value="satin" ${d.specFinish === 'satin' ? 'selected' : ''}>Satin</option>
+              <option value="metallic" ${d.specFinish === 'metallic' ? 'selected' : ''}>Metallic</option>
+              <option value="pearl" ${d.specFinish === 'pearl' ? 'selected' : ''}>Pearl</option>
+              <option value="chrome" ${d.specFinish === 'chrome' ? 'selected' : ''}>Chrome</option>
+              <option value="satin_metal" ${d.specFinish === 'satin_metal' ? 'selected' : ''}>Satin Metal</option>
+            </select>
         </div>`;
             });
             list.innerHTML = html;
@@ -336,6 +353,7 @@
                     visible: true,
                     flipH: false,
                     flipV: false,
+                    specFinish: 'none',
                 });
                 selectedDecalIndex = decalLayers.length - 1;
                 renderDecalList();

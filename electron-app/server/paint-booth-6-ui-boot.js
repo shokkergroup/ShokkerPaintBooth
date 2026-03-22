@@ -202,9 +202,54 @@
                     title="Apply a spec finish to just this decal's pixels">
               <option value="none" ${(!d.specFinish || d.specFinish === 'none') ? 'selected' : ''}>No Spec Finish</option>
               ${(() => {
-                const foundationIds = (window.BASE_GROUPS && window.BASE_GROUPS['Foundation']) || [];
-                const foundationBases = foundationIds.map(id => (window.BASES || []).find(b => b.id === id)).filter(Boolean);
-                return foundationBases.map(b => `<option value="${b.id}" ${d.specFinish === b.id ? 'selected' : ''}>${b.name}</option>`).join('');
+                // BASE_GROUPS and BASES are top-level const in paint-booth-0-finish-data.js.
+                // In non-module scripts they are in global scope but NOT on window — use directly.
+                const foundationIds = (typeof BASE_GROUPS !== 'undefined' && BASE_GROUPS['Foundation']) ||
+                                     (typeof window.BASE_GROUPS !== 'undefined' && window.BASE_GROUPS['Foundation']) ||
+                                     [];
+                const basesArr = (typeof BASES !== 'undefined' ? BASES : null) ||
+                                 (typeof window.BASES !== 'undefined' ? window.BASES : null) ||
+                                 [];
+                const foundationBases = foundationIds.map(id => basesArr.find(b => b.id === id)).filter(Boolean);
+                // Hardcoded fallback in case data hasn't loaded yet
+                const fallback = [
+                    {id: 'gloss',          name: 'Gloss'},
+                    {id: 'matte',          name: 'Matte'},
+                    {id: 'satin',          name: 'Satin'},
+                    {id: 'semi_gloss',     name: 'Semi Gloss'},
+                    {id: 'silk',           name: 'Silk'},
+                    {id: 'wet_look',       name: 'Wet Look'},
+                    {id: 'clear_matte',    name: 'Clear Matte'},
+                    {id: 'flat_black',     name: 'Flat Black'},
+                    {id: 'primer',         name: 'Primer'},
+                    {id: 'eggshell',       name: 'Eggshell'},
+                    {id: 'ceramic',        name: 'Ceramic'},
+                    {id: 'piano_black',    name: 'Piano Black'},
+                    {id: 'scuffed_satin',  name: 'Scuffed Satin'},
+                    {id: 'chalky_base',    name: 'Chalky'},
+                    {id: 'living_matte',   name: 'Living Matte'},
+                    {id: 'f_chrome',       name: 'Chrome (Foundation)'},
+                    {id: 'f_satin_chrome', name: 'Satin Chrome (Foundation)'},
+                    {id: 'f_metallic',     name: 'Metallic (Foundation)'},
+                    {id: 'f_pearl',        name: 'Pearl (Foundation)'},
+                    {id: 'f_carbon_fiber', name: 'Carbon Fiber (Foundation)'},
+                    {id: 'f_brushed',      name: 'Brushed (Foundation)'},
+                    {id: 'f_frozen',       name: 'Frozen (Foundation)'},
+                    {id: 'f_powder_coat',  name: 'Powder Coat (Foundation)'},
+                    {id: 'f_anodized',     name: 'Anodized (Foundation)'},
+                    {id: 'f_vinyl_wrap',   name: 'Vinyl Wrap (Foundation)'},
+                    {id: 'f_gel_coat',     name: 'Gel Coat (Foundation)'},
+                    {id: 'f_baked_enamel', name: 'Baked Enamel (Foundation)'},
+                    {id: 'f_pure_white',   name: 'Pure White (Foundation)'},
+                    {id: 'f_pure_black',   name: 'Pure Black (Foundation)'},
+                    {id: 'f_neutral_grey', name: 'Neutral Grey (Foundation)'},
+                    {id: 'f_soft_gloss',   name: 'Soft Gloss (Foundation)'},
+                    {id: 'f_soft_matte',   name: 'Soft Matte (Foundation)'},
+                    {id: 'f_clear_satin',  name: 'Clear Satin (Foundation)'},
+                    {id: 'f_warm_white',   name: 'Warm White (Foundation)'},
+                ];
+                const options = foundationBases.length > 0 ? foundationBases : fallback;
+                return options.map(b => `<option value="${b.id}" ${d.specFinish === b.id ? 'selected' : ''}>${b.name}</option>`).join('');
               })()}
             </select>
         </div>`;

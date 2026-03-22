@@ -852,37 +852,38 @@ if __name__ == '__main__':
         // ===== PAINT PREVIEW & EYEDROPPER =====
 
         // Activate Manual Placement mode for a zone — enables drag-to-position on the preview canvas
-        function activateManualPlacement(zoneIndex) {
-            // Select the zone so placement drag targets it
-            if (typeof selectZone === 'function') selectZone(zoneIndex);
-
-            // Set placementLayer so canvas drag handlers know to reposition the pattern
-            // Only default to 'pattern' if no explicit layer was set before calling
-            if (typeof placementLayer === 'undefined' || placementLayer === 'none') {
+        function activateManualPlacement(zoneIndex, layer) {
+            // Set placement layer FIRST, before selectZone can reset it
+            if (layer) {
+                placementLayer = layer;
+            } else if (placementLayer === 'none' || !placementLayer) {
                 placementLayer = 'pattern';
             }
 
-            // Show visual feedback
-            if (typeof showToast === 'function') showToast('Manual Placement active — drag on the preview to position. Scroll to resize. Shift+drag to rotate.');
+            // Now select the zone (it will see placementLayer is already set)
+            if (typeof selectZone === 'function') selectZone(zoneIndex);
 
-            // Update canvas cursor
-            const canvas = document.getElementById('paintCanvas');
-            if (canvas) canvas.style.cursor = 'move';
-
-            // Show the floating tools bar
+            // Show tools bar
             const toolsBar = document.getElementById('placement-tools-bar');
             if (toolsBar) toolsBar.style.display = 'flex';
 
-            // Update placement banner if it exists
+            // Set cursor
+            if (paintCanvas) paintCanvas.style.cursor = 'move';
+
+            // Update banner
             if (typeof updatePlacementBanner === 'function') updatePlacementBanner();
+
+            // Toast
+            const layerName = placementLayer.replace(/_/g, ' ');
+            showToast('Manual Placement active for ' + layerName + ' — drag to position, scroll to resize, Shift+drag to rotate', 'info');
         }
+        window.activateManualPlacement = activateManualPlacement;
 
         // Deactivate Manual Placement mode — hides tools bar and resets cursor
         function deactivateManualPlacement() {
             placementLayer = 'none';
             const toolsBar = document.getElementById('placement-tools-bar');
             if (toolsBar) toolsBar.style.display = 'none';
-            const paintCanvas = document.getElementById('paintCanvas');
             if (paintCanvas) paintCanvas.style.cursor = '';
             if (typeof updatePlacementBanner === 'function') updatePlacementBanner();
         }
@@ -895,6 +896,9 @@ if __name__ == '__main__':
             if (placementLayer === 'pattern') z.patternFlipH = !z.patternFlipH;
             else if (placementLayer === 'base') z.baseFlipH = !z.baseFlipH;
             else if (placementLayer === 'second_base') z.secondBasePatternFlipH = !z.secondBasePatternFlipH;
+            else if (placementLayer.startsWith('spec_pattern_')) {
+                // spec patterns don't have a flip property — no-op
+            }
             triggerPreviewRender();
             renderZones();
         };
@@ -905,6 +909,9 @@ if __name__ == '__main__':
             if (placementLayer === 'pattern') z.patternFlipV = !z.patternFlipV;
             else if (placementLayer === 'base') z.baseFlipV = !z.baseFlipV;
             else if (placementLayer === 'second_base') z.secondBasePatternFlipV = !z.secondBasePatternFlipV;
+            else if (placementLayer.startsWith('spec_pattern_')) {
+                // spec patterns don't have a flip property — no-op
+            }
             triggerPreviewRender();
             renderZones();
         };
@@ -915,6 +922,11 @@ if __name__ == '__main__':
             if (placementLayer === 'pattern') z.rotation = ((z.rotation || 0) + 90) % 360;
             else if (placementLayer === 'base') z.baseRotation = ((z.baseRotation || 0) + 90) % 360;
             else if (placementLayer === 'second_base') z.secondBasePatternRotation = (((z.secondBasePatternRotation || 0) + 90) % 360);
+            else if (placementLayer.startsWith('spec_pattern_')) {
+                const si = parseInt(placementLayer.split('_')[2]);
+                const sp = z.specPatternStack && z.specPatternStack[si];
+                if (sp) sp.rotation = ((sp.rotation || 0) + 90) % 360;
+            }
             triggerPreviewRender();
             renderZones();
         };
@@ -925,6 +937,11 @@ if __name__ == '__main__':
             if (placementLayer === 'pattern') z.rotation = (((z.rotation || 0) - 90) + 360) % 360;
             else if (placementLayer === 'base') z.baseRotation = (((z.baseRotation || 0) - 90) + 360) % 360;
             else if (placementLayer === 'second_base') z.secondBasePatternRotation = (((z.secondBasePatternRotation || 0) - 90) + 360) % 360;
+            else if (placementLayer.startsWith('spec_pattern_')) {
+                const si = parseInt(placementLayer.split('_')[2]);
+                const sp = z.specPatternStack && z.specPatternStack[si];
+                if (sp) sp.rotation = (((sp.rotation || 0) - 90) + 360) % 360;
+            }
             triggerPreviewRender();
             renderZones();
         };
@@ -938,6 +955,10 @@ if __name__ == '__main__':
                 z.baseOffsetX = 0.5; z.baseOffsetY = 0.5; z.baseScale = 1.0; z.baseRotation = 0; z.baseFlipH = false; z.baseFlipV = false;
             } else if (placementLayer === 'second_base') {
                 z.secondBasePatternOffsetX = 0.5; z.secondBasePatternOffsetY = 0.5; z.secondBasePatternScale = 1.0; z.secondBasePatternRotation = 0;
+            } else if (placementLayer.startsWith('spec_pattern_')) {
+                const si = parseInt(placementLayer.split('_')[2]);
+                const sp = z.specPatternStack && z.specPatternStack[si];
+                if (sp) { sp.offsetX = 0.5; sp.offsetY = 0.5; sp.scale = 1.0; sp.rotation = 0; }
             }
             triggerPreviewRender();
             renderZones();
@@ -985,6 +1006,10 @@ if __name__ == '__main__':
                     z.baseOffsetX = ox; z.baseOffsetY = oy;
                     const xEl = document.getElementById('detBasePosXVal' + i); if (xEl) { xEl.textContent = pctX; const inp = xEl.previousElementSibling; if (inp && inp.type === 'range') inp.value = vx; }
                     const yEl = document.getElementById('detBasePosYVal' + i); if (yEl) { yEl.textContent = pctY; const inp = yEl.previousElementSibling; if (inp && inp.type === 'range') inp.value = vy; }
+                } else if (layer.startsWith('spec_pattern_')) {
+                    const si = parseInt(layer.split('_')[2]);
+                    const sp = z.specPatternStack && z.specPatternStack[si];
+                    if (sp) { sp.offsetX = ox; sp.offsetY = oy; }
                 }
                 if (typeof triggerPreviewRender === 'function') {
                     clearTimeout(placementPreviewTimer);
@@ -1225,6 +1250,11 @@ if __name__ == '__main__':
                         else if (placementLayer === 'second_base') { ox = z.secondBasePatternOffsetX ?? 0.5; oy = z.secondBasePatternOffsetY ?? 0.5; }
                         else if (placementLayer === 'third_base') { ox = z.thirdBasePatternOffsetX ?? 0.5; oy = z.thirdBasePatternOffsetY ?? 0.5; }
                         else if (placementLayer === 'base') { ox = z.baseOffsetX ?? 0.5; oy = z.baseOffsetY ?? 0.5; }
+                        else if (placementLayer.startsWith('spec_pattern_')) {
+                            const si = parseInt(placementLayer.split('_')[2]);
+                            const sp = z.specPatternStack && z.specPatternStack[si];
+                            if (sp) { ox = sp.offsetX ?? 0.5; oy = sp.offsetY ?? 0.5; }
+                        }
                         placementDragStart = { x: pos.x, y: pos.y, offsetX: ox, offsetY: oy };
                         placementDragging = true;
                         if (typeof pushZoneUndo === 'function') pushZoneUndo('', true);
@@ -3771,6 +3801,25 @@ if __name__ == '__main__':
             // Include imported spec map if active (merge mode)
             if (importedSpecMapPath) {
                 body.import_spec_map = importedSpecMapPath;
+            }
+
+            // Include decal composited paint + spec finish info so preview shows decal spec
+            if (typeof compositeDecalsForRender === 'function' && typeof decalLayers !== 'undefined' && decalLayers.length > 0) {
+                try {
+                    const compositeCanvas = compositeDecalsForRender();
+                    if (compositeCanvas) {
+                        body.paint_image_base64 = compositeCanvas.toDataURL('image/png');
+                    }
+                    const decalSpecs = decalLayers
+                        .filter(dl => dl.visible && dl.specFinish && dl.specFinish !== 'none')
+                        .map(dl => ({ specFinish: dl.specFinish }));
+                    if (decalSpecs.length > 0) {
+                        body.decal_spec_finishes = decalSpecs;
+                    }
+                } catch (e) {
+                    // Non-fatal: preview still works without decal spec
+                    console.warn('[preview] Failed to composite decals for preview:', e);
+                }
             }
 
             try {

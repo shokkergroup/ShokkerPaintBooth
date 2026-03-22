@@ -930,6 +930,11 @@ function renderZoneDetail(index) {
                     <label style="color:#888; font-size:10px;">Rot</label>
                     <input type="range" min="0" max="359" value="${sp.rotation||0}"
                            onchange="zones[${i}].specPatternStack[${si}].rotation=parseInt(this.value); triggerPreviewRender();" style="width:60px;">
+                    <button onclick="activateManualPlacement(${i}, 'spec_pattern_${si}'); showToast('Drag on canvas to position spec pattern','info');"
+                            style="background:#1a1a1a; color:#00C8C8; border:1px solid #00C8C8; padding:2px 8px; font-size:10px; cursor:pointer; border-radius:3px;"
+                            title="Drag on canvas to position this spec pattern">
+                      ✋ Manual Place
+                    </button>
                 </div>
             </div>`;
         });
@@ -1021,7 +1026,7 @@ function renderZoneDetail(index) {
             </div>
             <div class="base-placement-mode" style="margin:6px 0; display:flex; gap:6px; align-items:center;">
                 <label style="color:#aaa; font-size:11px;">Base Placement:</label>
-                <select onchange="zones[${i}].basePlacement=this.value; if(this.value==='manual'){placementLayer='base'; activateManualPlacement(${i});} renderZones();" style="background:#1a1a1a; color:#ccc; border:1px solid #333; padding:2px 6px; font-size:11px;">
+                <select onchange="zones[${i}].basePlacement=this.value; if(this.value==='manual'){ activateManualPlacement(${i}, 'base'); } else { if (typeof deactivateManualPlacement === 'function') deactivateManualPlacement(); } renderZones();" style="background:#1a1a1a; color:#ccc; border:1px solid #333; padding:2px 6px; font-size:11px;">
                     <option value="normal" ${(zone.basePlacement||'normal')!=='manual'?'selected':''}>Full Canvas</option>
                     <option value="manual" ${zone.basePlacement==='manual'?'selected':''}>Manual Placement</option>
                 </select>
@@ -1106,7 +1111,7 @@ function renderZoneDetail(index) {
                             <button class="btn btn-sm" onclick="event.stopPropagation(); resetZoneRotation(${i})" style="padding:0 4px;font-size:9px;">↺</button></div>
                         <div class="zone-target-mode" style="margin: 6px 0; display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
                             <label style="color: #aaa; font-size: 11px; white-space: nowrap;">Pattern Placement:</label>
-                            <select onchange="zones[${i}].patternPlacement = this.value; if(this.value === 'manual') { activateManualPlacement(${i}); } renderZones();"
+                            <select onchange="zones[${i}].patternPlacement = this.value; if(this.value === 'manual') { activateManualPlacement(${i}, 'pattern'); } else { if (typeof deactivateManualPlacement === 'function') deactivateManualPlacement(); } renderZones();"
                                     style="background: #1a1a1a; color: #ccc; border: 1px solid #333; padding: 2px 6px; font-size: 11px;"
                                     title="Full Canvas tiles across the whole car; Fit to Zone concentrates the pattern into just this zone; Manual lets you drag to position">
                                 <option value="normal" ${zone.patternPlacement !== 'fit' && zone.patternPlacement !== 'manual' ? 'selected' : ''}>Full Canvas (Normal)</option>
@@ -2042,21 +2047,23 @@ function updateBottomBarShift() {
 
 // ===== ZONE ACTIONS =====
 function selectZone(index) {
-    selectedZoneIndex = index;
-    // If placement mode is on but this zone doesn't have that layer, clear it
-    if (placementLayer !== 'none' && zones[index]) {
+    // Only reset placement layer when switching to a DIFFERENT zone
+    if (index !== selectedZoneIndex && placementLayer !== 'none' && zones[index]) {
         const z = zones[index];
         const ok = (placementLayer === 'pattern' && z.pattern && z.pattern !== 'none') ||
             (placementLayer === 'second_base' && z.secondBase && z.secondBasePattern) ||
             (placementLayer === 'third_base' && z.thirdBase && z.thirdBasePattern) ||
             (placementLayer === 'fourth_base' && z.fourthBase && z.fourthBasePattern) ||
             (placementLayer === 'fifth_base' && z.fifthBase && z.fifthBasePattern) ||
-            (placementLayer === 'base' && (z.base || z.finish));
+            (placementLayer === 'base' && (z.base || z.finish)) ||
+            placementLayer.startsWith('spec_pattern');
         if (!ok) {
             placementLayer = 'none';
+            if (typeof deactivateManualPlacement === 'function') deactivateManualPlacement();
             if (typeof updatePlacementBanner === 'function') updatePlacementBanner();
         }
     }
+    selectedZoneIndex = index;
     renderZones();
     // Ensure the zone detail popout is shown when a zone is selected (fixes missing popout after Restore All or new session)
     if (typeof renderZoneDetail === 'function' && selectedZoneIndex >= 0 && selectedZoneIndex < zones.length) {

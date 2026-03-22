@@ -96,7 +96,11 @@
                 const img = new Image();
                 img.onload = () => {
                     const { w: cw, h: ch } = getPaintCanvasSize();
-                    const scale = 0.5;
+                    // Smart scale: full-size images import at 1.0, oversized get scaled to fit
+                    let scale = 1.0;
+                    if (img.width > cw * 1.5 || img.height > ch * 1.5) {
+                        scale = Math.min(cw / img.width, ch / img.height) * 0.9;
+                    }
                     const dw = img.width * scale, dh = img.height * scale;
                     const x = Math.max(0, (cw - dw) / 2);
                     const y = Math.max(0, (ch - dh) / 2);
@@ -110,6 +114,7 @@
                         visible: true,
                         flipH: false,
                         flipV: false,
+                        specFinish: 'none',
                     });
                     selectedDecalIndex = decalLayers.length - 1;
                     renderDecalList();
@@ -192,6 +197,61 @@
                 <button onclick="toggleDecalVisibility(${idx})" title="Toggle visibility">${d.visible ? '&#x1F441;' : '&#x1F6AB;'}</button>
                 <button onclick="removeDecal(${idx})" title="Remove">&times;</button>
             </div>
+            <select onchange="decalLayers[${idx}].specFinish = this.value; renderDecalOverlay();"
+                    style="background:#1a1a1a; color:#ccc; border:1px solid #333; padding:2px 4px; font-size:10px; width:100%;"
+                    title="Apply a spec finish to just this decal's pixels">
+              <option value="none" ${(!d.specFinish || d.specFinish === 'none') ? 'selected' : ''}>No Spec Finish</option>
+              ${(() => {
+                // BASE_GROUPS and BASES are top-level const in paint-booth-0-finish-data.js.
+                // In non-module scripts they are in global scope but NOT on window — use directly.
+                const foundationIds = (typeof BASE_GROUPS !== 'undefined' && BASE_GROUPS['Foundation']) ||
+                                     (typeof window.BASE_GROUPS !== 'undefined' && window.BASE_GROUPS['Foundation']) ||
+                                     [];
+                const basesArr = (typeof BASES !== 'undefined' ? BASES : null) ||
+                                 (typeof window.BASES !== 'undefined' ? window.BASES : null) ||
+                                 [];
+                const foundationBases = foundationIds.map(id => basesArr.find(b => b.id === id)).filter(Boolean);
+                // Hardcoded fallback in case data hasn't loaded yet
+                const fallback = [
+                    {id: 'gloss',          name: 'Gloss'},
+                    {id: 'matte',          name: 'Matte'},
+                    {id: 'satin',          name: 'Satin'},
+                    {id: 'semi_gloss',     name: 'Semi Gloss'},
+                    {id: 'silk',           name: 'Silk'},
+                    {id: 'wet_look',       name: 'Wet Look'},
+                    {id: 'clear_matte',    name: 'Clear Matte'},
+                    {id: 'flat_black',     name: 'Flat Black'},
+                    {id: 'primer',         name: 'Primer'},
+                    {id: 'eggshell',       name: 'Eggshell'},
+                    {id: 'ceramic',        name: 'Ceramic'},
+                    {id: 'piano_black',    name: 'Piano Black'},
+                    {id: 'scuffed_satin',  name: 'Scuffed Satin'},
+                    {id: 'chalky_base',    name: 'Chalky'},
+                    {id: 'living_matte',   name: 'Living Matte'},
+                    {id: 'f_chrome',       name: 'Chrome (Foundation)'},
+                    {id: 'f_satin_chrome', name: 'Satin Chrome (Foundation)'},
+                    {id: 'f_metallic',     name: 'Metallic (Foundation)'},
+                    {id: 'f_pearl',        name: 'Pearl (Foundation)'},
+                    {id: 'f_carbon_fiber', name: 'Carbon Fiber (Foundation)'},
+                    {id: 'f_brushed',      name: 'Brushed (Foundation)'},
+                    {id: 'f_frozen',       name: 'Frozen (Foundation)'},
+                    {id: 'f_powder_coat',  name: 'Powder Coat (Foundation)'},
+                    {id: 'f_anodized',     name: 'Anodized (Foundation)'},
+                    {id: 'f_vinyl_wrap',   name: 'Vinyl Wrap (Foundation)'},
+                    {id: 'f_gel_coat',     name: 'Gel Coat (Foundation)'},
+                    {id: 'f_baked_enamel', name: 'Baked Enamel (Foundation)'},
+                    {id: 'f_pure_white',   name: 'Pure White (Foundation)'},
+                    {id: 'f_pure_black',   name: 'Pure Black (Foundation)'},
+                    {id: 'f_neutral_grey', name: 'Neutral Grey (Foundation)'},
+                    {id: 'f_soft_gloss',   name: 'Soft Gloss (Foundation)'},
+                    {id: 'f_soft_matte',   name: 'Soft Matte (Foundation)'},
+                    {id: 'f_clear_satin',  name: 'Clear Satin (Foundation)'},
+                    {id: 'f_warm_white',   name: 'Warm White (Foundation)'},
+                ];
+                const options = foundationBases.length > 0 ? foundationBases : fallback;
+                return options.map(b => `<option value="${b.id}" ${d.specFinish === b.id ? 'selected' : ''}>${b.name}</option>`).join('');
+              })()}
+            </select>
         </div>`;
             });
             list.innerHTML = html;
@@ -336,6 +396,7 @@
                     visible: true,
                     flipH: false,
                     flipV: false,
+                    specFinish: 'none',
                 });
                 selectedDecalIndex = decalLayers.length - 1;
                 renderDecalList();
@@ -2500,7 +2561,9 @@
 
             let wheelDots = dotAt(h, hex); // current color
             harmonies.complementary.forEach(c => { wheelDots += dotAt(hexToHSL(c).h, c); });
+            harmonies.analogous.forEach(c => { wheelDots += dotAt(hexToHSL(c).h, c); });
             harmonies.triadic.forEach(c => { wheelDots += dotAt(hexToHSL(c).h, c); });
+            harmonies.split.forEach(c => { wheelDots += dotAt(hexToHSL(c).h, c); });
 
             function chipRow(label, colors) {
                 const chips = colors.map(c =>
@@ -2526,23 +2589,29 @@
         }
 
         function applyHarmonyColor(fromZoneIndex, hex) {
-            // Apply to the NEXT zone that doesn't have a color yet, or prompt
+            // Find first truly empty zone (no color in any mode)
             let targetIdx = -1;
             for (let i = 0; i < zones.length; i++) {
-                if (i !== fromZoneIndex && (zones[i].colorMode === 'none' || zones[i].color === null)) {
+                if (i !== fromZoneIndex &&
+                    (zones[i].colorMode === 'none' || (zones[i].color === null && (!zones[i].colors || zones[i].colors.length === 0)))) {
                     targetIdx = i;
                     break;
                 }
             }
             if (targetIdx === -1) {
-                // All zones have colors, apply to next zone after current
+                // All zones have colors — apply to next zone (with confirmation via toast)
                 targetIdx = (fromZoneIndex + 1) % zones.length;
-                if (targetIdx === fromZoneIndex) return;
+                if (targetIdx === fromZoneIndex) {
+                    showToast('Only one zone exists — add another zone first', true);
+                    return;
+                }
+                showToast(`Replacing color on Zone ${targetIdx + 1}: ${zones[targetIdx].name} with ${hex}`);
             }
 
             const r = parseInt(hex.substr(1, 2), 16);
             const g = parseInt(hex.substr(3, 2), 16);
             const b = parseInt(hex.substr(5, 2), 16);
+            pushZoneUndo('Harmony color apply');
             zones[targetIdx].pickerColor = hex;
             zones[targetIdx].color = { color_rgb: [r, g, b], tolerance: zones[targetIdx].pickerTolerance || 40 };
             zones[targetIdx].colorMode = 'picker';

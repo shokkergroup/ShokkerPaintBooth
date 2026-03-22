@@ -457,6 +457,10 @@ if __name__ == '__main__':
 
                         setupCanvasHandlers(canvas);
                         canvasZoom('fit');
+                        // Auto-enable split view when paint is loaded
+                        if (!splitViewActive) {
+                            setTimeout(() => toggleSplitView(), 200);
+                        }
                         showToast(`Loaded ${fileName} as source paint + preview!`);
                     };
                     img.src = e.target.result;
@@ -785,6 +789,10 @@ if __name__ == '__main__':
 
                     setupCanvasHandlers(canvas);
                     canvasZoom('fit');
+                    // Auto-enable split view when paint is loaded
+                    if (!splitViewActive) {
+                        setTimeout(() => toggleSplitView(), 200);
+                    }
                     showToast(`Preview loaded: ${img.width}x${img.height}`);
                     URL.revokeObjectURL(url);
                 };
@@ -843,6 +851,119 @@ if __name__ == '__main__':
 
         // ===== PAINT PREVIEW & EYEDROPPER =====
 
+        // Activate Manual Placement mode for a zone — enables drag-to-position on the preview canvas
+        function activateManualPlacement(zoneIndex, layer) {
+            // Set placement layer FIRST, before selectZone can reset it
+            if (layer) {
+                placementLayer = layer;
+            } else if (placementLayer === 'none' || !placementLayer) {
+                placementLayer = 'pattern';
+            }
+
+            // Now select the zone (it will see placementLayer is already set)
+            if (typeof selectZone === 'function') selectZone(zoneIndex);
+
+            // Show tools bar
+            const toolsBar = document.getElementById('placement-tools-bar');
+            if (toolsBar) toolsBar.style.display = 'flex';
+
+            // Set cursor
+            if (paintCanvas) paintCanvas.style.cursor = 'move';
+
+            // Update banner
+            if (typeof updatePlacementBanner === 'function') updatePlacementBanner();
+
+            // Toast
+            const layerName = placementLayer.replace(/_/g, ' ');
+            showToast('Manual Placement active for ' + layerName + ' — drag to position, scroll to resize, Shift+drag to rotate', 'info');
+        }
+        window.activateManualPlacement = activateManualPlacement;
+
+        // Deactivate Manual Placement mode — hides tools bar and resets cursor
+        function deactivateManualPlacement() {
+            placementLayer = 'none';
+            const toolsBar = document.getElementById('placement-tools-bar');
+            if (toolsBar) toolsBar.style.display = 'none';
+            if (paintCanvas) paintCanvas.style.cursor = '';
+            if (typeof updatePlacementBanner === 'function') updatePlacementBanner();
+        }
+        window.deactivateManualPlacement = deactivateManualPlacement;
+
+        // ===== FLOATING TOOLS BAR HANDLERS =====
+        window.manualPlacementFlipH = function() {
+            const z = zones[selectedZoneIndex];
+            if (!z) return;
+            if (placementLayer === 'pattern') z.patternFlipH = !z.patternFlipH;
+            else if (placementLayer === 'base') z.baseFlipH = !z.baseFlipH;
+            else if (placementLayer === 'second_base') z.secondBasePatternFlipH = !z.secondBasePatternFlipH;
+            else if (placementLayer.startsWith('spec_pattern_')) {
+                // spec patterns don't have a flip property — no-op
+            }
+            triggerPreviewRender();
+            renderZones();
+        };
+
+        window.manualPlacementFlipV = function() {
+            const z = zones[selectedZoneIndex];
+            if (!z) return;
+            if (placementLayer === 'pattern') z.patternFlipV = !z.patternFlipV;
+            else if (placementLayer === 'base') z.baseFlipV = !z.baseFlipV;
+            else if (placementLayer === 'second_base') z.secondBasePatternFlipV = !z.secondBasePatternFlipV;
+            else if (placementLayer.startsWith('spec_pattern_')) {
+                // spec patterns don't have a flip property — no-op
+            }
+            triggerPreviewRender();
+            renderZones();
+        };
+
+        window.manualPlacementRotateCW = function() {
+            const z = zones[selectedZoneIndex];
+            if (!z) return;
+            if (placementLayer === 'pattern') z.rotation = ((z.rotation || 0) + 90) % 360;
+            else if (placementLayer === 'base') z.baseRotation = ((z.baseRotation || 0) + 90) % 360;
+            else if (placementLayer === 'second_base') z.secondBasePatternRotation = (((z.secondBasePatternRotation || 0) + 90) % 360);
+            else if (placementLayer.startsWith('spec_pattern_')) {
+                const si = parseInt(placementLayer.split('_')[2]);
+                const sp = z.specPatternStack && z.specPatternStack[si];
+                if (sp) sp.rotation = ((sp.rotation || 0) + 90) % 360;
+            }
+            triggerPreviewRender();
+            renderZones();
+        };
+
+        window.manualPlacementRotateCCW = function() {
+            const z = zones[selectedZoneIndex];
+            if (!z) return;
+            if (placementLayer === 'pattern') z.rotation = (((z.rotation || 0) - 90) + 360) % 360;
+            else if (placementLayer === 'base') z.baseRotation = (((z.baseRotation || 0) - 90) + 360) % 360;
+            else if (placementLayer === 'second_base') z.secondBasePatternRotation = (((z.secondBasePatternRotation || 0) - 90) + 360) % 360;
+            else if (placementLayer.startsWith('spec_pattern_')) {
+                const si = parseInt(placementLayer.split('_')[2]);
+                const sp = z.specPatternStack && z.specPatternStack[si];
+                if (sp) sp.rotation = (((sp.rotation || 0) - 90) + 360) % 360;
+            }
+            triggerPreviewRender();
+            renderZones();
+        };
+
+        window.manualPlacementReset = function() {
+            const z = zones[selectedZoneIndex];
+            if (!z) return;
+            if (placementLayer === 'pattern') {
+                z.patternOffsetX = 0.5; z.patternOffsetY = 0.5; z.scale = 1.0; z.rotation = 0; z.patternFlipH = false; z.patternFlipV = false;
+            } else if (placementLayer === 'base') {
+                z.baseOffsetX = 0.5; z.baseOffsetY = 0.5; z.baseScale = 1.0; z.baseRotation = 0; z.baseFlipH = false; z.baseFlipV = false;
+            } else if (placementLayer === 'second_base') {
+                z.secondBasePatternOffsetX = 0.5; z.secondBasePatternOffsetY = 0.5; z.secondBasePatternScale = 1.0; z.secondBasePatternRotation = 0;
+            } else if (placementLayer.startsWith('spec_pattern_')) {
+                const si = parseInt(placementLayer.split('_')[2]);
+                const sp = z.specPatternStack && z.specPatternStack[si];
+                if (sp) { sp.offsetX = 0.5; sp.offsetY = 0.5; sp.scale = 1.0; sp.rotation = 0; }
+            }
+            triggerPreviewRender();
+            renderZones();
+        };
+
         // Shared: set up hover + click + draw handlers on the canvas
         function setupCanvasHandlers(canvas) {
             // Placement drag (GIMP/PS-style: drag on map to position pattern/base overlay)
@@ -885,6 +1006,10 @@ if __name__ == '__main__':
                     z.baseOffsetX = ox; z.baseOffsetY = oy;
                     const xEl = document.getElementById('detBasePosXVal' + i); if (xEl) { xEl.textContent = pctX; const inp = xEl.previousElementSibling; if (inp && inp.type === 'range') inp.value = vx; }
                     const yEl = document.getElementById('detBasePosYVal' + i); if (yEl) { yEl.textContent = pctY; const inp = yEl.previousElementSibling; if (inp && inp.type === 'range') inp.value = vy; }
+                } else if (layer.startsWith('spec_pattern_')) {
+                    const si = parseInt(layer.split('_')[2]);
+                    const sp = z.specPatternStack && z.specPatternStack[si];
+                    if (sp) { sp.offsetX = ox; sp.offsetY = oy; }
                 }
                 if (typeof triggerPreviewRender === 'function') {
                     clearTimeout(placementPreviewTimer);
@@ -1077,10 +1202,24 @@ if __name__ == '__main__':
                     const val = canvasMode === 'brush' ? 1 : 0;
                     paintRegionCircle(pos.x, pos.y, radius, val);
                     _fastOverlayArc(pos.x, pos.y, radius, val); // fast GPU draw - no full ImageData rebuild
-                } else if ((canvasMode === 'spatial-include' || canvasMode === 'spatial-exclude') && isDrawing) {
-                    const val = canvasMode === 'spatial-include' ? 1 : 2;
+                } else if ((canvasMode === 'spatial-include' || canvasMode === 'spatial-exclude' || canvasMode === 'spatial-erase') && isDrawing) {
+                    const val = canvasMode === 'spatial-include' ? 1 : (canvasMode === 'spatial-exclude' ? 2 : 0);
                     paintSpatialCircle(pos.x, pos.y, spatialBrushRadius, val);
                     renderRegionOverlay();
+                } else if (canvasMode === 'lasso' && isDrawing && lassoMouseDownPos) {
+                    const dist = Math.sqrt((pos.x - lassoMouseDownPos.x) ** 2 + (pos.y - lassoMouseDownPos.y) ** 2);
+                    if (!lassoFreehandDrawing && dist >= 5) {
+                        // Start freehand mode: add the initial mousedown point first
+                        lassoFreehandDrawing = true;
+                        addLassoPoint(lassoMouseDownPos.x, lassoMouseDownPos.y);
+                    }
+                    if (lassoFreehandDrawing) {
+                        const lastPt = lassoPoints[lassoPoints.length - 1];
+                        const ptDist = Math.sqrt((pos.x - lastPt.x) ** 2 + (pos.y - lastPt.y) ** 2);
+                        if (ptDist >= 5) { // Add point every 5 pixels
+                            addLassoPoint(pos.x, pos.y);
+                        }
+                    }
                 } else if (canvasMode === 'rect' && isDrawing && rectStart) {
                     // Use clamped coords so drag pins to canvas edge instead of dying
                     let cpos = getPixelAtClamped(e);
@@ -1111,6 +1250,11 @@ if __name__ == '__main__':
                         else if (placementLayer === 'second_base') { ox = z.secondBasePatternOffsetX ?? 0.5; oy = z.secondBasePatternOffsetY ?? 0.5; }
                         else if (placementLayer === 'third_base') { ox = z.thirdBasePatternOffsetX ?? 0.5; oy = z.thirdBasePatternOffsetY ?? 0.5; }
                         else if (placementLayer === 'base') { ox = z.baseOffsetX ?? 0.5; oy = z.baseOffsetY ?? 0.5; }
+                        else if (placementLayer.startsWith('spec_pattern_')) {
+                            const si = parseInt(placementLayer.split('_')[2]);
+                            const sp = z.specPatternStack && z.specPatternStack[si];
+                            if (sp) { ox = sp.offsetX ?? 0.5; oy = sp.offsetY ?? 0.5; }
+                        }
                         placementDragStart = { x: pos.x, y: pos.y, offsetX: ox, offsetY: oy };
                         placementDragging = true;
                         if (typeof pushZoneUndo === 'function') pushZoneUndo('', true);
@@ -1215,20 +1359,20 @@ if __name__ == '__main__':
                     // (RAF-wrapped renderRegionOverlay() is async and may not run in time,
                     //  leaving regionCanvas at default 300×150 → tiny dots bug)
                     _doRenderRegionOverlay();
-                } else if (canvasMode === 'spatial-include' || canvasMode === 'spatial-exclude') {
+                } else if (canvasMode === 'spatial-include' || canvasMode === 'spatial-exclude' || canvasMode === 'spatial-erase') {
                     pushSpatialUndo(selectedZoneIndex);
                     isDrawing = true;
-                    const val = canvasMode === 'spatial-include' ? 1 : 2;
+                    const val = canvasMode === 'spatial-include' ? 1 : (canvasMode === 'spatial-exclude' ? 2 : 0);
                     paintSpatialCircle(pos.x, pos.y, spatialBrushRadius, val);
                     _doRenderRegionOverlay();
                 } else if (canvasMode === 'lasso') {
                     // Right-click undoes last lasso point
                     if (e.button === 2) { undoLassoPoint(); return; }
-                    addLassoPoint(pos.x, pos.y);
-                    // Double-click closes the lasso
-                    if (e.detail >= 2 && lassoPoints.length >= 3) {
-                        closeLasso();
-                    }
+                    // Save mousedown position for drag-vs-click detection
+                    lassoMouseDownPos = { x: pos.x, y: pos.y };
+                    isDrawing = true;
+                    // Freehand mode starts on mousemove (see mousemove handler below)
+                    // Click behavior (no drag): handled in mouseup when not freehand
                 } else if (canvasMode === 'rect') {
                     pushUndo(selectedZoneIndex); // Save state before rect draw
                     isDrawing = true;
@@ -1307,6 +1451,8 @@ if __name__ == '__main__':
                     _rectZoneCache = null;
                     hideRectPreview();
                     renderRegionOverlay();
+                    // Force immediate overlay re-render (bypass RAF throttle)
+                    setTimeout(() => { _doRenderRegionOverlay(); }, 30);
                 }
                 // Brush/erase: full re-render once at stroke end so edges and multi-zone
                 // overlaps are drawn correctly (fast arc path skips those)
@@ -1315,6 +1461,26 @@ if __name__ == '__main__':
                 }
                 if ((canvasMode === 'spatial-include' || canvasMode === 'spatial-exclude') && isDrawing) {
                     _doRenderRegionOverlay();
+                }
+                if (canvasMode === 'lasso' && isDrawing) {
+                    if (lassoFreehandDrawing) {
+                        // Freehand drag completed — auto-close if enough points
+                        if (lassoPoints.length >= 3) {
+                            closeLasso();
+                        }
+                        lassoFreehandDrawing = false;
+                    } else if (lassoMouseDownPos) {
+                        // Click (no drag) — use existing click-by-click behavior
+                        const pos2 = getPixelAt(e);
+                        if (pos2) {
+                            addLassoPoint(pos2.x, pos2.y);
+                            // Double-click closes the lasso
+                            if (e.detail >= 2 && lassoPoints.length >= 3) {
+                                closeLasso();
+                            }
+                        }
+                    }
+                    lassoMouseDownPos = null;
                 }
                 isDrawing = false;
             };
@@ -1375,6 +1541,8 @@ if __name__ == '__main__':
                     _rectZoneCache = null;
                     hideRectPreview();
                     renderRegionOverlay();
+                    // Force immediate overlay re-render (bypass RAF throttle)
+                    setTimeout(() => { _doRenderRegionOverlay(); }, 30);
                     isDrawing = false;
                 }
             });
@@ -1398,7 +1566,8 @@ if __name__ == '__main__':
                 eyedropper: 'vtModeEyedropper', brush: 'vtModeBrush', rect: 'vtModeRect',
                 erase: 'vtModeErase', wand: 'vtModeWand', selectall: 'vtModeSelectAll',
                 edge: 'vtModeEdge', 'spatial-include': 'vtModeSpatialInclude',
-                'spatial-exclude': 'vtModeSpatialExclude', lasso: 'vtModeLasso'
+                'spatial-exclude': 'vtModeSpatialExclude', 'spatial-erase': 'vtModeSpatialErase',
+                lasso: 'vtModeLasso'
             }[mode];
             document.getElementById(vtBtnId)?.classList.add('active');
             // Reset lasso state when switching away
@@ -1407,7 +1576,7 @@ if __name__ == '__main__':
             // Toggle tool-specific controls
             const showBrush = (mode === 'brush' || mode === 'erase');
             const showWand = (mode === 'wand' || mode === 'selectall' || mode === 'edge' || mode === 'rect');
-            const showSpatial = (mode === 'spatial-include' || mode === 'spatial-exclude');
+            const showSpatial = (mode === 'spatial-include' || mode === 'spatial-exclude' || mode === 'spatial-erase');
             document.getElementById('brushSizeLabel').style.display = showBrush ? '' : 'none';
             document.getElementById('brushSize').style.display = showBrush ? '' : 'none';
             document.getElementById('brushSizeVal').style.display = showBrush ? '' : 'none';
@@ -1418,6 +1587,11 @@ if __name__ == '__main__':
             const showSelMode = (mode === 'wand' || mode === 'selectall' || mode === 'edge' || mode === 'rect' || mode === 'lasso');
             const selModeEl = document.getElementById('selectionMode');
             if (selModeEl) selModeEl.style.display = showSelMode ? '' : 'none';
+            // Rect tool defaults to additive so multiple rectangles can be drawn
+            if (mode === 'rect') {
+                const selMode = document.getElementById('selectionMode');
+                if (selMode && selMode.value === 'replace') selMode.value = 'add';
+            }
             const modifierHint = document.getElementById('selectionModifierHint');
             if (modifierHint) modifierHint.style.display = showSelMode ? '' : 'none';
             // Contiguous checkbox only for wand/selectall, not edge/rect
@@ -1431,6 +1605,11 @@ if __name__ == '__main__':
             document.getElementById('spatialSizeLabel').style.display = showSpatial ? '' : 'none';
             document.getElementById('spatialBrushSize').style.display = showSpatial ? '' : 'none';
             document.getElementById('spatialSizeVal').style.display = showSpatial ? '' : 'none';
+            // Show erase buttons contextually
+            const spatialEraseBtn = document.getElementById('spatialEraseBtn');
+            if (spatialEraseBtn) spatialEraseBtn.style.display = showSpatial ? '' : 'none';
+            const drawEraseBtn = document.getElementById('drawEraseBtn');
+            if (drawEraseBtn) drawEraseBtn.style.display = (showWand || mode === 'brush' || mode === 'rect' || mode === 'lasso') ? '' : 'none';
 
             // Edge preview button: only visible in edge mode
             const edgeBtn = document.getElementById('edgePreviewBtn');
@@ -1446,7 +1625,7 @@ if __name__ == '__main__':
                 if (viewport) viewport.style.cursor = '';
                 document.getElementById('drawZoneIndicator').style.display = 'none';
                 document.getElementById('regionCanvas').style.pointerEvents = 'none';
-            } else if (showSpatial) {
+            } else if (showSpatial || mode === 'spatial-erase') {
                 canvas.style.cursor = 'none'; // Hide native cursor, use brush circle
                 if (viewport) viewport.style.cursor = '';
                 document.getElementById('drawZoneIndicator').style.display = 'flex';
@@ -2642,6 +2821,8 @@ if __name__ == '__main__':
         // --- LASSO / POLYGON SELECT --- click vertices, fill inside on close
         let lassoPoints = [];
         let lassoActive = false;
+        let lassoFreehandDrawing = false;
+        let lassoMouseDownPos = null;
 
         function startLasso() {
             lassoPoints = [];
@@ -2770,9 +2951,11 @@ if __name__ == '__main__':
 
         // Expose for Escape key: cancel active lasso (used by cancelCanvasOperation in 2-state-zones)
         window.cancelLasso = function () {
-            if (!lassoActive && lassoPoints.length === 0) return false;
+            if (!lassoActive && lassoPoints.length === 0 && !lassoFreehandDrawing) return false;
             lassoActive = false;
             lassoPoints = [];
+            lassoFreehandDrawing = false;
+            lassoMouseDownPos = null;
             hideLassoPreview();
             return true;
         };
@@ -2833,6 +3016,10 @@ if __name__ == '__main__':
 
                         setupCanvasHandlers(canvas);
                         canvasZoom('fit');
+                        // Auto-enable split view when paint is loaded
+                        if (!splitViewActive) {
+                            setTimeout(() => toggleSplitView(), 200);
+                        }
                         showToast('Paint loaded! Hover to see colors, click to grab one.');
                     };
                     img.src = e.target.result;
@@ -2897,6 +3084,10 @@ if __name__ == '__main__':
                         const zoomCtrl = document.getElementById('zoomControls'); if (zoomCtrl) zoomCtrl.style.display = 'flex';
                         setupCanvasHandlers(canvas);
                         canvasZoom('fit');
+                        // Auto-enable split view when paint is loaded
+                        if (!splitViewActive) {
+                            setTimeout(() => toggleSplitView(), 200);
+                        }
                         if (typeof showToast === 'function') showToast('Paint loaded!');
                     };
                     img.src = e.target.result;
@@ -3242,6 +3433,55 @@ if __name__ == '__main__':
             }
         }
 
+        // ===== PREVIEW LIGHTBOX =====
+        let lightboxMode = 'paint';
+
+        function openPreviewLightbox(mode) {
+            const lb = document.getElementById('previewLightbox');
+            if (!lb) return;
+            lb.style.display = 'block';
+            showLightbox(mode || 'paint');
+            document.addEventListener('keydown', lightboxKeyHandler);
+        }
+
+        function showLightbox(mode, channel) {
+            lightboxMode = mode || 'paint';
+            const img = document.getElementById('lightboxImg');
+            const paintBtn = document.getElementById('lightboxPaintBtn');
+            const specBtn = document.getElementById('lightboxSpecBtn');
+            const chBtns = ['lightboxChAll','lightboxChR','lightboxChG','lightboxChB'];
+
+            if (lightboxMode === 'paint') {
+                const src = document.getElementById('livePreviewImg');
+                if (src) img.src = src.src;
+                paintBtn.style.borderColor = '#E87A20';
+                paintBtn.style.color = '#E87A20';
+                specBtn.style.borderColor = '#333';
+                specBtn.style.color = '#00C8C8';
+                chBtns.forEach(id => { const b = document.getElementById(id); if (b) b.style.display = 'none'; });
+            } else {
+                const src = document.getElementById('livePreviewSpecImg');
+                if (src) img.src = src.src;
+                specBtn.style.borderColor = '#00C8C8';
+                specBtn.style.color = '#00C8C8';
+                paintBtn.style.borderColor = '#333';
+                paintBtn.style.color = '#E87A20';
+                chBtns.forEach(id => { const b = document.getElementById(id); if (b) b.style.display = ''; });
+            }
+        }
+
+        function closePreviewLightbox() {
+            const lb = document.getElementById('previewLightbox');
+            if (lb) lb.style.display = 'none';
+            document.removeEventListener('keydown', lightboxKeyHandler);
+        }
+
+        function lightboxKeyHandler(e) {
+            if (e.key === 'Escape') closePreviewLightbox();
+            if (e.key === 'p' || e.key === 'P') showLightbox('paint');
+            if (e.key === 's' || e.key === 'S') showLightbox('spec');
+        }
+
         function getZoneConfigHash() {
             // Hash ALL rendering-relevant zone fields to detect actual changes
             // Must match every field sent to server in doPreviewRender / doRender
@@ -3563,6 +3803,25 @@ if __name__ == '__main__':
                 body.import_spec_map = importedSpecMapPath;
             }
 
+            // Include decal composited paint + spec finish info so preview shows decal spec
+            if (typeof compositeDecalsForRender === 'function' && typeof decalLayers !== 'undefined' && decalLayers.length > 0) {
+                try {
+                    const compositeCanvas = compositeDecalsForRender();
+                    if (compositeCanvas) {
+                        body.paint_image_base64 = compositeCanvas.toDataURL('image/png');
+                    }
+                    const decalSpecs = decalLayers
+                        .filter(dl => dl.visible && dl.specFinish && dl.specFinish !== 'none')
+                        .map(dl => ({ specFinish: dl.specFinish }));
+                    if (decalSpecs.length > 0) {
+                        body.decal_spec_finishes = decalSpecs;
+                    }
+                } catch (e) {
+                    // Non-fatal: preview still works without decal spec
+                    console.warn('[preview] Failed to composite decals for preview:', e);
+                }
+            }
+
             try {
                 const resp = await fetch(ShokkerAPI.baseUrl + '/preview-render', {
                     method: 'POST',
@@ -3797,6 +4056,20 @@ if __name__ == '__main__':
             // Zooms toward the mouse cursor position for intuitive navigation
             viewport.addEventListener('wheel', (e) => {
                 if (!document.getElementById('paintCanvas')?.width) return;
+
+                // If Manual Placement is active, scroll adjusts pattern scale instead of zooming
+                if (typeof placementLayer !== 'undefined' && placementLayer === 'pattern' &&
+                    typeof selectedZoneIndex !== 'undefined' && zones && zones[selectedZoneIndex] &&
+                    zones[selectedZoneIndex].patternPlacement === 'manual') {
+                    e.preventDefault();
+                    const z = zones[selectedZoneIndex];
+                    const delta = e.deltaY > 0 ? -0.05 : 0.05;
+                    z.scale = Math.max(0.1, Math.min(4.0, (z.scale || 1.0) + delta));
+                    if (typeof renderZones === 'function') renderZones();
+                    if (typeof triggerPreviewRender === 'function') triggerPreviewRender();
+                    return;
+                }
+
                 e.preventDefault();
 
                 const oldZoom = currentZoom;

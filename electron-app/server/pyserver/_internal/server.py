@@ -1671,24 +1671,49 @@ def preview_render_endpoint():
             return jsonify({"error": f"Paint file not found: {paint_file}"}), 404
 
         zones = data.get("zones", [])
-        if not zones:
+        import_spec_map_early = data.get("import_spec_map")
+        if not zones and not import_spec_map_early:
             return jsonify({"error": "No zones provided"}), 400
 
         seed = data.get("seed", 51)
         preview_scale = float(data.get("preview_scale", 0.25))
         preview_scale = max(0.0625, min(1.0, preview_scale))  # Clamp 1/16 to 1x
 
-        # Apply paint recoloring if rules provided (at preview res this is fast)
-        recolor_rules = data.get("recolor_rules", [])
+        # Decal spec finishes (list of {specFinish: "gloss"} for non-"none" decals)
+        decal_spec_finishes = data.get("decal_spec_finishes", [])
+        decal_paint_path_preview = None  # set below if paint_image_base64 is decoded
+
+        # If client sent a composited paint (paint + baked-in decals), decode and use it
+        paint_image_base64 = data.get("paint_image_base64")
         actual_paint_file = paint_file
+        if paint_image_base64:
+            try:
+                import base64 as _b64, tempfile
+                raw = paint_image_base64
+                if raw.startswith("data:"):
+                    raw = raw.split(",", 1)[-1]
+                buf = _b64.b64decode(raw)
+                tmp_decal_dir = tempfile.mkdtemp(prefix="shokker_preview_decal_")
+                decal_paint_path_preview = os.path.join(tmp_decal_dir, "paint_with_decals.png")
+                with open(decal_paint_path_preview, "wb") as f:
+                    f.write(buf)
+                actual_paint_file = decal_paint_path_preview
+                logger.info(f"Preview: using composited paint (decals) from client, {len(decal_spec_finishes)} decal spec finish(es)")
+            except Exception as e:
+                logger.warning(f"Preview: failed to decode paint_image_base64: {e}")
+                decal_paint_path_preview = None
+                actual_paint_file = paint_file
+
+        # Apply paint recoloring if rules provided (at preview res this is fast)
+        # Note: recoloring runs on actual_paint_file so decal composite is preserved
+        recolor_rules = data.get("recolor_rules", [])
         if recolor_rules:
             try:
-                # Recolor needs a temp directory for the recolored TGA
                 import tempfile
                 tmp_dir = tempfile.mkdtemp(prefix="shokker_preview_")
-                actual_paint_file = apply_paint_recolor(paint_file, recolor_rules, tmp_dir)
+                actual_paint_file = apply_paint_recolor(actual_paint_file, recolor_rules, tmp_dir)
             except Exception:
-                actual_paint_file = paint_file  # Fall back to original
+                pass  # Fall back to current actual_paint_file
 
         # Build server zones (same format conversion as /render)
 
@@ -1881,7 +1906,9 @@ def preview_render_endpoint():
         # Run the preview render
         paint_rgb, spec_rgba, elapsed_ms = engine.preview_render(
             actual_paint_file, server_zones, seed=seed, preview_scale=preview_scale,
-            import_spec_map=import_spec_map
+            import_spec_map=import_spec_map,
+            decal_spec_finishes=decal_spec_finishes if decal_spec_finishes else None,
+            decal_paint_path=decal_paint_path_preview,
         )
 
         # Convert paint to base64 PNG (main preview)
@@ -1905,8 +1932,13 @@ def preview_render_endpoint():
         if spec_b64 is None:
             spec_b64 = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=="  # 1x1 transparent
 
-        # Cleanup temp recolor dir if created
-        if recolor_rules and actual_paint_file != paint_file:
+        # Cleanup temp dirs created during preview
+        if decal_paint_path_preview:
+            try:
+                shutil.rmtree(os.path.dirname(decal_paint_path_preview), ignore_errors=True)
+            except Exception:
+                pass
+        if recolor_rules and actual_paint_file != paint_file and actual_paint_file != decal_paint_path_preview:
             try:
                 shutil.rmtree(os.path.dirname(actual_paint_file), ignore_errors=True)
             except Exception:
@@ -1976,7 +2008,8 @@ def render():
             return jsonify({"error": f"Paint file not found: {paint_file}"}), 404
 
         zones = data.get("zones", [])
-        if not zones:
+        import_spec_map_early = data.get("import_spec_map")
+        if not zones and not import_spec_map_early:
             return jsonify({"error": "No zones provided"}), 400
 
         iracing_id = data.get("iracing_id", "00000")
@@ -2005,6 +2038,10 @@ def render():
         stamp_spec_finish = data.get("stamp_spec_finish", "gloss")
         stamp_image_path = None
 
+        # Decal spec finishes (list of {specFinish: "gloss"} for non-"none" decals)
+        decal_spec_finishes = data.get("decal_spec_finishes", [])
+        decal_paint_path = None  # set below if paint_image_base64 is decoded
+
         # Validate optional files
         if helmet_paint and not os.path.exists(helmet_paint):
             helmet_paint = None
@@ -2029,8 +2066,11 @@ def render():
                     f.write(buf)
                 paint_file = decal_paint_path
                 logger.info(f"Job {job_id}: Using composited paint (decals) from client")
+                if decal_spec_finishes:
+                    logger.info(f"Job {job_id}: {len(decal_spec_finishes)} decal spec finish(es) will be applied")
             except Exception as e:
                 logger.warning(f"Job {job_id}: Failed to decode paint_image_base64: {e}")
+                decal_paint_path = None
                 if not paint_file or not os.path.exists(paint_file):
                     return jsonify({"error": "Invalid paint_image_base64 and no valid paint_file"}), 400
 
@@ -2170,6 +2210,8 @@ def render():
             car_prefix=car_prefix,
             stamp_image=stamp_image_path,
             stamp_spec_finish=stamp_spec_finish,
+            decal_spec_finishes=decal_spec_finishes if decal_spec_finishes else None,
+            decal_paint_path=decal_paint_path,
         )
 
         elapsed = time.time() - start
@@ -2421,7 +2463,8 @@ def export_to_photoshop():
             return jsonify({"error": f"Paint file not found: {paint_file}"}), 404
 
         zones = data.get("zones", [])
-        if not zones:
+        import_spec_map_early = data.get("import_spec_map")
+        if not zones and not import_spec_map_early:
             return jsonify({"error": "No zones provided"}), 400
 
         car_file_name = (data.get("car_file_name") or "shokker_export").strip()
@@ -3277,6 +3320,58 @@ def upload_spec_map():
 
     except Exception as e:
         logger.error(f"Spec map upload error: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/upload-tga-decal', methods=['POST'])
+def upload_tga_decal():
+    """Convert an uploaded TGA file to PNG for use as a decal.
+    Accepts multipart form POST with a 'file' field containing a .tga file.
+    Returns: {"success": true, "png_base64": "data:image/png;base64,...", "width": N, "height": N}
+    """
+    try:
+        from PIL import Image as PILImage
+        import tempfile, uuid
+
+        if 'file' not in request.files:
+            return jsonify({"error": "No file uploaded"}), 400
+        f = request.files['file']
+        if not f.filename.lower().endswith('.tga'):
+            return jsonify({"error": "File must be a TGA"}), 400
+
+        # Save TGA temporarily
+        temp_tga = os.path.join(tempfile.gettempdir(), f"decal_{uuid.uuid4().hex}.tga")
+        f.save(temp_tga)
+
+        # Convert to RGBA PNG
+        img = PILImage.open(temp_tga).convert('RGBA')
+        temp_png = temp_tga.replace('.tga', '.png')
+        img.save(temp_png, 'PNG')
+
+        # Clean up TGA
+        try:
+            os.remove(temp_tga)
+        except Exception:
+            pass
+
+        # Read PNG as base64
+        with open(temp_png, 'rb') as pf:
+            png_b64 = base64.b64encode(pf.read()).decode('utf-8')
+
+        try:
+            os.remove(temp_png)
+        except Exception:
+            pass
+
+        logger.info(f"TGA decal uploaded: {f.filename} -> {img.width}x{img.height} PNG")
+        return jsonify({
+            "success": True,
+            "png_base64": f"data:image/png;base64,{png_b64}",
+            "width": img.width,
+            "height": img.height,
+        })
+    except Exception as e:
+        logger.error(f"TGA decal upload error: {e}")
         return jsonify({"error": str(e)}), 500
 
 

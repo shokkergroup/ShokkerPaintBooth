@@ -6308,12 +6308,13 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
 # LIVE PREVIEW - Low-res fast render (no file I/O)
 # ================================================================
 
-def preview_render(paint_file, zones, seed=51, preview_scale=0.25, import_spec_map=None):
+def preview_render(paint_file, zones, seed=51, preview_scale=0.25, import_spec_map=None,
+                   decal_spec_finishes=None, decal_paint_path=None):
     """Live preview: runs the FULL render pipeline at reduced resolution.
 
     Uses build_multi_zone with preview_mode=True so the preview matches
     the actual render output exactly (all features: HSB, overlays, patterns,
-    blend modes, color sources, etc.).
+    blend modes, color sources, decal spec finishes, etc.).
 
     Returns:
         (paint_rgb_uint8, combined_spec_uint8, elapsed_ms)
@@ -6348,6 +6349,20 @@ def preview_render(paint_file, zones, seed=51, preview_scale=0.25, import_spec_m
         except Exception:
             preview_spec = import_spec_map
 
+    # Downscale decal_paint_path to preview resolution if provided
+    # The decal composite is RGBA (alpha = decal mask), so preserve full RGBA.
+    preview_decal_path = None
+    if decal_paint_path and os.path.exists(decal_paint_path):
+        try:
+            decal_img = Image.open(decal_paint_path).convert('RGBA')
+            decal_img = decal_img.resize((preview_w, preview_h), Image.LANCZOS)
+            tmp_decal = tempfile.NamedTemporaryFile(suffix='.png', delete=False)
+            preview_decal_path = tmp_decal.name
+            tmp_decal.close()
+            decal_img.save(preview_decal_path)
+        except Exception:
+            preview_decal_path = decal_paint_path  # Fall back to original size
+
     # Resize any region_mask / spatial_mask in zones to preview res
     for z in zones:
         if "region_mask" in z and z["region_mask"] is not None:
@@ -6372,6 +6387,8 @@ def preview_render(paint_file, zones, seed=51, preview_scale=0.25, import_spec_m
             seed=seed,
             import_spec_map=preview_spec or import_spec_map,
             preview_mode=True,
+            decal_spec_finishes=decal_spec_finishes,
+            decal_paint_path=preview_decal_path,
         )
         paint_rgb, combined_spec = result
     except Exception as e:
@@ -6388,6 +6405,11 @@ def preview_render(paint_file, zones, seed=51, preview_scale=0.25, import_spec_m
         if preview_spec and preview_spec != import_spec_map:
             try:
                 os.unlink(preview_spec)
+            except Exception:
+                pass
+        if preview_decal_path and preview_decal_path != decal_paint_path:
+            try:
+                os.unlink(preview_decal_path)
             except Exception:
                 pass
 

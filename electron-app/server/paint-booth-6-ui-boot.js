@@ -141,6 +141,19 @@
             if (decalLayers[idx]) { decalLayers[idx].flipV = !!val; renderDecalOverlay(); }
         }
 
+        function snapDecalToCanvas(idx) {
+            if (!decalLayers[idx]) return;
+            decalLayers[idx].x = 0;
+            decalLayers[idx].y = 0;
+            decalLayers[idx].scale = 1.0;
+            decalLayers[idx].rotation = 0;
+            decalLayers[idx].flipH = false;
+            decalLayers[idx].flipV = false;
+            renderDecalList();
+            renderDecalOverlay();
+            if (typeof showToast === 'function') showToast('Decal snapped to canvas — position (0,0), scale 1.0', 'success');
+        }
+
         function setDecalScale(idx, val) {
             decalLayers[idx].scale = parseFloat(val);
             renderDecalOverlay();
@@ -195,6 +208,7 @@
                 <button onclick="setDecalFlipH(${idx}, !decalLayers[${idx}].flipH)" title="Flip H">↔</button>
                 <button onclick="setDecalFlipV(${idx}, !decalLayers[${idx}].flipV)" title="Flip V">↕</button>
                 <button onclick="toggleDecalVisibility(${idx})" title="Toggle visibility">${d.visible ? '&#x1F441;' : '&#x1F6AB;'}</button>
+                <button onclick="snapDecalToCanvas(${idx})" title="Snap to Canvas — reset to position (0,0), scale 1.0, no rotation" style="color:#00C8C8;">⊞</button>
                 <button onclick="removeDecal(${idx})" title="Remove">&times;</button>
             </div>
             <select onchange="decalLayers[${idx}].specFinish = this.value; renderDecalOverlay();"

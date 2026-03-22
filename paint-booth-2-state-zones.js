@@ -5904,15 +5904,26 @@ function applyPreset(presetId) {
 // ===== TOAST =====
 function showToast(msg, isError) {
     const toast = document.getElementById('toast');
-    toast.textContent = msg;
     // Auto-detect styling from message content
     const isSuccess = msg.startsWith('✅') || msg.startsWith('🔥');
     const isErr = isError === true || msg.startsWith('❌');
     toast.className = 'toast show' + (isErr ? ' error' : isSuccess ? ' success' : '');
-    // Show longer for save/success messages, shorter for quick info
-    const duration = (isSuccess || isErr) ? 5000 : 2500;
+    // Build content with close button
+    toast.innerHTML = '';
+    const msgSpan = document.createElement('span');
+    msgSpan.textContent = msg;
+    const closeBtn = document.createElement('span');
+    closeBtn.innerHTML = '&#x2715;';
+    closeBtn.style.cssText = 'cursor:pointer; margin-left:12px; font-weight:bold; opacity:0.7; flex-shrink:0;';
+    closeBtn.title = 'Dismiss';
+    closeBtn.onclick = () => { toast.className = 'toast'; clearTimeout(showToast._timer); };
+    toast.style.display = 'flex';
+    toast.style.alignItems = 'center';
+    toast.appendChild(msgSpan);
+    toast.appendChild(closeBtn);
+    // 60 seconds auto-dismiss
     clearTimeout(showToast._timer);
-    showToast._timer = setTimeout(() => toast.className = 'toast', duration);
+    showToast._timer = setTimeout(() => toast.className = 'toast', 60000);
 }
 
 // ===== RENDER NOTIFICATION SYSTEM =====

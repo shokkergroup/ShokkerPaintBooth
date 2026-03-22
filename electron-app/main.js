@@ -131,11 +131,11 @@ function verifyWithPayhip(licenseKey) {
     });
     req.on('error', (err) => {
       console.log('[License] Payhip API error:', err.message);
-      resolve({ valid: false, reason: 'Could not reach license server. Check your internet connection.' });
+      resolve({ valid: false, networkError: true, reason: 'Could not reach license server. Check your internet connection.' });
     });
     req.setTimeout(10000, () => {
       req.destroy();
-      resolve({ valid: false, reason: 'License server timed out. Check your internet connection.' });
+      resolve({ valid: false, networkError: true, reason: 'License server timed out. Check your internet connection.' });
     });
     req.end();
   });
@@ -283,7 +283,7 @@ function getLicenseDialogHTML() {
   h1 {
     font-size: 22px;
     font-weight: 700;
-    color: #ff3366;
+    color: #E87A20;
     margin-bottom: 6px;
     letter-spacing: 1px;
   }
@@ -319,7 +319,7 @@ function getLicenseDialogHTML() {
     outline: none;
     transition: border-color 0.2s;
   }
-  input:focus { border-color: #ff3366; }
+  input:focus { border-color: #E87A20; }
   input::placeholder { color: #555; letter-spacing: 1px; font-size: 13px; }
   .btn-row {
     display: flex;
@@ -340,17 +340,17 @@ function getLicenseDialogHTML() {
     transition: all 0.15s;
   }
   .btn-activate {
-    background: #ff3366;
+    background: #E87A20;
     color: #fff;
   }
-  .btn-activate:hover { background: #e6295a; }
+  .btn-activate:hover { background: #c9660e; }
   .btn-activate:disabled { background: #663; cursor: wait; }
   .btn-buy {
     background: #222;
-    color: #ff3366;
+    color: #E87A20;
     border: 1px solid #333;
   }
-  .btn-buy:hover { background: #2a2a2a; border-color: #ff3366; }
+  .btn-buy:hover { background: #2a2a2a; border-color: #E87A20; }
   .btn-quit {
     background: transparent;
     color: #666;
@@ -443,8 +443,13 @@ async function checkLicenseAndActivate() {
         // Update last verified timestamp
         saveLocalLicense(local.licenseKey, local.email);
         return true;
+      } else if (result.networkError) {
+        // Network timeout / connection refused / DNS failure — treat as "try next time", do NOT revoke
+        console.log('[License] Re-verification skipped (network error) — keeping local license:', result.reason);
+        return true;
       } else {
-        console.log('[License] Re-verification failed - clearing local license');
+        // Server explicitly responded that the license is invalid/revoked — revoke locally
+        console.log('[License] Re-verification failed (server rejected) - clearing local license');
         try { fs.unlinkSync(LICENSE_FILE); } catch (e) { }
         // Fall through to show dialog
       }
@@ -817,7 +822,7 @@ app.whenReady().then(async () => {
           dialog.showMessageBox(mainWindow, {
             type: 'info',
             title: 'Update Available',
-            message: `A new version (v${info.version}) is available and downloading in the background. It will install when you close the app.`,
+            message: `Version ${info.version} is available and downloading in the background. It will install when you close the app.\n\nSee what's new: https://github.com/ShokkerGroup/ShokkerPaintBooth/releases`,
             buttons: ['OK']
           });
         }

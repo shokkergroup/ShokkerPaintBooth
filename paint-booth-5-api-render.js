@@ -378,7 +378,10 @@ const ShokkerAPI = {
             if (extras.output_dir) body.output_dir = extras.output_dir;
             if (extras.import_spec_map) body.import_spec_map = extras.import_spec_map;
             if (extras.paint_image_base64) body.paint_image_base64 = extras.paint_image_base64;
+            if (extras.decal_mask_base64) body.decal_mask_base64 = extras.decal_mask_base64;
+            if (extras.decal_spec_finishes && extras.decal_spec_finishes.length) body.decal_spec_finishes = extras.decal_spec_finishes;
         }
+        this.resetStatusInterval(); // Reset polling backoff on every render
         const res = await fetch(this.baseUrl + '/render', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -403,6 +406,8 @@ const ShokkerAPI = {
         if (extras) {
             if (extras.import_spec_map) body.import_spec_map = extras.import_spec_map;
             if (extras.paint_image_base64) body.paint_image_base64 = extras.paint_image_base64;
+            if (extras.decal_mask_base64) body.decal_mask_base64 = extras.decal_mask_base64;
+            if (extras.decal_spec_finishes && extras.decal_spec_finishes.length) body.decal_spec_finishes = extras.decal_spec_finishes;
         }
         const res = await fetch(this.baseUrl + '/api/export-to-photoshop', {
             method: 'POST',
@@ -470,8 +475,22 @@ const ShokkerAPI = {
     },
 
     startPolling() {
+        this._statusInterval = 10000;
         this.checkStatus();
-        setInterval(() => this.checkStatus(), 10000);
+        const statusPoll = () => {
+            this.checkStatus().then(() => {
+                // Slow down polling when idle (no recent renders)
+                this._statusInterval = Math.min(this._statusInterval * 1.5, 120000); // max 2 minutes
+                setTimeout(statusPoll, this._statusInterval);
+            }).catch(() => {
+                setTimeout(statusPoll, this._statusInterval);
+            });
+        };
+        setTimeout(statusPoll, this._statusInterval);
+    },
+
+    resetStatusInterval() {
+        this._statusInterval = 10000;
     }
 };
 

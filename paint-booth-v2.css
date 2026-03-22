@@ -23,6 +23,11 @@
     --text-bright: #fff;
     --border: #2a2a38;
     --success: #00ff88;
+    /* Additional semantic aliases */
+    --text-primary: #e0e0e0;
+    --surface: #1a1a2a;
+    --border-color: #333;
+    --accent-red: #ff4444;
 }
 
 /* Light theme — applied when body has .theme-light */

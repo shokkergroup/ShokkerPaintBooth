@@ -95,6 +95,10 @@ CORS(app)
 def _handle_404(e):
     return jsonify({"error": "not_found", "path": request.path}), 404
 
+@app.route('/favicon.ico')
+def favicon():
+    return '', 204  # No content — stops the 404 without needing an actual icon file
+
 @app.route('/<path:filename>')
 def serve_static_assets(filename):
     """Serve JS/CSS assets from the server directory."""
@@ -4086,6 +4090,34 @@ def api_shokk_delete():
             return jsonify({"error": "Invalid filename"}), 400
         ok = mgr.delete(filename)
         return jsonify({"ok": ok})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/shokk/rename', methods=['POST'])
+def api_shokk_rename():
+    """Rename a .shokk in the user library (never factory). Body: { old_name, new_name }"""
+    mgr = _get_shokk_manager()
+    if not mgr:
+        return jsonify({"error": "SHOKK manager unavailable"}), 500
+    try:
+        data = request.get_json() or {}
+        old_name = data.get("old_name", "").strip()
+        new_name = data.get("new_name", "").strip()
+        if not old_name.endswith(".shokk") or not new_name.endswith(".shokk"):
+            return jsonify({"error": "Invalid filename — must end in .shokk"}), 400
+        # Sanitize new name: allow alphanumeric, spaces, dashes, underscores, dots
+        safe_new = "".join(c if c.isalnum() or c in " ._-" else "_" for c in new_name)
+        if not safe_new or safe_new == ".shokk":
+            return jsonify({"error": "Invalid new name"}), 400
+        old_path = os.path.join(mgr.library_dir, old_name)
+        new_path = os.path.join(mgr.library_dir, safe_new)
+        if not os.path.exists(old_path):
+            return jsonify({"error": "File not found"}), 404
+        if os.path.exists(new_path):
+            return jsonify({"error": f'A file named "{safe_new}" already exists'}), 409
+        os.rename(old_path, new_path)
+        return jsonify({"ok": True, "new_name": safe_new})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 

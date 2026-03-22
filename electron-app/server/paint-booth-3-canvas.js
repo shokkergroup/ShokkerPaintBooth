@@ -3828,6 +3828,11 @@ if __name__ == '__main__':
                     if (compositeCanvas) {
                         body.paint_image_base64 = compositeCanvas.toDataURL('image/png');
                     }
+                    // Send the separate decal alpha mask so engine knows WHERE decals are
+                    if (typeof compositeDecalMaskForRender === 'function') {
+                        const maskDataUrl = compositeDecalMaskForRender();
+                        if (maskDataUrl) body.decal_mask_base64 = maskDataUrl;
+                    }
                     const decalSpecs = decalLayers
                         .filter(dl => dl.visible && dl.specFinish && dl.specFinish !== 'none')
                         .map(dl => ({ specFinish: dl.specFinish }));

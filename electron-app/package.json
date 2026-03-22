@@ -1,6 +1,6 @@
 {
   "name": "shokker-paint-booth-v5",
-  "version": "5.5.4",
+  "version": "5.6.0",
   "description": "Shokker Paint Booth V5 — iRacing Spec Map Tool",
   "main": "main.js",
   "author": "Shokker Group",
@@ -25,7 +25,7 @@
     },
     "win": {
       "target": "nsis",
-      "icon": null,
+      "icon": "icon.ico",
       "artifactName": "ShokkerPaintBoothV5-${version}-Setup.${ext}"
     },
     "nsis": {

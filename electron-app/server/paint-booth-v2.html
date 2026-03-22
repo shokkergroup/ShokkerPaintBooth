@@ -10,7 +10,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SHOKKER PAINT BOOTH — v6.0 Alpha</title>
+    <title>SHOKKER PAINT BOOTH — v5 Alpha</title>
+    <link rel="icon" href="data:," />
     <link rel="stylesheet" href="paint-booth-v2.css">
     <script src="fusion-swatches.js"></script>
     <script src="swatch-upgrades.js"></script>
@@ -226,6 +227,23 @@
             opacity: 1;
         }
 
+        .shokk-card-rename {
+            position: absolute;
+            top: 6px;
+            right: 28px;
+            background: none;
+            border: none;
+            color: #aaaaff;
+            font-size: 13px;
+            cursor: pointer;
+            opacity: 0.5;
+            padding: 2px 5px;
+        }
+
+        .shokk-card-rename:hover {
+            opacity: 1;
+        }
+
         /* Save SHOKK modal */
         #saveShokkModal {
             position: fixed;
@@ -322,7 +340,7 @@
         <div class="header-brand">
             <h1>SHOKKER PAINT BOOTH</h1>
             <div class="subtitle">
-                <span id="liveBuildBadge" class="version-badge" title="Version">v6.0</span>
+                <span id="liveBuildBadge" class="version-badge" title="Version">v5</span>
                 <span id="comboCount" style="display:none;"></span>
                 <span id="b21check" style="display:none;"></span>
             </div>
@@ -336,7 +354,7 @@
         <div class="header-fields">
             <div class="header-field field-id" id="iracingIdContainer">
                 <label>iRacing User ID</label>
-                <input type="text" id="iracingId" value="" placeholder="e.g. 23371" onchange="updateOutputPath()" title="Your iRacing member number (found in your iRacing account profile). Required for saving car files." style="border: 2px solid var(--accent-orange); background: rgba(255,165,0,0.08);">
+                <input type="text" id="iracingId" value="" placeholder="e.g. 23371" onchange="updateOutputPath()" oninput="this.style.borderColor = this.value.trim() ? '#333' : '#E87A20'" title="Your iRacing member number (found in your iRacing account profile). Required for saving car files." style="border: 2px solid var(--accent-orange); background: rgba(255,165,0,0.08);">
                 <div id="iracingIdHint" style="font-size: 8px; color: var(--accent-orange); margin-top: 1px;">Required — your iRacing member number</div>
             </div>
             <div class="header-field field-source" style="position: relative;">
@@ -694,10 +712,7 @@
                         </div>
                     </div>
                 </div>
-                <!-- Placeholder warning for unfinished sections -->
-                <div style="margin: 8px 16px 2px 16px; padding: 4px 8px; background: rgba(255,40,40,0.12); border: 1px solid rgba(255,60,60,0.35); border-radius: 4px; text-align: center;">
-                    <span style="font-size: 9px; font-weight: 700; color: #ff4444; letter-spacing: 1px; text-transform: uppercase;">&#9888; Placeholder / Coming Soon</span>
-                </div>
+                <!-- Placeholder banner removed for Alpha release -->
                 <!-- Decals & Numbers: import PNGs, add number decals, drag on canvas -->
                 <div style="padding: 2px 16px 4px 16px;">
                     <details class="combo-section" id="decalsSection">
@@ -708,29 +723,7 @@
                             <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:6px;">
                                 <button type="button" class="btn btn-sm" onclick="importDecal()" title="Import PNG/JPEG as decal layer"
                                     style="font-size:10px; padding:4px 10px;">📁 Import PNG</button>
-                                <button type="button" class="btn btn-sm" onclick="openNumberGenerator()" title="Add number decal"
-                                    style="font-size:10px; padding:4px 10px; border-color:var(--accent-blue); color:var(--accent-blue);"># Add Number</button>
-                            </div>
-                            <div id="numberGenSection" style="display:none; margin-bottom:8px; padding:8px; background:var(--bg-card); border-radius:6px; border:1px solid var(--border);">
-                                <div style="font-size:9px; font-weight:700; color:var(--text-dim); margin-bottom:4px;">Number style</div>
-                                <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
-                                    <label style="font-size:9px;">Text:</label>
-                                    <input id="numberGenText" type="text" value="23" maxlength="4" style="width:42px; font-size:11px; padding:2px 4px; background:var(--bg-input); color:var(--text); border:1px solid var(--border); border-radius:3px;">
-                                    <label style="font-size:9px;">Color:</label>
-                                    <input id="numberGenColor" type="color" value="#ffffff" style="width:28px; height:20px; padding:0; border:1px solid var(--border); cursor:pointer;">
-                                    <label style="font-size:9px;">Outline:</label>
-                                    <input id="numberGenOutline" type="color" value="#000000" style="width:28px; height:20px; padding:0; border:1px solid var(--border); cursor:pointer;">
-                                    <label style="font-size:9px;">Size:</label>
-                                    <input id="numberGenSize" type="range" min="40" max="300" value="120" oninput="updateNumberPreview()" style="width:50px;">
-                                    <span id="numberGenSizeVal" style="font-size:9px; width:22px;">120</span>
-                                    <select id="numberGenFont" style="font-size:9px; padding:2px 4px; background:var(--bg-input); color:var(--text); border:1px solid var(--border); border-radius:3px;">
-                                        <option value="Helvetica">Helvetica</option>
-                                        <option value="Arial">Arial</option>
-                                        <option value="Impact">Impact</option>
-                                    </select>
-                                    <button type="button" class="btn btn-sm" onclick="addNumberDecal()" style="font-size:9px; padding:2px 8px;">Add</button>
-                                </div>
-                                <div id="numberPreview" style="margin-top:6px; font-weight:900; text-align:center;" title="Preview">23</div>
+                                <!-- REMOVED FOR ALPHA: # Add Number button and number generator UI -->
                             </div>
                             <div id="decalLayerList" style="max-height:180px; overflow-y:auto; font-size:9px;"></div>
                             <div style="font-size:8px; color:var(--text-dim); margin-top:4px;">Drag decals on the car map to position. Scale/opacity/rotation below.</div>
@@ -738,7 +731,7 @@
                     </details>
                 </div>
 
-                <!-- Spec Stamps: import sponsor/decal PNGs with alpha, apply uniform spec finish -->
+                <!-- REMOVED FOR ALPHA
                 <div style="padding: 2px 16px 4px 16px;">
                     <details class="combo-section" id="specStampsSection">
                         <summary style="cursor:pointer; font-size:10px; font-weight:700; color:var(--accent-gold); letter-spacing:0.5px;">
@@ -771,8 +764,9 @@
                         </div>
                     </details>
                 </div>
+                -->
 
-                <!-- Finish Combo Library -->
+                <!-- REMOVED FOR ALPHA
                 <div style="padding: 2px 16px 4px 16px;">
                     <details class="combo-section">
                         <summary
@@ -796,6 +790,7 @@
                         </div>
                     </details>
                 </div>
+                -->
                 <div class="smart-random-row" style="padding: 0 16px;">
                     <input type="checkbox" id="smartRandomize" checked>
                     <label for="smartRandomize">Smart Randomize (avoid ugly combos)</label>

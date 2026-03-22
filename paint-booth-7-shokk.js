@@ -230,10 +230,14 @@ function _shokkCard(e) {
     const deleteBtn = e.source !== 'factory'
         ? `<button class="shokk-card-delete" onclick="deleteShokkFile('${safeFilename}',event)" title="Delete this SHOKK file">✕</button>`
         : '';
+    const renameBtn = e.source !== 'factory'
+        ? `<button class="shokk-card-rename" onclick="renameShokkFile('${safeFilename}',event)" title="Rename this SHOKK file">✎</button>`
+        : '';
 
     return `
 <div class="shokk-card" onclick="selectShokkCard('${safePath}', this)" ondblclick="showShokkImportOptions('${safePath}')">
     ${deleteBtn}
+    ${renameBtn}
     <div class="shokk-card-thumb">${previewEl}</div>
     <div class="shokk-card-body">
         <div class="shokk-card-name">${e.source === 'factory' ? '⭐ ' : ''}${e.name || e.filename}</div>
@@ -649,6 +653,32 @@ async function deleteShokkFile(filename, event) {
             _loadShokkLibraryContents();
         } else {
             showToast(`Failed: ${data.error}`, true);
+        }
+    } catch (e) {
+        showToast(`Error: ${e.message}`, true);
+    }
+}
+
+// ─── RENAME SHOKK ─────────────────────────────────────────────────────────────
+
+async function renameShokkFile(filename, event) {
+    event.stopPropagation();
+    const currentName = filename.replace(/\.shokk$/i, '');
+    const newName = prompt(`Rename "${currentName}" to:`, currentName);
+    if (!newName || newName.trim() === '' || newName.trim() === currentName) return;
+    const base = _shokkApiBase();
+    try {
+        const res = await fetch(base + '/api/shokk/rename', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ old_name: filename, new_name: newName.trim() + '.shokk' })
+        });
+        const data = await res.json();
+        if (data.ok) {
+            showToast(`Renamed to "${newName.trim()}".`);
+            _loadShokkLibraryContents();
+        } else {
+            showToast(`Rename failed: ${data.error}`, true);
         }
     } catch (e) {
         showToast(`Error: ${e.message}`, true);

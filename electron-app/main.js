@@ -825,6 +825,7 @@ app.whenReady().then(async () => {
       autoUpdater.logger = { info: (m) => debugLog(`[Updater] ${m}`), warn: (m) => debugLog(`[Updater] WARN: ${m}`), error: (m) => debugLog(`[Updater] ERR: ${m}`) };
       autoUpdater.autoDownload = true;
       autoUpdater.autoInstallOnAppQuit = true;
+      autoUpdater.allowPrerelease = true;
 
       autoUpdater.on('update-available', (info) => {
         debugLog(`[Updater] Update available: v${info.version}`);

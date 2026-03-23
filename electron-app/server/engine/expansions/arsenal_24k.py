@@ -230,6 +230,12 @@ def _multi_scale_noise(shape, scales, weights, seed):
         arr = np.array(img).astype(np.float32) / 255.0
         arr = arr * (small.max() - small.min()) + small.min()
         result += arr * weight
+    # Normalize to [0, 1] range
+    r_min, r_max = result.min(), result.max()
+    if r_max - r_min > 1e-8:
+        result = (result - r_min) / (r_max - r_min)
+    else:
+        result = np.full_like(result, 0.5)
     return result
 
 
@@ -11304,7 +11310,16 @@ def integrate_expansion(engine_module):
         rng = np.random.RandomState(seed)
 
         # Fine flakes — per-pixel random assignment weighted by cluster noise
-        fine_noise = rng.rand(h, w).astype(np.float32)
+        # Generate actual micro-flake texture at the specified scale
+        if flake_scale <= 1:
+            fine_noise = rng.rand(h, w).astype(np.float32)
+        else:
+            # Create flakes at the specified grain size, then upscale
+            fh = max(4, h // flake_scale)
+            fw = max(4, w // flake_scale)
+            small_flakes = rng.rand(fh, fw).astype(np.float32)
+            from PIL import Image as _PILImage
+            fine_noise = np.array(_PILImage.fromarray((small_flakes * 255).astype(np.uint8)).resize((w, h), _PILImage.NEAREST)).astype(np.float32) / 255.0
 
         # Medium clusters — which color dominates in each region
         cluster = _multi_scale_noise((h, w), [cluster_scale, cluster_scale * 2],
@@ -11314,8 +11329,8 @@ def integrate_expansion(engine_module):
         flow = _multi_scale_noise((h, w), [flow_scale, int(flow_scale * 1.5)],
                                   [0.8, 0.2], seed + 200)
 
-        # Combine: flow for primary tendency, cluster for variation, fine for flakes
-        combined = flow * 0.5 + cluster * 0.3 + fine_noise * 0.2
+        # Combine: fine flakes dominate, cluster for variation, flow for overall tendency
+        combined = fine_noise * 0.5 + cluster * 0.3 + flow * 0.2
 
         # Quantize into color bins
         n_colors = len(colors)
@@ -11346,12 +11361,21 @@ def integrate_expansion(engine_module):
         rng = np.random.RandomState(seed)
 
         # Reproduce the same noise fields as paint to keep colors aligned
-        fine_noise = rng.rand(h, w).astype(np.float32)
+        # Generate actual micro-flake texture at the specified scale
+        if flake_scale <= 1:
+            fine_noise = rng.rand(h, w).astype(np.float32)
+        else:
+            # Create flakes at the specified grain size, then upscale
+            fh = max(4, h // flake_scale)
+            fw = max(4, w // flake_scale)
+            small_flakes = rng.rand(fh, fw).astype(np.float32)
+            from PIL import Image as _PILImage
+            fine_noise = np.array(_PILImage.fromarray((small_flakes * 255).astype(np.uint8)).resize((w, h), _PILImage.NEAREST)).astype(np.float32) / 255.0
         cluster = _multi_scale_noise((h, w), [cluster_scale, cluster_scale * 2],
                                      [0.7, 0.3], seed + 100)
         flow = _multi_scale_noise((h, w), [flow_scale, int(flow_scale * 1.5)],
                                   [0.8, 0.2], seed + 200)
-        combined = flow * 0.5 + cluster * 0.3 + fine_noise * 0.2
+        combined = fine_noise * 0.5 + cluster * 0.3 + flow * 0.2
         n_colors = len(colors)
         color_idx = np.clip((combined * n_colors).astype(np.int32), 0, n_colors - 1)
 

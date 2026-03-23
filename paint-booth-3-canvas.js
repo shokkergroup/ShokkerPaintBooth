@@ -3814,7 +3814,7 @@ if __name__ == '__main__':
                 paint_file: paintFile,
                 zones: serverZones,
                 seed: 51,
-                preview_scale: 0.25,
+                preview_scale: 0.5,
             };
 
             // Include imported spec map if active (merge mode)

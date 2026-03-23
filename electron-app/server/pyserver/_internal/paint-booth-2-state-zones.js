@@ -755,9 +755,12 @@ function renderZoneDetail(index) {
                 onchange="setHexColor(${i}, this.value)"
                 onfocus="this.select()"
                 maxlength="7">
-            <input class="color-picker-input" type="color" value="${zone.pickerColor || '#3366ff'}"
+            <input class="color-picker-input" id="colorPickerInput${i}" type="color" value="${zone.pickerColor || '#3366ff'}"
                 onchange="setPickerColor(${i}, this.value)"
                 title="Color picker">
+            <button onclick="(function(){var inp=document.getElementById('colorPickerInput${i}');if(inp)setPickerColor(${i},inp.value);})()"
+                    style="background:#E87A20; color:#fff; border:none; padding:4px 10px; border-radius:4px; cursor:pointer; font-weight:bold; font-size:10px; white-space:nowrap;"
+                    title="Apply the selected color to this zone">&#10003; Apply</button>
         </div>
         <div class="color-tol-row">
             <span class="tol-label">TOL:</span>
@@ -931,7 +934,7 @@ function renderZoneDetail(index) {
                     <input type="range" min="0" max="100" value="${Math.round((sp.offsetY||0.5)*100)}"
                            onchange="zones[${i}].specPatternStack[${si}].offsetY=this.value/100; triggerPreviewRender();" style="width:60px;">
                     <label style="color:#888; font-size:10px;">Scale</label>
-                    <input type="range" min="10" max="400" value="${Math.round((sp.scale||1)*100)}"
+                    <input type="range" min="5" max="400" value="${Math.round((sp.scale||1)*100)}"
                            onchange="zones[${i}].specPatternStack[${si}].scale=this.value/100; triggerPreviewRender();" style="width:60px;">
                     <label style="color:#888; font-size:10px;">Rot</label>
                     <input type="range" min="0" max="359" value="${sp.rotation||0}"

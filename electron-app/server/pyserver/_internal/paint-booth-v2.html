@@ -10,7 +10,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SHOKKER PAINT BOOTH — v6.0 Alpha</title>
+    <title>SHOKKER PAINT BOOTH — v5 Alpha</title>
+    <link rel="icon" href="data:," />
     <link rel="stylesheet" href="paint-booth-v2.css">
     <script src="fusion-swatches.js"></script>
     <script src="swatch-upgrades.js"></script>
@@ -226,6 +227,23 @@
             opacity: 1;
         }
 
+        .shokk-card-rename {
+            position: absolute;
+            top: 6px;
+            right: 28px;
+            background: none;
+            border: none;
+            color: #aaaaff;
+            font-size: 13px;
+            cursor: pointer;
+            opacity: 0.5;
+            padding: 2px 5px;
+        }
+
+        .shokk-card-rename:hover {
+            opacity: 1;
+        }
+
         /* Save SHOKK modal */
         #saveShokkModal {
             position: fixed;
@@ -322,7 +340,7 @@
         <div class="header-brand">
             <h1>SHOKKER PAINT BOOTH</h1>
             <div class="subtitle">
-                <span id="liveBuildBadge" class="version-badge" title="Version">v6.0</span>
+                <span id="liveBuildBadge" class="version-badge" title="Version">v5</span>
                 <span id="comboCount" style="display:none;"></span>
                 <span id="b21check" style="display:none;"></span>
             </div>
@@ -336,7 +354,7 @@
         <div class="header-fields">
             <div class="header-field field-id" id="iracingIdContainer">
                 <label>iRacing User ID</label>
-                <input type="text" id="iracingId" value="" placeholder="e.g. 23371" onchange="updateOutputPath()" title="Your iRacing member number (found in your iRacing account profile). Required for saving car files." style="border: 2px solid var(--accent-orange); background: rgba(255,165,0,0.08);">
+                <input type="text" id="iracingId" value="" placeholder="e.g. 23371" onchange="updateOutputPath()" oninput="this.style.borderColor = this.value.trim() ? '#333' : '#E87A20'" title="Your iRacing member number (found in your iRacing account profile). Required for saving car files." style="border: 2px solid var(--accent-orange); background: rgba(255,165,0,0.08);">
                 <div id="iracingIdHint" style="font-size: 8px; color: var(--accent-orange); margin-top: 1px;">Required — your iRacing member number</div>
             </div>
             <div class="header-field field-source" style="position: relative;">
@@ -633,10 +651,10 @@
 
                 <!-- Zone Actions -->
                 <div class="zone-actions" style="flex-wrap: wrap;">
-                    <button class="btn btn-accent" onclick="addZone()" style="flex-shrink: 0;">+ Add Zone</button>
+                    <button class="btn btn-accent" onclick="addZone()" style="flex-shrink: 0;" title="Create a new empty zone">+ Add Zone</button>
                     <button class="btn btn-sm" onclick="restoreAllZones()"
                         style="font-size: 10px; border-color: var(--accent-green); color: var(--accent-green);"
-                        title="Restore all 10 default zones at their default settings">Restore All</button>
+                        title="Restore all zones to their last saved state">Restore All</button>
                     <button class="btn btn-sm" onclick="clearAllZones()" style="font-size: 10px; color: #ff8888;"
                         title="Reset all zones to defaults">Clear All</button>
                     <button class="btn btn-sm" onclick="openPresetGallery()" style="font-size: 10px;"
@@ -653,11 +671,11 @@
                             style="margin-left:8px; font-size:9px;">Dismiss</button>
                     </div>
                     <button class="btn btn-sm" onclick="randomizeZone(selectedZoneIndex)" style="font-size: 10px;"
-                        title="Randomize selected zone (R)">Rand</button>
+                        title="Randomly assign a base and pattern to this zone">Rand</button>
                     <button class="btn btn-sm" onclick="randomizeAllZones()" style="font-size: 10px;"
-                        title="Randomize ALL zones">Rand All</button>
+                        title="Randomize all zones at once">Rand All</button>
                     <button class="btn btn-sm" onclick="applyFinishToAllZones()" style="font-size: 10px;"
-                        title="Apply selected zone's finish to ALL zones">Apply All</button>
+                        title="Apply this zone's finish to all other zones">Apply All</button>
                     <button class="btn btn-sm" onclick="openTemplateLibrary()"
                         style="font-size: 10px; border-color: var(--accent-gold); color: var(--accent-gold);"
                         title="Browse pre-built livery layouts">Library</button>
@@ -694,10 +712,7 @@
                         </div>
                     </div>
                 </div>
-                <!-- Placeholder warning for unfinished sections -->
-                <div style="margin: 8px 16px 2px 16px; padding: 4px 8px; background: rgba(255,40,40,0.12); border: 1px solid rgba(255,60,60,0.35); border-radius: 4px; text-align: center;">
-                    <span style="font-size: 9px; font-weight: 700; color: #ff4444; letter-spacing: 1px; text-transform: uppercase;">&#9888; Placeholder / Coming Soon</span>
-                </div>
+                <!-- Placeholder banner removed for Alpha release -->
                 <!-- Decals & Numbers: import PNGs, add number decals, drag on canvas -->
                 <div style="padding: 2px 16px 4px 16px;">
                     <details class="combo-section" id="decalsSection">
@@ -708,29 +723,7 @@
                             <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:6px;">
                                 <button type="button" class="btn btn-sm" onclick="importDecal()" title="Import PNG/JPEG as decal layer"
                                     style="font-size:10px; padding:4px 10px;">📁 Import PNG</button>
-                                <button type="button" class="btn btn-sm" onclick="openNumberGenerator()" title="Add number decal"
-                                    style="font-size:10px; padding:4px 10px; border-color:var(--accent-blue); color:var(--accent-blue);"># Add Number</button>
-                            </div>
-                            <div id="numberGenSection" style="display:none; margin-bottom:8px; padding:8px; background:var(--bg-card); border-radius:6px; border:1px solid var(--border);">
-                                <div style="font-size:9px; font-weight:700; color:var(--text-dim); margin-bottom:4px;">Number style</div>
-                                <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
-                                    <label style="font-size:9px;">Text:</label>
-                                    <input id="numberGenText" type="text" value="23" maxlength="4" style="width:42px; font-size:11px; padding:2px 4px; background:var(--bg-input); color:var(--text); border:1px solid var(--border); border-radius:3px;">
-                                    <label style="font-size:9px;">Color:</label>
-                                    <input id="numberGenColor" type="color" value="#ffffff" style="width:28px; height:20px; padding:0; border:1px solid var(--border); cursor:pointer;">
-                                    <label style="font-size:9px;">Outline:</label>
-                                    <input id="numberGenOutline" type="color" value="#000000" style="width:28px; height:20px; padding:0; border:1px solid var(--border); cursor:pointer;">
-                                    <label style="font-size:9px;">Size:</label>
-                                    <input id="numberGenSize" type="range" min="40" max="300" value="120" oninput="updateNumberPreview()" style="width:50px;">
-                                    <span id="numberGenSizeVal" style="font-size:9px; width:22px;">120</span>
-                                    <select id="numberGenFont" style="font-size:9px; padding:2px 4px; background:var(--bg-input); color:var(--text); border:1px solid var(--border); border-radius:3px;">
-                                        <option value="Helvetica">Helvetica</option>
-                                        <option value="Arial">Arial</option>
-                                        <option value="Impact">Impact</option>
-                                    </select>
-                                    <button type="button" class="btn btn-sm" onclick="addNumberDecal()" style="font-size:9px; padding:2px 8px;">Add</button>
-                                </div>
-                                <div id="numberPreview" style="margin-top:6px; font-weight:900; text-align:center;" title="Preview">23</div>
+                                <!-- REMOVED FOR ALPHA: # Add Number button and number generator UI -->
                             </div>
                             <div id="decalLayerList" style="max-height:180px; overflow-y:auto; font-size:9px;"></div>
                             <div style="font-size:8px; color:var(--text-dim); margin-top:4px;">Drag decals on the car map to position. Scale/opacity/rotation below.</div>
@@ -738,7 +731,7 @@
                     </details>
                 </div>
 
-                <!-- Spec Stamps: import sponsor/decal PNGs with alpha, apply uniform spec finish -->
+                <!-- REMOVED FOR ALPHA
                 <div style="padding: 2px 16px 4px 16px;">
                     <details class="combo-section" id="specStampsSection">
                         <summary style="cursor:pointer; font-size:10px; font-weight:700; color:var(--accent-gold); letter-spacing:0.5px;">
@@ -771,8 +764,9 @@
                         </div>
                     </details>
                 </div>
+                -->
 
-                <!-- Finish Combo Library -->
+                <!-- REMOVED FOR ALPHA
                 <div style="padding: 2px 16px 4px 16px;">
                     <details class="combo-section">
                         <summary
@@ -796,6 +790,7 @@
                         </div>
                     </details>
                 </div>
+                -->
                 <div class="smart-random-row" style="padding: 0 16px;">
                     <input type="checkbox" id="smartRandomize" checked>
                     <label for="smartRandomize">Smart Randomize (avoid ugly combos)</label>
@@ -1062,7 +1057,18 @@
                 <div class="split-view-container" id="splitViewContainer">
                     <div class="split-pane split-source" id="splitSource">
                         <div class="split-pane-label" id="sourcePaneLabel" style="display:none;">SOURCE</div>
-                        <div class="canvas-inner" id="canvasInner" style="display: none;">
+                        <div class="canvas-inner" id="canvasInner" style="display: none; position: relative;">
+                            <div id="placement-tools-bar" style="display:none; position:absolute; top:6px; left:50%; transform:translateX(-50%);
+                                 z-index:100; background:#111; border:1px solid #00C8C8; border-radius:6px; padding:4px 10px;
+                                 gap:8px; align-items:center; white-space:nowrap; box-shadow:0 2px 10px rgba(0,200,200,0.3);">
+                                <span style="color:#00C8C8; font-size:11px; font-weight:bold;">MANUAL PLACEMENT</span>
+                                <button onclick="manualPlacementFlipH()" title="Flip Horizontal" style="background:#1a1a1a; color:#ccc; border:1px solid #333; padding:3px 8px; cursor:pointer; font-size:12px; border-radius:3px;">&#x2194; Flip H</button>
+                                <button onclick="manualPlacementFlipV()" title="Flip Vertical" style="background:#1a1a1a; color:#ccc; border:1px solid #333; padding:3px 8px; cursor:pointer; font-size:12px; border-radius:3px;">&#x2195; Flip V</button>
+                                <button onclick="manualPlacementRotateCW()" title="Rotate 90° Clockwise" style="background:#1a1a1a; color:#ccc; border:1px solid #333; padding:3px 8px; cursor:pointer; font-size:12px; border-radius:3px;">&#x21BB; +90°</button>
+                                <button onclick="manualPlacementRotateCCW()" title="Rotate 90° Counter-clockwise" style="background:#1a1a1a; color:#ccc; border:1px solid #333; padding:3px 8px; cursor:pointer; font-size:12px; border-radius:3px;">&#x21BA; -90°</button>
+                                <button onclick="manualPlacementReset()" title="Reset to center" style="background:#1a1a1a; color:#ccc; border:1px solid #333; padding:3px 8px; cursor:pointer; font-size:12px; border-radius:3px;">&#x27F2; Reset</button>
+                                <button onclick="deactivateManualPlacement(); renderZones();" title="Exit Manual Placement" style="background:#8B0000; color:#fff; border:1px solid #333; padding:3px 8px; cursor:pointer; font-size:12px; border-radius:3px;">&#x2715; Done</button>
+                            </div>
                             <canvas id="paintCanvas" style="display: block;"></canvas>
                             <canvas id="regionCanvas"
                                 style="position: absolute; top: 0; left: 0; display: block; pointer-events: none; opacity: 0.85;"></canvas>
@@ -1107,7 +1113,7 @@
                             </div>
                             <div class="preview-dual-pane" id="previewPaintPane" style="display:none;">
                                 <div class="preview-dual-label">PAINT</div>
-                                <img id="livePreviewImg" alt="Live Preview (Paint)">
+                                <img id="livePreviewImg" alt="Live Preview (Paint)" onclick="openPreviewLightbox('paint')" style="cursor:zoom-in;">
                                 <div id="patternActiveBadge"
                                     style="display:none; position:absolute; bottom:8px; left:8px; background:rgba(51,102,255,0.85); color:#fff; font-size:9px; font-weight:700; padding:2px 8px; border-radius:3px; letter-spacing:0.5px; pointer-events:none; z-index:5;"
                                     title="Pattern textures modify the spec map (surface lighting). They are fully visible in iRacing's 3D view but subtle in this 2D preview.">
@@ -1127,7 +1133,7 @@
                                     <button class="spec-channel-btn" data-ch="a" onclick="setSpecChannel('a')">A
                                         Mask</button>
                                 </div>
-                                <div onclick="toggleSpecInset()" style="position:relative;">
+                                <div onclick="openPreviewLightbox('spec')" style="position:relative; cursor:zoom-in;">
                                     <div class="preview-dual-label">SPEC MAP</div>
                                     <img id="livePreviewSpecImg" alt="Live Preview (Spec Map)">
                                     <canvas id="specChannelCanvas" style="display:none; width:100%;"></canvas>
@@ -1298,6 +1304,10 @@
                                 style="font-size: 10px; padding: 3px 8px; white-space: nowrap;"
                                 onclick="addEyedropperColorToZone()"
                                 title="Stack this color into the zone (multi-color)">+Add</button>
+                            <button class="btn btn-sm"
+                                style="font-size: 10px; padding: 3px 8px; white-space: nowrap; border-color: #ff4444; color: #ff4444;"
+                                onclick="setCanvasMode('spatial-exclude')"
+                                title="Switch to Exclude brush — paint areas on the car to REMOVE from this zone's color match (red overlay)">&#10060; Exclude</button>
                             <button class="btn btn-sm" style="font-size: 10px; padding: 3px 8px; white-space: nowrap;"
                                 onclick="useEyedropperColor()"
                                 title="Replace zone's color with this single color">Set</button>
@@ -1992,6 +2002,25 @@
     </div>
 
     <!-- (Import from Photoshop: simplified to one-click spec import, no modal needed) -->
+
+    <!-- Preview Lightbox -->
+    <div id="previewLightbox" onclick="closePreviewLightbox()" style="display:none; position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,0.95); cursor:pointer; backdrop-filter:blur(4px);">
+      <div style="position:absolute; top:12px; right:16px; display:flex; gap:8px; z-index:10000;">
+        <button id="lightboxPaintBtn" onclick="event.stopPropagation(); showLightbox('paint')"
+                style="background:#1a1a1a; color:#E87A20; border:1px solid #E87A20; padding:6px 16px; border-radius:4px; cursor:pointer; font-size:12px; font-weight:bold;">PAINT</button>
+        <button id="lightboxSpecBtn" onclick="event.stopPropagation(); showLightbox('spec')"
+                style="background:#1a1a1a; color:#00C8C8; border:1px solid #333; padding:6px 16px; border-radius:4px; cursor:pointer; font-size:12px;">SPEC MAP</button>
+        <button onclick="closePreviewLightbox()"
+                style="background:#1a1a1a; color:#ff4444; border:1px solid #333; padding:6px 12px; border-radius:4px; cursor:pointer; font-size:14px; font-weight:bold;">&#x2715;</button>
+      </div>
+      <div style="position:absolute; bottom:12px; left:50%; transform:translateX(-50%); display:flex; gap:8px; z-index:10000;">
+        <button id="lightboxChAll" onclick="event.stopPropagation(); showLightbox('spec','all')" style="background:#1a1a1a; color:#ccc; border:1px solid #333; padding:4px 10px; border-radius:3px; cursor:pointer; font-size:10px; display:none;">ALL</button>
+        <button id="lightboxChR" onclick="event.stopPropagation(); showLightbox('spec','r')" style="background:#1a1a1a; color:#ff6666; border:1px solid #333; padding:4px 10px; border-radius:3px; cursor:pointer; font-size:10px; display:none;">R Metal</button>
+        <button id="lightboxChG" onclick="event.stopPropagation(); showLightbox('spec','g')" style="background:#1a1a1a; color:#66ff66; border:1px solid #333; padding:4px 10px; border-radius:3px; cursor:pointer; font-size:10px; display:none;">G Rough</button>
+        <button id="lightboxChB" onclick="event.stopPropagation(); showLightbox('spec','b')" style="background:#1a1a1a; color:#6666ff; border:1px solid #333; padding:4px 10px; border-radius:3px; cursor:pointer; font-size:10px; display:none;">B Coat</button>
+      </div>
+      <img id="lightboxImg" onclick="event.stopPropagation();" style="max-width:92vw; max-height:88vh; object-fit:contain; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); border:1px solid #333; border-radius:4px;">
+    </div>
 
 </body>
 

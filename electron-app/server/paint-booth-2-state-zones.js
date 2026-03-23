@@ -765,6 +765,12 @@ function renderZoneDetail(index) {
                 onchange="setPickerTolerance(${i}, this.value)"
                 title="How loosely colors are matched — low = exact, high = approximate">
             <span class="tolerance-val">&plusmn;${zone.pickerTolerance || 40}</span>
+            <label style="display:inline-flex; align-items:center; gap:4px; font-size:11px; color:#aaa; margin-left:12px;"
+                   title="Hard Edge — removes soft blending at zone boundaries for crisp, clean edges. Prevents pattern bleed into adjacent colors.">
+              <input type="checkbox" ${zone.hardEdge ? 'checked' : ''}
+                     onchange="zones[${i}].hardEdge = this.checked; renderZones();">
+              <span style="color:#E87A20;">&#11041;</span> Hard Edge
+            </label>
         </div>
         ${renderMultiColorChips(zone, i)}
         <div class="color-status">${colorStatus}</div>
@@ -944,7 +950,7 @@ function renderZoneDetail(index) {
                 <div id="specPatternGrid${i}" style="display:none; max-height:400px; overflow-y:auto; background:var(--bg-card,#16162a); border:1px solid var(--border,#2a2a4a); border-radius:4px;" class="spec-pattern-grid">`;
             (typeof SPEC_PATTERNS !== 'undefined' ? SPEC_PATTERNS : []).forEach(sp => {
                 specPatternsHtml += `<div class="spec-pattern-thumb-card"
-                    onclick="if(this._spPopup){this._spPopup.remove();this._spPopup=null;} document.querySelectorAll('.spec-thumb-popup').forEach(p=>p.remove()); addSpecPatternLayer(${i}, '${sp.id}'); document.getElementById('specPatternGrid${i}').style.display='none';"
+                    onclick="if(this._spPopup){this._spPopup.remove();this._spPopup=null;} document.querySelectorAll('.spec-thumb-popup').forEach(p=>p.remove()); var _g=document.getElementById('specPatternGrid${i}'); if(_g){_g.style.display='none';} addSpecPatternLayer(${i}, '${sp.id}');"
                     title="${sp.desc}"
                     onmouseenter="(function(el){var img=el.querySelector('img');if(!img)return;var popup=document.createElement('div');popup.className='spec-thumb-popup';popup.innerHTML='<img src=\\''+img.src+'\\' style=\\'width:200px;height:200px;object-fit:contain;\\'>';var rect=el.getBoundingClientRect();popup.style.left=(rect.left+rect.width/2-104)+'px';popup.style.top=(rect.top-216)+'px';document.body.appendChild(popup);el._spPopup=popup;})(this)"
                     onmouseleave="if(this._spPopup){this._spPopup.remove();this._spPopup=null;}">
@@ -1346,7 +1352,7 @@ function renderZoneDetail(index) {
                             <div id="overlaySpecPatternGrid${i}" style="display:none; max-height:220px; overflow-y:auto; background:var(--bg-card,#16162a); border:1px solid var(--border,#2a2a4a); border-radius:4px;" class="spec-pattern-grid">`;
                         (typeof SPEC_PATTERNS !== 'undefined' ? SPEC_PATTERNS : []).forEach(sp => {
                             ovSpHtml += `<div class="spec-pattern-thumb-card"
-                                onclick="if(this._spPopup){this._spPopup.remove();this._spPopup=null;} document.querySelectorAll('.spec-thumb-popup').forEach(p=>p.remove()); addOverlaySpecPatternLayer(${i}, '${sp.id}'); document.getElementById('overlaySpecPatternGrid${i}').style.display='none';"
+                                onclick="if(this._spPopup){this._spPopup.remove();this._spPopup=null;} document.querySelectorAll('.spec-thumb-popup').forEach(p=>p.remove()); var _og=document.getElementById('overlaySpecPatternGrid${i}'); if(_og){_og.style.display='none';} addOverlaySpecPatternLayer(${i}, '${sp.id}');"
                                 title="${sp.desc}"
                                 onmouseenter="(function(el){var img=el.querySelector('img');if(!img)return;var popup=document.createElement('div');popup.className='spec-thumb-popup';popup.innerHTML='<img src=\\''+img.src+'\\' style=\\'width:200px;height:200px;object-fit:contain;\\'>';var rect=el.getBoundingClientRect();popup.style.left=(rect.left+rect.width/2-104)+'px';popup.style.top=(rect.top-216)+'px';document.body.appendChild(popup);el._spPopup=popup;})(this)"
                                 onmouseleave="if(this._spPopup){this._spPopup.remove();this._spPopup=null;}">
@@ -1355,7 +1361,7 @@ function renderZoneDetail(index) {
                             </div>`;
                         });
                         ovSpHtml += `</div>
-                            <button onclick="document.querySelectorAll('.spec-thumb-popup').forEach(p=>p.remove()); const g=document.getElementById('overlaySpecPatternGrid${i}'); g.style.display=g.style.display==='none'?'grid':'none';" class="btn btn-sm" style="width:100%; font-size:10px; padding:4px 6px; border:1px solid #c084fc44; color:#c084fc; margin-top:4px;">
+                            <button onclick="document.querySelectorAll('.spec-thumb-popup').forEach(p=>p.remove()); const g=document.getElementById('overlaySpecPatternGrid${i}'); if(g.style.display==='none'||!g.style.display){g.style.display='grid';g.style.gridTemplateColumns='repeat(3,1fr)';g.style.gap='6px';g.style.padding='6px';}else{g.style.display='none';}" class="btn btn-sm" style="width:100%; font-size:10px; padding:4px 6px; border:1px solid #c084fc44; color:#c084fc; margin-top:4px;">
                                 + Add Overlay Spec Pattern (click to browse)
                             </button>
                         </div>`;
@@ -2680,6 +2686,7 @@ function addZone(skipUndo) {
         baseStrength: 1,
         baseSpecBlendMode: 'normal',
         patternSpecMult: 1,
+        hardEdge: false,
     });
     selectedZoneIndex = zones.length - 1;
     renderZones();

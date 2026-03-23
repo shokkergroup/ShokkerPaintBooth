@@ -5297,6 +5297,8 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
             continue
 
         # Parse selector(s) - can be a single selector or a LIST of selectors (multi-color zone)
+        hard_edge = zone.get("hard_edge", False)
+        _blur = 0 if hard_edge else 3
         if isinstance(color_desc, list):
             # Multi-color zone: union of multiple color selectors
             # Each element is a dict like {"color_rgb": [R,G,B], "tolerance": 40}
@@ -5306,7 +5308,7 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
                     sub_selector = sub_desc
                 else:
                     sub_selector = parse_color_description(str(sub_desc))
-                sub_mask = build_zone_mask(scheme, stats, sub_selector, blur_radius=3)
+                sub_mask = build_zone_mask(scheme, stats, sub_selector, blur_radius=_blur)
                 union_mask = np.maximum(union_mask, sub_mask)  # OR/union
             mask = union_mask
             print(f"    Zone {i+1} [{zone['name']}]: multi-color ({len(color_desc)} selectors)")
@@ -5315,13 +5317,13 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
             if selector.get("remainder"):
                 zone_masks.append(None)  # Placeholder
                 continue
-            mask = build_zone_mask(scheme, stats, selector, blur_radius=3)
+            mask = build_zone_mask(scheme, stats, selector, blur_radius=_blur)
         else:
             selector = parse_color_description(str(color_desc))
             if selector.get("remainder"):
                 zone_masks.append(None)  # Placeholder
                 continue
-            mask = build_zone_mask(scheme, stats, selector, blur_radius=3)
+            mask = build_zone_mask(scheme, stats, selector, blur_radius=_blur)
 
         # ---- SPATIAL MASK: intersect color mask with drawn include/exclude regions ----
         # spatial_mask is a 2D numpy array: 0=unset, 1=include, 2=exclude
@@ -5360,8 +5362,13 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
     for i in range(len(zone_masks)):
         if zone_masks[i] is not None:
             soft = zone_masks[i]
-            # Keep soft edges at the boundary but harden the core
-            zone_masks[i] = np.where(soft > HARD_THRESHOLD, 1.0, soft / HARD_THRESHOLD * soft).astype(np.float32)
+            hard_edge = zones[i].get("hard_edge", False) if i < len(zones) else False
+            if hard_edge:
+                # Binary mask — no soft edges at all
+                zone_masks[i] = np.where(soft > 0.01, 1.0, 0.0).astype(np.float32)
+            else:
+                # Keep soft edges at the boundary but harden the core
+                zone_masks[i] = np.where(soft > HARD_THRESHOLD, 1.0, soft / HARD_THRESHOLD * soft).astype(np.float32)
 
     # Rebuild claimed from hardened masks (so remainder doesn't bleed into them)
     claimed_hard = np.zeros((h, w), dtype=np.float32)
@@ -6056,14 +6063,19 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
         # Apply zone spec with hard ownership: where mask is strong, fully replace
         # Vectorized across all 4 channels at once for speed
         mask3d = zone_mask[:,:,np.newaxis]  # (h, w, 1)
-        strong = mask3d > 0.5
-        soft = (mask3d > 0.05) & ~strong
-        blended = np.clip(
-            zone_spec.astype(np.float32) * mask3d +
-            combined_spec.astype(np.float32) * (1 - mask3d),
-            0, 255
-        ).astype(np.uint8)
-        combined_spec = np.where(strong, zone_spec, np.where(soft, blended, combined_spec))
+        hard_edge = zone.get("hard_edge", False)
+        if hard_edge:
+            # Binary application — no soft blend zone, clean crisp edges
+            combined_spec = np.where(mask3d > 0.01, zone_spec, combined_spec)
+        else:
+            strong = mask3d > 0.5
+            soft = (mask3d > 0.05) & ~strong
+            blended = np.clip(
+                zone_spec.astype(np.float32) * mask3d +
+                combined_spec.astype(np.float32) * (1 - mask3d),
+                0, 255
+            ).astype(np.uint8)
+            combined_spec = np.where(strong, zone_spec, np.where(soft, blended, combined_spec))
 
         if os.environ.get("SHOKKER_TIMING") == "1":
             print(f"      [{name}] zone time: {time.time()-t_zone:.2f}s")

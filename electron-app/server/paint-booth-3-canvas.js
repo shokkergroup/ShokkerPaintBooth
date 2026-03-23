@@ -3703,6 +3703,7 @@ if __name__ == '__main__':
                             zoneObj.pattern_flip_h = !!z.patternFlipH;
                             zoneObj.pattern_flip_v = !!z.patternFlipV;
                         }
+                        if (z.hardEdge) zoneObj.hard_edge = true;
                         if (z.base || z.finish) {
                             zoneObj.base_offset_x = Math.max(0, Math.min(1, Number(z.baseOffsetX ?? 0.5)));
                             zoneObj.base_offset_y = Math.max(0, Math.min(1, Number(z.baseOffsetY ?? 0.5)));

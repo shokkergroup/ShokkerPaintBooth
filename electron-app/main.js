@@ -530,6 +530,16 @@ ipcMain.handle('list-dir', async (_event, dirPath, filter) => {
   }
 });
 
+ipcMain.handle('show-folder-dialog', async () => {
+  const { dialog } = require('electron');
+  const result = await dialog.showOpenDialog({
+    properties: ['openDirectory'],
+    title: 'Select PS Export Folder',
+  });
+  if (result.canceled || !result.filePaths || result.filePaths.length === 0) return null;
+  return result.filePaths[0].replace(/\\/g, '/');
+});
+
 ipcMain.handle('get-quick-navs', async () => {
   const drives = [];
   for (const letter of 'CDEFGHIJKLMNOPQRSTUVWXYZ') {

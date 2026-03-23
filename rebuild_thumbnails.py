@@ -85,6 +85,8 @@ def main():
     ap.add_argument("--type", choices=("base", "pattern", "monolithic", "all"), default="all", help="Which registry to build")
     ap.add_argument("--key", type=str, default=None, help="Build only this key (requires --type)")
     ap.add_argument("--quiet", action="store_true", help="Less console output")
+    ap.add_argument("--incremental", action="store_true", help="Only rebuild missing thumbnails (skip existing)")
+    ap.add_argument("--force", action="store_true", help="Rebuild ALL thumbnails even if they exist (default without --incremental)")
     args = ap.parse_args()
 
     try:
@@ -144,6 +146,21 @@ def main():
         if not tasks:
             print("No keys to build.")
             return
+
+        # Incremental mode: filter out tasks where thumbnail already exists on disk
+        skipped = 0
+        if args.incremental and not args.force:
+            filtered = []
+            for finish_type, finish_key in tasks:
+                subdir = os.path.join(out_root, finish_type)
+                path = os.path.join(subdir, f"{safe_key(finish_key)}.png")
+                if os.path.isfile(path) and os.path.getsize(path) > 100:
+                    skipped += 1
+                else:
+                    filtered.append((finish_type, finish_key))
+            tasks = filtered
+            if skipped:
+                print(f"Incremental mode: skipping {skipped} existing thumbnails, building {len(tasks)} new/missing")
 
         print(f"Building {len(tasks)} thumbnails -> {out_root} (monolithic at 256px, others at {args.size}px)")
         total = len(tasks)

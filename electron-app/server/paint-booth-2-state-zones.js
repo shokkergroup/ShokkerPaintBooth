@@ -835,21 +835,27 @@ function renderZoneDetail(index) {
                 <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); stepZoneBaseColorStrength(${i}, 1)" title="+5%" style="padding:0 4px;font-size:10px;">+</button>
                 <span class="stack-val" id="detBaseColorStrVal${i}">${_baseColorStrengthPct}%</span>
             </div>` : ''}
-            <div class="hsb-controls" style="display:flex; align-items:center; gap:8px; width:100%; flex-wrap:wrap;">
+            <div class="hsb-controls" style="display:flex; align-items:center; gap:4px; width:100%; flex-wrap:wrap;">
                 <span class="stack-label-mini" style="min-width:62px;">Hue Shift</span>
-                <input type="range" min="-180" max="180" step="5" value="${_baseHueOffset}" oninput="setZoneBaseHueOffset(${i}, this.value)" class="stack-slider" title="Shift all colors around the color wheel — negative = cool, positive = warm">
+                <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); setZoneBaseHueOffset(${i}, Math.max(-180, (zones[${i}].baseHueOffset||0)-1))" title="-1" style="padding:0 3px;font-size:9px;">−</button>
+                <input type="range" min="-180" max="180" step="1" value="${_baseHueOffset}" oninput="setZoneBaseHueOffset(${i}, this.value)" class="stack-slider" title="Shift all colors around the color wheel — negative = cool, positive = warm">
+                <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); setZoneBaseHueOffset(${i}, Math.min(180, (zones[${i}].baseHueOffset||0)+1))" title="+1" style="padding:0 3px;font-size:9px;">+</button>
                 <span class="stack-val" id="detBaseHueVal${i}" style="min-width:32px;">${_baseHueOffset}°</span>
                 <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); setZoneBaseHueOffset(${i}, 0)" title="Reset" style="padding:0 4px;font-size:9px;">↺</button>
             </div>
-            <div class="hsb-controls" style="display:flex; align-items:center; gap:8px; width:100%; flex-wrap:wrap;">
+            <div class="hsb-controls" style="display:flex; align-items:center; gap:4px; width:100%; flex-wrap:wrap;">
                 <span class="stack-label-mini" style="min-width:62px;">Saturation</span>
-                <input type="range" min="-100" max="100" step="5" value="${_baseSatAdj}" oninput="setZoneBaseSaturation(${i}, this.value)" class="stack-slider" title="Color intensity — negative = more grey, positive = more vivid">
+                <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); setZoneBaseSaturation(${i}, Math.max(-100, (zones[${i}].baseSaturationAdjust||0)-1))" title="-1" style="padding:0 3px;font-size:9px;">−</button>
+                <input type="range" min="-100" max="100" step="1" value="${_baseSatAdj}" oninput="setZoneBaseSaturation(${i}, this.value)" class="stack-slider" title="Color intensity — negative = more grey, positive = more vivid">
+                <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); setZoneBaseSaturation(${i}, Math.min(100, (zones[${i}].baseSaturationAdjust||0)+1))" title="+1" style="padding:0 3px;font-size:9px;">+</button>
                 <span class="stack-val" id="detBaseSatVal${i}" style="min-width:32px;">${_baseSatAdj}</span>
                 <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); setZoneBaseSaturation(${i}, 0)" title="Reset" style="padding:0 4px;font-size:9px;">↺</button>
             </div>
-            <div class="hsb-controls" style="display:flex; align-items:center; gap:8px; width:100%; flex-wrap:wrap;">
+            <div class="hsb-controls" style="display:flex; align-items:center; gap:4px; width:100%; flex-wrap:wrap;">
                 <span class="stack-label-mini" style="min-width:62px;">Brightness</span>
-                <input type="range" min="-100" max="100" step="5" value="${_baseBrightAdj}" oninput="setZoneBaseBrightness(${i}, this.value)" class="stack-slider" title="Overall lightness — negative = darker, positive = brighter">
+                <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); setZoneBaseBrightness(${i}, Math.max(-100, (zones[${i}].baseBrightnessAdjust||0)-1))" title="-1" style="padding:0 3px;font-size:9px;">−</button>
+                <input type="range" min="-100" max="100" step="1" value="${_baseBrightAdj}" oninput="setZoneBaseBrightness(${i}, this.value)" class="stack-slider" title="Overall lightness — negative = darker, positive = brighter">
+                <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); setZoneBaseBrightness(${i}, Math.min(100, (zones[${i}].baseBrightnessAdjust||0)+1))" title="+1" style="padding:0 3px;font-size:9px;">+</button>
                 <span class="stack-val" id="detBaseBrightVal${i}" style="min-width:32px;">${_baseBrightAdj}</span>
                 <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); setZoneBaseBrightness(${i}, 0)" title="Reset" style="padding:0 4px;font-size:9px;">↺</button>
             </div>
@@ -926,19 +932,25 @@ function renderZoneDetail(index) {
                         <label style="display:inline-flex;align-items:center;gap:2px;cursor:pointer;font-size:9px;"><input type="checkbox" ${chCC ? 'checked' : ''} onchange="toggleSpecPatternChannel(${i}, ${si}, 'CC', this.checked)"> CC</label>
                     </div>
                 </div>
-                <div style="margin-top:4px; display:flex; gap:4px; align-items:center; flex-wrap:wrap;">
-                    <label style="color:#888; font-size:10px;">Pos X</label>
+                <div style="margin-top:6px; display:grid; grid-template-columns:42px 1fr 36px; gap:2px 4px; align-items:center;">
+                    <span style="color:#888; font-size:10px;">POS X</span>
                     <input type="range" min="0" max="100" value="${Math.round((sp.offsetX||0.5)*100)}"
-                           onchange="zones[${i}].specPatternStack[${si}].offsetX=this.value/100; triggerPreviewRender();" style="width:60px;">
-                    <label style="color:#888; font-size:10px;">Pos Y</label>
+                           oninput="zones[${i}].specPatternStack[${si}].offsetX=this.value/100; this.nextElementSibling.textContent=this.value+'%'; triggerPreviewRender();" style="width:100%;">
+                    <span style="color:#ccc; font-size:10px;">${Math.round((sp.offsetX||0.5)*100)}%</span>
+                    <span style="color:#888; font-size:10px;">POS Y</span>
                     <input type="range" min="0" max="100" value="${Math.round((sp.offsetY||0.5)*100)}"
-                           onchange="zones[${i}].specPatternStack[${si}].offsetY=this.value/100; triggerPreviewRender();" style="width:60px;">
-                    <label style="color:#888; font-size:10px;">Scale</label>
+                           oninput="zones[${i}].specPatternStack[${si}].offsetY=this.value/100; this.nextElementSibling.textContent=this.value+'%'; triggerPreviewRender();" style="width:100%;">
+                    <span style="color:#ccc; font-size:10px;">${Math.round((sp.offsetY||0.5)*100)}%</span>
+                    <span style="color:#ff4444; font-size:10px; font-weight:bold;">SCALE</span>
                     <input type="range" min="5" max="400" value="${Math.round((sp.scale||1)*100)}"
-                           onchange="zones[${i}].specPatternStack[${si}].scale=this.value/100; triggerPreviewRender();" style="width:60px;">
-                    <label style="color:#888; font-size:10px;">Rot</label>
+                           oninput="zones[${i}].specPatternStack[${si}].scale=this.value/100; this.nextElementSibling.textContent=(this.value/100).toFixed(2)+'x'; triggerPreviewRender();" style="width:100%; accent-color:#ff4444;">
+                    <span style="color:#ff4444; font-size:10px; font-weight:bold;">${(sp.scale||1).toFixed(2)}x</span>
+                    <span style="color:#888; font-size:10px;">ROT</span>
                     <input type="range" min="0" max="359" value="${sp.rotation||0}"
-                           onchange="zones[${i}].specPatternStack[${si}].rotation=parseInt(this.value); triggerPreviewRender();" style="width:60px;">
+                           oninput="zones[${i}].specPatternStack[${si}].rotation=parseInt(this.value); this.nextElementSibling.textContent=this.value+'°'; triggerPreviewRender();" style="width:100%;">
+                    <span style="color:#ccc; font-size:10px;">${sp.rotation||0}°</span>
+                </div>
+                <div style="margin-top:4px;">
                     <button onclick="activateManualPlacement(${i}, 'spec_pattern_${si}'); showToast('Drag on canvas to position spec pattern','info');"
                             style="background:#1a1a1a; color:#00C8C8; border:1px solid #00C8C8; padding:2px 8px; font-size:10px; cursor:pointer; border-radius:3px;"
                             title="Drag on canvas to position this spec pattern">

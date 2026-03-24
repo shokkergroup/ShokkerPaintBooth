@@ -66,6 +66,40 @@ window.toggleEasyMode = function() {
     renderZones();
 };
 
+// ===== UI SCALE =====
+let _uiScale = parseFloat(localStorage.getItem('shokker_ui_scale') || '1.0');
+if (_uiScale !== 1.0) document.body.style.zoom = _uiScale;
+
+window.setUIScale = function(direction) {
+    // direction: +1 = zoom in, -1 = zoom out, 0 = reset
+    const steps = [0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1.0, 1.05, 1.1, 1.15, 1.2, 1.25, 1.3, 1.4, 1.5];
+    if (direction === 0) {
+        _uiScale = 1.0;
+    } else {
+        const currentIdx = steps.indexOf(_uiScale);
+        const idx = currentIdx >= 0 ? currentIdx : steps.findIndex(s => s >= _uiScale);
+        const newIdx = Math.max(0, Math.min(steps.length - 1, (idx >= 0 ? idx : 6) + direction));
+        _uiScale = steps[newIdx];
+    }
+    document.body.style.zoom = _uiScale;
+    localStorage.setItem('shokker_ui_scale', String(_uiScale));
+    const label = document.getElementById('uiScaleLabel');
+    if (label) label.textContent = Math.round(_uiScale * 100) + '%';
+};
+
+// Keyboard shortcuts for zoom: Ctrl+Plus, Ctrl+Minus, Ctrl+0 (reset)
+document.addEventListener('keydown', function(e) {
+    if (e.ctrlKey && (e.key === '=' || e.key === '+')) { e.preventDefault(); setUIScale(1); }
+    else if (e.ctrlKey && e.key === '-') { e.preventDefault(); setUIScale(-1); }
+    else if (e.ctrlKey && e.key === '0') { e.preventDefault(); setUIScale(0); }
+});
+
+// Update label on load
+requestAnimationFrame(() => {
+    const label = document.getElementById('uiScaleLabel');
+    if (label) label.textContent = Math.round(_uiScale * 100) + '%';
+});
+
 /** When non-null, the overlay "From special" picker for this zone+layer is expanded (big grid). Clear on select. */
 let _overlaySpecialPickerExpanded = null; // { zoneIndex: number, layer: 'second'|'third'|'fourth'|'fifth' } | null
 

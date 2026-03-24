@@ -408,6 +408,11 @@
                 title="Toggle between Easy Mode (simplified) and Advanced Mode (full controls)">
               ⚡ ADVANCED
             </button>
+            <span style="display:inline-flex;align-items:center;gap:2px;margin:0 4px;" title="UI Scale — Ctrl+Plus to zoom in, Ctrl+Minus to zoom out">
+                <button onclick="setUIScale(-1)" style="background:none;border:1px solid #444;color:#aaa;width:18px;height:18px;font-size:11px;cursor:pointer;border-radius:3px;padding:0;line-height:1;">−</button>
+                <span id="uiScaleLabel" style="font-size:9px;color:#888;min-width:28px;text-align:center;">100%</span>
+                <button onclick="setUIScale(1)" style="background:none;border:1px solid #444;color:#aaa;width:18px;height:18px;font-size:11px;cursor:pointer;border-radius:3px;padding:0;line-height:1;">+</button>
+            </span>
             <button class="gear-btn" onclick="showShortcutLegend()" title="Keyboard shortcuts (?)"
                 style="font-size:12px; opacity:0.6;">?</button>
             <button class="gear-btn" id="settingsGearBtn" onclick="toggleSettingsDropdown()" title="Settings">⚙</button>

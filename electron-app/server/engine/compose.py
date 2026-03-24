@@ -61,7 +61,9 @@ def _get_pattern_mask(pattern_id, shape, mask, seed, sm, scale=1.0, rotation=0.0
         return None
     try:
         h, w = shape[0], shape[1]
-        tex = tex_fn(shape, mask, seed, sm)
+        # tex_fn needs CPU mask
+        _mask_cpu = to_cpu(mask) if is_gpu() else mask
+        tex = tex_fn(shape, _mask_cpu, seed, sm)
         if isinstance(tex, dict):
             pv = tex.get("pattern_val")
         else:
@@ -89,7 +91,8 @@ def _get_pattern_mask(pattern_id, shape, mask, seed, sm, scale=1.0, rotation=0.0
             pv = (pv - pmin) / (pmax - pmin)
         else:
             pv = np.zeros_like(pv)
-        out = np.clip(pv * mask * max(0.0, min(1.0, float(opacity))) * max(0.0, min(2.0, float(strength))), 0, 1).astype(np.float32)
+        # Use CPU mask for final multiply (returns CPU array for downstream)
+        out = np.clip(pv * _mask_cpu * max(0.0, min(1.0, float(opacity))) * max(0.0, min(2.0, float(strength))), 0, 1).astype(np.float32)
         _apply_pattern_offset(out, shape, offset_x, offset_y)
         return out
     except Exception:
@@ -97,7 +100,8 @@ def _get_pattern_mask(pattern_id, shape, mask, seed, sm, scale=1.0, rotation=0.0
 
 
 def _apply_pattern_offset(pv, shape, offset_x, offset_y):
-    """Apply pan offset to pattern array in-place. offset_x/y in [0,1]; 0.5 = no shift."""
+    """Apply pan offset to pattern array in-place. offset_x/y in [0,1]; 0.5 = no shift.
+    Uses np.roll (CPU only). If pv is a CuPy array, transfers to CPU, rolls, transfers back."""
     if pv is None or pv.size == 0:
         return
     try:
@@ -107,24 +111,31 @@ def _apply_pattern_offset(pv, shape, offset_x, offset_y):
         shift_x = int(round((ox - 0.5) * w))
         shift_y = int(round((oy - 0.5) * h))
         if shift_x != 0 or shift_y != 0:
-            pv[:] = np.roll(pv, (-shift_y, -shift_x), axis=(0, 1))
+            # xp.roll works on both numpy and cupy
+            pv[:] = xp.roll(pv, (-shift_y, -shift_x), axis=(0, 1))
     except Exception:
         pass
 
 
 def _boost_overlay_mono_color(rgb):
-    """Boost monolithic overlay readability without white blowout."""
-    rgb = np.clip(np.asarray(rgb, dtype=np.float32), 0.0, 1.0)
-    gray = rgb.mean(axis=2, keepdims=True)
-    sat_boost = np.clip(gray + (rgb - gray) * 1.18, 0.0, 1.0)
+    """Boost monolithic overlay readability without white blowout.
+    Always returns numpy (CPU) array since callers in compose_paint_mod work on CPU."""
+    # Ensure CPU numpy array — accept CuPy arrays via .get()
+    if hasattr(rgb, 'get'):
+        rgb = rgb.get()
+    rgb_np = np.asarray(rgb, dtype=np.float32)
+    rgb_np = np.clip(rgb_np, 0.0, 1.0)
+    gray = rgb_np.mean(axis=2, keepdims=True)
+    sat_boost = np.clip(gray + (rgb_np - gray) * 1.18, 0.0, 1.0)
     val_boost = np.clip(sat_boost * 1.12, 0.0, 1.0)
     return val_boost
 
 
 def _mono_overlay_seed_paint(paint):
-    """Generate neutral seed paint so mono overlays match swatch intent."""
-    seed = np.full_like(paint[:, :, :3], 0.533, dtype=np.float32)
-    return seed
+    """Generate neutral seed paint so mono overlays match swatch intent.
+    Always returns CPU (numpy) array — external paint_fn functions expect numpy."""
+    paint_cpu = to_cpu(paint) if is_gpu() else paint
+    return np.full_like(paint_cpu[:, :, :3], 0.533, dtype=np.float32)
 
 
 def _apply_hsb_adjustments(paint, mask, hue_offset_deg, saturation_adjust, brightness_adjust):
@@ -132,15 +143,19 @@ def _apply_hsb_adjustments(paint, mask, hue_offset_deg, saturation_adjust, brigh
     hue_offset_deg: -180 to +180 degrees
     saturation_adjust: -100 to +100 (multiplicative: sat * (1 + adjust/100))
     brightness_adjust: -100 to +100 (multiplicative: val * (1 + adjust/100))
+    Always operates on CPU (numpy) arrays. CuPy inputs are converted via .get().
     """
     try:
         if abs(hue_offset_deg) < 0.5 and abs(saturation_adjust) < 0.5 and abs(brightness_adjust) < 0.5:
             return paint
-        rgb = np.clip(paint[:, :, :3], 0.0, 1.0).astype(np.float32)
+        # rgb_to_hsv_array / hsv_to_rgb_vec use cv2 internally -> need CPU numpy arrays
+        _paint_cpu = paint.get() if hasattr(paint, 'get') else np.asarray(paint)
+        _mask_cpu = mask.get() if hasattr(mask, 'get') else np.asarray(mask)
+        rgb = np.clip(_paint_cpu[:, :, :3], 0.0, 1.0).astype(np.float32)
         # Ensure mask matches paint dimensions
-        if mask.shape[0] != rgb.shape[0] or mask.shape[1] != rgb.shape[1]:
+        if _mask_cpu.shape[0] != rgb.shape[0] or _mask_cpu.shape[1] != rgb.shape[1]:
             from PIL import Image
-            mask = np.array(Image.fromarray((mask * 255).astype(np.uint8)).resize(
+            _mask_cpu = np.array(Image.fromarray((_mask_cpu * 255).astype(np.uint8)).resize(
                 (rgb.shape[1], rgb.shape[0]), Image.NEAREST)).astype(np.float32) / 255.0
         hsv = rgb_to_hsv_array(rgb)
         h, s, v = hsv[:, :, 0], hsv[:, :, 1], hsv[:, :, 2]
@@ -152,22 +167,29 @@ def _apply_hsb_adjustments(paint, mask, hue_offset_deg, saturation_adjust, brigh
             v = np.clip(v * (1.0 + brightness_adjust / 100.0), 0.0, 1.0)
         r, g, b = hsv_to_rgb_vec(h, s, v)
         adjusted = np.stack([np.clip(r, 0, 1), np.clip(g, 0, 1), np.clip(b, 0, 1)], axis=-1).astype(np.float32)
-        m3 = mask[:, :, np.newaxis]
-        paint = paint.copy()
-        paint[:, :, :3] = paint[:, :, :3] * (1.0 - m3) + adjusted * m3
-        return paint
+        # All blending is CPU-only
+        m3 = _mask_cpu[:, :, np.newaxis]
+        _paint_cpu = _paint_cpu.copy()
+        _paint_cpu[:, :, :3] = _paint_cpu[:, :, :3] * (1.0 - m3) + adjusted * m3
+        return _paint_cpu
     except Exception as e:
         print(f"  [HSB] WARNING: _apply_hsb_adjustments failed ({e}), returning paint unchanged")
         return paint
 
 
 def _apply_base_color_override(paint, shape, hard_mask, seed, base_color_mode, base_color, base_color_source, base_color_strength, monolithic_registry):
+    """Apply base color override to paint. Always operates on CPU (numpy) arrays.
+    CuPy inputs are converted at the top. Returns a numpy array."""
     mode = str(base_color_mode or "source").strip().lower()
     if mode in ("", "source", "none"):
         return paint
     strength = max(0.0, min(1.0, float(base_color_strength if base_color_strength is not None else 1.0)))
     if strength <= 0.001:
         return paint
+
+    # Ensure CPU numpy — accept CuPy inputs
+    paint = paint.get() if hasattr(paint, 'get') else np.asarray(paint)
+    hard_mask = hard_mask.get() if hasattr(hard_mask, 'get') else np.asarray(hard_mask)
 
     # Always use the actual canvas size from the paint array, not the shape parameter.
     # During preview renders the paint is already downscaled but shape may still carry
@@ -182,9 +204,10 @@ def _apply_base_color_override(paint, shape, hard_mask, seed, base_color_mode, b
                 mono_id = base_color_source[5:]
                 if mono_id in monolithic_registry:
                     mono_paint_fn = monolithic_registry[mono_id][1]
-                    src = mono_paint_fn(_mono_overlay_seed_paint(paint), actual_shape, hard_mask, seed + 4242, 1.0, 0.0)
-                    if src is not None:
-                        src = _boost_overlay_mono_color(np.clip(src[:, :, :3], 0.0, 1.0))
+                    _src_raw = mono_paint_fn(_mono_overlay_seed_paint(paint), actual_shape, hard_mask, seed + 4242, 1.0, 0.0)
+                    if _src_raw is not None:
+                        _src_np = _src_raw.get() if hasattr(_src_raw, 'get') else np.asarray(_src_raw)
+                        src = _boost_overlay_mono_color(np.clip(_src_np[:, :, :3], 0.0, 1.0))
             # --- Base finish source: raw ID or "base:finish_id" ---
             elif not base_color_source.startswith("mono:"):
                 try:
@@ -194,15 +217,17 @@ def _apply_base_color_override(paint, shape, hard_mask, seed, base_color_mode, b
                         base_entry = BASE_REGISTRY[raw_id]
                         base_paint_fn = base_entry.get("paint_fn", paint_none)
                         if base_paint_fn is not paint_none:
-                            src = base_paint_fn(paint.copy(), actual_shape, hard_mask, seed + 4242, 1.0, 0.0)
-                            if src is not None:
-                                src = np.clip(src[:, :, :3], 0.0, 1.0)
+                            _src_raw = base_paint_fn(paint.copy(), actual_shape, hard_mask, seed + 4242, 1.0, 0.0)
+                            if _src_raw is not None:
+                                _src_np = _src_raw.get() if hasattr(_src_raw, 'get') else np.asarray(_src_raw)
+                                src = np.clip(_src_np[:, :, :3], 0.0, 1.0)
                     # Also check monolithic registry with raw ID (user picked a special without prefix)
                     elif monolithic_registry is not None and raw_id in monolithic_registry:
                         mono_paint_fn = monolithic_registry[raw_id][1]
-                        src = mono_paint_fn(_mono_overlay_seed_paint(paint), actual_shape, hard_mask, seed + 4242, 1.0, 0.0)
-                        if src is not None:
-                            src = _boost_overlay_mono_color(np.clip(src[:, :, :3], 0.0, 1.0))
+                        _src_raw = mono_paint_fn(_mono_overlay_seed_paint(paint), actual_shape, hard_mask, seed + 4242, 1.0, 0.0)
+                        if _src_raw is not None:
+                            _src_np = _src_raw.get() if hasattr(_src_raw, 'get') else np.asarray(_src_raw)
+                            src = _boost_overlay_mono_color(np.clip(_src_np[:, :, :3], 0.0, 1.0))
                 except Exception:
                     pass
     elif mode == "solid":
@@ -216,7 +241,10 @@ def _apply_base_color_override(paint, shape, hard_mask, seed, base_color_mode, b
     if src is None:
         return paint
 
+    # Everything is CPU here (paint + hard_mask + src)
+    src = src.get() if hasattr(src, 'get') else (np.asarray(src) if not isinstance(src, np.ndarray) else src)
     w = (hard_mask * strength)[:, :, np.newaxis]
+    paint = paint.copy()
     paint[:, :, :3] = paint[:, :, :3] * (1.0 - w) + src * w
     return paint
 
@@ -225,36 +253,36 @@ def _apply_spec_blend_mode(base_val, pattern_contrib, opacity, mode="normal"):
     """Apply a pattern contribution to a spec channel using the specified blend mode."""
     if mode == "normal" or mode not in ("multiply", "screen", "overlay", "hardlight", "softlight"):
         return base_val + pattern_contrib * opacity
-    p_abs = np.abs(pattern_contrib)
-    p_max = float(np.max(p_abs)) if np.max(p_abs) > 1e-8 else 1.0
+    p_abs = xp.abs(pattern_contrib)
+    p_max = float(xp.max(p_abs)) if float(xp.max(p_abs)) > 1e-8 else 1.0
     p_norm = pattern_contrib / p_max
-    p_factor = np.clip(p_norm * 0.5 + 0.5, 0, 1)
-    b_norm = np.clip(base_val / 255.0, 0, 1)
+    p_factor = xp.clip(p_norm * 0.5 + 0.5, 0, 1)
+    b_norm = xp.clip(base_val / 255.0, 0, 1)
     if mode == "multiply":
         blended_norm = b_norm * (1.0 - opacity + opacity * p_factor * 2.0)
-        return np.clip(blended_norm * 255.0, 0, 255)
+        return xp.clip(blended_norm * 255.0, 0, 255)
     elif mode == "screen":
         screen_factor = p_factor * opacity
         blended_norm = 1.0 - (1.0 - b_norm) * (1.0 - screen_factor)
-        return np.clip(blended_norm * 255.0, 0, 255)
+        return xp.clip(blended_norm * 255.0, 0, 255)
     elif mode == "overlay":
         dark = 2.0 * b_norm * p_factor
         light = 1.0 - 2.0 * (1.0 - b_norm) * (1.0 - p_factor)
-        overlay_result = np.where(b_norm < 0.5, dark, light)
+        overlay_result = xp.where(b_norm < 0.5, dark, light)
         blended_norm = b_norm * (1.0 - opacity) + overlay_result * opacity
-        return np.clip(blended_norm * 255.0, 0, 255)
+        return xp.clip(blended_norm * 255.0, 0, 255)
     elif mode == "hardlight":
         # Hard Light: like overlay but with base/pattern roles swapped
         dark = 2.0 * b_norm * p_factor
         light = 1.0 - 2.0 * (1.0 - b_norm) * (1.0 - p_factor)
-        hl_result = np.where(p_factor < 0.5, dark, light)
+        hl_result = xp.where(p_factor < 0.5, dark, light)
         blended_norm = b_norm * (1.0 - opacity) + hl_result * opacity
-        return np.clip(blended_norm * 255.0, 0, 255)
+        return xp.clip(blended_norm * 255.0, 0, 255)
     elif mode == "softlight":
         # Soft Light: gentler version — subtle spec shifts
         sl_result = (1.0 - 2.0 * p_factor) * b_norm * b_norm + 2.0 * p_factor * b_norm
         blended_norm = b_norm * (1.0 - opacity) + sl_result * opacity
-        return np.clip(blended_norm * 255.0, 0, 255)
+        return xp.clip(blended_norm * 255.0, 0, 255)
     return base_val + pattern_contrib * opacity
 
 
@@ -314,10 +342,14 @@ def compose_finish(base_id, pattern_id, shape, mask, seed, sm, scale=1.0, spec_m
     # NOTE: base_strength is a paint slider, handled in compose_paint_mod — not used in spec compositing.
     _sm_base = sm * max(0.0, min(2.0, float(base_spec_strength)))
     base = BASE_REGISTRY[base_id]
-    spec = np.zeros((shape[0], shape[1], 4), dtype=np.uint8)
+    spec = np.zeros((shape[0], shape[1], 4), dtype=np.uint8)  # stays CPU (uint8 output)
     base_M = float(base["M"])
     base_R = float(base["R"])
     base_CC = int(base["CC"]) if base.get("CC") is not None else 16
+
+    # Transfer mask to GPU at entry — used throughout
+    if _gpu_active:
+        mask = to_gpu(mask)
 
     if base_scale != 1.0 and base_scale > 0:
         MAX_BASE_DIM = 4096
@@ -388,6 +420,13 @@ def compose_finish(base_id, pattern_id, shape, mask, seed, sm, scale=1.0, spec_m
         if CC_arr is not None:
             CC_arr = _resize_array(CC_arr, shape[0], shape[1])
 
+    # Transfer base spec arrays to GPU after generation + resize (they arrive as numpy)
+    if _gpu_active:
+        M_arr = to_gpu(M_arr)
+        R_arr = to_gpu(R_arr)
+        if CC_arr is not None:
+            CC_arr = to_gpu(CC_arr)
+
     if cc_quality is not None:
         if base_CC > 0:
             cc_value = 16.0 + (1.0 - float(cc_quality)) * 239.0
@@ -396,7 +435,7 @@ def compose_finish(base_id, pattern_id, shape, mask, seed, sm, scale=1.0, spec_m
         if CC_arr is not None:
             CC_arr = CC_arr - float(base_CC) + cc_value
         else:
-            CC_arr = np.full(shape, cc_value, dtype=np.float32)
+            CC_arr = xp.full(shape, cc_value, dtype=xp.float32)
 
     if blend_base and blend_base in BASE_REGISTRY and blend_base != base_id:
         base2 = BASE_REGISTRY[blend_base]
@@ -404,8 +443,10 @@ def compose_finish(base_id, pattern_id, shape, mask, seed, sm, scale=1.0, spec_m
         base2_R = float(base2["R"])
         base2_CC = int(base2["CC"]) if base2.get("CC") is not None else 16
         h, w = shape
-        rows_active = np.any(mask > 0.1, axis=1)
-        cols_active = np.any(mask > 0.1, axis=0)
+        # np.any/np.where for bbox indices need CPU mask
+        _mask_cpu_blend = to_cpu(mask) if _gpu_active else mask
+        rows_active = np.any(_mask_cpu_blend > 0.1, axis=1)
+        cols_active = np.any(_mask_cpu_blend > 0.1, axis=0)
         if np.any(rows_active) and np.any(cols_active):
             r_min, r_max = np.where(rows_active)[0][[0, -1]]
             c_min, c_max = np.where(cols_active)[0][[0, -1]]
@@ -415,6 +456,7 @@ def compose_finish(base_id, pattern_id, shape, mask, seed, sm, scale=1.0, spec_m
             r_min, c_min = 0, 0
             bbox_h, bbox_w = h, w
 
+        # Build gradient on CPU (linspace/mgrid slicing), then transfer to GPU
         if blend_dir == "vertical":
             grad = np.zeros((h, w), dtype=np.float32)
             zone_grad = np.linspace(0, 1, bbox_h, dtype=np.float32)[:, np.newaxis] * np.ones((1, w), dtype=np.float32)
@@ -446,6 +488,8 @@ def compose_finish(base_id, pattern_id, shape, mask, seed, sm, scale=1.0, spec_m
 
         ba = max(0.1, min(3.0, blend_amount * 2.0 + 0.1))
         grad = np.power(grad, ba)
+        if _gpu_active:
+            grad = to_gpu(grad)
         M_arr = M_arr * (1.0 - grad) + base2_M * grad
         R_arr = R_arr * (1.0 - grad) + base2_R * grad
         if CC_arr is not None:
@@ -469,8 +513,15 @@ def compose_finish(base_id, pattern_id, shape, mask, seed, sm, scale=1.0, spec_m
             CC_arr = CC_arr + cc_haze
 
     # Base placement: offset (pan), rotation, flip - reposition gradient/duo like patterns
+    # _apply_pattern_offset uses np.roll, _rotate_single_array uses scipy -> need CPU
     _bo_x = max(0.0, min(1.0, float(base_offset_x if base_offset_x is not None else 0.5)))
     _bo_y = max(0.0, min(1.0, float(base_offset_y if base_offset_y is not None else 0.5)))
+    _need_transform = (_bo_x != 0.5 or _bo_y != 0.5) or (abs(float(base_rotation if base_rotation is not None else 0) % 360.0) > 0.5) or base_flip_h or base_flip_v
+    if _need_transform and _gpu_active:
+        M_arr = to_cpu(M_arr)
+        R_arr = to_cpu(R_arr)
+        if CC_arr is not None:
+            CC_arr = to_cpu(CC_arr)
     if _bo_x != 0.5 or _bo_y != 0.5:
         _apply_pattern_offset(M_arr, shape, _bo_x, _bo_y)
         _apply_pattern_offset(R_arr, shape, _bo_x, _bo_y)
@@ -492,6 +543,11 @@ def compose_finish(base_id, pattern_id, shape, mask, seed, sm, scale=1.0, spec_m
         R_arr = np.flipud(R_arr)
         if CC_arr is not None:
             CC_arr = np.flipud(CC_arr)
+    if _need_transform and _gpu_active:
+        M_arr = to_gpu(M_arr)
+        R_arr = to_gpu(R_arr)
+        if CC_arr is not None:
+            CC_arr = to_gpu(CC_arr)
 
     # --- Spec Pattern Overlays ---
     _spec_patterns = kwargs.get("spec_pattern_stack", []) or base.get("spec_pattern_stack", [])
@@ -512,9 +568,9 @@ def compose_finish(base_id, pattern_id, shape, mask, seed, sm, scale=1.0, spec_m
             sp_offset_y = float(sp_layer.get("offset_y", 0.5))
             sp_scale = float(sp_layer.get("scale", 1.0))
             sp_rotation = float(sp_layer.get("rotation", 0))
-            # Generate pattern (returns 0-1 float32 array)
+            # Generate pattern (returns 0-1 float32 numpy array) -> stays CPU for transforms
             sp_arr = sp_fn(base_shape, seed + 5000 + hash(sp_name) % 10000, _sm_base, **sp_params)
-            # Apply scale, rotation, and offset transforms
+            # Apply scale, rotation, and offset transforms (CPU-only ops)
             if abs(sp_scale - 1.0) > 0.01:
                 h, w = base_shape[0], base_shape[1]
                 if sp_scale < 1.0:
@@ -525,6 +581,9 @@ def compose_finish(base_id, pattern_id, shape, mask, seed, sm, scale=1.0, spec_m
                 sp_arr = _rotate_single_array(sp_arr, sp_rotation, base_shape)
             if abs(sp_offset_x - 0.5) > 0.01 or abs(sp_offset_y - 0.5) > 0.01:
                 _apply_pattern_offset(sp_arr, base_shape, sp_offset_x, sp_offset_y)
+            # Transfer to GPU for math
+            if _gpu_active:
+                sp_arr = to_gpu(sp_arr)
             # Convert 0-1 pattern to spec-range contribution
             # Pattern centered at 0.5 means no change; >0.5 = increase, <0.5 = decrease
             sp_delta = (sp_arr - 0.5) * 2.0  # -1 to +1 range
@@ -533,13 +592,13 @@ def compose_finish(base_id, pattern_id, shape, mask, seed, sm, scale=1.0, spec_m
 
             if "M" in sp_channels and M_arr is not None:
                 M_arr = _apply_spec_blend_mode(M_arr, sp_contrib, sp_opacity, sp_blend)
-                M_arr = np.clip(M_arr, 0, 255).astype(np.float32)
+                M_arr = xp.clip(M_arr, 0, 255).astype(xp.float32)
             if "R" in sp_channels and R_arr is not None:
                 R_arr = _apply_spec_blend_mode(R_arr, sp_contrib, sp_opacity, sp_blend)
-                R_arr = np.clip(R_arr, 0, 255).astype(np.float32)
+                R_arr = xp.clip(R_arr, 0, 255).astype(xp.float32)
             if "C" in sp_channels and CC_arr is not None:
                 CC_arr = _apply_spec_blend_mode(CC_arr, sp_contrib, sp_opacity, sp_blend)
-                CC_arr = np.clip(CC_arr, 16, 255).astype(np.float32)
+                CC_arr = xp.clip(CC_arr, 16, 255).astype(xp.float32)
 
     final_CC = CC_arr if CC_arr is not None else base_CC
     has_pattern = (pattern_id and pattern_id != "none" and pattern_id in PATTERN_REGISTRY)
@@ -559,6 +618,9 @@ def compose_finish(base_id, pattern_id, shape, mask, seed, sm, scale=1.0, spec_m
                     pv = np.zeros_like(pv)
                 pv = pv.copy()
                 _apply_pattern_offset(pv, shape, pattern_offset_x, pattern_offset_y)
+                # Transfer to GPU for blending math
+                if _gpu_active:
+                    pv = to_gpu(pv)
                 R_range, M_range = 60.0, 50.0
                 _pat_scale = pattern_sm_eff * spec_mult * max(0.0, min(1.0, float(pattern_opacity)))
                 # Mask the pattern so it only affects pixels INSIDE the zone
@@ -566,7 +628,9 @@ def compose_finish(base_id, pattern_id, shape, mask, seed, sm, scale=1.0, spec_m
                 M_arr = M_arr + pv_masked * M_range * _pat_scale
                 R_arr = R_arr + pv_masked * R_range * _pat_scale
         elif tex_fn is not None:
-            tex = tex_fn(shape, mask, seed, sm)
+            # tex_fn needs CPU mask
+            _mask_cpu_tex = to_cpu(mask) if _gpu_active else mask
+            tex = tex_fn(shape, _mask_cpu_tex, seed, sm)
             pv = tex["pattern_val"]
             R_range = tex["R_range"]
             M_range = tex["M_range"]
@@ -590,10 +654,7 @@ def compose_finish(base_id, pattern_id, shape, mask, seed, sm, scale=1.0, spec_m
             R_pv = tex.get("R_pattern", pv)
             CC_pv = tex.get("CC_pattern", None)
 
-            # NOTE: M_pv/R_pv/CC_pv scaling was ALREADY handled by _scale_pattern_output above (line 534).
-            # The tex dict entries (M_extra, R_extra, CC) were scaled there. M_pv/R_pv now come from
-            # tex.get("M_pattern", pv) which are already scaled. DO NOT double-scale.
-            # Only scale if M_pv/R_pv are freshly generated arrays NOT from the scaled tex dict.
+            # NOTE: M_pv/R_pv/CC_pv scaling was ALREADY handled by _scale_pattern_output above.
             if False and scale != 1.0 and scale > 0:  # DISABLED — was causing double-scale bug
                 if M_pv is not pv:
                     if scale < 1.0:
@@ -619,6 +680,13 @@ def compose_finish(base_id, pattern_id, shape, mask, seed, sm, scale=1.0, spec_m
                 if CC_pv is not None:
                     CC_pv = _rotate_single_array(CC_pv, rot_angle, shape)
 
+            # Transfer pattern arrays to GPU for blending
+            if _gpu_active:
+                M_pv = to_gpu(M_pv)
+                R_pv = to_gpu(R_pv)
+                if CC_pv is not None:
+                    CC_pv = to_gpu(CC_pv)
+
             _pat_scale = pattern_sm_eff * spec_mult * max(0.0, min(1.0, float(pattern_opacity)))
             M_arr = M_arr + M_pv * M_range * _pat_scale
             R_arr = R_arr + R_pv * R_range * _pat_scale
@@ -628,35 +696,37 @@ def compose_finish(base_id, pattern_id, shape, mask, seed, sm, scale=1.0, spec_m
                 if CC_arr is not None:
                     CC_arr = CC_arr + CC_pv * CC_range * _pat_scale
                 elif base_CC > 0:
-                    CC_arr = np.full(shape, float(base_CC), dtype=np.float32) + CC_pv * CC_range * _pat_scale
+                    CC_arr = xp.full(shape, float(base_CC), dtype=xp.float32) + CC_pv * CC_range * _pat_scale
 
             if "R_extra" in tex:
-                R_arr = R_arr + tex["R_extra"] * _pat_scale
+                _r_extra = to_gpu(tex["R_extra"]) if _gpu_active else tex["R_extra"]
+                R_arr = R_arr + _r_extra * _pat_scale
             if "M_extra" in tex:
-                M_arr = M_arr + tex["M_extra"] * _pat_scale
+                _m_extra = to_gpu(tex["M_extra"]) if _gpu_active else tex["M_extra"]
+                M_arr = M_arr + _m_extra * _pat_scale
 
             pat_CC = tex.get("CC")
             if pat_CC is None:
                 pass
             elif isinstance(pat_CC, np.ndarray):
-                final_CC = pat_CC
+                final_CC = to_gpu(pat_CC) if _gpu_active else pat_CC
             else:
                 final_CC = int(pat_CC)
 
     # GPU-accelerate final spec assembly (mask blending + clipping)
+    # M_arr/R_arr/mask are already on GPU when _gpu_active
     if _gpu_active:
-        M_arr = to_gpu(M_arr)
-        R_arr = to_gpu(R_arr)
-        _mask_g = to_gpu(mask)
-        M_final = M_arr * _mask_g + 5.0 * (1 - _mask_g)
-        R_final = R_arr * _mask_g + 100.0 * (1 - _mask_g)
+        M_final = M_arr * mask + 5.0 * (1 - mask)
+        R_final = R_arr * mask + 100.0 * (1 - mask)
         spec[:,:,0] = to_cpu(xp.clip(M_final, 0, 255).astype(xp.uint8))
         spec[:,:,1] = to_cpu(xp.clip(R_final, 0, 255).astype(xp.uint8))
-        if isinstance(final_CC, np.ndarray):
-            _cc_g = to_gpu(final_CC)
-            spec[:,:,2] = to_cpu(xp.clip(_cc_g * _mask_g, 0, 255).astype(xp.uint8))
+        _is_cc_arr = hasattr(final_CC, 'shape')  # works for both numpy and cupy arrays
+        if _is_cc_arr:
+            final_CC = to_gpu(final_CC)  # ensure on GPU
+            spec[:,:,2] = to_cpu(xp.clip(final_CC * mask, 0, 255).astype(xp.uint8))
         else:
-            spec[:,:,2] = np.where(mask > 0.5, final_CC, 0).astype(np.uint8)
+            _mask_cpu_cc = to_cpu(mask)
+            spec[:,:,2] = np.where(_mask_cpu_cc > 0.5, final_CC, 0).astype(np.uint8)
         spec[:,:,3] = 255
     else:
         M_final = M_arr * mask + 5.0 * (1 - mask)
@@ -668,6 +738,10 @@ def compose_finish(base_id, pattern_id, shape, mask, seed, sm, scale=1.0, spec_m
         else:
             spec[:,:,2] = np.where(mask > 0.5, final_CC, 0).astype(np.uint8)
         spec[:,:,3] = 255
+
+    # From here on, mask is needed as CPU for overlay functions — transfer back
+    if _gpu_active:
+        mask = to_cpu(mask)
 
     if second_base and second_base_strength > 0.001:
         try:
@@ -941,6 +1015,7 @@ def compose_finish_stacked(base_id, all_patterns, shape, mask, seed, sm, spec_mu
     """Compose a base material + MULTIPLE stacked patterns into a final spec map.
     base_spec_blend_mode: master override for how pattern spec contributions blend with base spec."""
     monolithic_registry = kwargs.pop("monolithic_registry", None)
+    _gpu_active = is_gpu()
     from engine.registry import BASE_REGISTRY, PATTERN_REGISTRY
     if pattern_sm is None:
         pattern_sm = sm
@@ -949,10 +1024,14 @@ def compose_finish_stacked(base_id, all_patterns, shape, mask, seed, sm, spec_mu
     # NOTE: base_strength is a paint slider, handled in compose_paint_mod_stacked — not used in spec compositing.
     _sm_base = sm * max(0.0, min(2.0, float(base_spec_strength)))
     base = BASE_REGISTRY[base_id]
-    spec = np.zeros((shape[0], shape[1], 4), dtype=np.uint8)
+    spec = np.zeros((shape[0], shape[1], 4), dtype=np.uint8)  # stays CPU (uint8 output)
     base_M = float(base["M"])
     base_R = float(base["R"])
     base_CC = int(base["CC"]) if base.get("CC") is not None else 16
+
+    # Transfer mask to GPU at entry
+    if _gpu_active:
+        mask = to_gpu(mask)
 
     if base_scale != 1.0 and base_scale > 0:
         MAX_BASE_DIM = 4096
@@ -1015,12 +1094,19 @@ def compose_finish_stacked(base_id, all_patterns, shape, mask, seed, sm, spec_mu
         if CC_arr is not None:
             CC_arr = _resize_array(CC_arr, shape[0], shape[1])
 
+    # Transfer base spec arrays to GPU after generation + resize
+    if _gpu_active:
+        M_arr = to_gpu(M_arr)
+        R_arr = to_gpu(R_arr)
+        if CC_arr is not None:
+            CC_arr = to_gpu(CC_arr)
+
     if cc_quality is not None and base_CC > 0:
         cc_value = 16.0 + (1.0 - float(cc_quality)) * 239.0
         if CC_arr is not None:
             CC_arr = CC_arr - float(base_CC) + cc_value
         else:
-            CC_arr = np.full(shape, cc_value, dtype=np.float32)
+            CC_arr = xp.full(shape, cc_value, dtype=xp.float32)
 
     h, w = shape
     if blend_base and blend_base in BASE_REGISTRY and blend_base != base_id:
@@ -1042,6 +1128,8 @@ def compose_finish_stacked(base_id, all_patterns, shape, mask, seed, sm, spec_mu
             grad = np.ones((h, 1), dtype=np.float32) * np.linspace(0, 1, w, dtype=np.float32)[np.newaxis, :]
         ba = max(0.1, min(3.0, blend_amount * 2.0 + 0.1))
         grad = np.power(grad, ba)
+        if _gpu_active:
+            grad = to_gpu(grad)
         M_arr = M_arr * (1.0 - grad) + base2_M * grad
         R_arr = R_arr * (1.0 - grad) + base2_R * grad
         if CC_arr is not None:
@@ -1064,9 +1152,15 @@ def compose_finish_stacked(base_id, all_patterns, shape, mask, seed, sm, spec_mu
             cc_haze = (0.4 - luminance) * 20.0 * sm
             CC_arr = CC_arr + cc_haze
 
-    # Base placement: offset (pan), rotation, flip - reposition gradient/duo like patterns
+    # Base placement: offset, rotation, flip — need CPU for np.roll/scipy
     _bo_x = max(0.0, min(1.0, float(base_offset_x if base_offset_x is not None else 0.5)))
     _bo_y = max(0.0, min(1.0, float(base_offset_y if base_offset_y is not None else 0.5)))
+    _need_transform = (_bo_x != 0.5 or _bo_y != 0.5) or (abs(float(base_rotation if base_rotation is not None else 0) % 360.0) > 0.5) or base_flip_h or base_flip_v
+    if _need_transform and _gpu_active:
+        M_arr = to_cpu(M_arr)
+        R_arr = to_cpu(R_arr)
+        if CC_arr is not None:
+            CC_arr = to_cpu(CC_arr)
     if _bo_x != 0.5 or _bo_y != 0.5:
         _apply_pattern_offset(M_arr, shape, _bo_x, _bo_y)
         _apply_pattern_offset(R_arr, shape, _bo_x, _bo_y)
@@ -1088,6 +1182,11 @@ def compose_finish_stacked(base_id, all_patterns, shape, mask, seed, sm, spec_mu
         R_arr = np.flipud(R_arr)
         if CC_arr is not None:
             CC_arr = np.flipud(CC_arr)
+    if _need_transform and _gpu_active:
+        M_arr = to_gpu(M_arr)
+        R_arr = to_gpu(R_arr)
+        if CC_arr is not None:
+            CC_arr = to_gpu(CC_arr)
 
     # --- Spec Pattern Overlays ---
     _spec_patterns = kwargs.get("spec_pattern_stack", []) or base.get("spec_pattern_stack", [])
@@ -1101,16 +1200,13 @@ def compose_finish_stacked(base_id, all_patterns, shape, mask, seed, sm, spec_mu
             sp_opacity = float(sp_layer.get("opacity", 0.5))
             sp_blend = sp_layer.get("blend_mode", "normal")
             sp_params = sp_layer.get("params", {})
-            # Which channels to affect (default: M and R)
-            sp_channels = sp_layer.get("channels", "MR")  # "M", "R", "CC", "MR", "MRC", etc.
-            # Position/transform params
+            sp_channels = sp_layer.get("channels", "MR")
             sp_offset_x = float(sp_layer.get("offset_x", 0.5))
             sp_offset_y = float(sp_layer.get("offset_y", 0.5))
             sp_scale = float(sp_layer.get("scale", 1.0))
             sp_rotation = float(sp_layer.get("rotation", 0))
-            # Generate pattern (returns 0-1 float32 array)
+            # Generate pattern (CPU) -> transform (CPU) -> transfer to GPU
             sp_arr = sp_fn(base_shape, seed + 5000 + hash(sp_name) % 10000, _sm_base, **sp_params)
-            # Apply scale, rotation, and offset transforms
             if abs(sp_scale - 1.0) > 0.01:
                 h, w = base_shape[0], base_shape[1]
                 if sp_scale < 1.0:
@@ -1121,27 +1217,28 @@ def compose_finish_stacked(base_id, all_patterns, shape, mask, seed, sm, spec_mu
                 sp_arr = _rotate_single_array(sp_arr, sp_rotation, base_shape)
             if abs(sp_offset_x - 0.5) > 0.01 or abs(sp_offset_y - 0.5) > 0.01:
                 _apply_pattern_offset(sp_arr, base_shape, sp_offset_x, sp_offset_y)
-            # Convert 0-1 pattern to spec-range contribution
-            # Pattern centered at 0.5 means no change; >0.5 = increase, <0.5 = decrease
-            sp_delta = (sp_arr - 0.5) * 2.0  # -1 to +1 range
-            sp_range = float(sp_layer.get("range", 40.0))  # How many spec units of variation
-            sp_contrib = sp_delta * sp_range  # Actual spec contribution
+            if _gpu_active:
+                sp_arr = to_gpu(sp_arr)
+            sp_delta = (sp_arr - 0.5) * 2.0
+            sp_range = float(sp_layer.get("range", 40.0))
+            sp_contrib = sp_delta * sp_range
 
             if "M" in sp_channels and M_arr is not None:
                 M_arr = _apply_spec_blend_mode(M_arr, sp_contrib, sp_opacity, sp_blend)
-                M_arr = np.clip(M_arr, 0, 255).astype(np.float32)
+                M_arr = xp.clip(M_arr, 0, 255).astype(xp.float32)
             if "R" in sp_channels and R_arr is not None:
                 R_arr = _apply_spec_blend_mode(R_arr, sp_contrib, sp_opacity, sp_blend)
-                R_arr = np.clip(R_arr, 0, 255).astype(np.float32)
+                R_arr = xp.clip(R_arr, 0, 255).astype(xp.float32)
             if "C" in sp_channels and CC_arr is not None:
                 CC_arr = _apply_spec_blend_mode(CC_arr, sp_contrib, sp_opacity, sp_blend)
-                CC_arr = np.clip(CC_arr, 16, 255).astype(np.float32)
+                CC_arr = xp.clip(CC_arr, 16, 255).astype(xp.float32)
 
     if CC_arr is not None:
         final_CC = CC_arr.copy()
     else:
-        final_CC = np.full(shape, float(base_CC), dtype=np.float32)
+        final_CC = xp.full(shape, float(base_CC), dtype=xp.float32)
 
+    _mask_cpu_stk = to_cpu(mask) if _gpu_active else mask
     for layer_idx, layer in enumerate(all_patterns):
         pat_id = layer["id"]
         opacity = float(layer.get("opacity", 1.0))
@@ -1160,12 +1257,12 @@ def compose_finish_stacked(base_id, all_patterns, shape, mask, seed, sm, spec_mu
                     pv = (pv - pv_min) / (pv_max - pv_min)
                 else:
                     pv = np.zeros_like(pv)
-                # Per-pattern offset (supports Fit-to-Zone and Manual Placement)
                 _img_ox = float(layer.get("offset_x", pattern_offset_x))
                 _img_oy = float(layer.get("offset_y", pattern_offset_y))
                 if abs(_img_ox - 0.5) > 0.001 or abs(_img_oy - 0.5) > 0.001:
                     _apply_pattern_offset(pv, shape, _img_ox, _img_oy)
-                # Mask the pattern so it only affects pixels INSIDE the zone
+                if _gpu_active:
+                    pv = to_gpu(pv)
                 pv_masked = pv * mask
                 M_contrib = pv_masked * 50.0 * pattern_sm_eff * spec_mult
                 R_contrib = pv_masked * 60.0 * pattern_sm_eff * spec_mult
@@ -1176,7 +1273,7 @@ def compose_finish_stacked(base_id, all_patterns, shape, mask, seed, sm, spec_mu
         if tex_fn is None:
             continue
         layer_seed = seed + layer_idx * 7
-        tex = tex_fn(shape, mask, layer_seed, sm)
+        tex = tex_fn(shape, _mask_cpu_stk, layer_seed, sm)
         pv = tex["pattern_val"]
         R_range = tex["R_range"]
         M_range = tex["M_range"]
@@ -1214,7 +1311,6 @@ def compose_finish_stacked(base_id, all_patterns, shape, mask, seed, sm, spec_mu
             if CC_pv is not None:
                 CC_pv = _rotate_single_array(CC_pv, layer_rotation, shape)
         blend_mode = layer.get("blend_mode", "normal")
-        # Per-pattern offset (supports Fit-to-Zone bbox-center and Manual Placement)
         _p_ox = float(layer.get("offset_x", pattern_offset_x))
         _p_oy = float(layer.get("offset_y", pattern_offset_y))
         if abs(_p_ox - 0.5) > 0.001 or abs(_p_oy - 0.5) > 0.001:
@@ -1225,7 +1321,12 @@ def compose_finish_stacked(base_id, all_patterns, shape, mask, seed, sm, spec_mu
                 _apply_pattern_offset(R_pv, shape, _p_ox, _p_oy)
             if CC_pv is not None:
                 _apply_pattern_offset(CC_pv, shape, _p_ox, _p_oy)
-        # Master spec blend mode overrides per-layer blend when set
+        # Transfer pattern arrays to GPU for blending
+        if _gpu_active:
+            M_pv = to_gpu(M_pv)
+            R_pv = to_gpu(R_pv)
+            if CC_pv is not None:
+                CC_pv = to_gpu(CC_pv)
         _effective_spec_blend = base_spec_blend_mode if base_spec_blend_mode != "normal" else blend_mode
         M_contrib = M_pv * M_range * pattern_sm_eff * spec_mult
         R_contrib = R_pv * R_range * pattern_sm_eff * spec_mult
@@ -1235,30 +1336,32 @@ def compose_finish_stacked(base_id, all_patterns, shape, mask, seed, sm, spec_mu
         if CC_pv is not None and CC_range != 0:
             final_CC = final_CC + CC_pv * CC_range * pattern_sm_eff * opacity * spec_mult
         if "R_extra" in tex:
-            R_arr = R_arr + tex["R_extra"] * pattern_sm_eff * opacity * spec_mult
+            _r_extra = to_gpu(tex["R_extra"]) if _gpu_active else tex["R_extra"]
+            R_arr = R_arr + _r_extra * pattern_sm_eff * opacity * spec_mult
         if "M_extra" in tex:
-            M_arr = M_arr + tex["M_extra"] * pattern_sm_eff * opacity * spec_mult
+            _m_extra = to_gpu(tex["M_extra"]) if _gpu_active else tex["M_extra"]
+            M_arr = M_arr + _m_extra * pattern_sm_eff * opacity * spec_mult
         pat_CC = tex.get("CC")
         if pat_CC is not None:
             if isinstance(pat_CC, np.ndarray):
-                final_CC = final_CC * (1.0 - opacity) + pat_CC * opacity
+                _pat_cc_g = to_gpu(pat_CC) if _gpu_active else pat_CC
+                final_CC = final_CC * (1.0 - opacity) + _pat_cc_g * opacity
             else:
                 final_CC = final_CC * (1.0 - opacity) + float(pat_CC) * opacity
 
-    # GPU-accelerate final spec assembly (mask blending + clipping)
-    if is_gpu():
-        M_arr = to_gpu(M_arr)
-        R_arr = to_gpu(R_arr)
-        _mask_g = to_gpu(mask)
-        M_final = M_arr * _mask_g + 5.0 * (1 - _mask_g)
-        R_final = R_arr * _mask_g + 100.0 * (1 - _mask_g)
+    # GPU-accelerate final spec assembly — M_arr/R_arr/mask already on GPU when _gpu_active
+    if _gpu_active:
+        M_final = M_arr * mask + 5.0 * (1 - mask)
+        R_final = R_arr * mask + 100.0 * (1 - mask)
         spec[:,:,0] = to_cpu(xp.clip(M_final, 0, 255).astype(xp.uint8))
         spec[:,:,1] = to_cpu(xp.clip(R_final, 0, 255).astype(xp.uint8))
-        if isinstance(final_CC, np.ndarray):
-            _cc_g = to_gpu(final_CC)
-            spec[:,:,2] = to_cpu(xp.clip(_cc_g * _mask_g, 0, 255).astype(xp.uint8))
+        _is_cc_arr = hasattr(final_CC, 'shape')
+        if _is_cc_arr:
+            final_CC = to_gpu(final_CC)
+            spec[:,:,2] = to_cpu(xp.clip(final_CC * mask, 0, 255).astype(xp.uint8))
         else:
-            spec[:,:,2] = np.clip(final_CC * mask, 0, 255).astype(np.uint8)
+            _mask_cpu_cc = to_cpu(mask)
+            spec[:,:,2] = np.clip(final_CC * _mask_cpu_cc, 0, 255).astype(np.uint8)
         spec[:,:,3] = 255
     else:
         M_final = M_arr * mask + 5.0 * (1 - mask)
@@ -1267,6 +1370,10 @@ def compose_finish_stacked(base_id, all_patterns, shape, mask, seed, sm, spec_mu
         spec[:,:,1] = np.clip(R_final, 0, 255).astype(np.uint8)
         spec[:,:,2] = np.clip(final_CC * mask, 0, 255).astype(np.uint8)
         spec[:,:,3] = 255
+
+    # Transfer mask back to CPU for overlay functions
+    if _gpu_active:
+        mask = to_cpu(mask)
 
     if second_base and second_base_strength > 0.001:
         try:
@@ -1654,9 +1761,17 @@ def compose_paint_mod(base_id, pattern_id, paint, shape, mask, seed, pm, bb, sca
                       pattern_flip_h=False, pattern_flip_v=False):
     """Apply base paint modifier then pattern paint modifier WITH spatial texture blending.
     pattern_intensity 0-1: 5%% = hint, 100%% = full (linear; avoids flip below 50%%).
-    When second_base_color_source (etc.) is 'mono:xyz', the overlay color comes from that special's paint_fn (gradients, color shifts, etc.)."""
+    When second_base_color_source (etc.) is 'mono:xyz', the overlay color comes from that special's paint_fn (gradients, color shifts, etc.).
+    PURE CPU: always receives and returns numpy arrays. The caller (build_multi_zone) handles GPU↔CPU conversion."""
     from engine.registry import BASE_REGISTRY, PATTERN_REGISTRY
-    hard_mask = np.where(mask > 0.1, mask, 0.0).astype(np.float32)
+    # Ensure CPU numpy — CuPy inputs converted here (caller should prefer to_cpu before calling)
+    if hasattr(paint, 'get'):
+        paint = paint.get()
+    paint = np.asarray(paint)
+    if hasattr(mask, 'get'):
+        mask = mask.get()
+    mask = np.asarray(mask)
+    hard_mask = np.where(mask > 0.1, mask, np.float32(0.0)).astype(np.float32)
     base = BASE_REGISTRY[base_id]
     base_paint_fn = base.get("paint_fn", paint_none)
     has_pattern = (pattern_id and pattern_id != "none" and pattern_id in PATTERN_REGISTRY)
@@ -1669,10 +1784,12 @@ def compose_paint_mod(base_id, pattern_id, paint, shape, mask, seed, pm, bb, sca
 
     _BASE_PAINT_BOOST = 1.0 * max(0.0, min(2.0, float(base_strength)))
     if base_paint_fn is not paint_none:
+        # External paint_fn expects CPU (numpy) arrays — paint is already CPU here
         if has_pattern:
-            paint = base_paint_fn(paint, shape, hard_mask, seed, pm * _BASE_PAINT_BOOST * 0.7, bb * _BASE_PAINT_BOOST * 0.7)
+            _paint_result = base_paint_fn(paint, shape, hard_mask, seed, pm * _BASE_PAINT_BOOST * 0.7, bb * _BASE_PAINT_BOOST * 0.7)
         else:
-            paint = base_paint_fn(paint, shape, hard_mask, seed, pm * _BASE_PAINT_BOOST, bb * _BASE_PAINT_BOOST)
+            _paint_result = base_paint_fn(paint, shape, hard_mask, seed, pm * _BASE_PAINT_BOOST, bb * _BASE_PAINT_BOOST)
+        paint = np.asarray(_paint_result) if not isinstance(_paint_result, np.ndarray) else _paint_result
 
     # Record what the base paint_fn produced so we can blend it against the
     # base color override using base_strength as a mix weight.
@@ -1708,13 +1825,13 @@ def compose_paint_mod(base_id, pattern_id, paint, shape, mask, seed, pm, bb, sca
             + paint[:, :, :3] * (1.0 - _str_w)
         ) * _mask3 + paint[:, :, :3] * (1.0 - _mask3)
 
-    # Base transforms (offset, rotation, flip) applied to paint channels
+    # Base transforms (offset, rotation, flip) applied to paint channels — all CPU
     _bo_x = max(0.0, min(1.0, float(base_offset_x if base_offset_x is not None else 0.5)))
     _bo_y = max(0.0, min(1.0, float(base_offset_y if base_offset_y is not None else 0.5)))
+    _bro = float(base_rotation if base_rotation is not None else 0) % 360.0
     if abs(_bo_x - 0.5) > 0.001 or abs(_bo_y - 0.5) > 0.001:
         for ch in range(min(3, paint.shape[2])):
             _apply_pattern_offset(paint[:, :, ch], shape, _bo_x, _bo_y)
-    _bro = float(base_rotation if base_rotation is not None else 0) % 360.0
     if abs(_bro) > 0.5:
         for ch in range(min(3, paint.shape[2])):
             paint[:, :, ch] = _rotate_single_array(paint[:, :, ch], _bro, shape)
@@ -1725,9 +1842,10 @@ def compose_paint_mod(base_id, pattern_id, paint, shape, mask, seed, pm, bb, sca
 
     if has_blend and base2_paint_fn is not paint_none:
         print(f"    [BLEND PAINT v6.1] base={base_id} + blend={blend_base}, dir={blend_dir}, amount={blend_amount:.2f}")
-        paint_blend = paint.copy()
         _BLEND_PM, _BLEND_BB = 1.0, 1.0
-        paint_blend = base2_paint_fn(paint_blend, shape, hard_mask, seed + 5000, _BLEND_PM, _BLEND_BB)
+        # External paint_fn expects CPU (numpy) arrays — paint is already CPU here
+        _paint_blend_result = base2_paint_fn(paint.copy(), shape, hard_mask, seed + 5000, _BLEND_PM, _BLEND_BB)
+        paint_blend = np.asarray(_paint_blend_result) if not isinstance(_paint_blend_result, np.ndarray) else _paint_blend_result
         h, w = shape
         rows_active = np.any(mask > 0.1, axis=1)
         cols_active = np.any(mask > 0.1, axis=0)
@@ -1781,7 +1899,7 @@ def compose_paint_mod(base_id, pattern_id, paint, shape, mask, seed, pm, bb, sca
             rgba = _load_color_image_pattern(image_path, shape, scale=scale, rotation=rotation)
             if rgba is not None:
                 r, g, b, alpha = rgba[:, :, 0], rgba[:, :, 1], rgba[:, :, 2], rgba[:, :, 3]
-                # Scale alpha by pattern_intensity so 5% shows a hint, 100% full
+                # Scale alpha by pattern_intensity so 5% shows a hint, 100% full — all CPU
                 alpha_3d = (alpha[:, :, np.newaxis] * _pi) * hard_mask[:, :, np.newaxis]
                 rgb_3d = rgba[:, :, :3]
                 paint[:, :, :3] = paint[:, :, :3] * (1.0 - alpha_3d) + rgb_3d * alpha_3d
@@ -1800,14 +1918,17 @@ def compose_paint_mod(base_id, pattern_id, paint, shape, mask, seed, pm, bb, sca
                     fac = 0.35 * pm * spec_mult * _pi
                     paint = np.clip(paint * (1.0 - pv_masked * fac) - pv_masked * bb * 0.1 * spec_mult, 0, 1).astype(np.float32)
         elif pat_paint_fn is not paint_none:
+            # External pat_paint_fn expects CPU arrays — paint is already CPU here
             paint_before_pattern = paint.copy()
             _PAT_PAINT_BOOST = 1.8
             if base_paint_fn is not paint_none:
-                paint = pat_paint_fn(paint, shape, hard_mask, seed, pm * _PAT_PAINT_BOOST * 0.7 * spec_mult, bb * _PAT_PAINT_BOOST * 0.7 * spec_mult)
+                _pat_result = pat_paint_fn(paint, shape, hard_mask, seed, pm * _PAT_PAINT_BOOST * 0.7 * spec_mult, bb * _PAT_PAINT_BOOST * 0.7 * spec_mult)
             else:
-                paint = pat_paint_fn(paint, shape, hard_mask, seed, pm * _PAT_PAINT_BOOST * spec_mult, bb * _PAT_PAINT_BOOST * spec_mult)
+                _pat_result = pat_paint_fn(paint, shape, hard_mask, seed, pm * _PAT_PAINT_BOOST * spec_mult, bb * _PAT_PAINT_BOOST * spec_mult)
+            paint = np.asarray(_pat_result) if not isinstance(_pat_result, np.ndarray) else _pat_result
             if tex_fn is not None:
                 try:
+                    # tex_fn expects CPU mask — mask is already CPU here
                     tex = tex_fn(shape, mask, seed, 1.0)
                     pv = tex["pattern_val"] if isinstance(tex, dict) else tex
                     if scale != 1.0 and scale > 0:
@@ -1839,7 +1960,8 @@ def compose_paint_mod(base_id, pattern_id, paint, shape, mask, seed, pm, bb, sca
             if not _sb_color_src and second_base and str(second_base).startswith("mono:"):
                 _sb_color_src = second_base
             print(f"    [PAINT OVERLAY 2nd] second_base={second_base}, color_src={_sb_color_src}, strength={second_base_strength}, blend_mode={second_base_blend_mode}")
-            paint_overlay = paint.copy()
+            # Overlay operations are CPU-only — paint is already CPU here
+            _paint_overlay_cpu = paint.copy()
             # Use actual canvas dimensions from paint array (preview renders may have a smaller
             # canvas than the shape parameter which can still carry the original file resolution).
             _sb_shape = (paint.shape[0], paint.shape[1])
@@ -1853,14 +1975,15 @@ def compose_paint_mod(base_id, pattern_id, paint, shape, mask, seed, pm, bb, sca
                 _color_paint = _mono_paint_fn(_mono_overlay_seed_paint(paint), _sb_shape, hard_mask, seed + 7777, 1.0, 0.0)
                 if _color_paint is None:
                     print(f"    [PAINT OVERLAY 2nd] WARNING: mono paint_fn returned None!")
-                    _color_paint = paint.copy()
+                    _color_paint = _paint_overlay_cpu.copy()
                 else:
+                    _color_paint = _color_paint.get() if hasattr(_color_paint, 'get') else np.asarray(_color_paint)
                     _cp_shape = _color_paint.shape if hasattr(_color_paint, 'shape') else 'N/A'
                     _cp_dtype = _color_paint.dtype if hasattr(_color_paint, 'dtype') else 'N/A'
                     _cp_min = float(_color_paint[:,:,:3].min()) if hasattr(_color_paint, 'min') else 'N/A'
                     _cp_max = float(_color_paint[:,:,:3].max()) if hasattr(_color_paint, 'max') else 'N/A'
                     print(f"    [PAINT OVERLAY 2nd] mono paint result: shape={_cp_shape}, dtype={_cp_dtype}, range=[{_cp_min:.3f}, {_cp_max:.3f}]")
-                paint_overlay[:, :, :3] = _boost_overlay_mono_color(_color_paint[:, :, :3])
+                _paint_overlay_cpu[:, :, :3] = np.asarray(_boost_overlay_mono_color(_color_paint[:, :, :3]))
             elif _sb_color_src:
                 # User explicitly chose "From special", but that special isn't available in the active registry.
                 # Keep overlay driven by base overlay paint_fn and do not fall back to solid color tint.
@@ -1872,7 +1995,7 @@ def compose_paint_mod(base_id, pattern_id, paint, shape, mask, seed, pm, bb, sca
                 _sb_b = float(_sb_color[2]) if len(_sb_color) > 2 else 1.0
                 _sb_rgb = np.array([_sb_r, _sb_g, _sb_b], dtype=np.float32)
                 print(f"    [PAINT OVERLAY 2nd] Using solid color: ({_sb_r:.3f}, {_sb_g:.3f}, {_sb_b:.3f})")
-                paint_overlay[:, :, :3] = paint_overlay[:, :, :3] * (1.0 - _sb_mask3d) + _sb_rgb * _sb_mask3d
+                _paint_overlay_cpu[:, :, :3] = _paint_overlay_cpu[:, :, :3] * (1.0 - _sb_mask3d) + _sb_rgb * _sb_mask3d
             if second_base and second_base in BASE_REGISTRY:
                 _sb_def2 = BASE_REGISTRY[second_base]
                 _sb_pfn = _sb_def2.get("paint_fn", paint_none)
@@ -1882,13 +2005,15 @@ def compose_paint_mod(base_id, pattern_id, paint, shape, mask, seed, pm, bb, sca
                 # its paint_fn would wash out the special's colors (e.g. Chrome pushes
                 # toward silver, destroying a Bruise purple-to-black gradient).
                 if _sb_pfn is not paint_none and not _sb_color_src:
-                    paint_overlay = _sb_pfn(paint_overlay, _sb_shape, hard_mask, seed + 7777, 1.0, 0.0)
+                    # External paint_fn expects CPU arrays — _paint_overlay_cpu is already CPU
+                    _paint_overlay_cpu = _sb_pfn(_paint_overlay_cpu, _sb_shape, hard_mask, seed + 7777, 1.0, 0.0)
+                    _paint_overlay_cpu = np.asarray(_paint_overlay_cpu) if not isinstance(_paint_overlay_cpu, np.ndarray) else _paint_overlay_cpu
                 # When source is 'overlay', we already used the base's color; don't multiply again.
                 if second_base_color is not None and not _sb_color_src and str(second_base_color_source or '').strip().lower() != 'overlay':
                     _sb_r = float(second_base_color[0]) if len(second_base_color) > 0 else 1.0
                     _sb_g = float(second_base_color[1]) if len(second_base_color) > 1 else 1.0
                     _sb_b = float(second_base_color[2]) if len(second_base_color) > 2 else 1.0
-                    paint_overlay[:, :, :3] *= np.array([_sb_r, _sb_g, _sb_b], dtype=np.float32)
+                    _paint_overlay_cpu[:, :, :3] *= np.array([_sb_r, _sb_g, _sb_b], dtype=np.float32)
             _sb_bm_norm = _normalize_second_base_blend_mode(second_base_blend_mode)
             _pat_id_sb = None if second_base_pattern == '__none__' else (second_base_pattern if (second_base_pattern and second_base_pattern != 'none') else (pattern_id if pattern_id and pattern_id != 'none' else None))
             _sb_pat_mask = _get_pattern_mask(_pat_id_sb, _sb_shape, hard_mask, seed, 1.0,
@@ -1909,14 +2034,17 @@ def compose_paint_mod(base_id, pattern_id, paint, shape, mask, seed, pm, bb, sca
             _alpha_sb3 = _alpha_sb[:, :, np.newaxis]
             if abs(second_base_hue_shift) > 0.5 or abs(second_base_saturation) > 0.5 or abs(second_base_brightness) > 0.5:
                 print(f"    [OVERLAY HSB] 2nd base: hue={second_base_hue_shift}, sat={second_base_saturation}, brt={second_base_brightness}")
-                paint_overlay = _apply_hsb_adjustments(paint_overlay, hard_mask, second_base_hue_shift, second_base_saturation, second_base_brightness)
+                _paint_overlay_cpu = _apply_hsb_adjustments(_paint_overlay_cpu, hard_mask, second_base_hue_shift, second_base_saturation, second_base_brightness)
+                _paint_overlay_cpu = np.asarray(_paint_overlay_cpu)
             if abs(second_base_pattern_hue_shift) > 0.5 or abs(second_base_pattern_saturation) > 0.5 or abs(second_base_pattern_brightness) > 0.5:
-                paint_overlay = _apply_hsb_adjustments(paint_overlay, hard_mask, second_base_pattern_hue_shift, second_base_pattern_saturation, second_base_pattern_brightness)
+                _paint_overlay_cpu = _apply_hsb_adjustments(_paint_overlay_cpu, hard_mask, second_base_pattern_hue_shift, second_base_pattern_saturation, second_base_pattern_brightness)
+                _paint_overlay_cpu = np.asarray(_paint_overlay_cpu)
+            # Blend back — all CPU
             if _sb_bm_norm == "pattern_screen":
-                _screened = 1.0 - (1.0 - paint[:, :, :3]) * (1.0 - paint_overlay[:, :, :3])
+                _screened = 1.0 - (1.0 - paint[:, :, :3]) * (1.0 - _paint_overlay_cpu[:, :, :3])
                 paint[:, :, :3] = paint[:, :, :3] * (1.0 - _alpha_sb3) + _screened * _alpha_sb3
             else:
-                paint[:, :, :3] = paint[:, :, :3] * (1.0 - _alpha_sb3) + paint_overlay[:, :, :3] * _alpha_sb3
+                paint[:, :, :3] = paint[:, :, :3] * (1.0 - _alpha_sb3) + _paint_overlay_cpu[:, :, :3] * _alpha_sb3
             print(f"    [PAINT OVERLAY 2nd] blend_mode={_sb_bm_norm}, applied successfully")
         except Exception as _e:
             import traceback
@@ -1929,7 +2057,7 @@ def compose_paint_mod(base_id, pattern_id, paint, shape, mask, seed, pm, bb, sca
             _tb_color_src = third_base_color_source if (third_base_color_source and str(third_base_color_source).startswith("mono:")) else None
             if not _tb_color_src and third_base and str(third_base).startswith("mono:"):
                 _tb_color_src = third_base
-            paint_overlay_tb = paint.copy()
+            _paint_overlay_tb_cpu = paint.copy()
             _tb_shape = (paint.shape[0], paint.shape[1])
             _tb_mask3d = hard_mask[:, :, np.newaxis]
             if (_tb_color_src and monolithic_registry is not None and _tb_color_src[5:] in monolithic_registry):
@@ -1937,7 +2065,8 @@ def compose_paint_mod(base_id, pattern_id, paint, shape, mask, seed, pm, bb, sca
                 _mono_paint_fn = monolithic_registry[_mono_id][1]
                 _color_paint = _mono_paint_fn(_mono_overlay_seed_paint(paint), _tb_shape, hard_mask, seed + 9999, 1.0, 0.0)
                 if _color_paint is not None:
-                    paint_overlay_tb[:, :, :3] = _boost_overlay_mono_color(_color_paint[:, :, :3])
+                    _color_paint = _color_paint.get() if hasattr(_color_paint, 'get') else np.asarray(_color_paint)
+                    _paint_overlay_tb_cpu[:, :, :3] = np.asarray(_boost_overlay_mono_color(_color_paint[:, :, :3]))
             elif _tb_color_src:
                 print(f"    [PAINT OVERLAY 3rd] WARNING: special source '{_tb_color_src}' not found in registry; skipping solid color fallback")
             else:
@@ -1946,17 +2075,18 @@ def compose_paint_mod(base_id, pattern_id, paint, shape, mask, seed, pm, bb, sca
                 _tb_g = float(_tb_color[1]) if len(_tb_color) > 1 else 1.0
                 _tb_b = float(_tb_color[2]) if len(_tb_color) > 2 else 1.0
                 _tb_rgb = np.array([_tb_r, _tb_g, _tb_b], dtype=np.float32)
-                paint_overlay_tb[:, :, :3] = paint_overlay_tb[:, :, :3] * (1.0 - _tb_mask3d) + _tb_rgb * _tb_mask3d
+                _paint_overlay_tb_cpu[:, :, :3] = _paint_overlay_tb_cpu[:, :, :3] * (1.0 - _tb_mask3d) + _tb_rgb * _tb_mask3d
             if third_base and third_base in BASE_REGISTRY:
                 _tb_def2 = BASE_REGISTRY[third_base]
                 _tb_pfn = _tb_def2.get("paint_fn", paint_none)
                 if _tb_pfn is not paint_none and not _tb_color_src:
-                    paint_overlay_tb = _tb_pfn(paint_overlay_tb, _tb_shape, hard_mask, seed + 9999, 1.0, 0.0)
+                    _paint_overlay_tb_cpu = _tb_pfn(_paint_overlay_tb_cpu, _tb_shape, hard_mask, seed + 9999, 1.0, 0.0)
+                    _paint_overlay_tb_cpu = np.asarray(_paint_overlay_tb_cpu) if not isinstance(_paint_overlay_tb_cpu, np.ndarray) else _paint_overlay_tb_cpu
                 if third_base_color is not None and not _tb_color_src and str(third_base_color_source or '').strip().lower() != 'overlay':
                     _tb_r = float(third_base_color[0]) if len(third_base_color) > 0 else 1.0
                     _tb_g = float(third_base_color[1]) if len(third_base_color) > 1 else 1.0
                     _tb_b = float(third_base_color[2]) if len(third_base_color) > 2 else 1.0
-                    paint_overlay_tb[:, :, :3] *= np.array([_tb_r, _tb_g, _tb_b], dtype=np.float32)
+                    _paint_overlay_tb_cpu[:, :, :3] *= np.array([_tb_r, _tb_g, _tb_b], dtype=np.float32)
             _tb_bm_norm = _normalize_second_base_blend_mode(third_base_blend_mode)
             _pat_id_tb = None if third_base_pattern == '__none__' else (third_base_pattern if (third_base_pattern and third_base_pattern != 'none') else (pattern_id if pattern_id and pattern_id != 'none' else None))
             _tb_pat_mask = _get_pattern_mask(_pat_id_tb, _tb_shape, hard_mask, seed + 5555, 1.0,
@@ -1976,12 +2106,13 @@ def compose_paint_mod(base_id, pattern_id, paint, shape, mask, seed, pm, bb, sca
             )
             _alpha_tb3 = _alpha_tb[:, :, np.newaxis]
             if abs(third_base_hue_shift) > 0.5 or abs(third_base_saturation) > 0.5 or abs(third_base_brightness) > 0.5:
-                paint_overlay_tb = _apply_hsb_adjustments(paint_overlay_tb, hard_mask, third_base_hue_shift, third_base_saturation, third_base_brightness)
+                _paint_overlay_tb_cpu = _apply_hsb_adjustments(_paint_overlay_tb_cpu, hard_mask, third_base_hue_shift, third_base_saturation, third_base_brightness)
+                _paint_overlay_tb_cpu = np.asarray(_paint_overlay_tb_cpu)
             if _tb_bm_norm == "pattern_screen":
-                _screened_tb = 1.0 - (1.0 - paint[:, :, :3]) * (1.0 - paint_overlay_tb[:, :, :3])
+                _screened_tb = 1.0 - (1.0 - paint[:, :, :3]) * (1.0 - _paint_overlay_tb_cpu[:, :, :3])
                 paint[:, :, :3] = paint[:, :, :3] * (1.0 - _alpha_tb3) + _screened_tb * _alpha_tb3
             else:
-                paint[:, :, :3] = paint[:, :, :3] * (1.0 - _alpha_tb3) + paint_overlay_tb[:, :, :3] * _alpha_tb3
+                paint[:, :, :3] = paint[:, :, :3] * (1.0 - _alpha_tb3) + _paint_overlay_tb_cpu[:, :, :3] * _alpha_tb3
         except Exception as _e:
             import traceback
             print(f"    [PAINT OVERLAY 3rd] ERROR: {_e}")
@@ -1992,7 +2123,7 @@ def compose_paint_mod(base_id, pattern_id, paint, shape, mask, seed, pm, bb, sca
             _fb_color_src = fourth_base_color_source if (fourth_base_color_source and str(fourth_base_color_source).startswith("mono:")) else None
             if not _fb_color_src and fourth_base and str(fourth_base).startswith("mono:"):
                 _fb_color_src = fourth_base
-            paint_overlay_fb = paint.copy()
+            _paint_overlay_fb_cpu = paint.copy()
             _fb_shape = (paint.shape[0], paint.shape[1])
             _fb_mask3d = hard_mask[:, :, np.newaxis]
             if (_fb_color_src and monolithic_registry is not None and _fb_color_src[5:] in monolithic_registry):
@@ -2000,7 +2131,8 @@ def compose_paint_mod(base_id, pattern_id, paint, shape, mask, seed, pm, bb, sca
                 _mono_paint_fn = monolithic_registry[_mono_id][1]
                 _color_paint = _mono_paint_fn(_mono_overlay_seed_paint(paint), _fb_shape, hard_mask, seed + 11111, 1.0, 0.0)
                 if _color_paint is not None:
-                    paint_overlay_fb[:, :, :3] = _boost_overlay_mono_color(_color_paint[:, :, :3])
+                    _color_paint = _color_paint.get() if hasattr(_color_paint, 'get') else np.asarray(_color_paint)
+                    _paint_overlay_fb_cpu[:, :, :3] = np.asarray(_boost_overlay_mono_color(_color_paint[:, :, :3]))
             elif _fb_color_src:
                 print(f"    [PAINT OVERLAY 4th] WARNING: special source '{_fb_color_src}' not found in registry; skipping solid color fallback")
             else:
@@ -2009,17 +2141,18 @@ def compose_paint_mod(base_id, pattern_id, paint, shape, mask, seed, pm, bb, sca
                 _fb_g = float(_fb_color[1]) if len(_fb_color) > 1 else 1.0
                 _fb_b = float(_fb_color[2]) if len(_fb_color) > 2 else 1.0
                 _fb_rgb = np.array([_fb_r, _fb_g, _fb_b], dtype=np.float32)
-                paint_overlay_fb[:, :, :3] = paint_overlay_fb[:, :, :3] * (1.0 - _fb_mask3d) + _fb_rgb * _fb_mask3d
+                _paint_overlay_fb_cpu[:, :, :3] = _paint_overlay_fb_cpu[:, :, :3] * (1.0 - _fb_mask3d) + _fb_rgb * _fb_mask3d
             if fourth_base and fourth_base in BASE_REGISTRY:
                 _fb_def2 = BASE_REGISTRY[fourth_base]
                 _fb_pfn = _fb_def2.get("paint_fn", paint_none)
                 if _fb_pfn is not paint_none and not _fb_color_src:
-                    paint_overlay_fb = _fb_pfn(paint_overlay_fb, _fb_shape, hard_mask, seed + 11111, 1.0, 0.0)
+                    _paint_overlay_fb_cpu = _fb_pfn(_paint_overlay_fb_cpu, _fb_shape, hard_mask, seed + 11111, 1.0, 0.0)
+                    _paint_overlay_fb_cpu = np.asarray(_paint_overlay_fb_cpu) if not isinstance(_paint_overlay_fb_cpu, np.ndarray) else _paint_overlay_fb_cpu
                 if fourth_base_color is not None and not _fb_color_src and str(fourth_base_color_source or '').strip().lower() != 'overlay':
                     _fb_r = float(fourth_base_color[0]) if len(fourth_base_color) > 0 else 1.0
                     _fb_g = float(fourth_base_color[1]) if len(fourth_base_color) > 1 else 1.0
                     _fb_b = float(fourth_base_color[2]) if len(fourth_base_color) > 2 else 1.0
-                    paint_overlay_fb[:, :, :3] *= np.array([_fb_r, _fb_g, _fb_b], dtype=np.float32)
+                    _paint_overlay_fb_cpu[:, :, :3] *= np.array([_fb_r, _fb_g, _fb_b], dtype=np.float32)
             _fb_bm_norm = _normalize_second_base_blend_mode(fourth_base_blend_mode)
             _pat_id_fb = None if fourth_base_pattern == '__none__' else (fourth_base_pattern if (fourth_base_pattern and fourth_base_pattern != 'none') else (pattern_id if pattern_id and pattern_id != 'none' else None))
             _fb_pat_mask = _get_pattern_mask(_pat_id_fb, _fb_shape, hard_mask, seed + 3333, 1.0,
@@ -2039,12 +2172,13 @@ def compose_paint_mod(base_id, pattern_id, paint, shape, mask, seed, pm, bb, sca
             )
             _alpha_fb3 = _alpha_fb[:, :, np.newaxis]
             if abs(fourth_base_hue_shift) > 0.5 or abs(fourth_base_saturation) > 0.5 or abs(fourth_base_brightness) > 0.5:
-                paint_overlay_fb = _apply_hsb_adjustments(paint_overlay_fb, hard_mask, fourth_base_hue_shift, fourth_base_saturation, fourth_base_brightness)
+                _paint_overlay_fb_cpu = _apply_hsb_adjustments(_paint_overlay_fb_cpu, hard_mask, fourth_base_hue_shift, fourth_base_saturation, fourth_base_brightness)
+                _paint_overlay_fb_cpu = np.asarray(_paint_overlay_fb_cpu)
             if _fb_bm_norm == "pattern_screen":
-                _screened_fb = 1.0 - (1.0 - paint[:, :, :3]) * (1.0 - paint_overlay_fb[:, :, :3])
+                _screened_fb = 1.0 - (1.0 - paint[:, :, :3]) * (1.0 - _paint_overlay_fb_cpu[:, :, :3])
                 paint[:, :, :3] = paint[:, :, :3] * (1.0 - _alpha_fb3) + _screened_fb * _alpha_fb3
             else:
-                paint[:, :, :3] = paint[:, :, :3] * (1.0 - _alpha_fb3) + paint_overlay_fb[:, :, :3] * _alpha_fb3
+                paint[:, :, :3] = paint[:, :, :3] * (1.0 - _alpha_fb3) + _paint_overlay_fb_cpu[:, :, :3] * _alpha_fb3
         except Exception:
             pass
 
@@ -2053,7 +2187,7 @@ def compose_paint_mod(base_id, pattern_id, paint, shape, mask, seed, pm, bb, sca
             _fif_color_src = fifth_base_color_source if (fifth_base_color_source and str(fifth_base_color_source).startswith("mono:")) else None
             if not _fif_color_src and fifth_base and str(fifth_base).startswith("mono:"):
                 _fif_color_src = fifth_base
-            paint_overlay_fif = paint.copy()
+            _paint_overlay_fif_cpu = paint.copy()
             _fif_shape = (paint.shape[0], paint.shape[1])
             _fif_mask3d = hard_mask[:, :, np.newaxis]
             if (_fif_color_src and monolithic_registry is not None and _fif_color_src[5:] in monolithic_registry):
@@ -2061,7 +2195,8 @@ def compose_paint_mod(base_id, pattern_id, paint, shape, mask, seed, pm, bb, sca
                 _mono_paint_fn = monolithic_registry[_mono_id][1]
                 _color_paint = _mono_paint_fn(_mono_overlay_seed_paint(paint), _fif_shape, hard_mask, seed + 13333, 1.0, 0.0)
                 if _color_paint is not None:
-                    paint_overlay_fif[:, :, :3] = _boost_overlay_mono_color(_color_paint[:, :, :3])
+                    _color_paint = _color_paint.get() if hasattr(_color_paint, 'get') else np.asarray(_color_paint)
+                    _paint_overlay_fif_cpu[:, :, :3] = np.asarray(_boost_overlay_mono_color(_color_paint[:, :, :3]))
             elif _fif_color_src:
                 print(f"    [PAINT OVERLAY 5th] WARNING: special source '{_fif_color_src}' not found in registry; skipping solid color fallback")
             else:
@@ -2070,17 +2205,18 @@ def compose_paint_mod(base_id, pattern_id, paint, shape, mask, seed, pm, bb, sca
                 _fif_g = float(_fif_color[1]) if len(_fif_color) > 1 else 1.0
                 _fif_b = float(_fif_color[2]) if len(_fif_color) > 2 else 1.0
                 _fif_rgb = np.array([_fif_r, _fif_g, _fif_b], dtype=np.float32)
-                paint_overlay_fif[:, :, :3] = paint_overlay_fif[:, :, :3] * (1.0 - _fif_mask3d) + _fif_rgb * _fif_mask3d
+                _paint_overlay_fif_cpu[:, :, :3] = _paint_overlay_fif_cpu[:, :, :3] * (1.0 - _fif_mask3d) + _fif_rgb * _fif_mask3d
             if fifth_base and fifth_base in BASE_REGISTRY:
                 _fif_def2 = BASE_REGISTRY[fifth_base]
                 _fif_pfn = _fif_def2.get("paint_fn", paint_none)
                 if _fif_pfn is not paint_none and not _fif_color_src:
-                    paint_overlay_fif = _fif_pfn(paint_overlay_fif, _fif_shape, hard_mask, seed + 13333, 1.0, 0.0)
+                    _paint_overlay_fif_cpu = _fif_pfn(_paint_overlay_fif_cpu, _fif_shape, hard_mask, seed + 13333, 1.0, 0.0)
+                    _paint_overlay_fif_cpu = np.asarray(_paint_overlay_fif_cpu) if not isinstance(_paint_overlay_fif_cpu, np.ndarray) else _paint_overlay_fif_cpu
                 if fifth_base_color is not None and not _fif_color_src and str(fifth_base_color_source or '').strip().lower() != 'overlay':
                     _fif_r = float(fifth_base_color[0]) if len(fifth_base_color) > 0 else 1.0
                     _fif_g = float(fifth_base_color[1]) if len(fifth_base_color) > 1 else 1.0
                     _fif_b = float(fifth_base_color[2]) if len(fifth_base_color) > 2 else 1.0
-                    paint_overlay_fif[:, :, :3] *= np.array([_fif_r, _fif_g, _fif_b], dtype=np.float32)
+                    _paint_overlay_fif_cpu[:, :, :3] *= np.array([_fif_r, _fif_g, _fif_b], dtype=np.float32)
             _fif_bm_norm = _normalize_second_base_blend_mode(fifth_base_blend_mode)
             _pat_id_fif = None if fifth_base_pattern == '__none__' else (fifth_base_pattern if (fifth_base_pattern and fifth_base_pattern != 'none') else (pattern_id if pattern_id and pattern_id != 'none' else None))
             _fif_pat_mask = _get_pattern_mask(_pat_id_fif, _fif_shape, hard_mask, seed + 4444, 1.0,
@@ -2100,12 +2236,13 @@ def compose_paint_mod(base_id, pattern_id, paint, shape, mask, seed, pm, bb, sca
             )
             _alpha_fif3 = _alpha_fif[:, :, np.newaxis]
             if abs(fifth_base_hue_shift) > 0.5 or abs(fifth_base_saturation) > 0.5 or abs(fifth_base_brightness) > 0.5:
-                paint_overlay_fif = _apply_hsb_adjustments(paint_overlay_fif, hard_mask, fifth_base_hue_shift, fifth_base_saturation, fifth_base_brightness)
+                _paint_overlay_fif_cpu = _apply_hsb_adjustments(_paint_overlay_fif_cpu, hard_mask, fifth_base_hue_shift, fifth_base_saturation, fifth_base_brightness)
+                _paint_overlay_fif_cpu = np.asarray(_paint_overlay_fif_cpu)
             if _fif_bm_norm == "pattern_screen":
-                _screened_fif = 1.0 - (1.0 - paint[:, :, :3]) * (1.0 - paint_overlay_fif[:, :, :3])
+                _screened_fif = 1.0 - (1.0 - paint[:, :, :3]) * (1.0 - _paint_overlay_fif_cpu[:, :, :3])
                 paint[:, :, :3] = paint[:, :, :3] * (1.0 - _alpha_fif3) + _screened_fif * _alpha_fif3
             else:
-                paint[:, :, :3] = paint[:, :, :3] * (1.0 - _alpha_fif3) + paint_overlay_fif[:, :, :3] * _alpha_fif3
+                paint[:, :, :3] = paint[:, :, :3] * (1.0 - _alpha_fif3) + _paint_overlay_fif_cpu[:, :, :3] * _alpha_fif3
         except Exception:
             pass
 
@@ -2152,8 +2289,16 @@ def compose_paint_mod_stacked(base_id, all_patterns, paint, shape, mask, seed, p
                               pattern_offset_x=0.5, pattern_offset_y=0.5,
                               **kwargs):
     """Apply base paint modifier then MULTIPLE stacked pattern paint modifiers.
-    When second_base_color_source (etc.) is 'mono:xyz', overlay color comes from that special's paint_fn."""
+    When second_base_color_source (etc.) is 'mono:xyz', overlay color comes from that special's paint_fn.
+    PURE CPU: always receives and returns numpy arrays. The caller (build_multi_zone) handles GPU↔CPU conversion."""
     from engine.registry import BASE_REGISTRY, PATTERN_REGISTRY
+    # Ensure CPU numpy — CuPy inputs converted here (caller should prefer to_cpu before calling)
+    if hasattr(paint, 'get'):
+        paint = paint.get()
+    paint = np.asarray(paint)
+    if hasattr(mask, 'get'):
+        mask = mask.get()
+    mask = np.asarray(mask)
     second_base_color_source = kwargs.pop("second_base_color_source", None)
     third_base_color_source = kwargs.pop("third_base_color_source", None)
     fourth_base_color_source = kwargs.pop("fourth_base_color_source", None)
@@ -2167,7 +2312,7 @@ def compose_paint_mod_stacked(base_id, all_patterns, paint, shape, mask, seed, p
     base_brightness_adjust = float(kwargs.pop("base_brightness_adjust", 0))
     monolithic_registry = kwargs.pop("monolithic_registry", None)
     _pi_stk = max(0.0, min(1.0, float(kwargs.pop("pattern_intensity", 1.0))))
-    hard_mask = np.where(mask > 0.1, mask, 0.0).astype(np.float32)
+    hard_mask = np.where(np.asarray(mask) > 0.1, np.asarray(mask), np.float32(0.0)).astype(np.float32)
     base = BASE_REGISTRY[base_id]
     base_paint_fn = base.get("paint_fn", paint_none)
     has_any_pattern = len(all_patterns) > 0
@@ -2186,11 +2331,14 @@ def compose_paint_mod_stacked(base_id, all_patterns, paint, shape, mask, seed, p
 
     _BASE_PAINT_BOOST = 1.0 * max(0.0, min(2.0, float(base_strength)))
     if base_paint_fn is not paint_none:
+        # External paint_fn expects CPU (numpy) arrays — convert, call, restore to GPU
+        # External paint_fn expects CPU (numpy) arrays — paint is already CPU here
         if has_any_pattern and active_paint_fns > 0:
             atten = 0.6 / max(1, active_paint_fns)
-            paint = base_paint_fn(paint, shape, hard_mask, seed, pm * _BASE_PAINT_BOOST * atten, bb * _BASE_PAINT_BOOST * atten)
+            _paint_result_stk = base_paint_fn(paint, shape, hard_mask, seed, pm * _BASE_PAINT_BOOST * atten, bb * _BASE_PAINT_BOOST * atten)
         else:
-            paint = base_paint_fn(paint, shape, hard_mask, seed, pm * _BASE_PAINT_BOOST, bb * _BASE_PAINT_BOOST)
+            _paint_result_stk = base_paint_fn(paint, shape, hard_mask, seed, pm * _BASE_PAINT_BOOST, bb * _BASE_PAINT_BOOST)
+        paint = np.asarray(_paint_result_stk) if not isinstance(_paint_result_stk, np.ndarray) else _paint_result_stk
 
     # Record base material output before color override (same fix as compose_paint_mod)
     # Only copy when the lerp will actually be used (avoids ~32MB memcpy on most renders).
@@ -2220,14 +2368,13 @@ def compose_paint_mod_stacked(base_id, all_patterns, paint, shape, mask, seed, p
             + paint[:, :, :3] * (1.0 - _str_w)
         ) * _mask3 + paint[:, :, :3] * (1.0 - _mask3)
 
-
-    # Base transforms (offset, rotation, flip) applied to paint channels
+    # Base transforms (offset, rotation, flip) applied to paint channels — all CPU
     _bo_x_stk = max(0.0, min(1.0, float(base_offset_x if base_offset_x is not None else 0.5)))
     _bo_y_stk = max(0.0, min(1.0, float(base_offset_y if base_offset_y is not None else 0.5)))
+    _bro_stk = float(base_rotation if base_rotation is not None else 0) % 360.0
     if abs(_bo_x_stk - 0.5) > 0.001 or abs(_bo_y_stk - 0.5) > 0.001:
         for ch in range(min(3, paint.shape[2])):
             _apply_pattern_offset(paint[:, :, ch], shape, _bo_x_stk, _bo_y_stk)
-    _bro_stk = float(base_rotation if base_rotation is not None else 0) % 360.0
     if abs(_bro_stk) > 0.5:
         for ch in range(min(3, paint.shape[2])):
             paint[:, :, ch] = _rotate_single_array(paint[:, :, ch], _bro_stk, shape)
@@ -2238,8 +2385,9 @@ def compose_paint_mod_stacked(base_id, all_patterns, paint, shape, mask, seed, p
 
     if has_blend and base2_paint_fn is not paint_none:
         print(f"    [BLEND PAINT v6.1 STACKED] base={base_id} + blend={blend_base}, dir={blend_dir}, amount={blend_amount:.2f}")
-        paint_blend = paint.copy()
-        paint_blend = base2_paint_fn(paint_blend, shape, hard_mask, seed + 5000, 1.0, 1.0)
+        # External paint_fn expects CPU (numpy) arrays — paint is already CPU here
+        _paint_blend_result_stk = base2_paint_fn(paint.copy(), shape, hard_mask, seed + 5000, 1.0, 1.0)
+        paint_blend = np.asarray(_paint_blend_result_stk) if not isinstance(_paint_blend_result_stk, np.ndarray) else _paint_blend_result_stk
         h, w = shape
         rows_active = np.any(mask > 0.1, axis=1)
         cols_active = np.any(mask > 0.1, axis=0)
@@ -2300,8 +2448,7 @@ def compose_paint_mod_stacked(base_id, all_patterns, paint, shape, mask, seed, p
                 # Scale alpha by opacity, zone pattern_intensity, and mask (5% = hint, 100% = full)
                 alpha_3d = (alpha[:, :, np.newaxis] * opacity * _pi_stk) * hard_mask[:, :, np.newaxis]
                 rgb_3d = rgba[:, :, :3]
-                # Apply base darkening from image (emulate old shadow behavior if image is dark)
-                # But mainly alpha blend color!
+                # All CPU blend
                 paint[:, :, :3] = paint[:, :, :3] * (1.0 - alpha_3d) + rgb_3d * alpha_3d
             else:
                 # Fallback to legacy grayscale shadow loading
@@ -2322,10 +2469,13 @@ def compose_paint_mod_stacked(base_id, all_patterns, paint, shape, mask, seed, p
         elif pat_paint_fn is not paint_none:
             atten = opacity * 0.6 / max(1, active_paint_fns)
             layer_seed = seed + layer_idx * 7
+            # External paint_fn expects CPU arrays — paint is already CPU here
             paint_before_layer = paint.copy()
-            paint = pat_paint_fn(paint, shape, hard_mask, layer_seed, pm * atten * spec_mult * _PAT_PAINT_BOOST, bb * atten * spec_mult * _PAT_PAINT_BOOST)
+            _layer_result = pat_paint_fn(paint, shape, hard_mask, layer_seed, pm * atten * spec_mult * _PAT_PAINT_BOOST, bb * atten * spec_mult * _PAT_PAINT_BOOST)
+            paint = np.asarray(_layer_result) if not isinstance(_layer_result, np.ndarray) else _layer_result
             if tex_fn is not None:
                 try:
+                    # tex_fn expects CPU mask — mask is already CPU here
                     tex = tex_fn(shape, mask, layer_seed, 1.0)
                     pv = tex["pattern_val"] if isinstance(tex, dict) else tex
                     if scale != 1.0 and scale > 0:
@@ -2361,7 +2511,7 @@ def compose_paint_mod_stacked(base_id, all_patterns, paint, shape, mask, seed, p
             _sb_color_src = second_base_color_source if (second_base_color_source and str(second_base_color_source).startswith("mono:")) else None
             if not _sb_color_src and second_base and str(second_base).startswith("mono:"):
                 _sb_color_src = second_base
-            paint_overlay = paint.copy()
+            _paint_overlay_st_cpu = paint.copy()
             _sb_shape = (paint.shape[0], paint.shape[1])
             _sb_mask3d = hard_mask[:, :, np.newaxis]
             if (_sb_color_src and monolithic_registry is not None and _sb_color_src[5:] in monolithic_registry):
@@ -2369,7 +2519,8 @@ def compose_paint_mod_stacked(base_id, all_patterns, paint, shape, mask, seed, p
                 _mono_paint_fn = monolithic_registry[_mono_id][1]
                 _color_paint = _mono_paint_fn(_mono_overlay_seed_paint(paint), _sb_shape, hard_mask, seed + 7777, 1.0, 0.0)
                 if _color_paint is not None:
-                    paint_overlay[:, :, :3] = _boost_overlay_mono_color(_color_paint[:, :, :3])
+                    _color_paint = _color_paint.get() if hasattr(_color_paint, 'get') else np.asarray(_color_paint)
+                    _paint_overlay_st_cpu[:, :, :3] = np.asarray(_boost_overlay_mono_color(_color_paint[:, :, :3]))
             elif _sb_color_src:
                 print(f"    [PAINT OVERLAY 2nd STACKED] WARNING: special source '{_sb_color_src}' not found in registry; skipping solid color fallback")
             else:
@@ -2378,18 +2529,19 @@ def compose_paint_mod_stacked(base_id, all_patterns, paint, shape, mask, seed, p
                 _sb_g = float(_sb_color[1]) if len(_sb_color) > 1 else 1.0
                 _sb_b = float(_sb_color[2]) if len(_sb_color) > 2 else 1.0
                 _sb_rgb = np.array([_sb_r, _sb_g, _sb_b], dtype=np.float32)
-                paint_overlay[:, :, :3] = paint_overlay[:, :, :3] * (1.0 - _sb_mask3d) + _sb_rgb * _sb_mask3d
+                _paint_overlay_st_cpu[:, :, :3] = _paint_overlay_st_cpu[:, :, :3] * (1.0 - _sb_mask3d) + _sb_rgb * _sb_mask3d
             if second_base and second_base in BASE_REGISTRY:
                 _sb_def2 = BASE_REGISTRY[second_base]
                 _sb_pfn = _sb_def2.get("paint_fn", paint_none)
                 # Skip base paint_fn when From Special is active (same fix as compose_paint_mod)
                 if _sb_pfn is not paint_none and not _sb_color_src:
-                    paint_overlay = _sb_pfn(paint_overlay, _sb_shape, hard_mask, seed + 7777, 1.0, 0.0)
+                    _paint_overlay_st_cpu = _sb_pfn(_paint_overlay_st_cpu, _sb_shape, hard_mask, seed + 7777, 1.0, 0.0)
+                    _paint_overlay_st_cpu = np.asarray(_paint_overlay_st_cpu) if not isinstance(_paint_overlay_st_cpu, np.ndarray) else _paint_overlay_st_cpu
                 if second_base_color is not None and not _sb_color_src and str(second_base_color_source or '').strip().lower() != 'overlay':
                     _sb_r = float(second_base_color[0]) if len(second_base_color) > 0 else 1.0
                     _sb_g = float(second_base_color[1]) if len(second_base_color) > 1 else 1.0
                     _sb_b = float(second_base_color[2]) if len(second_base_color) > 2 else 1.0
-                    paint_overlay[:, :, :3] *= np.array([_sb_r, _sb_g, _sb_b], dtype=np.float32)
+                    _paint_overlay_st_cpu[:, :, :3] *= np.array([_sb_r, _sb_g, _sb_b], dtype=np.float32)
             _sb_bm_norm = _normalize_second_base_blend_mode(second_base_blend_mode)
             _pat_id_st = None if second_base_pattern == '__none__' else (second_base_pattern if (second_base_pattern and second_base_pattern != 'none') else (all_patterns[0].get("id") if all_patterns and isinstance(all_patterns[0], dict) else (all_patterns[0] if all_patterns else None)))
             _sb_pat_mask_st = _get_pattern_mask(_pat_id_st, _sb_shape, hard_mask, seed, 1.0,
@@ -2410,14 +2562,14 @@ def compose_paint_mod_stacked(base_id, all_patterns, paint, shape, mask, seed, p
             _alpha_sb_st3 = _alpha_sb_st[:, :, np.newaxis]
             if abs(second_base_hue_shift) > 0.5 or abs(second_base_saturation) > 0.5 or abs(second_base_brightness) > 0.5:
                 print(f"    [OVERLAY HSB] 2nd base: hue={second_base_hue_shift}, sat={second_base_saturation}, brt={second_base_brightness}")
-                paint_overlay = _apply_hsb_adjustments(paint_overlay, hard_mask, second_base_hue_shift, second_base_saturation, second_base_brightness)
+                _paint_overlay_st_cpu = _apply_hsb_adjustments(_paint_overlay_st_cpu, hard_mask, second_base_hue_shift, second_base_saturation, second_base_brightness)
             if abs(second_base_pattern_hue_shift) > 0.5 or abs(second_base_pattern_saturation) > 0.5 or abs(second_base_pattern_brightness) > 0.5:
-                paint_overlay = _apply_hsb_adjustments(paint_overlay, hard_mask, second_base_pattern_hue_shift, second_base_pattern_saturation, second_base_pattern_brightness)
+                _paint_overlay_st_cpu = _apply_hsb_adjustments(_paint_overlay_st_cpu, hard_mask, second_base_pattern_hue_shift, second_base_pattern_saturation, second_base_pattern_brightness)
             if _sb_bm_norm == "pattern_screen":
-                _screened_st = 1.0 - (1.0 - paint[:, :, :3]) * (1.0 - paint_overlay[:, :, :3])
+                _screened_st = 1.0 - (1.0 - paint[:, :, :3]) * (1.0 - _paint_overlay_st_cpu[:, :, :3])
                 paint[:, :, :3] = paint[:, :, :3] * (1.0 - _alpha_sb_st3) + _screened_st * _alpha_sb_st3
             else:
-                paint[:, :, :3] = paint[:, :, :3] * (1.0 - _alpha_sb_st3) + paint_overlay[:, :, :3] * _alpha_sb_st3
+                paint[:, :, :3] = paint[:, :, :3] * (1.0 - _alpha_sb_st3) + _paint_overlay_st_cpu[:, :, :3] * _alpha_sb_st3
         except Exception:
             pass
 
@@ -2426,16 +2578,16 @@ def compose_paint_mod_stacked(base_id, all_patterns, paint, shape, mask, seed, p
             _tb_color_src = third_base_color_source if (third_base_color_source and str(third_base_color_source).startswith("mono:")) else None
             if not _tb_color_src and third_base and str(third_base).startswith("mono:"):
                 _tb_color_src = third_base
-            paint_overlay_tb = paint.copy()
+            _paint_overlay_tb_st_cpu = paint.copy()
             _tb_shape = (paint.shape[0], paint.shape[1])
             _tb_mask3d = hard_mask[:, :, np.newaxis]
             if (_tb_color_src and monolithic_registry is not None and _tb_color_src[5:] in monolithic_registry):
                 _mono_id = _tb_color_src[5:]
                 _mono_paint_fn = monolithic_registry[_mono_id][1]
-                _mono_paint_fn = monolithic_registry[_mono_id][1]
                 _color_paint = _mono_paint_fn(_mono_overlay_seed_paint(paint), _tb_shape, hard_mask, seed + 9999, 1.0, 0.0)
                 if _color_paint is not None:
-                    paint_overlay_tb[:, :, :3] = _boost_overlay_mono_color(_color_paint[:, :, :3])
+                    _color_paint = _color_paint.get() if hasattr(_color_paint, 'get') else np.asarray(_color_paint)
+                    _paint_overlay_tb_st_cpu[:, :, :3] = np.asarray(_boost_overlay_mono_color(_color_paint[:, :, :3]))
             elif _tb_color_src:
                 print(f"    [PAINT OVERLAY 3rd STACKED] WARNING: special source '{_tb_color_src}' not found in registry; skipping solid color fallback")
             else:
@@ -2444,17 +2596,18 @@ def compose_paint_mod_stacked(base_id, all_patterns, paint, shape, mask, seed, p
                 _tb_g = float(_tb_color[1]) if len(_tb_color) > 1 else 1.0
                 _tb_b = float(_tb_color[2]) if len(_tb_color) > 2 else 1.0
                 _tb_rgb = np.array([_tb_r, _tb_g, _tb_b], dtype=np.float32)
-                paint_overlay_tb[:, :, :3] = paint_overlay_tb[:, :, :3] * (1.0 - _tb_mask3d) + _tb_rgb * _tb_mask3d
+                _paint_overlay_tb_st_cpu[:, :, :3] = _paint_overlay_tb_st_cpu[:, :, :3] * (1.0 - _tb_mask3d) + _tb_rgb * _tb_mask3d
             if third_base and third_base in BASE_REGISTRY:
                 _tb_def2 = BASE_REGISTRY[third_base]
                 _tb_pfn = _tb_def2.get("paint_fn", paint_none)
                 if _tb_pfn is not paint_none and not _tb_color_src:
-                    paint_overlay_tb = _tb_pfn(paint_overlay_tb, _tb_shape, hard_mask, seed + 9999, 1.0, 0.0)
+                    _paint_overlay_tb_st_cpu = _tb_pfn(_paint_overlay_tb_st_cpu, _tb_shape, hard_mask, seed + 9999, 1.0, 0.0)
+                    _paint_overlay_tb_st_cpu = np.asarray(_paint_overlay_tb_st_cpu) if not isinstance(_paint_overlay_tb_st_cpu, np.ndarray) else _paint_overlay_tb_st_cpu
                 if third_base_color is not None and not _tb_color_src and str(third_base_color_source or '').strip().lower() != 'overlay':
                     _tb_r = float(third_base_color[0]) if len(third_base_color) > 0 else 1.0
                     _tb_g = float(third_base_color[1]) if len(third_base_color) > 1 else 1.0
                     _tb_b = float(third_base_color[2]) if len(third_base_color) > 2 else 1.0
-                    paint_overlay_tb[:, :, :3] *= np.array([_tb_r, _tb_g, _tb_b], dtype=np.float32)
+                    _paint_overlay_tb_st_cpu[:, :, :3] *= np.array([_tb_r, _tb_g, _tb_b], dtype=np.float32)
             _tb_bm_norm = _normalize_second_base_blend_mode(third_base_blend_mode)
             _pat_id_tb = None if third_base_pattern == '__none__' else (third_base_pattern if (third_base_pattern and third_base_pattern != 'none') else (all_patterns[0].get("id") if all_patterns and isinstance(all_patterns[0], dict) else (all_patterns[0] if all_patterns else None)))
             _tb_pat_mask_st = _get_pattern_mask(_pat_id_tb, _tb_shape, hard_mask, seed + 5555, 1.0,
@@ -2474,12 +2627,12 @@ def compose_paint_mod_stacked(base_id, all_patterns, paint, shape, mask, seed, p
             )
             _alpha_tb_st3 = _alpha_tb_st[:, :, np.newaxis]
             if abs(third_base_hue_shift) > 0.5 or abs(third_base_saturation) > 0.5 or abs(third_base_brightness) > 0.5:
-                paint_overlay_tb = _apply_hsb_adjustments(paint_overlay_tb, hard_mask, third_base_hue_shift, third_base_saturation, third_base_brightness)
+                _paint_overlay_tb_st_cpu = _apply_hsb_adjustments(_paint_overlay_tb_st_cpu, hard_mask, third_base_hue_shift, third_base_saturation, third_base_brightness)
             if _tb_bm_norm == "pattern_screen":
-                _screened_tb_st = 1.0 - (1.0 - paint[:, :, :3]) * (1.0 - paint_overlay_tb[:, :, :3])
+                _screened_tb_st = 1.0 - (1.0 - paint[:, :, :3]) * (1.0 - _paint_overlay_tb_st_cpu[:, :, :3])
                 paint[:, :, :3] = paint[:, :, :3] * (1.0 - _alpha_tb_st3) + _screened_tb_st * _alpha_tb_st3
             else:
-                paint[:, :, :3] = paint[:, :, :3] * (1.0 - _alpha_tb_st3) + paint_overlay_tb[:, :, :3] * _alpha_tb_st3
+                paint[:, :, :3] = paint[:, :, :3] * (1.0 - _alpha_tb_st3) + _paint_overlay_tb_st_cpu[:, :, :3] * _alpha_tb_st3
         except Exception:
             pass
 
@@ -2488,7 +2641,7 @@ def compose_paint_mod_stacked(base_id, all_patterns, paint, shape, mask, seed, p
             _fb_color_src = fourth_base_color_source if (fourth_base_color_source and str(fourth_base_color_source).startswith("mono:")) else None
             if not _fb_color_src and fourth_base and str(fourth_base).startswith("mono:"):
                 _fb_color_src = fourth_base
-            paint_overlay_fb = paint.copy()
+            _paint_overlay_fb_st_cpu = paint.copy()
             _fb_shape = (paint.shape[0], paint.shape[1])
             _fb_mask3d = hard_mask[:, :, np.newaxis]
             if (_fb_color_src and monolithic_registry is not None and _fb_color_src[5:] in monolithic_registry):
@@ -2496,7 +2649,8 @@ def compose_paint_mod_stacked(base_id, all_patterns, paint, shape, mask, seed, p
                 _mono_paint_fn = monolithic_registry[_mono_id][1]
                 _color_paint = _mono_paint_fn(_mono_overlay_seed_paint(paint), _fb_shape, hard_mask, seed + 11111, 1.0, 0.0)
                 if _color_paint is not None:
-                    paint_overlay_fb[:, :, :3] = _boost_overlay_mono_color(_color_paint[:, :, :3])
+                    _color_paint = _color_paint.get() if hasattr(_color_paint, 'get') else np.asarray(_color_paint)
+                    _paint_overlay_fb_st_cpu[:, :, :3] = np.asarray(_boost_overlay_mono_color(_color_paint[:, :, :3]))
             elif _fb_color_src:
                 print(f"    [PAINT OVERLAY 4th STACKED] WARNING: special source '{_fb_color_src}' not found in registry; skipping solid color fallback")
             else:
@@ -2505,17 +2659,18 @@ def compose_paint_mod_stacked(base_id, all_patterns, paint, shape, mask, seed, p
                 _fb_g = float(_fb_color[1]) if len(_fb_color) > 1 else 1.0
                 _fb_b = float(_fb_color[2]) if len(_fb_color) > 2 else 1.0
                 _fb_rgb = np.array([_fb_r, _fb_g, _fb_b], dtype=np.float32)
-                paint_overlay_fb[:, :, :3] = paint_overlay_fb[:, :, :3] * (1.0 - _fb_mask3d) + _fb_rgb * _fb_mask3d
+                _paint_overlay_fb_st_cpu[:, :, :3] = _paint_overlay_fb_st_cpu[:, :, :3] * (1.0 - _fb_mask3d) + _fb_rgb * _fb_mask3d
             if fourth_base and fourth_base in BASE_REGISTRY:
                 _fb_def2 = BASE_REGISTRY[fourth_base]
                 _fb_pfn = _fb_def2.get("paint_fn", paint_none)
                 if _fb_pfn is not paint_none and not _fb_color_src:
-                    paint_overlay_fb = _fb_pfn(paint_overlay_fb, _fb_shape, hard_mask, seed + 11111, 1.0, 0.0)
+                    _paint_overlay_fb_st_cpu = _fb_pfn(_paint_overlay_fb_st_cpu, _fb_shape, hard_mask, seed + 11111, 1.0, 0.0)
+                    _paint_overlay_fb_st_cpu = np.asarray(_paint_overlay_fb_st_cpu) if not isinstance(_paint_overlay_fb_st_cpu, np.ndarray) else _paint_overlay_fb_st_cpu
                 if fourth_base_color is not None and not _fb_color_src and str(fourth_base_color_source or '').strip().lower() != 'overlay':
                     _fb_r = float(fourth_base_color[0]) if len(fourth_base_color) > 0 else 1.0
                     _fb_g = float(fourth_base_color[1]) if len(fourth_base_color) > 1 else 1.0
                     _fb_b = float(fourth_base_color[2]) if len(fourth_base_color) > 2 else 1.0
-                    paint_overlay_fb[:, :, :3] *= np.array([_fb_r, _fb_g, _fb_b], dtype=np.float32)
+                    _paint_overlay_fb_st_cpu[:, :, :3] *= np.array([_fb_r, _fb_g, _fb_b], dtype=np.float32)
             _fb_bm_norm = _normalize_second_base_blend_mode(fourth_base_blend_mode)
             _pat_id_fb = None if fourth_base_pattern == '__none__' else (fourth_base_pattern if (fourth_base_pattern and fourth_base_pattern != 'none') else (all_patterns[0].get("id") if all_patterns and isinstance(all_patterns[0], dict) else (all_patterns[0] if all_patterns else None)))
             _fb_pat_mask_st = _get_pattern_mask(_pat_id_fb, _fb_shape, hard_mask, seed + 3333, 1.0,
@@ -2535,12 +2690,12 @@ def compose_paint_mod_stacked(base_id, all_patterns, paint, shape, mask, seed, p
             )
             _alpha_fb_st3 = _alpha_fb_st[:, :, np.newaxis]
             if abs(fourth_base_hue_shift) > 0.5 or abs(fourth_base_saturation) > 0.5 or abs(fourth_base_brightness) > 0.5:
-                paint_overlay_fb = _apply_hsb_adjustments(paint_overlay_fb, hard_mask, fourth_base_hue_shift, fourth_base_saturation, fourth_base_brightness)
+                _paint_overlay_fb_st_cpu = _apply_hsb_adjustments(_paint_overlay_fb_st_cpu, hard_mask, fourth_base_hue_shift, fourth_base_saturation, fourth_base_brightness)
             if _fb_bm_norm == "pattern_screen":
-                _screened_fb_st = 1.0 - (1.0 - paint[:, :, :3]) * (1.0 - paint_overlay_fb[:, :, :3])
+                _screened_fb_st = 1.0 - (1.0 - paint[:, :, :3]) * (1.0 - _paint_overlay_fb_st_cpu[:, :, :3])
                 paint[:, :, :3] = paint[:, :, :3] * (1.0 - _alpha_fb_st3) + _screened_fb_st * _alpha_fb_st3
             else:
-                paint[:, :, :3] = paint[:, :, :3] * (1.0 - _alpha_fb_st3) + paint_overlay_fb[:, :, :3] * _alpha_fb_st3
+                paint[:, :, :3] = paint[:, :, :3] * (1.0 - _alpha_fb_st3) + _paint_overlay_fb_st_cpu[:, :, :3] * _alpha_fb_st3
         except Exception:
             pass
 
@@ -2549,7 +2704,7 @@ def compose_paint_mod_stacked(base_id, all_patterns, paint, shape, mask, seed, p
             _fif_color_src = fifth_base_color_source if (fifth_base_color_source and str(fifth_base_color_source).startswith("mono:")) else None
             if not _fif_color_src and fifth_base and str(fifth_base).startswith("mono:"):
                 _fif_color_src = fifth_base
-            paint_overlay_fif = paint.copy()
+            _paint_overlay_fif_st_cpu = paint.copy()
             _fif_shape = (paint.shape[0], paint.shape[1])
             _fif_mask3d = hard_mask[:, :, np.newaxis]
             if (_fif_color_src and monolithic_registry is not None and _fif_color_src[5:] in monolithic_registry):
@@ -2557,7 +2712,8 @@ def compose_paint_mod_stacked(base_id, all_patterns, paint, shape, mask, seed, p
                 _mono_paint_fn = monolithic_registry[_mono_id][1]
                 _color_paint = _mono_paint_fn(_mono_overlay_seed_paint(paint), _fif_shape, hard_mask, seed + 13333, 1.0, 0.0)
                 if _color_paint is not None:
-                    paint_overlay_fif[:, :, :3] = _boost_overlay_mono_color(_color_paint[:, :, :3])
+                    _color_paint = _color_paint.get() if hasattr(_color_paint, 'get') else np.asarray(_color_paint)
+                    _paint_overlay_fif_st_cpu[:, :, :3] = np.asarray(_boost_overlay_mono_color(_color_paint[:, :, :3]))
             elif _fif_color_src:
                 print(f"    [PAINT OVERLAY 5th STACKED] WARNING: special source '{_fif_color_src}' not found in registry; skipping solid color fallback")
             else:
@@ -2566,17 +2722,18 @@ def compose_paint_mod_stacked(base_id, all_patterns, paint, shape, mask, seed, p
                 _fif_g = float(_fif_color[1]) if len(_fif_color) > 1 else 1.0
                 _fif_b = float(_fif_color[2]) if len(_fif_color) > 2 else 1.0
                 _fif_rgb = np.array([_fif_r, _fif_g, _fif_b], dtype=np.float32)
-                paint_overlay_fif[:, :, :3] = paint_overlay_fif[:, :, :3] * (1.0 - _fif_mask3d) + _fif_rgb * _fif_mask3d
+                _paint_overlay_fif_st_cpu[:, :, :3] = _paint_overlay_fif_st_cpu[:, :, :3] * (1.0 - _fif_mask3d) + _fif_rgb * _fif_mask3d
             if fifth_base and fifth_base in BASE_REGISTRY:
                 _fif_def2 = BASE_REGISTRY[fifth_base]
                 _fif_pfn = _fif_def2.get("paint_fn", paint_none)
                 if _fif_pfn is not paint_none and not _fif_color_src:
-                    paint_overlay_fif = _fif_pfn(paint_overlay_fif, _fif_shape, hard_mask, seed + 13333, 1.0, 0.0)
+                    _paint_overlay_fif_st_cpu = _fif_pfn(_paint_overlay_fif_st_cpu, _fif_shape, hard_mask, seed + 13333, 1.0, 0.0)
+                    _paint_overlay_fif_st_cpu = np.asarray(_paint_overlay_fif_st_cpu) if not isinstance(_paint_overlay_fif_st_cpu, np.ndarray) else _paint_overlay_fif_st_cpu
                 if fifth_base_color is not None and not _fif_color_src and str(fifth_base_color_source or '').strip().lower() != 'overlay':
                     _fif_r = float(fifth_base_color[0]) if len(fifth_base_color) > 0 else 1.0
                     _fif_g = float(fifth_base_color[1]) if len(fifth_base_color) > 1 else 1.0
                     _fif_b = float(fifth_base_color[2]) if len(fifth_base_color) > 2 else 1.0
-                    paint_overlay_fif[:, :, :3] *= np.array([_fif_r, _fif_g, _fif_b], dtype=np.float32)
+                    _paint_overlay_fif_st_cpu[:, :, :3] *= np.array([_fif_r, _fif_g, _fif_b], dtype=np.float32)
             _fif_bm_norm = _normalize_second_base_blend_mode(fifth_base_blend_mode)
             _pat_id_fif = None if fifth_base_pattern == '__none__' else (fifth_base_pattern if (fifth_base_pattern and fifth_base_pattern != 'none') else (all_patterns[0].get("id") if all_patterns and isinstance(all_patterns[0], dict) else (all_patterns[0] if all_patterns else None)))
             _fif_pat_mask_st = _get_pattern_mask(_pat_id_fif, _fif_shape, hard_mask, seed + 4444, 1.0,
@@ -2596,12 +2753,12 @@ def compose_paint_mod_stacked(base_id, all_patterns, paint, shape, mask, seed, p
             )
             _alpha_fif_st3 = _alpha_fif_st[:, :, np.newaxis]
             if abs(fifth_base_hue_shift) > 0.5 or abs(fifth_base_saturation) > 0.5 or abs(fifth_base_brightness) > 0.5:
-                paint_overlay_fif = _apply_hsb_adjustments(paint_overlay_fif, hard_mask, fifth_base_hue_shift, fifth_base_saturation, fifth_base_brightness)
+                _paint_overlay_fif_st_cpu = _apply_hsb_adjustments(_paint_overlay_fif_st_cpu, hard_mask, fifth_base_hue_shift, fifth_base_saturation, fifth_base_brightness)
             if _fif_bm_norm == "pattern_screen":
-                _screened_fif_st = 1.0 - (1.0 - paint[:, :, :3]) * (1.0 - paint_overlay_fif[:, :, :3])
+                _screened_fif_st = 1.0 - (1.0 - paint[:, :, :3]) * (1.0 - _paint_overlay_fif_st_cpu[:, :, :3])
                 paint[:, :, :3] = paint[:, :, :3] * (1.0 - _alpha_fif_st3) + _screened_fif_st * _alpha_fif_st3
             else:
-                paint[:, :, :3] = paint[:, :, :3] * (1.0 - _alpha_fif_st3) + paint_overlay_fif[:, :, :3] * _alpha_fif_st3
+                paint[:, :, :3] = paint[:, :, :3] * (1.0 - _alpha_fif_st3) + _paint_overlay_fif_st_cpu[:, :, :3] * _alpha_fif_st3
         except Exception:
             pass
 

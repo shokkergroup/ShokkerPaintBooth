@@ -5878,13 +5878,19 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
                     # Parallel: spec in background thread while paint mod runs in foreground
                     with ThreadPoolExecutor(max_workers=1) as _spec_ex:
                         _spec_fut = _spec_ex.submit(compose_finish_stacked, base_id, all_patterns, shape, zone_mask, seed + i * 13, sm, spec_mult=spec_mult, base_scale=zone_base_scale, **_v6kw)
+                        _paint_was_gpu = is_gpu() and hasattr(paint, '__cuda_array_interface__')
+                        if _paint_was_gpu: paint = to_cpu(paint)
                         paint = compose_paint_mod_stacked(base_id, all_patterns, paint, shape, zone_mask, seed + i * 13, pm, bb, **_v6paint)
+                        if _paint_was_gpu: paint = to_gpu(paint)
                         zone_spec = _spec_fut.result()
                 else:
                     # Parallel: spec in background thread while paint mod runs in foreground
                     with ThreadPoolExecutor(max_workers=1) as _spec_ex:
                         _spec_fut = _spec_ex.submit(compose_finish, base_id, "none", shape, zone_mask, seed + i * 13, sm, spec_mult=spec_mult, base_scale=zone_base_scale, **_v6kw)
+                        _paint_was_gpu = is_gpu() and hasattr(paint, '__cuda_array_interface__')
+                        if _paint_was_gpu: paint = to_cpu(paint)
                         paint = compose_paint_mod(base_id, "none", paint, shape, zone_mask, seed + i * 13, pm, bb, **_v6paint)
+                        if _paint_was_gpu: paint = to_gpu(paint)
                         zone_spec = _spec_fut.result()
             else:
                 # SINGLE PATTERN: original path
@@ -5908,7 +5914,10 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
                 # Parallel: spec in background thread while paint mod runs in foreground
                 with ThreadPoolExecutor(max_workers=1) as _spec_ex:
                     _spec_fut = _spec_ex.submit(compose_finish, base_id, pattern_id, shape, zone_mask, seed + i * 13, sm, scale=zone_scale, spec_mult=spec_mult, rotation=zone_rotation, base_scale=zone_base_scale, **_v6kw)
+                    _paint_was_gpu = is_gpu() and hasattr(paint, '__cuda_array_interface__')
+                    if _paint_was_gpu: paint = to_cpu(paint)
                     paint = compose_paint_mod(base_id, pattern_id, paint, shape, zone_mask, seed + i * 13, pm, bb, scale=zone_scale, rotation=zone_rotation, **_v6paint)
+                    if _paint_was_gpu: paint = to_gpu(paint)
                     zone_spec = _spec_fut.result()
 
         elif finish_name and zone.get("finish_colors") and (
@@ -6990,13 +6999,19 @@ def build_helmet_spec(helmet_paint_file, output_dir, zones, iracing_id="23371", 
                     # Parallel: spec in background thread while paint mod runs in foreground
                     with ThreadPoolExecutor(max_workers=1) as _spec_ex:
                         _spec_fut = _spec_ex.submit(compose_finish_stacked, base_id, all_patterns, shape, zone_mask, seed + i * 13, sm, spec_mult=spec_mult, base_scale=zone_base_scale, **_v6kw)
+                        _paint_was_gpu = is_gpu() and hasattr(paint, '__cuda_array_interface__')
+                        if _paint_was_gpu: paint = to_cpu(paint)
                         paint = compose_paint_mod_stacked(base_id, all_patterns, paint, shape, zone_mask, seed + i * 13, pm, bb, **_v6paint)
+                        if _paint_was_gpu: paint = to_gpu(paint)
                         zone_spec = _spec_fut.result()
                 else:
                     # Parallel: spec in background thread while paint mod runs in foreground
                     with ThreadPoolExecutor(max_workers=1) as _spec_ex:
                         _spec_fut = _spec_ex.submit(compose_finish, base_id, "none", shape, zone_mask, seed + i * 13, sm, spec_mult=spec_mult, base_scale=zone_base_scale, **_v6kw)
+                        _paint_was_gpu = is_gpu() and hasattr(paint, '__cuda_array_interface__')
+                        if _paint_was_gpu: paint = to_cpu(paint)
                         paint = compose_paint_mod(base_id, "none", paint, shape, zone_mask, seed + i * 13, pm, bb, **_v6paint)
+                        if _paint_was_gpu: paint = to_gpu(paint)
                         zone_spec = _spec_fut.result()
             else:
                 # SINGLE PATTERN: original path
@@ -7019,7 +7034,10 @@ def build_helmet_spec(helmet_paint_file, output_dir, zones, iracing_id="23371", 
                 # Parallel: spec in background thread while paint mod runs in foreground
                 with ThreadPoolExecutor(max_workers=1) as _spec_ex:
                     _spec_fut = _spec_ex.submit(compose_finish, base_id, pattern_id, shape, zone_mask, seed + i * 13, sm, scale=zone_scale, spec_mult=spec_mult, rotation=zone_rotation, base_scale=zone_base_scale, **_v6kw)
+                    _paint_was_gpu = is_gpu() and hasattr(paint, '__cuda_array_interface__')
+                    if _paint_was_gpu: paint = to_cpu(paint)
                     paint = compose_paint_mod(base_id, pattern_id, paint, shape, zone_mask, seed + i * 13, pm, bb, scale=zone_scale, rotation=zone_rotation, **_v6paint)
+                    if _paint_was_gpu: paint = to_gpu(paint)
                     zone_spec = _spec_fut.result()
         elif finish_name and zone.get("finish_colors") and (
             finish_name.startswith("grad_") or finish_name.startswith("gradm_")
@@ -7430,13 +7448,19 @@ def build_suit_spec(suit_paint_file, output_dir, zones, iracing_id="23371", seed
                     # Parallel: spec in background thread while paint mod runs in foreground
                     with ThreadPoolExecutor(max_workers=1) as _spec_ex:
                         _spec_fut = _spec_ex.submit(compose_finish_stacked, base_id, all_patterns, shape, zone_mask, seed + i * 13, sm, spec_mult=spec_mult, base_scale=zone_base_scale, **_v6kw)
+                        _paint_was_gpu = is_gpu() and hasattr(paint, '__cuda_array_interface__')
+                        if _paint_was_gpu: paint = to_cpu(paint)
                         paint = compose_paint_mod_stacked(base_id, all_patterns, paint, shape, zone_mask, seed + i * 13, pm, bb, **_v6paint)
+                        if _paint_was_gpu: paint = to_gpu(paint)
                         zone_spec = _spec_fut.result()
                 else:
                     # Parallel: spec in background thread while paint mod runs in foreground
                     with ThreadPoolExecutor(max_workers=1) as _spec_ex:
                         _spec_fut = _spec_ex.submit(compose_finish, base_id, "none", shape, zone_mask, seed + i * 13, sm, spec_mult=spec_mult, base_scale=zone_base_scale, **_v6kw)
+                        _paint_was_gpu = is_gpu() and hasattr(paint, '__cuda_array_interface__')
+                        if _paint_was_gpu: paint = to_cpu(paint)
                         paint = compose_paint_mod(base_id, "none", paint, shape, zone_mask, seed + i * 13, pm, bb, **_v6paint)
+                        if _paint_was_gpu: paint = to_gpu(paint)
                         zone_spec = _spec_fut.result()
             else:
                 # SINGLE PATTERN: original path
@@ -7459,7 +7483,10 @@ def build_suit_spec(suit_paint_file, output_dir, zones, iracing_id="23371", seed
                 # Parallel: spec in background thread while paint mod runs in foreground
                 with ThreadPoolExecutor(max_workers=1) as _spec_ex:
                     _spec_fut = _spec_ex.submit(compose_finish, base_id, pattern_id, shape, zone_mask, seed + i * 13, sm, scale=zone_scale, spec_mult=spec_mult, rotation=zone_rotation, base_scale=zone_base_scale, **_v6kw)
+                    _paint_was_gpu = is_gpu() and hasattr(paint, '__cuda_array_interface__')
+                    if _paint_was_gpu: paint = to_cpu(paint)
                     paint = compose_paint_mod(base_id, pattern_id, paint, shape, zone_mask, seed + i * 13, pm, bb, scale=zone_scale, rotation=zone_rotation, **_v6paint)
+                    if _paint_was_gpu: paint = to_gpu(paint)
                     zone_spec = _spec_fut.result()
         elif finish_name and zone.get("finish_colors") and (
             finish_name.startswith("grad_") or finish_name.startswith("gradm_")

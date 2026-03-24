@@ -109,8 +109,13 @@ def _detect():
 # Run detection at import
 _detect()
 
-# Unified array module: use CuPy for CUDA/ROCm, numpy for everything else
-if GPU_BACKEND in ('cuda', 'rocm') and _cupy is not None:
+# GPU compute is detected but currently disabled for rendering due to
+# CPU↔GPU boundary issues with external paint_fn/texture_fn functions.
+# The GPU info is still reported in the UI. When GPU compute kernels are
+# ready (all texture functions ported to CuPy), set _GPU_COMPUTE_ENABLED = True.
+_GPU_COMPUTE_ENABLED = False
+
+if _GPU_COMPUTE_ENABLED and GPU_BACKEND in ('cuda', 'rocm') and _cupy is not None:
     xp = _cupy
 else:
     xp = np

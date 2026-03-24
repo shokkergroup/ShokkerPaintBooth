@@ -5693,6 +5693,9 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
             _v6kw["second_base_hue_shift"] = float(zone.get("second_base_hue_shift", 0))
             _v6kw["second_base_saturation"] = float(zone.get("second_base_saturation", 0))
             _v6kw["second_base_brightness"] = float(zone.get("second_base_brightness", 0))
+            _v6kw["second_base_pattern_hue_shift"] = float(zone.get("second_base_pattern_hue_shift", 0))
+            _v6kw["second_base_pattern_saturation"] = float(zone.get("second_base_pattern_saturation", 0))
+            _v6kw["second_base_pattern_brightness"] = float(zone.get("second_base_pattern_brightness", 0))
             _v6kw["second_base_color_source"] = zone.get("second_base_color_source")
             _z_tb = zone.get("third_base")
             if _z_tb:
@@ -6780,6 +6783,9 @@ def build_helmet_spec(helmet_paint_file, output_dir, zones, iracing_id="23371", 
             _v6kw["second_base_hue_shift"] = float(zone.get("second_base_hue_shift", 0))
             _v6kw["second_base_saturation"] = float(zone.get("second_base_saturation", 0))
             _v6kw["second_base_brightness"] = float(zone.get("second_base_brightness", 0))
+            _v6kw["second_base_pattern_hue_shift"] = float(zone.get("second_base_pattern_hue_shift", 0))
+            _v6kw["second_base_pattern_saturation"] = float(zone.get("second_base_pattern_saturation", 0))
+            _v6kw["second_base_pattern_brightness"] = float(zone.get("second_base_pattern_brightness", 0))
             _v6kw["second_base_color_source"] = zone.get("second_base_color_source")
             _z_tb = zone.get("third_base")
             if _z_tb:
@@ -7199,6 +7205,9 @@ def build_suit_spec(suit_paint_file, output_dir, zones, iracing_id="23371", seed
             _v6kw["second_base_hue_shift"] = float(zone.get("second_base_hue_shift", 0))
             _v6kw["second_base_saturation"] = float(zone.get("second_base_saturation", 0))
             _v6kw["second_base_brightness"] = float(zone.get("second_base_brightness", 0))
+            _v6kw["second_base_pattern_hue_shift"] = float(zone.get("second_base_pattern_hue_shift", 0))
+            _v6kw["second_base_pattern_saturation"] = float(zone.get("second_base_pattern_saturation", 0))
+            _v6kw["second_base_pattern_brightness"] = float(zone.get("second_base_pattern_brightness", 0))
             _v6kw["second_base_color_source"] = zone.get("second_base_color_source")
             _z_tb = zone.get("third_base")
             if _z_tb:

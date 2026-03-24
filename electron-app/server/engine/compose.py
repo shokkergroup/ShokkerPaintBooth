@@ -1596,6 +1596,7 @@ def compose_paint_mod(base_id, pattern_id, paint, shape, mask, seed, pm, bb, sca
                       fifth_base_pattern_invert=False, fifth_base_pattern_harden=False,
                       fifth_base_pattern_offset_x=0.5, fifth_base_pattern_offset_y=0.5,
                       second_base_hue_shift=0, second_base_saturation=0, second_base_brightness=0,
+                      second_base_pattern_hue_shift=0, second_base_pattern_saturation=0, second_base_pattern_brightness=0,
                       third_base_hue_shift=0, third_base_saturation=0, third_base_brightness=0,
                       fourth_base_hue_shift=0, fourth_base_saturation=0, fourth_base_brightness=0,
                       fifth_base_hue_shift=0, fifth_base_saturation=0, fifth_base_brightness=0,
@@ -1863,6 +1864,8 @@ def compose_paint_mod(base_id, pattern_id, paint, shape, mask, seed, pm, bb, sca
             _alpha_sb3 = _alpha_sb[:, :, np.newaxis]
             if abs(second_base_hue_shift) > 0.5 or abs(second_base_saturation) > 0.5 or abs(second_base_brightness) > 0.5:
                 paint_overlay = _apply_hsb_adjustments(paint_overlay, hard_mask, second_base_hue_shift, second_base_saturation, second_base_brightness)
+            if abs(second_base_pattern_hue_shift) > 0.5 or abs(second_base_pattern_saturation) > 0.5 or abs(second_base_pattern_brightness) > 0.5:
+                paint_overlay = _apply_hsb_adjustments(paint_overlay, hard_mask, second_base_pattern_hue_shift, second_base_pattern_saturation, second_base_pattern_brightness)
             if _sb_bm_norm == "pattern_screen":
                 _screened = 1.0 - (1.0 - paint[:, :, :3]) * (1.0 - paint_overlay[:, :, :3])
                 paint[:, :, :3] = paint[:, :, :3] * (1.0 - _alpha_sb3) + _screened * _alpha_sb3
@@ -2093,6 +2096,7 @@ def compose_paint_mod_stacked(base_id, all_patterns, paint, shape, mask, seed, p
                               fifth_base_pattern_invert=False, fifth_base_pattern_harden=False,
                               fifth_base_pattern_offset_x=0.5, fifth_base_pattern_offset_y=0.5,
                               second_base_hue_shift=0, second_base_saturation=0, second_base_brightness=0,
+                              second_base_pattern_hue_shift=0, second_base_pattern_saturation=0, second_base_pattern_brightness=0,
                               third_base_hue_shift=0, third_base_saturation=0, third_base_brightness=0,
                               fourth_base_hue_shift=0, fourth_base_saturation=0, fourth_base_brightness=0,
                               fifth_base_hue_shift=0, fifth_base_saturation=0, fifth_base_brightness=0,
@@ -2360,6 +2364,8 @@ def compose_paint_mod_stacked(base_id, all_patterns, paint, shape, mask, seed, p
             _alpha_sb_st3 = _alpha_sb_st[:, :, np.newaxis]
             if abs(second_base_hue_shift) > 0.5 or abs(second_base_saturation) > 0.5 or abs(second_base_brightness) > 0.5:
                 paint_overlay = _apply_hsb_adjustments(paint_overlay, hard_mask, second_base_hue_shift, second_base_saturation, second_base_brightness)
+            if abs(second_base_pattern_hue_shift) > 0.5 or abs(second_base_pattern_saturation) > 0.5 or abs(second_base_pattern_brightness) > 0.5:
+                paint_overlay = _apply_hsb_adjustments(paint_overlay, hard_mask, second_base_pattern_hue_shift, second_base_pattern_saturation, second_base_pattern_brightness)
             if _sb_bm_norm == "pattern_screen":
                 _screened_st = 1.0 - (1.0 - paint[:, :, :3]) * (1.0 - paint_overlay[:, :, :3])
                 paint[:, :, :3] = paint[:, :, :3] * (1.0 - _alpha_sb_st3) + _screened_st * _alpha_sb_st3

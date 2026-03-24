@@ -285,10 +285,26 @@ def save_config(cfg):
 @app.route('/build-check', methods=['GET'])
 def build_check():
     """Diagnostic endpoint - returns server status and configuration."""
+    # Read actual version from electron-app/package.json if available
+    _pkg_version = "5.8.8"
+    try:
+        import json as _json
+        for _pkg_path in [
+            os.path.join(os.path.dirname(SERVER_DIR), 'package.json'),  # electron-app/package.json
+            os.path.join(SERVER_DIR, '..', 'package.json'),
+        ]:
+            if os.path.isfile(_pkg_path):
+                with open(_pkg_path, 'r') as _f:
+                    _pkg_version = _json.load(_f).get('version', _pkg_version)
+                break
+    except Exception:
+        pass
     return jsonify({
-        "build": 29,
-        "version": "6.0.1-alpha",
+        "build": "V5",
+        "version": _pkg_version,
         "status": "running",
+        "debug": False,
+        "engine": "Shokker Engine V5 - Modular Architecture",
         "pid": os.getpid(),
         "port": int(os.environ.get('SHOKKER_PORT', 59876)),
         "server_dir": SERVER_DIR,

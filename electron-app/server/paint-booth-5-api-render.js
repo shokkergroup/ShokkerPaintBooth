@@ -868,6 +868,9 @@ async function doFleetRender() {
             if (z.secondBaseHueShift) zoneObj.second_base_hue_shift = z.secondBaseHueShift;
             if (z.secondBaseSaturation) zoneObj.second_base_saturation = z.secondBaseSaturation;
             if (z.secondBaseBrightness) zoneObj.second_base_brightness = z.secondBaseBrightness;
+            if (z.secondBasePatternHueShift) zoneObj.second_base_pattern_hue_shift = z.secondBasePatternHueShift;
+            if (z.secondBasePatternSaturation) zoneObj.second_base_pattern_saturation = z.secondBasePatternSaturation;
+            if (z.secondBasePatternBrightness) zoneObj.second_base_pattern_brightness = z.secondBasePatternBrightness;
         }
         if ((z.thirdBase || z.thirdBaseColorSource) && (z.thirdBaseStrength || 0) > 0) {
             const _tbColor = (z.thirdBaseColor || '#ffffff').toString();
@@ -1173,6 +1176,9 @@ async function doSeasonRender() {
             if (z.secondBaseHueShift) zoneObj.second_base_hue_shift = z.secondBaseHueShift;
             if (z.secondBaseSaturation) zoneObj.second_base_saturation = z.secondBaseSaturation;
             if (z.secondBaseBrightness) zoneObj.second_base_brightness = z.secondBaseBrightness;
+            if (z.secondBasePatternHueShift) zoneObj.second_base_pattern_hue_shift = z.secondBasePatternHueShift;
+            if (z.secondBasePatternSaturation) zoneObj.second_base_pattern_saturation = z.secondBasePatternSaturation;
+            if (z.secondBasePatternBrightness) zoneObj.second_base_pattern_brightness = z.secondBasePatternBrightness;
         }
         if ((z.thirdBase || z.thirdBaseColorSource) && (z.thirdBaseStrength || 0) > 0) {
             const _tbColor = (z.thirdBaseColor || '#ffffff').toString();
@@ -1529,6 +1535,9 @@ function buildServerZonesForRender(zones) {
             if (z.secondBaseHueShift) zoneObj.second_base_hue_shift = z.secondBaseHueShift;
             if (z.secondBaseSaturation) zoneObj.second_base_saturation = z.secondBaseSaturation;
             if (z.secondBaseBrightness) zoneObj.second_base_brightness = z.secondBaseBrightness;
+            if (z.secondBasePatternHueShift) zoneObj.second_base_pattern_hue_shift = z.secondBasePatternHueShift;
+            if (z.secondBasePatternSaturation) zoneObj.second_base_pattern_saturation = z.secondBasePatternSaturation;
+            if (z.secondBasePatternBrightness) zoneObj.second_base_pattern_brightness = z.secondBasePatternBrightness;
         }
         if ((z.thirdBase || z.thirdBaseColorSource) && (z.thirdBaseStrength || 0) > 0) {
             const _tbColor = (z.thirdBaseColor || '#ffffff').toString();

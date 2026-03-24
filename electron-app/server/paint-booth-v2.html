@@ -10,7 +10,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SHOKKER PAINT BOOTH — v5 Alpha</title>
+    <title>Shokker Paint Booth</title>
     <link rel="icon" href="data:," />
     <link rel="stylesheet" href="paint-booth-v2.css">
     <script src="fusion-swatches.js"></script>
@@ -340,7 +340,22 @@
         <div class="header-brand">
             <h1>SHOKKER PAINT BOOTH</h1>
             <div class="subtitle">
-                <span id="liveBuildBadge" class="version-badge" title="Version">v5</span>
+                <span id="liveBuildBadge" class="version-badge" title="Version">...</span>
+                <script>
+                // Fetch real version from server and update badge + title
+                (function(){
+                    var port = window._SHOKKER_PORT || 59876;
+                    fetch('http://localhost:' + port + '/build-check').then(function(r){return r.json();}).then(function(d){
+                        var badge = document.getElementById('liveBuildBadge');
+                        if (badge && d.version) {
+                            var v = d.version.replace('-alpha','').replace('-beta','');
+                            badge.textContent = 'v' + v;
+                            badge.title = 'Version ' + d.version;
+                            document.title = 'Shokker Paint Booth v' + v;
+                        }
+                    }).catch(function(){});
+                })();
+                </script>
                 <span id="comboCount" style="display:none;"></span>
                 <span id="b21check" style="display:none;"></span>
             </div>

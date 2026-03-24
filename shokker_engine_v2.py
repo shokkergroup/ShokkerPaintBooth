@@ -41,6 +41,7 @@ import struct
 import os
 import json
 import time
+from concurrent.futures import ThreadPoolExecutor
 from scipy.ndimage import gaussian_filter as _scipy_gaussian_filter
 
 from engine.utils import write_tga_32bit, write_tga_24bit, get_mgrid, generate_perlin_noise_2d, perlin_multi_octave
@@ -69,6 +70,15 @@ from engine.compose import (
     compose_finish, compose_finish_stacked, compose_paint_mod, compose_paint_mod_stacked,
     _get_pattern_mask, _apply_spec_blend_mode, _apply_hsb_adjustments,
 )
+
+# GPU acceleration
+try:
+    from engine.gpu import xp, to_cpu, to_gpu, is_gpu
+except ImportError:
+    import numpy as xp
+    def to_cpu(a): return a
+    def to_gpu(a): return a
+    def is_gpu(): return False
 
 
 def _engine_rot_debug(msg):
@@ -5427,30 +5437,30 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
             imp_img = Image.open(import_spec_map)
             # Handle both RGBA (32-bit) and RGB (24-bit) spec maps
             if imp_img.mode == 'RGBA':
-                combined_spec = np.array(imp_img).astype(np.uint8)
+                combined_spec = np.array(imp_img).astype(np.float32)
             elif imp_img.mode == 'RGB':
-                rgb = np.array(imp_img).astype(np.uint8)
-                alpha = np.full((rgb.shape[0], rgb.shape[1], 1), 255, dtype=np.uint8)
+                rgb = np.array(imp_img).astype(np.float32)
+                alpha = np.full((rgb.shape[0], rgb.shape[1], 1), 255, dtype=np.float32)
                 combined_spec = np.concatenate([rgb, alpha], axis=2)
             else:
                 imp_img = imp_img.convert('RGBA')
-                combined_spec = np.array(imp_img).astype(np.uint8)
+                combined_spec = np.array(imp_img).astype(np.float32)
             # Resize to match paint if needed
             if combined_spec.shape[0] != h or combined_spec.shape[1] != w:
-                imp_resized = Image.fromarray(combined_spec).resize((w, h), Image.LANCZOS)
-                combined_spec = np.array(imp_resized).astype(np.uint8)
+                imp_resized = Image.fromarray(combined_spec.astype(np.uint8)).resize((w, h), Image.LANCZOS)
+                combined_spec = np.array(imp_resized).astype(np.float32)
             print(f"    Imported spec: {combined_spec.shape[1]}x{combined_spec.shape[0]} RGBA")
             print(f"    Zones will MERGE on top of imported spec map")
         except Exception as e:
             print(f"    WARNING: Failed to load import spec map: {e}")
             print(f"    Falling back to default spec")
-            combined_spec = np.zeros((h, w, 4), dtype=np.uint8)
+            combined_spec = np.zeros((h, w, 4), dtype=np.float32)
             combined_spec[:,:,0] = 5       # Low metallic
             combined_spec[:,:,1] = 100     # Medium-rough
             combined_spec[:,:,2] = 16      # Max clearcoat
             combined_spec[:,:,3] = 255     # Full spec mask
     else:
-        combined_spec = np.zeros((h, w, 4), dtype=np.uint8)
+        combined_spec = np.zeros((h, w, 4), dtype=np.float32)
         combined_spec[:,:,0] = 5       # Low metallic
         combined_spec[:,:,1] = 100     # Medium-rough
         combined_spec[:,:,2] = 16      # Max clearcoat
@@ -5512,21 +5522,33 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
                     print(f"    [{name}] => CACHE HIT (skipped re-render)")
                     # Jump directly to the combined_spec blending step below
                     # (reuse cached zone_spec, paint already updated)
-                    mask3d = zone_mask[:, :, np.newaxis]
+                    # GPU-accelerated when CuPy is available
                     hard_edge = zone.get("hard_edge", False)
-                    if hard_edge:
-                        combined_spec = np.where(mask3d > 0.01, zone_spec, combined_spec)
+                    if is_gpu():
+                        _zs_g = to_gpu(zone_spec.astype(np.float32))
+                        _m3d_g = to_gpu(zone_mask[:, :, np.newaxis])
+                        _cs_g = to_gpu(combined_spec)
+                        if hard_edge:
+                            combined_spec = to_cpu(xp.where(_m3d_g > 0.01, _zs_g, _cs_g))
+                        else:
+                            strong = _m3d_g > 0.5
+                            soft = (_m3d_g > 0.05) & ~strong
+                            blended = xp.clip(_zs_g * _m3d_g + _cs_g * (1 - _m3d_g), 0, 255)
+                            combined_spec = to_cpu(xp.where(strong, _zs_g, xp.where(soft, blended, _cs_g)))
                     else:
-                        strong = mask3d > 0.5
-                        soft = (mask3d > 0.05) & ~strong
-                        blended = np.clip(
-                            zone_spec.astype(np.float32) * mask3d +
-                            combined_spec.astype(np.float32) * (1 - mask3d),
-                            0, 255
-                        ).astype(np.uint8)
-                        combined_spec = np.where(strong, zone_spec, np.where(soft, blended, combined_spec))
-                    if os.environ.get("SHOKKER_TIMING") == "1":
-                        print(f"      [{name}] zone time (cached): {time.time()-t_zone:.2f}s")
+                        mask3d = zone_mask[:, :, np.newaxis]
+                        if hard_edge:
+                            combined_spec = np.where(mask3d > 0.01, zone_spec, combined_spec)
+                        else:
+                            strong = mask3d > 0.5
+                            soft = (mask3d > 0.05) & ~strong
+                            blended = np.clip(
+                                zone_spec.astype(np.float32) * mask3d +
+                                combined_spec * (1 - mask3d),
+                                0, 255
+                            )
+                            combined_spec = np.where(strong, zone_spec.astype(np.float32), np.where(soft, blended, combined_spec))
+                    print(f"      [{name}] zone time (cached): {time.time()-t_zone:.2f}s")
                     continue
             except Exception as _ce:
                 _zone_cache_key = None  # Cache lookup failed — fall through to normal render
@@ -5840,10 +5862,10 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
                 # v6.1: build blend paint kwargs
                 _v6paint = {"base_strength": _v6kw.get("base_strength", 1.0), "base_spec_strength": _v6kw.get("base_spec_strength", 1.0), "base_color_mode": _v6kw.get("base_color_mode", "source"), "base_color": _v6kw.get("base_color", [1.0, 1.0, 1.0]), "base_color_source": _v6kw.get("base_color_source"), "base_color_strength": _v6kw.get("base_color_strength", 1.0), "base_hue_offset": _v6kw.get("base_hue_offset", 0), "base_saturation_adjust": _v6kw.get("base_saturation_adjust", 0), "base_brightness_adjust": _v6kw.get("base_brightness_adjust", 0), "pattern_intensity": pattern_intensity_01}
                 if _z_bb: _v6paint["blend_base"] = _z_bb; _v6paint["blend_dir"] = _z_bd; _v6paint["blend_amount"] = _z_ba
-                if _z_sb or _v6kw.get("second_base_color_source"): _v6paint["second_base"] = _z_sb; _v6paint["second_base_color_source"] = _v6kw.get("second_base_color_source"); _v6paint["second_base_color"] = _v6kw.get("second_base_color", [1.0, 1.0, 1.0]); _v6paint["second_base_strength"] = _v6kw.get("second_base_strength", 0.0); _v6paint["second_base_spec_strength"] = _v6kw.get("second_base_spec_strength", 1.0); _v6paint["second_base_blend_mode"] = _v6kw.get("second_base_blend_mode", "noise"); _v6paint["second_base_noise_scale"] = _v6kw.get("second_base_noise_scale", 24); _v6paint["second_base_scale"] = _v6kw.get("second_base_scale", 1.0); _v6paint["second_base_pattern"] = _v6kw.get("second_base_pattern"); _v6paint["second_base_pattern_scale"] = _v6kw.get("second_base_pattern_scale", 1.0); _v6paint["second_base_pattern_rotation"] = _v6kw.get("second_base_pattern_rotation", 0.0); _v6paint["second_base_pattern_opacity"] = _v6kw.get("second_base_pattern_opacity", 1.0); _v6paint["second_base_pattern_strength"] = _v6kw.get("second_base_pattern_strength", 1.0); _v6paint["second_base_pattern_invert"] = _v6kw.get("second_base_pattern_invert", False); _v6paint["second_base_pattern_harden"] = _v6kw.get("second_base_pattern_harden", False); _v6paint["second_base_pattern_offset_x"] = _v6kw.get("second_base_pattern_offset_x", 0.5); _v6paint["second_base_pattern_offset_y"] = _v6kw.get("second_base_pattern_offset_y", 0.5)
-                if _z_tb or _v6kw.get("third_base_color_source"): _v6paint["third_base"] = _z_tb; _v6paint["third_base_color_source"] = _v6kw.get("third_base_color_source"); _v6paint["third_base_color"] = _v6kw.get("third_base_color", [1.0, 1.0, 1.0]); _v6paint["third_base_strength"] = _v6kw.get("third_base_strength", 0.0); _v6paint["third_base_spec_strength"] = _v6kw.get("third_base_spec_strength", 1.0); _v6paint["third_base_blend_mode"] = _v6kw.get("third_base_blend_mode", "noise"); _v6paint["third_base_noise_scale"] = _v6kw.get("third_base_noise_scale", 24); _v6paint["third_base_scale"] = _v6kw.get("third_base_scale", 1.0); _v6paint["third_base_pattern"] = _v6kw.get("third_base_pattern"); _v6paint["third_base_pattern_scale"] = _v6kw.get("third_base_pattern_scale", 1.0); _v6paint["third_base_pattern_rotation"] = _v6kw.get("third_base_pattern_rotation", 0.0); _v6paint["third_base_pattern_opacity"] = _v6kw.get("third_base_pattern_opacity", 1.0); _v6paint["third_base_pattern_strength"] = _v6kw.get("third_base_pattern_strength", 1.0); _v6paint["third_base_pattern_invert"] = _v6kw.get("third_base_pattern_invert", False); _v6paint["third_base_pattern_harden"] = _v6kw.get("third_base_pattern_harden", False); _v6paint["third_base_pattern_offset_x"] = _v6kw.get("third_base_pattern_offset_x", 0.5); _v6paint["third_base_pattern_offset_y"] = _v6kw.get("third_base_pattern_offset_y", 0.5)
-                if _z_fb or _v6kw.get("fourth_base_color_source"): _v6paint["fourth_base"] = _z_fb; _v6paint["fourth_base_color_source"] = _v6kw.get("fourth_base_color_source"); _v6paint["fourth_base_color"] = _v6kw.get("fourth_base_color", [1.0, 1.0, 1.0]); _v6paint["fourth_base_strength"] = _v6kw.get("fourth_base_strength", 0.0); _v6paint["fourth_base_spec_strength"] = _v6kw.get("fourth_base_spec_strength", 1.0); _v6paint["fourth_base_blend_mode"] = _v6kw.get("fourth_base_blend_mode", "noise"); _v6paint["fourth_base_noise_scale"] = _v6kw.get("fourth_base_noise_scale", 24); _v6paint["fourth_base_scale"] = _v6kw.get("fourth_base_scale", 1.0); _v6paint["fourth_base_pattern"] = _v6kw.get("fourth_base_pattern"); _v6paint["fourth_base_pattern_scale"] = _v6kw.get("fourth_base_pattern_scale", 1.0); _v6paint["fourth_base_pattern_rotation"] = _v6kw.get("fourth_base_pattern_rotation", 0.0); _v6paint["fourth_base_pattern_opacity"] = _v6kw.get("fourth_base_pattern_opacity", 1.0); _v6paint["fourth_base_pattern_strength"] = _v6kw.get("fourth_base_pattern_strength", 1.0); _v6paint["fourth_base_pattern_invert"] = _v6kw.get("fourth_base_pattern_invert", False); _v6paint["fourth_base_pattern_harden"] = _v6kw.get("fourth_base_pattern_harden", False); _v6paint["fourth_base_pattern_offset_x"] = _v6kw.get("fourth_base_pattern_offset_x", 0.5); _v6paint["fourth_base_pattern_offset_y"] = _v6kw.get("fourth_base_pattern_offset_y", 0.5)
-                if _z_fif or _v6kw.get("fifth_base_color_source"): _v6paint["fifth_base"] = _z_fif; _v6paint["fifth_base_color_source"] = _v6kw.get("fifth_base_color_source"); _v6paint["fifth_base_color"] = _v6kw.get("fifth_base_color", [1.0, 1.0, 1.0]); _v6paint["fifth_base_strength"] = _v6kw.get("fifth_base_strength", 0.0); _v6paint["fifth_base_spec_strength"] = _v6kw.get("fifth_base_spec_strength", 1.0); _v6paint["fifth_base_blend_mode"] = _v6kw.get("fifth_base_blend_mode", "noise"); _v6paint["fifth_base_noise_scale"] = _v6kw.get("fifth_base_noise_scale", 24); _v6paint["fifth_base_scale"] = _v6kw.get("fifth_base_scale", 1.0); _v6paint["fifth_base_pattern"] = _v6kw.get("fifth_base_pattern"); _v6paint["fifth_base_pattern_scale"] = _v6kw.get("fifth_base_pattern_scale", 1.0); _v6paint["fifth_base_pattern_rotation"] = _v6kw.get("fifth_base_pattern_rotation", 0.0); _v6paint["fifth_base_pattern_opacity"] = _v6kw.get("fifth_base_pattern_opacity", 1.0); _v6paint["fifth_base_pattern_strength"] = _v6kw.get("fifth_base_pattern_strength", 1.0); _v6paint["fifth_base_pattern_invert"] = _v6kw.get("fifth_base_pattern_invert", False); _v6paint["fifth_base_pattern_harden"] = _v6kw.get("fifth_base_pattern_harden", False); _v6paint["fifth_base_pattern_offset_x"] = _v6kw.get("fifth_base_pattern_offset_x", 0.5); _v6paint["fifth_base_pattern_offset_y"] = _v6kw.get("fifth_base_pattern_offset_y", 0.5)
+                if _z_sb or _v6kw.get("second_base_color_source"): _v6paint["second_base"] = _z_sb; _v6paint["second_base_color_source"] = _v6kw.get("second_base_color_source"); _v6paint["second_base_color"] = _v6kw.get("second_base_color", [1.0, 1.0, 1.0]); _v6paint["second_base_strength"] = _v6kw.get("second_base_strength", 0.0); _v6paint["second_base_spec_strength"] = _v6kw.get("second_base_spec_strength", 1.0); _v6paint["second_base_blend_mode"] = _v6kw.get("second_base_blend_mode", "noise"); _v6paint["second_base_noise_scale"] = _v6kw.get("second_base_noise_scale", 24); _v6paint["second_base_scale"] = _v6kw.get("second_base_scale", 1.0); _v6paint["second_base_pattern"] = _v6kw.get("second_base_pattern"); _v6paint["second_base_pattern_scale"] = _v6kw.get("second_base_pattern_scale", 1.0); _v6paint["second_base_pattern_rotation"] = _v6kw.get("second_base_pattern_rotation", 0.0); _v6paint["second_base_pattern_opacity"] = _v6kw.get("second_base_pattern_opacity", 1.0); _v6paint["second_base_pattern_strength"] = _v6kw.get("second_base_pattern_strength", 1.0); _v6paint["second_base_pattern_invert"] = _v6kw.get("second_base_pattern_invert", False); _v6paint["second_base_pattern_harden"] = _v6kw.get("second_base_pattern_harden", False); _v6paint["second_base_pattern_offset_x"] = _v6kw.get("second_base_pattern_offset_x", 0.5); _v6paint["second_base_pattern_offset_y"] = _v6kw.get("second_base_pattern_offset_y", 0.5); _v6paint["second_base_hue_shift"] = _v6kw.get("second_base_hue_shift", 0); _v6paint["second_base_saturation"] = _v6kw.get("second_base_saturation", 0); _v6paint["second_base_brightness"] = _v6kw.get("second_base_brightness", 0); _v6paint["second_base_pattern_hue_shift"] = _v6kw.get("second_base_pattern_hue_shift", 0); _v6paint["second_base_pattern_saturation"] = _v6kw.get("second_base_pattern_saturation", 0); _v6paint["second_base_pattern_brightness"] = _v6kw.get("second_base_pattern_brightness", 0)
+                if _z_tb or _v6kw.get("third_base_color_source"): _v6paint["third_base"] = _z_tb; _v6paint["third_base_color_source"] = _v6kw.get("third_base_color_source"); _v6paint["third_base_color"] = _v6kw.get("third_base_color", [1.0, 1.0, 1.0]); _v6paint["third_base_strength"] = _v6kw.get("third_base_strength", 0.0); _v6paint["third_base_spec_strength"] = _v6kw.get("third_base_spec_strength", 1.0); _v6paint["third_base_blend_mode"] = _v6kw.get("third_base_blend_mode", "noise"); _v6paint["third_base_noise_scale"] = _v6kw.get("third_base_noise_scale", 24); _v6paint["third_base_scale"] = _v6kw.get("third_base_scale", 1.0); _v6paint["third_base_pattern"] = _v6kw.get("third_base_pattern"); _v6paint["third_base_pattern_scale"] = _v6kw.get("third_base_pattern_scale", 1.0); _v6paint["third_base_pattern_rotation"] = _v6kw.get("third_base_pattern_rotation", 0.0); _v6paint["third_base_pattern_opacity"] = _v6kw.get("third_base_pattern_opacity", 1.0); _v6paint["third_base_pattern_strength"] = _v6kw.get("third_base_pattern_strength", 1.0); _v6paint["third_base_pattern_invert"] = _v6kw.get("third_base_pattern_invert", False); _v6paint["third_base_pattern_harden"] = _v6kw.get("third_base_pattern_harden", False); _v6paint["third_base_pattern_offset_x"] = _v6kw.get("third_base_pattern_offset_x", 0.5); _v6paint["third_base_pattern_offset_y"] = _v6kw.get("third_base_pattern_offset_y", 0.5); _v6paint["third_base_hue_shift"] = _v6kw.get("third_base_hue_shift", 0); _v6paint["third_base_saturation"] = _v6kw.get("third_base_saturation", 0); _v6paint["third_base_brightness"] = _v6kw.get("third_base_brightness", 0)
+                if _z_fb or _v6kw.get("fourth_base_color_source"): _v6paint["fourth_base"] = _z_fb; _v6paint["fourth_base_color_source"] = _v6kw.get("fourth_base_color_source"); _v6paint["fourth_base_color"] = _v6kw.get("fourth_base_color", [1.0, 1.0, 1.0]); _v6paint["fourth_base_strength"] = _v6kw.get("fourth_base_strength", 0.0); _v6paint["fourth_base_spec_strength"] = _v6kw.get("fourth_base_spec_strength", 1.0); _v6paint["fourth_base_blend_mode"] = _v6kw.get("fourth_base_blend_mode", "noise"); _v6paint["fourth_base_noise_scale"] = _v6kw.get("fourth_base_noise_scale", 24); _v6paint["fourth_base_scale"] = _v6kw.get("fourth_base_scale", 1.0); _v6paint["fourth_base_pattern"] = _v6kw.get("fourth_base_pattern"); _v6paint["fourth_base_pattern_scale"] = _v6kw.get("fourth_base_pattern_scale", 1.0); _v6paint["fourth_base_pattern_rotation"] = _v6kw.get("fourth_base_pattern_rotation", 0.0); _v6paint["fourth_base_pattern_opacity"] = _v6kw.get("fourth_base_pattern_opacity", 1.0); _v6paint["fourth_base_pattern_strength"] = _v6kw.get("fourth_base_pattern_strength", 1.0); _v6paint["fourth_base_pattern_invert"] = _v6kw.get("fourth_base_pattern_invert", False); _v6paint["fourth_base_pattern_harden"] = _v6kw.get("fourth_base_pattern_harden", False); _v6paint["fourth_base_pattern_offset_x"] = _v6kw.get("fourth_base_pattern_offset_x", 0.5); _v6paint["fourth_base_pattern_offset_y"] = _v6kw.get("fourth_base_pattern_offset_y", 0.5); _v6paint["fourth_base_hue_shift"] = _v6kw.get("fourth_base_hue_shift", 0); _v6paint["fourth_base_saturation"] = _v6kw.get("fourth_base_saturation", 0); _v6paint["fourth_base_brightness"] = _v6kw.get("fourth_base_brightness", 0)
+                if _z_fif or _v6kw.get("fifth_base_color_source"): _v6paint["fifth_base"] = _z_fif; _v6paint["fifth_base_color_source"] = _v6kw.get("fifth_base_color_source"); _v6paint["fifth_base_color"] = _v6kw.get("fifth_base_color", [1.0, 1.0, 1.0]); _v6paint["fifth_base_strength"] = _v6kw.get("fifth_base_strength", 0.0); _v6paint["fifth_base_spec_strength"] = _v6kw.get("fifth_base_spec_strength", 1.0); _v6paint["fifth_base_blend_mode"] = _v6kw.get("fifth_base_blend_mode", "noise"); _v6paint["fifth_base_noise_scale"] = _v6kw.get("fifth_base_noise_scale", 24); _v6paint["fifth_base_scale"] = _v6kw.get("fifth_base_scale", 1.0); _v6paint["fifth_base_pattern"] = _v6kw.get("fifth_base_pattern"); _v6paint["fifth_base_pattern_scale"] = _v6kw.get("fifth_base_pattern_scale", 1.0); _v6paint["fifth_base_pattern_rotation"] = _v6kw.get("fifth_base_pattern_rotation", 0.0); _v6paint["fifth_base_pattern_opacity"] = _v6kw.get("fifth_base_pattern_opacity", 1.0); _v6paint["fifth_base_pattern_strength"] = _v6kw.get("fifth_base_pattern_strength", 1.0); _v6paint["fifth_base_pattern_invert"] = _v6kw.get("fifth_base_pattern_invert", False); _v6paint["fifth_base_pattern_harden"] = _v6kw.get("fifth_base_pattern_harden", False); _v6paint["fifth_base_pattern_offset_x"] = _v6kw.get("fifth_base_pattern_offset_x", 0.5); _v6paint["fifth_base_pattern_offset_y"] = _v6kw.get("fifth_base_pattern_offset_y", 0.5); _v6paint["fifth_base_hue_shift"] = _v6kw.get("fifth_base_hue_shift", 0); _v6paint["fifth_base_saturation"] = _v6kw.get("fifth_base_saturation", 0); _v6paint["fifth_base_brightness"] = _v6kw.get("fifth_base_brightness", 0)
                 _v6paint["monolithic_registry"] = _v6kw.get("monolithic_registry")
                 _v6paint["base_offset_x"] = _v6kw.get("base_offset_x", 0.5)
                 _v6paint["base_offset_y"] = _v6kw.get("base_offset_y", 0.5)
@@ -5853,11 +5875,17 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
                 _v6paint["pattern_offset_x"] = _v6kw.get("pattern_offset_x", 0.5)
                 _v6paint["pattern_offset_y"] = _v6kw.get("pattern_offset_y", 0.5)
                 if all_patterns:
-                    zone_spec = compose_finish_stacked(base_id, all_patterns, shape, zone_mask, seed + i * 13, sm, spec_mult=spec_mult, base_scale=zone_base_scale, **_v6kw)
-                    paint = compose_paint_mod_stacked(base_id, all_patterns, paint, shape, zone_mask, seed + i * 13, pm, bb, **_v6paint)
+                    # Parallel: spec in background thread while paint mod runs in foreground
+                    with ThreadPoolExecutor(max_workers=1) as _spec_ex:
+                        _spec_fut = _spec_ex.submit(compose_finish_stacked, base_id, all_patterns, shape, zone_mask, seed + i * 13, sm, spec_mult=spec_mult, base_scale=zone_base_scale, **_v6kw)
+                        paint = compose_paint_mod_stacked(base_id, all_patterns, paint, shape, zone_mask, seed + i * 13, pm, bb, **_v6paint)
+                        zone_spec = _spec_fut.result()
                 else:
-                    zone_spec = compose_finish(base_id, "none", shape, zone_mask, seed + i * 13, sm, spec_mult=spec_mult, base_scale=zone_base_scale, **_v6kw)
-                    paint = compose_paint_mod(base_id, "none", paint, shape, zone_mask, seed + i * 13, pm, bb, **_v6paint)
+                    # Parallel: spec in background thread while paint mod runs in foreground
+                    with ThreadPoolExecutor(max_workers=1) as _spec_ex:
+                        _spec_fut = _spec_ex.submit(compose_finish, base_id, "none", shape, zone_mask, seed + i * 13, sm, spec_mult=spec_mult, base_scale=zone_base_scale, **_v6kw)
+                        paint = compose_paint_mod(base_id, "none", paint, shape, zone_mask, seed + i * 13, pm, bb, **_v6paint)
+                        zone_spec = _spec_fut.result()
             else:
                 # SINGLE PATTERN: original path
                 label = f"{base_id}" + (f" + {pattern_id}" if pattern_id != "none" else "")
@@ -5867,18 +5895,21 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
                 print(f"    [{name}] => {label} ({intensity}){scale_label}{rot_label}{bs_label} [compositing]")
                 _v6paint = {"base_strength": _v6kw.get("base_strength", 1.0), "base_spec_strength": _v6kw.get("base_spec_strength", 1.0), "base_color_mode": _v6kw.get("base_color_mode", "source"), "base_color": _v6kw.get("base_color", [1.0, 1.0, 1.0]), "base_color_source": _v6kw.get("base_color_source"), "base_color_strength": _v6kw.get("base_color_strength", 1.0), "base_hue_offset": _v6kw.get("base_hue_offset", 0), "base_saturation_adjust": _v6kw.get("base_saturation_adjust", 0), "base_brightness_adjust": _v6kw.get("base_brightness_adjust", 0), "pattern_intensity": pattern_intensity_01}
                 if _z_bb: _v6paint["blend_base"] = _z_bb; _v6paint["blend_dir"] = _z_bd; _v6paint["blend_amount"] = _z_ba
-                if _z_sb or _v6kw.get("second_base_color_source"): _v6paint["second_base"] = _z_sb; _v6paint["second_base_color_source"] = _v6kw.get("second_base_color_source"); _v6paint["second_base_color"] = _v6kw.get("second_base_color", [1.0, 1.0, 1.0]); _v6paint["second_base_strength"] = _v6kw.get("second_base_strength", 0.0); _v6paint["second_base_spec_strength"] = _v6kw.get("second_base_spec_strength", 1.0); _v6paint["second_base_blend_mode"] = _v6kw.get("second_base_blend_mode", "noise"); _v6paint["second_base_noise_scale"] = _v6kw.get("second_base_noise_scale", 24); _v6paint["second_base_scale"] = _v6kw.get("second_base_scale", 1.0); _v6paint["second_base_pattern"] = _v6kw.get("second_base_pattern"); _v6paint["second_base_pattern_scale"] = _v6kw.get("second_base_pattern_scale", 1.0); _v6paint["second_base_pattern_rotation"] = _v6kw.get("second_base_pattern_rotation", 0.0); _v6paint["second_base_pattern_opacity"] = _v6kw.get("second_base_pattern_opacity", 1.0); _v6paint["second_base_pattern_strength"] = _v6kw.get("second_base_pattern_strength", 1.0); _v6paint["second_base_pattern_invert"] = _v6kw.get("second_base_pattern_invert", False); _v6paint["second_base_pattern_harden"] = _v6kw.get("second_base_pattern_harden", False); _v6paint["second_base_pattern_offset_x"] = _v6kw.get("second_base_pattern_offset_x", 0.5); _v6paint["second_base_pattern_offset_y"] = _v6kw.get("second_base_pattern_offset_y", 0.5)
-                if _z_tb or _v6kw.get("third_base_color_source"): _v6paint["third_base"] = _z_tb; _v6paint["third_base_color_source"] = _v6kw.get("third_base_color_source"); _v6paint["third_base_color"] = _v6kw.get("third_base_color", [1.0, 1.0, 1.0]); _v6paint["third_base_strength"] = _v6kw.get("third_base_strength", 0.0); _v6paint["third_base_spec_strength"] = _v6kw.get("third_base_spec_strength", 1.0); _v6paint["third_base_blend_mode"] = _v6kw.get("third_base_blend_mode", "noise"); _v6paint["third_base_noise_scale"] = _v6kw.get("third_base_noise_scale", 24); _v6paint["third_base_scale"] = _v6kw.get("third_base_scale", 1.0); _v6paint["third_base_pattern"] = _v6kw.get("third_base_pattern"); _v6paint["third_base_pattern_scale"] = _v6kw.get("third_base_pattern_scale", 1.0); _v6paint["third_base_pattern_rotation"] = _v6kw.get("third_base_pattern_rotation", 0.0); _v6paint["third_base_pattern_opacity"] = _v6kw.get("third_base_pattern_opacity", 1.0); _v6paint["third_base_pattern_strength"] = _v6kw.get("third_base_pattern_strength", 1.0); _v6paint["third_base_pattern_invert"] = _v6kw.get("third_base_pattern_invert", False); _v6paint["third_base_pattern_harden"] = _v6kw.get("third_base_pattern_harden", False); _v6paint["third_base_pattern_offset_x"] = _v6kw.get("third_base_pattern_offset_x", 0.5); _v6paint["third_base_pattern_offset_y"] = _v6kw.get("third_base_pattern_offset_y", 0.5)
-                if _z_fb or _v6kw.get("fourth_base_color_source"): _v6paint["fourth_base"] = _z_fb; _v6paint["fourth_base_color_source"] = _v6kw.get("fourth_base_color_source"); _v6paint["fourth_base_color"] = _v6kw.get("fourth_base_color", [1.0, 1.0, 1.0]); _v6paint["fourth_base_strength"] = _v6kw.get("fourth_base_strength", 0.0); _v6paint["fourth_base_spec_strength"] = _v6kw.get("fourth_base_spec_strength", 1.0); _v6paint["fourth_base_blend_mode"] = _v6kw.get("fourth_base_blend_mode", "noise"); _v6paint["fourth_base_noise_scale"] = _v6kw.get("fourth_base_noise_scale", 24); _v6paint["fourth_base_scale"] = _v6kw.get("fourth_base_scale", 1.0); _v6paint["fourth_base_pattern"] = _v6kw.get("fourth_base_pattern"); _v6paint["fourth_base_pattern_scale"] = _v6kw.get("fourth_base_pattern_scale", 1.0); _v6paint["fourth_base_pattern_rotation"] = _v6kw.get("fourth_base_pattern_rotation", 0.0); _v6paint["fourth_base_pattern_opacity"] = _v6kw.get("fourth_base_pattern_opacity", 1.0); _v6paint["fourth_base_pattern_strength"] = _v6kw.get("fourth_base_pattern_strength", 1.0); _v6paint["fourth_base_pattern_invert"] = _v6kw.get("fourth_base_pattern_invert", False); _v6paint["fourth_base_pattern_harden"] = _v6kw.get("fourth_base_pattern_harden", False); _v6paint["fourth_base_pattern_offset_x"] = _v6kw.get("fourth_base_pattern_offset_x", 0.5); _v6paint["fourth_base_pattern_offset_y"] = _v6kw.get("fourth_base_pattern_offset_y", 0.5)
-                if _z_fif or _v6kw.get("fifth_base_color_source"): _v6paint["fifth_base"] = _z_fif; _v6paint["fifth_base_color_source"] = _v6kw.get("fifth_base_color_source"); _v6paint["fifth_base_color"] = _v6kw.get("fifth_base_color", [1.0, 1.0, 1.0]); _v6paint["fifth_base_strength"] = _v6kw.get("fifth_base_strength", 0.0); _v6paint["fifth_base_spec_strength"] = _v6kw.get("fifth_base_spec_strength", 1.0); _v6paint["fifth_base_blend_mode"] = _v6kw.get("fifth_base_blend_mode", "noise"); _v6paint["fifth_base_noise_scale"] = _v6kw.get("fifth_base_noise_scale", 24); _v6paint["fifth_base_scale"] = _v6kw.get("fifth_base_scale", 1.0); _v6paint["fifth_base_pattern"] = _v6kw.get("fifth_base_pattern"); _v6paint["fifth_base_pattern_scale"] = _v6kw.get("fifth_base_pattern_scale", 1.0); _v6paint["fifth_base_pattern_rotation"] = _v6kw.get("fifth_base_pattern_rotation", 0.0); _v6paint["fifth_base_pattern_opacity"] = _v6kw.get("fifth_base_pattern_opacity", 1.0); _v6paint["fifth_base_pattern_strength"] = _v6kw.get("fifth_base_pattern_strength", 1.0); _v6paint["fifth_base_pattern_invert"] = _v6kw.get("fifth_base_pattern_invert", False); _v6paint["fifth_base_pattern_harden"] = _v6kw.get("fifth_base_pattern_harden", False); _v6paint["fifth_base_pattern_offset_x"] = _v6kw.get("fifth_base_pattern_offset_x", 0.5); _v6paint["fifth_base_pattern_offset_y"] = _v6kw.get("fifth_base_pattern_offset_y", 0.5)
+                if _z_sb or _v6kw.get("second_base_color_source"): _v6paint["second_base"] = _z_sb; _v6paint["second_base_color_source"] = _v6kw.get("second_base_color_source"); _v6paint["second_base_color"] = _v6kw.get("second_base_color", [1.0, 1.0, 1.0]); _v6paint["second_base_strength"] = _v6kw.get("second_base_strength", 0.0); _v6paint["second_base_spec_strength"] = _v6kw.get("second_base_spec_strength", 1.0); _v6paint["second_base_blend_mode"] = _v6kw.get("second_base_blend_mode", "noise"); _v6paint["second_base_noise_scale"] = _v6kw.get("second_base_noise_scale", 24); _v6paint["second_base_scale"] = _v6kw.get("second_base_scale", 1.0); _v6paint["second_base_pattern"] = _v6kw.get("second_base_pattern"); _v6paint["second_base_pattern_scale"] = _v6kw.get("second_base_pattern_scale", 1.0); _v6paint["second_base_pattern_rotation"] = _v6kw.get("second_base_pattern_rotation", 0.0); _v6paint["second_base_pattern_opacity"] = _v6kw.get("second_base_pattern_opacity", 1.0); _v6paint["second_base_pattern_strength"] = _v6kw.get("second_base_pattern_strength", 1.0); _v6paint["second_base_pattern_invert"] = _v6kw.get("second_base_pattern_invert", False); _v6paint["second_base_pattern_harden"] = _v6kw.get("second_base_pattern_harden", False); _v6paint["second_base_pattern_offset_x"] = _v6kw.get("second_base_pattern_offset_x", 0.5); _v6paint["second_base_pattern_offset_y"] = _v6kw.get("second_base_pattern_offset_y", 0.5); _v6paint["second_base_hue_shift"] = _v6kw.get("second_base_hue_shift", 0); _v6paint["second_base_saturation"] = _v6kw.get("second_base_saturation", 0); _v6paint["second_base_brightness"] = _v6kw.get("second_base_brightness", 0); _v6paint["second_base_pattern_hue_shift"] = _v6kw.get("second_base_pattern_hue_shift", 0); _v6paint["second_base_pattern_saturation"] = _v6kw.get("second_base_pattern_saturation", 0); _v6paint["second_base_pattern_brightness"] = _v6kw.get("second_base_pattern_brightness", 0)
+                if _z_tb or _v6kw.get("third_base_color_source"): _v6paint["third_base"] = _z_tb; _v6paint["third_base_color_source"] = _v6kw.get("third_base_color_source"); _v6paint["third_base_color"] = _v6kw.get("third_base_color", [1.0, 1.0, 1.0]); _v6paint["third_base_strength"] = _v6kw.get("third_base_strength", 0.0); _v6paint["third_base_spec_strength"] = _v6kw.get("third_base_spec_strength", 1.0); _v6paint["third_base_blend_mode"] = _v6kw.get("third_base_blend_mode", "noise"); _v6paint["third_base_noise_scale"] = _v6kw.get("third_base_noise_scale", 24); _v6paint["third_base_scale"] = _v6kw.get("third_base_scale", 1.0); _v6paint["third_base_pattern"] = _v6kw.get("third_base_pattern"); _v6paint["third_base_pattern_scale"] = _v6kw.get("third_base_pattern_scale", 1.0); _v6paint["third_base_pattern_rotation"] = _v6kw.get("third_base_pattern_rotation", 0.0); _v6paint["third_base_pattern_opacity"] = _v6kw.get("third_base_pattern_opacity", 1.0); _v6paint["third_base_pattern_strength"] = _v6kw.get("third_base_pattern_strength", 1.0); _v6paint["third_base_pattern_invert"] = _v6kw.get("third_base_pattern_invert", False); _v6paint["third_base_pattern_harden"] = _v6kw.get("third_base_pattern_harden", False); _v6paint["third_base_pattern_offset_x"] = _v6kw.get("third_base_pattern_offset_x", 0.5); _v6paint["third_base_pattern_offset_y"] = _v6kw.get("third_base_pattern_offset_y", 0.5); _v6paint["third_base_hue_shift"] = _v6kw.get("third_base_hue_shift", 0); _v6paint["third_base_saturation"] = _v6kw.get("third_base_saturation", 0); _v6paint["third_base_brightness"] = _v6kw.get("third_base_brightness", 0)
+                if _z_fb or _v6kw.get("fourth_base_color_source"): _v6paint["fourth_base"] = _z_fb; _v6paint["fourth_base_color_source"] = _v6kw.get("fourth_base_color_source"); _v6paint["fourth_base_color"] = _v6kw.get("fourth_base_color", [1.0, 1.0, 1.0]); _v6paint["fourth_base_strength"] = _v6kw.get("fourth_base_strength", 0.0); _v6paint["fourth_base_spec_strength"] = _v6kw.get("fourth_base_spec_strength", 1.0); _v6paint["fourth_base_blend_mode"] = _v6kw.get("fourth_base_blend_mode", "noise"); _v6paint["fourth_base_noise_scale"] = _v6kw.get("fourth_base_noise_scale", 24); _v6paint["fourth_base_scale"] = _v6kw.get("fourth_base_scale", 1.0); _v6paint["fourth_base_pattern"] = _v6kw.get("fourth_base_pattern"); _v6paint["fourth_base_pattern_scale"] = _v6kw.get("fourth_base_pattern_scale", 1.0); _v6paint["fourth_base_pattern_rotation"] = _v6kw.get("fourth_base_pattern_rotation", 0.0); _v6paint["fourth_base_pattern_opacity"] = _v6kw.get("fourth_base_pattern_opacity", 1.0); _v6paint["fourth_base_pattern_strength"] = _v6kw.get("fourth_base_pattern_strength", 1.0); _v6paint["fourth_base_pattern_invert"] = _v6kw.get("fourth_base_pattern_invert", False); _v6paint["fourth_base_pattern_harden"] = _v6kw.get("fourth_base_pattern_harden", False); _v6paint["fourth_base_pattern_offset_x"] = _v6kw.get("fourth_base_pattern_offset_x", 0.5); _v6paint["fourth_base_pattern_offset_y"] = _v6kw.get("fourth_base_pattern_offset_y", 0.5); _v6paint["fourth_base_hue_shift"] = _v6kw.get("fourth_base_hue_shift", 0); _v6paint["fourth_base_saturation"] = _v6kw.get("fourth_base_saturation", 0); _v6paint["fourth_base_brightness"] = _v6kw.get("fourth_base_brightness", 0)
+                if _z_fif or _v6kw.get("fifth_base_color_source"): _v6paint["fifth_base"] = _z_fif; _v6paint["fifth_base_color_source"] = _v6kw.get("fifth_base_color_source"); _v6paint["fifth_base_color"] = _v6kw.get("fifth_base_color", [1.0, 1.0, 1.0]); _v6paint["fifth_base_strength"] = _v6kw.get("fifth_base_strength", 0.0); _v6paint["fifth_base_spec_strength"] = _v6kw.get("fifth_base_spec_strength", 1.0); _v6paint["fifth_base_blend_mode"] = _v6kw.get("fifth_base_blend_mode", "noise"); _v6paint["fifth_base_noise_scale"] = _v6kw.get("fifth_base_noise_scale", 24); _v6paint["fifth_base_scale"] = _v6kw.get("fifth_base_scale", 1.0); _v6paint["fifth_base_pattern"] = _v6kw.get("fifth_base_pattern"); _v6paint["fifth_base_pattern_scale"] = _v6kw.get("fifth_base_pattern_scale", 1.0); _v6paint["fifth_base_pattern_rotation"] = _v6kw.get("fifth_base_pattern_rotation", 0.0); _v6paint["fifth_base_pattern_opacity"] = _v6kw.get("fifth_base_pattern_opacity", 1.0); _v6paint["fifth_base_pattern_strength"] = _v6kw.get("fifth_base_pattern_strength", 1.0); _v6paint["fifth_base_pattern_invert"] = _v6kw.get("fifth_base_pattern_invert", False); _v6paint["fifth_base_pattern_harden"] = _v6kw.get("fifth_base_pattern_harden", False); _v6paint["fifth_base_pattern_offset_x"] = _v6kw.get("fifth_base_pattern_offset_x", 0.5); _v6paint["fifth_base_pattern_offset_y"] = _v6kw.get("fifth_base_pattern_offset_y", 0.5); _v6paint["fifth_base_hue_shift"] = _v6kw.get("fifth_base_hue_shift", 0); _v6paint["fifth_base_saturation"] = _v6kw.get("fifth_base_saturation", 0); _v6paint["fifth_base_brightness"] = _v6kw.get("fifth_base_brightness", 0)
                 _v6paint["monolithic_registry"] = _v6kw.get("monolithic_registry")
                 _v6paint["base_offset_x"] = _v6kw.get("base_offset_x", 0.5)
                 _v6paint["base_offset_y"] = _v6kw.get("base_offset_y", 0.5)
                 _v6paint["base_rotation"] = _v6kw.get("base_rotation", 0)
                 _v6paint["base_flip_h"] = _v6kw.get("base_flip_h", False)
                 _v6paint["base_flip_v"] = _v6kw.get("base_flip_v", False)
-                zone_spec = compose_finish(base_id, pattern_id, shape, zone_mask, seed + i * 13, sm, scale=zone_scale, spec_mult=spec_mult, rotation=zone_rotation, base_scale=zone_base_scale, **_v6kw)
-                paint = compose_paint_mod(base_id, pattern_id, paint, shape, zone_mask, seed + i * 13, pm, bb, scale=zone_scale, rotation=zone_rotation, **_v6paint)
+                # Parallel: spec in background thread while paint mod runs in foreground
+                with ThreadPoolExecutor(max_workers=1) as _spec_ex:
+                    _spec_fut = _spec_ex.submit(compose_finish, base_id, pattern_id, shape, zone_mask, seed + i * 13, sm, scale=zone_scale, spec_mult=spec_mult, rotation=zone_rotation, base_scale=zone_base_scale, **_v6kw)
+                    paint = compose_paint_mod(base_id, pattern_id, paint, shape, zone_mask, seed + i * 13, pm, bb, scale=zone_scale, rotation=zone_rotation, **_v6paint)
+                    zone_spec = _spec_fut.result()
 
         elif finish_name and zone.get("finish_colors") and (
             finish_name.startswith("grad_") or finish_name.startswith("gradm_")
@@ -6160,23 +6191,35 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
 
         # Apply zone spec with hard ownership: where mask is strong, fully replace
         # Vectorized across all 4 channels at once for speed
-        mask3d = zone_mask[:,:,np.newaxis]  # (h, w, 1)
-        hard_edge = zone.get("hard_edge", False)
-        if hard_edge:
-            # Binary application — no soft blend zone, clean crisp edges
-            combined_spec = np.where(mask3d > 0.01, zone_spec, combined_spec)
+        # GPU-accelerated when CuPy is available
+        if is_gpu():
+            _zs_g = to_gpu(zone_spec.astype(np.float32))
+            _m3d_g = to_gpu(zone_mask[:,:,np.newaxis])
+            _cs_g = to_gpu(combined_spec)
+            hard_edge = zone.get("hard_edge", False)
+            if hard_edge:
+                combined_spec = to_cpu(xp.where(_m3d_g > 0.01, _zs_g, _cs_g))
+            else:
+                strong = _m3d_g > 0.5
+                soft = (_m3d_g > 0.05) & ~strong
+                blended = xp.clip(_zs_g * _m3d_g + _cs_g * (1 - _m3d_g), 0, 255)
+                combined_spec = to_cpu(xp.where(strong, _zs_g, xp.where(soft, blended, _cs_g)))
         else:
-            strong = mask3d > 0.5
-            soft = (mask3d > 0.05) & ~strong
-            blended = np.clip(
-                zone_spec.astype(np.float32) * mask3d +
-                combined_spec.astype(np.float32) * (1 - mask3d),
-                0, 255
-            ).astype(np.uint8)
-            combined_spec = np.where(strong, zone_spec, np.where(soft, blended, combined_spec))
+            mask3d = zone_mask[:,:,np.newaxis]  # (h, w, 1)
+            hard_edge = zone.get("hard_edge", False)
+            if hard_edge:
+                combined_spec = np.where(mask3d > 0.01, zone_spec.astype(np.float32), combined_spec)
+            else:
+                strong = mask3d > 0.5
+                soft = (mask3d > 0.05) & ~strong
+                blended = np.clip(
+                    zone_spec.astype(np.float32) * mask3d +
+                    combined_spec * (1 - mask3d),
+                    0, 255
+                )
+                combined_spec = np.where(strong, zone_spec.astype(np.float32), np.where(soft, blended, combined_spec))
 
-        if os.environ.get("SHOKKER_TIMING") == "1":
-            print(f"      [{name}] zone time: {time.time()-t_zone:.2f}s")
+        print(f"      [{name}] zone time: {time.time()-t_zone:.2f}s")
 
     # ---- Per-zone wear: BATCHED (single apply_wear call for ALL zones) ----
     # Instead of N separate apply_wear calls (each 5-8s), compute once at max level
@@ -6189,9 +6232,10 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
         print(f"\n  Batched per-zone wear: {len(wear_zones)} zones, max wear={max_wear}%")
         t_wear = time.time()
         worn_spec, worn_paint = apply_wear(
-            combined_spec.copy(), (np.clip(paint, 0, 1) * 255).astype(np.uint8),
+            combined_spec.astype(np.uint8), (np.clip(paint, 0, 1) * 255).astype(np.uint8),
             max_wear, seed + 777
         )
+        worn_spec_f = worn_spec.astype(np.float32)
         # Blend worn results per zone, scaled by each zone's wear fraction
         for zi, zone, zm, wl in wear_zones:
             wear_frac = wl / max_wear  # 0.0-1.0 how much of the max wear this zone gets
@@ -6200,14 +6244,14 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
             # Interpolate between unworn and worn based on wear fraction
             if wear_frac >= 0.99:
                 # Full strength - just swap
-                combined_spec = np.where(mask3d, worn_spec, combined_spec)
+                combined_spec = np.where(mask3d, worn_spec_f, combined_spec)
                 paint = np.where(mask3d, worn_paint.astype(np.float32) / 255.0, paint)
             else:
-                # Partial strength - lerp between original and worn
+                # Partial strength - lerp between original and worn (all float32)
                 spec_lerp = np.clip(
-                    combined_spec.astype(np.float32) * (1 - wear_frac) +
-                    worn_spec.astype(np.float32) * wear_frac, 0, 255
-                ).astype(np.uint8)
+                    combined_spec * (1 - wear_frac) +
+                    worn_spec_f * wear_frac, 0, 255
+                )
                 paint_lerp = np.clip(
                     paint * (1 - wear_frac) +
                     worn_paint.astype(np.float32) / 255.0 * wear_frac, 0, 1
@@ -6307,10 +6351,11 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
 
                 # Blend decal spec onto combined_spec using decal alpha
                 alpha4 = decal_alpha[:, :, np.newaxis]
-                combined_spec = (
-                    combined_spec.astype(np.float32) * (1.0 - alpha4) +
-                    decal_spec.astype(np.float32) * alpha4
-                ).astype(np.uint8)
+                combined_spec = np.clip(
+                    combined_spec * (1.0 - alpha4) +
+                    decal_spec.astype(np.float32) * alpha4,
+                    0, 255
+                )
 
                 decal_px = int(np.sum(decal_alpha > 0.01))
                 print(f"  Decal spec applied: {decal_px:,} pixels, finish={spec_name}")
@@ -6357,10 +6402,11 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
 
                 # Blend stamp spec onto combined_spec (all 4 channels)
                 alpha4 = stamp_alpha[:, :, np.newaxis]
-                combined_spec = (
-                    combined_spec.astype(np.float32) * (1.0 - alpha4) +
-                    stamp_spec.astype(np.float32) * alpha4
-                ).astype(np.uint8)
+                combined_spec = np.clip(
+                    combined_spec * (1.0 - alpha4) +
+                    stamp_spec.astype(np.float32) * alpha4,
+                    0, 255
+                )
 
                 stamp_px = np.sum(stamp_alpha > 0.01)
                 print(f"  Stamp applied: {stamp_px:,} pixels affected, finish={stamp_spec_finish}")
@@ -6370,15 +6416,16 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
             print(f"  Stamp ERROR: {e}")
         print(f"  Stamp time: {time.time()-t_stamp:.2f}s")
 
-    # Convert paint to uint8
+    # Convert paint and spec to uint8 (single conversion point)
     t_save = time.time()
     paint_rgb = (np.clip(paint, 0, 1) * 255).astype(np.uint8)
     if paint_rgb.shape[2] == 4:
         paint_rgb = paint_rgb[:, :, :3]
+    combined_spec_u8 = np.clip(combined_spec, 0, 255).astype(np.uint8)
 
     # ---- PREVIEW MODE: return arrays directly, skip all file I/O ----
     if preview_mode:
-        return (paint_rgb, combined_spec)
+        return (paint_rgb, combined_spec_u8)
 
     # Save outputs - car_prefix is "car_num" (custom numbers) or "car" (no custom numbers)
     # Spec map is ALWAYS car_spec regardless of custom number setting
@@ -6386,11 +6433,11 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
     spec_path = os.path.join(output_dir, f"car_spec_{iracing_id}.tga")
 
     write_tga_24bit(paint_path, paint_rgb)
-    write_tga_32bit(spec_path, combined_spec)
+    write_tga_32bit(spec_path, combined_spec_u8)
 
     # Save previews
     Image.fromarray(paint_rgb).save(os.path.join(output_dir, "PREVIEW_paint.png"))
-    Image.fromarray(combined_spec).save(os.path.join(output_dir, "PREVIEW_spec.png"))
+    Image.fromarray(combined_spec_u8).save(os.path.join(output_dir, "PREVIEW_spec.png"))
 
     # Save individual zone mask previews (only when debug images requested)
     if save_debug_images:
@@ -6432,7 +6479,7 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
         print(f"  Zone previews saved for debugging")
     print(f"{'=' * 60}")
 
-    return paint_rgb, combined_spec, zone_masks
+    return paint_rgb, combined_spec_u8, zone_masks
 
 
 # ================================================================
@@ -6678,7 +6725,7 @@ def build_helmet_spec(helmet_paint_file, output_dir, zones, iracing_id="23371", 
     paint = paint_rgb.astype(np.float32) / 255.0
 
     # Build spec using same zone logic as cars
-    combined_spec = np.zeros((h, w, 4), dtype=np.uint8)
+    combined_spec = np.zeros((h, w, 4), dtype=np.float32)
     combined_spec[:,:,1] = 100  # default R
     combined_spec[:,:,3] = 255  # full spec mask
 
@@ -6927,10 +6974,10 @@ def build_helmet_spec(helmet_paint_file, output_dir, zones, iracing_id="23371", 
                 print(f"    [{name}] => {label} ({intensity}) [stacked compositing]")
                 _v6paint = {"base_strength": _v6kw.get("base_strength", 1.0), "base_spec_strength": _v6kw.get("base_spec_strength", 1.0), "base_color_mode": _v6kw.get("base_color_mode", "source"), "base_color": _v6kw.get("base_color", [1.0, 1.0, 1.0]), "base_color_source": _v6kw.get("base_color_source"), "base_color_strength": _v6kw.get("base_color_strength", 1.0), "base_hue_offset": _v6kw.get("base_hue_offset", 0), "base_saturation_adjust": _v6kw.get("base_saturation_adjust", 0), "base_brightness_adjust": _v6kw.get("base_brightness_adjust", 0)}
                 if _z_bb: _v6paint["blend_base"] = _z_bb; _v6paint["blend_dir"] = _z_bd; _v6paint["blend_amount"] = _z_ba
-                if _z_sb or _v6kw.get("second_base_color_source"): _v6paint["second_base"] = _z_sb; _v6paint["second_base_color_source"] = _v6kw.get("second_base_color_source"); _v6paint["second_base_color"] = _v6kw.get("second_base_color", [1.0, 1.0, 1.0]); _v6paint["second_base_strength"] = _v6kw.get("second_base_strength", 0.0); _v6paint["second_base_spec_strength"] = _v6kw.get("second_base_spec_strength", 1.0); _v6paint["second_base_blend_mode"] = _v6kw.get("second_base_blend_mode", "noise"); _v6paint["second_base_noise_scale"] = _v6kw.get("second_base_noise_scale", 24); _v6paint["second_base_scale"] = _v6kw.get("second_base_scale", 1.0); _v6paint["second_base_pattern"] = _v6kw.get("second_base_pattern"); _v6paint["second_base_pattern_scale"] = _v6kw.get("second_base_pattern_scale", 1.0); _v6paint["second_base_pattern_rotation"] = _v6kw.get("second_base_pattern_rotation", 0.0); _v6paint["second_base_pattern_opacity"] = _v6kw.get("second_base_pattern_opacity", 1.0); _v6paint["second_base_pattern_strength"] = _v6kw.get("second_base_pattern_strength", 1.0); _v6paint["second_base_pattern_invert"] = _v6kw.get("second_base_pattern_invert", False); _v6paint["second_base_pattern_harden"] = _v6kw.get("second_base_pattern_harden", False); _v6paint["second_base_pattern_offset_x"] = _v6kw.get("second_base_pattern_offset_x", 0.5); _v6paint["second_base_pattern_offset_y"] = _v6kw.get("second_base_pattern_offset_y", 0.5)
-                if _z_tb or _v6kw.get("third_base_color_source"): _v6paint["third_base"] = _z_tb; _v6paint["third_base_color_source"] = _v6kw.get("third_base_color_source"); _v6paint["third_base_color"] = _v6kw.get("third_base_color", [1.0, 1.0, 1.0]); _v6paint["third_base_strength"] = _v6kw.get("third_base_strength", 0.0); _v6paint["third_base_spec_strength"] = _v6kw.get("third_base_spec_strength", 1.0); _v6paint["third_base_blend_mode"] = _v6kw.get("third_base_blend_mode", "noise"); _v6paint["third_base_noise_scale"] = _v6kw.get("third_base_noise_scale", 24); _v6paint["third_base_scale"] = _v6kw.get("third_base_scale", 1.0); _v6paint["third_base_pattern"] = _v6kw.get("third_base_pattern"); _v6paint["third_base_pattern_scale"] = _v6kw.get("third_base_pattern_scale", 1.0); _v6paint["third_base_pattern_rotation"] = _v6kw.get("third_base_pattern_rotation", 0.0); _v6paint["third_base_pattern_opacity"] = _v6kw.get("third_base_pattern_opacity", 1.0); _v6paint["third_base_pattern_strength"] = _v6kw.get("third_base_pattern_strength", 1.0); _v6paint["third_base_pattern_invert"] = _v6kw.get("third_base_pattern_invert", False); _v6paint["third_base_pattern_harden"] = _v6kw.get("third_base_pattern_harden", False); _v6paint["third_base_pattern_offset_x"] = _v6kw.get("third_base_pattern_offset_x", 0.5); _v6paint["third_base_pattern_offset_y"] = _v6kw.get("third_base_pattern_offset_y", 0.5)
-                if _z_fb or _v6kw.get("fourth_base_color_source"): _v6paint["fourth_base"] = _z_fb; _v6paint["fourth_base_color_source"] = _v6kw.get("fourth_base_color_source"); _v6paint["fourth_base_color"] = _v6kw.get("fourth_base_color", [1.0, 1.0, 1.0]); _v6paint["fourth_base_strength"] = _v6kw.get("fourth_base_strength", 0.0); _v6paint["fourth_base_spec_strength"] = _v6kw.get("fourth_base_spec_strength", 1.0); _v6paint["fourth_base_blend_mode"] = _v6kw.get("fourth_base_blend_mode", "noise"); _v6paint["fourth_base_noise_scale"] = _v6kw.get("fourth_base_noise_scale", 24); _v6paint["fourth_base_scale"] = _v6kw.get("fourth_base_scale", 1.0); _v6paint["fourth_base_pattern"] = _v6kw.get("fourth_base_pattern"); _v6paint["fourth_base_pattern_scale"] = _v6kw.get("fourth_base_pattern_scale", 1.0); _v6paint["fourth_base_pattern_rotation"] = _v6kw.get("fourth_base_pattern_rotation", 0.0); _v6paint["fourth_base_pattern_opacity"] = _v6kw.get("fourth_base_pattern_opacity", 1.0); _v6paint["fourth_base_pattern_strength"] = _v6kw.get("fourth_base_pattern_strength", 1.0); _v6paint["fourth_base_pattern_invert"] = _v6kw.get("fourth_base_pattern_invert", False); _v6paint["fourth_base_pattern_harden"] = _v6kw.get("fourth_base_pattern_harden", False); _v6paint["fourth_base_pattern_offset_x"] = _v6kw.get("fourth_base_pattern_offset_x", 0.5); _v6paint["fourth_base_pattern_offset_y"] = _v6kw.get("fourth_base_pattern_offset_y", 0.5)
-                if _z_fif or _v6kw.get("fifth_base_color_source"): _v6paint["fifth_base"] = _z_fif; _v6paint["fifth_base_color_source"] = _v6kw.get("fifth_base_color_source"); _v6paint["fifth_base_color"] = _v6kw.get("fifth_base_color", [1.0, 1.0, 1.0]); _v6paint["fifth_base_strength"] = _v6kw.get("fifth_base_strength", 0.0); _v6paint["fifth_base_spec_strength"] = _v6kw.get("fifth_base_spec_strength", 1.0); _v6paint["fifth_base_blend_mode"] = _v6kw.get("fifth_base_blend_mode", "noise"); _v6paint["fifth_base_noise_scale"] = _v6kw.get("fifth_base_noise_scale", 24); _v6paint["fifth_base_scale"] = _v6kw.get("fifth_base_scale", 1.0); _v6paint["fifth_base_pattern"] = _v6kw.get("fifth_base_pattern"); _v6paint["fifth_base_pattern_scale"] = _v6kw.get("fifth_base_pattern_scale", 1.0); _v6paint["fifth_base_pattern_rotation"] = _v6kw.get("fifth_base_pattern_rotation", 0.0); _v6paint["fifth_base_pattern_opacity"] = _v6kw.get("fifth_base_pattern_opacity", 1.0); _v6paint["fifth_base_pattern_strength"] = _v6kw.get("fifth_base_pattern_strength", 1.0); _v6paint["fifth_base_pattern_invert"] = _v6kw.get("fifth_base_pattern_invert", False); _v6paint["fifth_base_pattern_harden"] = _v6kw.get("fifth_base_pattern_harden", False); _v6paint["fifth_base_pattern_offset_x"] = _v6kw.get("fifth_base_pattern_offset_x", 0.5); _v6paint["fifth_base_pattern_offset_y"] = _v6kw.get("fifth_base_pattern_offset_y", 0.5)
+                if _z_sb or _v6kw.get("second_base_color_source"): _v6paint["second_base"] = _z_sb; _v6paint["second_base_color_source"] = _v6kw.get("second_base_color_source"); _v6paint["second_base_color"] = _v6kw.get("second_base_color", [1.0, 1.0, 1.0]); _v6paint["second_base_strength"] = _v6kw.get("second_base_strength", 0.0); _v6paint["second_base_spec_strength"] = _v6kw.get("second_base_spec_strength", 1.0); _v6paint["second_base_blend_mode"] = _v6kw.get("second_base_blend_mode", "noise"); _v6paint["second_base_noise_scale"] = _v6kw.get("second_base_noise_scale", 24); _v6paint["second_base_scale"] = _v6kw.get("second_base_scale", 1.0); _v6paint["second_base_pattern"] = _v6kw.get("second_base_pattern"); _v6paint["second_base_pattern_scale"] = _v6kw.get("second_base_pattern_scale", 1.0); _v6paint["second_base_pattern_rotation"] = _v6kw.get("second_base_pattern_rotation", 0.0); _v6paint["second_base_pattern_opacity"] = _v6kw.get("second_base_pattern_opacity", 1.0); _v6paint["second_base_pattern_strength"] = _v6kw.get("second_base_pattern_strength", 1.0); _v6paint["second_base_pattern_invert"] = _v6kw.get("second_base_pattern_invert", False); _v6paint["second_base_pattern_harden"] = _v6kw.get("second_base_pattern_harden", False); _v6paint["second_base_pattern_offset_x"] = _v6kw.get("second_base_pattern_offset_x", 0.5); _v6paint["second_base_pattern_offset_y"] = _v6kw.get("second_base_pattern_offset_y", 0.5); _v6paint["second_base_hue_shift"] = _v6kw.get("second_base_hue_shift", 0); _v6paint["second_base_saturation"] = _v6kw.get("second_base_saturation", 0); _v6paint["second_base_brightness"] = _v6kw.get("second_base_brightness", 0); _v6paint["second_base_pattern_hue_shift"] = _v6kw.get("second_base_pattern_hue_shift", 0); _v6paint["second_base_pattern_saturation"] = _v6kw.get("second_base_pattern_saturation", 0); _v6paint["second_base_pattern_brightness"] = _v6kw.get("second_base_pattern_brightness", 0)
+                if _z_tb or _v6kw.get("third_base_color_source"): _v6paint["third_base"] = _z_tb; _v6paint["third_base_color_source"] = _v6kw.get("third_base_color_source"); _v6paint["third_base_color"] = _v6kw.get("third_base_color", [1.0, 1.0, 1.0]); _v6paint["third_base_strength"] = _v6kw.get("third_base_strength", 0.0); _v6paint["third_base_spec_strength"] = _v6kw.get("third_base_spec_strength", 1.0); _v6paint["third_base_blend_mode"] = _v6kw.get("third_base_blend_mode", "noise"); _v6paint["third_base_noise_scale"] = _v6kw.get("third_base_noise_scale", 24); _v6paint["third_base_scale"] = _v6kw.get("third_base_scale", 1.0); _v6paint["third_base_pattern"] = _v6kw.get("third_base_pattern"); _v6paint["third_base_pattern_scale"] = _v6kw.get("third_base_pattern_scale", 1.0); _v6paint["third_base_pattern_rotation"] = _v6kw.get("third_base_pattern_rotation", 0.0); _v6paint["third_base_pattern_opacity"] = _v6kw.get("third_base_pattern_opacity", 1.0); _v6paint["third_base_pattern_strength"] = _v6kw.get("third_base_pattern_strength", 1.0); _v6paint["third_base_pattern_invert"] = _v6kw.get("third_base_pattern_invert", False); _v6paint["third_base_pattern_harden"] = _v6kw.get("third_base_pattern_harden", False); _v6paint["third_base_pattern_offset_x"] = _v6kw.get("third_base_pattern_offset_x", 0.5); _v6paint["third_base_pattern_offset_y"] = _v6kw.get("third_base_pattern_offset_y", 0.5); _v6paint["third_base_hue_shift"] = _v6kw.get("third_base_hue_shift", 0); _v6paint["third_base_saturation"] = _v6kw.get("third_base_saturation", 0); _v6paint["third_base_brightness"] = _v6kw.get("third_base_brightness", 0)
+                if _z_fb or _v6kw.get("fourth_base_color_source"): _v6paint["fourth_base"] = _z_fb; _v6paint["fourth_base_color_source"] = _v6kw.get("fourth_base_color_source"); _v6paint["fourth_base_color"] = _v6kw.get("fourth_base_color", [1.0, 1.0, 1.0]); _v6paint["fourth_base_strength"] = _v6kw.get("fourth_base_strength", 0.0); _v6paint["fourth_base_spec_strength"] = _v6kw.get("fourth_base_spec_strength", 1.0); _v6paint["fourth_base_blend_mode"] = _v6kw.get("fourth_base_blend_mode", "noise"); _v6paint["fourth_base_noise_scale"] = _v6kw.get("fourth_base_noise_scale", 24); _v6paint["fourth_base_scale"] = _v6kw.get("fourth_base_scale", 1.0); _v6paint["fourth_base_pattern"] = _v6kw.get("fourth_base_pattern"); _v6paint["fourth_base_pattern_scale"] = _v6kw.get("fourth_base_pattern_scale", 1.0); _v6paint["fourth_base_pattern_rotation"] = _v6kw.get("fourth_base_pattern_rotation", 0.0); _v6paint["fourth_base_pattern_opacity"] = _v6kw.get("fourth_base_pattern_opacity", 1.0); _v6paint["fourth_base_pattern_strength"] = _v6kw.get("fourth_base_pattern_strength", 1.0); _v6paint["fourth_base_pattern_invert"] = _v6kw.get("fourth_base_pattern_invert", False); _v6paint["fourth_base_pattern_harden"] = _v6kw.get("fourth_base_pattern_harden", False); _v6paint["fourth_base_pattern_offset_x"] = _v6kw.get("fourth_base_pattern_offset_x", 0.5); _v6paint["fourth_base_pattern_offset_y"] = _v6kw.get("fourth_base_pattern_offset_y", 0.5); _v6paint["fourth_base_hue_shift"] = _v6kw.get("fourth_base_hue_shift", 0); _v6paint["fourth_base_saturation"] = _v6kw.get("fourth_base_saturation", 0); _v6paint["fourth_base_brightness"] = _v6kw.get("fourth_base_brightness", 0)
+                if _z_fif or _v6kw.get("fifth_base_color_source"): _v6paint["fifth_base"] = _z_fif; _v6paint["fifth_base_color_source"] = _v6kw.get("fifth_base_color_source"); _v6paint["fifth_base_color"] = _v6kw.get("fifth_base_color", [1.0, 1.0, 1.0]); _v6paint["fifth_base_strength"] = _v6kw.get("fifth_base_strength", 0.0); _v6paint["fifth_base_spec_strength"] = _v6kw.get("fifth_base_spec_strength", 1.0); _v6paint["fifth_base_blend_mode"] = _v6kw.get("fifth_base_blend_mode", "noise"); _v6paint["fifth_base_noise_scale"] = _v6kw.get("fifth_base_noise_scale", 24); _v6paint["fifth_base_scale"] = _v6kw.get("fifth_base_scale", 1.0); _v6paint["fifth_base_pattern"] = _v6kw.get("fifth_base_pattern"); _v6paint["fifth_base_pattern_scale"] = _v6kw.get("fifth_base_pattern_scale", 1.0); _v6paint["fifth_base_pattern_rotation"] = _v6kw.get("fifth_base_pattern_rotation", 0.0); _v6paint["fifth_base_pattern_opacity"] = _v6kw.get("fifth_base_pattern_opacity", 1.0); _v6paint["fifth_base_pattern_strength"] = _v6kw.get("fifth_base_pattern_strength", 1.0); _v6paint["fifth_base_pattern_invert"] = _v6kw.get("fifth_base_pattern_invert", False); _v6paint["fifth_base_pattern_harden"] = _v6kw.get("fifth_base_pattern_harden", False); _v6paint["fifth_base_pattern_offset_x"] = _v6kw.get("fifth_base_pattern_offset_x", 0.5); _v6paint["fifth_base_pattern_offset_y"] = _v6kw.get("fifth_base_pattern_offset_y", 0.5); _v6paint["fifth_base_hue_shift"] = _v6kw.get("fifth_base_hue_shift", 0); _v6paint["fifth_base_saturation"] = _v6kw.get("fifth_base_saturation", 0); _v6paint["fifth_base_brightness"] = _v6kw.get("fifth_base_brightness", 0)
                 _v6paint["monolithic_registry"] = _v6kw.get("monolithic_registry")
                 _v6paint["base_offset_x"] = _v6kw.get("base_offset_x", 0.5)
                 _v6paint["base_offset_y"] = _v6kw.get("base_offset_y", 0.5)
@@ -6940,11 +6987,17 @@ def build_helmet_spec(helmet_paint_file, output_dir, zones, iracing_id="23371", 
                 _v6paint["pattern_offset_x"] = _v6kw.get("pattern_offset_x", 0.5)
                 _v6paint["pattern_offset_y"] = _v6kw.get("pattern_offset_y", 0.5)
                 if all_patterns:
-                    zone_spec = compose_finish_stacked(base_id, all_patterns, shape, zone_mask, seed + i * 13, sm, spec_mult=spec_mult, base_scale=zone_base_scale, **_v6kw)
-                    paint = compose_paint_mod_stacked(base_id, all_patterns, paint, shape, zone_mask, seed + i * 13, pm, bb, **_v6paint)
+                    # Parallel: spec in background thread while paint mod runs in foreground
+                    with ThreadPoolExecutor(max_workers=1) as _spec_ex:
+                        _spec_fut = _spec_ex.submit(compose_finish_stacked, base_id, all_patterns, shape, zone_mask, seed + i * 13, sm, spec_mult=spec_mult, base_scale=zone_base_scale, **_v6kw)
+                        paint = compose_paint_mod_stacked(base_id, all_patterns, paint, shape, zone_mask, seed + i * 13, pm, bb, **_v6paint)
+                        zone_spec = _spec_fut.result()
                 else:
-                    zone_spec = compose_finish(base_id, "none", shape, zone_mask, seed + i * 13, sm, spec_mult=spec_mult, base_scale=zone_base_scale, **_v6kw)
-                    paint = compose_paint_mod(base_id, "none", paint, shape, zone_mask, seed + i * 13, pm, bb, **_v6paint)
+                    # Parallel: spec in background thread while paint mod runs in foreground
+                    with ThreadPoolExecutor(max_workers=1) as _spec_ex:
+                        _spec_fut = _spec_ex.submit(compose_finish, base_id, "none", shape, zone_mask, seed + i * 13, sm, spec_mult=spec_mult, base_scale=zone_base_scale, **_v6kw)
+                        paint = compose_paint_mod(base_id, "none", paint, shape, zone_mask, seed + i * 13, pm, bb, **_v6paint)
+                        zone_spec = _spec_fut.result()
             else:
                 # SINGLE PATTERN: original path
                 label = f"{base_id}" + (f" + {pattern_id}" if pattern_id != "none" else "")
@@ -6953,18 +7006,21 @@ def build_helmet_spec(helmet_paint_file, output_dir, zones, iracing_id="23371", 
                 print(f"    [{name}] => {label} ({intensity}){scale_label}{rot_label}")
                 _v6paint = {"base_strength": _v6kw.get("base_strength", 1.0), "base_spec_strength": _v6kw.get("base_spec_strength", 1.0), "base_color_mode": _v6kw.get("base_color_mode", "source"), "base_color": _v6kw.get("base_color", [1.0, 1.0, 1.0]), "base_color_source": _v6kw.get("base_color_source"), "base_color_strength": _v6kw.get("base_color_strength", 1.0), "base_hue_offset": _v6kw.get("base_hue_offset", 0), "base_saturation_adjust": _v6kw.get("base_saturation_adjust", 0), "base_brightness_adjust": _v6kw.get("base_brightness_adjust", 0)}
                 if _z_bb: _v6paint["blend_base"] = _z_bb; _v6paint["blend_dir"] = _z_bd; _v6paint["blend_amount"] = _z_ba
-                if _z_sb or _v6kw.get("second_base_color_source"): _v6paint["second_base"] = _z_sb; _v6paint["second_base_color_source"] = _v6kw.get("second_base_color_source"); _v6paint["second_base_color"] = _v6kw.get("second_base_color", [1.0, 1.0, 1.0]); _v6paint["second_base_strength"] = _v6kw.get("second_base_strength", 0.0); _v6paint["second_base_spec_strength"] = _v6kw.get("second_base_spec_strength", 1.0); _v6paint["second_base_blend_mode"] = _v6kw.get("second_base_blend_mode", "noise"); _v6paint["second_base_noise_scale"] = _v6kw.get("second_base_noise_scale", 24); _v6paint["second_base_scale"] = _v6kw.get("second_base_scale", 1.0); _v6paint["second_base_pattern"] = _v6kw.get("second_base_pattern"); _v6paint["second_base_pattern_scale"] = _v6kw.get("second_base_pattern_scale", 1.0); _v6paint["second_base_pattern_rotation"] = _v6kw.get("second_base_pattern_rotation", 0.0); _v6paint["second_base_pattern_opacity"] = _v6kw.get("second_base_pattern_opacity", 1.0); _v6paint["second_base_pattern_strength"] = _v6kw.get("second_base_pattern_strength", 1.0); _v6paint["second_base_pattern_invert"] = _v6kw.get("second_base_pattern_invert", False); _v6paint["second_base_pattern_harden"] = _v6kw.get("second_base_pattern_harden", False); _v6paint["second_base_pattern_offset_x"] = _v6kw.get("second_base_pattern_offset_x", 0.5); _v6paint["second_base_pattern_offset_y"] = _v6kw.get("second_base_pattern_offset_y", 0.5)
-                if _z_tb or _v6kw.get("third_base_color_source"): _v6paint["third_base"] = _z_tb; _v6paint["third_base_color_source"] = _v6kw.get("third_base_color_source"); _v6paint["third_base_color"] = _v6kw.get("third_base_color", [1.0, 1.0, 1.0]); _v6paint["third_base_strength"] = _v6kw.get("third_base_strength", 0.0); _v6paint["third_base_spec_strength"] = _v6kw.get("third_base_spec_strength", 1.0); _v6paint["third_base_blend_mode"] = _v6kw.get("third_base_blend_mode", "noise"); _v6paint["third_base_noise_scale"] = _v6kw.get("third_base_noise_scale", 24); _v6paint["third_base_scale"] = _v6kw.get("third_base_scale", 1.0); _v6paint["third_base_pattern"] = _v6kw.get("third_base_pattern"); _v6paint["third_base_pattern_scale"] = _v6kw.get("third_base_pattern_scale", 1.0); _v6paint["third_base_pattern_rotation"] = _v6kw.get("third_base_pattern_rotation", 0.0); _v6paint["third_base_pattern_opacity"] = _v6kw.get("third_base_pattern_opacity", 1.0); _v6paint["third_base_pattern_strength"] = _v6kw.get("third_base_pattern_strength", 1.0); _v6paint["third_base_pattern_invert"] = _v6kw.get("third_base_pattern_invert", False); _v6paint["third_base_pattern_harden"] = _v6kw.get("third_base_pattern_harden", False); _v6paint["third_base_pattern_offset_x"] = _v6kw.get("third_base_pattern_offset_x", 0.5); _v6paint["third_base_pattern_offset_y"] = _v6kw.get("third_base_pattern_offset_y", 0.5)
-                if _z_fb or _v6kw.get("fourth_base_color_source"): _v6paint["fourth_base"] = _z_fb; _v6paint["fourth_base_color_source"] = _v6kw.get("fourth_base_color_source"); _v6paint["fourth_base_color"] = _v6kw.get("fourth_base_color", [1.0, 1.0, 1.0]); _v6paint["fourth_base_strength"] = _v6kw.get("fourth_base_strength", 0.0); _v6paint["fourth_base_spec_strength"] = _v6kw.get("fourth_base_spec_strength", 1.0); _v6paint["fourth_base_blend_mode"] = _v6kw.get("fourth_base_blend_mode", "noise"); _v6paint["fourth_base_noise_scale"] = _v6kw.get("fourth_base_noise_scale", 24); _v6paint["fourth_base_scale"] = _v6kw.get("fourth_base_scale", 1.0); _v6paint["fourth_base_pattern"] = _v6kw.get("fourth_base_pattern"); _v6paint["fourth_base_pattern_scale"] = _v6kw.get("fourth_base_pattern_scale", 1.0); _v6paint["fourth_base_pattern_rotation"] = _v6kw.get("fourth_base_pattern_rotation", 0.0); _v6paint["fourth_base_pattern_opacity"] = _v6kw.get("fourth_base_pattern_opacity", 1.0); _v6paint["fourth_base_pattern_strength"] = _v6kw.get("fourth_base_pattern_strength", 1.0); _v6paint["fourth_base_pattern_invert"] = _v6kw.get("fourth_base_pattern_invert", False); _v6paint["fourth_base_pattern_harden"] = _v6kw.get("fourth_base_pattern_harden", False); _v6paint["fourth_base_pattern_offset_x"] = _v6kw.get("fourth_base_pattern_offset_x", 0.5); _v6paint["fourth_base_pattern_offset_y"] = _v6kw.get("fourth_base_pattern_offset_y", 0.5)
-                if _z_fif or _v6kw.get("fifth_base_color_source"): _v6paint["fifth_base"] = _z_fif; _v6paint["fifth_base_color_source"] = _v6kw.get("fifth_base_color_source"); _v6paint["fifth_base_color"] = _v6kw.get("fifth_base_color", [1.0, 1.0, 1.0]); _v6paint["fifth_base_strength"] = _v6kw.get("fifth_base_strength", 0.0); _v6paint["fifth_base_spec_strength"] = _v6kw.get("fifth_base_spec_strength", 1.0); _v6paint["fifth_base_blend_mode"] = _v6kw.get("fifth_base_blend_mode", "noise"); _v6paint["fifth_base_noise_scale"] = _v6kw.get("fifth_base_noise_scale", 24); _v6paint["fifth_base_scale"] = _v6kw.get("fifth_base_scale", 1.0); _v6paint["fifth_base_pattern"] = _v6kw.get("fifth_base_pattern"); _v6paint["fifth_base_pattern_scale"] = _v6kw.get("fifth_base_pattern_scale", 1.0); _v6paint["fifth_base_pattern_rotation"] = _v6kw.get("fifth_base_pattern_rotation", 0.0); _v6paint["fifth_base_pattern_opacity"] = _v6kw.get("fifth_base_pattern_opacity", 1.0); _v6paint["fifth_base_pattern_strength"] = _v6kw.get("fifth_base_pattern_strength", 1.0); _v6paint["fifth_base_pattern_invert"] = _v6kw.get("fifth_base_pattern_invert", False); _v6paint["fifth_base_pattern_harden"] = _v6kw.get("fifth_base_pattern_harden", False); _v6paint["fifth_base_pattern_offset_x"] = _v6kw.get("fifth_base_pattern_offset_x", 0.5); _v6paint["fifth_base_pattern_offset_y"] = _v6kw.get("fifth_base_pattern_offset_y", 0.5)
+                if _z_sb or _v6kw.get("second_base_color_source"): _v6paint["second_base"] = _z_sb; _v6paint["second_base_color_source"] = _v6kw.get("second_base_color_source"); _v6paint["second_base_color"] = _v6kw.get("second_base_color", [1.0, 1.0, 1.0]); _v6paint["second_base_strength"] = _v6kw.get("second_base_strength", 0.0); _v6paint["second_base_spec_strength"] = _v6kw.get("second_base_spec_strength", 1.0); _v6paint["second_base_blend_mode"] = _v6kw.get("second_base_blend_mode", "noise"); _v6paint["second_base_noise_scale"] = _v6kw.get("second_base_noise_scale", 24); _v6paint["second_base_scale"] = _v6kw.get("second_base_scale", 1.0); _v6paint["second_base_pattern"] = _v6kw.get("second_base_pattern"); _v6paint["second_base_pattern_scale"] = _v6kw.get("second_base_pattern_scale", 1.0); _v6paint["second_base_pattern_rotation"] = _v6kw.get("second_base_pattern_rotation", 0.0); _v6paint["second_base_pattern_opacity"] = _v6kw.get("second_base_pattern_opacity", 1.0); _v6paint["second_base_pattern_strength"] = _v6kw.get("second_base_pattern_strength", 1.0); _v6paint["second_base_pattern_invert"] = _v6kw.get("second_base_pattern_invert", False); _v6paint["second_base_pattern_harden"] = _v6kw.get("second_base_pattern_harden", False); _v6paint["second_base_pattern_offset_x"] = _v6kw.get("second_base_pattern_offset_x", 0.5); _v6paint["second_base_pattern_offset_y"] = _v6kw.get("second_base_pattern_offset_y", 0.5); _v6paint["second_base_hue_shift"] = _v6kw.get("second_base_hue_shift", 0); _v6paint["second_base_saturation"] = _v6kw.get("second_base_saturation", 0); _v6paint["second_base_brightness"] = _v6kw.get("second_base_brightness", 0); _v6paint["second_base_pattern_hue_shift"] = _v6kw.get("second_base_pattern_hue_shift", 0); _v6paint["second_base_pattern_saturation"] = _v6kw.get("second_base_pattern_saturation", 0); _v6paint["second_base_pattern_brightness"] = _v6kw.get("second_base_pattern_brightness", 0)
+                if _z_tb or _v6kw.get("third_base_color_source"): _v6paint["third_base"] = _z_tb; _v6paint["third_base_color_source"] = _v6kw.get("third_base_color_source"); _v6paint["third_base_color"] = _v6kw.get("third_base_color", [1.0, 1.0, 1.0]); _v6paint["third_base_strength"] = _v6kw.get("third_base_strength", 0.0); _v6paint["third_base_spec_strength"] = _v6kw.get("third_base_spec_strength", 1.0); _v6paint["third_base_blend_mode"] = _v6kw.get("third_base_blend_mode", "noise"); _v6paint["third_base_noise_scale"] = _v6kw.get("third_base_noise_scale", 24); _v6paint["third_base_scale"] = _v6kw.get("third_base_scale", 1.0); _v6paint["third_base_pattern"] = _v6kw.get("third_base_pattern"); _v6paint["third_base_pattern_scale"] = _v6kw.get("third_base_pattern_scale", 1.0); _v6paint["third_base_pattern_rotation"] = _v6kw.get("third_base_pattern_rotation", 0.0); _v6paint["third_base_pattern_opacity"] = _v6kw.get("third_base_pattern_opacity", 1.0); _v6paint["third_base_pattern_strength"] = _v6kw.get("third_base_pattern_strength", 1.0); _v6paint["third_base_pattern_invert"] = _v6kw.get("third_base_pattern_invert", False); _v6paint["third_base_pattern_harden"] = _v6kw.get("third_base_pattern_harden", False); _v6paint["third_base_pattern_offset_x"] = _v6kw.get("third_base_pattern_offset_x", 0.5); _v6paint["third_base_pattern_offset_y"] = _v6kw.get("third_base_pattern_offset_y", 0.5); _v6paint["third_base_hue_shift"] = _v6kw.get("third_base_hue_shift", 0); _v6paint["third_base_saturation"] = _v6kw.get("third_base_saturation", 0); _v6paint["third_base_brightness"] = _v6kw.get("third_base_brightness", 0)
+                if _z_fb or _v6kw.get("fourth_base_color_source"): _v6paint["fourth_base"] = _z_fb; _v6paint["fourth_base_color_source"] = _v6kw.get("fourth_base_color_source"); _v6paint["fourth_base_color"] = _v6kw.get("fourth_base_color", [1.0, 1.0, 1.0]); _v6paint["fourth_base_strength"] = _v6kw.get("fourth_base_strength", 0.0); _v6paint["fourth_base_spec_strength"] = _v6kw.get("fourth_base_spec_strength", 1.0); _v6paint["fourth_base_blend_mode"] = _v6kw.get("fourth_base_blend_mode", "noise"); _v6paint["fourth_base_noise_scale"] = _v6kw.get("fourth_base_noise_scale", 24); _v6paint["fourth_base_scale"] = _v6kw.get("fourth_base_scale", 1.0); _v6paint["fourth_base_pattern"] = _v6kw.get("fourth_base_pattern"); _v6paint["fourth_base_pattern_scale"] = _v6kw.get("fourth_base_pattern_scale", 1.0); _v6paint["fourth_base_pattern_rotation"] = _v6kw.get("fourth_base_pattern_rotation", 0.0); _v6paint["fourth_base_pattern_opacity"] = _v6kw.get("fourth_base_pattern_opacity", 1.0); _v6paint["fourth_base_pattern_strength"] = _v6kw.get("fourth_base_pattern_strength", 1.0); _v6paint["fourth_base_pattern_invert"] = _v6kw.get("fourth_base_pattern_invert", False); _v6paint["fourth_base_pattern_harden"] = _v6kw.get("fourth_base_pattern_harden", False); _v6paint["fourth_base_pattern_offset_x"] = _v6kw.get("fourth_base_pattern_offset_x", 0.5); _v6paint["fourth_base_pattern_offset_y"] = _v6kw.get("fourth_base_pattern_offset_y", 0.5); _v6paint["fourth_base_hue_shift"] = _v6kw.get("fourth_base_hue_shift", 0); _v6paint["fourth_base_saturation"] = _v6kw.get("fourth_base_saturation", 0); _v6paint["fourth_base_brightness"] = _v6kw.get("fourth_base_brightness", 0)
+                if _z_fif or _v6kw.get("fifth_base_color_source"): _v6paint["fifth_base"] = _z_fif; _v6paint["fifth_base_color_source"] = _v6kw.get("fifth_base_color_source"); _v6paint["fifth_base_color"] = _v6kw.get("fifth_base_color", [1.0, 1.0, 1.0]); _v6paint["fifth_base_strength"] = _v6kw.get("fifth_base_strength", 0.0); _v6paint["fifth_base_spec_strength"] = _v6kw.get("fifth_base_spec_strength", 1.0); _v6paint["fifth_base_blend_mode"] = _v6kw.get("fifth_base_blend_mode", "noise"); _v6paint["fifth_base_noise_scale"] = _v6kw.get("fifth_base_noise_scale", 24); _v6paint["fifth_base_scale"] = _v6kw.get("fifth_base_scale", 1.0); _v6paint["fifth_base_pattern"] = _v6kw.get("fifth_base_pattern"); _v6paint["fifth_base_pattern_scale"] = _v6kw.get("fifth_base_pattern_scale", 1.0); _v6paint["fifth_base_pattern_rotation"] = _v6kw.get("fifth_base_pattern_rotation", 0.0); _v6paint["fifth_base_pattern_opacity"] = _v6kw.get("fifth_base_pattern_opacity", 1.0); _v6paint["fifth_base_pattern_strength"] = _v6kw.get("fifth_base_pattern_strength", 1.0); _v6paint["fifth_base_pattern_invert"] = _v6kw.get("fifth_base_pattern_invert", False); _v6paint["fifth_base_pattern_harden"] = _v6kw.get("fifth_base_pattern_harden", False); _v6paint["fifth_base_pattern_offset_x"] = _v6kw.get("fifth_base_pattern_offset_x", 0.5); _v6paint["fifth_base_pattern_offset_y"] = _v6kw.get("fifth_base_pattern_offset_y", 0.5); _v6paint["fifth_base_hue_shift"] = _v6kw.get("fifth_base_hue_shift", 0); _v6paint["fifth_base_saturation"] = _v6kw.get("fifth_base_saturation", 0); _v6paint["fifth_base_brightness"] = _v6kw.get("fifth_base_brightness", 0)
                 _v6paint["monolithic_registry"] = _v6kw.get("monolithic_registry")
                 _v6paint["base_offset_x"] = _v6kw.get("base_offset_x", 0.5)
                 _v6paint["base_offset_y"] = _v6kw.get("base_offset_y", 0.5)
                 _v6paint["base_rotation"] = _v6kw.get("base_rotation", 0)
                 _v6paint["base_flip_h"] = _v6kw.get("base_flip_h", False)
                 _v6paint["base_flip_v"] = _v6kw.get("base_flip_v", False)
-                zone_spec = compose_finish(base_id, pattern_id, shape, zone_mask, seed + i * 13, sm, scale=zone_scale, spec_mult=spec_mult, rotation=zone_rotation, base_scale=zone_base_scale, **_v6kw)
-                paint = compose_paint_mod(base_id, pattern_id, paint, shape, zone_mask, seed + i * 13, pm, bb, scale=zone_scale, rotation=zone_rotation, **_v6paint)
+                # Parallel: spec in background thread while paint mod runs in foreground
+                with ThreadPoolExecutor(max_workers=1) as _spec_ex:
+                    _spec_fut = _spec_ex.submit(compose_finish, base_id, pattern_id, shape, zone_mask, seed + i * 13, sm, scale=zone_scale, spec_mult=spec_mult, rotation=zone_rotation, base_scale=zone_base_scale, **_v6kw)
+                    paint = compose_paint_mod(base_id, pattern_id, paint, shape, zone_mask, seed + i * 13, pm, bb, scale=zone_scale, rotation=zone_rotation, **_v6paint)
+                    zone_spec = _spec_fut.result()
         elif finish_name and zone.get("finish_colors") and (
             finish_name.startswith("grad_") or finish_name.startswith("gradm_")
             or finish_name.startswith("grad3_") or finish_name.startswith("ghostg_")
@@ -7047,20 +7103,29 @@ def build_helmet_spec(helmet_paint_file, output_dir, zones, iracing_id="23371", 
             continue
 
         claimed = np.clip(claimed + zone_mask, 0, 1)
-        mask3d = zone_mask[:,:,np.newaxis]
-        soft = mask3d > 0.05
-        blended = np.clip(
-            zone_spec.astype(np.float32) * mask3d +
-            combined_spec.astype(np.float32) * (1 - mask3d),
-            0, 255
-        ).astype(np.uint8)
-        combined_spec = np.where(soft, blended, combined_spec)
+        if is_gpu():
+            _zs_g = to_gpu(zone_spec.astype(np.float32))
+            _m3d_g = to_gpu(zone_mask[:,:,np.newaxis])
+            _cs_g = to_gpu(combined_spec)
+            soft = _m3d_g > 0.05
+            blended = xp.clip(_zs_g * _m3d_g + _cs_g * (1 - _m3d_g), 0, 255)
+            combined_spec = to_cpu(xp.where(soft, blended, _cs_g))
+        else:
+            mask3d = zone_mask[:,:,np.newaxis]
+            soft = mask3d > 0.05
+            blended = np.clip(
+                zone_spec.astype(np.float32) * mask3d +
+                combined_spec * (1 - mask3d),
+                0, 255
+            )
+            combined_spec = np.where(soft, blended, combined_spec)
 
-    # Save outputs
+    # Convert to uint8 once at the end before file I/O
+    combined_spec_u8 = np.clip(combined_spec, 0, 255).astype(np.uint8)
     os.makedirs(output_dir, exist_ok=True)
     spec_path = os.path.join(output_dir, f"helmet_spec_{iracing_id}.tga")
-    write_tga_32bit(spec_path, combined_spec)
-    Image.fromarray(combined_spec).save(os.path.join(output_dir, "PREVIEW_helmet_spec.png"))
+    write_tga_32bit(spec_path, combined_spec_u8)
+    Image.fromarray(combined_spec_u8).save(os.path.join(output_dir, "PREVIEW_helmet_spec.png"))
 
     # Also save modified paint if it changed
     helmet_paint = (np.clip(paint, 0, 1) * 255).astype(np.uint8)
@@ -7072,7 +7137,7 @@ def build_helmet_spec(helmet_paint_file, output_dir, zones, iracing_id="23371", 
     print(f"\n  Helmet done in {elapsed:.1f}s!")
     print(f"  Spec:  {spec_path}")
     print(f"  Paint: {paint_path}")
-    return helmet_paint, combined_spec
+    return helmet_paint, combined_spec_u8
 
 
 def build_suit_spec(suit_paint_file, output_dir, zones, iracing_id="23371", seed=51):
@@ -7101,7 +7166,7 @@ def build_suit_spec(suit_paint_file, output_dir, zones, iracing_id="23371", seed
     shape = (h, w)
     paint = paint_rgb.astype(np.float32) / 255.0
 
-    combined_spec = np.zeros((h, w, 4), dtype=np.uint8)
+    combined_spec = np.zeros((h, w, 4), dtype=np.float32)
     combined_spec[:,:,1] = 100
     combined_spec[:,:,3] = 255
     claimed = np.zeros(shape, dtype=np.float32)
@@ -7349,10 +7414,10 @@ def build_suit_spec(suit_paint_file, output_dir, zones, iracing_id="23371", seed
                 print(f"    [{name}] => {label} ({intensity}) [stacked compositing]")
                 _v6paint = {"base_strength": _v6kw.get("base_strength", 1.0), "base_spec_strength": _v6kw.get("base_spec_strength", 1.0), "base_color_mode": _v6kw.get("base_color_mode", "source"), "base_color": _v6kw.get("base_color", [1.0, 1.0, 1.0]), "base_color_source": _v6kw.get("base_color_source"), "base_color_strength": _v6kw.get("base_color_strength", 1.0), "base_hue_offset": _v6kw.get("base_hue_offset", 0), "base_saturation_adjust": _v6kw.get("base_saturation_adjust", 0), "base_brightness_adjust": _v6kw.get("base_brightness_adjust", 0)}
                 if _z_bb: _v6paint["blend_base"] = _z_bb; _v6paint["blend_dir"] = _z_bd; _v6paint["blend_amount"] = _z_ba
-                if _z_sb or _v6kw.get("second_base_color_source"): _v6paint["second_base"] = _z_sb; _v6paint["second_base_color_source"] = _v6kw.get("second_base_color_source"); _v6paint["second_base_color"] = _v6kw.get("second_base_color", [1.0, 1.0, 1.0]); _v6paint["second_base_strength"] = _v6kw.get("second_base_strength", 0.0); _v6paint["second_base_spec_strength"] = _v6kw.get("second_base_spec_strength", 1.0); _v6paint["second_base_blend_mode"] = _v6kw.get("second_base_blend_mode", "noise"); _v6paint["second_base_noise_scale"] = _v6kw.get("second_base_noise_scale", 24); _v6paint["second_base_scale"] = _v6kw.get("second_base_scale", 1.0); _v6paint["second_base_pattern"] = _v6kw.get("second_base_pattern"); _v6paint["second_base_pattern_scale"] = _v6kw.get("second_base_pattern_scale", 1.0); _v6paint["second_base_pattern_rotation"] = _v6kw.get("second_base_pattern_rotation", 0.0); _v6paint["second_base_pattern_opacity"] = _v6kw.get("second_base_pattern_opacity", 1.0); _v6paint["second_base_pattern_strength"] = _v6kw.get("second_base_pattern_strength", 1.0); _v6paint["second_base_pattern_invert"] = _v6kw.get("second_base_pattern_invert", False); _v6paint["second_base_pattern_harden"] = _v6kw.get("second_base_pattern_harden", False); _v6paint["second_base_pattern_offset_x"] = _v6kw.get("second_base_pattern_offset_x", 0.5); _v6paint["second_base_pattern_offset_y"] = _v6kw.get("second_base_pattern_offset_y", 0.5)
-                if _z_tb or _v6kw.get("third_base_color_source"): _v6paint["third_base"] = _z_tb; _v6paint["third_base_color_source"] = _v6kw.get("third_base_color_source"); _v6paint["third_base_color"] = _v6kw.get("third_base_color", [1.0, 1.0, 1.0]); _v6paint["third_base_strength"] = _v6kw.get("third_base_strength", 0.0); _v6paint["third_base_spec_strength"] = _v6kw.get("third_base_spec_strength", 1.0); _v6paint["third_base_blend_mode"] = _v6kw.get("third_base_blend_mode", "noise"); _v6paint["third_base_noise_scale"] = _v6kw.get("third_base_noise_scale", 24); _v6paint["third_base_scale"] = _v6kw.get("third_base_scale", 1.0); _v6paint["third_base_pattern"] = _v6kw.get("third_base_pattern"); _v6paint["third_base_pattern_scale"] = _v6kw.get("third_base_pattern_scale", 1.0); _v6paint["third_base_pattern_rotation"] = _v6kw.get("third_base_pattern_rotation", 0.0); _v6paint["third_base_pattern_opacity"] = _v6kw.get("third_base_pattern_opacity", 1.0); _v6paint["third_base_pattern_strength"] = _v6kw.get("third_base_pattern_strength", 1.0); _v6paint["third_base_pattern_invert"] = _v6kw.get("third_base_pattern_invert", False); _v6paint["third_base_pattern_harden"] = _v6kw.get("third_base_pattern_harden", False); _v6paint["third_base_pattern_offset_x"] = _v6kw.get("third_base_pattern_offset_x", 0.5); _v6paint["third_base_pattern_offset_y"] = _v6kw.get("third_base_pattern_offset_y", 0.5)
-                if _z_fb or _v6kw.get("fourth_base_color_source"): _v6paint["fourth_base"] = _z_fb; _v6paint["fourth_base_color_source"] = _v6kw.get("fourth_base_color_source"); _v6paint["fourth_base_color"] = _v6kw.get("fourth_base_color", [1.0, 1.0, 1.0]); _v6paint["fourth_base_strength"] = _v6kw.get("fourth_base_strength", 0.0); _v6paint["fourth_base_spec_strength"] = _v6kw.get("fourth_base_spec_strength", 1.0); _v6paint["fourth_base_blend_mode"] = _v6kw.get("fourth_base_blend_mode", "noise"); _v6paint["fourth_base_noise_scale"] = _v6kw.get("fourth_base_noise_scale", 24); _v6paint["fourth_base_scale"] = _v6kw.get("fourth_base_scale", 1.0); _v6paint["fourth_base_pattern"] = _v6kw.get("fourth_base_pattern"); _v6paint["fourth_base_pattern_scale"] = _v6kw.get("fourth_base_pattern_scale", 1.0); _v6paint["fourth_base_pattern_rotation"] = _v6kw.get("fourth_base_pattern_rotation", 0.0); _v6paint["fourth_base_pattern_opacity"] = _v6kw.get("fourth_base_pattern_opacity", 1.0); _v6paint["fourth_base_pattern_strength"] = _v6kw.get("fourth_base_pattern_strength", 1.0); _v6paint["fourth_base_pattern_invert"] = _v6kw.get("fourth_base_pattern_invert", False); _v6paint["fourth_base_pattern_harden"] = _v6kw.get("fourth_base_pattern_harden", False); _v6paint["fourth_base_pattern_offset_x"] = _v6kw.get("fourth_base_pattern_offset_x", 0.5); _v6paint["fourth_base_pattern_offset_y"] = _v6kw.get("fourth_base_pattern_offset_y", 0.5)
-                if _z_fif or _v6kw.get("fifth_base_color_source"): _v6paint["fifth_base"] = _z_fif; _v6paint["fifth_base_color_source"] = _v6kw.get("fifth_base_color_source"); _v6paint["fifth_base_color"] = _v6kw.get("fifth_base_color", [1.0, 1.0, 1.0]); _v6paint["fifth_base_strength"] = _v6kw.get("fifth_base_strength", 0.0); _v6paint["fifth_base_spec_strength"] = _v6kw.get("fifth_base_spec_strength", 1.0); _v6paint["fifth_base_blend_mode"] = _v6kw.get("fifth_base_blend_mode", "noise"); _v6paint["fifth_base_noise_scale"] = _v6kw.get("fifth_base_noise_scale", 24); _v6paint["fifth_base_scale"] = _v6kw.get("fifth_base_scale", 1.0); _v6paint["fifth_base_pattern"] = _v6kw.get("fifth_base_pattern"); _v6paint["fifth_base_pattern_scale"] = _v6kw.get("fifth_base_pattern_scale", 1.0); _v6paint["fifth_base_pattern_rotation"] = _v6kw.get("fifth_base_pattern_rotation", 0.0); _v6paint["fifth_base_pattern_opacity"] = _v6kw.get("fifth_base_pattern_opacity", 1.0); _v6paint["fifth_base_pattern_strength"] = _v6kw.get("fifth_base_pattern_strength", 1.0); _v6paint["fifth_base_pattern_invert"] = _v6kw.get("fifth_base_pattern_invert", False); _v6paint["fifth_base_pattern_harden"] = _v6kw.get("fifth_base_pattern_harden", False); _v6paint["fifth_base_pattern_offset_x"] = _v6kw.get("fifth_base_pattern_offset_x", 0.5); _v6paint["fifth_base_pattern_offset_y"] = _v6kw.get("fifth_base_pattern_offset_y", 0.5)
+                if _z_sb or _v6kw.get("second_base_color_source"): _v6paint["second_base"] = _z_sb; _v6paint["second_base_color_source"] = _v6kw.get("second_base_color_source"); _v6paint["second_base_color"] = _v6kw.get("second_base_color", [1.0, 1.0, 1.0]); _v6paint["second_base_strength"] = _v6kw.get("second_base_strength", 0.0); _v6paint["second_base_spec_strength"] = _v6kw.get("second_base_spec_strength", 1.0); _v6paint["second_base_blend_mode"] = _v6kw.get("second_base_blend_mode", "noise"); _v6paint["second_base_noise_scale"] = _v6kw.get("second_base_noise_scale", 24); _v6paint["second_base_scale"] = _v6kw.get("second_base_scale", 1.0); _v6paint["second_base_pattern"] = _v6kw.get("second_base_pattern"); _v6paint["second_base_pattern_scale"] = _v6kw.get("second_base_pattern_scale", 1.0); _v6paint["second_base_pattern_rotation"] = _v6kw.get("second_base_pattern_rotation", 0.0); _v6paint["second_base_pattern_opacity"] = _v6kw.get("second_base_pattern_opacity", 1.0); _v6paint["second_base_pattern_strength"] = _v6kw.get("second_base_pattern_strength", 1.0); _v6paint["second_base_pattern_invert"] = _v6kw.get("second_base_pattern_invert", False); _v6paint["second_base_pattern_harden"] = _v6kw.get("second_base_pattern_harden", False); _v6paint["second_base_pattern_offset_x"] = _v6kw.get("second_base_pattern_offset_x", 0.5); _v6paint["second_base_pattern_offset_y"] = _v6kw.get("second_base_pattern_offset_y", 0.5); _v6paint["second_base_hue_shift"] = _v6kw.get("second_base_hue_shift", 0); _v6paint["second_base_saturation"] = _v6kw.get("second_base_saturation", 0); _v6paint["second_base_brightness"] = _v6kw.get("second_base_brightness", 0); _v6paint["second_base_pattern_hue_shift"] = _v6kw.get("second_base_pattern_hue_shift", 0); _v6paint["second_base_pattern_saturation"] = _v6kw.get("second_base_pattern_saturation", 0); _v6paint["second_base_pattern_brightness"] = _v6kw.get("second_base_pattern_brightness", 0)
+                if _z_tb or _v6kw.get("third_base_color_source"): _v6paint["third_base"] = _z_tb; _v6paint["third_base_color_source"] = _v6kw.get("third_base_color_source"); _v6paint["third_base_color"] = _v6kw.get("third_base_color", [1.0, 1.0, 1.0]); _v6paint["third_base_strength"] = _v6kw.get("third_base_strength", 0.0); _v6paint["third_base_spec_strength"] = _v6kw.get("third_base_spec_strength", 1.0); _v6paint["third_base_blend_mode"] = _v6kw.get("third_base_blend_mode", "noise"); _v6paint["third_base_noise_scale"] = _v6kw.get("third_base_noise_scale", 24); _v6paint["third_base_scale"] = _v6kw.get("third_base_scale", 1.0); _v6paint["third_base_pattern"] = _v6kw.get("third_base_pattern"); _v6paint["third_base_pattern_scale"] = _v6kw.get("third_base_pattern_scale", 1.0); _v6paint["third_base_pattern_rotation"] = _v6kw.get("third_base_pattern_rotation", 0.0); _v6paint["third_base_pattern_opacity"] = _v6kw.get("third_base_pattern_opacity", 1.0); _v6paint["third_base_pattern_strength"] = _v6kw.get("third_base_pattern_strength", 1.0); _v6paint["third_base_pattern_invert"] = _v6kw.get("third_base_pattern_invert", False); _v6paint["third_base_pattern_harden"] = _v6kw.get("third_base_pattern_harden", False); _v6paint["third_base_pattern_offset_x"] = _v6kw.get("third_base_pattern_offset_x", 0.5); _v6paint["third_base_pattern_offset_y"] = _v6kw.get("third_base_pattern_offset_y", 0.5); _v6paint["third_base_hue_shift"] = _v6kw.get("third_base_hue_shift", 0); _v6paint["third_base_saturation"] = _v6kw.get("third_base_saturation", 0); _v6paint["third_base_brightness"] = _v6kw.get("third_base_brightness", 0)
+                if _z_fb or _v6kw.get("fourth_base_color_source"): _v6paint["fourth_base"] = _z_fb; _v6paint["fourth_base_color_source"] = _v6kw.get("fourth_base_color_source"); _v6paint["fourth_base_color"] = _v6kw.get("fourth_base_color", [1.0, 1.0, 1.0]); _v6paint["fourth_base_strength"] = _v6kw.get("fourth_base_strength", 0.0); _v6paint["fourth_base_spec_strength"] = _v6kw.get("fourth_base_spec_strength", 1.0); _v6paint["fourth_base_blend_mode"] = _v6kw.get("fourth_base_blend_mode", "noise"); _v6paint["fourth_base_noise_scale"] = _v6kw.get("fourth_base_noise_scale", 24); _v6paint["fourth_base_scale"] = _v6kw.get("fourth_base_scale", 1.0); _v6paint["fourth_base_pattern"] = _v6kw.get("fourth_base_pattern"); _v6paint["fourth_base_pattern_scale"] = _v6kw.get("fourth_base_pattern_scale", 1.0); _v6paint["fourth_base_pattern_rotation"] = _v6kw.get("fourth_base_pattern_rotation", 0.0); _v6paint["fourth_base_pattern_opacity"] = _v6kw.get("fourth_base_pattern_opacity", 1.0); _v6paint["fourth_base_pattern_strength"] = _v6kw.get("fourth_base_pattern_strength", 1.0); _v6paint["fourth_base_pattern_invert"] = _v6kw.get("fourth_base_pattern_invert", False); _v6paint["fourth_base_pattern_harden"] = _v6kw.get("fourth_base_pattern_harden", False); _v6paint["fourth_base_pattern_offset_x"] = _v6kw.get("fourth_base_pattern_offset_x", 0.5); _v6paint["fourth_base_pattern_offset_y"] = _v6kw.get("fourth_base_pattern_offset_y", 0.5); _v6paint["fourth_base_hue_shift"] = _v6kw.get("fourth_base_hue_shift", 0); _v6paint["fourth_base_saturation"] = _v6kw.get("fourth_base_saturation", 0); _v6paint["fourth_base_brightness"] = _v6kw.get("fourth_base_brightness", 0)
+                if _z_fif or _v6kw.get("fifth_base_color_source"): _v6paint["fifth_base"] = _z_fif; _v6paint["fifth_base_color_source"] = _v6kw.get("fifth_base_color_source"); _v6paint["fifth_base_color"] = _v6kw.get("fifth_base_color", [1.0, 1.0, 1.0]); _v6paint["fifth_base_strength"] = _v6kw.get("fifth_base_strength", 0.0); _v6paint["fifth_base_spec_strength"] = _v6kw.get("fifth_base_spec_strength", 1.0); _v6paint["fifth_base_blend_mode"] = _v6kw.get("fifth_base_blend_mode", "noise"); _v6paint["fifth_base_noise_scale"] = _v6kw.get("fifth_base_noise_scale", 24); _v6paint["fifth_base_scale"] = _v6kw.get("fifth_base_scale", 1.0); _v6paint["fifth_base_pattern"] = _v6kw.get("fifth_base_pattern"); _v6paint["fifth_base_pattern_scale"] = _v6kw.get("fifth_base_pattern_scale", 1.0); _v6paint["fifth_base_pattern_rotation"] = _v6kw.get("fifth_base_pattern_rotation", 0.0); _v6paint["fifth_base_pattern_opacity"] = _v6kw.get("fifth_base_pattern_opacity", 1.0); _v6paint["fifth_base_pattern_strength"] = _v6kw.get("fifth_base_pattern_strength", 1.0); _v6paint["fifth_base_pattern_invert"] = _v6kw.get("fifth_base_pattern_invert", False); _v6paint["fifth_base_pattern_harden"] = _v6kw.get("fifth_base_pattern_harden", False); _v6paint["fifth_base_pattern_offset_x"] = _v6kw.get("fifth_base_pattern_offset_x", 0.5); _v6paint["fifth_base_pattern_offset_y"] = _v6kw.get("fifth_base_pattern_offset_y", 0.5); _v6paint["fifth_base_hue_shift"] = _v6kw.get("fifth_base_hue_shift", 0); _v6paint["fifth_base_saturation"] = _v6kw.get("fifth_base_saturation", 0); _v6paint["fifth_base_brightness"] = _v6kw.get("fifth_base_brightness", 0)
                 _v6paint["monolithic_registry"] = _v6kw.get("monolithic_registry")
                 _v6paint["base_offset_x"] = _v6kw.get("base_offset_x", 0.5)
                 _v6paint["base_offset_y"] = _v6kw.get("base_offset_y", 0.5)
@@ -7362,11 +7427,17 @@ def build_suit_spec(suit_paint_file, output_dir, zones, iracing_id="23371", seed
                 _v6paint["pattern_offset_x"] = _v6kw.get("pattern_offset_x", 0.5)
                 _v6paint["pattern_offset_y"] = _v6kw.get("pattern_offset_y", 0.5)
                 if all_patterns:
-                    zone_spec = compose_finish_stacked(base_id, all_patterns, shape, zone_mask, seed + i * 13, sm, spec_mult=spec_mult, base_scale=zone_base_scale, **_v6kw)
-                    paint = compose_paint_mod_stacked(base_id, all_patterns, paint, shape, zone_mask, seed + i * 13, pm, bb, **_v6paint)
+                    # Parallel: spec in background thread while paint mod runs in foreground
+                    with ThreadPoolExecutor(max_workers=1) as _spec_ex:
+                        _spec_fut = _spec_ex.submit(compose_finish_stacked, base_id, all_patterns, shape, zone_mask, seed + i * 13, sm, spec_mult=spec_mult, base_scale=zone_base_scale, **_v6kw)
+                        paint = compose_paint_mod_stacked(base_id, all_patterns, paint, shape, zone_mask, seed + i * 13, pm, bb, **_v6paint)
+                        zone_spec = _spec_fut.result()
                 else:
-                    zone_spec = compose_finish(base_id, "none", shape, zone_mask, seed + i * 13, sm, spec_mult=spec_mult, base_scale=zone_base_scale, **_v6kw)
-                    paint = compose_paint_mod(base_id, "none", paint, shape, zone_mask, seed + i * 13, pm, bb, **_v6paint)
+                    # Parallel: spec in background thread while paint mod runs in foreground
+                    with ThreadPoolExecutor(max_workers=1) as _spec_ex:
+                        _spec_fut = _spec_ex.submit(compose_finish, base_id, "none", shape, zone_mask, seed + i * 13, sm, spec_mult=spec_mult, base_scale=zone_base_scale, **_v6kw)
+                        paint = compose_paint_mod(base_id, "none", paint, shape, zone_mask, seed + i * 13, pm, bb, **_v6paint)
+                        zone_spec = _spec_fut.result()
             else:
                 # SINGLE PATTERN: original path
                 label = f"{base_id}" + (f" + {pattern_id}" if pattern_id != "none" else "")
@@ -7375,18 +7446,21 @@ def build_suit_spec(suit_paint_file, output_dir, zones, iracing_id="23371", seed
                 print(f"    [{name}] => {label} ({intensity}){scale_label}{rot_label}")
                 _v6paint = {"base_strength": _v6kw.get("base_strength", 1.0), "base_spec_strength": _v6kw.get("base_spec_strength", 1.0), "base_color_mode": _v6kw.get("base_color_mode", "source"), "base_color": _v6kw.get("base_color", [1.0, 1.0, 1.0]), "base_color_source": _v6kw.get("base_color_source"), "base_color_strength": _v6kw.get("base_color_strength", 1.0), "base_hue_offset": _v6kw.get("base_hue_offset", 0), "base_saturation_adjust": _v6kw.get("base_saturation_adjust", 0), "base_brightness_adjust": _v6kw.get("base_brightness_adjust", 0)}
                 if _z_bb: _v6paint["blend_base"] = _z_bb; _v6paint["blend_dir"] = _z_bd; _v6paint["blend_amount"] = _z_ba
-                if _z_sb or _v6kw.get("second_base_color_source"): _v6paint["second_base"] = _z_sb; _v6paint["second_base_color_source"] = _v6kw.get("second_base_color_source"); _v6paint["second_base_color"] = _v6kw.get("second_base_color", [1.0, 1.0, 1.0]); _v6paint["second_base_strength"] = _v6kw.get("second_base_strength", 0.0); _v6paint["second_base_spec_strength"] = _v6kw.get("second_base_spec_strength", 1.0); _v6paint["second_base_blend_mode"] = _v6kw.get("second_base_blend_mode", "noise"); _v6paint["second_base_noise_scale"] = _v6kw.get("second_base_noise_scale", 24); _v6paint["second_base_scale"] = _v6kw.get("second_base_scale", 1.0); _v6paint["second_base_pattern"] = _v6kw.get("second_base_pattern"); _v6paint["second_base_pattern_scale"] = _v6kw.get("second_base_pattern_scale", 1.0); _v6paint["second_base_pattern_rotation"] = _v6kw.get("second_base_pattern_rotation", 0.0); _v6paint["second_base_pattern_opacity"] = _v6kw.get("second_base_pattern_opacity", 1.0); _v6paint["second_base_pattern_strength"] = _v6kw.get("second_base_pattern_strength", 1.0); _v6paint["second_base_pattern_invert"] = _v6kw.get("second_base_pattern_invert", False); _v6paint["second_base_pattern_harden"] = _v6kw.get("second_base_pattern_harden", False); _v6paint["second_base_pattern_offset_x"] = _v6kw.get("second_base_pattern_offset_x", 0.5); _v6paint["second_base_pattern_offset_y"] = _v6kw.get("second_base_pattern_offset_y", 0.5)
-                if _z_tb or _v6kw.get("third_base_color_source"): _v6paint["third_base"] = _z_tb; _v6paint["third_base_color_source"] = _v6kw.get("third_base_color_source"); _v6paint["third_base_color"] = _v6kw.get("third_base_color", [1.0, 1.0, 1.0]); _v6paint["third_base_strength"] = _v6kw.get("third_base_strength", 0.0); _v6paint["third_base_spec_strength"] = _v6kw.get("third_base_spec_strength", 1.0); _v6paint["third_base_blend_mode"] = _v6kw.get("third_base_blend_mode", "noise"); _v6paint["third_base_noise_scale"] = _v6kw.get("third_base_noise_scale", 24); _v6paint["third_base_scale"] = _v6kw.get("third_base_scale", 1.0); _v6paint["third_base_pattern"] = _v6kw.get("third_base_pattern"); _v6paint["third_base_pattern_scale"] = _v6kw.get("third_base_pattern_scale", 1.0); _v6paint["third_base_pattern_rotation"] = _v6kw.get("third_base_pattern_rotation", 0.0); _v6paint["third_base_pattern_opacity"] = _v6kw.get("third_base_pattern_opacity", 1.0); _v6paint["third_base_pattern_strength"] = _v6kw.get("third_base_pattern_strength", 1.0); _v6paint["third_base_pattern_invert"] = _v6kw.get("third_base_pattern_invert", False); _v6paint["third_base_pattern_harden"] = _v6kw.get("third_base_pattern_harden", False); _v6paint["third_base_pattern_offset_x"] = _v6kw.get("third_base_pattern_offset_x", 0.5); _v6paint["third_base_pattern_offset_y"] = _v6kw.get("third_base_pattern_offset_y", 0.5)
-                if _z_fb or _v6kw.get("fourth_base_color_source"): _v6paint["fourth_base"] = _z_fb; _v6paint["fourth_base_color_source"] = _v6kw.get("fourth_base_color_source"); _v6paint["fourth_base_color"] = _v6kw.get("fourth_base_color", [1.0, 1.0, 1.0]); _v6paint["fourth_base_strength"] = _v6kw.get("fourth_base_strength", 0.0); _v6paint["fourth_base_spec_strength"] = _v6kw.get("fourth_base_spec_strength", 1.0); _v6paint["fourth_base_blend_mode"] = _v6kw.get("fourth_base_blend_mode", "noise"); _v6paint["fourth_base_noise_scale"] = _v6kw.get("fourth_base_noise_scale", 24); _v6paint["fourth_base_scale"] = _v6kw.get("fourth_base_scale", 1.0); _v6paint["fourth_base_pattern"] = _v6kw.get("fourth_base_pattern"); _v6paint["fourth_base_pattern_scale"] = _v6kw.get("fourth_base_pattern_scale", 1.0); _v6paint["fourth_base_pattern_rotation"] = _v6kw.get("fourth_base_pattern_rotation", 0.0); _v6paint["fourth_base_pattern_opacity"] = _v6kw.get("fourth_base_pattern_opacity", 1.0); _v6paint["fourth_base_pattern_strength"] = _v6kw.get("fourth_base_pattern_strength", 1.0); _v6paint["fourth_base_pattern_invert"] = _v6kw.get("fourth_base_pattern_invert", False); _v6paint["fourth_base_pattern_harden"] = _v6kw.get("fourth_base_pattern_harden", False); _v6paint["fourth_base_pattern_offset_x"] = _v6kw.get("fourth_base_pattern_offset_x", 0.5); _v6paint["fourth_base_pattern_offset_y"] = _v6kw.get("fourth_base_pattern_offset_y", 0.5)
-                if _z_fif or _v6kw.get("fifth_base_color_source"): _v6paint["fifth_base"] = _z_fif; _v6paint["fifth_base_color_source"] = _v6kw.get("fifth_base_color_source"); _v6paint["fifth_base_color"] = _v6kw.get("fifth_base_color", [1.0, 1.0, 1.0]); _v6paint["fifth_base_strength"] = _v6kw.get("fifth_base_strength", 0.0); _v6paint["fifth_base_spec_strength"] = _v6kw.get("fifth_base_spec_strength", 1.0); _v6paint["fifth_base_blend_mode"] = _v6kw.get("fifth_base_blend_mode", "noise"); _v6paint["fifth_base_noise_scale"] = _v6kw.get("fifth_base_noise_scale", 24); _v6paint["fifth_base_scale"] = _v6kw.get("fifth_base_scale", 1.0); _v6paint["fifth_base_pattern"] = _v6kw.get("fifth_base_pattern"); _v6paint["fifth_base_pattern_scale"] = _v6kw.get("fifth_base_pattern_scale", 1.0); _v6paint["fifth_base_pattern_rotation"] = _v6kw.get("fifth_base_pattern_rotation", 0.0); _v6paint["fifth_base_pattern_opacity"] = _v6kw.get("fifth_base_pattern_opacity", 1.0); _v6paint["fifth_base_pattern_strength"] = _v6kw.get("fifth_base_pattern_strength", 1.0); _v6paint["fifth_base_pattern_invert"] = _v6kw.get("fifth_base_pattern_invert", False); _v6paint["fifth_base_pattern_harden"] = _v6kw.get("fifth_base_pattern_harden", False); _v6paint["fifth_base_pattern_offset_x"] = _v6kw.get("fifth_base_pattern_offset_x", 0.5); _v6paint["fifth_base_pattern_offset_y"] = _v6kw.get("fifth_base_pattern_offset_y", 0.5)
+                if _z_sb or _v6kw.get("second_base_color_source"): _v6paint["second_base"] = _z_sb; _v6paint["second_base_color_source"] = _v6kw.get("second_base_color_source"); _v6paint["second_base_color"] = _v6kw.get("second_base_color", [1.0, 1.0, 1.0]); _v6paint["second_base_strength"] = _v6kw.get("second_base_strength", 0.0); _v6paint["second_base_spec_strength"] = _v6kw.get("second_base_spec_strength", 1.0); _v6paint["second_base_blend_mode"] = _v6kw.get("second_base_blend_mode", "noise"); _v6paint["second_base_noise_scale"] = _v6kw.get("second_base_noise_scale", 24); _v6paint["second_base_scale"] = _v6kw.get("second_base_scale", 1.0); _v6paint["second_base_pattern"] = _v6kw.get("second_base_pattern"); _v6paint["second_base_pattern_scale"] = _v6kw.get("second_base_pattern_scale", 1.0); _v6paint["second_base_pattern_rotation"] = _v6kw.get("second_base_pattern_rotation", 0.0); _v6paint["second_base_pattern_opacity"] = _v6kw.get("second_base_pattern_opacity", 1.0); _v6paint["second_base_pattern_strength"] = _v6kw.get("second_base_pattern_strength", 1.0); _v6paint["second_base_pattern_invert"] = _v6kw.get("second_base_pattern_invert", False); _v6paint["second_base_pattern_harden"] = _v6kw.get("second_base_pattern_harden", False); _v6paint["second_base_pattern_offset_x"] = _v6kw.get("second_base_pattern_offset_x", 0.5); _v6paint["second_base_pattern_offset_y"] = _v6kw.get("second_base_pattern_offset_y", 0.5); _v6paint["second_base_hue_shift"] = _v6kw.get("second_base_hue_shift", 0); _v6paint["second_base_saturation"] = _v6kw.get("second_base_saturation", 0); _v6paint["second_base_brightness"] = _v6kw.get("second_base_brightness", 0); _v6paint["second_base_pattern_hue_shift"] = _v6kw.get("second_base_pattern_hue_shift", 0); _v6paint["second_base_pattern_saturation"] = _v6kw.get("second_base_pattern_saturation", 0); _v6paint["second_base_pattern_brightness"] = _v6kw.get("second_base_pattern_brightness", 0)
+                if _z_tb or _v6kw.get("third_base_color_source"): _v6paint["third_base"] = _z_tb; _v6paint["third_base_color_source"] = _v6kw.get("third_base_color_source"); _v6paint["third_base_color"] = _v6kw.get("third_base_color", [1.0, 1.0, 1.0]); _v6paint["third_base_strength"] = _v6kw.get("third_base_strength", 0.0); _v6paint["third_base_spec_strength"] = _v6kw.get("third_base_spec_strength", 1.0); _v6paint["third_base_blend_mode"] = _v6kw.get("third_base_blend_mode", "noise"); _v6paint["third_base_noise_scale"] = _v6kw.get("third_base_noise_scale", 24); _v6paint["third_base_scale"] = _v6kw.get("third_base_scale", 1.0); _v6paint["third_base_pattern"] = _v6kw.get("third_base_pattern"); _v6paint["third_base_pattern_scale"] = _v6kw.get("third_base_pattern_scale", 1.0); _v6paint["third_base_pattern_rotation"] = _v6kw.get("third_base_pattern_rotation", 0.0); _v6paint["third_base_pattern_opacity"] = _v6kw.get("third_base_pattern_opacity", 1.0); _v6paint["third_base_pattern_strength"] = _v6kw.get("third_base_pattern_strength", 1.0); _v6paint["third_base_pattern_invert"] = _v6kw.get("third_base_pattern_invert", False); _v6paint["third_base_pattern_harden"] = _v6kw.get("third_base_pattern_harden", False); _v6paint["third_base_pattern_offset_x"] = _v6kw.get("third_base_pattern_offset_x", 0.5); _v6paint["third_base_pattern_offset_y"] = _v6kw.get("third_base_pattern_offset_y", 0.5); _v6paint["third_base_hue_shift"] = _v6kw.get("third_base_hue_shift", 0); _v6paint["third_base_saturation"] = _v6kw.get("third_base_saturation", 0); _v6paint["third_base_brightness"] = _v6kw.get("third_base_brightness", 0)
+                if _z_fb or _v6kw.get("fourth_base_color_source"): _v6paint["fourth_base"] = _z_fb; _v6paint["fourth_base_color_source"] = _v6kw.get("fourth_base_color_source"); _v6paint["fourth_base_color"] = _v6kw.get("fourth_base_color", [1.0, 1.0, 1.0]); _v6paint["fourth_base_strength"] = _v6kw.get("fourth_base_strength", 0.0); _v6paint["fourth_base_spec_strength"] = _v6kw.get("fourth_base_spec_strength", 1.0); _v6paint["fourth_base_blend_mode"] = _v6kw.get("fourth_base_blend_mode", "noise"); _v6paint["fourth_base_noise_scale"] = _v6kw.get("fourth_base_noise_scale", 24); _v6paint["fourth_base_scale"] = _v6kw.get("fourth_base_scale", 1.0); _v6paint["fourth_base_pattern"] = _v6kw.get("fourth_base_pattern"); _v6paint["fourth_base_pattern_scale"] = _v6kw.get("fourth_base_pattern_scale", 1.0); _v6paint["fourth_base_pattern_rotation"] = _v6kw.get("fourth_base_pattern_rotation", 0.0); _v6paint["fourth_base_pattern_opacity"] = _v6kw.get("fourth_base_pattern_opacity", 1.0); _v6paint["fourth_base_pattern_strength"] = _v6kw.get("fourth_base_pattern_strength", 1.0); _v6paint["fourth_base_pattern_invert"] = _v6kw.get("fourth_base_pattern_invert", False); _v6paint["fourth_base_pattern_harden"] = _v6kw.get("fourth_base_pattern_harden", False); _v6paint["fourth_base_pattern_offset_x"] = _v6kw.get("fourth_base_pattern_offset_x", 0.5); _v6paint["fourth_base_pattern_offset_y"] = _v6kw.get("fourth_base_pattern_offset_y", 0.5); _v6paint["fourth_base_hue_shift"] = _v6kw.get("fourth_base_hue_shift", 0); _v6paint["fourth_base_saturation"] = _v6kw.get("fourth_base_saturation", 0); _v6paint["fourth_base_brightness"] = _v6kw.get("fourth_base_brightness", 0)
+                if _z_fif or _v6kw.get("fifth_base_color_source"): _v6paint["fifth_base"] = _z_fif; _v6paint["fifth_base_color_source"] = _v6kw.get("fifth_base_color_source"); _v6paint["fifth_base_color"] = _v6kw.get("fifth_base_color", [1.0, 1.0, 1.0]); _v6paint["fifth_base_strength"] = _v6kw.get("fifth_base_strength", 0.0); _v6paint["fifth_base_spec_strength"] = _v6kw.get("fifth_base_spec_strength", 1.0); _v6paint["fifth_base_blend_mode"] = _v6kw.get("fifth_base_blend_mode", "noise"); _v6paint["fifth_base_noise_scale"] = _v6kw.get("fifth_base_noise_scale", 24); _v6paint["fifth_base_scale"] = _v6kw.get("fifth_base_scale", 1.0); _v6paint["fifth_base_pattern"] = _v6kw.get("fifth_base_pattern"); _v6paint["fifth_base_pattern_scale"] = _v6kw.get("fifth_base_pattern_scale", 1.0); _v6paint["fifth_base_pattern_rotation"] = _v6kw.get("fifth_base_pattern_rotation", 0.0); _v6paint["fifth_base_pattern_opacity"] = _v6kw.get("fifth_base_pattern_opacity", 1.0); _v6paint["fifth_base_pattern_strength"] = _v6kw.get("fifth_base_pattern_strength", 1.0); _v6paint["fifth_base_pattern_invert"] = _v6kw.get("fifth_base_pattern_invert", False); _v6paint["fifth_base_pattern_harden"] = _v6kw.get("fifth_base_pattern_harden", False); _v6paint["fifth_base_pattern_offset_x"] = _v6kw.get("fifth_base_pattern_offset_x", 0.5); _v6paint["fifth_base_pattern_offset_y"] = _v6kw.get("fifth_base_pattern_offset_y", 0.5); _v6paint["fifth_base_hue_shift"] = _v6kw.get("fifth_base_hue_shift", 0); _v6paint["fifth_base_saturation"] = _v6kw.get("fifth_base_saturation", 0); _v6paint["fifth_base_brightness"] = _v6kw.get("fifth_base_brightness", 0)
                 _v6paint["monolithic_registry"] = _v6kw.get("monolithic_registry")
                 _v6paint["base_offset_x"] = _v6kw.get("base_offset_x", 0.5)
                 _v6paint["base_offset_y"] = _v6kw.get("base_offset_y", 0.5)
                 _v6paint["base_rotation"] = _v6kw.get("base_rotation", 0)
                 _v6paint["base_flip_h"] = _v6kw.get("base_flip_h", False)
                 _v6paint["base_flip_v"] = _v6kw.get("base_flip_v", False)
-                zone_spec = compose_finish(base_id, pattern_id, shape, zone_mask, seed + i * 13, sm, scale=zone_scale, spec_mult=spec_mult, rotation=zone_rotation, base_scale=zone_base_scale, **_v6kw)
-                paint = compose_paint_mod(base_id, pattern_id, paint, shape, zone_mask, seed + i * 13, pm, bb, scale=zone_scale, rotation=zone_rotation, **_v6paint)
+                # Parallel: spec in background thread while paint mod runs in foreground
+                with ThreadPoolExecutor(max_workers=1) as _spec_ex:
+                    _spec_fut = _spec_ex.submit(compose_finish, base_id, pattern_id, shape, zone_mask, seed + i * 13, sm, scale=zone_scale, spec_mult=spec_mult, rotation=zone_rotation, base_scale=zone_base_scale, **_v6kw)
+                    paint = compose_paint_mod(base_id, pattern_id, paint, shape, zone_mask, seed + i * 13, pm, bb, scale=zone_scale, rotation=zone_rotation, **_v6paint)
+                    zone_spec = _spec_fut.result()
         elif finish_name and zone.get("finish_colors") and (
             finish_name.startswith("grad_") or finish_name.startswith("gradm_")
             or finish_name.startswith("grad3_") or finish_name.startswith("ghostg_")
@@ -7469,19 +7543,29 @@ def build_suit_spec(suit_paint_file, output_dir, zones, iracing_id="23371", seed
             continue
 
         claimed = np.clip(claimed + zone_mask, 0, 1)
-        mask3d = zone_mask[:,:,np.newaxis]
-        soft = mask3d > 0.05
-        blended = np.clip(
-            zone_spec.astype(np.float32) * mask3d +
-            combined_spec.astype(np.float32) * (1 - mask3d),
-            0, 255
-        ).astype(np.uint8)
-        combined_spec = np.where(soft, blended, combined_spec)
+        if is_gpu():
+            _zs_g = to_gpu(zone_spec.astype(np.float32))
+            _m3d_g = to_gpu(zone_mask[:,:,np.newaxis])
+            _cs_g = to_gpu(combined_spec)
+            soft = _m3d_g > 0.05
+            blended = xp.clip(_zs_g * _m3d_g + _cs_g * (1 - _m3d_g), 0, 255)
+            combined_spec = to_cpu(xp.where(soft, blended, _cs_g))
+        else:
+            mask3d = zone_mask[:,:,np.newaxis]
+            soft = mask3d > 0.05
+            blended = np.clip(
+                zone_spec.astype(np.float32) * mask3d +
+                combined_spec * (1 - mask3d),
+                0, 255
+            )
+            combined_spec = np.where(soft, blended, combined_spec)
 
+    # Convert to uint8 once at the end before file I/O
+    combined_spec_u8 = np.clip(combined_spec, 0, 255).astype(np.uint8)
     os.makedirs(output_dir, exist_ok=True)
     spec_path = os.path.join(output_dir, f"suit_spec_{iracing_id}.tga")
-    write_tga_32bit(spec_path, combined_spec)
-    Image.fromarray(combined_spec).save(os.path.join(output_dir, "PREVIEW_suit_spec.png"))
+    write_tga_32bit(spec_path, combined_spec_u8)
+    Image.fromarray(combined_spec_u8).save(os.path.join(output_dir, "PREVIEW_suit_spec.png"))
 
     suit_paint = (np.clip(paint, 0, 1) * 255).astype(np.uint8)
     paint_path = os.path.join(output_dir, f"suit_{iracing_id}.tga")
@@ -7492,7 +7576,7 @@ def build_suit_spec(suit_paint_file, output_dir, zones, iracing_id="23371", seed
     print(f"\n  Suit done in {elapsed:.1f}s!")
     print(f"  Spec:  {spec_path}")
     print(f"  Paint: {paint_path}")
-    return suit_paint, combined_spec
+    return suit_paint, combined_spec_u8
 
 
 def build_matching_set(car_paint_file, output_dir, zones, iracing_id="23371", seed=51,

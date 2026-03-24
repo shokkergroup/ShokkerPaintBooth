@@ -37,8 +37,15 @@ FIX GUIDE:
 
 import numpy as np
 import colorsys
+try:
+    import cv2 as _cv2
+except ImportError:
+    _cv2 = None
 
 _engine = None  # Injected by shokker_engine_v2 after import
+
+# LRU-style cache for expensive field/flake generators (max 8 entries)
+_chameleon_cache = {}
 
 
 def integrate_chameleon(engine_module):
@@ -65,11 +72,14 @@ def hsv_to_rgb_vec(h, s, v):
 # ================================================================
 def _chameleon_v5_field(shape, seed, flow_complexity=3):
     """Generate the master panel-orientation field for chameleon v5.
-    
+
     Returns normalized 0-1 field. Different UV regions get different values
     based on simulated 3D surface orientation. This SAME field drives both
     paint color AND spec channel variation for perfect coordination.
     """
+    _cache_key = ('field', shape, seed, flow_complexity)
+    if _cache_key in _chameleon_cache:
+        return _chameleon_cache[_cache_key].copy()
     h, w = shape
     y, x = get_mgrid((h, w))
     yf = y.astype(np.float32)
@@ -111,6 +121,9 @@ def _chameleon_v5_field(shape, seed, flow_complexity=3):
     # Normalize to 0-1
     fmin, fmax = field.min(), field.max()
     field = (field - fmin) / (fmax - fmin + 1e-8)
+    _chameleon_cache[_cache_key] = field.copy()
+    if len(_chameleon_cache) > 8:
+        _chameleon_cache.pop(next(iter(_chameleon_cache)))
     return field
 
 
@@ -118,6 +131,9 @@ def _chameleon_v5_flake(shape, seed, cell_size=5):
     """Generate Voronoi-like micro-flake cells for paint depth.
     Returns per-pixel flake value (0-1) and edge detection mask.
     """
+    _cache_key = ('flake', shape, seed, cell_size)
+    if _cache_key in _chameleon_cache:
+        return _chameleon_cache[_cache_key].copy()
     h, w = shape
     rng = np.random.RandomState(seed + 8100)
     ny = max(1, h // cell_size)
@@ -129,6 +145,9 @@ def _chameleon_v5_flake(shape, seed, cell_size=5):
     # Add fine noise within cells
     fine = rng.rand(h, w).astype(np.float32) * 0.3
     flake = flake * 0.7 + fine
+    _chameleon_cache[_cache_key] = flake.copy()
+    if len(_chameleon_cache) > 8:
+        _chameleon_cache.pop(next(iter(_chameleon_cache)))
     return flake
 
 
@@ -463,8 +482,18 @@ def _aurora_flow_field(shape, seed, num_bands=8, flow_stretch=4.0):
         phase = rng.uniform(0, 2 * np.pi)
         # Perpendicular noise distortion creates the curtain wobble
         perp = -np.sin(base_angle) * yn + np.cos(base_angle) * xn
-        noise_warp = _msn((h, w), [max(8, int(w * 0.05)), max(16, int(w * 0.1))],
-                         [0.6, 0.4], seed + 9100 + i * 37) * 0.15
+        # Downsample noise by 4x for speed, then upscale — amplitude is only 0.15
+        _ds = 4
+        _h_ds, _w_ds = max(4, h // _ds), max(4, w // _ds)
+        _noise_small = _msn((_h_ds, _w_ds),
+                            [max(2, int(_w_ds * 0.05)), max(4, int(_w_ds * 0.1))],
+                            [0.6, 0.4], seed + 9100 + i * 37)
+        if _cv2 is not None:
+            noise_warp = _cv2.resize(_noise_small, (w, h),
+                                     interpolation=_cv2.INTER_LINEAR) * 0.15
+        else:
+            # Fallback: numpy repeat upscale (no cv2)
+            noise_warp = np.repeat(np.repeat(_noise_small, _ds, axis=0), _ds, axis=1)[:h, :w] * 0.15
         warped = proj + noise_warp * perp * flow_stretch
         band = np.sin(warped * freq * np.pi + phase)
         weight = 1.0 / (i + 1) ** 0.6

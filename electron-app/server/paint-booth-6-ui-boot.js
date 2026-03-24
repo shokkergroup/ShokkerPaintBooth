@@ -3080,10 +3080,21 @@
                     const d = JSON.parse(rawText);
                     // Server info logged to console only — not shown in header
                     console.log(`[BUILD-CHECK] Server B${d.build} | PID:${d.pid} | port:${d.shokker_port_env}`);
-                    document.title = `Shokker Paint Booth v6.0`;
+                    document.title = `Shokker Paint Booth v${d.version || '5'}`;
+                    // GPU status badge
+                    if (d.gpu) {
+                        var gpuBadge = document.getElementById('gpuStatusBadge');
+                        if (gpuBadge) {
+                            gpuBadge.textContent = d.gpu.icon + ' ' + (d.gpu.accelerated ? d.gpu.name : 'CPU');
+                            gpuBadge.title = d.gpu.accelerated ?
+                                'GPU Accelerated: ' + d.gpu.name + ' (' + d.gpu.vram_mb + 'MB VRAM)' :
+                                'CPU Mode -- install CuPy for GPU acceleration';
+                            gpuBadge.style.color = d.gpu.accelerated ? '#00ff88' : '#888';
+                        }
+                    }
                 } catch (jsonErr) {
                     console.warn(`[BUILD-CHECK] HTTP ${res.status} NOT JSON: "${rawText.substring(0, 60)}..."`);
-                    document.title = `Shokker Paint Booth v6.0`;
+                    document.title = `Shokker Paint Booth`;
                 }
             } catch (e) {
                 console.error('[BUILD-CHECK] FAILED:', e);

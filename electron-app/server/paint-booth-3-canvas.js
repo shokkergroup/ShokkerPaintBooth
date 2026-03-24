@@ -3549,6 +3549,8 @@ if __name__ == '__main__':
                 secondBasePatternHarden: z.secondBasePatternHarden,
                 secondBasePatternOffsetX: z.secondBasePatternOffsetX,
                 secondBasePatternOffsetY: z.secondBasePatternOffsetY,
+                secondBaseHueShift: z.secondBaseHueShift, secondBaseSaturation: z.secondBaseSaturation, secondBaseBrightness: z.secondBaseBrightness,
+                secondBasePatternHueShift: z.secondBasePatternHueShift, secondBasePatternSaturation: z.secondBasePatternSaturation, secondBasePatternBrightness: z.secondBasePatternBrightness,
                 // 3rd base overlay
                 thirdBase: z.thirdBase, thirdBaseStrength: z.thirdBaseStrength,
                 thirdBaseSpecStrength: z.thirdBaseSpecStrength,
@@ -3563,6 +3565,7 @@ if __name__ == '__main__':
                 thirdBasePatternHarden: z.thirdBasePatternHarden,
                 thirdBasePatternOffsetX: z.thirdBasePatternOffsetX,
                 thirdBasePatternOffsetY: z.thirdBasePatternOffsetY,
+                thirdBaseHueShift: z.thirdBaseHueShift, thirdBaseSaturation: z.thirdBaseSaturation, thirdBaseBrightness: z.thirdBaseBrightness,
                 // 4th base overlay
                 fourthBase: z.fourthBase, fourthBaseStrength: z.fourthBaseStrength,
                 fourthBaseSpecStrength: z.fourthBaseSpecStrength,
@@ -3577,6 +3580,7 @@ if __name__ == '__main__':
                 fourthBasePatternHarden: z.fourthBasePatternHarden,
                 fourthBasePatternOffsetX: z.fourthBasePatternOffsetX,
                 fourthBasePatternOffsetY: z.fourthBasePatternOffsetY,
+                fourthBaseHueShift: z.fourthBaseHueShift, fourthBaseSaturation: z.fourthBaseSaturation, fourthBaseBrightness: z.fourthBaseBrightness,
                 // 5th base overlay
                 fifthBase: z.fifthBase, fifthBaseStrength: z.fifthBaseStrength,
                 fifthBaseSpecStrength: z.fifthBaseSpecStrength,
@@ -3591,6 +3595,7 @@ if __name__ == '__main__':
                 fifthBasePatternHarden: z.fifthBasePatternHarden,
                 fifthBasePatternOffsetX: z.fifthBasePatternOffsetX,
                 fifthBasePatternOffsetY: z.fifthBasePatternOffsetY,
+                fifthBaseHueShift: z.fifthBaseHueShift, fifthBaseSaturation: z.fifthBaseSaturation, fifthBaseBrightness: z.fifthBaseBrightness,
                 // Spec pattern overlays
                 specPatternStack: z.specPatternStack,
                 overlaySpecPatternStack: z.overlaySpecPatternStack,
@@ -3762,6 +3767,12 @@ if __name__ == '__main__':
                             if (z.secondBasePatternHarden != null) zoneObj.second_base_pattern_harden = !!z.secondBasePatternHarden;
                             if (z.secondBasePatternOffsetX != null) zoneObj.second_base_pattern_offset_x = Math.max(0, Math.min(1, Number(z.secondBasePatternOffsetX)));
                             if (z.secondBasePatternOffsetY != null) zoneObj.second_base_pattern_offset_y = Math.max(0, Math.min(1, Number(z.secondBasePatternOffsetY)));
+                            if (z.secondBaseHueShift) zoneObj.second_base_hue_shift = z.secondBaseHueShift;
+                            if (z.secondBaseSaturation) zoneObj.second_base_saturation = z.secondBaseSaturation;
+                            if (z.secondBaseBrightness) zoneObj.second_base_brightness = z.secondBaseBrightness;
+                            if (z.secondBasePatternHueShift) zoneObj.second_base_pattern_hue_shift = z.secondBasePatternHueShift;
+                            if (z.secondBasePatternSaturation) zoneObj.second_base_pattern_saturation = z.secondBasePatternSaturation;
+                            if (z.secondBasePatternBrightness) zoneObj.second_base_pattern_brightness = z.secondBasePatternBrightness;
                         }
                         if ((z.thirdBase || z.thirdBaseColorSource) && (z.thirdBaseStrength || 0) > 0) {
                             const _tbColor = (z.thirdBaseColor || '#ffffff').toString();
@@ -3783,6 +3794,9 @@ if __name__ == '__main__':
                             if (z.thirdBasePatternHarden != null) zoneObj.third_base_pattern_harden = !!z.thirdBasePatternHarden;
                             if (z.thirdBasePatternOffsetX != null) zoneObj.third_base_pattern_offset_x = Math.max(0, Math.min(1, Number(z.thirdBasePatternOffsetX ?? 0.5)));
                             if (z.thirdBasePatternOffsetY != null) zoneObj.third_base_pattern_offset_y = Math.max(0, Math.min(1, Number(z.thirdBasePatternOffsetY ?? 0.5)));
+                            if (z.thirdBaseHueShift) zoneObj.third_base_hue_shift = z.thirdBaseHueShift;
+                            if (z.thirdBaseSaturation) zoneObj.third_base_saturation = z.thirdBaseSaturation;
+                            if (z.thirdBaseBrightness) zoneObj.third_base_brightness = z.thirdBaseBrightness;
                         }
                         if ((z.fourthBase || z.fourthBaseColorSource) && (z.fourthBaseStrength || 0) > 0) {
                             const _fbColor = (z.fourthBaseColor || '#ffffff').toString();
@@ -3804,6 +3818,9 @@ if __name__ == '__main__':
                             if (z.fourthBasePatternHarden != null) zoneObj.fourth_base_pattern_harden = !!z.fourthBasePatternHarden;
                             if (z.fourthBasePatternOffsetX != null) zoneObj.fourth_base_pattern_offset_x = Math.max(0, Math.min(1, Number(z.fourthBasePatternOffsetX ?? 0.5)));
                             if (z.fourthBasePatternOffsetY != null) zoneObj.fourth_base_pattern_offset_y = Math.max(0, Math.min(1, Number(z.fourthBasePatternOffsetY ?? 0.5)));
+                            if (z.fourthBaseHueShift) zoneObj.fourth_base_hue_shift = z.fourthBaseHueShift;
+                            if (z.fourthBaseSaturation) zoneObj.fourth_base_saturation = z.fourthBaseSaturation;
+                            if (z.fourthBaseBrightness) zoneObj.fourth_base_brightness = z.fourthBaseBrightness;
                         }
                         if ((z.fifthBase || z.fifthBaseColorSource) && (z.fifthBaseStrength || 0) > 0) {
                             const _fifColor = (z.fifthBaseColor || '#ffffff').toString();
@@ -3825,6 +3842,9 @@ if __name__ == '__main__':
                             if (z.fifthBasePatternHarden != null) zoneObj.fifth_base_pattern_harden = !!z.fifthBasePatternHarden;
                             if (z.fifthBasePatternOffsetX != null) zoneObj.fifth_base_pattern_offset_x = Math.max(0, Math.min(1, Number(z.fifthBasePatternOffsetX ?? 0.5)));
                             if (z.fifthBasePatternOffsetY != null) zoneObj.fifth_base_pattern_offset_y = Math.max(0, Math.min(1, Number(z.fifthBasePatternOffsetY ?? 0.5)));
+                            if (z.fifthBaseHueShift) zoneObj.fifth_base_hue_shift = z.fifthBaseHueShift;
+                            if (z.fifthBaseSaturation) zoneObj.fifth_base_saturation = z.fifthBaseSaturation;
+                            if (z.fifthBaseBrightness) zoneObj.fifth_base_brightness = z.fifthBaseBrightness;
                         }
                         const hasSpatialRefinement = z.spatialMask && z.spatialMask.some(v => v > 0);
                         if (!hasSpatialRefinement && z.regionMask && z.regionMask.some(v => v > 0)) { const pc = document.getElementById('paintCanvas'); if (pc) zoneObj.region_mask = encodeRegionMaskRLE(z.regionMask, pc.width, pc.height); }

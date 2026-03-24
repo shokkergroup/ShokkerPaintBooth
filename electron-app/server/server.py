@@ -112,6 +112,12 @@ except ImportError:
     from config import CFG
 # engine package provides V5 registries (BASE_REGISTRY, PATTERN_REGISTRY, MONOLITHIC_REGISTRY) via __getattr__
 
+# GPU acceleration detection
+try:
+    from engine.gpu import gpu_info
+except ImportError:
+    def gpu_info(): return {'backend': 'cpu', 'name': 'CPU', 'vram_mb': 0, 'accelerated': False, 'icon': 'CPU'}
+
 # Setup Flask
 app = Flask(__name__)
 CORS(app)
@@ -290,8 +296,9 @@ def build_check():
     try:
         import json as _json
         for _pkg_path in [
-            os.path.join(os.path.dirname(SERVER_DIR), 'package.json'),  # electron-app/package.json
-            os.path.join(SERVER_DIR, '..', 'package.json'),
+            os.path.join(SERVER_DIR, 'electron-app', 'package.json'),   # dev mode: V5/electron-app/package.json
+            os.path.join(os.path.dirname(SERVER_DIR), 'package.json'),  # electron-app/package.json (installed)
+            os.path.join(SERVER_DIR, '..', 'package.json'),             # fallback
         ]:
             if os.path.isfile(_pkg_path):
                 with open(_pkg_path, 'r') as _f:
@@ -308,6 +315,7 @@ def build_check():
         "pid": os.getpid(),
         "port": int(os.environ.get('SHOKKER_PORT', 59876)),
         "server_dir": SERVER_DIR,
+        "gpu": gpu_info(),
     })
 
 @app.route('/status', methods=['GET'])
@@ -347,7 +355,8 @@ def status():
         "license": {
             "active": _license_active,
             "key_masked": (_license_key[:12] + "****") if _license_key else "",
-        }
+        },
+        "gpu": gpu_info(),
     })
 
 
@@ -2086,9 +2095,23 @@ def render():
     #         "license_required": True
     #     }), 403
 
+    # Cancel any in-flight preview render so it doesn't compete for CPU
+    _preview_abort.set()
+    # Acquire render lock to prevent preview and full render from running simultaneously
+    acquired = _preview_render_lock.acquire(timeout=5.0)
+    if not acquired:
+        logger.warning("Full render waiting for preview lock — forcing acquisition")
+        # Force it — full renders take priority
+        try:
+            _preview_render_lock.release()
+        except RuntimeError:
+            pass
+        _preview_render_lock.acquire(timeout=1.0)
+
     try:
         data = request.get_json()
         if not data:
+            _preview_render_lock.release()
             return jsonify({"error": "No JSON body provided"}), 400
 
         paint_file = data.get("paint_file")
@@ -2531,6 +2554,12 @@ def render():
     except Exception as e:
         logger.error(f"Render error: {traceback.format_exc()}")
         return jsonify({"error": str(e), "traceback": traceback.format_exc()}), 500
+    finally:
+        # Release render lock so previews can resume
+        try:
+            _preview_render_lock.release()
+        except RuntimeError:
+            pass  # Already released
 
 
 def _photoshop_exchange_root():

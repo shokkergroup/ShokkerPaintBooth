@@ -13,6 +13,15 @@ Uses LAZY import for BASE_REGISTRY/PATTERN_REGISTRY to avoid circular import.
 """
 
 import numpy as np
+import time as _time
+
+try:
+    from engine.gpu import xp, to_cpu, to_gpu, is_gpu
+except ImportError:
+    import numpy as xp
+    def to_cpu(a): return a
+    def to_gpu(a): return a
+    def is_gpu(): return False
 
 from engine.core import (
     _resize_array,
@@ -295,6 +304,8 @@ def compose_finish(base_id, pattern_id, shape, mask, seed, sm, scale=1.0, spec_m
         (normal/multiply/screen/overlay/hardlight/softlight).
     When second_base/third_base/fourth_base/fifth_base start with "mono:", they are
     looked up in monolithic_registry (spec_fn, paint_fn) and the spec_fn is used as the overlay."""
+    _t_compose = _time.time()
+    _gpu_active = is_gpu()
     from engine.registry import BASE_REGISTRY, PATTERN_REGISTRY
     if pattern_sm is None:
         pattern_sm = sm
@@ -632,16 +643,31 @@ def compose_finish(base_id, pattern_id, shape, mask, seed, sm, scale=1.0, spec_m
             else:
                 final_CC = int(pat_CC)
 
-    M_final = M_arr * mask + 5.0 * (1 - mask)
-    R_final = R_arr * mask + 100.0 * (1 - mask)
-
-    spec[:,:,0] = np.clip(M_final, 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R_final, 0, 255).astype(np.uint8)
-    if isinstance(final_CC, np.ndarray):
-        spec[:,:,2] = np.clip(final_CC * mask, 0, 255).astype(np.uint8)
+    # GPU-accelerate final spec assembly (mask blending + clipping)
+    if _gpu_active:
+        M_arr = to_gpu(M_arr)
+        R_arr = to_gpu(R_arr)
+        _mask_g = to_gpu(mask)
+        M_final = M_arr * _mask_g + 5.0 * (1 - _mask_g)
+        R_final = R_arr * _mask_g + 100.0 * (1 - _mask_g)
+        spec[:,:,0] = to_cpu(xp.clip(M_final, 0, 255).astype(xp.uint8))
+        spec[:,:,1] = to_cpu(xp.clip(R_final, 0, 255).astype(xp.uint8))
+        if isinstance(final_CC, np.ndarray):
+            _cc_g = to_gpu(final_CC)
+            spec[:,:,2] = to_cpu(xp.clip(_cc_g * _mask_g, 0, 255).astype(xp.uint8))
+        else:
+            spec[:,:,2] = np.where(mask > 0.5, final_CC, 0).astype(np.uint8)
+        spec[:,:,3] = 255
     else:
-        spec[:,:,2] = np.where(mask > 0.5, final_CC, 0).astype(np.uint8)
-    spec[:,:,3] = 255
+        M_final = M_arr * mask + 5.0 * (1 - mask)
+        R_final = R_arr * mask + 100.0 * (1 - mask)
+        spec[:,:,0] = np.clip(M_final, 0, 255).astype(np.uint8)
+        spec[:,:,1] = np.clip(R_final, 0, 255).astype(np.uint8)
+        if isinstance(final_CC, np.ndarray):
+            spec[:,:,2] = np.clip(final_CC * mask, 0, 255).astype(np.uint8)
+        else:
+            spec[:,:,2] = np.where(mask > 0.5, final_CC, 0).astype(np.uint8)
+        spec[:,:,3] = 255
 
     if second_base and second_base_strength > 0.001:
         try:
@@ -871,6 +897,9 @@ def compose_finish(base_id, pattern_id, shape, mask, seed, sm, scale=1.0, spec_m
     _apply_named_overlay_spec_stack("fourth_overlay_spec_pattern_stack", 9000)
     _apply_named_overlay_spec_stack("fifth_overlay_spec_pattern_stack", 10000)
 
+    _ms = int((_time.time() - _t_compose) * 1000)
+    if _gpu_active:
+        print(f"[GPU] compose_finish: {_ms}ms (GPU)")
     return spec
 
 
@@ -1216,12 +1245,28 @@ def compose_finish_stacked(base_id, all_patterns, shape, mask, seed, sm, spec_mu
             else:
                 final_CC = final_CC * (1.0 - opacity) + float(pat_CC) * opacity
 
-    M_final = M_arr * mask + 5.0 * (1 - mask)
-    R_final = R_arr * mask + 100.0 * (1 - mask)
-    spec[:,:,0] = np.clip(M_final, 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R_final, 0, 255).astype(np.uint8)
-    spec[:,:,2] = np.clip(final_CC * mask, 0, 255).astype(np.uint8)
-    spec[:,:,3] = 255
+    # GPU-accelerate final spec assembly (mask blending + clipping)
+    if is_gpu():
+        M_arr = to_gpu(M_arr)
+        R_arr = to_gpu(R_arr)
+        _mask_g = to_gpu(mask)
+        M_final = M_arr * _mask_g + 5.0 * (1 - _mask_g)
+        R_final = R_arr * _mask_g + 100.0 * (1 - _mask_g)
+        spec[:,:,0] = to_cpu(xp.clip(M_final, 0, 255).astype(xp.uint8))
+        spec[:,:,1] = to_cpu(xp.clip(R_final, 0, 255).astype(xp.uint8))
+        if isinstance(final_CC, np.ndarray):
+            _cc_g = to_gpu(final_CC)
+            spec[:,:,2] = to_cpu(xp.clip(_cc_g * _mask_g, 0, 255).astype(xp.uint8))
+        else:
+            spec[:,:,2] = np.clip(final_CC * mask, 0, 255).astype(np.uint8)
+        spec[:,:,3] = 255
+    else:
+        M_final = M_arr * mask + 5.0 * (1 - mask)
+        R_final = R_arr * mask + 100.0 * (1 - mask)
+        spec[:,:,0] = np.clip(M_final, 0, 255).astype(np.uint8)
+        spec[:,:,1] = np.clip(R_final, 0, 255).astype(np.uint8)
+        spec[:,:,2] = np.clip(final_CC * mask, 0, 255).astype(np.uint8)
+        spec[:,:,3] = 255
 
     if second_base and second_base_strength > 0.001:
         try:
@@ -1863,6 +1908,7 @@ def compose_paint_mod(base_id, pattern_id, paint, shape, mask, seed, pm, bb, sca
             )
             _alpha_sb3 = _alpha_sb[:, :, np.newaxis]
             if abs(second_base_hue_shift) > 0.5 or abs(second_base_saturation) > 0.5 or abs(second_base_brightness) > 0.5:
+                print(f"    [OVERLAY HSB] 2nd base: hue={second_base_hue_shift}, sat={second_base_saturation}, brt={second_base_brightness}")
                 paint_overlay = _apply_hsb_adjustments(paint_overlay, hard_mask, second_base_hue_shift, second_base_saturation, second_base_brightness)
             if abs(second_base_pattern_hue_shift) > 0.5 or abs(second_base_pattern_saturation) > 0.5 or abs(second_base_pattern_brightness) > 0.5:
                 paint_overlay = _apply_hsb_adjustments(paint_overlay, hard_mask, second_base_pattern_hue_shift, second_base_pattern_saturation, second_base_pattern_brightness)
@@ -2363,6 +2409,7 @@ def compose_paint_mod_stacked(base_id, all_patterns, paint, shape, mask, seed, p
             )
             _alpha_sb_st3 = _alpha_sb_st[:, :, np.newaxis]
             if abs(second_base_hue_shift) > 0.5 or abs(second_base_saturation) > 0.5 or abs(second_base_brightness) > 0.5:
+                print(f"    [OVERLAY HSB] 2nd base: hue={second_base_hue_shift}, sat={second_base_saturation}, brt={second_base_brightness}")
                 paint_overlay = _apply_hsb_adjustments(paint_overlay, hard_mask, second_base_hue_shift, second_base_saturation, second_base_brightness)
             if abs(second_base_pattern_hue_shift) > 0.5 or abs(second_base_pattern_saturation) > 0.5 or abs(second_base_pattern_brightness) > 0.5:
                 paint_overlay = _apply_hsb_adjustments(paint_overlay, hard_mask, second_base_pattern_hue_shift, second_base_pattern_saturation, second_base_pattern_brightness)

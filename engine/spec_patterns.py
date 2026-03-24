@@ -38,8 +38,23 @@ CONVENIENCE:
 26. multi_band_spec     — combo of bands + flakes + depth, outputs 0-255
 """
 import numpy as np
-from scipy.ndimage import gaussian_filter
+try:
+    import cv2 as _cv2
+    _CV2_OK = True
+except ImportError:
+    _CV2_OK = False
+from scipy.ndimage import gaussian_filter as _scipy_gaussian
 from scipy.spatial import cKDTree
+
+
+def _gauss(arr, sigma):
+    """Gaussian blur: use cv2 (3-5x faster) with scipy fallback."""
+    if not _CV2_OK or sigma < 0.3:
+        return _scipy_gaussian(arr, sigma=sigma)
+    # cv2.GaussianBlur requires odd kernel size
+    ksize = int(sigma * 6) | 1  # nearest odd integer >= 6*sigma
+    ksize = max(ksize, 3)
+    return _cv2.GaussianBlur(arr, (ksize, ksize), sigmaX=sigma, sigmaY=sigma)
 
 
 # ---------------------------------------------------------------------------
@@ -95,12 +110,13 @@ def banded_rows(shape, seed, sm, num_bands=30, palette_size=10,
     eff_y = row_coords[:, np.newaxis] + warp[np.newaxis, :]
     feather_px = max(band_height * feather_frac, 1.0)
 
-    result = np.zeros(shape, dtype=np.float32)
-    wsum = np.zeros(shape, dtype=np.float32)
-    for b in range(num_bands):
-        wb = np.exp(-((eff_y - band_centers[b]) ** 2) / (2.0 * feather_px ** 2))
-        result += wb * band_values[b]
-        wsum += wb
+    # Vectorized over all bands at once: (num_bands, h, w) → reduce along axis 0
+    # eff_y is (h, w); band_centers is (B,)
+    # diff: (B, h, w) via broadcasting
+    diff = eff_y[np.newaxis, :, :] - band_centers[:, np.newaxis, np.newaxis]  # (B, h, w)
+    wb = np.exp(-(diff ** 2) / (2.0 * feather_px ** 2))                      # (B, h, w)
+    wsum = wb.sum(axis=0)                                                      # (h, w)
+    result = (wb * band_values[:, np.newaxis, np.newaxis]).sum(axis=0)        # (h, w)
     result /= np.maximum(wsum, 1e-6)
 
     return _sm_scale(result, sm).astype(np.float32)
@@ -138,7 +154,7 @@ def flake_scatter(shape, seed, sm, density=0.02, flake_radius=2,
 
     # One Gaussian blur pass produces radial glow around every flake
     sigma = max(0.5, flake_radius * 0.6)
-    blurred = gaussian_filter(canvas, sigma=sigma)
+    blurred = _gauss(canvas, sigma=sigma)
     bmax = blurred.max()
     if bmax > 1e-7:
         blurred = blurred / bmax
@@ -531,27 +547,24 @@ def panel_zones(shape, seed, sm, num_zones=6, feather=0.08):
         return _flat(shape)
 
     rng = np.random.RandomState(seed)
-    yy = np.arange(h, dtype=np.float32) / h
-    xx = np.arange(w, dtype=np.float32) / w
 
     # Zone centers and values
     zone_vals = rng.uniform(0.15, 0.85, size=num_zones).astype(np.float32)
     zone_cy = rng.uniform(0.1, 0.9, size=num_zones)
     zone_cx = rng.uniform(0.1, 0.9, size=num_zones)
 
-    # For each pixel, find nearest zone (Voronoi)
-    min_dist = np.full(shape, 1e6, dtype=np.float32)
-    second_dist = np.full(shape, 1e6, dtype=np.float32)
-    nearest = np.zeros(shape, dtype=np.float32)
-
-    for z in range(num_zones):
-        d = np.sqrt(((yy[:, np.newaxis] - zone_cy[z]) * 2)**2 +
-                     ((xx[np.newaxis, :] - zone_cx[z]) * 2)**2)
-        closer = d < min_dist
-        # Update second-nearest before nearest
-        second_dist = np.where(closer, min_dist, np.minimum(second_dist, d))
-        nearest = np.where(closer, zone_vals[z], nearest)
-        min_dist = np.where(closer, d, min_dist)
+    # For each pixel, find nearest zone via cKDTree (no per-zone loop)
+    # Coordinates scaled by 2 to match original distance metric
+    centers = np.column_stack([(zone_cy * 2).astype(np.float64), (zone_cx * 2).astype(np.float64)])
+    tree = cKDTree(centers)
+    yy_g = (np.arange(h, dtype=np.float64) / h) * 2
+    xx_g = (np.arange(w, dtype=np.float64) / w) * 2
+    YY, XX = np.meshgrid(yy_g, xx_g, indexing='ij')
+    pts = np.column_stack([YY.ravel(), XX.ravel()])
+    dists, idxs = tree.query(pts, k=2, workers=-1)
+    min_dist    = dists[:, 0].reshape(shape).astype(np.float32)
+    second_dist = dists[:, 1].reshape(shape).astype(np.float32)
+    nearest     = zone_vals[idxs[:, 0]].reshape(shape)
 
     # Feather at zone boundaries
     edge_blend = np.clip((second_dist - min_dist) / max(feather, 0.001), 0, 1)
@@ -658,20 +671,18 @@ def crackle_network(shape, seed, sm, cell_count=25, crack_width=0.12):
     cx = rng.uniform(0, 1, size=n).astype(np.float32)
     cell_vals = rng.uniform(0.4, 0.7, size=n).astype(np.float32)
 
-    yy = np.arange(h, dtype=np.float32) / h
-    xx = np.arange(w, dtype=np.float32) / w
-
-    d1 = np.full(shape, 1e6, dtype=np.float32)
-    d2 = np.full(shape, 1e6, dtype=np.float32)
-    nearest = np.zeros(shape, dtype=np.float32)
-
-    for i in range(n):
-        d = np.sqrt(((yy[:, np.newaxis] - cy[i]))**2 +
-                     ((xx[np.newaxis, :] - cx[i]))**2)
-        closer = d < d1
-        d2 = np.where(closer, d1, np.minimum(d2, d))
-        nearest = np.where(closer, cell_vals[i], nearest)
-        d1 = np.where(closer, d, d1)
+    # Use cKDTree for vectorized 2-NN query — no Python loop over cells
+    # Centers are in normalized [0,1] coordinates (match yy/xx)
+    centers = np.column_stack([cy.astype(np.float64), cx.astype(np.float64)])
+    tree = cKDTree(centers)
+    yy_g = np.arange(h, dtype=np.float64) / h
+    xx_g = np.arange(w, dtype=np.float64) / w
+    YY, XX = np.meshgrid(yy_g, xx_g, indexing='ij')
+    pts = np.column_stack([YY.ravel(), XX.ravel()])
+    dists, idxs = tree.query(pts, k=2, workers=-1)
+    d1      = dists[:, 0].reshape(shape).astype(np.float32)
+    d2      = dists[:, 1].reshape(shape).astype(np.float32)
+    nearest = cell_vals[idxs[:, 0]].reshape(shape)
 
     # Crack detection: thin zone where d2 ≈ d1
     crack_factor = np.clip(1.0 - (d2 - d1) / max(crack_width * 0.1, 0.001), 0, 1)
@@ -691,6 +702,7 @@ def flow_lines(shape, seed, sm, num_streams=40, line_width=0.02, curvature=3.0):
     Fluid flow lines showing how paint/coating flows across surface.
     Simulates spray patterns, drip paths, or wind streaks.
     Creates organic elongated streaks that curve across the surface.
+    Optimized: processes streams in batches to reduce per-stream overhead.
     """
     h, w = shape
     if sm < 0.001:
@@ -701,26 +713,40 @@ def flow_lines(shape, seed, sm, num_streams=40, line_width=0.02, curvature=3.0):
     xx = np.arange(w, dtype=np.float32) / w
 
     # Base flow direction (slightly diagonal)
-    base_angle = rng.uniform(-0.3, 0.3)  # Near horizontal
+    base_angle = rng.uniform(-0.3, 0.3)
+    tan_angle = np.tan(base_angle)
 
-    result = np.full(shape, 0.5, dtype=np.float32)
-    for _ in range(num_streams):
-        # Stream center line: y = start_y + curvature_fn(x)
-        start_y = rng.uniform(0, 1)
-        intensity = rng.uniform(0.3, 0.8)
-        freq = rng.uniform(0.5, curvature)
-        phase = rng.uniform(0, 2 * np.pi)
-        amplitude = rng.uniform(0.02, 0.12)
-        lw = line_width * rng.uniform(0.5, 2.0)
+    # Pre-generate all stream parameters at once
+    n = num_streams
+    start_ys = rng.uniform(0, 1, n).astype(np.float32)
+    intensities = rng.uniform(0.3, 0.8, n).astype(np.float32)
+    freqs = rng.uniform(0.5, curvature, n).astype(np.float32)
+    phases = rng.uniform(0, 2 * np.pi, n).astype(np.float32)
+    amplitudes = rng.uniform(0.02, 0.12, n).astype(np.float32)
+    lws = (line_width * rng.uniform(0.5, 2.0, n)).astype(np.float32)
 
-        # Stream path
-        stream_y = start_y + np.sin(xx * freq * np.pi + phase) * amplitude + xx * np.tan(base_angle)
-        # Distance from each pixel to stream path
-        dist = np.abs(yy[:, np.newaxis] - stream_y[np.newaxis, :])
-        # Stream profile: Gaussian cross-section
-        stream = np.exp(-(dist ** 2) / (2 * lw ** 2))
-        result = result + stream * (intensity - 0.5) * 0.5
+    # Process in batches of 8 to limit peak memory while still vectorizing
+    batch_size = 8
+    result = np.zeros(shape, dtype=np.float32)
+    for b_start in range(0, n, batch_size):
+        b_end = min(b_start + batch_size, n)
+        b = b_end - b_start
+        # Compute all stream centerlines for this batch: (b, w)
+        stream_ys = (start_ys[b_start:b_end, None] +
+                     np.sin(xx[None, :] * freqs[b_start:b_end, None] * np.pi + phases[b_start:b_end, None]) *
+                     amplitudes[b_start:b_end, None] +
+                     xx[None, :] * tan_angle)
+        # Distance from every pixel row to every stream: (b, h, w) via broadcasting
+        # yy is (h,), stream_ys is (b, w) → dist is (b, h, w)
+        dist = np.abs(yy[None, :, None] - stream_ys[:, None, :])
+        # Gaussian profile: (b, h, w)
+        inv_2lw2 = 1.0 / (2.0 * lws[b_start:b_end, None, None] ** 2)
+        streams = np.exp(-(dist ** 2) * inv_2lw2)
+        # Accumulate weighted streams
+        weights = (intensities[b_start:b_end] - 0.5)[:, None, None] * 0.5
+        result += (streams * weights).sum(axis=0)
 
+    result += 0.5  # Re-center around 0.5
     return _sm_scale(_normalize(result), sm).astype(np.float32)
 
 
@@ -983,26 +1009,41 @@ def patina_bloom(shape, seed, sm, num_blooms=20, min_radius=0.02,
     yy = np.arange(h, dtype=np.float32) / h
     xx = np.arange(w, dtype=np.float32) / w
 
+    # Pre-generate all bloom parameters at once
+    n = num_blooms
+    cys       = rng.uniform(0, 1, n).astype(np.float32)
+    cxs       = rng.uniform(0, 1, n).astype(np.float32)
+    radii     = rng.uniform(min_radius, max_radius, n).astype(np.float32)
+    intensities = rng.uniform(0.3, 0.9, n).astype(np.float32)
+    is_ring   = rng.uniform(0, 1, n) > 0.5   # (n,) bool
+
     result = np.full(shape, 0.5, dtype=np.float32)
-    for _ in range(num_blooms):
-        cy, cx = rng.uniform(0, 1), rng.uniform(0, 1)
-        radius = rng.uniform(min_radius, max_radius)
-        intensity = rng.uniform(0.3, 0.9)
-        # Ring vs solid: some blooms have bright edge, some are solid
-        ring = rng.uniform(0, 1) > 0.5
 
-        dist = np.sqrt(((yy[:, np.newaxis] - cy))**2 +
-                        ((xx[np.newaxis, :] - cx))**2)
+    # Separate ring and solid blooms to batch each type
+    ring_idx  = np.where(is_ring)[0]
+    solid_idx = np.where(~is_ring)[0]
 
-        if ring:
-            # Ring bloom: bright at edge, fade inside and outside
-            ring_dist = np.abs(dist - radius * 0.7) / (radius * 0.3 + 1e-6)
-            bloom = np.exp(-ring_dist**2 * 2) * intensity
-        else:
-            # Solid bloom: bright at center, fade outward
-            bloom = np.exp(-(dist / radius)**2) * intensity
+    # --- Solid blooms: (n_solid, h, w) ---
+    if len(solid_idx) > 0:
+        # dist^2 = (yy - cy)^2 + (xx - cx)^2 for each bloom
+        dy = yy[:, np.newaxis, np.newaxis] - cys[solid_idx][np.newaxis, np.newaxis, :]  # (h,1,n)
+        dx = xx[np.newaxis, :, np.newaxis] - cxs[solid_idx][np.newaxis, np.newaxis, :]  # (1,w,n)
+        # dist: (h, w, n_solid)
+        dist_sq = dy**2 + dx**2
+        r2 = (radii[solid_idx]**2)[np.newaxis, np.newaxis, :]
+        bloom = np.exp(-dist_sq / np.maximum(r2, 1e-12)) * intensities[solid_idx][np.newaxis, np.newaxis, :]
+        result += (bloom.sum(axis=2) - 0.5 * len(solid_idx)) * 0.3
 
-        result = result + (bloom - 0.5) * 0.3
+    # --- Ring blooms ---
+    if len(ring_idx) > 0:
+        dy = yy[:, np.newaxis, np.newaxis] - cys[ring_idx][np.newaxis, np.newaxis, :]
+        dx = xx[np.newaxis, :, np.newaxis] - cxs[ring_idx][np.newaxis, np.newaxis, :]
+        dist = np.sqrt(dy**2 + dx**2)
+        r_inner = (radii[ring_idx] * 0.7)[np.newaxis, np.newaxis, :]
+        r_width = (radii[ring_idx] * 0.3 + 1e-6)[np.newaxis, np.newaxis, :]
+        ring_dist = np.abs(dist - r_inner) / r_width
+        bloom = np.exp(-ring_dist**2 * 2) * intensities[ring_idx][np.newaxis, np.newaxis, :]
+        result += (bloom.sum(axis=2) - 0.5 * len(ring_idx)) * 0.3
 
     return _sm_scale(_normalize(result), sm).astype(np.float32)
 
@@ -1078,7 +1119,7 @@ def electric_branches(shape, seed, sm, num_trees=3, branch_depth=6,
     # Gaussian blur for glow — sigma proportional to mean thickness
     mean_thick = float(np.mean([s[4] for s in segments]))
     sigma = max(mean_thick * min(h, w) * 0.5, 1.5)
-    blurred = gaussian_filter(canvas, sigma=sigma)
+    blurred = _gauss(canvas, sigma=sigma)
     result = np.maximum(canvas * 0.4, blurred)
     result = 0.3 + result * 0.7
 
@@ -1119,22 +1160,21 @@ def voronoi_fracture(shape, seed, sm, num_cells=40, edge_width=2.0, **kwargs):
     if sm < 0.001:
         return _flat(shape)
     rng = np.random.RandomState(seed)
-    cx = rng.rand(num_cells) * w
-    cy = rng.rand(num_cells) * h
-    cell_vals = rng.rand(num_cells).astype(np.float32) * 0.6 + 0.2
+    cx = rng.rand(num_cells).astype(np.float32) * w
+    cy = rng.rand(num_cells).astype(np.float32) * h
+    cell_vals = (rng.rand(num_cells).astype(np.float32) * 0.6 + 0.2)
 
-    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
-    dists = np.full((2, h, w), 1e9, dtype=np.float32)
-    closest = np.zeros((h, w), dtype=np.int32)
+    # Use cKDTree for vectorized 2-NN query instead of per-cell loop
+    centers = np.column_stack([cy, cx]).astype(np.float64)
+    tree = cKDTree(centers)
+    yy, xx = np.mgrid[0:h, 0:w]
+    pts = np.column_stack([yy.ravel().astype(np.float64), xx.ravel().astype(np.float64)])
+    dists, idxs = tree.query(pts, k=2, workers=-1)
+    d1 = dists[:, 0].reshape(shape).astype(np.float32)
+    d2 = dists[:, 1].reshape(shape).astype(np.float32)
+    closest = idxs[:, 0].reshape(shape)
 
-    for i in range(num_cells):
-        d = np.sqrt((xx - cx[i])**2 + (yy - cy[i])**2)
-        mask = d < dists[0]
-        dists[1] = np.where(mask, dists[0], np.minimum(dists[1], d))
-        closest = np.where(mask, i, closest)
-        dists[0] = np.minimum(dists[0], d)
-
-    edge = np.clip((dists[1] - dists[0]) / edge_width, 0, 1).astype(np.float32)
+    edge = np.clip((d2 - d1) / max(edge_width, 1e-6), 0, 1).astype(np.float32)
     cell_fill = cell_vals[closest]
     result = cell_fill * edge
     return _sm_scale(_normalize(result), sm)
@@ -1205,22 +1245,51 @@ def acid_etch(shape, seed, sm, intensity=0.6, blob_count=30, **kwargs):
     if sm < 0.001:
         return _flat(shape)
     rng = np.random.RandomState(seed)
-    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+
+    # Pre-generate all blob parameters
+    n = blob_count
+    cxs    = rng.rand(n).astype(np.float32) * w
+    cys    = rng.rand(n).astype(np.float32) * h
+    rxs    = rng.uniform(10, 60, n).astype(np.float32)
+    rys    = rng.uniform(10, 60, n).astype(np.float32)
+    angles = rng.uniform(0, np.pi, n).astype(np.float32)
+    depths = rng.uniform(0.3, 1.0, n).astype(np.float32)
+    noise_phases = rng.uniform(0, 6.28, n).astype(np.float32)
+
+    yy = np.arange(h, dtype=np.float32)
+    xx = np.arange(w, dtype=np.float32)
+    # Build 2D grids once
+    XX, YY = np.meshgrid(xx, yy)  # (h, w)
+
     result = np.ones(shape, dtype=np.float32)
 
-    for _ in range(blob_count):
-        cx, cy = rng.rand() * w, rng.rand() * h
-        rx, ry = rng.uniform(10, 60), rng.uniform(10, 60)
-        angle = rng.uniform(0, np.pi)
-        cos_a, sin_a = np.cos(angle), np.sin(angle)
-        dx = (xx - cx) * cos_a + (yy - cy) * sin_a
-        dy = -(xx - cx) * sin_a + (yy - cy) * cos_a
-        d = (dx/rx)**2 + (dy/ry)**2
-        depth = rng.uniform(0.3, 1.0)
-        etch = np.exp(-d * 2.0) * depth * intensity
-        # Noise at edges
-        edge_noise = np.sin(dx * 0.3 + rng.uniform(0, 6.28)) * np.cos(dy * 0.4) * 0.15
-        result -= etch + np.clip(edge_noise * np.exp(-d * 3.0), 0, 0.3)
+    # Process in small batches to limit (n, h, w) peak memory
+    batch = max(1, min(5, blob_count))
+    for b_start in range(0, n, batch):
+        b_end = min(b_start + batch, n)
+        B = b_end - b_start
+
+        cos_a = np.cos(angles[b_start:b_end]).astype(np.float32)  # (B,)
+        sin_a = np.sin(angles[b_start:b_end]).astype(np.float32)
+
+        # (B, h, w) local rotated coords
+        dX = XX[np.newaxis, :, :] - cxs[b_start:b_end, np.newaxis, np.newaxis]
+        dY = YY[np.newaxis, :, :] - cys[b_start:b_end, np.newaxis, np.newaxis]
+        dx = dX * cos_a[:, np.newaxis, np.newaxis] + dY * sin_a[:, np.newaxis, np.newaxis]
+        dy = -dX * sin_a[:, np.newaxis, np.newaxis] + dY * cos_a[:, np.newaxis, np.newaxis]
+
+        rx = rxs[b_start:b_end, np.newaxis, np.newaxis]
+        ry = rys[b_start:b_end, np.newaxis, np.newaxis]
+        d = (dx / rx) ** 2 + (dy / ry) ** 2
+
+        dep = depths[b_start:b_end, np.newaxis, np.newaxis]
+        etch = np.exp(-d * 2.0) * dep * intensity
+
+        ph = noise_phases[b_start:b_end, np.newaxis, np.newaxis]
+        edge_noise = np.sin(dx * 0.3 + ph) * np.cos(dy * 0.4) * 0.15
+        etch_total = etch + np.clip(edge_noise * np.exp(-d * 3.0), 0, 0.3)
+
+        result -= etch_total.sum(axis=0)
 
     return _sm_scale(_normalize(np.clip(result, 0, 1)), sm)
 
@@ -1255,12 +1324,9 @@ def galaxy_swirl(shape, seed, sm, num_arms=4, twist=3.0, **kwargs):
     halo = np.exp(-r * 2.0)
 
     result = arms * halo + bulge * 0.5
-    # Sprinkle star clusters
+    # Sprinkle star clusters — Gaussian blur replaces slow nested-roll loop
     stars = (rng.rand(h, w) > 0.997).astype(np.float32)
-    star_glow = np.zeros_like(stars)
-    for dy in range(-2, 3):
-        for dx in range(-2, 3):
-            star_glow += np.roll(np.roll(stars, dy, 0), dx, 1) * np.exp(-(dy**2 + dx**2) * 0.5)
+    star_glow = _gauss(stars, sigma=1.0)
     result += star_glow * 0.3
 
     return _sm_scale(_normalize(result), sm)
@@ -1299,8 +1365,8 @@ def reptile_scale(shape, seed, sm, scale_size=18, overlap=0.3, **kwargs):
     cell_hash = ((cell_r * 48271) ^ (cell_c * 16807)) & 0xFFFF
     tilt = (cell_hash.astype(np.float32) / 65535.0) * 0.4 + 0.8
 
-    result = scale_bright * tilt
-    return _sm_scale(_normalize(result), sm)
+    result = (scale_bright * tilt).astype(np.float32)
+    return _sm_scale(_normalize(result), sm).astype(np.float32)
 
 
 # ============================================================================
@@ -1358,18 +1424,18 @@ def prismatic_shatter(shape, seed, sm, num_shards=60, **kwargs):
     angles = rng.uniform(0, np.pi, num_shards)
     shard_spec = rng.uniform(0.15, 0.95, num_shards).astype(np.float32)
 
-    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+    # Assign each pixel to nearest shard via cKDTree (vectorized, no loop)
+    centers = np.column_stack([cy.astype(np.float64), cx.astype(np.float64)])
+    tree = cKDTree(centers)
+    yy_g, xx_g = np.mgrid[0:h, 0:w]
+    pts = np.column_stack([yy_g.ravel().astype(np.float64), xx_g.ravel().astype(np.float64)])
+    dists, idxs = tree.query(pts, k=2, workers=-1)
+    min_dist_v   = dists[:, 0].reshape(shape).astype(np.float32)
+    second_dist_v= dists[:, 1].reshape(shape).astype(np.float32)
+    closest = idxs[:, 0].reshape(shape)
 
-    # Assign each pixel to nearest shard (Voronoi)
-    closest = np.zeros((h, w), dtype=np.int32)
-    min_dist = np.full((h, w), 1e9, dtype=np.float32)
-    second_dist = np.full((h, w), 1e9, dtype=np.float32)
-    for i in range(num_shards):
-        d = (xx - cx[i])**2 + (yy - cy[i])**2
-        mask = d < min_dist
-        second_dist = np.where(mask, min_dist, np.minimum(second_dist, d))
-        closest = np.where(mask, i, closest)
-        min_dist = np.minimum(min_dist, d)
+    yy = yy_g.astype(np.float32)
+    xx = xx_g.astype(np.float32)
 
     # Angular gradient within each shard — normalize to [0,1] to avoid wild oscillation
     shard_angle = angles[closest]
@@ -1378,10 +1444,10 @@ def prismatic_shatter(shape, seed, sm, num_shards=60, **kwargs):
     grad = np.sin((xx_n * np.cos(shard_angle) + yy_n * np.sin(shard_angle)) * np.pi) * 0.5 + 0.5
 
     # Edge darkening (fracture lines)
-    edge = np.clip((np.sqrt(second_dist) - np.sqrt(min_dist)) / 3.0, 0, 1)
+    edge = np.clip((second_dist_v - min_dist_v) / 3.0, 0, 1)
 
-    result = shard_spec[closest] * (0.6 + 0.4 * grad) * edge
-    return _sm_scale(_normalize(result), sm)
+    result = (shard_spec[closest] * (0.6 + 0.4 * grad) * edge).astype(np.float32)
+    return _sm_scale(_normalize(result), sm).astype(np.float32)
 
 
 # ============================================================================
@@ -1448,7 +1514,7 @@ def neural_dendrite(shape, seed, sm, num_neurons=5, branch_depth=7, **kwargs):
         canvas[iy, ix] = max(canvas[iy, ix], 1.0)
 
     # Gaussian blur adds soft dendritic glow halo
-    blurred = gaussian_filter(canvas, sigma=3.0)
+    blurred = _gauss(canvas, sigma=3.0)
     result = np.maximum(canvas, blurred)
     return _sm_scale(_normalize(result), sm)
 
@@ -1491,22 +1557,40 @@ def rust_bloom(shape, seed, sm, num_spots=25, max_radius=50, **kwargs):
     if sm < 0.001:
         return _flat(shape)
     rng = np.random.RandomState(seed)
-    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+
+    # Pre-generate all spot parameters
+    n = num_spots
+    cxs    = rng.rand(n).astype(np.float32) * w
+    cys    = rng.rand(n).astype(np.float32) * h
+    radii  = rng.uniform(8, max_radius, n).astype(np.float32)
+    depths = rng.uniform(0.4, 0.9, n).astype(np.float32)
+    edge_freqs = rng.uniform(5, 15, n).astype(np.float32)
+
+    yy = np.arange(h, dtype=np.float32)
+    xx = np.arange(w, dtype=np.float32)
+    XX, YY = np.meshgrid(xx, yy)  # (h, w)
+
     result = np.ones(shape, dtype=np.float32) * 0.85
 
-    for _ in range(num_spots):
-        cx, cy = rng.rand() * w, rng.rand() * h
-        radius = rng.uniform(8, max_radius)
-        d = np.sqrt((xx - cx)**2 + (yy - cy)**2)
-        # Ring pattern with rough edges
-        ring = np.sin(d / radius * np.pi * 3.0) * 0.3
-        rust_depth = np.exp(-(d / radius)**2 * 2.0) * rng.uniform(0.4, 0.9)
-        # Jagged edge noise
-        angle = np.arctan2(yy - cy, xx - cx)
-        edge_noise = np.sin(angle * rng.uniform(5, 15)) * radius * 0.15
+    # Process in batches to limit peak (B, h, w) memory
+    batch = max(1, min(5, num_spots))
+    for b_start in range(0, n, batch):
+        b_end = min(b_start + batch, n)
+
+        # (B, h, w)
+        dX = XX[np.newaxis, :, :] - cxs[b_start:b_end, np.newaxis, np.newaxis]
+        dY = YY[np.newaxis, :, :] - cys[b_start:b_end, np.newaxis, np.newaxis]
+        r  = radii[b_start:b_end, np.newaxis, np.newaxis]
+        d  = np.sqrt(dX**2 + dY**2)
+
+        ring       = np.sin(d / r * np.pi * 3.0) * 0.3
+        rust_depth = np.exp(-(d / r)**2 * 2.0) * depths[b_start:b_end, np.newaxis, np.newaxis]
+        angle      = np.arctan2(dY, dX)
+        ef         = edge_freqs[b_start:b_end, np.newaxis, np.newaxis]
+        edge_noise = np.sin(angle * ef) * r * 0.15
         adjusted_d = d - edge_noise
-        mask = np.clip(1.0 - adjusted_d / radius, 0, 1)
-        result -= (rust_depth + ring * 0.5) * mask
+        mask       = np.clip(1.0 - adjusted_d / r, 0, 1)
+        result    -= ((rust_depth + ring * 0.5) * mask).sum(axis=0)
 
     return _sm_scale(_normalize(np.clip(result, 0, 1)), sm)
 
@@ -1588,17 +1672,14 @@ def lava_crack(shape, seed, sm, num_plates=35, glow_width=4.0, **kwargs):
     cy = rng.rand(num_plates) * h
     plate_dark = rng.uniform(0.05, 0.25, num_plates).astype(np.float32)
 
-    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
-    min_d = np.full((h, w), 1e9, dtype=np.float32)
-    second_d = np.full((h, w), 1e9, dtype=np.float32)
-    closest = np.zeros((h, w), dtype=np.int32)
-
-    for i in range(num_plates):
-        d = np.sqrt((xx - cx[i])**2 + (yy - cy[i])**2)
-        mask = d < min_d
-        second_d = np.where(mask, min_d, np.minimum(second_d, d))
-        closest = np.where(mask, i, closest)
-        min_d = np.minimum(min_d, d)
+    centers = np.column_stack([cy.astype(np.float64), cx.astype(np.float64)])
+    tree = cKDTree(centers)
+    yy, xx = np.mgrid[0:h, 0:w]
+    pts = np.column_stack([yy.ravel().astype(np.float64), xx.ravel().astype(np.float64)])
+    dists, idxs = tree.query(pts, k=2, workers=-1)
+    min_d    = dists[:, 0].reshape(shape).astype(np.float32)
+    second_d = dists[:, 1].reshape(shape).astype(np.float32)
+    closest  = idxs[:, 0].reshape(shape)
 
     # Crack brightness = inverse of edge distance
     edge_dist = second_d - min_d
@@ -1675,8 +1756,8 @@ def sand_dune(shape, seed, sm, dune_freq=15.0, wind_angle=0.3, **kwargs):
     # Large-scale undulation
     large = np.sin(u * 2.5 + rng.uniform(0, 6.28)) * np.sin(v * 1.8 + rng.uniform(0, 6.28)) * 0.2
 
-    result = primary + secondary + large
-    return _sm_scale(_normalize(result), sm)
+    result = (primary + secondary + large).astype(np.float32)
+    return _sm_scale(_normalize(result), sm).astype(np.float32)
 
 
 # ============================================================================
@@ -1740,7 +1821,7 @@ def circuit_trace(shape, seed, sm, trace_count=40, **kwargs):
 
     # Subtle glow halo via Gaussian blur of bright trace regions
     bright_mask = (result > 0.5).astype(np.float32)
-    glow = gaussian_filter(bright_mask, sigma=2.0) * 0.25
+    glow = _gauss(bright_mask, sigma=2.0) * 0.25
     result = np.clip(result + glow, 0.0, 1.0)
 
     return _sm_scale(_normalize(result), sm)
@@ -1760,17 +1841,24 @@ def oil_slick(shape, seed, sm, num_pools=8, freq=6.0, **kwargs):
     xx = np.linspace(0, 1, w, dtype=np.float32)
     X, Y = np.meshgrid(xx, yy)
 
-    # Create smooth flowing thickness field
-    thickness = np.zeros(shape, dtype=np.float32)
-    for _ in range(num_pools):
-        cx, cy = rng.rand(), rng.rand()
-        sx, sy = rng.uniform(0.1, 0.4), rng.uniform(0.1, 0.4)
-        angle = rng.uniform(0, np.pi)
-        cos_a, sin_a = np.cos(angle), np.sin(angle)
-        dx = (X - cx) * cos_a + (Y - cy) * sin_a
-        dy = -(X - cx) * sin_a + (Y - cy) * cos_a
-        pool = np.exp(-(dx**2 / sx**2 + dy**2 / sy**2))
-        thickness += pool * rng.uniform(0.5, 2.0)
+    # Create smooth flowing thickness field — vectorize over all pools at once
+    n = num_pools
+    cxs   = rng.rand(n).astype(np.float32)
+    cys   = rng.rand(n).astype(np.float32)
+    sxs   = rng.uniform(0.1, 0.4, n).astype(np.float32)
+    sys_  = rng.uniform(0.1, 0.4, n).astype(np.float32)
+    angles= rng.uniform(0, np.pi, n).astype(np.float32)
+    amps  = rng.uniform(0.5, 2.0, n).astype(np.float32)
+    cos_a = np.cos(angles); sin_a = np.sin(angles)
+
+    # (n, h, w) rotated coords
+    dX = X[np.newaxis, :, :] - cxs[:, np.newaxis, np.newaxis]
+    dY = Y[np.newaxis, :, :] - cys[:, np.newaxis, np.newaxis]
+    dx = dX * cos_a[:, np.newaxis, np.newaxis] + dY * sin_a[:, np.newaxis, np.newaxis]
+    dy = -dX * sin_a[:, np.newaxis, np.newaxis] + dY * cos_a[:, np.newaxis, np.newaxis]
+    pools = np.exp(-(dx**2 / sxs[:, np.newaxis, np.newaxis]**2 +
+                     dy**2 / sys_[:, np.newaxis, np.newaxis]**2))
+    thickness = (pools * amps[:, np.newaxis, np.newaxis]).sum(axis=0).astype(np.float32)
 
     # Interference: sin of thickness gives rainbow banding
     interference = np.sin(thickness * freq * 2 * np.pi) * 0.5 + 0.5
@@ -1808,17 +1896,17 @@ def meteor_impact(shape, seed, sm, num_craters=3, **kwargs):
         # Raised rim
         rim = np.exp(-((r - crater_r) / (crater_r * 0.15))**2) * 0.6
 
-        # Ejecta rays
+        # Ejecta rays — vectorized over all rays at once
         num_rays = rng.randint(8, 20)
-        rays = np.zeros(shape, dtype=np.float32)
-        for ray in range(num_rays):
-            ray_angle = rng.uniform(0, 2 * np.pi)
-            ray_width = rng.uniform(0.05, 0.15)
-            ang_dist = np.abs(np.mod(theta - ray_angle + np.pi, 2*np.pi) - np.pi)
-            ray_mask = np.exp(-(ang_dist / ray_width)**2)
-            ray_falloff = np.exp(-(r - crater_r) / (crater_r * rng.uniform(1.0, 3.0)))
-            ray_falloff = np.where(r > crater_r, ray_falloff, 0)
-            rays += ray_mask * ray_falloff * 0.3
+        ray_angles = rng.uniform(0, 2 * np.pi, num_rays).astype(np.float32)
+        ray_widths = rng.uniform(0.05, 0.15, num_rays).astype(np.float32)
+        ray_decays = rng.uniform(1.0, 3.0, num_rays).astype(np.float32)
+        # ang_dist: (h, w, num_rays)
+        ang_dist = np.abs(np.mod(theta[:, :, np.newaxis] - ray_angles[np.newaxis, np.newaxis, :] + np.pi, 2*np.pi) - np.pi)
+        ray_mask = np.exp(-(ang_dist / ray_widths[np.newaxis, np.newaxis, :])**2)
+        ray_falloff_all = np.exp(-(r[:, :, np.newaxis] - crater_r) / (crater_r * ray_decays[np.newaxis, np.newaxis, :]))
+        ray_falloff_all = np.where(r[:, :, np.newaxis] > crater_r, ray_falloff_all, 0.0)
+        rays = (ray_mask * ray_falloff_all * 0.3).sum(axis=2).astype(np.float32)
 
         # Shock rings
         shock = np.sin((r - crater_r) / (crater_r * 0.3) * np.pi * 4) * 0.1
@@ -1849,8 +1937,8 @@ def fungal_network(shape, seed, sm, num_hyphae=60, **kwargs):
     all_v = []
 
     for _ in range(num_hyphae):
-        x = rng.uniform(0, w)
-        y = rng.uniform(0, h)
+        x0 = rng.uniform(0, w)
+        y0 = rng.uniform(0, h)
         angle = rng.uniform(0, 2 * np.pi)
         speed = rng.uniform(1.5, 4.0)
         brightness = rng.uniform(0.5, 1.0)
@@ -1861,16 +1949,20 @@ def fungal_network(shape, seed, sm, num_hyphae=60, **kwargs):
         branch_signs = rng.choice([-1.0, 1.0], size=length)
         branch_mags  = rng.uniform(0.5, 1.2, size=length)
 
-        for step in range(length):
-            all_y.append(int(y) % h)
-            all_x.append(int(x) % w)
-            all_v.append(brightness)
+        # Vectorized cumulative angle integration
+        # Branches add extra delta at flagged steps
+        effective_da = delta_angles + branch_mask * branch_signs * branch_mags
+        # Cumulative angle at each step
+        angles_arr = angle + np.cumsum(np.concatenate([[0.0], effective_da[:-1]]))
+        # Cumulative positions
+        dx_arr = np.cos(angles_arr) * speed
+        dy_arr = np.sin(angles_arr) * speed
+        xs_arr = (x0 + np.concatenate([[0.0], np.cumsum(dx_arr[:-1])])).astype(np.int32) % w
+        ys_arr = (y0 + np.concatenate([[0.0], np.cumsum(dy_arr[:-1])])).astype(np.int32) % h
 
-            angle += delta_angles[step]
-            if branch_mask[step]:
-                angle += branch_signs[step] * branch_mags[step]
-            x += np.cos(angle) * speed
-            y += np.sin(angle) * speed
+        all_y.extend(ys_arr.tolist())
+        all_x.extend(xs_arr.tolist())
+        all_v.extend([brightness] * length)
 
     if not all_y:
         return _flat(shape)
@@ -1883,7 +1975,7 @@ def fungal_network(shape, seed, sm, num_hyphae=60, **kwargs):
     canvas = np.clip(canvas, 0.0, 1.0)
 
     # Gaussian blur for soft glow around hyphae
-    blurred = gaussian_filter(canvas, sigma=2.0)
+    blurred = _gauss(canvas, sigma=2.0)
     result = np.maximum(canvas * 0.6, blurred)
     bmax = result.max()
     if bmax > 1e-7:
@@ -2014,39 +2106,44 @@ def crystal_growth(shape, seed, sm, num_seeds_pts=4, growth_steps=200, **kwargs)
 
         for arm in range(6):
             arm_angle = base_angle + arm * np.pi / 3
-            rand_dx = rng.uniform(-0.3, 0.3, size=growth_steps)
-            rand_dy = rng.uniform(-0.3, 0.3, size=growth_steps)
+            rand_dx = rng.uniform(-0.3, 0.3, size=growth_steps).astype(np.float32)
+            rand_dy = rng.uniform(-0.3, 0.3, size=growth_steps).astype(np.float32)
             branch_mask  = rng.random(size=growth_steps) < 0.08
             branch_sides = rng.choice([-1, 1], size=growth_steps)
             branch_lens  = rng.integers(10, 40, size=growth_steps)
 
-            x, y = float(cx), float(cy)
-            for step in range(growth_steps):
-                val = 1.0 - step / growth_steps * 0.5
-                # Correct indexing: row=y, col=x
-                py_i = int(y) % h
-                px_i = int(x) % w
-                all_y.append(py_i)
-                all_x.append(px_i)
-                all_v.append(val)
+            # Vectorized main arm path
+            steps_main = np.arange(growth_steps, dtype=np.float32)
+            vals_main  = 1.0 - steps_main / growth_steps * 0.5
 
-                # Side branch: vectorized path
-                if branch_mask[step]:
-                    b_angle = arm_angle + branch_sides[step] * np.pi / 3
-                    b_len = int(branch_lens[step])
-                    if b_len > 0:
-                        steps_arr = np.arange(b_len, dtype=np.float32)
-                        bx_arr = x + np.cos(b_angle) * 1.2 * steps_arr
-                        by_arr = y + np.sin(b_angle) * 1.2 * steps_arr
-                        bval_arr = val * (1.0 - steps_arr / b_len) * 0.7
-                        bpy = by_arr.astype(np.int32) % h
-                        bpx = bx_arr.astype(np.int32) % w
-                        all_y.extend(bpy.tolist())
-                        all_x.extend(bpx.tolist())
-                        all_v.extend(bval_arr.tolist())
+            step_dx = np.cos(arm_angle) * 1.5 + rand_dx
+            step_dy = np.sin(arm_angle) * 1.5 + rand_dy
 
-                x += np.cos(arm_angle) * 1.5 + rand_dx[step]
-                y += np.sin(arm_angle) * 1.5 + rand_dy[step]
+            arm_xs = cx + np.concatenate([[0.0], np.cumsum(step_dx[:-1])]).astype(np.float32)
+            arm_ys = cy + np.concatenate([[0.0], np.cumsum(step_dy[:-1])]).astype(np.float32)
+
+            py_arr = arm_ys.astype(np.int32) % h
+            px_arr = arm_xs.astype(np.int32) % w
+            all_y.extend(py_arr.tolist())
+            all_x.extend(px_arr.tolist())
+            all_v.extend(vals_main.tolist())
+
+            # Side branches (already fast per-branch vectorization)
+            branch_steps_idx = np.where(branch_mask)[0]
+            for step in branch_steps_idx:
+                val = float(vals_main[step])
+                x_b = float(arm_xs[step])
+                y_b = float(arm_ys[step])
+                b_angle = arm_angle + branch_sides[step] * np.pi / 3
+                b_len = int(branch_lens[step])
+                if b_len > 0:
+                    s = np.arange(b_len, dtype=np.float32)
+                    bx_arr = x_b + np.cos(b_angle) * 1.2 * s
+                    by_arr = y_b + np.sin(b_angle) * 1.2 * s
+                    bval_arr = val * (1.0 - s / b_len) * 0.7
+                    all_y.extend((by_arr.astype(np.int32) % h).tolist())
+                    all_x.extend((bx_arr.astype(np.int32) % w).tolist())
+                    all_v.extend(bval_arr.tolist())
 
     if all_y:
         ys = np.array(all_y, dtype=np.int32)
@@ -2054,7 +2151,7 @@ def crystal_growth(shape, seed, sm, num_seeds_pts=4, growth_steps=200, **kwargs)
         vs = np.array(all_v, dtype=np.float32)
         np.maximum.at(canvas, (ys, xs), vs)
 
-    blurred = gaussian_filter(canvas, sigma=1.5)
+    blurred = _gauss(canvas, sigma=1.5)
     result = np.maximum(canvas, blurred * 0.7)
     return _sm_scale(_normalize(result), sm)
 
@@ -2163,7 +2260,7 @@ def fractal_discharge(shape, seed, sm, num_bolts=4, depth=8, **kwargs):
         np.maximum.at(canvas, (ys, xs), br)
 
     # Gaussian blur for electric glow/corona effect
-    blurred = gaussian_filter(canvas, sigma=3.0)
+    blurred = _gauss(canvas, sigma=3.0)
     result = np.maximum(canvas * 0.5, blurred)
 
     return _sm_scale(_normalize(result), sm)
@@ -2186,7 +2283,7 @@ def diamond_dust(shape, seed, sm, density=0.003):
     threshold = 1.0 - density
     sparkle = np.where(raw > threshold, raw, 0.05).astype(np.float32)
     # Tiny blur for pixel-wide glow
-    sparkle = gaussian_filter(sparkle, sigma=0.4)
+    sparkle = _gauss(sparkle, sigma=0.4)
     return _sm_scale(_normalize(sparkle), sm).astype(np.float32)
 
 
@@ -2239,7 +2336,7 @@ def holographic_flake(shape, seed, sm, density=0.004, freq_x=12.0, freq_y=9.0):
     mod = (np.sin(xx[np.newaxis, :] * freq_x * np.pi + ph1) *
            np.sin(yy[:, np.newaxis] * freq_y * np.pi + ph2)) * 0.5 + 0.5
     result = sparkle * (0.4 + 0.6 * mod) + 0.06
-    blurred = gaussian_filter(result, sigma=0.6)
+    blurred = _gauss(result, sigma=0.6)
     return _sm_scale(_normalize(blurred), sm).astype(np.float32)
 
 
@@ -2296,7 +2393,7 @@ def stardust_fine(shape, seed, sm, density=0.012):
     # Variable intensity per star
     intensity = rng.uniform(0.3, 1.0, (h, w)).astype(np.float32)
     sparkle = np.where(raw > threshold, intensity, 0.04).astype(np.float32)
-    sparkle = gaussian_filter(sparkle, sigma=0.3)
+    sparkle = _gauss(sparkle, sigma=0.3)
     return _sm_scale(_normalize(sparkle), sm).astype(np.float32)
 
 
@@ -2387,7 +2484,7 @@ def brushed_sparkle(shape, seed, sm, sparkle_density=0.002):
     raw = rng2.random((h, w)).astype(np.float32)
     threshold = 1.0 - sparkle_density
     sparkle = np.where(raw > threshold, 1.0, 0.0).astype(np.float32)
-    sparkle = gaussian_filter(sparkle, sigma=0.5)
+    sparkle = _gauss(sparkle, sigma=0.5)
     result = grain * 0.75 + sparkle * 0.25
     return _sm_scale(_normalize(result), sm).astype(np.float32)
 
@@ -2437,7 +2534,7 @@ def prismatic_dust(shape, seed, sm, scatter_density=0.005, ring_freq=18.0):
     raw = rng.random((h, w)).astype(np.float32)
     threshold = 1.0 - scatter_density
     scatter = np.where(raw > threshold, 1.0, 0.05).astype(np.float32)
-    scatter = gaussian_filter(scatter, sigma=0.4)
+    scatter = _gauss(scatter, sigma=0.4)
     # Prismatic ring layer from a random center
     cy, cx = rng2.uniform(0.3, 0.7), rng2.uniform(0.3, 0.7)
     yy = np.arange(h, dtype=np.float32) / h

@@ -151,10 +151,13 @@ def _generate_perlin_2d(shape, res, seed=None):
     grid = np.mgrid[0:res[0]:delta[0], 0:res[1]:delta[1]].transpose(1,2,0) % 1
     angles = 2*np.pi*np.random.rand(res[0]+1, res[1]+1)
     gradients = np.dstack((np.cos(angles), np.sin(angles)))
-    g00 = gradients[:-1,:-1].repeat(d[0],0).repeat(d[1],1)
-    g10 = gradients[1:,:-1].repeat(d[0],0).repeat(d[1],1)
-    g01 = gradients[:-1,1:].repeat(d[0],0).repeat(d[1],1)
-    g11 = gradients[1:,1:].repeat(d[0],0).repeat(d[1],1)
+    # Use advanced indexing instead of .repeat() — zero-copy broadcast, no temp arrays.
+    yi = np.clip(np.arange(shape[0]) // d[0], 0, gradients.shape[0] - 2)
+    xi = np.clip(np.arange(shape[1]) // d[1], 0, gradients.shape[1] - 2)
+    g00 = gradients[yi[:, None], xi[None, :]]
+    g10 = gradients[yi[:, None] + 1, xi[None, :]]
+    g01 = gradients[yi[:, None], xi[None, :] + 1]
+    g11 = gradients[yi[:, None] + 1, xi[None, :] + 1]
     n00 = np.sum(np.dstack((grid[:,:,0], grid[:,:,1]))*g00, 2)
     n10 = np.sum(np.dstack((grid[:,:,0]-1, grid[:,:,1]))*g10, 2)
     n01 = np.sum(np.dstack((grid[:,:,0], grid[:,:,1]-1))*g01, 2)
@@ -173,48 +176,30 @@ generate_perlin_noise_2d = _generate_perlin_2d
 # COLOR CONVERSION
 # ================================================================
 
-def hsv_to_rgb_vec(h, s, v):
-    """Vectorized HSV â†’ RGB conversion (numpy arrays).
+def hsv_to_rgb_vec(h_arr, s_arr, v_arr):
+    """Vectorized HSV → RGB conversion using cv2.cvtColor (zero Python loops).
     All inputs 0-1. Returns (r, g, b) as float arrays 0-1.
     """
-    c = v * s
-    hp = h * 6.0
-    x = c * (1 - np.abs(hp % 2 - 1))
-    r = np.zeros_like(c); g = np.zeros_like(c); b = np.zeros_like(c)
-    for lo in range(6):
-        m = (hp >= lo) & (hp < lo+1)
-        if lo==0: r[m]=c[m]; g[m]=x[m]
-        elif lo==1: r[m]=x[m]; g[m]=c[m]
-        elif lo==2: g[m]=c[m]; b[m]=x[m]
-        elif lo==3: g[m]=x[m]; b[m]=c[m]
-        elif lo==4: r[m]=x[m]; b[m]=c[m]
-        elif lo==5: r[m]=c[m]; b[m]=x[m]
-    off = v - c
-    return r+off, g+off, b+off
+    h = np.asarray(h_arr, dtype=np.float32)
+    s = np.asarray(s_arr, dtype=np.float32)
+    v = np.asarray(v_arr, dtype=np.float32)
+    orig_shape = h.shape
+    # cv2.cvtColor requires a 3-channel image; flatten to (N,1,3) then restore.
+    hsv = np.stack([h.ravel() * 360.0, s.ravel(), v.ravel()], axis=-1).reshape(-1, 1, 3)
+    rgb = cv2.cvtColor(hsv, cv2.COLOR_HSV2RGB)  # float32 H∈[0,360], S/V∈[0,1]
+    rgb = rgb.reshape(orig_shape + (3,))
+    return rgb[..., 0], rgb[..., 1], rgb[..., 2]
 
 
 def rgb_to_hsv_array(scheme):
-    """Convert RGB float [0,1] array to HSV float [0,1] array.
+    """Convert RGB float [0,1] array to HSV float [0,1] array using cv2.cvtColor.
     Input shape: (h, w, 3). Output shape: (h, w, 3) [H, S, V all 0-1].
+    cv2 returns H in [0,360] for float32 input; we normalise back to [0,1].
     """
-    r, g, b = scheme[:,:,0], scheme[:,:,1], scheme[:,:,2]
-    maxc = np.maximum(np.maximum(r, g), b)
-    minc = np.minimum(np.minimum(r, g), b)
-    delta = maxc - minc
-
-    hue = np.zeros_like(r)
-    mask_r = (maxc == r) & (delta > 0)
-    mask_g = (maxc == g) & (delta > 0)
-    mask_b = (maxc == b) & (delta > 0)
-    hue[mask_r] = (((g[mask_r] - b[mask_r]) / delta[mask_r]) % 6) / 6.0
-    hue[mask_g] = (((b[mask_g] - r[mask_g]) / delta[mask_g]) + 2) / 6.0
-    hue[mask_b] = (((r[mask_b] - g[mask_b]) / delta[mask_b]) + 4) / 6.0
-
-    sat = np.zeros_like(r)
-    sat[maxc > 0] = delta[maxc > 0] / maxc[maxc > 0]
-    val = maxc
-
-    return np.stack([hue, sat, val], axis=-1)
+    rgb = np.asarray(scheme, dtype=np.float32)
+    hsv = cv2.cvtColor(rgb, cv2.COLOR_RGB2HSV)   # H∈[0,360], S/V∈[0,1]
+    hsv[..., 0] /= 360.0                          # normalise H to [0,1]
+    return hsv
 
 
 # ================================================================

@@ -1312,7 +1312,7 @@ function renderZoneDetail(index) {
                         <span class="stack-label-mini" style="min-width:28px;">Hue</span>
                         <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); zones[${i}].secondBaseHueShift=Math.max(-180,(zones[${i}].secondBaseHueShift||0)-1); renderZones(); triggerPreviewRender();" title="-1" style="padding:0 3px;font-size:9px;">−</button>
                         <input type="range" min="-180" max="180" step="5" value="${zone.secondBaseHueShift || 0}"
-                            oninput="zones[${i}].secondBaseHueShift=parseInt(this.value); renderZones(); triggerPreviewRender();"
+                            oninput="zones[${i}].secondBaseHueShift=parseInt(this.value); var lbl=this.parentElement.querySelector('.stack-val'); if(lbl) lbl.textContent=this.value+'°'; triggerPreviewRender();"
                             class="stack-slider" title="Shift overlay colors (-180° to +180°), drag=5° steps">
                         <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); zones[${i}].secondBaseHueShift=Math.min(180,(zones[${i}].secondBaseHueShift||0)+1); renderZones(); triggerPreviewRender();" title="+1" style="padding:0 3px;font-size:9px;">+</button>
                         <span class="stack-val" style="min-width:35px;">${zone.secondBaseHueShift || 0}°</span>
@@ -1321,7 +1321,7 @@ function renderZoneDetail(index) {
                         <span class="stack-label-mini" style="min-width:28px;">Sat</span>
                         <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); zones[${i}].secondBaseSaturation=Math.max(-100,(zones[${i}].secondBaseSaturation||0)-1); renderZones(); triggerPreviewRender();" title="-1" style="padding:0 3px;font-size:9px;">−</button>
                         <input type="range" min="-100" max="100" step="5" value="${zone.secondBaseSaturation || 0}"
-                            oninput="zones[${i}].secondBaseSaturation=parseInt(this.value); renderZones(); triggerPreviewRender();"
+                            oninput="zones[${i}].secondBaseSaturation=parseInt(this.value); var lbl=this.parentElement.querySelector('.stack-val'); if(lbl) lbl.textContent=this.value; triggerPreviewRender();"
                             class="stack-slider" title="Adjust overlay saturation (-100 to +100), drag=5 steps">
                         <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); zones[${i}].secondBaseSaturation=Math.min(100,(zones[${i}].secondBaseSaturation||0)+1); renderZones(); triggerPreviewRender();" title="+1" style="padding:0 3px;font-size:9px;">+</button>
                         <span class="stack-val" style="min-width:35px;">${zone.secondBaseSaturation || 0}</span>
@@ -1330,7 +1330,7 @@ function renderZoneDetail(index) {
                         <span class="stack-label-mini" style="min-width:28px;">Brt</span>
                         <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); zones[${i}].secondBaseBrightness=Math.max(-100,(zones[${i}].secondBaseBrightness||0)-1); renderZones(); triggerPreviewRender();" title="-1" style="padding:0 3px;font-size:9px;">−</button>
                         <input type="range" min="-100" max="100" step="5" value="${zone.secondBaseBrightness || 0}"
-                            oninput="zones[${i}].secondBaseBrightness=parseInt(this.value); renderZones(); triggerPreviewRender();"
+                            oninput="zones[${i}].secondBaseBrightness=parseInt(this.value); var lbl=this.parentElement.querySelector('.stack-val'); if(lbl) lbl.textContent=this.value; triggerPreviewRender();"
                             class="stack-slider" title="Adjust overlay brightness (-100 to +100), drag=5 steps">
                         <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); zones[${i}].secondBaseBrightness=Math.min(100,(zones[${i}].secondBaseBrightness||0)+1); renderZones(); triggerPreviewRender();" title="+1" style="padding:0 3px;font-size:9px;">+</button>
                         <span class="stack-val" style="min-width:35px;">${zone.secondBaseBrightness || 0}</span>
@@ -1555,7 +1555,7 @@ function renderZoneDetail(index) {
                             <span class="stack-label-mini" style="min-width:28px;">Hue</span>
                             <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); zones[${i}].secondBasePatternHueShift=Math.max(-180,(zones[${i}].secondBasePatternHueShift||0)-1); renderZones(); triggerPreviewRender();" title="-1" style="padding:0 3px;font-size:9px;">−</button>
                             <input type="range" min="-180" max="180" step="5" value="${zone.secondBasePatternHueShift || 0}"
-                                oninput="zones[${i}].secondBasePatternHueShift=parseInt(this.value); renderZones(); triggerPreviewRender();"
+                                oninput="zones[${i}].secondBasePatternHueShift=parseInt(this.value); var lbl=this.parentElement.querySelector('.stack-val'); if(lbl) lbl.textContent=this.value+'°'; triggerPreviewRender();"
                                 class="stack-slider" title="Shift pattern reaction colors (-180° to +180°), drag=5° steps">
                             <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); zones[${i}].secondBasePatternHueShift=Math.min(180,(zones[${i}].secondBasePatternHueShift||0)+1); renderZones(); triggerPreviewRender();" title="+1" style="padding:0 3px;font-size:9px;">+</button>
                             <span class="stack-val" style="min-width:35px;">${zone.secondBasePatternHueShift || 0}°</span>
@@ -1564,7 +1564,7 @@ function renderZoneDetail(index) {
                             <span class="stack-label-mini" style="min-width:28px;">Sat</span>
                             <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); zones[${i}].secondBasePatternSaturation=Math.max(-100,(zones[${i}].secondBasePatternSaturation||0)-1); renderZones(); triggerPreviewRender();" title="-1" style="padding:0 3px;font-size:9px;">−</button>
                             <input type="range" min="-100" max="100" step="5" value="${zone.secondBasePatternSaturation || 0}"
-                                oninput="zones[${i}].secondBasePatternSaturation=parseInt(this.value); renderZones(); triggerPreviewRender();"
+                                oninput="zones[${i}].secondBasePatternSaturation=parseInt(this.value); var lbl=this.parentElement.querySelector('.stack-val'); if(lbl) lbl.textContent=this.value; triggerPreviewRender();"
                                 class="stack-slider" title="Adjust pattern reaction saturation (-100 to +100), drag=5 steps">
                             <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); zones[${i}].secondBasePatternSaturation=Math.min(100,(zones[${i}].secondBasePatternSaturation||0)+1); renderZones(); triggerPreviewRender();" title="+1" style="padding:0 3px;font-size:9px;">+</button>
                             <span class="stack-val" style="min-width:35px;">${zone.secondBasePatternSaturation || 0}</span>
@@ -1573,7 +1573,7 @@ function renderZoneDetail(index) {
                             <span class="stack-label-mini" style="min-width:28px;">Brt</span>
                             <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); zones[${i}].secondBasePatternBrightness=Math.max(-100,(zones[${i}].secondBasePatternBrightness||0)-1); renderZones(); triggerPreviewRender();" title="-1" style="padding:0 3px;font-size:9px;">−</button>
                             <input type="range" min="-100" max="100" step="5" value="${zone.secondBasePatternBrightness || 0}"
-                                oninput="zones[${i}].secondBasePatternBrightness=parseInt(this.value); renderZones(); triggerPreviewRender();"
+                                oninput="zones[${i}].secondBasePatternBrightness=parseInt(this.value); var lbl=this.parentElement.querySelector('.stack-val'); if(lbl) lbl.textContent=this.value; triggerPreviewRender();"
                                 class="stack-slider" title="Adjust pattern reaction brightness (-100 to +100), drag=5 steps">
                             <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); zones[${i}].secondBasePatternBrightness=Math.min(100,(zones[${i}].secondBasePatternBrightness||0)+1); renderZones(); triggerPreviewRender();" title="+1" style="padding:0 3px;font-size:9px;">+</button>
                             <span class="stack-val" style="min-width:35px;">${zone.secondBasePatternBrightness || 0}</span>
@@ -1634,7 +1634,7 @@ function renderZoneDetail(index) {
                         <span class="stack-label-mini" style="min-width:28px;">Hue</span>
                         <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); zones[${i}].thirdBaseHueShift=Math.max(-180,(zones[${i}].thirdBaseHueShift||0)-1); renderZones(); triggerPreviewRender();" title="-1" style="padding:0 3px;font-size:9px;">−</button>
                         <input type="range" min="-180" max="180" step="5" value="${zone.thirdBaseHueShift || 0}"
-                            oninput="zones[${i}].thirdBaseHueShift=parseInt(this.value); renderZones(); triggerPreviewRender();"
+                            oninput="zones[${i}].thirdBaseHueShift=parseInt(this.value); var lbl=this.parentElement.querySelector('.stack-val'); if(lbl) lbl.textContent=this.value+'°'; triggerPreviewRender();"
                             class="stack-slider" title="Shift overlay colors (-180° to +180°), drag=5° steps">
                         <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); zones[${i}].thirdBaseHueShift=Math.min(180,(zones[${i}].thirdBaseHueShift||0)+1); renderZones(); triggerPreviewRender();" title="+1" style="padding:0 3px;font-size:9px;">+</button>
                         <span class="stack-val" style="min-width:35px;">${zone.thirdBaseHueShift || 0}°</span>
@@ -1643,7 +1643,7 @@ function renderZoneDetail(index) {
                         <span class="stack-label-mini" style="min-width:28px;">Sat</span>
                         <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); zones[${i}].thirdBaseSaturation=Math.max(-100,(zones[${i}].thirdBaseSaturation||0)-1); renderZones(); triggerPreviewRender();" title="-1" style="padding:0 3px;font-size:9px;">−</button>
                         <input type="range" min="-100" max="100" step="5" value="${zone.thirdBaseSaturation || 0}"
-                            oninput="zones[${i}].thirdBaseSaturation=parseInt(this.value); renderZones(); triggerPreviewRender();"
+                            oninput="zones[${i}].thirdBaseSaturation=parseInt(this.value); var lbl=this.parentElement.querySelector('.stack-val'); if(lbl) lbl.textContent=this.value; triggerPreviewRender();"
                             class="stack-slider" title="Adjust overlay saturation (-100 to +100), drag=5 steps">
                         <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); zones[${i}].thirdBaseSaturation=Math.min(100,(zones[${i}].thirdBaseSaturation||0)+1); renderZones(); triggerPreviewRender();" title="+1" style="padding:0 3px;font-size:9px;">+</button>
                         <span class="stack-val" style="min-width:35px;">${zone.thirdBaseSaturation || 0}</span>
@@ -1652,7 +1652,7 @@ function renderZoneDetail(index) {
                         <span class="stack-label-mini" style="min-width:28px;">Brt</span>
                         <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); zones[${i}].thirdBaseBrightness=Math.max(-100,(zones[${i}].thirdBaseBrightness||0)-1); renderZones(); triggerPreviewRender();" title="-1" style="padding:0 3px;font-size:9px;">−</button>
                         <input type="range" min="-100" max="100" step="5" value="${zone.thirdBaseBrightness || 0}"
-                            oninput="zones[${i}].thirdBaseBrightness=parseInt(this.value); renderZones(); triggerPreviewRender();"
+                            oninput="zones[${i}].thirdBaseBrightness=parseInt(this.value); var lbl=this.parentElement.querySelector('.stack-val'); if(lbl) lbl.textContent=this.value; triggerPreviewRender();"
                             class="stack-slider" title="Adjust overlay brightness (-100 to +100), drag=5 steps">
                         <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); zones[${i}].thirdBaseBrightness=Math.min(100,(zones[${i}].thirdBaseBrightness||0)+1); renderZones(); triggerPreviewRender();" title="+1" style="padding:0 3px;font-size:9px;">+</button>
                         <span class="stack-val" style="min-width:35px;">${zone.thirdBaseBrightness || 0}</span>
@@ -1894,7 +1894,7 @@ function renderZoneDetail(index) {
                         <span class="stack-label-mini" style="min-width:28px;">Hue</span>
                         <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); zones[${i}].fourthBaseHueShift=Math.max(-180,(zones[${i}].fourthBaseHueShift||0)-1); renderZones(); triggerPreviewRender();" title="-1" style="padding:0 3px;font-size:9px;">−</button>
                         <input type="range" min="-180" max="180" step="5" value="${zone.fourthBaseHueShift || 0}"
-                            oninput="zones[${i}].fourthBaseHueShift=parseInt(this.value); renderZones(); triggerPreviewRender();"
+                            oninput="zones[${i}].fourthBaseHueShift=parseInt(this.value); var lbl=this.parentElement.querySelector('.stack-val'); if(lbl) lbl.textContent=this.value+'°'; triggerPreviewRender();"
                             class="stack-slider" title="Shift overlay colors (-180° to +180°), drag=5° steps">
                         <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); zones[${i}].fourthBaseHueShift=Math.min(180,(zones[${i}].fourthBaseHueShift||0)+1); renderZones(); triggerPreviewRender();" title="+1" style="padding:0 3px;font-size:9px;">+</button>
                         <span class="stack-val" style="min-width:35px;">${zone.fourthBaseHueShift || 0}°</span>
@@ -1903,7 +1903,7 @@ function renderZoneDetail(index) {
                         <span class="stack-label-mini" style="min-width:28px;">Sat</span>
                         <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); zones[${i}].fourthBaseSaturation=Math.max(-100,(zones[${i}].fourthBaseSaturation||0)-1); renderZones(); triggerPreviewRender();" title="-1" style="padding:0 3px;font-size:9px;">−</button>
                         <input type="range" min="-100" max="100" step="5" value="${zone.fourthBaseSaturation || 0}"
-                            oninput="zones[${i}].fourthBaseSaturation=parseInt(this.value); renderZones(); triggerPreviewRender();"
+                            oninput="zones[${i}].fourthBaseSaturation=parseInt(this.value); var lbl=this.parentElement.querySelector('.stack-val'); if(lbl) lbl.textContent=this.value; triggerPreviewRender();"
                             class="stack-slider" title="Adjust overlay saturation (-100 to +100), drag=5 steps">
                         <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); zones[${i}].fourthBaseSaturation=Math.min(100,(zones[${i}].fourthBaseSaturation||0)+1); renderZones(); triggerPreviewRender();" title="+1" style="padding:0 3px;font-size:9px;">+</button>
                         <span class="stack-val" style="min-width:35px;">${zone.fourthBaseSaturation || 0}</span>
@@ -1912,7 +1912,7 @@ function renderZoneDetail(index) {
                         <span class="stack-label-mini" style="min-width:28px;">Brt</span>
                         <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); zones[${i}].fourthBaseBrightness=Math.max(-100,(zones[${i}].fourthBaseBrightness||0)-1); renderZones(); triggerPreviewRender();" title="-1" style="padding:0 3px;font-size:9px;">−</button>
                         <input type="range" min="-100" max="100" step="5" value="${zone.fourthBaseBrightness || 0}"
-                            oninput="zones[${i}].fourthBaseBrightness=parseInt(this.value); renderZones(); triggerPreviewRender();"
+                            oninput="zones[${i}].fourthBaseBrightness=parseInt(this.value); var lbl=this.parentElement.querySelector('.stack-val'); if(lbl) lbl.textContent=this.value; triggerPreviewRender();"
                             class="stack-slider" title="Adjust overlay brightness (-100 to +100), drag=5 steps">
                         <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); zones[${i}].fourthBaseBrightness=Math.min(100,(zones[${i}].fourthBaseBrightness||0)+1); renderZones(); triggerPreviewRender();" title="+1" style="padding:0 3px;font-size:9px;">+</button>
                         <span class="stack-val" style="min-width:35px;">${zone.fourthBaseBrightness || 0}</span>
@@ -2144,7 +2144,7 @@ function renderZoneDetail(index) {
                         <span class="stack-label-mini" style="min-width:28px;">Hue</span>
                         <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); zones[${i}].fifthBaseHueShift=Math.max(-180,(zones[${i}].fifthBaseHueShift||0)-1); renderZones(); triggerPreviewRender();" title="-1" style="padding:0 3px;font-size:9px;">−</button>
                         <input type="range" min="-180" max="180" step="5" value="${zone.fifthBaseHueShift || 0}"
-                            oninput="zones[${i}].fifthBaseHueShift=parseInt(this.value); renderZones(); triggerPreviewRender();"
+                            oninput="zones[${i}].fifthBaseHueShift=parseInt(this.value); var lbl=this.parentElement.querySelector('.stack-val'); if(lbl) lbl.textContent=this.value+'°'; triggerPreviewRender();"
                             class="stack-slider" title="Shift overlay colors (-180° to +180°), drag=5° steps">
                         <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); zones[${i}].fifthBaseHueShift=Math.min(180,(zones[${i}].fifthBaseHueShift||0)+1); renderZones(); triggerPreviewRender();" title="+1" style="padding:0 3px;font-size:9px;">+</button>
                         <span class="stack-val" style="min-width:35px;">${zone.fifthBaseHueShift || 0}°</span>
@@ -2153,7 +2153,7 @@ function renderZoneDetail(index) {
                         <span class="stack-label-mini" style="min-width:28px;">Sat</span>
                         <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); zones[${i}].fifthBaseSaturation=Math.max(-100,(zones[${i}].fifthBaseSaturation||0)-1); renderZones(); triggerPreviewRender();" title="-1" style="padding:0 3px;font-size:9px;">−</button>
                         <input type="range" min="-100" max="100" step="5" value="${zone.fifthBaseSaturation || 0}"
-                            oninput="zones[${i}].fifthBaseSaturation=parseInt(this.value); renderZones(); triggerPreviewRender();"
+                            oninput="zones[${i}].fifthBaseSaturation=parseInt(this.value); var lbl=this.parentElement.querySelector('.stack-val'); if(lbl) lbl.textContent=this.value; triggerPreviewRender();"
                             class="stack-slider" title="Adjust overlay saturation (-100 to +100), drag=5 steps">
                         <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); zones[${i}].fifthBaseSaturation=Math.min(100,(zones[${i}].fifthBaseSaturation||0)+1); renderZones(); triggerPreviewRender();" title="+1" style="padding:0 3px;font-size:9px;">+</button>
                         <span class="stack-val" style="min-width:35px;">${zone.fifthBaseSaturation || 0}</span>
@@ -2162,7 +2162,7 @@ function renderZoneDetail(index) {
                         <span class="stack-label-mini" style="min-width:28px;">Brt</span>
                         <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); zones[${i}].fifthBaseBrightness=Math.max(-100,(zones[${i}].fifthBaseBrightness||0)-1); renderZones(); triggerPreviewRender();" title="-1" style="padding:0 3px;font-size:9px;">−</button>
                         <input type="range" min="-100" max="100" step="5" value="${zone.fifthBaseBrightness || 0}"
-                            oninput="zones[${i}].fifthBaseBrightness=parseInt(this.value); renderZones(); triggerPreviewRender();"
+                            oninput="zones[${i}].fifthBaseBrightness=parseInt(this.value); var lbl=this.parentElement.querySelector('.stack-val'); if(lbl) lbl.textContent=this.value; triggerPreviewRender();"
                             class="stack-slider" title="Adjust overlay brightness (-100 to +100), drag=5 steps">
                         <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); zones[${i}].fifthBaseBrightness=Math.min(100,(zones[${i}].fifthBaseBrightness||0)+1); renderZones(); triggerPreviewRender();" title="+1" style="padding:0 3px;font-size:9px;">+</button>
                         <span class="stack-val" style="min-width:35px;">${zone.fifthBaseBrightness || 0}</span>

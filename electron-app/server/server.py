@@ -55,6 +55,31 @@ import sys
 import traceback
 import io
 import base64
+import threading
+
+# ----------------------------------------------------------------
+# Preview render serialisation — prevents CPU thrashing when the
+# UI fires multiple /preview-render requests before the previous
+# one finishes (e.g. slider dragging, zone switching).
+#
+# _preview_abort  — set this Event to tell an in-flight render it
+#                   should give up (currently used as a signal; the
+#                   actual check is the lock timeout below).
+# _preview_render_lock — only one preview renders at a time.
+#                   Acquiring it with a short timeout means stale
+#                   requests return 429 instead of stacking up.
+# ----------------------------------------------------------------
+_preview_render_lock = threading.Lock()
+_preview_abort = threading.Event()
+
+# ----------------------------------------------------------------
+# Incremental preview cache metadata (actual zone-result caching
+# lives inside build_multi_zone._zone_cache in shokker_engine_v2).
+# These track the last paint file + mtime seen by the preview
+# endpoint so the engine cache can be invalidated when the file
+# changes or the preview scale changes.
+# ----------------------------------------------------------------
+_preview_cache_paint_key = None  # "<paint_file_path>|<mtime>|<scale>"
 
 # --- Fix OSError [Errno 22] on print() when stdout/stderr pipes break (Electron) ---
 class _SafeStream:
@@ -1664,6 +1689,14 @@ def preview_render_endpoint():
         "resolution": [512, 512]
     }
     """
+    # Signal any in-flight preview to abort, then wait for the lock.
+    # If the previous render is still finishing after 2 s, reject this
+    # request with 429 so the UI can retry rather than pile up renders.
+    _preview_abort.set()
+    acquired = _preview_render_lock.acquire(timeout=2.0)
+    if not acquired:
+        return jsonify({"error": "Preview busy — previous render still finishing"}), 429
+    _preview_abort.clear()
     try:
         data = request.get_json()
         if not data:
@@ -1682,6 +1715,34 @@ def preview_render_endpoint():
         seed = data.get("seed", 51)
         preview_scale = float(data.get("preview_scale", 0.25))
         preview_scale = max(0.0625, min(1.0, preview_scale))  # Clamp 1/16 to 1x
+
+        # Incremental rendering hints from client
+        changed_zone = data.get("changed_zone", -1)
+        zone_hashes = data.get("zone_hashes", [])
+
+        # Invalidate engine zone cache when paint file or preview scale changes.
+        # The engine cache (build_multi_zone._zone_cache) keys on zone settings only;
+        # if the underlying paint file or resolution changes we must flush it so
+        # cached spec/paint arrays from a different canvas size don't get reused.
+        global _preview_cache_paint_key
+        try:
+            _paint_mtime = os.path.getmtime(paint_file)
+        except OSError:
+            _paint_mtime = 0
+        _new_paint_key = f"{paint_file}|{_paint_mtime}|{preview_scale}"
+        if _new_paint_key != _preview_cache_paint_key:
+            _preview_cache_paint_key = _new_paint_key
+            # Clear the engine-level zone cache so stale arrays from a different
+            # paint file or scale are never served.
+            try:
+                import shokker_engine_v2 as _eng
+                if hasattr(_eng.build_multi_zone, '_zone_cache'):
+                    _eng.build_multi_zone._zone_cache.clear()
+                    logger.info(f"[preview-cache] Invalidated zone cache (paint file or scale changed)")
+            except Exception:
+                pass
+        if changed_zone >= 0 or zone_hashes:
+            logger.info(f"[preview-cache] changed_zone={changed_zone}, {len(zone_hashes)} zone hashes received")
 
         # Decal spec finishes (list of {specFinish: "gloss"} for non-"none" decals)
         decal_spec_finishes = data.get("decal_spec_finishes", [])
@@ -1964,6 +2025,12 @@ def preview_render_endpoint():
     except Exception as e:
         logger.error(f"Preview render failed: {e}\n{traceback.format_exc()}")
         return jsonify({"error": str(e)}), 500
+    finally:
+        # Always release the preview render lock so the next request can proceed.
+        try:
+            _preview_render_lock.release()
+        except RuntimeError:
+            pass  # Lock was already released (e.g. early-return path above)
 
 
 @app.route('/render', methods=['POST'])

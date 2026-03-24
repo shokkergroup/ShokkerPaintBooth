@@ -22,6 +22,27 @@ import io
 import base64
 
 # ================================================================
+# CLEAR STALE __pycache__ ON EVERY STARTUP
+# Prevents cached .pyc bytecode from loading old function signatures
+# after code updates (auto-updater changes .py but not .pyc)
+# ================================================================
+def _clear_pycache():
+    _root = os.path.dirname(os.path.abspath(__file__))
+    _cleared = 0
+    for dirpath, dirnames, filenames in os.walk(_root):
+        if '__pycache__' in dirnames:
+            _cache_dir = os.path.join(dirpath, '__pycache__')
+            try:
+                shutil.rmtree(_cache_dir)
+                _cleared += 1
+            except Exception:
+                pass
+    if _cleared:
+        print(f"[Startup] Cleared {_cleared} __pycache__ directories")
+
+_clear_pycache()
+
+# ================================================================
 # CONFIG - single source of truth for port, paths, debug
 # ================================================================
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))

@@ -798,6 +798,48 @@ async function doFleetRender() {
                 rotation: sp.rotation || 0
             }));
         }
+        if (z.thirdOverlaySpecPatternStack && z.thirdOverlaySpecPatternStack.length > 0) {
+            zoneObj.third_overlay_spec_pattern_stack = z.thirdOverlaySpecPatternStack.map(sp => ({
+                pattern: sp.pattern,
+                opacity: (sp.opacity ?? 50) / 100,
+                blend_mode: sp.blendMode || 'normal',
+                channels: sp.channels || 'MR',
+                range: sp.range || 40,
+                params: sp.params || {},
+                offset_x: sp.offsetX || 0.5,
+                offset_y: sp.offsetY || 0.5,
+                scale: sp.scale || 1.0,
+                rotation: sp.rotation || 0
+            }));
+        }
+        if (z.fourthOverlaySpecPatternStack && z.fourthOverlaySpecPatternStack.length > 0) {
+            zoneObj.fourth_overlay_spec_pattern_stack = z.fourthOverlaySpecPatternStack.map(sp => ({
+                pattern: sp.pattern,
+                opacity: (sp.opacity ?? 50) / 100,
+                blend_mode: sp.blendMode || 'normal',
+                channels: sp.channels || 'MR',
+                range: sp.range || 40,
+                params: sp.params || {},
+                offset_x: sp.offsetX || 0.5,
+                offset_y: sp.offsetY || 0.5,
+                scale: sp.scale || 1.0,
+                rotation: sp.rotation || 0
+            }));
+        }
+        if (z.fifthOverlaySpecPatternStack && z.fifthOverlaySpecPatternStack.length > 0) {
+            zoneObj.fifth_overlay_spec_pattern_stack = z.fifthOverlaySpecPatternStack.map(sp => ({
+                pattern: sp.pattern,
+                opacity: (sp.opacity ?? 50) / 100,
+                blend_mode: sp.blendMode || 'normal',
+                channels: sp.channels || 'MR',
+                range: sp.range || 40,
+                params: sp.params || {},
+                offset_x: sp.offsetX || 0.5,
+                offset_y: sp.offsetY || 0.5,
+                scale: sp.scale || 1.0,
+                rotation: sp.rotation || 0
+            }));
+        }
         // v6.0 advanced finish params
         if ((z.ccQuality ?? 100) !== 100) zoneObj.cc_quality = (z.ccQuality ?? 100) / 100;
         if (z.blendBase && z.blendBase !== 'undefined' && z.blendBase !== 'none' && z.blendBase !== 'null') { zoneObj.blend_base = z.blendBase; zoneObj.blend_dir = z.blendDir || 'horizontal'; zoneObj.blend_amount = (z.blendAmount ?? 50) / 100; }
@@ -1037,6 +1079,48 @@ async function doSeasonRender() {
         }
         if (z.overlaySpecPatternStack && z.overlaySpecPatternStack.length > 0) {
             zoneObj.overlay_spec_pattern_stack = z.overlaySpecPatternStack.map(sp => ({
+                pattern: sp.pattern,
+                opacity: (sp.opacity ?? 50) / 100,
+                blend_mode: sp.blendMode || 'normal',
+                channels: sp.channels || 'MR',
+                range: sp.range || 40,
+                params: sp.params || {},
+                offset_x: sp.offsetX || 0.5,
+                offset_y: sp.offsetY || 0.5,
+                scale: sp.scale || 1.0,
+                rotation: sp.rotation || 0
+            }));
+        }
+        if (z.thirdOverlaySpecPatternStack && z.thirdOverlaySpecPatternStack.length > 0) {
+            zoneObj.third_overlay_spec_pattern_stack = z.thirdOverlaySpecPatternStack.map(sp => ({
+                pattern: sp.pattern,
+                opacity: (sp.opacity ?? 50) / 100,
+                blend_mode: sp.blendMode || 'normal',
+                channels: sp.channels || 'MR',
+                range: sp.range || 40,
+                params: sp.params || {},
+                offset_x: sp.offsetX || 0.5,
+                offset_y: sp.offsetY || 0.5,
+                scale: sp.scale || 1.0,
+                rotation: sp.rotation || 0
+            }));
+        }
+        if (z.fourthOverlaySpecPatternStack && z.fourthOverlaySpecPatternStack.length > 0) {
+            zoneObj.fourth_overlay_spec_pattern_stack = z.fourthOverlaySpecPatternStack.map(sp => ({
+                pattern: sp.pattern,
+                opacity: (sp.opacity ?? 50) / 100,
+                blend_mode: sp.blendMode || 'normal',
+                channels: sp.channels || 'MR',
+                range: sp.range || 40,
+                params: sp.params || {},
+                offset_x: sp.offsetX || 0.5,
+                offset_y: sp.offsetY || 0.5,
+                scale: sp.scale || 1.0,
+                rotation: sp.rotation || 0
+            }));
+        }
+        if (z.fifthOverlaySpecPatternStack && z.fifthOverlaySpecPatternStack.length > 0) {
+            zoneObj.fifth_overlay_spec_pattern_stack = z.fifthOverlaySpecPatternStack.map(sp => ({
                 pattern: sp.pattern,
                 opacity: (sp.opacity ?? 50) / 100,
                 blend_mode: sp.blendMode || 'normal',
@@ -1333,6 +1417,48 @@ function buildServerZonesForRender(zones) {
         }
         if (z.overlaySpecPatternStack && z.overlaySpecPatternStack.length > 0) {
             zoneObj.overlay_spec_pattern_stack = z.overlaySpecPatternStack.map(sp => ({
+                pattern: sp.pattern,
+                opacity: (sp.opacity ?? 50) / 100,
+                blend_mode: sp.blendMode || 'normal',
+                channels: sp.channels || 'MR',
+                range: sp.range || 40,
+                params: sp.params || {},
+                offset_x: sp.offsetX || 0.5,
+                offset_y: sp.offsetY || 0.5,
+                scale: sp.scale || 1.0,
+                rotation: sp.rotation || 0
+            }));
+        }
+        if (z.thirdOverlaySpecPatternStack && z.thirdOverlaySpecPatternStack.length > 0) {
+            zoneObj.third_overlay_spec_pattern_stack = z.thirdOverlaySpecPatternStack.map(sp => ({
+                pattern: sp.pattern,
+                opacity: (sp.opacity ?? 50) / 100,
+                blend_mode: sp.blendMode || 'normal',
+                channels: sp.channels || 'MR',
+                range: sp.range || 40,
+                params: sp.params || {},
+                offset_x: sp.offsetX || 0.5,
+                offset_y: sp.offsetY || 0.5,
+                scale: sp.scale || 1.0,
+                rotation: sp.rotation || 0
+            }));
+        }
+        if (z.fourthOverlaySpecPatternStack && z.fourthOverlaySpecPatternStack.length > 0) {
+            zoneObj.fourth_overlay_spec_pattern_stack = z.fourthOverlaySpecPatternStack.map(sp => ({
+                pattern: sp.pattern,
+                opacity: (sp.opacity ?? 50) / 100,
+                blend_mode: sp.blendMode || 'normal',
+                channels: sp.channels || 'MR',
+                range: sp.range || 40,
+                params: sp.params || {},
+                offset_x: sp.offsetX || 0.5,
+                offset_y: sp.offsetY || 0.5,
+                scale: sp.scale || 1.0,
+                rotation: sp.rotation || 0
+            }));
+        }
+        if (z.fifthOverlaySpecPatternStack && z.fifthOverlaySpecPatternStack.length > 0) {
+            zoneObj.fifth_overlay_spec_pattern_stack = z.fifthOverlaySpecPatternStack.map(sp => ({
                 pattern: sp.pattern,
                 opacity: (sp.opacity ?? 50) / 100,
                 blend_mode: sp.blendMode || 'normal',

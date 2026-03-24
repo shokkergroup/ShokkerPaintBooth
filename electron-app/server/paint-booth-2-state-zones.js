@@ -819,8 +819,9 @@ function renderZoneDetail(index) {
                     <option value="solid" ${_baseColorMode === 'solid' ? 'selected' : ''}>Use solid color</option>
                     <option value="special" ${_baseColorMode === 'special' ? 'selected' : ''}>From special</option>
                 </select>
-                ${_baseColorMode === 'solid' ? `<input type="color" value="${_baseColorHex}" onchange="setZoneBaseColor(${i}, this.value)" title="Pick base tint">` : ''}
+                ${_baseColorMode === 'solid' ? `<input type="color" id="baseColorPicker${i}" value="${_baseColorHex}" onchange="setZoneBaseColor(${i}, this.value)" title="Pick base tint">` : ''}
                 ${_baseColorMode === 'solid' ? `<input type="text" value="${_baseColorHex}" onchange="setZoneBaseColor(${i}, this.value)" style="width:78px;font-size:10px;">` : ''}
+                ${_baseColorMode === 'solid' ? `<button onclick="(function(){var inp=document.getElementById('baseColorPicker${i}');if(inp)setZoneBaseColor(${i},inp.value);})()" style="background:#E87A20;color:#fff;border:none;padding:3px 8px;border-radius:3px;cursor:pointer;font-weight:bold;font-size:9px;" title="Apply the selected color">✓ Apply</button>` : ''}
                 ${_baseColorMode === 'special' ? `<div class="swatch-trigger" onclick="event.stopPropagation(); openSwatchPicker(this, 'baseColorSource', ${i})" title="Pick special color source" style="display:inline-flex;align-items:center;gap:6px;">
                     ${_baseSrcId ? renderSwatchDot(_baseSrcId, _baseSrcSwatch, _baseColorHex) : '<div class="swatch-dot" style="background:#333;border-style:dashed;"></div>'}
                     <span class="swatch-name">${_baseSrcName}</span>
@@ -1267,14 +1268,19 @@ function renderZoneDetail(index) {
                         <input type="radio" name="sbColorSource${i}" value="solid" ${!zone.secondBaseColorSource ? 'checked' : ''} onchange="setZoneSecondBaseColorSource(${i}, null)">
                         <span>Solid</span>
                     </label>
-                    <span style="display:flex;align-items:center;gap:4px;"> <input type="color" value="${zone.secondBaseColor || '#ffffff'}"
+                    <span style="display:flex;align-items:center;gap:4px;"> <input type="color" id="overlayColorPicker${i}" value="${zone.secondBaseColor || '#ffffff'}"
                         onchange="setZoneSecondBaseColor(${i}, this.value)"
                         title="Paint color for the overlay"
                         style="width:24px;height:18px;padding:0;border:1px solid var(--border);border-radius:3px;cursor:pointer;">
-                    <input type="text" value="${zone.secondBaseColor || '#ffffff'}" onchange="setZoneSecondBaseColor(${i}, this.value)" style="font-size:9px;color:var(--text-dim);width:45px;background:none;border:none;" maxlength="7"></span>
+                    <input type="text" value="${zone.secondBaseColor || '#ffffff'}" onchange="setZoneSecondBaseColor(${i}, this.value)" style="font-size:9px;color:var(--text-dim);width:45px;background:none;border:none;" maxlength="7">
+                    <button onclick="(function(){var inp=document.getElementById('overlayColorPicker${i}');if(inp)setZoneSecondBaseColor(${i},inp.value);})()" style="background:#E87A20;color:#fff;border:none;padding:2px 6px;border-radius:3px;cursor:pointer;font-weight:bold;font-size:9px;" title="Apply the selected color">✓ Apply</button></span>
                     <label style="display:flex;align-items:center;gap:4px;cursor:pointer;font-size:10px;" title="Use the overlay base's own color (e.g. Bronze Heat stays bronze/gold)">
                         <input type="radio" name="sbColorSource${i}" value="overlay" ${zone.secondBaseColorSource === 'overlay' ? 'checked' : ''} onchange="setZoneSecondBaseColorSourceToOverlay(${i})">
                         <span>Same as overlay</span>
+                    </label>
+                    <label style="display:flex;align-items:center;gap:4px;cursor:pointer;font-size:10px;" title="Use a base finish color — picks from bases that have distinctive colors">
+                        <input type="radio" name="sbColorSource${i}" value="frombase" ${zone.secondBaseColorSource && zone.secondBaseColorSource.startsWith('base:') ? 'checked' : ''} onchange="openSwatchPicker(this.parentElement, 'overlayBaseColor', ${i})">
+                        <span>From base</span>
                     </label>
                     <label style="display:flex;align-items:center;gap:4px;cursor:pointer;font-size:10px;">
                         <input type="radio" name="sbColorSource${i}" value="special" ${zone.secondBaseColorSource && zone.secondBaseColorSource.startsWith('mono:') ? 'checked' : ''} onchange="_overlaySpecialPickerExpanded = { zoneIndex: ${i}, layer: 'second' }; setZoneSecondBaseColorSource(${i}, '${(zone.secondBaseColorSource && zone.secondBaseColorSource.startsWith('mono:') ? zone.secondBaseColorSource : (typeof MONOLITHICS !== 'undefined' && MONOLITHICS[0] ? 'mono:' + MONOLITHICS[0].id : 'mono:chameleon_fire')).replace(/'/g, "\\'")}')">
@@ -1304,7 +1310,7 @@ function renderZoneDetail(index) {
                 ${(zone.secondBase || zone.secondBaseColorSource) ? (() => {
                     const ovSpecStack = zone.overlaySpecPatternStack || [];
                     const ovSpecStackActive = ovSpecStack.length > 0;
-                    const MAX_OVERLAY_SPEC_PATTERN_LAYERS = 3;
+                    const MAX_OVERLAY_SPEC_PATTERN_LAYERS = 5;
                     let ovSpHtml = `<div class="overlay-spec-patterns" style="border-top:1px solid #c084fc33;margin-top:6px;padding-top:6px;">
                         <div style="color:#c084fc;font-size:10px;margin-bottom:4px;">
                             &#9670; Overlay Spec Patterns
@@ -1339,6 +1345,13 @@ function renderZoneDetail(index) {
                                         oninput="setOverlaySpecPatternLayerProp(${i}, ${si}, 'range', parseInt(this.value)); this.nextElementSibling.textContent=this.value"
                                         class="stack-slider" title="Range (1-100)">
                                     <span class="stack-val">${sp.range || 40}</span>
+                                </div>
+                                <div class="stack-control-group" style="flex:1; min-width:90px;">
+                                    <span class="stack-label-mini">Scale</span>
+                                    <input type="range" min="5" max="400" step="5" value="${Math.round((sp.scale || 1) * 100)}"
+                                        oninput="setOverlaySpecPatternLayerProp(${i}, ${si}, 'scale', this.value/100); this.nextElementSibling.textContent=this.value+'%'; renderZones(); triggerPreviewRender();"
+                                        class="stack-slider" title="Spec pattern scale — 100% = default">
+                                    <span class="stack-val">${Math.round((sp.scale || 1) * 100)}%</span>
                                 </div>
                                 <div class="stack-control-group" style="min-width:80px;">
                                     <span class="stack-label-mini">Blend</span>
@@ -1381,7 +1394,7 @@ function renderZoneDetail(index) {
                             </button>
                         </div>`;
                     } else {
-                        ovSpHtml += '<div style="font-size:9px; color:var(--text-dim); margin-top:4px;">Maximum 3 overlay spec pattern layers reached.</div>';
+                        ovSpHtml += '<div style="font-size:9px; color:var(--text-dim); margin-top:4px;">Maximum 5 overlay spec pattern layers reached.</div>';
                     }
 
                     ovSpHtml += `</div>`;
@@ -1555,6 +1568,99 @@ function renderZoneDetail(index) {
                     <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); stepZoneThirdBaseSpecStrength(${i}, 1)" title="+5%" style="padding:0 4px;font-size:10px;">+</button>
                     <span class="stack-val" id="detTBSpecStrVal${i}">${Math.round((zone.thirdBaseSpecStrength ?? 1) * 100)}%</span>
                 </div>
+                ${(zone.thirdBase || zone.thirdBaseColorSource) ? (() => {
+                    const thirdOvSpecStack = zone.thirdOverlaySpecPatternStack || [];
+                    const thirdOvSpecStackActive = thirdOvSpecStack.length > 0;
+                    const MAX_OVERLAY_SPEC_PATTERN_LAYERS = 5;
+                    let thirdOvSpHtml = `<div class="overlay-spec-patterns" style="border-top:1px solid #c084fc33;margin-top:6px;padding-top:6px;">
+                        <div style="color:#c084fc;font-size:10px;margin-bottom:4px;">
+                            &#9670; Overlay Spec Patterns
+                            <span style="font-size:9px;color:var(--text-dim);margin-left:4px;">spec overlays for 3rd base</span>
+                            ${thirdOvSpecStackActive ? '<span style="font-size:9px;margin-left:auto;color:#c084fc;">&#9679; ACTIVE (' + thirdOvSpecStack.length + ')</span>' : ''}
+                        </div>`;
+
+                    thirdOvSpecStack.forEach((sp, si) => {
+                        const spDef = (typeof SPEC_PATTERNS !== 'undefined' ? SPEC_PATTERNS : []).find(p => p.id === sp.pattern);
+                        const spName = spDef ? spDef.name : (sp.pattern || '???');
+                        const chM = (sp.channels || 'MR').includes('M');
+                        const chR = (sp.channels || 'MR').includes('R');
+                        const chCC = (sp.channels || 'MR').includes('CC');
+                        thirdOvSpHtml += `<div style="margin-bottom:6px; padding:6px 8px; background:var(--bg-card,#16162a); border:1px solid var(--border,#2a2a4a); border-radius:4px;">
+                            <div style="display:flex; align-items:center; gap:6px; margin-bottom:4px;">
+                                <span style="font-size:10px; color:#c084fc; font-weight:bold;">${si + 1}.</span>
+                                <span style="font-size:10px; color:var(--text);">${spName}</span>
+                                <span style="font-size:8px; color:var(--text-dim);">${spDef ? spDef.desc : ''}</span>
+                                <button class="btn btn-sm" onclick="event.stopPropagation(); removeThirdOverlaySpecPatternLayer(${i}, ${si})" title="Remove" style="margin-left:auto; padding:0px 5px; font-size:9px; line-height:1.2;">&times;</button>
+                            </div>
+                            <div style="display:flex; flex-wrap:wrap; gap:6px 10px; align-items:center;">
+                                <div class="stack-control-group" style="flex:1; min-width:100px;">
+                                    <span class="stack-label-mini">Opacity</span>
+                                    <input type="range" min="0" max="100" step="5" value="${sp.opacity ?? 50}"
+                                        oninput="setThirdOverlaySpecPatternLayerProp(${i}, ${si}, 'opacity', parseInt(this.value)); this.nextElementSibling.textContent=this.value+'%'"
+                                        class="stack-slider" title="Opacity (5% steps)">
+                                    <span class="stack-val">${sp.opacity ?? 50}%</span>
+                                </div>
+                                <div class="stack-control-group" style="flex:1; min-width:90px;">
+                                    <span class="stack-label-mini">Range</span>
+                                    <input type="range" min="1" max="100" step="1" value="${sp.range || 40}"
+                                        oninput="setThirdOverlaySpecPatternLayerProp(${i}, ${si}, 'range', parseInt(this.value)); this.nextElementSibling.textContent=this.value"
+                                        class="stack-slider" title="Range (1-100)">
+                                    <span class="stack-val">${sp.range || 40}</span>
+                                </div>
+                                <div class="stack-control-group" style="flex:1; min-width:90px;">
+                                    <span class="stack-label-mini">Scale</span>
+                                    <input type="range" min="5" max="400" step="5" value="${Math.round((sp.scale || 1) * 100)}"
+                                        oninput="setThirdOverlaySpecPatternLayerProp(${i}, ${si}, 'scale', this.value/100); this.nextElementSibling.textContent=this.value+'%'; renderZones(); triggerPreviewRender();"
+                                        class="stack-slider" title="Spec pattern scale — 100% = default">
+                                    <span class="stack-val">${Math.round((sp.scale || 1) * 100)}%</span>
+                                </div>
+                                <div class="stack-control-group" style="min-width:80px;">
+                                    <span class="stack-label-mini">Blend</span>
+                                    <select onchange="setThirdOverlaySpecPatternLayerProp(${i}, ${si}, 'blendMode', this.value)"
+                                        style="font-size:9px; padding:1px 3px; background:var(--bg-input,#1a1a2e); color:var(--text,#e0e0e0); border:1px solid var(--border,#333); border-radius:3px; min-width:60px;">
+                                        <option value="normal"${(sp.blendMode || 'normal') === 'normal' ? ' selected' : ''}>Normal</option>
+                                        <option value="multiply"${sp.blendMode === 'multiply' ? ' selected' : ''}>Multiply</option>
+                                        <option value="screen"${sp.blendMode === 'screen' ? ' selected' : ''}>Screen</option>
+                                        <option value="overlay"${sp.blendMode === 'overlay' ? ' selected' : ''}>Overlay</option>
+                                        <option value="hardlight"${sp.blendMode === 'hardlight' ? ' selected' : ''}>Hard Light</option>
+                                        <option value="softlight"${sp.blendMode === 'softlight' ? ' selected' : ''}>Soft Light</option>
+                                    </select>
+                                </div>
+                                <div class="stack-control-group" style="min-width:100px;">
+                                    <span class="stack-label-mini">Channels</span>
+                                    <label style="display:inline-flex;align-items:center;gap:2px;cursor:pointer;font-size:9px;"><input type="checkbox" ${chM ? 'checked' : ''} onchange="toggleThirdOverlaySpecPatternChannel(${i}, ${si}, 'M', this.checked)"> M</label>
+                                    <label style="display:inline-flex;align-items:center;gap:2px;cursor:pointer;font-size:9px;"><input type="checkbox" ${chR ? 'checked' : ''} onchange="toggleThirdOverlaySpecPatternChannel(${i}, ${si}, 'R', this.checked)"> R</label>
+                                    <label style="display:inline-flex;align-items:center;gap:2px;cursor:pointer;font-size:9px;"><input type="checkbox" ${chCC ? 'checked' : ''} onchange="toggleThirdOverlaySpecPatternChannel(${i}, ${si}, 'CC', this.checked)"> CC</label>
+                                </div>
+                            </div>
+                        </div>`;
+                    });
+
+                    if (thirdOvSpecStack.length < MAX_OVERLAY_SPEC_PATTERN_LAYERS) {
+                        thirdOvSpHtml += `<div style="margin-top:4px;">
+                            <div id="thirdOverlaySpecPatternGrid${i}" style="display:none; max-height:220px; overflow-y:auto; background:var(--bg-card,#16162a); border:1px solid var(--border,#2a2a4a); border-radius:4px;" class="spec-pattern-grid">`;
+                        (typeof SPEC_PATTERNS !== 'undefined' ? SPEC_PATTERNS : []).forEach(sp => {
+                            thirdOvSpHtml += `<div class="spec-pattern-thumb-card"
+                                onclick="if(this._spPopup){this._spPopup.remove();this._spPopup=null;} document.querySelectorAll('.spec-thumb-popup').forEach(p=>p.remove()); var _og=document.getElementById('thirdOverlaySpecPatternGrid${i}'); if(_og){_og.style.display='none';} addThirdOverlaySpecPatternLayer(${i}, '${sp.id}');"
+                                title="${sp.desc}"
+                                onmouseenter="(function(el){var img=el.querySelector('img');if(!img)return;var popup=document.createElement('div');popup.className='spec-thumb-popup';popup.innerHTML='<img src=\\''+img.src+'\\' style=\\'width:200px;height:200px;object-fit:contain;\\'>';var rect=el.getBoundingClientRect();popup.style.left=(rect.left+rect.width/2-104)+'px';popup.style.top=(rect.top-216)+'px';document.body.appendChild(popup);el._spPopup=popup;})(this)"
+                                onmouseleave="if(this._spPopup){this._spPopup.remove();this._spPopup=null;}">
+                                <img src="/api/spec-pattern-preview/${sp.id}" alt="${sp.name}" onerror="this.style.display='none'">
+                                <div class="thumb-label">${sp.name}</div>
+                            </div>`;
+                        });
+                        thirdOvSpHtml += `</div>
+                            <button onclick="document.querySelectorAll('.spec-thumb-popup').forEach(p=>p.remove()); const g=document.getElementById('thirdOverlaySpecPatternGrid${i}'); if(g.style.display==='none'||!g.style.display){g.style.display='grid';g.style.gridTemplateColumns='repeat(3,1fr)';g.style.gap='6px';g.style.padding='6px';}else{g.style.display='none';}" class="btn btn-sm" style="width:100%; font-size:10px; padding:4px 6px; border:1px solid #c084fc44; color:#c084fc; margin-top:4px;">
+                                + Add Overlay Spec Pattern (click to browse)
+                            </button>
+                        </div>`;
+                    } else {
+                        thirdOvSpHtml += '<div style="font-size:9px; color:var(--text-dim); margin-top:4px;">Maximum 5 overlay spec pattern layers reached.</div>';
+                    }
+
+                    thirdOvSpHtml += `</div>`;
+                    return thirdOvSpHtml;
+                })() : ''}
                 <div class="stack-control-group" style="margin-top:4px;align-items:flex-start;">
                     <span class="stack-label-mini" style="padding-top:2px;">Blend Mode</span>
                     <div style="display:flex;flex-direction:column;gap:2px;font-size:10px;">
@@ -1692,6 +1798,99 @@ function renderZoneDetail(index) {
                     <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); stepZoneFourthBaseSpecStrength(${i}, 1)" title="+5%" style="padding:0 4px;font-size:10px;">+</button>
                     <span class="stack-val" id="detFBSpecStrVal${i}">${Math.round((zone.fourthBaseSpecStrength ?? 1) * 100)}%</span>
                 </div>
+                ${(zone.fourthBase || zone.fourthBaseColorSource) ? (() => {
+                    const fourthOvSpecStack = zone.fourthOverlaySpecPatternStack || [];
+                    const fourthOvSpecStackActive = fourthOvSpecStack.length > 0;
+                    const MAX_OVERLAY_SPEC_PATTERN_LAYERS = 5;
+                    let fourthOvSpHtml = `<div class="overlay-spec-patterns" style="border-top:1px solid #c084fc33;margin-top:6px;padding-top:6px;">
+                        <div style="color:#c084fc;font-size:10px;margin-bottom:4px;">
+                            &#9670; Overlay Spec Patterns
+                            <span style="font-size:9px;color:var(--text-dim);margin-left:4px;">spec overlays for 4th base</span>
+                            ${fourthOvSpecStackActive ? '<span style="font-size:9px;margin-left:auto;color:#c084fc;">&#9679; ACTIVE (' + fourthOvSpecStack.length + ')</span>' : ''}
+                        </div>`;
+
+                    fourthOvSpecStack.forEach((sp, si) => {
+                        const spDef = (typeof SPEC_PATTERNS !== 'undefined' ? SPEC_PATTERNS : []).find(p => p.id === sp.pattern);
+                        const spName = spDef ? spDef.name : (sp.pattern || '???');
+                        const chM = (sp.channels || 'MR').includes('M');
+                        const chR = (sp.channels || 'MR').includes('R');
+                        const chCC = (sp.channels || 'MR').includes('CC');
+                        fourthOvSpHtml += `<div style="margin-bottom:6px; padding:6px 8px; background:var(--bg-card,#16162a); border:1px solid var(--border,#2a2a4a); border-radius:4px;">
+                            <div style="display:flex; align-items:center; gap:6px; margin-bottom:4px;">
+                                <span style="font-size:10px; color:#c084fc; font-weight:bold;">${si + 1}.</span>
+                                <span style="font-size:10px; color:var(--text);">${spName}</span>
+                                <span style="font-size:8px; color:var(--text-dim);">${spDef ? spDef.desc : ''}</span>
+                                <button class="btn btn-sm" onclick="event.stopPropagation(); removeFourthOverlaySpecPatternLayer(${i}, ${si})" title="Remove" style="margin-left:auto; padding:0px 5px; font-size:9px; line-height:1.2;">&times;</button>
+                            </div>
+                            <div style="display:flex; flex-wrap:wrap; gap:6px 10px; align-items:center;">
+                                <div class="stack-control-group" style="flex:1; min-width:100px;">
+                                    <span class="stack-label-mini">Opacity</span>
+                                    <input type="range" min="0" max="100" step="5" value="${sp.opacity ?? 50}"
+                                        oninput="setFourthOverlaySpecPatternLayerProp(${i}, ${si}, 'opacity', parseInt(this.value)); this.nextElementSibling.textContent=this.value+'%'"
+                                        class="stack-slider" title="Opacity (5% steps)">
+                                    <span class="stack-val">${sp.opacity ?? 50}%</span>
+                                </div>
+                                <div class="stack-control-group" style="flex:1; min-width:90px;">
+                                    <span class="stack-label-mini">Range</span>
+                                    <input type="range" min="1" max="100" step="1" value="${sp.range || 40}"
+                                        oninput="setFourthOverlaySpecPatternLayerProp(${i}, ${si}, 'range', parseInt(this.value)); this.nextElementSibling.textContent=this.value"
+                                        class="stack-slider" title="Range (1-100)">
+                                    <span class="stack-val">${sp.range || 40}</span>
+                                </div>
+                                <div class="stack-control-group" style="flex:1; min-width:90px;">
+                                    <span class="stack-label-mini">Scale</span>
+                                    <input type="range" min="5" max="400" step="5" value="${Math.round((sp.scale || 1) * 100)}"
+                                        oninput="setFourthOverlaySpecPatternLayerProp(${i}, ${si}, 'scale', this.value/100); this.nextElementSibling.textContent=this.value+'%'; renderZones(); triggerPreviewRender();"
+                                        class="stack-slider" title="Spec pattern scale — 100% = default">
+                                    <span class="stack-val">${Math.round((sp.scale || 1) * 100)}%</span>
+                                </div>
+                                <div class="stack-control-group" style="min-width:80px;">
+                                    <span class="stack-label-mini">Blend</span>
+                                    <select onchange="setFourthOverlaySpecPatternLayerProp(${i}, ${si}, 'blendMode', this.value)"
+                                        style="font-size:9px; padding:1px 3px; background:var(--bg-input,#1a1a2e); color:var(--text,#e0e0e0); border:1px solid var(--border,#333); border-radius:3px; min-width:60px;">
+                                        <option value="normal"${(sp.blendMode || 'normal') === 'normal' ? ' selected' : ''}>Normal</option>
+                                        <option value="multiply"${sp.blendMode === 'multiply' ? ' selected' : ''}>Multiply</option>
+                                        <option value="screen"${sp.blendMode === 'screen' ? ' selected' : ''}>Screen</option>
+                                        <option value="overlay"${sp.blendMode === 'overlay' ? ' selected' : ''}>Overlay</option>
+                                        <option value="hardlight"${sp.blendMode === 'hardlight' ? ' selected' : ''}>Hard Light</option>
+                                        <option value="softlight"${sp.blendMode === 'softlight' ? ' selected' : ''}>Soft Light</option>
+                                    </select>
+                                </div>
+                                <div class="stack-control-group" style="min-width:100px;">
+                                    <span class="stack-label-mini">Channels</span>
+                                    <label style="display:inline-flex;align-items:center;gap:2px;cursor:pointer;font-size:9px;"><input type="checkbox" ${chM ? 'checked' : ''} onchange="toggleFourthOverlaySpecPatternChannel(${i}, ${si}, 'M', this.checked)"> M</label>
+                                    <label style="display:inline-flex;align-items:center;gap:2px;cursor:pointer;font-size:9px;"><input type="checkbox" ${chR ? 'checked' : ''} onchange="toggleFourthOverlaySpecPatternChannel(${i}, ${si}, 'R', this.checked)"> R</label>
+                                    <label style="display:inline-flex;align-items:center;gap:2px;cursor:pointer;font-size:9px;"><input type="checkbox" ${chCC ? 'checked' : ''} onchange="toggleFourthOverlaySpecPatternChannel(${i}, ${si}, 'CC', this.checked)"> CC</label>
+                                </div>
+                            </div>
+                        </div>`;
+                    });
+
+                    if (fourthOvSpecStack.length < MAX_OVERLAY_SPEC_PATTERN_LAYERS) {
+                        fourthOvSpHtml += `<div style="margin-top:4px;">
+                            <div id="fourthOverlaySpecPatternGrid${i}" style="display:none; max-height:220px; overflow-y:auto; background:var(--bg-card,#16162a); border:1px solid var(--border,#2a2a4a); border-radius:4px;" class="spec-pattern-grid">`;
+                        (typeof SPEC_PATTERNS !== 'undefined' ? SPEC_PATTERNS : []).forEach(sp => {
+                            fourthOvSpHtml += `<div class="spec-pattern-thumb-card"
+                                onclick="if(this._spPopup){this._spPopup.remove();this._spPopup=null;} document.querySelectorAll('.spec-thumb-popup').forEach(p=>p.remove()); var _og=document.getElementById('fourthOverlaySpecPatternGrid${i}'); if(_og){_og.style.display='none';} addFourthOverlaySpecPatternLayer(${i}, '${sp.id}');"
+                                title="${sp.desc}"
+                                onmouseenter="(function(el){var img=el.querySelector('img');if(!img)return;var popup=document.createElement('div');popup.className='spec-thumb-popup';popup.innerHTML='<img src=\\''+img.src+'\\' style=\\'width:200px;height:200px;object-fit:contain;\\'>';var rect=el.getBoundingClientRect();popup.style.left=(rect.left+rect.width/2-104)+'px';popup.style.top=(rect.top-216)+'px';document.body.appendChild(popup);el._spPopup=popup;})(this)"
+                                onmouseleave="if(this._spPopup){this._spPopup.remove();this._spPopup=null;}">
+                                <img src="/api/spec-pattern-preview/${sp.id}" alt="${sp.name}" onerror="this.style.display='none'">
+                                <div class="thumb-label">${sp.name}</div>
+                            </div>`;
+                        });
+                        fourthOvSpHtml += `</div>
+                            <button onclick="document.querySelectorAll('.spec-thumb-popup').forEach(p=>p.remove()); const g=document.getElementById('fourthOverlaySpecPatternGrid${i}'); if(g.style.display==='none'||!g.style.display){g.style.display='grid';g.style.gridTemplateColumns='repeat(3,1fr)';g.style.gap='6px';g.style.padding='6px';}else{g.style.display='none';}" class="btn btn-sm" style="width:100%; font-size:10px; padding:4px 6px; border:1px solid #c084fc44; color:#c084fc; margin-top:4px;">
+                                + Add Overlay Spec Pattern (click to browse)
+                            </button>
+                        </div>`;
+                    } else {
+                        fourthOvSpHtml += '<div style="font-size:9px; color:var(--text-dim); margin-top:4px;">Maximum 5 overlay spec pattern layers reached.</div>';
+                    }
+
+                    fourthOvSpHtml += `</div>`;
+                    return fourthOvSpHtml;
+                })() : ''}
                         <div class="stack-control-group" style="margin-top:4px;align-items:flex-start;">
                             <span class="stack-label-mini" style="padding-top:2px;">Blend Mode</span>
                             <div style="display:flex;flex-direction:column;gap:2px;font-size:10px;">
@@ -1819,6 +2018,99 @@ function renderZoneDetail(index) {
                     <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); stepZoneFifthBaseSpecStrength(${i}, 1)" title="+5%" style="padding:0 4px;font-size:10px;">+</button>
                     <span class="stack-val" id="detFifSpecStrVal${i}">${Math.round((zone.fifthBaseSpecStrength ?? 1) * 100)}%</span>
                 </div>
+                ${(zone.fifthBase || zone.fifthBaseColorSource) ? (() => {
+                    const fifthOvSpecStack = zone.fifthOverlaySpecPatternStack || [];
+                    const fifthOvSpecStackActive = fifthOvSpecStack.length > 0;
+                    const MAX_OVERLAY_SPEC_PATTERN_LAYERS = 5;
+                    let fifthOvSpHtml = `<div class="overlay-spec-patterns" style="border-top:1px solid #c084fc33;margin-top:6px;padding-top:6px;">
+                        <div style="color:#c084fc;font-size:10px;margin-bottom:4px;">
+                            &#9670; Overlay Spec Patterns
+                            <span style="font-size:9px;color:var(--text-dim);margin-left:4px;">spec overlays for 5th base</span>
+                            ${fifthOvSpecStackActive ? '<span style="font-size:9px;margin-left:auto;color:#c084fc;">&#9679; ACTIVE (' + fifthOvSpecStack.length + ')</span>' : ''}
+                        </div>`;
+
+                    fifthOvSpecStack.forEach((sp, si) => {
+                        const spDef = (typeof SPEC_PATTERNS !== 'undefined' ? SPEC_PATTERNS : []).find(p => p.id === sp.pattern);
+                        const spName = spDef ? spDef.name : (sp.pattern || '???');
+                        const chM = (sp.channels || 'MR').includes('M');
+                        const chR = (sp.channels || 'MR').includes('R');
+                        const chCC = (sp.channels || 'MR').includes('CC');
+                        fifthOvSpHtml += `<div style="margin-bottom:6px; padding:6px 8px; background:var(--bg-card,#16162a); border:1px solid var(--border,#2a2a4a); border-radius:4px;">
+                            <div style="display:flex; align-items:center; gap:6px; margin-bottom:4px;">
+                                <span style="font-size:10px; color:#c084fc; font-weight:bold;">${si + 1}.</span>
+                                <span style="font-size:10px; color:var(--text);">${spName}</span>
+                                <span style="font-size:8px; color:var(--text-dim);">${spDef ? spDef.desc : ''}</span>
+                                <button class="btn btn-sm" onclick="event.stopPropagation(); removeFifthOverlaySpecPatternLayer(${i}, ${si})" title="Remove" style="margin-left:auto; padding:0px 5px; font-size:9px; line-height:1.2;">&times;</button>
+                            </div>
+                            <div style="display:flex; flex-wrap:wrap; gap:6px 10px; align-items:center;">
+                                <div class="stack-control-group" style="flex:1; min-width:100px;">
+                                    <span class="stack-label-mini">Opacity</span>
+                                    <input type="range" min="0" max="100" step="5" value="${sp.opacity ?? 50}"
+                                        oninput="setFifthOverlaySpecPatternLayerProp(${i}, ${si}, 'opacity', parseInt(this.value)); this.nextElementSibling.textContent=this.value+'%'"
+                                        class="stack-slider" title="Opacity (5% steps)">
+                                    <span class="stack-val">${sp.opacity ?? 50}%</span>
+                                </div>
+                                <div class="stack-control-group" style="flex:1; min-width:90px;">
+                                    <span class="stack-label-mini">Range</span>
+                                    <input type="range" min="1" max="100" step="1" value="${sp.range || 40}"
+                                        oninput="setFifthOverlaySpecPatternLayerProp(${i}, ${si}, 'range', parseInt(this.value)); this.nextElementSibling.textContent=this.value"
+                                        class="stack-slider" title="Range (1-100)">
+                                    <span class="stack-val">${sp.range || 40}</span>
+                                </div>
+                                <div class="stack-control-group" style="flex:1; min-width:90px;">
+                                    <span class="stack-label-mini">Scale</span>
+                                    <input type="range" min="5" max="400" step="5" value="${Math.round((sp.scale || 1) * 100)}"
+                                        oninput="setFifthOverlaySpecPatternLayerProp(${i}, ${si}, 'scale', this.value/100); this.nextElementSibling.textContent=this.value+'%'; renderZones(); triggerPreviewRender();"
+                                        class="stack-slider" title="Spec pattern scale — 100% = default">
+                                    <span class="stack-val">${Math.round((sp.scale || 1) * 100)}%</span>
+                                </div>
+                                <div class="stack-control-group" style="min-width:80px;">
+                                    <span class="stack-label-mini">Blend</span>
+                                    <select onchange="setFifthOverlaySpecPatternLayerProp(${i}, ${si}, 'blendMode', this.value)"
+                                        style="font-size:9px; padding:1px 3px; background:var(--bg-input,#1a1a2e); color:var(--text,#e0e0e0); border:1px solid var(--border,#333); border-radius:3px; min-width:60px;">
+                                        <option value="normal"${(sp.blendMode || 'normal') === 'normal' ? ' selected' : ''}>Normal</option>
+                                        <option value="multiply"${sp.blendMode === 'multiply' ? ' selected' : ''}>Multiply</option>
+                                        <option value="screen"${sp.blendMode === 'screen' ? ' selected' : ''}>Screen</option>
+                                        <option value="overlay"${sp.blendMode === 'overlay' ? ' selected' : ''}>Overlay</option>
+                                        <option value="hardlight"${sp.blendMode === 'hardlight' ? ' selected' : ''}>Hard Light</option>
+                                        <option value="softlight"${sp.blendMode === 'softlight' ? ' selected' : ''}>Soft Light</option>
+                                    </select>
+                                </div>
+                                <div class="stack-control-group" style="min-width:100px;">
+                                    <span class="stack-label-mini">Channels</span>
+                                    <label style="display:inline-flex;align-items:center;gap:2px;cursor:pointer;font-size:9px;"><input type="checkbox" ${chM ? 'checked' : ''} onchange="toggleFifthOverlaySpecPatternChannel(${i}, ${si}, 'M', this.checked)"> M</label>
+                                    <label style="display:inline-flex;align-items:center;gap:2px;cursor:pointer;font-size:9px;"><input type="checkbox" ${chR ? 'checked' : ''} onchange="toggleFifthOverlaySpecPatternChannel(${i}, ${si}, 'R', this.checked)"> R</label>
+                                    <label style="display:inline-flex;align-items:center;gap:2px;cursor:pointer;font-size:9px;"><input type="checkbox" ${chCC ? 'checked' : ''} onchange="toggleFifthOverlaySpecPatternChannel(${i}, ${si}, 'CC', this.checked)"> CC</label>
+                                </div>
+                            </div>
+                        </div>`;
+                    });
+
+                    if (fifthOvSpecStack.length < MAX_OVERLAY_SPEC_PATTERN_LAYERS) {
+                        fifthOvSpHtml += `<div style="margin-top:4px;">
+                            <div id="fifthOverlaySpecPatternGrid${i}" style="display:none; max-height:220px; overflow-y:auto; background:var(--bg-card,#16162a); border:1px solid var(--border,#2a2a4a); border-radius:4px;" class="spec-pattern-grid">`;
+                        (typeof SPEC_PATTERNS !== 'undefined' ? SPEC_PATTERNS : []).forEach(sp => {
+                            fifthOvSpHtml += `<div class="spec-pattern-thumb-card"
+                                onclick="if(this._spPopup){this._spPopup.remove();this._spPopup=null;} document.querySelectorAll('.spec-thumb-popup').forEach(p=>p.remove()); var _og=document.getElementById('fifthOverlaySpecPatternGrid${i}'); if(_og){_og.style.display='none';} addFifthOverlaySpecPatternLayer(${i}, '${sp.id}');"
+                                title="${sp.desc}"
+                                onmouseenter="(function(el){var img=el.querySelector('img');if(!img)return;var popup=document.createElement('div');popup.className='spec-thumb-popup';popup.innerHTML='<img src=\\''+img.src+'\\' style=\\'width:200px;height:200px;object-fit:contain;\\'>';var rect=el.getBoundingClientRect();popup.style.left=(rect.left+rect.width/2-104)+'px';popup.style.top=(rect.top-216)+'px';document.body.appendChild(popup);el._spPopup=popup;})(this)"
+                                onmouseleave="if(this._spPopup){this._spPopup.remove();this._spPopup=null;}">
+                                <img src="/api/spec-pattern-preview/${sp.id}" alt="${sp.name}" onerror="this.style.display='none'">
+                                <div class="thumb-label">${sp.name}</div>
+                            </div>`;
+                        });
+                        fifthOvSpHtml += `</div>
+                            <button onclick="document.querySelectorAll('.spec-thumb-popup').forEach(p=>p.remove()); const g=document.getElementById('fifthOverlaySpecPatternGrid${i}'); if(g.style.display==='none'||!g.style.display){g.style.display='grid';g.style.gridTemplateColumns='repeat(3,1fr)';g.style.gap='6px';g.style.padding='6px';}else{g.style.display='none';}" class="btn btn-sm" style="width:100%; font-size:10px; padding:4px 6px; border:1px solid #c084fc44; color:#c084fc; margin-top:4px;">
+                                + Add Overlay Spec Pattern (click to browse)
+                            </button>
+                        </div>`;
+                    } else {
+                        fifthOvSpHtml += '<div style="font-size:9px; color:var(--text-dim); margin-top:4px;">Maximum 5 overlay spec pattern layers reached.</div>';
+                    }
+
+                    fifthOvSpHtml += `</div>`;
+                    return fifthOvSpHtml;
+                })() : ''}
                         <div class="stack-control-group" style="margin-top:4px;align-items:flex-start;">
                             <span class="stack-label-mini" style="padding-top:2px;">Blend Mode</span>
                             <div style="display:flex;flex-direction:column;gap:2px;font-size:10px;">
@@ -2616,6 +2908,9 @@ function addZone(skipUndo) {
         patternStack: [],
         specPatternStack: [],  // Array of {pattern, opacity, blendMode, channels, range, params}
         overlaySpecPatternStack: [],  // Array of {pattern, opacity, blendMode, channels, range, params} for overlay layer
+        thirdOverlaySpecPatternStack: [],  // Overlay spec patterns for 3rd base overlay
+        fourthOverlaySpecPatternStack: [],  // Overlay spec patterns for 4th base overlay
+        fifthOverlaySpecPatternStack: [],  // Overlay spec patterns for 5th base overlay
         wear: 0,
         muted: false,
         patternOffsetX: 0.5,
@@ -3008,9 +3303,10 @@ function getPatternName(patternId) {
 const MAX_PATTERN_LAYERS_PER_ZONE = 5;
 const MAX_PATTERN_STACK_LAYERS = MAX_PATTERN_LAYERS_PER_ZONE - 1; // 4
 
-/** Build options for overlay "React to" dropdown: Pattern 1 (primary), Pattern 2, Pattern 3 from zone. Value '' = zone primary. */
+/** Build options for overlay "React to" dropdown: None (independent), Pattern 1 (primary), Pattern 2–5 from zone stack. Value '__none__' = independent, '' = zone primary. */
 function getZonePatternReactOptions(zone) {
     const opts = [];
+    opts.push({ value: '__none__', label: 'None (Independent)' });
     const primaryId = zone.pattern && zone.pattern !== 'none' ? zone.pattern : null;
     opts.push({ value: '', label: `Pattern 1 (${primaryId ? getPatternName(primaryId) : 'Primary - None'})` });
     const stack = zone.patternStack || [];
@@ -3020,15 +3316,24 @@ function getZonePatternReactOptions(zone) {
     if (stack[1] && stack[1].id && stack[1].id !== 'none') {
         opts.push({ value: stack[1].id, label: `Pattern 3 (${getPatternName(stack[1].id)})` });
     }
+    if (stack[2] && stack[2].id && stack[2].id !== 'none') {
+        opts.push({ value: stack[2].id, label: `Pattern 4 (${getPatternName(stack[2].id)})` });
+    }
+    if (stack[3] && stack[3].id && stack[3].id !== 'none') {
+        opts.push({ value: stack[3].id, label: `Pattern 5 (${getPatternName(stack[3].id)})` });
+    }
     return opts;
 }
 
-/** Current value for overlay "React to" select: '' = Pattern 1 (primary), else the stored pattern ID. */
+/** Current value for overlay "React to" select: '__none__' = independent, '' = Pattern 1 (primary), else the stored pattern ID. */
 function getOverlayReactToSelectValue(zone, overlayPatternId) {
+    if (overlayPatternId === '__none__') return '__none__';
     if (!overlayPatternId || overlayPatternId === 'none') return '';
     const stack = zone.patternStack || [];
     if (stack[0] && overlayPatternId === stack[0].id) return overlayPatternId;
     if (stack[1] && overlayPatternId === stack[1].id) return overlayPatternId;
+    if (stack[2] && overlayPatternId === stack[2].id) return overlayPatternId;
+    if (stack[3] && overlayPatternId === stack[3].id) return overlayPatternId;
     if (zone.pattern && overlayPatternId === zone.pattern) return '';
     return overlayPatternId; // legacy: show as-is (Pattern 1 if matches primary)
 }
@@ -3086,7 +3391,8 @@ function openSwatchPicker(triggerEl, type, zoneIndex, layerIndex) {
     const _nameSort = (a, b) => (a.name || '').localeCompare((b.name || ''), undefined, { sensitivity: 'base' });
     let html = '';
     const isOverlaySpecialSourcePicker = (type === 'secondBaseColorSource' || type === 'thirdBaseColorSource' || type === 'fourthBaseColorSource' || type === 'fifthBaseColorSource');
-    if (type === 'base' || type === 'secondBase' || type === 'thirdBase' || type === 'fourthBase' || type === 'fifthBase' || type === 'baseColorSource' || isOverlaySpecialSourcePicker) {
+    const isOverlayBaseColorPicker = (type === 'overlayBaseColor');
+    if (type === 'base' || type === 'secondBase' || type === 'thirdBase' || type === 'fourthBase' || type === 'fifthBase' || type === 'baseColorSource' || isOverlaySpecialSourcePicker || isOverlayBaseColorPicker) {
         // Bases section - grouped by BASE_GROUPS with collapsible sections
         if (!isOverlaySpecialSourcePicker) {
             html += `<div class="swatch-item${currentId === '' ? ' selected' : ''}" data-name="not set none clear" onclick="selectSwatchItem('')" style="margin-bottom:4px;">
@@ -3379,6 +3685,17 @@ function selectSwatchItem(id) {
         setZoneFifthBase(zoneIndex, id || '');
     } else if (type === 'baseColorSource') {
         setZoneBaseColorSource(zoneIndex, id || null);
+    } else if (type === 'overlayBaseColor') {
+        // "From base" overlay color — set the color source to 'base:<id>' and extract the base's paint color
+        if (id) {
+            setZoneSecondBaseColorSource(zoneIndex, 'base:' + id);
+            // Try to extract the base's representative color from BASES array
+            const basesArr = (typeof BASES !== 'undefined' ? BASES : null) || (typeof window.BASES !== 'undefined' ? window.BASES : null) || [];
+            const baseObj = basesArr.find(b => b.id === id);
+            if (baseObj && baseObj.swatch) {
+                setZoneSecondBaseColor(zoneIndex, baseObj.swatch);
+            }
+        }
     } else if (type === 'secondBaseColorSource') {
         setZoneSecondBaseColorSource(zoneIndex, id || null);
     } else if (type === 'thirdBaseColorSource') {
@@ -5346,7 +5663,7 @@ function addOverlaySpecPatternLayer(zoneIdx, patternId) {
     if (!patternId) return;
     pushZoneUndo('Add overlay spec pattern');
     if (!zones[zoneIdx].overlaySpecPatternStack) zones[zoneIdx].overlaySpecPatternStack = [];
-    if (zones[zoneIdx].overlaySpecPatternStack.length >= 3) { showToast('Maximum 3 overlay spec pattern layers', true); return; }
+    if (zones[zoneIdx].overlaySpecPatternStack.length >= 5) { showToast('Maximum 5 overlay spec pattern layers', true); return; }
     const spDef = (typeof SPEC_PATTERNS !== 'undefined' ? SPEC_PATTERNS : []).find(p => p.id === patternId);
     zones[zoneIdx].overlaySpecPatternStack.push({
         pattern: patternId,
@@ -5354,6 +5671,10 @@ function addOverlaySpecPatternLayer(zoneIdx, patternId) {
         blendMode: 'normal',
         channels: 'MR',
         range: 40,
+        scale: 1.0,
+        offsetX: 0.5,
+        offsetY: 0.5,
+        rotation: 0,
         params: spDef ? { ...spDef.defaults } : {}
     });
     renderZones();
@@ -5375,6 +5696,150 @@ function toggleOverlaySpecPatternChannel(zoneIdx, layerIdx, ch, checked) {
     pushZoneUndo('', true);
     if (!zones[zoneIdx].overlaySpecPatternStack || !zones[zoneIdx].overlaySpecPatternStack[layerIdx]) return;
     const sp = zones[zoneIdx].overlaySpecPatternStack[layerIdx];
+    let channels = sp.channels || 'MR';
+    if (checked && !channels.includes(ch)) {
+        channels += ch;
+    } else if (!checked) {
+        channels = channels.replace(ch, '');
+    }
+    sp.channels = channels || 'M';
+    triggerPreviewRender();
+}
+
+// ===== THIRD OVERLAY SPEC PATTERN STACK CONTROLS =====
+function addThirdOverlaySpecPatternLayer(zoneIdx, patternId) {
+    if (!patternId) return;
+    pushZoneUndo('Add third overlay spec pattern');
+    if (!zones[zoneIdx].thirdOverlaySpecPatternStack) zones[zoneIdx].thirdOverlaySpecPatternStack = [];
+    if (zones[zoneIdx].thirdOverlaySpecPatternStack.length >= 5) { showToast('Maximum 5 overlay spec pattern layers', true); return; }
+    const spDef = (typeof SPEC_PATTERNS !== 'undefined' ? SPEC_PATTERNS : []).find(p => p.id === patternId);
+    zones[zoneIdx].thirdOverlaySpecPatternStack.push({
+        pattern: patternId,
+        opacity: 50,
+        blendMode: 'normal',
+        channels: 'MR',
+        range: 40,
+        scale: 1.0,
+        offsetX: 0.5,
+        offsetY: 0.5,
+        rotation: 0,
+        params: spDef ? { ...spDef.defaults } : {}
+    });
+    renderZones();
+    triggerPreviewRender();
+}
+function removeThirdOverlaySpecPatternLayer(zoneIdx, layerIdx) {
+    pushZoneUndo('Remove third overlay spec pattern');
+    zones[zoneIdx].thirdOverlaySpecPatternStack.splice(layerIdx, 1);
+    renderZones();
+    triggerPreviewRender();
+}
+function setThirdOverlaySpecPatternLayerProp(zoneIdx, layerIdx, prop, val) {
+    pushZoneUndo('', true);
+    if (!zones[zoneIdx].thirdOverlaySpecPatternStack || !zones[zoneIdx].thirdOverlaySpecPatternStack[layerIdx]) return;
+    zones[zoneIdx].thirdOverlaySpecPatternStack[layerIdx][prop] = val;
+    triggerPreviewRender();
+}
+function toggleThirdOverlaySpecPatternChannel(zoneIdx, layerIdx, ch, checked) {
+    pushZoneUndo('', true);
+    if (!zones[zoneIdx].thirdOverlaySpecPatternStack || !zones[zoneIdx].thirdOverlaySpecPatternStack[layerIdx]) return;
+    const sp = zones[zoneIdx].thirdOverlaySpecPatternStack[layerIdx];
+    let channels = sp.channels || 'MR';
+    if (checked && !channels.includes(ch)) {
+        channels += ch;
+    } else if (!checked) {
+        channels = channels.replace(ch, '');
+    }
+    sp.channels = channels || 'M';
+    triggerPreviewRender();
+}
+
+// ===== FOURTH OVERLAY SPEC PATTERN STACK CONTROLS =====
+function addFourthOverlaySpecPatternLayer(zoneIdx, patternId) {
+    if (!patternId) return;
+    pushZoneUndo('Add fourth overlay spec pattern');
+    if (!zones[zoneIdx].fourthOverlaySpecPatternStack) zones[zoneIdx].fourthOverlaySpecPatternStack = [];
+    if (zones[zoneIdx].fourthOverlaySpecPatternStack.length >= 5) { showToast('Maximum 5 overlay spec pattern layers', true); return; }
+    const spDef = (typeof SPEC_PATTERNS !== 'undefined' ? SPEC_PATTERNS : []).find(p => p.id === patternId);
+    zones[zoneIdx].fourthOverlaySpecPatternStack.push({
+        pattern: patternId,
+        opacity: 50,
+        blendMode: 'normal',
+        channels: 'MR',
+        range: 40,
+        scale: 1.0,
+        offsetX: 0.5,
+        offsetY: 0.5,
+        rotation: 0,
+        params: spDef ? { ...spDef.defaults } : {}
+    });
+    renderZones();
+    triggerPreviewRender();
+}
+function removeFourthOverlaySpecPatternLayer(zoneIdx, layerIdx) {
+    pushZoneUndo('Remove fourth overlay spec pattern');
+    zones[zoneIdx].fourthOverlaySpecPatternStack.splice(layerIdx, 1);
+    renderZones();
+    triggerPreviewRender();
+}
+function setFourthOverlaySpecPatternLayerProp(zoneIdx, layerIdx, prop, val) {
+    pushZoneUndo('', true);
+    if (!zones[zoneIdx].fourthOverlaySpecPatternStack || !zones[zoneIdx].fourthOverlaySpecPatternStack[layerIdx]) return;
+    zones[zoneIdx].fourthOverlaySpecPatternStack[layerIdx][prop] = val;
+    triggerPreviewRender();
+}
+function toggleFourthOverlaySpecPatternChannel(zoneIdx, layerIdx, ch, checked) {
+    pushZoneUndo('', true);
+    if (!zones[zoneIdx].fourthOverlaySpecPatternStack || !zones[zoneIdx].fourthOverlaySpecPatternStack[layerIdx]) return;
+    const sp = zones[zoneIdx].fourthOverlaySpecPatternStack[layerIdx];
+    let channels = sp.channels || 'MR';
+    if (checked && !channels.includes(ch)) {
+        channels += ch;
+    } else if (!checked) {
+        channels = channels.replace(ch, '');
+    }
+    sp.channels = channels || 'M';
+    triggerPreviewRender();
+}
+
+// ===== FIFTH OVERLAY SPEC PATTERN STACK CONTROLS =====
+function addFifthOverlaySpecPatternLayer(zoneIdx, patternId) {
+    if (!patternId) return;
+    pushZoneUndo('Add fifth overlay spec pattern');
+    if (!zones[zoneIdx].fifthOverlaySpecPatternStack) zones[zoneIdx].fifthOverlaySpecPatternStack = [];
+    if (zones[zoneIdx].fifthOverlaySpecPatternStack.length >= 5) { showToast('Maximum 5 overlay spec pattern layers', true); return; }
+    const spDef = (typeof SPEC_PATTERNS !== 'undefined' ? SPEC_PATTERNS : []).find(p => p.id === patternId);
+    zones[zoneIdx].fifthOverlaySpecPatternStack.push({
+        pattern: patternId,
+        opacity: 50,
+        blendMode: 'normal',
+        channels: 'MR',
+        range: 40,
+        scale: 1.0,
+        offsetX: 0.5,
+        offsetY: 0.5,
+        rotation: 0,
+        params: spDef ? { ...spDef.defaults } : {}
+    });
+    renderZones();
+    triggerPreviewRender();
+}
+function removeFifthOverlaySpecPatternLayer(zoneIdx, layerIdx) {
+    pushZoneUndo('Remove fifth overlay spec pattern');
+    zones[zoneIdx].fifthOverlaySpecPatternStack.splice(layerIdx, 1);
+    renderZones();
+    triggerPreviewRender();
+}
+function setFifthOverlaySpecPatternLayerProp(zoneIdx, layerIdx, prop, val) {
+    pushZoneUndo('', true);
+    if (!zones[zoneIdx].fifthOverlaySpecPatternStack || !zones[zoneIdx].fifthOverlaySpecPatternStack[layerIdx]) return;
+    zones[zoneIdx].fifthOverlaySpecPatternStack[layerIdx][prop] = val;
+    triggerPreviewRender();
+}
+function toggleFifthOverlaySpecPatternChannel(zoneIdx, layerIdx, ch, checked) {
+    pushZoneUndo('', true);
+    if (!zones[zoneIdx].fifthOverlaySpecPatternStack || !zones[zoneIdx].fifthOverlaySpecPatternStack[layerIdx]) return;
+    const sp = zones[zoneIdx].fifthOverlaySpecPatternStack[layerIdx];
     let channels = sp.channels || 'MR';
     if (checked && !channels.includes(ch)) {
         channels += ch;
@@ -6100,6 +6565,9 @@ function getConfig() {
             patternStack: z.patternStack || [],
             specPatternStack: z.specPatternStack || [],
             overlaySpecPatternStack: z.overlaySpecPatternStack || [],
+            thirdOverlaySpecPatternStack: z.thirdOverlaySpecPatternStack || [],
+            fourthOverlaySpecPatternStack: z.fourthOverlaySpecPatternStack || [],
+            fifthOverlaySpecPatternStack: z.fifthOverlaySpecPatternStack || [],
             patternIntensity: z.patternIntensity ?? '100',
             wear: z.wear ?? 0,
             muted: z.muted ?? false,
@@ -6198,6 +6666,9 @@ function getConfig() {
             paintReactiveColor: z.paintReactiveColor,
             specPatternStack: z.specPatternStack || [],
             overlaySpecPatternStack: z.overlaySpecPatternStack || [],
+            thirdOverlaySpecPatternStack: z.thirdOverlaySpecPatternStack || [],
+            fourthOverlaySpecPatternStack: z.fourthOverlaySpecPatternStack || [],
+            fifthOverlaySpecPatternStack: z.fifthOverlaySpecPatternStack || [],
         })),
         // Decals disabled - future feature
         importedSpecMapPath: importedSpecMapPath || null,
@@ -6248,6 +6719,9 @@ function loadConfigFromObj(cfg) {
             patternStack: z.patternStack || [],
             specPatternStack: z.specPatternStack || [],
             overlaySpecPatternStack: z.overlaySpecPatternStack || [],
+            thirdOverlaySpecPatternStack: z.thirdOverlaySpecPatternStack || [],
+            fourthOverlaySpecPatternStack: z.fourthOverlaySpecPatternStack || [],
+            fifthOverlaySpecPatternStack: z.fifthOverlaySpecPatternStack || [],
             patternIntensity: z.patternIntensity ?? '100',
             wear: z.wear ?? 0,
             muted: z.muted ?? false,
@@ -6346,6 +6820,9 @@ function loadConfigFromObj(cfg) {
             paintReactiveColor: z.paintReactiveColor ?? null,
             specPatternStack: z.specPatternStack || [],
             overlaySpecPatternStack: z.overlaySpecPatternStack || [],
+            thirdOverlaySpecPatternStack: z.thirdOverlaySpecPatternStack || [],
+            fourthOverlaySpecPatternStack: z.fourthOverlaySpecPatternStack || [],
+            fifthOverlaySpecPatternStack: z.fifthOverlaySpecPatternStack || [],
         }));
         selectedZoneIndex = 0;
         // Restore nextLinkGroupId to avoid collisions
@@ -6445,6 +6922,9 @@ function exportPreset() {
             patternStack: z.patternStack || [],
             specPatternStack: z.specPatternStack || [],
             overlaySpecPatternStack: z.overlaySpecPatternStack || [],
+            thirdOverlaySpecPatternStack: z.thirdOverlaySpecPatternStack || [],
+            fourthOverlaySpecPatternStack: z.fourthOverlaySpecPatternStack || [],
+            fifthOverlaySpecPatternStack: z.fifthOverlaySpecPatternStack || [],
             wear: z.wear || 0,
             muted: z.muted || false,
             // Region masks are intentionally excluded - they're car-specific
@@ -6543,6 +7023,9 @@ function applyPreset(preset) {
         patternStack: z.patternStack || [],
         specPatternStack: z.specPatternStack || [],
             overlaySpecPatternStack: z.overlaySpecPatternStack || [],
+            thirdOverlaySpecPatternStack: z.thirdOverlaySpecPatternStack || [],
+            fourthOverlaySpecPatternStack: z.fourthOverlaySpecPatternStack || [],
+            fifthOverlaySpecPatternStack: z.fifthOverlaySpecPatternStack || [],
         wear: z.wear || 0,
         muted: z.muted || false,
     }));

@@ -3601,6 +3601,10 @@ if __name__ == '__main__':
             return muteKey + JSON.stringify(hashData);
         }
 
+        // Tiered preview: fast low-res first, then full-quality after idle
+        let _previewEnhanceTimer = null;
+        let _lastPreviewScale = 0.5;
+
         function triggerPreviewRender() {
             // Allow preview during manual placement even if split view is off
             if (!splitViewActive && placementLayer === 'none') return;
@@ -3622,14 +3626,34 @@ if __name__ == '__main__':
             // Mark as stale
             updatePreviewStatus('stale', 'Changed');
 
-            // Debounce: clear previous timer, set new 600ms timer
+            // Cancel any pending enhance
+            if (_previewEnhanceTimer) { clearTimeout(_previewEnhanceTimer); _previewEnhanceTimer = null; }
+
+            // Debounce: fast low-res preview after 600ms
             if (previewDebounceTimer) clearTimeout(previewDebounceTimer);
             previewDebounceTimer = setTimeout(() => {
-                doPreviewRender(hash);
+                _lastPreviewScale = 0.5;
+                doPreviewRender(hash, 0.5);
+
+                // Schedule full-quality enhance after 2 seconds of no further changes
+                _previewEnhanceTimer = setTimeout(function _tryEnhance() {
+                    if (previewIsRendering) {
+                        // Still rendering — reschedule in 1 second instead of giving up
+                        _previewEnhanceTimer = setTimeout(_tryEnhance, 1000);
+                        return;
+                    }
+                    const currentHash = getZoneConfigHash();
+                    if (currentHash === lastPreviewZoneHash && _lastPreviewScale < 1.0) {
+                        // No changes since fast preview — upgrade to full quality
+                        _lastPreviewScale = 1.0;
+                        doPreviewRender(currentHash, 1.0);
+                    }
+                }, 2000);
             }, 600);
         }
 
-        async function doPreviewRender(zoneHash) {
+        async function doPreviewRender(zoneHash, previewScale) {
+            const _pScale = previewScale || 0.5;
             const paintFile = document.getElementById('paintFile').value.trim();
             if (!paintFile) return;
             if (!ShokkerAPI.online) return;
@@ -3809,13 +3833,41 @@ if __name__ == '__main__':
                     });
                 })();
 
-            // Build request body
+            // Build request body — tiered: 0.5 for fast feedback, 1.0 for full quality
             const body = {
                 paint_file: paintFile,
                 zones: serverZones,
                 seed: 51,
-                preview_scale: 0.5,
+                preview_scale: _pScale,
             };
+
+            // Incremental rendering hints: tell server which zone changed and per-zone hashes
+            // so unchanged zones can be served from the zone-level cache in build_multi_zone.
+            body.changed_zone = selectedZoneIndex;
+            body.zone_hashes = zones.filter(z => !z.muted && (z.base || z.finish)).map(z => {
+                return JSON.stringify({
+                    base: z.base, finish: z.finish, pattern: z.pattern, scale: z.scale,
+                    rotation: z.rotation, baseRotation: z.baseRotation, baseScale: z.baseScale,
+                    baseStrength: z.baseStrength, baseSpecStrength: z.baseSpecStrength,
+                    baseOffsetX: z.baseOffsetX, baseOffsetY: z.baseOffsetY,
+                    baseFlipH: z.baseFlipH, baseFlipV: z.baseFlipV,
+                    patternOpacity: z.patternOpacity, patternStack: z.patternStack,
+                    patternSpecMult: z.patternSpecMult,
+                    patternOffsetX: z.patternOffsetX, patternOffsetY: z.patternOffsetY,
+                    patternFlipH: z.patternFlipH, patternFlipV: z.patternFlipV,
+                    intensity: z.intensity, patternIntensity: z.patternIntensity,
+                    customSpec: z.customSpec, customPaint: z.customPaint, customBright: z.customBright,
+                    color: z.color, colorMode: z.colorMode, colors: z.colors,
+                    baseColorMode: z.baseColorMode, baseColor: z.baseColor,
+                    baseColorSource: z.baseColorSource, baseColorStrength: z.baseColorStrength,
+                    baseHueOffset: z.baseHueOffset, baseSaturationAdjust: z.baseSaturationAdjust,
+                    baseBrightnessAdjust: z.baseBrightnessAdjust,
+                    secondBase: z.secondBase, secondBaseStrength: z.secondBaseStrength,
+                    specPatternStack: z.specPatternStack,
+                    rmLen: z.regionMask ? z.regionMask.length : 0,
+                    rmSum: z.regionMask ? z.regionMask.reduce((a, b) => a + b, 0) : 0,
+                });
+            });
 
             // Include imported spec map if active (merge mode)
             if (importedSpecMapPath) {
@@ -3868,8 +3920,15 @@ if __name__ == '__main__':
                 // Update preview images (show both paint + spec simultaneously)
                 const paintImg = document.getElementById('livePreviewImg');
                 const specImg = document.getElementById('livePreviewSpecImg');
-                paintImg.src = data.paint_preview;
-                if (specImg) specImg.src = data.spec_preview;
+                // Release old base64 data before assigning new (helps GC on large previews)
+                if (paintImg && paintImg.src && paintImg.src.startsWith('data:')) {
+                    try { URL.revokeObjectURL(paintImg.src); } catch(_) {}
+                }
+                if (specImg && specImg.src && specImg.src.startsWith('data:')) {
+                    try { URL.revokeObjectURL(specImg.src); } catch(_) {}
+                }
+                if (paintImg && data.paint_preview) paintImg.src = data.paint_preview;
+                if (specImg && data.spec_preview) specImg.src = data.spec_preview;
                 // Show both panes (paint full, spec inset) - reset expanded state
                 document.getElementById('previewPaintPane').style.display = '';
                 document.getElementById('previewSpecPane').style.display = '';
@@ -3891,7 +3950,8 @@ if __name__ == '__main__':
                 // Update hash and status
                 lastPreviewZoneHash = zoneHash;
                 previewIsRendering = false;
-                updatePreviewStatus('current', `${data.elapsed_ms}ms`);
+                const _qualLabel = _pScale >= 1.0 ? 'HD' : `${Math.round(_pScale * 100)}%`;
+                updatePreviewStatus('current', `${data.elapsed_ms}ms · ${_qualLabel}`);
 
                 // Show/hide pattern indicator badge
                 const patBadge = document.getElementById('patternActiveBadge');

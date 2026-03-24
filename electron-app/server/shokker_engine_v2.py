@@ -41,6 +41,7 @@ import struct
 import os
 import json
 import time
+from scipy.ndimage import gaussian_filter as _scipy_gaussian_filter
 
 from engine.utils import write_tga_32bit, write_tga_24bit, get_mgrid, generate_perlin_noise_2d, perlin_multi_octave
 from engine.core import (
@@ -5206,6 +5207,16 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
     print(f"  Combinations: {len(BASE_REGISTRY)} bases x {len(PATTERN_REGISTRY)} patterns = {len(BASE_REGISTRY) * len(PATTERN_REGISTRY)}+")
     print("=" * 60)
 
+    # ---- Zone result cache (preview_mode only) ----
+    # Persists across calls as a function attribute so unchanged zones are skipped.
+    # Each entry: { 'zone_spec': np.array, 'paint_delta': np.array, 'mask': np.array }
+    # 'paint_delta' is the paint array AFTER this zone was applied minus the paint BEFORE,
+    # masked to the zone — so we can replay it without re-running the full pipeline.
+    # Cache is invalidated externally (by server.py) when paint file or scale changes.
+    import hashlib as _hashlib
+    if not hasattr(build_multi_zone, '_zone_cache'):
+        build_multi_zone._zone_cache = {}
+
     start_time = time.time()
     if not preview_mode:
         os.makedirs(output_dir, exist_ok=True)
@@ -5362,6 +5373,10 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
     for i in range(len(zone_masks)):
         if zone_masks[i] is not None:
             soft = zone_masks[i]
+            # Skip blur + hardening for masks with no meaningful content
+            if np.max(soft) < 0.01:
+                zone_masks[i] = np.zeros_like(soft)
+                continue
             hard_edge = zones[i].get("hard_edge", False) if i < len(zones) else False
             if hard_edge:
                 # Binary mask — no soft edges at all
@@ -5383,9 +5398,7 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
         # Remainder = everything not yet claimed (using hardened masks)
         remainder_mask = np.clip(1.0 - claimed_hard, 0, 1)
         # Blur for soft edges at zone boundaries only
-        rm_img = Image.fromarray((remainder_mask * 255).astype(np.uint8))
-        rm_img = rm_img.filter(ImageFilter.GaussianBlur(radius=2))
-        remainder_mask = np.array(rm_img).astype(np.float32) / 255.0
+        remainder_mask = _scipy_gaussian_filter(remainder_mask, sigma=2)
         # Zero out remainder inside claimed zones to prevent overwriting
         remainder_mask = np.where(claimed_hard > 0.5, 0.0, remainder_mask).astype(np.float32)
 
@@ -5470,6 +5483,57 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
         if zone_mask is None or np.max(zone_mask) < 0.01:
             print(f"    [{name}] => SKIPPED (no matching pixels)")
             continue
+
+        # ---- Zone-level cache (preview_mode only) ----
+        # Compute a hash of all zone settings + mask fingerprint.
+        # If matched, replay the cached zone_spec and paint_delta instead of re-rendering.
+        _zone_cache_key = None
+        if preview_mode:
+            try:
+                # Build a stable cache key from zone settings + mask fingerprint.
+                # We exclude the zone mask data itself (too large) and instead fingerprint
+                # it via shape + sum + max so minor floating-point drift doesn't cause
+                # spurious cache misses.
+                _zone_key_data = {
+                    k: v for k, v in zone.items()
+                    if k not in ("region_mask", "spatial_mask", "name")
+                }
+                _zm_sig = f"{zone_mask.shape}:{zone_mask.sum():.4f}:{zone_mask.max():.4f}"
+                _zone_raw = str(sorted(_zone_key_data.items())) + _zm_sig
+                _zone_cache_key = _hashlib.md5(_zone_raw.encode()).hexdigest()
+                if _zone_cache_key in build_multi_zone._zone_cache:
+                    cached = build_multi_zone._zone_cache[_zone_cache_key]
+                    zone_spec = cached['zone_spec']
+                    # Replay paint delta: add the cached paint modification back onto current paint
+                    _pdelta = cached['paint_delta']
+                    _pmask = cached['mask']
+                    paint = np.where(_pmask[:, :, np.newaxis] > 0.01,
+                                     np.clip(paint + _pdelta, 0, 1), paint).astype(np.float32)
+                    print(f"    [{name}] => CACHE HIT (skipped re-render)")
+                    # Jump directly to the combined_spec blending step below
+                    # (reuse cached zone_spec, paint already updated)
+                    mask3d = zone_mask[:, :, np.newaxis]
+                    hard_edge = zone.get("hard_edge", False)
+                    if hard_edge:
+                        combined_spec = np.where(mask3d > 0.01, zone_spec, combined_spec)
+                    else:
+                        strong = mask3d > 0.5
+                        soft = (mask3d > 0.05) & ~strong
+                        blended = np.clip(
+                            zone_spec.astype(np.float32) * mask3d +
+                            combined_spec.astype(np.float32) * (1 - mask3d),
+                            0, 255
+                        ).astype(np.uint8)
+                        combined_spec = np.where(strong, zone_spec, np.where(soft, blended, combined_spec))
+                    if os.environ.get("SHOKKER_TIMING") == "1":
+                        print(f"      [{name}] zone time (cached): {time.time()-t_zone:.2f}s")
+                    continue
+            except Exception as _ce:
+                _zone_cache_key = None  # Cache lookup failed — fall through to normal render
+                print(f"    [{name}] zone cache lookup error (falling through): {_ce}")
+
+        # Snapshot paint before this zone renders so we can store the delta
+        _paint_before = paint.copy() if (preview_mode and _zone_cache_key) else None
 
         # Custom intensity overrides per-zone slider values
         # Custom sliders now use 0-1 normalized range (same as presets),
@@ -5584,6 +5648,9 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
             _v6kw["base_flip_v"] = bool(zone.get("base_flip_v", False))
             if zone.get("spec_pattern_stack"): _v6kw["spec_pattern_stack"] = zone["spec_pattern_stack"]
             if zone.get("overlay_spec_pattern_stack"): _v6kw["overlay_spec_pattern_stack"] = zone["overlay_spec_pattern_stack"]
+            if zone.get("third_overlay_spec_pattern_stack"): _v6kw["third_overlay_spec_pattern_stack"] = zone["third_overlay_spec_pattern_stack"]
+            if zone.get("fourth_overlay_spec_pattern_stack"): _v6kw["fourth_overlay_spec_pattern_stack"] = zone["fourth_overlay_spec_pattern_stack"]
+            if zone.get("fifth_overlay_spec_pattern_stack"): _v6kw["fifth_overlay_spec_pattern_stack"] = zone["fifth_overlay_spec_pattern_stack"]
             if _z_cc is not None: _v6kw["cc_quality"] = _z_cc
             if _z_bb: _v6kw["blend_base"] = _z_bb; _v6kw["blend_dir"] = _z_bd; _v6kw["blend_amount"] = _z_ba; print(f"    [{name}] v6.1 BLEND: base={_z_bb}, dir={_z_bd}, amount={_z_ba:.2f}")
             if _z_pc: _v6kw["paint_color"] = _z_pc
@@ -6059,6 +6126,22 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
             _engine_rot_debug(f"  [{name}] -> NO PATH MATCHED! finish={finish_name}, base={base_id}, has_fc={zone.get('finish_colors') is not None}")
             print(f"    WARNING: Unknown finish/base '{label}', skipping")
             continue
+
+        # ---- Store zone result in cache (preview_mode only) ----
+        if preview_mode and _zone_cache_key and _paint_before is not None:
+            try:
+                _paint_delta = (paint - _paint_before).astype(np.float32)
+                build_multi_zone._zone_cache[_zone_cache_key] = {
+                    'zone_spec': zone_spec.copy(),
+                    'paint_delta': _paint_delta,
+                    'mask': zone_mask.copy(),
+                }
+                # Limit cache size: keep at most 64 zone entries (avoids unbounded RAM growth)
+                if len(build_multi_zone._zone_cache) > 64:
+                    _oldest = next(iter(build_multi_zone._zone_cache))
+                    del build_multi_zone._zone_cache[_oldest]
+            except Exception as _cse:
+                pass  # Cache store failure is non-fatal
 
         # Apply zone spec with hard ownership: where mask is strong, fully replace
         # Vectorized across all 4 channels at once for speed
@@ -6641,6 +6724,9 @@ def build_helmet_spec(helmet_paint_file, output_dir, zones, iracing_id="23371", 
             _v6kw["base_flip_v"] = bool(zone.get("base_flip_v", False))
             if zone.get("spec_pattern_stack"): _v6kw["spec_pattern_stack"] = zone["spec_pattern_stack"]
             if zone.get("overlay_spec_pattern_stack"): _v6kw["overlay_spec_pattern_stack"] = zone["overlay_spec_pattern_stack"]
+            if zone.get("third_overlay_spec_pattern_stack"): _v6kw["third_overlay_spec_pattern_stack"] = zone["third_overlay_spec_pattern_stack"]
+            if zone.get("fourth_overlay_spec_pattern_stack"): _v6kw["fourth_overlay_spec_pattern_stack"] = zone["fourth_overlay_spec_pattern_stack"]
+            if zone.get("fifth_overlay_spec_pattern_stack"): _v6kw["fifth_overlay_spec_pattern_stack"] = zone["fifth_overlay_spec_pattern_stack"]
             if _z_cc is not None: _v6kw["cc_quality"] = _z_cc
             if _z_bb: _v6kw["blend_base"] = _z_bb; _v6kw["blend_dir"] = _z_bd; _v6kw["blend_amount"] = _z_ba
             if _z_pc: _v6kw["paint_color"] = _z_pc
@@ -7045,6 +7131,9 @@ def build_suit_spec(suit_paint_file, output_dir, zones, iracing_id="23371", seed
             _v6kw["base_flip_v"] = bool(zone.get("base_flip_v", False))
             if zone.get("spec_pattern_stack"): _v6kw["spec_pattern_stack"] = zone["spec_pattern_stack"]
             if zone.get("overlay_spec_pattern_stack"): _v6kw["overlay_spec_pattern_stack"] = zone["overlay_spec_pattern_stack"]
+            if zone.get("third_overlay_spec_pattern_stack"): _v6kw["third_overlay_spec_pattern_stack"] = zone["third_overlay_spec_pattern_stack"]
+            if zone.get("fourth_overlay_spec_pattern_stack"): _v6kw["fourth_overlay_spec_pattern_stack"] = zone["fourth_overlay_spec_pattern_stack"]
+            if zone.get("fifth_overlay_spec_pattern_stack"): _v6kw["fifth_overlay_spec_pattern_stack"] = zone["fifth_overlay_spec_pattern_stack"]
             if _z_cc is not None: _v6kw["cc_quality"] = _z_cc
             if _z_bb: _v6kw["blend_base"] = _z_bb; _v6kw["blend_dir"] = _z_bd; _v6kw["blend_amount"] = _z_ba
             if _z_pc: _v6kw["paint_color"] = _z_pc

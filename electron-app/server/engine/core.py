@@ -23,6 +23,8 @@ FIX GUIDE:
 import numpy as np
 from PIL import Image, ImageFilter
 import struct
+import cv2
+from scipy.ndimage import gaussian_filter
 
 
 # ================================================================
@@ -95,10 +97,9 @@ def multi_scale_noise(shape, scales, weights, seed=42):
     for scale, weight in zip(scales, weights):
         sh, sw = max(1, int(h) // scale), max(1, int(w) // scale)
         small = rng.randn(sh, sw).astype(np.float32)
-        img = Image.fromarray(((small - small.min()) / (small.max() - small.min() + 1e-8) * 255).clip(0, 255).astype(np.uint8))
-        img = img.resize((int(w), int(h)), Image.BILINEAR)
-        arr = np.array(img).astype(np.float32) / 255.0
-        arr = arr * (small.max() - small.min()) + small.min()
+        smin, smax = float(small.min()), float(small.max())
+        arr = cv2.resize(small, (int(w), int(h)), interpolation=cv2.INTER_LINEAR)
+        arr = arr * (smax - smin) + smin
         result += arr * weight
     rmin, rmax = float(result.min()), float(result.max())
     if rmax > rmin:
@@ -345,9 +346,7 @@ def build_zone_mask(scheme, stats, selector, blur_radius=3):
 
     # Soft edges via Gaussian blur
     if blur_radius > 0 and np.any(mask > 0):
-        mask_img = Image.fromarray((mask * 255).astype(np.uint8))
-        mask_img = mask_img.filter(ImageFilter.GaussianBlur(radius=blur_radius))
-        mask = np.array(mask_img).astype(np.float32) / 255.0
+        mask = gaussian_filter(mask, sigma=blur_radius)
 
     return mask
 
@@ -485,12 +484,10 @@ def _sample_zone_color(paint, mask):
 # ================================================================
 
 def _resize_array(arr, target_h, target_w):
-    """Resize a 2D numpy array using PIL for smooth interpolation."""
-    img = Image.fromarray(((arr - arr.min()) / (arr.max() - arr.min() + 1e-8) * 255).clip(0, 255).astype(np.uint8))
-    img = img.resize((target_w, target_h), Image.BILINEAR)
-    result = np.array(img).astype(np.float32) / 255.0
-    result = result * (arr.max() - arr.min()) + arr.min()
-    return result
+    """Resize a 2D float32 array to target dimensions using cv2."""
+    if arr.shape[0] == target_h and arr.shape[1] == target_w:
+        return arr
+    return cv2.resize(arr.astype(np.float32), (target_w, target_h), interpolation=cv2.INTER_LINEAR)
 
 
 def _tile_fractional(arr, factor, target_h, target_w):

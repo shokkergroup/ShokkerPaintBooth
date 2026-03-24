@@ -124,23 +124,32 @@ def _apply_hsb_adjustments(paint, mask, hue_offset_deg, saturation_adjust, brigh
     saturation_adjust: -100 to +100 (multiplicative: sat * (1 + adjust/100))
     brightness_adjust: -100 to +100 (multiplicative: val * (1 + adjust/100))
     """
-    if abs(hue_offset_deg) < 0.5 and abs(saturation_adjust) < 0.5 and abs(brightness_adjust) < 0.5:
+    try:
+        if abs(hue_offset_deg) < 0.5 and abs(saturation_adjust) < 0.5 and abs(brightness_adjust) < 0.5:
+            return paint
+        rgb = np.clip(paint[:, :, :3], 0.0, 1.0).astype(np.float32)
+        # Ensure mask matches paint dimensions
+        if mask.shape[0] != rgb.shape[0] or mask.shape[1] != rgb.shape[1]:
+            from PIL import Image
+            mask = np.array(Image.fromarray((mask * 255).astype(np.uint8)).resize(
+                (rgb.shape[1], rgb.shape[0]), Image.NEAREST)).astype(np.float32) / 255.0
+        hsv = rgb_to_hsv_array(rgb)
+        h, s, v = hsv[:, :, 0], hsv[:, :, 1], hsv[:, :, 2]
+        if abs(hue_offset_deg) >= 0.5:
+            h = (h + hue_offset_deg / 360.0) % 1.0
+        if abs(saturation_adjust) >= 0.5:
+            s = np.clip(s * (1.0 + saturation_adjust / 100.0), 0.0, 1.0)
+        if abs(brightness_adjust) >= 0.5:
+            v = np.clip(v * (1.0 + brightness_adjust / 100.0), 0.0, 1.0)
+        r, g, b = hsv_to_rgb_vec(h, s, v)
+        adjusted = np.stack([np.clip(r, 0, 1), np.clip(g, 0, 1), np.clip(b, 0, 1)], axis=-1).astype(np.float32)
+        m3 = mask[:, :, np.newaxis]
+        paint = paint.copy()
+        paint[:, :, :3] = paint[:, :, :3] * (1.0 - m3) + adjusted * m3
         return paint
-    rgb = np.clip(paint[:, :, :3], 0.0, 1.0).astype(np.float32)
-    hsv = rgb_to_hsv_array(rgb)
-    h, s, v = hsv[:, :, 0], hsv[:, :, 1], hsv[:, :, 2]
-    if abs(hue_offset_deg) >= 0.5:
-        h = (h + hue_offset_deg / 360.0) % 1.0
-    if abs(saturation_adjust) >= 0.5:
-        s = np.clip(s * (1.0 + saturation_adjust / 100.0), 0.0, 1.0)
-    if abs(brightness_adjust) >= 0.5:
-        v = np.clip(v * (1.0 + brightness_adjust / 100.0), 0.0, 1.0)
-    r, g, b = hsv_to_rgb_vec(h, s, v)
-    adjusted = np.stack([np.clip(r, 0, 1), np.clip(g, 0, 1), np.clip(b, 0, 1)], axis=-1).astype(np.float32)
-    m3 = mask[:, :, np.newaxis]
-    paint = paint.copy()
-    paint[:, :, :3] = paint[:, :, :3] * (1.0 - m3) + adjusted * m3
-    return paint
+    except Exception as e:
+        print(f"  [HSB] WARNING: _apply_hsb_adjustments failed ({e}), returning paint unchanged")
+        return paint
 
 
 def _apply_base_color_override(paint, shape, hard_mask, seed, base_color_mode, base_color, base_color_source, base_color_strength, monolithic_registry):
@@ -1586,6 +1595,10 @@ def compose_paint_mod(base_id, pattern_id, paint, shape, mask, seed, pm, bb, sca
                       fifth_base_pattern_opacity=1.0, fifth_base_pattern_strength=1.0,
                       fifth_base_pattern_invert=False, fifth_base_pattern_harden=False,
                       fifth_base_pattern_offset_x=0.5, fifth_base_pattern_offset_y=0.5,
+                      second_base_hue_shift=0, second_base_saturation=0, second_base_brightness=0,
+                      third_base_hue_shift=0, third_base_saturation=0, third_base_brightness=0,
+                      fourth_base_hue_shift=0, fourth_base_saturation=0, fourth_base_brightness=0,
+                      fifth_base_hue_shift=0, fifth_base_saturation=0, fifth_base_brightness=0,
                       monolithic_registry=None, base_strength=1.0, base_spec_strength=1.0, spec_mult=1.0,
                       pattern_intensity=1.0,
                       base_hue_offset=0, base_saturation_adjust=0, base_brightness_adjust=0,
@@ -1848,6 +1861,8 @@ def compose_paint_mod(base_id, pattern_id, paint, shape, mask, seed, pm, bb, sca
                 noise_fn=multi_scale_noise, overlay_scale=max(0.01, min(5.0, float(second_base_scale)))
             )
             _alpha_sb3 = _alpha_sb[:, :, np.newaxis]
+            if abs(second_base_hue_shift) > 0.5 or abs(second_base_saturation) > 0.5 or abs(second_base_brightness) > 0.5:
+                paint_overlay = _apply_hsb_adjustments(paint_overlay, hard_mask, second_base_hue_shift, second_base_saturation, second_base_brightness)
             if _sb_bm_norm == "pattern_screen":
                 _screened = 1.0 - (1.0 - paint[:, :, :3]) * (1.0 - paint_overlay[:, :, :3])
                 paint[:, :, :3] = paint[:, :, :3] * (1.0 - _alpha_sb3) + _screened * _alpha_sb3
@@ -1911,6 +1926,8 @@ def compose_paint_mod(base_id, pattern_id, paint, shape, mask, seed, pm, bb, sca
                 noise_fn=multi_scale_noise, overlay_scale=max(0.01, min(5.0, float(third_base_scale)))
             )
             _alpha_tb3 = _alpha_tb[:, :, np.newaxis]
+            if abs(third_base_hue_shift) > 0.5 or abs(third_base_saturation) > 0.5 or abs(third_base_brightness) > 0.5:
+                paint_overlay_tb = _apply_hsb_adjustments(paint_overlay_tb, hard_mask, third_base_hue_shift, third_base_saturation, third_base_brightness)
             if _tb_bm_norm == "pattern_screen":
                 _screened_tb = 1.0 - (1.0 - paint[:, :, :3]) * (1.0 - paint_overlay_tb[:, :, :3])
                 paint[:, :, :3] = paint[:, :, :3] * (1.0 - _alpha_tb3) + _screened_tb * _alpha_tb3
@@ -1972,6 +1989,8 @@ def compose_paint_mod(base_id, pattern_id, paint, shape, mask, seed, pm, bb, sca
                 noise_fn=multi_scale_noise, overlay_scale=max(0.01, min(5.0, float(fourth_base_scale)))
             )
             _alpha_fb3 = _alpha_fb[:, :, np.newaxis]
+            if abs(fourth_base_hue_shift) > 0.5 or abs(fourth_base_saturation) > 0.5 or abs(fourth_base_brightness) > 0.5:
+                paint_overlay_fb = _apply_hsb_adjustments(paint_overlay_fb, hard_mask, fourth_base_hue_shift, fourth_base_saturation, fourth_base_brightness)
             if _fb_bm_norm == "pattern_screen":
                 _screened_fb = 1.0 - (1.0 - paint[:, :, :3]) * (1.0 - paint_overlay_fb[:, :, :3])
                 paint[:, :, :3] = paint[:, :, :3] * (1.0 - _alpha_fb3) + _screened_fb * _alpha_fb3
@@ -2031,6 +2050,8 @@ def compose_paint_mod(base_id, pattern_id, paint, shape, mask, seed, pm, bb, sca
                 noise_fn=multi_scale_noise, overlay_scale=max(0.01, min(5.0, float(fifth_base_scale)))
             )
             _alpha_fif3 = _alpha_fif[:, :, np.newaxis]
+            if abs(fifth_base_hue_shift) > 0.5 or abs(fifth_base_saturation) > 0.5 or abs(fifth_base_brightness) > 0.5:
+                paint_overlay_fif = _apply_hsb_adjustments(paint_overlay_fif, hard_mask, fifth_base_hue_shift, fifth_base_saturation, fifth_base_brightness)
             if _fif_bm_norm == "pattern_screen":
                 _screened_fif = 1.0 - (1.0 - paint[:, :, :3]) * (1.0 - paint_overlay_fif[:, :, :3])
                 paint[:, :, :3] = paint[:, :, :3] * (1.0 - _alpha_fif3) + _screened_fif * _alpha_fif3
@@ -2071,6 +2092,10 @@ def compose_paint_mod_stacked(base_id, all_patterns, paint, shape, mask, seed, p
                               fifth_base_pattern_opacity=1.0, fifth_base_pattern_strength=1.0,
                               fifth_base_pattern_invert=False, fifth_base_pattern_harden=False,
                               fifth_base_pattern_offset_x=0.5, fifth_base_pattern_offset_y=0.5,
+                              second_base_hue_shift=0, second_base_saturation=0, second_base_brightness=0,
+                              third_base_hue_shift=0, third_base_saturation=0, third_base_brightness=0,
+                              fourth_base_hue_shift=0, fourth_base_saturation=0, fourth_base_brightness=0,
+                              fifth_base_hue_shift=0, fifth_base_saturation=0, fifth_base_brightness=0,
                               base_strength=1.0, base_spec_strength=1.0, spec_mult=1.0,
                               base_offset_x=0.5, base_offset_y=0.5, base_rotation=0.0,
                               base_flip_h=False, base_flip_v=False,
@@ -2333,6 +2358,8 @@ def compose_paint_mod_stacked(base_id, all_patterns, paint, shape, mask, seed, p
                 noise_fn=multi_scale_noise, overlay_scale=max(0.01, min(5.0, float(second_base_scale)))
             )
             _alpha_sb_st3 = _alpha_sb_st[:, :, np.newaxis]
+            if abs(second_base_hue_shift) > 0.5 or abs(second_base_saturation) > 0.5 or abs(second_base_brightness) > 0.5:
+                paint_overlay = _apply_hsb_adjustments(paint_overlay, hard_mask, second_base_hue_shift, second_base_saturation, second_base_brightness)
             if _sb_bm_norm == "pattern_screen":
                 _screened_st = 1.0 - (1.0 - paint[:, :, :3]) * (1.0 - paint_overlay[:, :, :3])
                 paint[:, :, :3] = paint[:, :, :3] * (1.0 - _alpha_sb_st3) + _screened_st * _alpha_sb_st3
@@ -2393,6 +2420,8 @@ def compose_paint_mod_stacked(base_id, all_patterns, paint, shape, mask, seed, p
                 noise_fn=multi_scale_noise, overlay_scale=max(0.01, min(5.0, float(third_base_scale)))
             )
             _alpha_tb_st3 = _alpha_tb_st[:, :, np.newaxis]
+            if abs(third_base_hue_shift) > 0.5 or abs(third_base_saturation) > 0.5 or abs(third_base_brightness) > 0.5:
+                paint_overlay_tb = _apply_hsb_adjustments(paint_overlay_tb, hard_mask, third_base_hue_shift, third_base_saturation, third_base_brightness)
             if _tb_bm_norm == "pattern_screen":
                 _screened_tb_st = 1.0 - (1.0 - paint[:, :, :3]) * (1.0 - paint_overlay_tb[:, :, :3])
                 paint[:, :, :3] = paint[:, :, :3] * (1.0 - _alpha_tb_st3) + _screened_tb_st * _alpha_tb_st3
@@ -2452,6 +2481,8 @@ def compose_paint_mod_stacked(base_id, all_patterns, paint, shape, mask, seed, p
                 noise_fn=multi_scale_noise, overlay_scale=max(0.01, min(5.0, float(fourth_base_scale)))
             )
             _alpha_fb_st3 = _alpha_fb_st[:, :, np.newaxis]
+            if abs(fourth_base_hue_shift) > 0.5 or abs(fourth_base_saturation) > 0.5 or abs(fourth_base_brightness) > 0.5:
+                paint_overlay_fb = _apply_hsb_adjustments(paint_overlay_fb, hard_mask, fourth_base_hue_shift, fourth_base_saturation, fourth_base_brightness)
             if _fb_bm_norm == "pattern_screen":
                 _screened_fb_st = 1.0 - (1.0 - paint[:, :, :3]) * (1.0 - paint_overlay_fb[:, :, :3])
                 paint[:, :, :3] = paint[:, :, :3] * (1.0 - _alpha_fb_st3) + _screened_fb_st * _alpha_fb_st3
@@ -2511,6 +2542,8 @@ def compose_paint_mod_stacked(base_id, all_patterns, paint, shape, mask, seed, p
                 noise_fn=multi_scale_noise, overlay_scale=max(0.01, min(5.0, float(fifth_base_scale)))
             )
             _alpha_fif_st3 = _alpha_fif_st[:, :, np.newaxis]
+            if abs(fifth_base_hue_shift) > 0.5 or abs(fifth_base_saturation) > 0.5 or abs(fifth_base_brightness) > 0.5:
+                paint_overlay_fif = _apply_hsb_adjustments(paint_overlay_fif, hard_mask, fifth_base_hue_shift, fifth_base_saturation, fifth_base_brightness)
             if _fif_bm_norm == "pattern_screen":
                 _screened_fif_st = 1.0 - (1.0 - paint[:, :, :3]) * (1.0 - paint_overlay_fif[:, :, :3])
                 paint[:, :, :3] = paint[:, :, :3] * (1.0 - _alpha_fif_st3) + _screened_fif_st * _alpha_fif_st3

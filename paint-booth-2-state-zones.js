@@ -1306,6 +1306,24 @@ function renderZoneDetail(index) {
                     <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); stepZoneSecondBaseSpecStrength(${i}, 1)" title="+5%" style="padding:0 4px;font-size:10px;">+</button>
                     <span class="stack-val" id="detSBSpecStrVal${i}">${Math.round((zone.secondBaseSpecStrength ?? 1) * 100)}%</span>
                 </div>
+                <div class="stack-control-group hsb-controls" style="margin-top:4px;flex-wrap:wrap;gap:4px 8px;">
+                    <span class="stack-label-mini" style="width:100%;color:#aaa;">Overlay HSB Adjust</span>
+                    <span class="stack-label-mini">Hue</span>
+                    <input type="range" min="-180" max="180" value="${zone.secondBaseHueShift || 0}"
+                        oninput="zones[${i}].secondBaseHueShift = parseInt(this.value); this.nextElementSibling.textContent = this.value + '°'; triggerPreviewRender();"
+                        style="width:80px;" title="Shift overlay colors around the color wheel">
+                    <span style="font-size:9px;color:#aaa;min-width:30px;">${zone.secondBaseHueShift || 0}°</span>
+                    <span class="stack-label-mini">Sat</span>
+                    <input type="range" min="-100" max="100" value="${zone.secondBaseSaturation || 0}"
+                        oninput="zones[${i}].secondBaseSaturation = parseInt(this.value); this.nextElementSibling.textContent = this.value; triggerPreviewRender();"
+                        style="width:80px;" title="Adjust overlay color saturation">
+                    <span style="font-size:9px;color:#aaa;min-width:25px;">${zone.secondBaseSaturation || 0}</span>
+                    <span class="stack-label-mini">Brt</span>
+                    <input type="range" min="-100" max="100" value="${zone.secondBaseBrightness || 0}"
+                        oninput="zones[${i}].secondBaseBrightness = parseInt(this.value); this.nextElementSibling.textContent = this.value; triggerPreviewRender();"
+                        style="width:80px;" title="Adjust overlay brightness — positive = brighter, negative = darker">
+                    <span style="font-size:9px;color:#aaa;min-width:25px;">${zone.secondBaseBrightness || 0}</span>
+                </div>
                 ` : ''}
                 ${(zone.secondBase || zone.secondBaseColorSource) ? (() => {
                     const ovSpecStack = zone.overlaySpecPatternStack || [];
@@ -1568,6 +1586,24 @@ function renderZoneDetail(index) {
                     <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); stepZoneThirdBaseSpecStrength(${i}, 1)" title="+5%" style="padding:0 4px;font-size:10px;">+</button>
                     <span class="stack-val" id="detTBSpecStrVal${i}">${Math.round((zone.thirdBaseSpecStrength ?? 1) * 100)}%</span>
                 </div>
+                <div class="stack-control-group hsb-controls" style="margin-top:4px;flex-wrap:wrap;gap:4px 8px;">
+                    <span class="stack-label-mini" style="width:100%;color:#aaa;">Overlay HSB Adjust</span>
+                    <span class="stack-label-mini">Hue</span>
+                    <input type="range" min="-180" max="180" value="${zone.thirdBaseHueShift || 0}"
+                        oninput="zones[${i}].thirdBaseHueShift = parseInt(this.value); this.nextElementSibling.textContent = this.value + '°'; triggerPreviewRender();"
+                        style="width:80px;" title="Shift overlay colors around the color wheel">
+                    <span style="font-size:9px;color:#aaa;min-width:30px;">${zone.thirdBaseHueShift || 0}°</span>
+                    <span class="stack-label-mini">Sat</span>
+                    <input type="range" min="-100" max="100" value="${zone.thirdBaseSaturation || 0}"
+                        oninput="zones[${i}].thirdBaseSaturation = parseInt(this.value); this.nextElementSibling.textContent = this.value; triggerPreviewRender();"
+                        style="width:80px;" title="Adjust overlay color saturation">
+                    <span style="font-size:9px;color:#aaa;min-width:25px;">${zone.thirdBaseSaturation || 0}</span>
+                    <span class="stack-label-mini">Brt</span>
+                    <input type="range" min="-100" max="100" value="${zone.thirdBaseBrightness || 0}"
+                        oninput="zones[${i}].thirdBaseBrightness = parseInt(this.value); this.nextElementSibling.textContent = this.value; triggerPreviewRender();"
+                        style="width:80px;" title="Adjust overlay brightness — positive = brighter, negative = darker">
+                    <span style="font-size:9px;color:#aaa;min-width:25px;">${zone.thirdBaseBrightness || 0}</span>
+                </div>
                 ${(zone.thirdBase || zone.thirdBaseColorSource) ? (() => {
                     const thirdOvSpecStack = zone.thirdOverlaySpecPatternStack || [];
                     const thirdOvSpecStackActive = thirdOvSpecStack.length > 0;
@@ -1798,6 +1834,24 @@ function renderZoneDetail(index) {
                     <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); stepZoneFourthBaseSpecStrength(${i}, 1)" title="+5%" style="padding:0 4px;font-size:10px;">+</button>
                     <span class="stack-val" id="detFBSpecStrVal${i}">${Math.round((zone.fourthBaseSpecStrength ?? 1) * 100)}%</span>
                 </div>
+                <div class="stack-control-group hsb-controls" style="margin-top:4px;flex-wrap:wrap;gap:4px 8px;">
+                    <span class="stack-label-mini" style="width:100%;color:#aaa;">Overlay HSB Adjust</span>
+                    <span class="stack-label-mini">Hue</span>
+                    <input type="range" min="-180" max="180" value="${zone.fourthBaseHueShift || 0}"
+                        oninput="zones[${i}].fourthBaseHueShift = parseInt(this.value); this.nextElementSibling.textContent = this.value + '°'; triggerPreviewRender();"
+                        style="width:80px;" title="Shift overlay colors around the color wheel">
+                    <span style="font-size:9px;color:#aaa;min-width:30px;">${zone.fourthBaseHueShift || 0}°</span>
+                    <span class="stack-label-mini">Sat</span>
+                    <input type="range" min="-100" max="100" value="${zone.fourthBaseSaturation || 0}"
+                        oninput="zones[${i}].fourthBaseSaturation = parseInt(this.value); this.nextElementSibling.textContent = this.value; triggerPreviewRender();"
+                        style="width:80px;" title="Adjust overlay color saturation">
+                    <span style="font-size:9px;color:#aaa;min-width:25px;">${zone.fourthBaseSaturation || 0}</span>
+                    <span class="stack-label-mini">Brt</span>
+                    <input type="range" min="-100" max="100" value="${zone.fourthBaseBrightness || 0}"
+                        oninput="zones[${i}].fourthBaseBrightness = parseInt(this.value); this.nextElementSibling.textContent = this.value; triggerPreviewRender();"
+                        style="width:80px;" title="Adjust overlay brightness — positive = brighter, negative = darker">
+                    <span style="font-size:9px;color:#aaa;min-width:25px;">${zone.fourthBaseBrightness || 0}</span>
+                </div>
                 ${(zone.fourthBase || zone.fourthBaseColorSource) ? (() => {
                     const fourthOvSpecStack = zone.fourthOverlaySpecPatternStack || [];
                     const fourthOvSpecStackActive = fourthOvSpecStack.length > 0;
@@ -2017,6 +2071,24 @@ function renderZoneDetail(index) {
                         class="stack-slider" title="Physical finish intensity, 5% steps">
                     <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); stepZoneFifthBaseSpecStrength(${i}, 1)" title="+5%" style="padding:0 4px;font-size:10px;">+</button>
                     <span class="stack-val" id="detFifSpecStrVal${i}">${Math.round((zone.fifthBaseSpecStrength ?? 1) * 100)}%</span>
+                </div>
+                <div class="stack-control-group hsb-controls" style="margin-top:4px;flex-wrap:wrap;gap:4px 8px;">
+                    <span class="stack-label-mini" style="width:100%;color:#aaa;">Overlay HSB Adjust</span>
+                    <span class="stack-label-mini">Hue</span>
+                    <input type="range" min="-180" max="180" value="${zone.fifthBaseHueShift || 0}"
+                        oninput="zones[${i}].fifthBaseHueShift = parseInt(this.value); this.nextElementSibling.textContent = this.value + '°'; triggerPreviewRender();"
+                        style="width:80px;" title="Shift overlay colors around the color wheel">
+                    <span style="font-size:9px;color:#aaa;min-width:30px;">${zone.fifthBaseHueShift || 0}°</span>
+                    <span class="stack-label-mini">Sat</span>
+                    <input type="range" min="-100" max="100" value="${zone.fifthBaseSaturation || 0}"
+                        oninput="zones[${i}].fifthBaseSaturation = parseInt(this.value); this.nextElementSibling.textContent = this.value; triggerPreviewRender();"
+                        style="width:80px;" title="Adjust overlay color saturation">
+                    <span style="font-size:9px;color:#aaa;min-width:25px;">${zone.fifthBaseSaturation || 0}</span>
+                    <span class="stack-label-mini">Brt</span>
+                    <input type="range" min="-100" max="100" value="${zone.fifthBaseBrightness || 0}"
+                        oninput="zones[${i}].fifthBaseBrightness = parseInt(this.value); this.nextElementSibling.textContent = this.value; triggerPreviewRender();"
+                        style="width:80px;" title="Adjust overlay brightness — positive = brighter, negative = darker">
+                    <span style="font-size:9px;color:#aaa;min-width:25px;">${zone.fifthBaseBrightness || 0}</span>
                 </div>
                 ${(zone.fifthBase || zone.fifthBaseColorSource) ? (() => {
                     const fifthOvSpecStack = zone.fifthOverlaySpecPatternStack || [];
@@ -2942,6 +3014,9 @@ function addZone(skipUndo) {
         secondBasePatternOffsetY: 0.5,
         secondBaseFitZone: false,
         secondBaseColorSource: null,
+        secondBaseHueShift: 0,
+        secondBaseSaturation: 0,
+        secondBaseBrightness: 0,
         thirdBase: null,
         thirdBaseColor: '#ffffff',
         thirdBaseStrength: 0,
@@ -2959,6 +3034,9 @@ function addZone(skipUndo) {
         thirdBasePatternOffsetY: 0.5,
         thirdBaseFitZone: false,
         thirdBaseColorSource: null,
+        thirdBaseHueShift: 0,
+        thirdBaseSaturation: 0,
+        thirdBaseBrightness: 0,
         fourthBase: null,
         fourthBaseColor: '#ffffff',
         fourthBaseStrength: 0,
@@ -2976,6 +3054,9 @@ function addZone(skipUndo) {
         fourthBasePatternOffsetY: 0.5,
         fourthBaseFitZone: false,
         fourthBaseColorSource: null,
+        fourthBaseHueShift: 0,
+        fourthBaseSaturation: 0,
+        fourthBaseBrightness: 0,
         fifthBase: null,
         fifthBaseColor: '#ffffff',
         fifthBaseStrength: 0,
@@ -2993,6 +3074,9 @@ function addZone(skipUndo) {
         fifthBasePatternOffsetY: 0.5,
         fifthBaseFitZone: false,
         fifthBaseColorSource: null,
+        fifthBaseHueShift: 0,
+        fifthBaseSaturation: 0,
+        fifthBaseBrightness: 0,
         baseStrength: 1,
         baseSpecBlendMode: 'normal',
         patternSpecMult: 1,
@@ -6607,6 +6691,9 @@ function getConfig() {
             secondBasePatternHarden: z.secondBasePatternHarden ?? false,
             secondBasePatternOffsetX: z.secondBasePatternOffsetX ?? 0.5,
             secondBasePatternOffsetY: z.secondBasePatternOffsetY ?? 0.5,
+            secondBaseHueShift: z.secondBaseHueShift ?? 0,
+            secondBaseSaturation: z.secondBaseSaturation ?? 0,
+            secondBaseBrightness: z.secondBaseBrightness ?? 0,
             thirdBase: z.thirdBase ?? null,
             thirdBaseColor: z.thirdBaseColor ?? '#ffffff',
             thirdBaseStrength: z.thirdBaseStrength ?? 0,
@@ -6624,6 +6711,9 @@ function getConfig() {
             thirdBasePatternHarden: z.thirdBasePatternHarden ?? false,
             thirdBasePatternOffsetX: z.thirdBasePatternOffsetX ?? 0.5,
             thirdBasePatternOffsetY: z.thirdBasePatternOffsetY ?? 0.5,
+            thirdBaseHueShift: z.thirdBaseHueShift ?? 0,
+            thirdBaseSaturation: z.thirdBaseSaturation ?? 0,
+            thirdBaseBrightness: z.thirdBaseBrightness ?? 0,
             fourthBase: z.fourthBase ?? null,
             fourthBaseColor: z.fourthBaseColor ?? '#ffffff',
             fourthBaseStrength: z.fourthBaseStrength ?? 0,
@@ -6641,6 +6731,9 @@ function getConfig() {
             fourthBasePatternHarden: z.fourthBasePatternHarden ?? false,
             fourthBasePatternOffsetX: z.fourthBasePatternOffsetX ?? 0.5,
             fourthBasePatternOffsetY: z.fourthBasePatternOffsetY ?? 0.5,
+            fourthBaseHueShift: z.fourthBaseHueShift ?? 0,
+            fourthBaseSaturation: z.fourthBaseSaturation ?? 0,
+            fourthBaseBrightness: z.fourthBaseBrightness ?? 0,
             fifthBase: z.fifthBase ?? null,
             fifthBaseColor: z.fifthBaseColor ?? '#ffffff',
             fifthBaseStrength: z.fifthBaseStrength ?? 0,
@@ -6658,6 +6751,9 @@ function getConfig() {
             fifthBasePatternHarden: z.fifthBasePatternHarden ?? false,
             fifthBasePatternOffsetX: z.fifthBasePatternOffsetX ?? 0.5,
             fifthBasePatternOffsetY: z.fifthBasePatternOffsetY ?? 0.5,
+            fifthBaseHueShift: z.fifthBaseHueShift ?? 0,
+            fifthBaseSaturation: z.fifthBaseSaturation ?? 0,
+            fifthBaseBrightness: z.fifthBaseBrightness ?? 0,
             ccQuality: z.ccQuality,
             blendBase: z.blendBase,
             blendDir: z.blendDir,
@@ -6761,6 +6857,9 @@ function loadConfigFromObj(cfg) {
             secondBasePatternHarden: z.secondBasePatternHarden ?? false,
             secondBasePatternOffsetX: z.secondBasePatternOffsetX ?? 0.5,
             secondBasePatternOffsetY: z.secondBasePatternOffsetY ?? 0.5,
+            secondBaseHueShift: z.secondBaseHueShift ?? 0,
+            secondBaseSaturation: z.secondBaseSaturation ?? 0,
+            secondBaseBrightness: z.secondBaseBrightness ?? 0,
             thirdBase: z.thirdBase ?? null,
             thirdBaseColor: z.thirdBaseColor ?? '#ffffff',
             thirdBaseStrength: z.thirdBaseStrength ?? 0,
@@ -6778,6 +6877,9 @@ function loadConfigFromObj(cfg) {
             thirdBasePatternHarden: z.thirdBasePatternHarden ?? false,
             thirdBasePatternOffsetX: z.thirdBasePatternOffsetX ?? 0.5,
             thirdBasePatternOffsetY: z.thirdBasePatternOffsetY ?? 0.5,
+            thirdBaseHueShift: z.thirdBaseHueShift ?? 0,
+            thirdBaseSaturation: z.thirdBaseSaturation ?? 0,
+            thirdBaseBrightness: z.thirdBaseBrightness ?? 0,
             fourthBase: z.fourthBase ?? null,
             fourthBaseColor: z.fourthBaseColor ?? '#ffffff',
             fourthBaseStrength: z.fourthBaseStrength ?? 0,
@@ -6795,6 +6897,9 @@ function loadConfigFromObj(cfg) {
             fourthBasePatternHarden: z.fourthBasePatternHarden ?? false,
             fourthBasePatternOffsetX: z.fourthBasePatternOffsetX ?? 0.5,
             fourthBasePatternOffsetY: z.fourthBasePatternOffsetY ?? 0.5,
+            fourthBaseHueShift: z.fourthBaseHueShift ?? 0,
+            fourthBaseSaturation: z.fourthBaseSaturation ?? 0,
+            fourthBaseBrightness: z.fourthBaseBrightness ?? 0,
             fifthBase: z.fifthBase ?? null,
             fifthBaseColor: z.fifthBaseColor ?? '#ffffff',
             fifthBaseStrength: z.fifthBaseStrength ?? 0,
@@ -6812,6 +6917,9 @@ function loadConfigFromObj(cfg) {
             fifthBasePatternHarden: z.fifthBasePatternHarden ?? false,
             fifthBasePatternOffsetX: z.fifthBasePatternOffsetX ?? 0.5,
             fifthBasePatternOffsetY: z.fifthBasePatternOffsetY ?? 0.5,
+            fifthBaseHueShift: z.fifthBaseHueShift ?? 0,
+            fifthBaseSaturation: z.fifthBaseSaturation ?? 0,
+            fifthBaseBrightness: z.fifthBaseBrightness ?? 0,
             ccQuality: z.ccQuality ?? 100,
             blendBase: z.blendBase ?? null,
             blendDir: z.blendDir ?? 'horizontal',

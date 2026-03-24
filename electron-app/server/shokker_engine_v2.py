@@ -5498,7 +5498,7 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
                     k: v for k, v in zone.items()
                     if k not in ("region_mask", "spatial_mask", "name")
                 }
-                _zm_sig = f"{zone_mask.shape}:{zone_mask.sum():.4f}:{zone_mask.max():.4f}"
+                _zm_sig = f"{zone_mask.shape}:{zone_mask.sum():.4f}:{zone_mask.max():.4f}:{h}x{w}"
                 _zone_raw = str(sorted(_zone_key_data.items())) + _zm_sig
                 _zone_cache_key = _hashlib.md5(_zone_raw.encode()).hexdigest()
                 if _zone_cache_key in build_multi_zone._zone_cache:
@@ -5690,6 +5690,9 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
                 _v6kw["second_base_pattern_offset_x"] = _sb_ox
                 _v6kw["second_base_pattern_offset_y"] = _sb_oy
                 _v6kw["second_base_pattern_scale"] = _sb_pscale
+            _v6kw["second_base_hue_shift"] = float(zone.get("second_base_hue_shift", 0))
+            _v6kw["second_base_saturation"] = float(zone.get("second_base_saturation", 0))
+            _v6kw["second_base_brightness"] = float(zone.get("second_base_brightness", 0))
             _v6kw["second_base_color_source"] = zone.get("second_base_color_source")
             _z_tb = zone.get("third_base")
             if _z_tb:
@@ -5725,6 +5728,9 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
                 _v6kw["third_base_pattern_offset_x"] = _tb_ox
                 _v6kw["third_base_pattern_offset_y"] = _tb_oy
                 _v6kw["third_base_pattern_scale"] = _tb_pscale
+            _v6kw["third_base_hue_shift"] = float(zone.get("third_base_hue_shift", 0))
+            _v6kw["third_base_saturation"] = float(zone.get("third_base_saturation", 0))
+            _v6kw["third_base_brightness"] = float(zone.get("third_base_brightness", 0))
             _v6kw["third_base_color_source"] = zone.get("third_base_color_source")
             _z_fb = zone.get("fourth_base")
             if _z_fb:
@@ -5760,6 +5766,9 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
                 _v6kw["fourth_base_pattern_offset_x"] = _fb_ox
                 _v6kw["fourth_base_pattern_offset_y"] = _fb_oy
                 _v6kw["fourth_base_pattern_scale"] = _fb_pscale
+            _v6kw["fourth_base_hue_shift"] = float(zone.get("fourth_base_hue_shift", 0))
+            _v6kw["fourth_base_saturation"] = float(zone.get("fourth_base_saturation", 0))
+            _v6kw["fourth_base_brightness"] = float(zone.get("fourth_base_brightness", 0))
             _v6kw["fourth_base_color_source"] = zone.get("fourth_base_color_source")
             _z_fif = zone.get("fifth_base")
             if _z_fif:
@@ -5795,6 +5804,9 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
                 _v6kw["fifth_base_pattern_offset_x"] = _fif_ox
                 _v6kw["fifth_base_pattern_offset_y"] = _fif_oy
                 _v6kw["fifth_base_pattern_scale"] = _fif_pscale
+            _v6kw["fifth_base_hue_shift"] = float(zone.get("fifth_base_hue_shift", 0))
+            _v6kw["fifth_base_saturation"] = float(zone.get("fifth_base_saturation", 0))
+            _v6kw["fifth_base_brightness"] = float(zone.get("fifth_base_brightness", 0))
             _v6kw["fifth_base_color_source"] = zone.get("fifth_base_color_source")
             _v6kw["monolithic_registry"] = MONOLITHIC_REGISTRY
 
@@ -6765,6 +6777,9 @@ def build_helmet_spec(helmet_paint_file, output_dir, zones, iracing_id="23371", 
                 _v6kw["second_base_pattern_offset_x"] = _sb_oxN
                 _v6kw["second_base_pattern_offset_y"] = _sb_oyN
                 _v6kw["second_base_pattern_scale"] = _sb_pscaleN
+            _v6kw["second_base_hue_shift"] = float(zone.get("second_base_hue_shift", 0))
+            _v6kw["second_base_saturation"] = float(zone.get("second_base_saturation", 0))
+            _v6kw["second_base_brightness"] = float(zone.get("second_base_brightness", 0))
             _v6kw["second_base_color_source"] = zone.get("second_base_color_source")
             _z_tb = zone.get("third_base")
             if _z_tb:
@@ -6800,6 +6815,9 @@ def build_helmet_spec(helmet_paint_file, output_dir, zones, iracing_id="23371", 
                 _v6kw["third_base_pattern_offset_x"] = _tb_oxN
                 _v6kw["third_base_pattern_offset_y"] = _tb_oyN
                 _v6kw["third_base_pattern_scale"] = _tb_pscaleN
+            _v6kw["third_base_hue_shift"] = float(zone.get("third_base_hue_shift", 0))
+            _v6kw["third_base_saturation"] = float(zone.get("third_base_saturation", 0))
+            _v6kw["third_base_brightness"] = float(zone.get("third_base_brightness", 0))
             _v6kw["third_base_color_source"] = zone.get("third_base_color_source")
             _z_fb = zone.get("fourth_base")
             if _z_fb:
@@ -6835,6 +6853,9 @@ def build_helmet_spec(helmet_paint_file, output_dir, zones, iracing_id="23371", 
                 _v6kw["fourth_base_pattern_offset_x"] = _fb_oxN
                 _v6kw["fourth_base_pattern_offset_y"] = _fb_oyN
                 _v6kw["fourth_base_pattern_scale"] = _fb_pscaleN
+            _v6kw["fourth_base_hue_shift"] = float(zone.get("fourth_base_hue_shift", 0))
+            _v6kw["fourth_base_saturation"] = float(zone.get("fourth_base_saturation", 0))
+            _v6kw["fourth_base_brightness"] = float(zone.get("fourth_base_brightness", 0))
             _v6kw["fourth_base_color_source"] = zone.get("fourth_base_color_source")
             _z_fif = zone.get("fifth_base")
             if _z_fif:
@@ -6870,6 +6891,9 @@ def build_helmet_spec(helmet_paint_file, output_dir, zones, iracing_id="23371", 
                 _v6kw["fifth_base_pattern_offset_x"] = _fif_oxN
                 _v6kw["fifth_base_pattern_offset_y"] = _fif_oyN
                 _v6kw["fifth_base_pattern_scale"] = _fif_pscaleN
+            _v6kw["fifth_base_hue_shift"] = float(zone.get("fifth_base_hue_shift", 0))
+            _v6kw["fifth_base_saturation"] = float(zone.get("fifth_base_saturation", 0))
+            _v6kw["fifth_base_brightness"] = float(zone.get("fifth_base_brightness", 0))
             _v6kw["fifth_base_color_source"] = zone.get("fifth_base_color_source")
             _v6kw["monolithic_registry"] = MONOLITHIC_REGISTRY
 
@@ -7172,6 +7196,9 @@ def build_suit_spec(suit_paint_file, output_dir, zones, iracing_id="23371", seed
                 _v6kw["second_base_pattern_offset_x"] = _sb_oxN
                 _v6kw["second_base_pattern_offset_y"] = _sb_oyN
                 _v6kw["second_base_pattern_scale"] = _sb_pscaleN
+            _v6kw["second_base_hue_shift"] = float(zone.get("second_base_hue_shift", 0))
+            _v6kw["second_base_saturation"] = float(zone.get("second_base_saturation", 0))
+            _v6kw["second_base_brightness"] = float(zone.get("second_base_brightness", 0))
             _v6kw["second_base_color_source"] = zone.get("second_base_color_source")
             _z_tb = zone.get("third_base")
             if _z_tb:
@@ -7207,6 +7234,9 @@ def build_suit_spec(suit_paint_file, output_dir, zones, iracing_id="23371", seed
                 _v6kw["third_base_pattern_offset_x"] = _tb_oxN
                 _v6kw["third_base_pattern_offset_y"] = _tb_oyN
                 _v6kw["third_base_pattern_scale"] = _tb_pscaleN
+            _v6kw["third_base_hue_shift"] = float(zone.get("third_base_hue_shift", 0))
+            _v6kw["third_base_saturation"] = float(zone.get("third_base_saturation", 0))
+            _v6kw["third_base_brightness"] = float(zone.get("third_base_brightness", 0))
             _v6kw["third_base_color_source"] = zone.get("third_base_color_source")
             _z_fb = zone.get("fourth_base")
             if _z_fb:
@@ -7242,6 +7272,9 @@ def build_suit_spec(suit_paint_file, output_dir, zones, iracing_id="23371", seed
                 _v6kw["fourth_base_pattern_offset_x"] = _fb_oxN
                 _v6kw["fourth_base_pattern_offset_y"] = _fb_oyN
                 _v6kw["fourth_base_pattern_scale"] = _fb_pscaleN
+            _v6kw["fourth_base_hue_shift"] = float(zone.get("fourth_base_hue_shift", 0))
+            _v6kw["fourth_base_saturation"] = float(zone.get("fourth_base_saturation", 0))
+            _v6kw["fourth_base_brightness"] = float(zone.get("fourth_base_brightness", 0))
             _v6kw["fourth_base_color_source"] = zone.get("fourth_base_color_source")
             _z_fif = zone.get("fifth_base")
             if _z_fif:
@@ -7277,6 +7310,9 @@ def build_suit_spec(suit_paint_file, output_dir, zones, iracing_id="23371", seed
                 _v6kw["fifth_base_pattern_offset_x"] = _fif_oxN
                 _v6kw["fifth_base_pattern_offset_y"] = _fif_oyN
                 _v6kw["fifth_base_pattern_scale"] = _fif_pscaleN
+            _v6kw["fifth_base_hue_shift"] = float(zone.get("fifth_base_hue_shift", 0))
+            _v6kw["fifth_base_saturation"] = float(zone.get("fifth_base_saturation", 0))
+            _v6kw["fifth_base_brightness"] = float(zone.get("fifth_base_brightness", 0))
             _v6kw["fifth_base_color_source"] = zone.get("fifth_base_color_source")
             _v6kw["monolithic_registry"] = MONOLITHIC_REGISTRY
 

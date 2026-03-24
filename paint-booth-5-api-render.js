@@ -865,6 +865,9 @@ async function doFleetRender() {
             zoneObj.second_base_pattern_offset_x = Math.max(0, Math.min(1, Number(z.secondBasePatternOffsetX ?? 0.5)));
             zoneObj.second_base_pattern_offset_y = Math.max(0, Math.min(1, Number(z.secondBasePatternOffsetY ?? 0.5)));
             if (z.secondBaseFitZone) zoneObj.second_base_fit_zone = true;
+            if (z.secondBaseHueShift) zoneObj.second_base_hue_shift = z.secondBaseHueShift;
+            if (z.secondBaseSaturation) zoneObj.second_base_saturation = z.secondBaseSaturation;
+            if (z.secondBaseBrightness) zoneObj.second_base_brightness = z.secondBaseBrightness;
         }
         if ((z.thirdBase || z.thirdBaseColorSource) && (z.thirdBaseStrength || 0) > 0) {
             const _tbColor = (z.thirdBaseColor || '#ffffff').toString();
@@ -887,6 +890,9 @@ async function doFleetRender() {
             zoneObj.third_base_pattern_offset_x = Math.max(0, Math.min(1, Number(z.thirdBasePatternOffsetX ?? 0.5)));
             zoneObj.third_base_pattern_offset_y = Math.max(0, Math.min(1, Number(z.thirdBasePatternOffsetY ?? 0.5)));
             if (z.thirdBaseFitZone) zoneObj.third_base_fit_zone = true;
+            if (z.thirdBaseHueShift) zoneObj.third_base_hue_shift = z.thirdBaseHueShift;
+            if (z.thirdBaseSaturation) zoneObj.third_base_saturation = z.thirdBaseSaturation;
+            if (z.thirdBaseBrightness) zoneObj.third_base_brightness = z.thirdBaseBrightness;
         }
         if ((z.fourthBase || z.fourthBaseColorSource) && (z.fourthBaseStrength || 0) > 0) {
             const _fbColor = (z.fourthBaseColor || '#ffffff').toString();
@@ -907,6 +913,9 @@ async function doFleetRender() {
             zoneObj.fourth_base_pattern_offset_x = Math.max(0, Math.min(1, Number(z.fourthBasePatternOffsetX ?? 0.5)));
             zoneObj.fourth_base_pattern_offset_y = Math.max(0, Math.min(1, Number(z.fourthBasePatternOffsetY ?? 0.5)));
             if (z.fourthBaseFitZone) zoneObj.fourth_base_fit_zone = true;
+            if (z.fourthBaseHueShift) zoneObj.fourth_base_hue_shift = z.fourthBaseHueShift;
+            if (z.fourthBaseSaturation) zoneObj.fourth_base_saturation = z.fourthBaseSaturation;
+            if (z.fourthBaseBrightness) zoneObj.fourth_base_brightness = z.fourthBaseBrightness;
         }
         if ((z.fifthBase || z.fifthBaseColorSource) && (z.fifthBaseStrength || 0) > 0) {
             const _fifColor = (z.fifthBaseColor || '#ffffff').toString();
@@ -927,6 +936,9 @@ async function doFleetRender() {
             zoneObj.fifth_base_pattern_offset_x = Math.max(0, Math.min(1, Number(z.fifthBasePatternOffsetX ?? 0.5)));
             zoneObj.fifth_base_pattern_offset_y = Math.max(0, Math.min(1, Number(z.fifthBasePatternOffsetY ?? 0.5)));
             if (z.fifthBaseFitZone) zoneObj.fifth_base_fit_zone = true;
+            if (z.fifthBaseHueShift) zoneObj.fifth_base_hue_shift = z.fifthBaseHueShift;
+            if (z.fifthBaseSaturation) zoneObj.fifth_base_saturation = z.fifthBaseSaturation;
+            if (z.fifthBaseBrightness) zoneObj.fifth_base_brightness = z.fifthBaseBrightness;
         }
         return zoneObj;
     });
@@ -1158,6 +1170,9 @@ async function doSeasonRender() {
             zoneObj.second_base_pattern_offset_x = Math.max(0, Math.min(1, Number(z.secondBasePatternOffsetX ?? 0.5)));
             zoneObj.second_base_pattern_offset_y = Math.max(0, Math.min(1, Number(z.secondBasePatternOffsetY ?? 0.5)));
             if (z.secondBaseFitZone) zoneObj.second_base_fit_zone = true;
+            if (z.secondBaseHueShift) zoneObj.second_base_hue_shift = z.secondBaseHueShift;
+            if (z.secondBaseSaturation) zoneObj.second_base_saturation = z.secondBaseSaturation;
+            if (z.secondBaseBrightness) zoneObj.second_base_brightness = z.secondBaseBrightness;
         }
         if ((z.thirdBase || z.thirdBaseColorSource) && (z.thirdBaseStrength || 0) > 0) {
             const _tbColor = (z.thirdBaseColor || '#ffffff').toString();
@@ -1180,6 +1195,9 @@ async function doSeasonRender() {
             zoneObj.third_base_pattern_offset_x = Math.max(0, Math.min(1, Number(z.thirdBasePatternOffsetX ?? 0.5)));
             zoneObj.third_base_pattern_offset_y = Math.max(0, Math.min(1, Number(z.thirdBasePatternOffsetY ?? 0.5)));
             if (z.thirdBaseFitZone) zoneObj.third_base_fit_zone = true;
+            if (z.thirdBaseHueShift) zoneObj.third_base_hue_shift = z.thirdBaseHueShift;
+            if (z.thirdBaseSaturation) zoneObj.third_base_saturation = z.thirdBaseSaturation;
+            if (z.thirdBaseBrightness) zoneObj.third_base_brightness = z.thirdBaseBrightness;
         }
         if ((z.fourthBase || z.fourthBaseColorSource) && (z.fourthBaseStrength || 0) > 0) {
             const _fbColor = (z.fourthBaseColor || '#ffffff').toString();
@@ -1200,6 +1218,9 @@ async function doSeasonRender() {
             zoneObj.fourth_base_pattern_offset_x = Math.max(0, Math.min(1, Number(z.fourthBasePatternOffsetX ?? 0.5)));
             zoneObj.fourth_base_pattern_offset_y = Math.max(0, Math.min(1, Number(z.fourthBasePatternOffsetY ?? 0.5)));
             if (z.fourthBaseFitZone) zoneObj.fourth_base_fit_zone = true;
+            if (z.fourthBaseHueShift) zoneObj.fourth_base_hue_shift = z.fourthBaseHueShift;
+            if (z.fourthBaseSaturation) zoneObj.fourth_base_saturation = z.fourthBaseSaturation;
+            if (z.fourthBaseBrightness) zoneObj.fourth_base_brightness = z.fourthBaseBrightness;
         }
         if ((z.fifthBase || z.fifthBaseColorSource) && (z.fifthBaseStrength || 0) > 0) {
             const _fifColor = (z.fifthBaseColor || '#ffffff').toString();
@@ -1220,6 +1241,9 @@ async function doSeasonRender() {
             zoneObj.fifth_base_pattern_offset_x = Math.max(0, Math.min(1, Number(z.fifthBasePatternOffsetX ?? 0.5)));
             zoneObj.fifth_base_pattern_offset_y = Math.max(0, Math.min(1, Number(z.fifthBasePatternOffsetY ?? 0.5)));
             if (z.fifthBaseFitZone) zoneObj.fifth_base_fit_zone = true;
+            if (z.fifthBaseHueShift) zoneObj.fifth_base_hue_shift = z.fifthBaseHueShift;
+            if (z.fifthBaseSaturation) zoneObj.fifth_base_saturation = z.fifthBaseSaturation;
+            if (z.fifthBaseBrightness) zoneObj.fifth_base_brightness = z.fifthBaseBrightness;
         }
         return zoneObj;
     });
@@ -1502,6 +1526,9 @@ function buildServerZonesForRender(zones) {
             zoneObj.second_base_pattern_offset_x = Math.max(0, Math.min(1, Number(z.secondBasePatternOffsetX ?? 0.5)));
             zoneObj.second_base_pattern_offset_y = Math.max(0, Math.min(1, Number(z.secondBasePatternOffsetY ?? 0.5)));
             if (z.secondBaseFitZone) zoneObj.second_base_fit_zone = true;
+            if (z.secondBaseHueShift) zoneObj.second_base_hue_shift = z.secondBaseHueShift;
+            if (z.secondBaseSaturation) zoneObj.second_base_saturation = z.secondBaseSaturation;
+            if (z.secondBaseBrightness) zoneObj.second_base_brightness = z.secondBaseBrightness;
         }
         if ((z.thirdBase || z.thirdBaseColorSource) && (z.thirdBaseStrength || 0) > 0) {
             const _tbColor = (z.thirdBaseColor || '#ffffff').toString();
@@ -1524,6 +1551,9 @@ function buildServerZonesForRender(zones) {
             zoneObj.third_base_pattern_offset_x = Math.max(0, Math.min(1, Number(z.thirdBasePatternOffsetX ?? 0.5)));
             zoneObj.third_base_pattern_offset_y = Math.max(0, Math.min(1, Number(z.thirdBasePatternOffsetY ?? 0.5)));
             if (z.thirdBaseFitZone) zoneObj.third_base_fit_zone = true;
+            if (z.thirdBaseHueShift) zoneObj.third_base_hue_shift = z.thirdBaseHueShift;
+            if (z.thirdBaseSaturation) zoneObj.third_base_saturation = z.thirdBaseSaturation;
+            if (z.thirdBaseBrightness) zoneObj.third_base_brightness = z.thirdBaseBrightness;
         }
         if ((z.fourthBase || z.fourthBaseColorSource) && (z.fourthBaseStrength || 0) > 0) {
             const _fbColor = (z.fourthBaseColor || '#ffffff').toString();
@@ -1546,6 +1576,9 @@ function buildServerZonesForRender(zones) {
             zoneObj.fourth_base_pattern_offset_x = Math.max(0, Math.min(1, Number(z.fourthBasePatternOffsetX ?? 0.5)));
             zoneObj.fourth_base_pattern_offset_y = Math.max(0, Math.min(1, Number(z.fourthBasePatternOffsetY ?? 0.5)));
             if (z.fourthBaseFitZone) zoneObj.fourth_base_fit_zone = true;
+            if (z.fourthBaseHueShift) zoneObj.fourth_base_hue_shift = z.fourthBaseHueShift;
+            if (z.fourthBaseSaturation) zoneObj.fourth_base_saturation = z.fourthBaseSaturation;
+            if (z.fourthBaseBrightness) zoneObj.fourth_base_brightness = z.fourthBaseBrightness;
         }
         if ((z.fifthBase || z.fifthBaseColorSource) && (z.fifthBaseStrength || 0) > 0) {
             const _fifColor = (z.fifthBaseColor || '#ffffff').toString();
@@ -1568,6 +1601,9 @@ function buildServerZonesForRender(zones) {
             zoneObj.fifth_base_pattern_offset_x = Math.max(0, Math.min(1, Number(z.fifthBasePatternOffsetX ?? 0.5)));
             zoneObj.fifth_base_pattern_offset_y = Math.max(0, Math.min(1, Number(z.fifthBasePatternOffsetY ?? 0.5)));
             if (z.fifthBaseFitZone) zoneObj.fifth_base_fit_zone = true;
+            if (z.fifthBaseHueShift) zoneObj.fifth_base_hue_shift = z.fifthBaseHueShift;
+            if (z.fifthBaseSaturation) zoneObj.fifth_base_saturation = z.fifthBaseSaturation;
+            if (z.fifthBaseBrightness) zoneObj.fifth_base_brightness = z.fifthBaseBrightness;
         }
         const hasSpatialRefinement = z.spatialMask && z.spatialMask.some(v => v > 0);
         if (!hasSpatialRefinement && z.regionMask && z.regionMask.some(v => v > 0)) {

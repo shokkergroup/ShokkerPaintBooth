@@ -1729,16 +1729,18 @@ def preview_render_endpoint():
             _paint_mtime = os.path.getmtime(paint_file)
         except OSError:
             _paint_mtime = 0
-        _new_paint_key = f"{paint_file}|{_paint_mtime}|{preview_scale}"
+        _new_paint_key = f"{paint_file}|{_paint_mtime}"
         if _new_paint_key != _preview_cache_paint_key:
             _preview_cache_paint_key = _new_paint_key
-            # Clear the engine-level zone cache so stale arrays from a different
-            # paint file or scale are never served.
+            # Clear the engine-level zone cache when the PAINT FILE changes.
+            # Scale changes should NOT flush the cache — the engine includes
+            # canvas dimensions in its per-zone cache key so different scales
+            # naturally produce different cache entries without flushing.
             try:
                 import shokker_engine_v2 as _eng
                 if hasattr(_eng.build_multi_zone, '_zone_cache'):
                     _eng.build_multi_zone._zone_cache.clear()
-                    logger.info(f"[preview-cache] Invalidated zone cache (paint file or scale changed)")
+                    logger.info(f"[preview-cache] Invalidated zone cache (paint file changed)")
             except Exception:
                 pass
         if changed_zone >= 0 or zone_hashes:

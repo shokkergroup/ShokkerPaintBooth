@@ -292,7 +292,7 @@ def save_config(cfg):
 def build_check():
     """Diagnostic endpoint - returns server status and configuration."""
     # Read actual version from electron-app/package.json if available
-    _pkg_version = "5.8.8"
+    _pkg_version = "5.9.2"
     try:
         import json as _json
         for _pkg_path in [
@@ -4326,8 +4326,23 @@ def api_export_spec_channels():
         # PS Export output: use user-specified dir, or a dedicated PS_Exports folder
         # NEVER save into a job_* folder (those get auto-purged)
         _user_out = data.get("output_dir", "").strip()
-        if _user_out and os.path.isdir(_user_out):
-            out_dir = _user_out
+        logger.info(f"PS Export: output_dir from request = '{_user_out}' (len={len(_user_out) if _user_out else 0})")
+        # Resolve relative paths to absolute — browser folder pickers return relative paths
+        if _user_out and not os.path.isabs(_user_out):
+            logger.warning(f"PS Export: relative path detected '{_user_out}', resolving to absolute")
+            # Try resolving relative to the output folder first, then fall back to default
+            _resolved = os.path.join(OUTPUT_FOLDER, "PS_Exports", _user_out)
+            _user_out = _resolved
+            logger.info(f"PS Export: resolved to '{_user_out}'")
+        if _user_out:
+            # Create directory if it doesn't exist — user explicitly chose this path
+            try:
+                os.makedirs(_user_out, exist_ok=True)
+                out_dir = _user_out
+                logger.info(f"PS Export: using user-specified output dir: {_user_out}")
+            except Exception as _dir_err:
+                logger.warning(f"PS Export: could not create output dir '{_user_out}': {_dir_err}, using default")
+                out_dir = os.path.join(OUTPUT_FOLDER, "PS_Exports")
         else:
             # Dedicated PS_Exports folder that auto-purge NEVER touches
             out_dir = os.path.join(OUTPUT_FOLDER, "PS_Exports")
@@ -4370,7 +4385,13 @@ def api_export_spec_channels():
             channel_img.save(out_path)
             paths[label] = out_path
 
-        return jsonify({"ok": True, "paths": paths, "spec_source": spec_path})
+        # Verify files actually exist at the written paths
+        verified = {}
+        for label, fpath in paths.items():
+            verified[label] = os.path.exists(fpath)
+        logger.info(f"PS Export: out_dir={out_dir} | {len(paths)} files | verified={verified}")
+
+        return jsonify({"ok": True, "paths": paths, "out_dir": out_dir, "spec_source": spec_path})
     except Exception as e:
         logger.error(f"/api/export-spec-channels error: {e}\n{traceback.format_exc()}")
         return jsonify({"error": str(e)}), 500

@@ -5106,19 +5106,52 @@ def overlay_pattern_paint(paint, pattern_id, shape, mask, seed, pm, bb, scale=1.
     image_path = pattern.get("image_path")
     if image_path:
         try:
-            from engine.render import _load_image_pattern
-            pv = _load_image_pattern(image_path, shape, scale=scale, rotation=rotation)
-            if pv is not None:
-                pv = np.asarray(pv, dtype=np.float32)
-                pv_min, pv_max = float(pv.min()), float(pv.max())
-                if pv_max - pv_min > 1e-8:
-                    pv = (pv - pv_min) / (pv_max - pv_min)
+            from engine.render import _load_image_pattern, _load_color_image_pattern
+            # Load the FULL COLOR version for paint overlay
+            rgba = _load_color_image_pattern(image_path, shape, scale=scale, rotation=rotation)
+            if rgba is not None and rgba.shape[2] >= 4:
+                alpha = rgba[:, :, 3]
+                rgb = rgba[:, :, :3]
+                # Check if image has REAL transparency or is fully opaque
+                has_real_transparency = float(alpha.min()) < 0.95
+                if has_real_transparency:
+                    # Image has transparent areas — use alpha as blend mask
+                    alpha_3d = (alpha[:, :, np.newaxis] * opacity).astype(np.float32)
+                    paint[:, :, :3] = np.clip(
+                        paint_before[:, :, :3] * (1.0 - alpha_3d) + rgb * alpha_3d,
+                        0, 1
+                    ).astype(np.float32)
                 else:
-                    pv = np.ones_like(pv) * 0.5
-                pv_3d = pv[:, :, np.newaxis] * opacity * spec_mult * 0.35
-                paint = np.clip(paint_before * (1.0 - pv_3d) + paint * pv_3d, 0, 1).astype(np.float32)
-        except Exception:
-            pass
+                    # Fully opaque image (like Art Deco) — use SCREEN blend so bright
+                    # pattern areas show on top of existing paint, dark areas are transparent
+                    # Screen blend: result = 1 - (1-a)(1-b) = a + b - a*b
+                    screen = paint_before[:, :, :3] + rgb - paint_before[:, :, :3] * rgb
+                    blend_3d = np.full_like(screen[:, :, :1], opacity, dtype=np.float32)
+                    paint[:, :, :3] = np.clip(
+                        paint_before[:, :, :3] * (1.0 - blend_3d) + screen * blend_3d,
+                        0, 1
+                    ).astype(np.float32)
+                    print(f"    [OVERLAY PAINT] Screen-blended opaque image pattern at {opacity*100:.0f}%")
+            elif rgba is not None:
+                # Fewer than 4 channels — use Screen blend
+                screen = paint_before[:, :, :3] + rgba[:, :, :3] - paint_before[:, :, :3] * rgba[:, :, :3]
+                blend_3d = np.full_like(screen[:, :, :1], opacity, dtype=np.float32)
+                paint[:, :, :3] = np.clip(
+                    paint_before[:, :, :3] * (1.0 - blend_3d) + screen * blend_3d,
+                    0, 1
+                ).astype(np.float32)
+            else:
+                # Fallback to grayscale if color load fails
+                pv = _load_image_pattern(image_path, shape, scale=scale, rotation=rotation)
+                if pv is not None:
+                    pv = np.asarray(pv, dtype=np.float32)
+                    pv_min, pv_max = float(pv.min()), float(pv.max())
+                    if pv_max - pv_min > 1e-8:
+                        pv = (pv - pv_min) / (pv_max - pv_min)
+                    pv_3d = pv[:, :, np.newaxis] * opacity
+                    paint = np.clip(paint_before * (1.0 - pv_3d) + paint * pv_3d, 0, 1).astype(np.float32)
+        except Exception as _img_err:
+            print(f"    [OVERLAY PAINT] Image pattern paint failed: {_img_err}")
         return paint
     tex_fn = pattern.get("texture_fn")
     if tex_fn is not None:
@@ -5847,7 +5880,16 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
                                          "offset_y": float(zone.get("pattern_offset_y", 0.5))})
                 for ps in pattern_stack[:3]:  # Max 3 additional
                     pid = ps.get("id", "none")
-                    if pid != "none" and pid in PATTERN_REGISTRY:
+                    _pid_in_reg = pid in PATTERN_REGISTRY
+                    print(f"    [STACK] Pattern layer: id='{pid}' in_registry={_pid_in_reg}")
+                    if not _pid_in_reg and pid != "none":
+                        # Try common ID transformations
+                        _alt_id = pid.replace(" ", "_").replace("-", "_")
+                        if _alt_id in PATTERN_REGISTRY:
+                            print(f"    [STACK] Found as '{_alt_id}' — using that instead")
+                            pid = _alt_id
+                            _pid_in_reg = True
+                    if pid != "none" and _pid_in_reg:
                         all_patterns.append({
                             "id": pid,
                             "opacity": float(ps.get("opacity", 1.0)),
@@ -5991,6 +6033,66 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
             if mono_pat and mono_pat != "none" and mono_pat in PATTERN_REGISTRY:
                 zone_spec = overlay_pattern_on_spec(zone_spec, mono_pat, shape, zone_mask, seed + i * 13 + 99, sm, mono_pat_scale, mono_pat_opacity, spec_mult=spec_mult, rotation=mono_pat_rotation)
                 paint = overlay_pattern_paint(paint, mono_pat, shape, zone_mask, seed + i * 13 + 99, pm, bb, mono_pat_scale, mono_pat_opacity, rotation=mono_pat_rotation)
+
+            # Pattern stack on monolithic: apply additional stacked patterns on top
+            _mono_pattern_stack = zone.get("pattern_stack", [])
+            if _mono_pattern_stack:
+                for _mps_idx, _mps in enumerate(_mono_pattern_stack[:3]):
+                    _mps_id = _mps.get("id", "none")
+                    if _mps_id == "none" or _mps_id not in PATTERN_REGISTRY:
+                        # Try underscore transformation for image-based patterns
+                        _mps_alt = _mps_id.replace(" ", "_").replace("-", "_")
+                        if _mps_alt in PATTERN_REGISTRY:
+                            _mps_id = _mps_alt
+                        else:
+                            print(f"    [MONO STACK] Pattern '{_mps.get('id')}' not in registry, skipping")
+                            continue
+                    _mps_opacity = float(_mps.get("opacity", 1.0))
+                    _mps_scale = float(_mps.get("scale", 1.0)) * mono_auto_scale
+                    _mps_rotation = float(_mps.get("rotation", 0))
+                    print(f"    [MONO STACK] Applying stacked pattern {_mps_idx+2}: '{_mps_id}' opacity={_mps_opacity} scale={_mps_scale}")
+                    zone_spec = overlay_pattern_on_spec(zone_spec, _mps_id, shape, zone_mask, seed + i * 13 + 200 + _mps_idx * 31, sm, _mps_scale, _mps_opacity, spec_mult=spec_mult, rotation=_mps_rotation)
+                    paint = overlay_pattern_paint(paint, _mps_id, shape, zone_mask, seed + i * 13 + 200 + _mps_idx * 31, pm, bb, _mps_scale, _mps_opacity, rotation=_mps_rotation)
+
+            # Spec pattern stack on monolithic: apply spec patterns to zone_spec
+            _mono_spec_patterns = zone.get("spec_pattern_stack", [])
+            if _mono_spec_patterns:
+                from engine.spec_patterns import PATTERN_CATALOG
+                for _msp in _mono_spec_patterns:
+                    _msp_name = _msp.get("pattern", "")
+                    _msp_fn = PATTERN_CATALOG.get(_msp_name)
+                    if _msp_fn is None:
+                        continue
+                    _msp_opacity = float(_msp.get("opacity", 0.5))
+                    _msp_blend = _msp.get("blend_mode", "normal")
+                    _msp_channels = _msp.get("channels", "MR")
+                    _msp_scale = float(_msp.get("scale", 1.0))
+                    _msp_rotation = float(_msp.get("rotation", 0))
+                    _msp_range = float(_msp.get("range", 40.0))
+                    _msp_params = _msp.get("params", {})
+                    _msp_arr = _msp_fn(shape, seed + 5000 + hash(_msp_name) % 10000, sm, **_msp_params)
+                    if abs(_msp_scale - 1.0) > 0.01:
+                        if _msp_scale < 1.0:
+                            _msp_arr = _tile_fractional(_msp_arr, 1.0 / _msp_scale, shape[0], shape[1])
+                        else:
+                            _msp_arr = _crop_center_array(_msp_arr, _msp_scale, shape[0], shape[1])
+                    if abs(_msp_rotation) > 0.5:
+                        _msp_arr = _rotate_single_array(_msp_arr, _msp_rotation, shape)
+                    _msp_delta = (_msp_arr - 0.5) * 2.0
+                    _msp_contrib = _msp_delta * _msp_range
+                    _msp_M = zone_spec[:,:,0].astype(np.float32)
+                    _msp_R = zone_spec[:,:,1].astype(np.float32)
+                    _msp_CC = zone_spec[:,:,2].astype(np.float32)
+                    if "M" in _msp_channels:
+                        _msp_M = _apply_spec_blend_mode(_msp_M, _msp_contrib, _msp_opacity, _msp_blend)
+                    if "R" in _msp_channels:
+                        _msp_R = _apply_spec_blend_mode(_msp_R, _msp_contrib, _msp_opacity, _msp_blend)
+                    if "C" in _msp_channels:
+                        _msp_CC = _apply_spec_blend_mode(_msp_CC, _msp_contrib, _msp_opacity, _msp_blend)
+                    zone_spec[:,:,0] = np.clip(_msp_M, 0, 255).astype(np.uint8)
+                    zone_spec[:,:,1] = np.clip(_msp_R, 0, 255).astype(np.uint8)
+                    zone_spec[:,:,2] = np.clip(_msp_CC, 16, 255).astype(np.uint8)
+                    print(f"    [MONO SPEC] Applied spec pattern '{_msp_name}' opacity={_msp_opacity}")
 
             # Dual Layer Base Overlay on monolithic (same as base+pattern path)
             _z_sb = zone.get("second_base")

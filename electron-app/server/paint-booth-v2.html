@@ -725,9 +725,10 @@
                             style="border-color:var(--accent-blue); color:var(--accent-blue);"
                             title="Export to folder below: paint_base + 4 spec channel PNGs">🎨 PS Export</button>
                         <div class="ps-export-section" style="display:flex; align-items:center; gap:4px; flex-wrap:wrap;">
-                            <input type="text" id="leftPanelPsExportFolder" placeholder="PS Export folder"
+                            <input type="text" id="leftPanelPsExportFolder" placeholder="Type full path here"
                                 style="max-width:160px; padding:4px 8px; font-size:10px; background:var(--surface); border:1px solid var(--border); border-radius:4px; color:var(--text);"
-                                title="Folder where PS Export writes files. Shared with LOAD SHOKK library.">
+                                title="Type or paste the FULL folder path (e.g. E:\My Exports). Browser Browse button may not work — type the path instead."
+                                oninput="(function(v){if(typeof PS_EXPORT_FOLDER_KEY!=='undefined')localStorage.setItem(PS_EXPORT_FOLDER_KEY,v);var o=document.getElementById('shokkPsExportFolder');if(o)o.value=v;})(this.value)">
                             <button type="button" class="template-btn" onclick="browsePsExportFolder('leftPanelPsExportFolder')"
                                 style="font-size:10px; padding:4px 8px;" title="Choose folder in File Explorer">Browse</button>
                         </div>
@@ -1919,7 +1920,8 @@
                     title="Export selected SHOKK to folder below (paint + 4 spec channel PNGs)">🎨 PS Export</button>
                 <input type="text" id="shokkPsExportFolder" placeholder="PS Export folder (optional)"
                     style="max-width:200px; padding:4px 8px; font-size:10px; background:var(--surface); border:1px solid var(--border); border-radius:4px; color:var(--text);"
-                    title="Folder where PS Export writes files. Leave blank for default.">
+                    title="Folder where PS Export writes files. Leave blank for default."
+                    oninput="(function(v){if(typeof PS_EXPORT_FOLDER_KEY!=='undefined')localStorage.setItem(PS_EXPORT_FOLDER_KEY,v);var o=document.getElementById('leftPanelPsExportFolder');if(o)o.value=v;})(this.value)">
                 <button type="button" class="btn btn-sm" onclick="browsePsExportFolder('shokkPsExportFolder')"
                     style="font-size:10px; padding:4px 8px;" title="Choose folder in File Explorer">Browse</button>
                 <span

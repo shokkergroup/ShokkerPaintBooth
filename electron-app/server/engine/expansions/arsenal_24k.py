@@ -11090,6 +11090,270 @@ EXPANSION_MONOLITHICS.update({
     "heat_blued":        (spec_heat_blued, paint_heat_blued),
 })
 
+# =============================================================================
+# METALS & FORGED MONOLITHICS - March 2026 (8 new premium metal finishes)
+# =============================================================================
+
+def spec_forged_titanium(shape, mask, seed, sm):
+    """Forged Titanium - heat-treated titanium with blue-gold oxidation bands.
+    High metallic, low roughness, high CC for interference color shimmer."""
+    h, w = shape
+    spec = np.zeros((h, w, 4), dtype=np.uint8)
+    y = np.linspace(0, 1, h, dtype=np.float32).reshape(h, 1)
+    noise = _multi_scale_noise(shape, [8, 16, 32], [0.3, 0.4, 0.3], seed + 4100)
+    # Oxidation bands follow y-axis with slight warping
+    bands = np.sin((y + noise * 0.08) * np.pi * 6) * 0.5 + 0.5
+    M = np.clip(210 + bands * 10 + noise * 8 * sm, 0, 255)
+    R = np.clip(20 + (1 - bands) * 10 + noise * 6 * sm, 0, 255)
+    CC = np.clip(180 + bands * 40 + noise * 15, 0, 255)
+    spec[:, :, 0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:, :, 1] = np.clip(R * mask + 80 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:, :, 2] = np.clip(CC * mask + 16 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
+    return spec
+
+def paint_forged_titanium(paint, shape, mask, seed, pm, bb):
+    """Forged Titanium - blue-gold banded hue shift using sin(y) oxidation zones."""
+    h, w = shape
+    y = np.linspace(0, 1, h, dtype=np.float32).reshape(h, 1)
+    noise = _multi_scale_noise(shape, [8, 16, 32], [0.3, 0.4, 0.3], seed + 4100)
+    bands = np.sin((y + noise * 0.08) * np.pi * 6) * 0.5 + 0.5
+    gray = paint.mean(axis=2, keepdims=True)
+    # Desaturate toward metallic base
+    paint = paint * (1 - 0.25 * pm * mask[:, :, np.newaxis]) + gray * 0.25 * pm * mask[:, :, np.newaxis]
+    # Gold zones: warm red-yellow shift
+    paint[:, :, 0] = np.clip(paint[:, :, 0] + bands * 0.12 * pm * mask, 0, 1)
+    paint[:, :, 1] = np.clip(paint[:, :, 1] + bands * 0.08 * pm * mask, 0, 1)
+    # Blue zones: cool blue shift
+    paint[:, :, 2] = np.clip(paint[:, :, 2] + (1 - bands) * 0.15 * pm * mask, 0, 1)
+    return np.clip(paint + bb * 0.3 * mask[:, :, np.newaxis], 0, 1)
+
+
+def spec_brushed_gunmetal(shape, mask, seed, sm):
+    """Brushed Gunmetal - directional brushed dark gunmetal with fine grain.
+    Very high metallic, very low roughness, high CC for tight highlights."""
+    h, w = shape
+    spec = np.zeros((h, w, 4), dtype=np.uint8)
+    # Horizontal grain noise (varies along x axis)
+    x_noise = _multi_scale_noise(shape, [3, 6, 12], [0.5, 0.3, 0.2], seed + 4110)
+    fine_noise = _multi_scale_noise(shape, [1, 2], [0.7, 0.3], seed + 4111)
+    grain = np.abs(np.sin(x_noise * 20 + fine_noise * 3)) ** 0.3
+    M = np.clip(230 + grain * 10 + fine_noise * 5 * sm, 0, 255)
+    R = np.clip(12 + (1 - grain) * 8 + fine_noise * 4 * sm, 0, 255)
+    CC = np.clip(210 + grain * 20, 0, 255)
+    spec[:, :, 0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:, :, 1] = np.clip(R * mask + 80 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:, :, 2] = np.clip(CC * mask + 16 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
+    return spec
+
+def paint_brushed_gunmetal(paint, shape, mask, seed, pm, bb):
+    """Brushed Gunmetal - dark grey with horizontal grain noise highlights."""
+    h, w = shape
+    x_noise = _multi_scale_noise(shape, [3, 6, 12], [0.5, 0.3, 0.2], seed + 4110)
+    fine_noise = _multi_scale_noise(shape, [1, 2], [0.7, 0.3], seed + 4111)
+    grain = np.abs(np.sin(x_noise * 20 + fine_noise * 3)) ** 0.3
+    gray = paint.mean(axis=2, keepdims=True)
+    # Heavy desaturation toward dark gunmetal
+    paint = paint * (1 - 0.40 * pm * mask[:, :, np.newaxis]) + gray * 0.40 * pm * mask[:, :, np.newaxis]
+    paint = np.clip(paint - 0.10 * pm * mask[:, :, np.newaxis], 0, 1)
+    # Grain highlights — bright silver streaks
+    paint = np.clip(paint + grain[:, :, np.newaxis] * 0.08 * pm * mask[:, :, np.newaxis], 0, 1)
+    # Slight blue-steel tint
+    paint[:, :, 2] = np.clip(paint[:, :, 2] + 0.03 * pm * mask, 0, 1)
+    return np.clip(paint + bb * 0.3 * mask[:, :, np.newaxis], 0, 1)
+
+
+def spec_cast_iron_raw(shape, mask, seed, sm):
+    """Raw Cast Iron - rough sand-cast iron with porous surface texture.
+    Low metallic, very high roughness, near-zero CC."""
+    h, w = shape
+    spec = np.zeros((h, w, 4), dtype=np.uint8)
+    pore_noise = _multi_scale_noise(shape, [4, 8, 16, 32], [0.2, 0.3, 0.3, 0.2], seed + 4120)
+    fine_noise = _multi_scale_noise(shape, [2, 4], [0.6, 0.4], seed + 4121)
+    # Porous surface: deep pits where noise is low
+    pores = np.clip(pore_noise * 0.5 + 0.5, 0, 1)
+    M = np.clip(75 + pores * 10 + fine_noise * 5 * sm, 0, 255)
+    R = np.clip(195 + (1 - pores) * 15 + fine_noise * 10 * sm, 0, 255)
+    CC = np.clip(5 + pores * 10, 0, 255)
+    spec[:, :, 0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:, :, 1] = np.clip(R * mask + 180 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:, :, 2] = np.clip(CC * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
+    return spec
+
+def paint_cast_iron_raw(paint, shape, mask, seed, pm, bb):
+    """Raw Cast Iron - near-black with porous noise texture darkening pits."""
+    h, w = shape
+    pore_noise = _multi_scale_noise(shape, [4, 8, 16, 32], [0.2, 0.3, 0.3, 0.2], seed + 4120)
+    pores = np.clip(pore_noise * 0.5 + 0.5, 0, 1)
+    gray = paint.mean(axis=2, keepdims=True)
+    # Very heavy desaturation and darkening
+    paint = paint * (1 - 0.50 * pm * mask[:, :, np.newaxis]) + gray * 0.50 * pm * mask[:, :, np.newaxis]
+    paint = np.clip(paint - 0.20 * pm * mask[:, :, np.newaxis], 0, 1)
+    # Pits are darker; peaks slightly lighter
+    paint = np.clip(paint + (pores - 0.5) * 0.08 * pm * mask[:, :, np.newaxis], 0, 1)
+    # Slight warm rust tint in pit zones
+    paint[:, :, 0] = np.clip(paint[:, :, 0] + (1 - pores) * 0.04 * pm * mask, 0, 1)
+    return np.clip(paint + bb * 0.2 * mask[:, :, np.newaxis], 0, 1)
+
+
+def spec_polished_brass(shape, mask, seed, sm):
+    """Polished Brass - mirror-polished brass with warm golden reflection.
+    Maximum metallic, minimum roughness, maximum CC for mirror finish."""
+    h, w = shape
+    spec = np.zeros((h, w, 4), dtype=np.uint8)
+    micro_noise = _multi_scale_noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + 4130)
+    M = np.clip(250 + micro_noise * 3 * sm, 0, 255)
+    R = np.clip(5 + micro_noise * 3 * sm, 0, 255)
+    CC = np.clip(240 + micro_noise * 8, 0, 255)
+    spec[:, :, 0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:, :, 1] = np.clip(R * mask + 30 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:, :, 2] = np.clip(CC * mask + 16 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
+    return spec
+
+def paint_polished_brass(paint, shape, mask, seed, pm, bb):
+    """Polished Brass - golden yellow with mirror-smooth warm golden specular."""
+    h, w = shape
+    micro_noise = _multi_scale_noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + 4130)
+    gray = paint.mean(axis=2, keepdims=True)
+    # Partial desaturation then strong gold tint
+    paint = paint * (1 - 0.15 * pm * mask[:, :, np.newaxis]) + gray * 0.15 * pm * mask[:, :, np.newaxis]
+    # Strong golden warmth
+    paint[:, :, 0] = np.clip(paint[:, :, 0] + 0.18 * pm * mask, 0, 1)
+    paint[:, :, 1] = np.clip(paint[:, :, 1] + 0.10 * pm * mask, 0, 1)
+    paint[:, :, 2] = np.clip(paint[:, :, 2] - 0.05 * pm * mask, 0, 1)
+    # Micro-variation for realism
+    paint = np.clip(paint + micro_noise[:, :, np.newaxis] * 0.02 * pm * mask[:, :, np.newaxis], 0, 1)
+    return np.clip(paint + bb * 0.4 * mask[:, :, np.newaxis], 0, 1)
+
+
+def spec_annealed_steel(shape, mask, seed, sm):
+    """Annealed Steel - heat-annealed steel with rainbow temper colors.
+    High metallic, low roughness, high CC for iridescent oxidation shimmer."""
+    h, w = shape
+    spec = np.zeros((h, w, 4), dtype=np.uint8)
+    y = np.linspace(0, 1, h, dtype=np.float32).reshape(h, 1)
+    noise = _multi_scale_noise(shape, [8, 16, 32], [0.3, 0.4, 0.3], seed + 4140)
+    # Temper color field driven by combined y + noise
+    field = np.clip((y + noise * 0.12) % 1.0, 0, 1)
+    M = np.clip(205 + field * 10 + noise * 5 * sm, 0, 255)
+    R = np.clip(25 + (1 - field) * 10 + noise * 5 * sm, 0, 255)
+    CC = np.clip(175 + field * 30 + noise * 10, 0, 255)
+    spec[:, :, 0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:, :, 1] = np.clip(R * mask + 80 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:, :, 2] = np.clip(CC * mask + 16 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
+    return spec
+
+def paint_annealed_steel(paint, shape, mask, seed, pm, bb):
+    """Annealed Steel - rainbow temper using full hue ramp through the field."""
+    h, w = shape
+    y = np.linspace(0, 1, h, dtype=np.float32).reshape(h, 1)
+    noise = _multi_scale_noise(shape, [8, 16, 32], [0.3, 0.4, 0.3], seed + 4140)
+    field = np.clip((y + noise * 0.12) % 1.0, 0, 1)
+    gray = paint.mean(axis=2, keepdims=True)
+    paint = paint * (1 - 0.20 * pm * mask[:, :, np.newaxis]) + gray * 0.20 * pm * mask[:, :, np.newaxis]
+    # Cycle: straw(0-0.2) -> gold(0.2-0.4) -> purple(0.4-0.6) -> blue(0.6-0.8) -> grey(0.8-1.0)
+    straw = np.clip(1.0 - np.abs(field - 0.1) / 0.15, 0, 1)
+    gold  = np.clip(1.0 - np.abs(field - 0.3) / 0.15, 0, 1)
+    purp  = np.clip(1.0 - np.abs(field - 0.5) / 0.15, 0, 1)
+    blue  = np.clip(1.0 - np.abs(field - 0.7) / 0.15, 0, 1)
+    paint[:, :, 0] = np.clip(paint[:, :, 0] + (straw * 0.10 + gold * 0.12 - blue * 0.04) * pm * mask, 0, 1)
+    paint[:, :, 1] = np.clip(paint[:, :, 1] + (straw * 0.06 + gold * 0.08 - purp * 0.02) * pm * mask, 0, 1)
+    paint[:, :, 2] = np.clip(paint[:, :, 2] + (purp * 0.08 + blue * 0.14) * pm * mask, 0, 1)
+    return np.clip(paint + bb * 0.35 * mask[:, :, np.newaxis], 0, 1)
+
+
+def spec_oxidized_bronze(shape, mask, seed, sm):
+    """Oxidized Bronze - ancient bronze with verdigris green patina overlay.
+    Medium metallic, medium roughness, moderate CC from patina layer."""
+    h, w = shape
+    spec = np.zeros((h, w, 4), dtype=np.uint8)
+    patina_noise = _multi_scale_noise(shape, [4, 8, 16, 32], [0.2, 0.3, 0.3, 0.2], seed + 4150)
+    fine_noise = _multi_scale_noise(shape, [2, 4], [0.6, 0.4], seed + 4151)
+    patina = np.clip(patina_noise * 0.5 + 0.5, 0, 1)
+    M = np.clip(145 + (1 - patina) * 30 + fine_noise * 10 * sm, 0, 255)
+    R = np.clip(110 + patina * 30 + fine_noise * 12 * sm, 0, 255)
+    CC = np.clip(50 + (1 - patina) * 30 + fine_noise * 8, 0, 255)
+    spec[:, :, 0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:, :, 1] = np.clip(R * mask + 120 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:, :, 2] = np.clip(CC * mask + 16 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
+    return spec
+
+def paint_oxidized_bronze(paint, shape, mask, seed, pm, bb):
+    """Oxidized Bronze - dark bronze base with green verdigris patina overlay."""
+    h, w = shape
+    patina_noise = _multi_scale_noise(shape, [4, 8, 16, 32], [0.2, 0.3, 0.3, 0.2], seed + 4150)
+    patina = np.clip(patina_noise * 0.5 + 0.5, 0, 1)
+    gray = paint.mean(axis=2, keepdims=True)
+    paint = paint * (1 - 0.30 * pm * mask[:, :, np.newaxis]) + gray * 0.30 * pm * mask[:, :, np.newaxis]
+    # Bronze base: warm red-brown
+    paint[:, :, 0] = np.clip(paint[:, :, 0] + (1 - patina) * 0.10 * pm * mask, 0, 1)
+    paint[:, :, 1] = np.clip(paint[:, :, 1] + (1 - patina) * 0.04 * pm * mask, 0, 1)
+    # Patina overlay: verdigris green
+    paint[:, :, 1] = np.clip(paint[:, :, 1] + patina * 0.12 * pm * mask, 0, 1)
+    paint[:, :, 2] = np.clip(paint[:, :, 2] + patina * 0.06 * pm * mask, 0, 1)
+    paint[:, :, 0] = np.clip(paint[:, :, 0] - patina * 0.04 * pm * mask, 0, 1)
+    # Overall darkening for aged look
+    paint = np.clip(paint - 0.08 * pm * mask[:, :, np.newaxis], 0, 1)
+    return np.clip(paint + bb * 0.3 * mask[:, :, np.newaxis], 0, 1)
+
+
+def spec_damascus_steel(shape, mask, seed, sm):
+    """Damascus Steel - folded steel pattern with visible layer striations.
+    Very high metallic, low roughness, high CC for crystalline clarity."""
+    h, w = shape
+    spec = np.zeros((h, w, 4), dtype=np.uint8)
+    y = np.linspace(0, 1, h, dtype=np.float32).reshape(h, 1)
+    x = np.linspace(0, 1, w, dtype=np.float32).reshape(1, w)
+    warp_noise = _multi_scale_noise(shape, [4, 8], [0.5, 0.5], seed + 4160)
+    fine_noise = _multi_scale_noise(shape, [16, 32], [0.5, 0.5], seed + 4161)
+    # Folded layer bands — warped diagonal striations
+    layers = np.sin((y * 0.6 + x * 0.4 + warp_noise * 0.15) * np.pi * 28) * 0.5 + 0.5
+    M = np.clip(220 + layers * 20 + fine_noise * 5 * sm, 0, 255)
+    R = np.clip(15 + (1 - layers) * 10 + fine_noise * 5 * sm, 0, 255)
+    CC = np.clip(200 + layers * 20 + fine_noise * 8, 0, 255)
+    spec[:, :, 0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:, :, 1] = np.clip(R * mask + 60 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:, :, 2] = np.clip(CC * mask + 16 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
+    return spec
+
+def paint_damascus_steel(paint, shape, mask, seed, pm, bb):
+    """Damascus Steel - alternating light/dark steel bands following fold pattern."""
+    h, w = shape
+    y = np.linspace(0, 1, h, dtype=np.float32).reshape(h, 1)
+    x = np.linspace(0, 1, w, dtype=np.float32).reshape(1, w)
+    warp_noise = _multi_scale_noise(shape, [4, 8], [0.5, 0.5], seed + 4160)
+    fine_noise = _multi_scale_noise(shape, [16, 32], [0.5, 0.5], seed + 4161)
+    layers = np.sin((y * 0.6 + x * 0.4 + warp_noise * 0.15) * np.pi * 28) * 0.5 + 0.5
+    gray = paint.mean(axis=2, keepdims=True)
+    # Desaturate toward steel grey
+    paint = paint * (1 - 0.35 * pm * mask[:, :, np.newaxis]) + gray * 0.35 * pm * mask[:, :, np.newaxis]
+    # Bright layers are lighter (polished), dark layers are deeper
+    paint = np.clip(paint + (layers - 0.5) * 0.14 * pm * mask[:, :, np.newaxis], 0, 1)
+    # Slight cool blue in dark bands
+    paint[:, :, 2] = np.clip(paint[:, :, 2] + (1 - layers) * 0.04 * pm * mask, 0, 1)
+    # Fine grain micro-detail
+    paint = np.clip(paint + fine_noise[:, :, np.newaxis] * 0.02 * pm * mask[:, :, np.newaxis], 0, 1)
+    return np.clip(paint + bb * 0.35 * mask[:, :, np.newaxis], 0, 1)
+
+
+# Register the 7 new Metals & Forged finishes
+# (hammered_copper already registered in EXPANSION_MONOLITHICS above)
+EXPANSION_MONOLITHICS.update({
+    "forged_titanium":   (spec_forged_titanium, paint_forged_titanium),
+    "brushed_gunmetal":  (spec_brushed_gunmetal, paint_brushed_gunmetal),
+    "cast_iron_raw":     (spec_cast_iron_raw, paint_cast_iron_raw),
+    "polished_brass":    (spec_polished_brass, paint_polished_brass),
+    "annealed_steel":    (spec_annealed_steel, paint_annealed_steel),
+    "oxidized_bronze":   (spec_oxidized_bronze, paint_oxidized_bronze),
+    "damascus_steel":    (spec_damascus_steel, paint_damascus_steel),
+})
+
 # Also register in the specials_groups UI metadata (appended to Texture & Surface)
 # NOTE: get_specials_groups() below is patched separately - see line ~11227
 
@@ -11273,16 +11537,37 @@ def integrate_expansion(engine_module):
     # uninitialized module instance where _engine=None, causing AttributeError at render time.
     # Instead, look up the functions directly from engine_module (already injected).
     _aurora_id_map = [
-        ("aurora_borealis",       "paint_aurora_borealis"),
-        ("aurora_solar_wind",     "paint_aurora_solar_wind"),
-        ("aurora_nebula",         "paint_aurora_nebula"),
-        ("aurora_chromatic_surge","paint_aurora_chromatic_surge"),
-        ("aurora_frozen_flame",   "paint_aurora_frozen_flame"),
-        ("aurora_deep_ocean",     "paint_aurora_deep_ocean"),
-        ("aurora_volcanic",       "paint_aurora_volcanic"),
-        ("aurora_ethereal",       "paint_aurora_ethereal"),
-        ("aurora_toxic_current",  "paint_aurora_toxic_current"),
-        ("aurora_midnight_silk",  "paint_aurora_midnight_silk"),
+        ("aurora_borealis",        "paint_aurora_borealis"),
+        ("aurora_solar_wind",      "paint_aurora_solar_wind"),
+        ("aurora_nebula",          "paint_aurora_nebula"),
+        ("aurora_chromatic_surge", "paint_aurora_chromatic_surge"),
+        ("aurora_frozen_flame",    "paint_aurora_frozen_flame"),
+        ("aurora_deep_ocean",      "paint_aurora_deep_ocean"),
+        ("aurora_volcanic",        "paint_aurora_volcanic"),
+        ("aurora_ethereal",        "paint_aurora_ethereal"),
+        ("aurora_toxic_current",   "paint_aurora_toxic_current"),
+        ("aurora_midnight_silk",   "paint_aurora_midnight_silk"),
+        # Extended set — 20 new Aurora & Chromatic Flow presets
+        ("aurora_electric_candy",  "paint_aurora_electric_candy"),
+        ("aurora_ocean_phosphor",  "paint_aurora_ocean_phosphor"),
+        ("aurora_molten_earth",    "paint_aurora_molten_earth"),
+        ("aurora_arctic_shimmer",  "paint_aurora_arctic_shimmer"),
+        ("aurora_neon_storm",      "paint_aurora_neon_storm"),
+        ("aurora_twilight_veil",   "paint_aurora_twilight_veil"),
+        ("aurora_dragon_fire",     "paint_aurora_dragon_fire"),
+        ("aurora_crystal_prism",   "paint_aurora_crystal_prism"),
+        ("aurora_shadow_silk",     "paint_aurora_shadow_silk"),
+        ("aurora_copper_patina",   "paint_aurora_copper_patina"),
+        ("aurora_poison_ivy",      "paint_aurora_poison_ivy"),
+        ("aurora_champagne_dream", "paint_aurora_champagne_dream"),
+        ("aurora_thunderhead",     "paint_aurora_thunderhead"),
+        ("aurora_coral_reef",      "paint_aurora_coral_reef"),
+        ("aurora_black_rainbow",   "paint_aurora_black_rainbow"),
+        ("aurora_cherry_blossom",  "paint_aurora_cherry_blossom"),
+        ("aurora_plasma_reactor",  "paint_aurora_plasma_reactor"),
+        ("aurora_autumn_ember",    "paint_aurora_autumn_ember"),
+        ("aurora_ice_crystal",     "paint_aurora_ice_crystal"),
+        ("aurora_supernova",       "paint_aurora_supernova"),
     ]
     _aurora_registered = 0
     for _aid, _afn in _aurora_id_map:
@@ -11294,7 +11579,7 @@ def integrate_expansion(engine_module):
             print(f"[24K Arsenal] WARNING: Aurora paint fn '{_afn}' not found in engine — "
                   f"chameleon module may not be loaded. '{_aid}' will have no color.")
     if _aurora_registered:
-        print(f"[24K Arsenal] Registered {_aurora_registered}/10 Aurora & Chromatic Flow finishes")
+        print(f"[24K Arsenal] Registered {_aurora_registered}/30 Aurora & Chromatic Flow finishes")
 
     # --- Register Chromatic Flake monolithic finishes ---
     # Factory-generated multi-color micro-flake effects. Each palette has 4-5 colors

@@ -792,7 +792,7 @@ async function loadBlankCanvas(width = 2048, height = 2048, color = 'ffffff') {
     }
 }
 
-// Pre-fill PS Export folder from localStorage when DOM is ready
+// Pre-fill PS Export folder from localStorage when DOM is ready (both inputs kept in sync)
 (function () {
     function fill() {
         if (typeof localStorage === 'undefined') return;
@@ -800,6 +800,8 @@ async function loadBlankCanvas(width = 2048, height = 2048, color = 'ffffff') {
         if (!v) return;
         var el = document.getElementById('leftPanelPsExportFolder');
         if (el) el.value = v;
+        var el2 = document.getElementById('shokkPsExportFolder');
+        if (el2) el2.value = v;
     }
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fill);
     else fill();

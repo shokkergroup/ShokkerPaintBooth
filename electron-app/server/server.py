@@ -1475,6 +1475,15 @@ def api_swatch(finish_type, finish_key):
             alt_path = _pre_path_for_key(finish_key)
             if os.path.isfile(alt_path):
                 _pre_path = alt_path
+        # Fallback: check other type directories (Aurora bases are in JS BASES but Python MONOLITHIC_REGISTRY)
+        if not os.path.isfile(_pre_path):
+            for _alt_type in ('monolithic', 'base', 'pattern'):
+                if _alt_type == finish_type:
+                    continue
+                _alt = os.path.join(THUMBNAIL_DIR, _alt_type, _safe_key + '.png')
+                if os.path.isfile(_alt):
+                    _pre_path = _alt
+                    break
 
     if _pre_path is None or not os.path.isfile(_pre_path):
         # No pre-rendered file: use generic cache
@@ -4385,13 +4394,7 @@ def api_export_spec_channels():
             channel_img.save(out_path)
             paths[label] = out_path
 
-        # Verify files actually exist at the written paths
-        verified = {}
-        for label, fpath in paths.items():
-            verified[label] = os.path.exists(fpath)
-        logger.info(f"PS Export: out_dir={out_dir} | {len(paths)} files | verified={verified}")
-
-        return jsonify({"ok": True, "paths": paths, "out_dir": out_dir, "spec_source": spec_path})
+        return jsonify({"ok": True, "paths": paths, "spec_source": spec_path})
     except Exception as e:
         logger.error(f"/api/export-spec-channels error: {e}\n{traceback.format_exc()}")
         return jsonify({"error": str(e)}), 500

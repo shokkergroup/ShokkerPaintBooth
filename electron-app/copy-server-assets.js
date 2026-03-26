@@ -152,6 +152,7 @@ const REQUIRED_PACKAGES = [
   { module: 'numpy', name: 'numpy' },
   { module: 'PIL', name: 'Pillow' },
   { module: 'scipy', name: 'scipy' },
+  { module: 'cv2', name: 'opencv-python-headless' },
 ];
 const SITE_PACKAGES = path.join(PYTHON_DIR, 'Lib', 'site-packages');
 

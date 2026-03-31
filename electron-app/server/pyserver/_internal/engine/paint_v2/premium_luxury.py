@@ -58,7 +58,7 @@ def spec_bentley_silver(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
     flake = multi_scale_noise((h, w), [1, 2, 4], [0.4, 0.35, 0.25], seed + 401)
     M = np.clip(180.0 + flake * 60.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(8.0 + flake * 15.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(8.0 + flake * 15.0 * sm, 15, 255).astype(np.float32)
     CC = np.clip(16.0 + flake * 5.0, 0, 255).astype(np.float32)
     return M, R, CC
 
@@ -100,7 +100,7 @@ def spec_bugatti_blue(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
     depth = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.4, 0.3], seed + 410)
     M = np.clip(60.0 + depth * 40.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(6.0 + depth * 10.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(6.0 + depth * 10.0 * sm, 15, 255).astype(np.float32)
     CC = np.clip(16.0 + depth * 6.0, 0, 255).astype(np.float32)
     return M, R, CC
 
@@ -147,7 +147,7 @@ def spec_ferrari_rosso(shape, seed, sm, base_m, base_r):
     pigment = multi_scale_noise((h, w), [16, 32], [0.6, 0.4], seed + 422)
     # Candy coat: moderate metallic from base layer, very low roughness from clearcoat
     M = np.clip(120.0 + pigment * 50.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(4.0 + pigment * 8.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(4.0 + pigment * 8.0 * sm, 15, 255).astype(np.float32)  # GGX floor — MiMo audit catch
     # Thick clearcoat
     CC = np.clip(22.0 + pigment * 8.0, 0, 255).astype(np.float32)
     return M, R, CC
@@ -206,7 +206,7 @@ def spec_koenigsegg_clear(shape, seed, sm, base_m, base_r):
     weave = ((row_p + col_p) % 4 < 2).astype(np.float32)
     # Carbon under clearcoat: low metallic, low roughness (glossy clear)
     M = np.clip(15.0 + weave * 20.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(5.0 + weave * 6.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(5.0 + weave * 6.0 * sm, 15, 255).astype(np.float32)
     CC = np.clip(20.0 + weave * 4.0, 0, 255).astype(np.float32)
     return M, R, CC
 
@@ -258,7 +258,7 @@ def spec_lamborghini_verde(shape, seed, sm, base_m, base_r):
     flake = multi_scale_noise((h, w), [1, 2, 4], [0.3, 0.35, 0.35], seed + 442)
     # Pearl: moderate metallic from mica, very smooth clearcoat
     M = np.clip(100.0 + flake * 80.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(5.0 + normal * 10.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(5.0 + normal * 10.0 * sm, 15, 255).astype(np.float32)
     CC = np.clip(18.0 + normal * 6.0, 0, 255).astype(np.float32)
     return M, R, CC
 
@@ -312,7 +312,7 @@ def spec_maybach_two_tone(shape, seed, sm, base_m, base_r):
     upper_m, lower_m = 10.0, 160.0
     upper_r, lower_r = 4.0, 10.0
     M = np.clip(upper_m * (1.0 - split) + lower_m * split * sm + (1.0 - sm) * 30.0, 0, 255).astype(np.float32)
-    R = np.clip(upper_r * (1.0 - split) + lower_r * split * sm, 0, 255).astype(np.float32)
+    R = np.clip(upper_r * (1.0 - split) + lower_r * split * sm, 15, 255).astype(np.float32)
     CC = np.clip(18.0 + split * 4.0, 0, 255).astype(np.float32)
     return M, R, CC
 
@@ -364,7 +364,7 @@ def spec_mclaren_orange(shape, seed, sm, base_m, base_r):
     uv = multi_scale_noise((h, w), [32, 64, 128], [0.35, 0.35, 0.3], seed + 462)
     # Metallic flake in orange + glossy clearcoat
     M = np.clip(90.0 + flake * 60.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(5.0 + uv * 8.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(5.0 + uv * 8.0 * sm, 15, 255).astype(np.float32)
     CC = np.clip(16.0 + uv * 6.0, 0, 255).astype(np.float32)
     return M, R, CC
 
@@ -376,75 +376,80 @@ def spec_mclaren_orange(shape, seed, sm, base_m, base_r):
 # ==================================================================
 
 def paint_pagani_tricolore_v2(paint, shape, mask, seed, pm, bb):
+    if pm == 0.0:
+        return paint
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     y, x = get_mgrid((h, w))
-    y_norm = y / max(h - 1, 1)
 
-    # Smoothstep function: 3t^2 - 2t^3 (Hermite interpolation)
+    # Noise-driven surface angle simulation (replaces hard stripe boundaries)
+    angle_noise = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.4, 0.3], seed + 471)
+    fine_noise = multi_scale_noise((h, w), [4, 8], [0.6, 0.4], seed + 472)
+
+    # Surface angle parameter: combines position + noise for angle-resolved shift
+    # This simulates how real tricolore paint shifts color based on viewing angle
+    y_norm = y / max(h - 1, 1)
+    angle_param = np.clip(y_norm * 0.6 + angle_noise * 0.25 + fine_noise * 0.15, 0, 1)
+
+    # Smoothstep for soft transitions
     def smoothstep(edge0, edge1, val):
         t = np.clip((val - edge0) / (edge1 - edge0 + 1e-8), 0, 1)
         return t * t * (3.0 - 2.0 * t)
 
-    # Zone boundaries with subtle waviness
-    wave1 = multi_scale_noise((h, w), [128, 256], [0.6, 0.4], seed + 471)
-    wave2 = multi_scale_noise((h, w), [128, 256], [0.6, 0.4], seed + 472)
-    zone1_end = 0.32 + wave1 * 0.02   # top zone boundary
-    zone2_end = 0.66 + wave2 * 0.02   # middle zone boundary
+    # Three premium colors with SOFT noise-driven transitions
+    # Deep wine red
+    c1 = np.array([0.38, 0.04, 0.08], dtype=np.float32)
+    # Champagne gold
+    c2 = np.array([0.78, 0.68, 0.42], dtype=np.float32)
+    # Midnight blue
+    c3 = np.array([0.06, 0.08, 0.22], dtype=np.float32)
 
-    # Transition blends (smoothstep for each boundary)
-    blend_12 = smoothstep(zone1_end - 0.04, zone1_end + 0.04, y_norm)
-    blend_23 = smoothstep(zone2_end - 0.04, zone2_end + 0.04, y_norm)
+    # Noise-warped transition zones (wide soft blending, not hard stripes)
+    t1 = smoothstep(0.15, 0.42, angle_param)  # wine -> gold
+    t2 = smoothstep(0.55, 0.82, angle_param)  # gold -> blue
 
-    # Zone texture variations
-    tex1 = multi_scale_noise((h, w), [16, 32], [0.5, 0.5], seed + 473)
-    tex2 = multi_scale_noise((h, w), [16, 32], [0.5, 0.5], seed + 474)
-    tex3 = multi_scale_noise((h, w), [16, 32], [0.5, 0.5], seed + 475)
+    # Three-way blend
+    effect_r = c1[0] * (1.0 - t1) + c2[0] * (t1 * (1.0 - t2)) + c3[0] * t2
+    effect_g = c1[1] * (1.0 - t1) + c2[1] * (t1 * (1.0 - t2)) + c3[1] * t2
+    effect_b = c1[2] * (1.0 - t1) + c2[2] * (t1 * (1.0 - t2)) + c3[2] * t2
 
-    # Zone 1 (top): Deep midnight blue
-    z1_r = 0.04 + tex1 * 0.02
-    z1_g = 0.05 + tex1 * 0.025
-    z1_b = 0.18 + tex1 * 0.04
+    # Pearl shimmer in transition zones (where two colors meet)
+    transition_intensity = t1 * (1.0 - t1) + t2 * (1.0 - t2)
+    pearl = multi_scale_noise((h, w), [2, 4, 8], [0.4, 0.35, 0.25], seed + 473)
+    shimmer = transition_intensity * pearl * 0.12
 
-    # Zone 2 (middle): Rich silver
-    z2_r = 0.55 + tex2 * 0.06
-    z2_g = 0.53 + tex2 * 0.055
-    z2_b = 0.50 + tex2 * 0.05
-
-    # Zone 3 (bottom): Deep rosso
-    z3_r = 0.52 + tex3 * 0.06
-    z3_g = 0.04 + tex3 * 0.02
-    z3_b = 0.06 + tex3 * 0.025
-
-    # Three-way blend using smoothstep transitions
-    effect_r = z1_r * (1.0 - blend_12) + z2_r * (blend_12 - blend_23) + z3_r * blend_23
-    effect_g = z1_g * (1.0 - blend_12) + z2_g * (blend_12 - blend_23) + z3_g * blend_23
-    effect_b = z1_b * (1.0 - blend_12) + z2_b * (blend_12 - blend_23) + z3_b * blend_23
     effect = np.stack([
-        np.clip(effect_r, 0, 1),
-        np.clip(effect_g, 0, 1),
-        np.clip(effect_b, 0, 1)
+        np.clip(effect_r + shimmer * 0.8, 0, 1),
+        np.clip(effect_g + shimmer * 0.6, 0, 1),
+        np.clip(effect_b + shimmer * 0.4, 0, 1)
     ], axis=-1).astype(np.float32)
 
     blend_pm = np.clip(pm, 0.0, 1.0)
     result = np.clip(base * (1.0 - mask[:,:,np.newaxis] * blend_pm) + effect * (mask[:,:,np.newaxis] * blend_pm), 0, 1)
-    return np.clip(result + bb[:,:,np.newaxis] * 0.36 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
+    return np.clip(result + bb[:,:,np.newaxis] * 0.30 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
 
 def spec_pagani_tricolore(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
     y, x = get_mgrid((h, w))
     y_norm = y / max(h - 1, 1)
-    # Zone-dependent specs: blue=glossy, silver=metallic, red=glossy
-    t12 = np.clip((y_norm - 0.28) / 0.08, 0, 1)
-    t12 = t12 * t12 * (3.0 - 2.0 * t12)
-    t23 = np.clip((y_norm - 0.62) / 0.08, 0, 1)
-    t23 = t23 * t23 * (3.0 - 2.0 * t23)
-    # Zone metallic: blue=low, silver=high, red=low
-    m1, m2, m3 = 25.0, 170.0, 30.0
-    M = np.clip(m1 * (1.0 - t12) + m2 * (t12 - t23) + m3 * t23, 0, 255).astype(np.float32)
-    M = np.clip(M * sm + (1.0 - sm) * 20.0, 0, 255).astype(np.float32)
-    R = np.clip(5.0 + t12 * 6.0 * sm, 0, 255).astype(np.float32)
-    CC = np.clip(16.0 + (1.0 - t12) * 4.0 + t23 * 4.0, 0, 255).astype(np.float32)
+    # Noise-based angle simulation for spec variation
+    angle_noise = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.4, 0.3], seed + 471)
+    fine = multi_scale_noise((h, w), [4, 8], [0.6, 0.4], seed + 474)
+    angle_param = np.clip(y_norm * 0.6 + angle_noise * 0.25 + fine * 0.15, 0, 1)
+
+    def smoothstep(edge0, edge1, val):
+        t = np.clip((val - edge0) / (edge1 - edge0 + 1e-8), 0, 1)
+        return t * t * (3.0 - 2.0 * t)
+
+    t1 = smoothstep(0.15, 0.42, angle_param)
+    t2 = smoothstep(0.55, 0.82, angle_param)
+    # Wine zone: low M (dielectric), Gold zone: high M (metallic), Blue zone: medium M
+    M = np.clip((30.0 * (1.0 - t1) + 200.0 * t1 * (1.0 - t2) + 80.0 * t2) * sm + 20.0 * (1.0 - sm), 0, 255).astype(np.float32)
+    # Low roughness across all zones (premium gloss), slight variation
+    R = np.clip(4.0 + t1 * 5.0 * sm + fine * 3.0 * sm, 15, 255).astype(np.float32)  # GGX floor — MiMo audit catch
+    # CC: glossy everywhere, slight variation at transitions
+    transition_boost = (t1 * (1.0 - t1) + t2 * (1.0 - t2)) * 2.0
+    CC = np.clip(16.0 + transition_boost * 8.0 * sm, 16, 255).astype(np.float32)
     return M, R, CC
 
 # ==================================================================
@@ -497,6 +502,6 @@ def spec_porsche_pts(shape, seed, sm, base_m, base_r):
     # PTS: zero metallic (solid color), extremely low roughness (mirror clearcoat)
     # Only micro-variation from orange peel
     M = np.clip(3.0 + peel * 4.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(3.0 + peel * 5.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(3.0 + peel * 5.0 * sm, 15, 255).astype(np.float32)
     CC = np.clip(20.0 + peel * 3.0, 0, 255).astype(np.float32)
     return M, R, CC

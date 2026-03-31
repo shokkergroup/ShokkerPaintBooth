@@ -975,6 +975,54 @@ if __name__ == '__main__':
             renderZones();
         };
 
+        // Draw a crosshair + box overlay on the canvas during manual placement drag
+        function drawPlacementCrosshair(canvas, ox, oy, layer) {
+            var rc = document.getElementById('regionCanvas');
+            if (!rc) return;
+            if (rc.width !== canvas.width || rc.height !== canvas.height) {
+                rc.width = canvas.width; rc.height = canvas.height;
+                rc.style.width = canvas.style.width; rc.style.height = canvas.style.height;
+            }
+            var ctx = rc.getContext('2d');
+            ctx.clearRect(0, 0, rc.width, rc.height);
+            var cx = Math.round(ox * canvas.width);
+            var cy = Math.round(oy * canvas.height);
+            var armLen = Math.min(canvas.width, canvas.height) * 0.15;
+            ctx.save();
+            // Outer glow
+            ctx.strokeStyle = 'rgba(0,255,235,0.3)'; ctx.lineWidth = 6;
+            ctx.beginPath();
+            ctx.moveTo(cx - armLen, cy); ctx.lineTo(cx + armLen, cy);
+            ctx.moveTo(cx, cy - armLen); ctx.lineTo(cx, cy + armLen);
+            ctx.stroke();
+            // Inner bright dashed line
+            ctx.strokeStyle = 'rgba(0,255,235,0.9)'; ctx.lineWidth = 2; ctx.setLineDash([8, 4]);
+            ctx.beginPath();
+            ctx.moveTo(cx - armLen, cy); ctx.lineTo(cx + armLen, cy);
+            ctx.moveTo(cx, cy - armLen); ctx.lineTo(cx, cy + armLen);
+            ctx.stroke(); ctx.setLineDash([]);
+            // Center circle
+            ctx.beginPath(); ctx.arc(cx, cy, 8, 0, Math.PI * 2);
+            ctx.strokeStyle = 'rgba(255,68,68,0.9)'; ctx.lineWidth = 2; ctx.stroke();
+            ctx.beginPath(); ctx.arc(cx, cy, 2, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(255,68,68,1)'; ctx.fill();
+            // Label
+            var label = (layer || 'pattern').replace(/_/g, ' ').toUpperCase();
+            var pctX = Math.round(ox * 100) + '%'; var pctY = Math.round(oy * 100) + '%';
+            var txt = label + '  X:' + pctX + '  Y:' + pctY;
+            ctx.font = 'bold 14px monospace';
+            ctx.fillStyle = 'rgba(0,0,0,0.7)';
+            var tw = ctx.measureText(txt).width;
+            ctx.fillRect(cx - tw/2 - 4, cy - armLen - 26, tw + 8, 20);
+            ctx.fillStyle = '#00ffe0'; ctx.textAlign = 'center';
+            ctx.fillText(txt, cx, cy - armLen - 10);
+            ctx.restore();
+        }
+        function clearPlacementCrosshair() {
+            var rc = document.getElementById('regionCanvas');
+            if (rc) rc.getContext('2d').clearRect(0, 0, rc.width, rc.height);
+        }
+
         // Shared: set up hover + click + draw handlers on the canvas
         function setupCanvasHandlers(canvas) {
             // Placement drag (GIMP/PS-style: drag on map to position pattern/base overlay)
@@ -1194,7 +1242,10 @@ if __name__ == '__main__':
                     const pos = getPixelAtClamped(e);
                     const dx = (pos.x - placementDragStart.x) / canvas.width;
                     const dy = (pos.y - placementDragStart.y) / canvas.height;
-                    applyPlacementOffset(selectedZoneIndex, placementLayer, placementDragStart.offsetX + dx, placementDragStart.offsetY + dy);
+                    const newOx = placementDragStart.offsetX + dx;
+                    const newOy = placementDragStart.offsetY + dy;
+                    applyPlacementOffset(selectedZoneIndex, placementLayer, newOx, newOy);
+                    drawPlacementCrosshair(canvas, newOx, newOy, placementLayer);
                     return;
                 }
 
@@ -1271,6 +1322,7 @@ if __name__ == '__main__':
                         if (typeof pushZoneUndo === 'function') pushZoneUndo('', true);
                         e.preventDefault();
                         canvas.style.cursor = 'grabbing';
+                        drawPlacementCrosshair(canvas, ox, oy, placementLayer);
                         return;
                     }
                 }
@@ -1436,6 +1488,7 @@ if __name__ == '__main__':
                     placementDragStart = null;
                     clearTimeout(placementPreviewTimer);
                     placementPreviewTimer = null;
+                    clearPlacementCrosshair();
                     if (typeof triggerPreviewRender === 'function') triggerPreviewRender();
                     if (typeof showToast === 'function') {
                         showToast('Position saved — will apply on next render', 'success');
@@ -1528,6 +1581,7 @@ if __name__ == '__main__':
                     placementDragStart = null;
                     clearTimeout(placementPreviewTimer);
                     placementPreviewTimer = null;
+                    clearPlacementCrosshair();
                     if (typeof triggerPreviewRender === 'function') triggerPreviewRender();
                     if (typeof showToast === 'function') {
                         showToast('Position saved — will apply on next render', 'success');
@@ -3634,31 +3688,33 @@ if __name__ == '__main__':
             // Cancel any pending enhance
             if (_previewEnhanceTimer) { clearTimeout(_previewEnhanceTimer); _previewEnhanceTimer = null; }
 
-            // Debounce: fast low-res preview after 600ms
+            // Debounce: fast low-res preview after 400ms
             if (previewDebounceTimer) clearTimeout(previewDebounceTimer);
             previewDebounceTimer = setTimeout(() => {
-                _lastPreviewScale = 0.5;
-                doPreviewRender(hash, 0.5);
+                _lastPreviewScale = 0.25;
+                doPreviewRender(hash, 0.25);
 
-                // Schedule full-quality enhance after 2 seconds of no further changes
+                // Schedule medium-quality enhance after 3s of no further changes
+                // Cap at 0.5 scale (1024x1024) — full 1.0 is reserved for final render
+                let _enhanceRetries = 0;
                 _previewEnhanceTimer = setTimeout(function _tryEnhance() {
                     if (previewIsRendering) {
-                        // Still rendering — reschedule in 1 second instead of giving up
-                        _previewEnhanceTimer = setTimeout(_tryEnhance, 1000);
+                        _enhanceRetries++;
+                        if (_enhanceRetries > 5) return;  // Give up after 5 retries
+                        _previewEnhanceTimer = setTimeout(_tryEnhance, 1500);
                         return;
                     }
                     const currentHash = getZoneConfigHash();
-                    if (currentHash === lastPreviewZoneHash && _lastPreviewScale < 1.0) {
-                        // No changes since fast preview — upgrade to full quality
-                        _lastPreviewScale = 1.0;
-                        doPreviewRender(currentHash, 1.0);
+                    if (currentHash === lastPreviewZoneHash && _lastPreviewScale < 0.5) {
+                        _lastPreviewScale = 0.5;
+                        doPreviewRender(currentHash, 0.5);
                     }
-                }, 2000);
-            }, 600);
+                }, 3000);
+            }, 400);
         }
 
         async function doPreviewRender(zoneHash, previewScale) {
-            const _pScale = previewScale || 0.5;
+            const _pScale = previewScale || 0.25;
             const paintFile = document.getElementById('paintFile').value.trim();
             if (!paintFile) return;
             if (!ShokkerAPI.online) return;
@@ -3927,7 +3983,10 @@ if __name__ == '__main__':
                 });
 
                 // Check if this response is still current (not superseded)
-                if (thisVersion !== previewVersion) return;
+                if (thisVersion !== previewVersion) { previewIsRendering = false; return; }
+
+                // 429 = server busy or superseded — silently ignore, don't show error
+                if (resp.status === 429) { previewIsRendering = false; return; }
 
                 const data = await resp.json();
                 if (!data.success) {

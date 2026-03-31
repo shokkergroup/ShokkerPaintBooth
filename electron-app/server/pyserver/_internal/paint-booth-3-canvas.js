@@ -873,6 +873,17 @@ if __name__ == '__main__':
             // Update banner
             if (typeof updatePlacementBanner === 'function') updatePlacementBanner();
 
+            // Auto-enable split view for live feedback during placement
+            if (typeof splitViewActive !== 'undefined' && !splitViewActive) {
+                if (typeof toggleSplitView === 'function') {
+                    toggleSplitView();
+                } else {
+                    // Fallback: find and click the split button
+                    const splitBtn = document.getElementById('splitViewBtn') || document.querySelector('[onclick*="toggleSplit"]');
+                    if (splitBtn) splitBtn.click();
+                }
+            }
+
             // Toast
             const layerName = placementLayer.replace(/_/g, ' ');
             showToast('Manual Placement active for ' + layerName + ' — drag to position, scroll to resize, Shift+drag to rotate', 'info');
@@ -963,6 +974,54 @@ if __name__ == '__main__':
             triggerPreviewRender();
             renderZones();
         };
+
+        // Draw a crosshair + box overlay on the canvas during manual placement drag
+        function drawPlacementCrosshair(canvas, ox, oy, layer) {
+            var rc = document.getElementById('regionCanvas');
+            if (!rc) return;
+            if (rc.width !== canvas.width || rc.height !== canvas.height) {
+                rc.width = canvas.width; rc.height = canvas.height;
+                rc.style.width = canvas.style.width; rc.style.height = canvas.style.height;
+            }
+            var ctx = rc.getContext('2d');
+            ctx.clearRect(0, 0, rc.width, rc.height);
+            var cx = Math.round(ox * canvas.width);
+            var cy = Math.round(oy * canvas.height);
+            var armLen = Math.min(canvas.width, canvas.height) * 0.15;
+            ctx.save();
+            // Outer glow
+            ctx.strokeStyle = 'rgba(0,255,235,0.3)'; ctx.lineWidth = 6;
+            ctx.beginPath();
+            ctx.moveTo(cx - armLen, cy); ctx.lineTo(cx + armLen, cy);
+            ctx.moveTo(cx, cy - armLen); ctx.lineTo(cx, cy + armLen);
+            ctx.stroke();
+            // Inner bright dashed line
+            ctx.strokeStyle = 'rgba(0,255,235,0.9)'; ctx.lineWidth = 2; ctx.setLineDash([8, 4]);
+            ctx.beginPath();
+            ctx.moveTo(cx - armLen, cy); ctx.lineTo(cx + armLen, cy);
+            ctx.moveTo(cx, cy - armLen); ctx.lineTo(cx, cy + armLen);
+            ctx.stroke(); ctx.setLineDash([]);
+            // Center circle
+            ctx.beginPath(); ctx.arc(cx, cy, 8, 0, Math.PI * 2);
+            ctx.strokeStyle = 'rgba(255,68,68,0.9)'; ctx.lineWidth = 2; ctx.stroke();
+            ctx.beginPath(); ctx.arc(cx, cy, 2, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(255,68,68,1)'; ctx.fill();
+            // Label
+            var label = (layer || 'pattern').replace(/_/g, ' ').toUpperCase();
+            var pctX = Math.round(ox * 100) + '%'; var pctY = Math.round(oy * 100) + '%';
+            var txt = label + '  X:' + pctX + '  Y:' + pctY;
+            ctx.font = 'bold 14px monospace';
+            ctx.fillStyle = 'rgba(0,0,0,0.7)';
+            var tw = ctx.measureText(txt).width;
+            ctx.fillRect(cx - tw/2 - 4, cy - armLen - 26, tw + 8, 20);
+            ctx.fillStyle = '#00ffe0'; ctx.textAlign = 'center';
+            ctx.fillText(txt, cx, cy - armLen - 10);
+            ctx.restore();
+        }
+        function clearPlacementCrosshair() {
+            var rc = document.getElementById('regionCanvas');
+            if (rc) rc.getContext('2d').clearRect(0, 0, rc.width, rc.height);
+        }
 
         // Shared: set up hover + click + draw handlers on the canvas
         function setupCanvasHandlers(canvas) {
@@ -1183,7 +1242,10 @@ if __name__ == '__main__':
                     const pos = getPixelAtClamped(e);
                     const dx = (pos.x - placementDragStart.x) / canvas.width;
                     const dy = (pos.y - placementDragStart.y) / canvas.height;
-                    applyPlacementOffset(selectedZoneIndex, placementLayer, placementDragStart.offsetX + dx, placementDragStart.offsetY + dy);
+                    const newOx = placementDragStart.offsetX + dx;
+                    const newOy = placementDragStart.offsetY + dy;
+                    applyPlacementOffset(selectedZoneIndex, placementLayer, newOx, newOy);
+                    drawPlacementCrosshair(canvas, newOx, newOy, placementLayer);
                     return;
                 }
 
@@ -1260,6 +1322,7 @@ if __name__ == '__main__':
                         if (typeof pushZoneUndo === 'function') pushZoneUndo('', true);
                         e.preventDefault();
                         canvas.style.cursor = 'grabbing';
+                        drawPlacementCrosshair(canvas, ox, oy, placementLayer);
                         return;
                     }
                 }
@@ -1425,7 +1488,11 @@ if __name__ == '__main__':
                     placementDragStart = null;
                     clearTimeout(placementPreviewTimer);
                     placementPreviewTimer = null;
+                    clearPlacementCrosshair();
                     if (typeof triggerPreviewRender === 'function') triggerPreviewRender();
+                    if (typeof showToast === 'function') {
+                        showToast('Position saved — will apply on next render', 'success');
+                    }
                     canvas.style.cursor = (typeof placementLayer !== 'undefined' && placementLayer !== 'none') ? 'grab' : '';
                     return;
                 }
@@ -1514,7 +1581,11 @@ if __name__ == '__main__':
                     placementDragStart = null;
                     clearTimeout(placementPreviewTimer);
                     placementPreviewTimer = null;
+                    clearPlacementCrosshair();
                     if (typeof triggerPreviewRender === 'function') triggerPreviewRender();
+                    if (typeof showToast === 'function') {
+                        showToast('Position saved — will apply on next render', 'success');
+                    }
                     const cvs = document.getElementById('paintCanvas');
                     if (cvs) cvs.style.cursor = (typeof placementLayer !== 'undefined' && placementLayer !== 'none') ? 'grab' : '';
                     return;
@@ -3532,6 +3603,8 @@ if __name__ == '__main__':
                 secondBasePatternHarden: z.secondBasePatternHarden,
                 secondBasePatternOffsetX: z.secondBasePatternOffsetX,
                 secondBasePatternOffsetY: z.secondBasePatternOffsetY,
+                secondBaseHueShift: z.secondBaseHueShift, secondBaseSaturation: z.secondBaseSaturation, secondBaseBrightness: z.secondBaseBrightness,
+                secondBasePatternHueShift: z.secondBasePatternHueShift, secondBasePatternSaturation: z.secondBasePatternSaturation, secondBasePatternBrightness: z.secondBasePatternBrightness,
                 // 3rd base overlay
                 thirdBase: z.thirdBase, thirdBaseStrength: z.thirdBaseStrength,
                 thirdBaseSpecStrength: z.thirdBaseSpecStrength,
@@ -3546,6 +3619,7 @@ if __name__ == '__main__':
                 thirdBasePatternHarden: z.thirdBasePatternHarden,
                 thirdBasePatternOffsetX: z.thirdBasePatternOffsetX,
                 thirdBasePatternOffsetY: z.thirdBasePatternOffsetY,
+                thirdBaseHueShift: z.thirdBaseHueShift, thirdBaseSaturation: z.thirdBaseSaturation, thirdBaseBrightness: z.thirdBaseBrightness,
                 // 4th base overlay
                 fourthBase: z.fourthBase, fourthBaseStrength: z.fourthBaseStrength,
                 fourthBaseSpecStrength: z.fourthBaseSpecStrength,
@@ -3560,6 +3634,7 @@ if __name__ == '__main__':
                 fourthBasePatternHarden: z.fourthBasePatternHarden,
                 fourthBasePatternOffsetX: z.fourthBasePatternOffsetX,
                 fourthBasePatternOffsetY: z.fourthBasePatternOffsetY,
+                fourthBaseHueShift: z.fourthBaseHueShift, fourthBaseSaturation: z.fourthBaseSaturation, fourthBaseBrightness: z.fourthBaseBrightness,
                 // 5th base overlay
                 fifthBase: z.fifthBase, fifthBaseStrength: z.fifthBaseStrength,
                 fifthBaseSpecStrength: z.fifthBaseSpecStrength,
@@ -3574,6 +3649,7 @@ if __name__ == '__main__':
                 fifthBasePatternHarden: z.fifthBasePatternHarden,
                 fifthBasePatternOffsetX: z.fifthBasePatternOffsetX,
                 fifthBasePatternOffsetY: z.fifthBasePatternOffsetY,
+                fifthBaseHueShift: z.fifthBaseHueShift, fifthBaseSaturation: z.fifthBaseSaturation, fifthBaseBrightness: z.fifthBaseBrightness,
                 // Spec pattern overlays
                 specPatternStack: z.specPatternStack,
                 overlaySpecPatternStack: z.overlaySpecPatternStack,
@@ -3584,8 +3660,13 @@ if __name__ == '__main__':
             return muteKey + JSON.stringify(hashData);
         }
 
+        // Tiered preview: fast low-res first, then full-quality after idle
+        let _previewEnhanceTimer = null;
+        let _lastPreviewScale = 0.5;
+
         function triggerPreviewRender() {
-            if (!splitViewActive) return;
+            // Allow preview during manual placement even if split view is off
+            if (!splitViewActive && placementLayer === 'none') return;
 
             const hash = getZoneConfigHash();
             if (hash === lastPreviewZoneHash) return;  // Nothing actually changed
@@ -3604,14 +3685,36 @@ if __name__ == '__main__':
             // Mark as stale
             updatePreviewStatus('stale', 'Changed');
 
-            // Debounce: clear previous timer, set new 600ms timer
+            // Cancel any pending enhance
+            if (_previewEnhanceTimer) { clearTimeout(_previewEnhanceTimer); _previewEnhanceTimer = null; }
+
+            // Debounce: fast low-res preview after 400ms
             if (previewDebounceTimer) clearTimeout(previewDebounceTimer);
             previewDebounceTimer = setTimeout(() => {
-                doPreviewRender(hash);
-            }, 600);
+                _lastPreviewScale = 0.25;
+                doPreviewRender(hash, 0.25);
+
+                // Schedule medium-quality enhance after 3s of no further changes
+                // Cap at 0.5 scale (1024x1024) — full 1.0 is reserved for final render
+                let _enhanceRetries = 0;
+                _previewEnhanceTimer = setTimeout(function _tryEnhance() {
+                    if (previewIsRendering) {
+                        _enhanceRetries++;
+                        if (_enhanceRetries > 5) return;  // Give up after 5 retries
+                        _previewEnhanceTimer = setTimeout(_tryEnhance, 1500);
+                        return;
+                    }
+                    const currentHash = getZoneConfigHash();
+                    if (currentHash === lastPreviewZoneHash && _lastPreviewScale < 0.5) {
+                        _lastPreviewScale = 0.5;
+                        doPreviewRender(currentHash, 0.5);
+                    }
+                }, 3000);
+            }, 400);
         }
 
-        async function doPreviewRender(zoneHash) {
+        async function doPreviewRender(zoneHash, previewScale) {
+            const _pScale = previewScale || 0.25;
             const paintFile = document.getElementById('paintFile').value.trim();
             if (!paintFile) return;
             if (!ShokkerAPI.online) return;
@@ -3685,6 +3788,7 @@ if __name__ == '__main__':
                             zoneObj.pattern_flip_h = !!z.patternFlipH;
                             zoneObj.pattern_flip_v = !!z.patternFlipV;
                         }
+                        if (z.hardEdge) zoneObj.hard_edge = true;
                         if (z.base || z.finish) {
                             zoneObj.base_offset_x = Math.max(0, Math.min(1, Number(z.baseOffsetX ?? 0.5)));
                             zoneObj.base_offset_y = Math.max(0, Math.min(1, Number(z.baseOffsetY ?? 0.5)));
@@ -3719,6 +3823,12 @@ if __name__ == '__main__':
                             if (z.secondBasePatternHarden != null) zoneObj.second_base_pattern_harden = !!z.secondBasePatternHarden;
                             if (z.secondBasePatternOffsetX != null) zoneObj.second_base_pattern_offset_x = Math.max(0, Math.min(1, Number(z.secondBasePatternOffsetX)));
                             if (z.secondBasePatternOffsetY != null) zoneObj.second_base_pattern_offset_y = Math.max(0, Math.min(1, Number(z.secondBasePatternOffsetY)));
+                            if (z.secondBaseHueShift) zoneObj.second_base_hue_shift = z.secondBaseHueShift;
+                            if (z.secondBaseSaturation) zoneObj.second_base_saturation = z.secondBaseSaturation;
+                            if (z.secondBaseBrightness) zoneObj.second_base_brightness = z.secondBaseBrightness;
+                            if (z.secondBasePatternHueShift) zoneObj.second_base_pattern_hue_shift = z.secondBasePatternHueShift;
+                            if (z.secondBasePatternSaturation) zoneObj.second_base_pattern_saturation = z.secondBasePatternSaturation;
+                            if (z.secondBasePatternBrightness) zoneObj.second_base_pattern_brightness = z.secondBasePatternBrightness;
                         }
                         if ((z.thirdBase || z.thirdBaseColorSource) && (z.thirdBaseStrength || 0) > 0) {
                             const _tbColor = (z.thirdBaseColor || '#ffffff').toString();
@@ -3740,6 +3850,9 @@ if __name__ == '__main__':
                             if (z.thirdBasePatternHarden != null) zoneObj.third_base_pattern_harden = !!z.thirdBasePatternHarden;
                             if (z.thirdBasePatternOffsetX != null) zoneObj.third_base_pattern_offset_x = Math.max(0, Math.min(1, Number(z.thirdBasePatternOffsetX ?? 0.5)));
                             if (z.thirdBasePatternOffsetY != null) zoneObj.third_base_pattern_offset_y = Math.max(0, Math.min(1, Number(z.thirdBasePatternOffsetY ?? 0.5)));
+                            if (z.thirdBaseHueShift) zoneObj.third_base_hue_shift = z.thirdBaseHueShift;
+                            if (z.thirdBaseSaturation) zoneObj.third_base_saturation = z.thirdBaseSaturation;
+                            if (z.thirdBaseBrightness) zoneObj.third_base_brightness = z.thirdBaseBrightness;
                         }
                         if ((z.fourthBase || z.fourthBaseColorSource) && (z.fourthBaseStrength || 0) > 0) {
                             const _fbColor = (z.fourthBaseColor || '#ffffff').toString();
@@ -3761,6 +3874,9 @@ if __name__ == '__main__':
                             if (z.fourthBasePatternHarden != null) zoneObj.fourth_base_pattern_harden = !!z.fourthBasePatternHarden;
                             if (z.fourthBasePatternOffsetX != null) zoneObj.fourth_base_pattern_offset_x = Math.max(0, Math.min(1, Number(z.fourthBasePatternOffsetX ?? 0.5)));
                             if (z.fourthBasePatternOffsetY != null) zoneObj.fourth_base_pattern_offset_y = Math.max(0, Math.min(1, Number(z.fourthBasePatternOffsetY ?? 0.5)));
+                            if (z.fourthBaseHueShift) zoneObj.fourth_base_hue_shift = z.fourthBaseHueShift;
+                            if (z.fourthBaseSaturation) zoneObj.fourth_base_saturation = z.fourthBaseSaturation;
+                            if (z.fourthBaseBrightness) zoneObj.fourth_base_brightness = z.fourthBaseBrightness;
                         }
                         if ((z.fifthBase || z.fifthBaseColorSource) && (z.fifthBaseStrength || 0) > 0) {
                             const _fifColor = (z.fifthBaseColor || '#ffffff').toString();
@@ -3782,6 +3898,9 @@ if __name__ == '__main__':
                             if (z.fifthBasePatternHarden != null) zoneObj.fifth_base_pattern_harden = !!z.fifthBasePatternHarden;
                             if (z.fifthBasePatternOffsetX != null) zoneObj.fifth_base_pattern_offset_x = Math.max(0, Math.min(1, Number(z.fifthBasePatternOffsetX ?? 0.5)));
                             if (z.fifthBasePatternOffsetY != null) zoneObj.fifth_base_pattern_offset_y = Math.max(0, Math.min(1, Number(z.fifthBasePatternOffsetY ?? 0.5)));
+                            if (z.fifthBaseHueShift) zoneObj.fifth_base_hue_shift = z.fifthBaseHueShift;
+                            if (z.fifthBaseSaturation) zoneObj.fifth_base_saturation = z.fifthBaseSaturation;
+                            if (z.fifthBaseBrightness) zoneObj.fifth_base_brightness = z.fifthBaseBrightness;
                         }
                         const hasSpatialRefinement = z.spatialMask && z.spatialMask.some(v => v > 0);
                         if (!hasSpatialRefinement && z.regionMask && z.regionMask.some(v => v > 0)) { const pc = document.getElementById('paintCanvas'); if (pc) zoneObj.region_mask = encodeRegionMaskRLE(z.regionMask, pc.width, pc.height); }
@@ -3790,13 +3909,41 @@ if __name__ == '__main__':
                     });
                 })();
 
-            // Build request body
+            // Build request body — tiered: 0.5 for fast feedback, 1.0 for full quality
             const body = {
                 paint_file: paintFile,
                 zones: serverZones,
                 seed: 51,
-                preview_scale: 0.25,
+                preview_scale: _pScale,
             };
+
+            // Incremental rendering hints: tell server which zone changed and per-zone hashes
+            // so unchanged zones can be served from the zone-level cache in build_multi_zone.
+            body.changed_zone = selectedZoneIndex;
+            body.zone_hashes = zones.filter(z => !z.muted && (z.base || z.finish)).map(z => {
+                return JSON.stringify({
+                    base: z.base, finish: z.finish, pattern: z.pattern, scale: z.scale,
+                    rotation: z.rotation, baseRotation: z.baseRotation, baseScale: z.baseScale,
+                    baseStrength: z.baseStrength, baseSpecStrength: z.baseSpecStrength,
+                    baseOffsetX: z.baseOffsetX, baseOffsetY: z.baseOffsetY,
+                    baseFlipH: z.baseFlipH, baseFlipV: z.baseFlipV,
+                    patternOpacity: z.patternOpacity, patternStack: z.patternStack,
+                    patternSpecMult: z.patternSpecMult,
+                    patternOffsetX: z.patternOffsetX, patternOffsetY: z.patternOffsetY,
+                    patternFlipH: z.patternFlipH, patternFlipV: z.patternFlipV,
+                    intensity: z.intensity, patternIntensity: z.patternIntensity,
+                    customSpec: z.customSpec, customPaint: z.customPaint, customBright: z.customBright,
+                    color: z.color, colorMode: z.colorMode, colors: z.colors,
+                    baseColorMode: z.baseColorMode, baseColor: z.baseColor,
+                    baseColorSource: z.baseColorSource, baseColorStrength: z.baseColorStrength,
+                    baseHueOffset: z.baseHueOffset, baseSaturationAdjust: z.baseSaturationAdjust,
+                    baseBrightnessAdjust: z.baseBrightnessAdjust,
+                    secondBase: z.secondBase, secondBaseStrength: z.secondBaseStrength,
+                    specPatternStack: z.specPatternStack,
+                    rmLen: z.regionMask ? z.regionMask.length : 0,
+                    rmSum: z.regionMask ? z.regionMask.reduce((a, b) => a + b, 0) : 0,
+                });
+            });
 
             // Include imported spec map if active (merge mode)
             if (importedSpecMapPath) {
@@ -3809,6 +3956,11 @@ if __name__ == '__main__':
                     const compositeCanvas = compositeDecalsForRender();
                     if (compositeCanvas) {
                         body.paint_image_base64 = compositeCanvas.toDataURL('image/png');
+                    }
+                    // Send the separate decal alpha mask so engine knows WHERE decals are
+                    if (typeof compositeDecalMaskForRender === 'function') {
+                        const maskDataUrl = compositeDecalMaskForRender();
+                        if (maskDataUrl) body.decal_mask_base64 = maskDataUrl;
                     }
                     const decalSpecs = decalLayers
                         .filter(dl => dl.visible && dl.specFinish && dl.specFinish !== 'none')
@@ -3831,7 +3983,10 @@ if __name__ == '__main__':
                 });
 
                 // Check if this response is still current (not superseded)
-                if (thisVersion !== previewVersion) return;
+                if (thisVersion !== previewVersion) { previewIsRendering = false; return; }
+
+                // 429 = server busy or superseded — silently ignore, don't show error
+                if (resp.status === 429) { previewIsRendering = false; return; }
 
                 const data = await resp.json();
                 if (!data.success) {
@@ -3844,8 +3999,15 @@ if __name__ == '__main__':
                 // Update preview images (show both paint + spec simultaneously)
                 const paintImg = document.getElementById('livePreviewImg');
                 const specImg = document.getElementById('livePreviewSpecImg');
-                paintImg.src = data.paint_preview;
-                if (specImg) specImg.src = data.spec_preview;
+                // Release old base64 data before assigning new (helps GC on large previews)
+                if (paintImg && paintImg.src && paintImg.src.startsWith('data:')) {
+                    try { URL.revokeObjectURL(paintImg.src); } catch(_) {}
+                }
+                if (specImg && specImg.src && specImg.src.startsWith('data:')) {
+                    try { URL.revokeObjectURL(specImg.src); } catch(_) {}
+                }
+                if (paintImg && data.paint_preview) paintImg.src = data.paint_preview;
+                if (specImg && data.spec_preview) specImg.src = data.spec_preview;
                 // Show both panes (paint full, spec inset) - reset expanded state
                 document.getElementById('previewPaintPane').style.display = '';
                 document.getElementById('previewSpecPane').style.display = '';
@@ -3867,7 +4029,8 @@ if __name__ == '__main__':
                 // Update hash and status
                 lastPreviewZoneHash = zoneHash;
                 previewIsRendering = false;
-                updatePreviewStatus('current', `${data.elapsed_ms}ms`);
+                const _qualLabel = _pScale >= 1.0 ? 'HD' : `${Math.round(_pScale * 100)}%`;
+                updatePreviewStatus('current', `${data.elapsed_ms}ms · ${_qualLabel}`);
 
                 // Show/hide pattern indicator badge
                 const patBadge = document.getElementById('patternActiveBadge');
@@ -4067,6 +4230,7 @@ if __name__ == '__main__':
                     z.scale = Math.max(0.1, Math.min(4.0, (z.scale || 1.0) + delta));
                     if (typeof renderZones === 'function') renderZones();
                     if (typeof triggerPreviewRender === 'function') triggerPreviewRender();
+                    if (typeof applyPlacementPatternTransform === 'function') applyPlacementPatternTransform();
                     return;
                 }
 

@@ -15,6 +15,14 @@ Uses LAZY import for BASE_REGISTRY/PATTERN_REGISTRY to avoid circular import.
 import numpy as np
 import time as _time
 
+
+def _ggx_safe_R(R_arr, M_arr, lib=None):
+    """Conditional GGX floor: R >= 15 for non-chrome (M < 240), R >= 0 for chrome (M >= 240).
+    Final safety net at the compose output stage. Works with numpy or cupy (pass lib=xp for GPU)."""
+    _np = lib if lib is not None else np
+    R_clipped = _np.clip(R_arr, 0, 255)
+    return _np.where(M_arr < 240, _np.maximum(R_clipped, 15.0), R_clipped)
+
 try:
     from engine.gpu import xp, to_cpu, to_gpu, is_gpu
 except ImportError:
@@ -37,6 +45,47 @@ from engine.core import (
 )
 from engine.overlay import blend_dual_base_spec, get_base_overlay_alpha, _normalize_second_base_blend_mode
 from engine.spec_paint import paint_none
+
+
+def _scale_down_spec_pattern(sp_fn, sp_scale, canvas_shape, seed_val, sm_val, sp_params):
+    """Generate a spec pattern at higher resolution, then downsample to canvas size.
+
+    When scale < 1.0, instead of tiling the pattern (which creates visible
+    grid boundaries), we generate the pattern at a larger resolution
+    (canvas_size / scale) and then smoothly downsample back to canvas size.
+    This effectively 'shrinks' the pattern features without any tile seams.
+
+    Args:
+        sp_fn: The spec pattern generator function.
+        sp_scale: The user scale factor (0 < sp_scale < 1.0).
+        canvas_shape: Target (H, W) or (H, W, C) shape.
+        seed_val: Seed for pattern generation.
+        sm_val: Smoothness parameter.
+        sp_params: Extra keyword args for sp_fn.
+
+    Returns:
+        float32 array at canvas_shape[:2] dimensions with scaled-down pattern.
+    """
+    import math
+    h, w = canvas_shape[0], canvas_shape[1]
+    inv_scale = 1.0 / sp_scale
+    # Generate at higher resolution — cap at 8x to avoid memory issues
+    inv_scale_capped = min(inv_scale, 8.0)
+    gen_h = min(16384, max(h, int(math.ceil(h * inv_scale_capped))))
+    gen_w = min(16384, max(w, int(math.ceil(w * inv_scale_capped))))
+    gen_shape = (gen_h, gen_w) if len(canvas_shape) == 2 else (gen_h, gen_w, canvas_shape[2])
+    try:
+        big_arr = sp_fn(gen_shape, seed_val, sm_val, **sp_params)
+    except Exception:
+        # Fallback: generate at canvas size and use smooth resize instead of tiling
+        big_arr = sp_fn(canvas_shape, seed_val, sm_val, **sp_params)
+        return big_arr
+    # Downsample to canvas size using smooth interpolation (INTER_AREA for downscale)
+    if big_arr.shape[0] != h or big_arr.shape[1] != w:
+        import cv2
+        big_arr = cv2.resize(big_arr.astype(np.float32), (w, h),
+                             interpolation=cv2.INTER_AREA)
+    return big_arr.astype(np.float32)
 
 
 def _get_pattern_mask(pattern_id, shape, mask, seed, sm, scale=1.0, rotation=0.0, opacity=1.0, strength=1.0, offset_x=0.5, offset_y=0.5):
@@ -115,6 +164,37 @@ def _apply_pattern_offset(pv, shape, offset_x, offset_y):
             pv[:] = xp.roll(pv, (-shift_y, -shift_x), axis=(0, 1))
     except Exception:
         pass
+
+
+def _apply_spec_pattern_box_size(sp_arr, canvas_shape, box_size_pct, offset_x, offset_y):
+    """Mask a spec pattern array to only affect a box region of the canvas.
+    box_size_pct: integer 5-100 (percentage of canvas each dimension).
+    offset_x/offset_y: 0-1 center position of the box.
+    Returns the masked array (0.5 outside the box = no effect in delta math).
+    """
+    if box_size_pct >= 100:
+        return sp_arr
+    h, w = int(canvas_shape[0]), int(canvas_shape[1])
+    box_w = max(1, int(w * box_size_pct / 100.0))
+    box_h = max(1, int(h * box_size_pct / 100.0))
+    # Center of box at offset position
+    cx = int(offset_x * w)
+    cy = int(offset_y * h)
+    x0 = max(0, cx - box_w // 2)
+    y0 = max(0, cy - box_h // 2)
+    x1 = min(w, x0 + box_w)
+    y1 = min(h, y0 + box_h)
+    # Clamp to ensure box stays within canvas
+    if x1 - x0 < box_w and x0 == 0:
+        x1 = min(w, box_w)
+    if y1 - y0 < box_h and y0 == 0:
+        y1 = min(h, box_h)
+    # Fill outside the box with 0.5 (neutral = no change in delta math)
+    result = np.full_like(np.asarray(sp_arr), 0.5, dtype=np.float32)
+    # Copy the pattern data inside the box region
+    # The pattern was generated at full canvas size, so crop the corresponding region
+    result[y0:y1, x0:x1] = np.asarray(sp_arr)[y0:y1, x0:x1]
+    return result
 
 
 def _boost_overlay_mono_color(rgb):
@@ -387,6 +467,11 @@ def compose_finish(base_id, pattern_id, shape, mask, seed, sm, scale=1.0, spec_m
             CC_arr = CC_arr + noise * base.get("noise_CC", 0) * _sm_base
         else:
             CC_arr = None
+        # Lerp toward neutral when spec strength < 1.0 so slider actually reduces the effect
+        if _bss < 0.999:
+            _neutral_M, _neutral_R = 0.0, 128.0
+            M_arr = _neutral_M + (M_arr - _neutral_M) * _bss
+            R_arr = _neutral_R + (R_arr - _neutral_R) * _bss
     elif base.get("perlin"):
         p_oct = base.get("perlin_octaves", 4)
         p_pers = base.get("perlin_persistence", 0.5)
@@ -399,6 +484,11 @@ def compose_finish(base_id, pattern_id, shape, mask, seed, sm, scale=1.0, spec_m
             CC_arr = CC_arr + noise * base.get("noise_CC", 0) * _sm_base
         else:
             CC_arr = None
+        # Lerp toward neutral when spec strength < 1.0
+        if _bss < 0.999:
+            _neutral_M, _neutral_R = 0.0, 128.0
+            M_arr = _neutral_M + (M_arr - _neutral_M) * _bss
+            R_arr = _neutral_R + (R_arr - _neutral_R) * _bss
     elif "noise_scales" in base:
         noise_weights = base.get("noise_weights", [1.0/len(base["noise_scales"])] * len(base["noise_scales"]))
         noise = multi_scale_noise(base_shape, base["noise_scales"], noise_weights, seed + 100 + _base_seed_offset)
@@ -409,9 +499,19 @@ def compose_finish(base_id, pattern_id, shape, mask, seed, sm, scale=1.0, spec_m
             CC_arr = CC_arr + noise * base.get("noise_CC", 0) * _sm_base
         else:
             CC_arr = None
+        # Lerp toward neutral when spec strength < 1.0
+        if _bss < 0.999:
+            _neutral_M, _neutral_R = 0.0, 128.0
+            M_arr = _neutral_M + (M_arr - _neutral_M) * _bss
+            R_arr = _neutral_R + (R_arr - _neutral_R) * _bss
     else:
-        M_arr = np.full(base_shape, base_M, dtype=np.float32)
-        R_arr = np.full(base_shape, base_R, dtype=np.float32)
+        # Flat-value base (no noise/perlin/custom spec fn) — apply spec strength
+        # by lerping toward "zero effect" neutral. bss=1.0 → full base values, bss=0 → flat paint.
+        # Neutral = no metallic (M=0), mid roughness (R=128), minimal clearcoat.
+        # Chrome at 5%: M≈13 (barely metallic), R≈122 (rough) — hint of chrome only.
+        _neutral_M, _neutral_R = 0.0, 128.0
+        M_arr = np.full(base_shape, _neutral_M + (base_M - _neutral_M) * _bss, dtype=np.float32)
+        R_arr = np.full(base_shape, _neutral_R + (base_R - _neutral_R) * _bss, dtype=np.float32)
         CC_arr = None
 
     if base_scale != 1.0 and base_scale > 0 and (base_shape[0] != shape[0] or base_shape[1] != shape[1]):
@@ -568,19 +668,24 @@ def compose_finish(base_id, pattern_id, shape, mask, seed, sm, scale=1.0, spec_m
             sp_offset_y = float(sp_layer.get("offset_y", 0.5))
             sp_scale = float(sp_layer.get("scale", 1.0))
             sp_rotation = float(sp_layer.get("rotation", 0))
+            sp_box_size = int(sp_layer.get("box_size", 100))
             # Generate pattern (returns 0-1 float32 numpy array) -> stays CPU for transforms
-            sp_arr = sp_fn(base_shape, seed + 5000 + hash(sp_name) % 10000, _sm_base, **sp_params)
-            # Apply scale, rotation, and offset transforms (CPU-only ops)
-            if abs(sp_scale - 1.0) > 0.01:
-                h, w = base_shape[0], base_shape[1]
-                if sp_scale < 1.0:
-                    sp_arr = _tile_fractional(sp_arr, 1.0 / sp_scale, h, w)
-                else:
-                    sp_arr = _crop_center_array(sp_arr, sp_scale, h, w)
+            _sp_seed = seed + 5000 + hash(sp_name) % 10000
+            if sp_scale < 1.0 and abs(sp_scale - 1.0) > 0.01:
+                # Scale down: regenerate at higher resolution then downsample (no tile seams)
+                sp_arr = _scale_down_spec_pattern(sp_fn, sp_scale, base_shape, _sp_seed, _sm_base, sp_params)
+            else:
+                sp_arr = sp_fn(base_shape, _sp_seed, _sm_base, **sp_params)
+                # Apply scale (crop for scale > 1)
+                if abs(sp_scale - 1.0) > 0.01:
+                    sp_arr = _crop_center_array(sp_arr, sp_scale, base_shape[0], base_shape[1])
             if abs(sp_rotation) > 0.5:
                 sp_arr = _rotate_single_array(sp_arr, sp_rotation, base_shape)
             if abs(sp_offset_x - 0.5) > 0.01 or abs(sp_offset_y - 0.5) > 0.01:
                 _apply_pattern_offset(sp_arr, base_shape, sp_offset_x, sp_offset_y)
+            # Apply box size masking (restrict pattern to a sub-region)
+            if sp_box_size < 100:
+                sp_arr = _apply_spec_pattern_box_size(sp_arr, base_shape, sp_box_size, sp_offset_x, sp_offset_y)
             # Transfer to GPU for math
             if _gpu_active:
                 sp_arr = to_gpu(sp_arr)
@@ -715,11 +820,14 @@ def compose_finish(base_id, pattern_id, shape, mask, seed, sm, scale=1.0, spec_m
 
     # GPU-accelerate final spec assembly (mask blending + clipping)
     # M_arr/R_arr/mask are already on GPU when _gpu_active
+    # CONDITIONAL GGX FLOOR: R >= 15 for non-chrome (M < 240), R >= 0 for chrome (M >= 240)
+    # This is the FINAL safety net — catches any upstream spec function that missed the floor.
     if _gpu_active:
         M_final = M_arr * mask + 5.0 * (1 - mask)
         R_final = R_arr * mask + 100.0 * (1 - mask)
         spec[:,:,0] = to_cpu(xp.clip(M_final, 0, 255).astype(xp.uint8))
-        spec[:,:,1] = to_cpu(xp.clip(R_final, 0, 255).astype(xp.uint8))
+        # Conditional GGX floor via helper
+        spec[:,:,1] = to_cpu(_ggx_safe_R(R_final, M_final, lib=xp).astype(xp.uint8))
         _is_cc_arr = hasattr(final_CC, 'shape')  # works for both numpy and cupy arrays
         if _is_cc_arr:
             final_CC = to_gpu(final_CC)  # ensure on GPU
@@ -732,7 +840,8 @@ def compose_finish(base_id, pattern_id, shape, mask, seed, sm, scale=1.0, spec_m
         M_final = M_arr * mask + 5.0 * (1 - mask)
         R_final = R_arr * mask + 100.0 * (1 - mask)
         spec[:,:,0] = np.clip(M_final, 0, 255).astype(np.uint8)
-        spec[:,:,1] = np.clip(R_final, 0, 255).astype(np.uint8)
+        # Conditional GGX floor via helper
+        spec[:,:,1] = _ggx_safe_R(R_final, M_final).astype(np.uint8)
         if isinstance(final_CC, np.ndarray):
             spec[:,:,2] = np.clip(final_CC * mask, 0, 255).astype(np.uint8)
         else:
@@ -775,7 +884,7 @@ def compose_finish(base_id, pattern_id, shape, mask, seed, sm, scale=1.0, spec_m
                 _sb_M_final = _sb_M_arr * mask + 5.0 * (1 - mask)
                 _sb_R_final = _sb_R_arr * mask + 100.0 * (1 - mask)
                 spec_secondary[:,:,0] = np.clip(_sb_M_final, 0, 255).astype(np.uint8)
-                spec_secondary[:,:,1] = np.clip(_sb_R_final, 0, 255).astype(np.uint8)
+                spec_secondary[:,:,1] = _ggx_safe_R(_sb_R_final, _sb_M_final).astype(np.uint8)
                 spec_secondary[:,:,2] = np.clip(_sb_CC_arr * mask, 0, 255).astype(np.uint8)
                 spec_secondary[:,:,3] = 255
 
@@ -836,7 +945,7 @@ def compose_finish(base_id, pattern_id, shape, mask, seed, sm, scale=1.0, spec_m
                 _tb_M_final = _tb_M_arr * mask + 5.0 * (1 - mask)
                 _tb_R_final = _tb_R_arr * mask + 100.0 * (1 - mask)
                 spec_tertiary[:,:,0] = np.clip(_tb_M_final, 0, 255).astype(np.uint8)
-                spec_tertiary[:,:,1] = np.clip(_tb_R_final, 0, 255).astype(np.uint8)
+                spec_tertiary[:,:,1] = _ggx_safe_R(_tb_R_final, _tb_M_final).astype(np.uint8)
                 spec_tertiary[:,:,2] = np.clip(_tb_CC_arr * mask, 0, 255).astype(np.uint8)
                 spec_tertiary[:,:,3] = 255
             _tb_bm_norm = _normalize_second_base_blend_mode(third_base_blend_mode)
@@ -885,19 +994,23 @@ def compose_finish(base_id, pattern_id, shape, mask, seed, sm, scale=1.0, spec_m
                 _ovsp_offset_y = float(_ovsp.get("offset_y", 0.5))
                 _ovsp_scale = float(_ovsp.get("scale", 1.0))
                 _ovsp_rotation = float(_ovsp.get("rotation", 0))
+                _ovsp_box_size = int(_ovsp.get("box_size", 100))
                 _ovsp_range = float(_ovsp.get("range", 40.0))
                 _ovsp_params = _ovsp.get("params", {})
-                _ovsp_arr = _ovsp_fn(shape, seed + 7000 + hash(_ovsp_name) % 10000, sm, **_ovsp_params)
-                if abs(_ovsp_scale - 1.0) > 0.01:
-                    _oh, _ow = shape[0], shape[1]
-                    if _ovsp_scale < 1.0:
-                        _ovsp_arr = _tile_fractional(_ovsp_arr, 1.0 / _ovsp_scale, _oh, _ow)
-                    else:
+                _ovsp_seed = seed + 7000 + hash(_ovsp_name) % 10000
+                if _ovsp_scale < 1.0 and abs(_ovsp_scale - 1.0) > 0.01:
+                    _ovsp_arr = _scale_down_spec_pattern(_ovsp_fn, _ovsp_scale, shape, _ovsp_seed, sm, _ovsp_params)
+                else:
+                    _ovsp_arr = _ovsp_fn(shape, _ovsp_seed, sm, **_ovsp_params)
+                    if abs(_ovsp_scale - 1.0) > 0.01:
+                        _oh, _ow = shape[0], shape[1]
                         _ovsp_arr = _crop_center_array(_ovsp_arr, _ovsp_scale, _oh, _ow)
                 if abs(_ovsp_rotation) > 0.5:
                     _ovsp_arr = _rotate_single_array(_ovsp_arr, _ovsp_rotation, shape)
                 if abs(_ovsp_offset_x - 0.5) > 0.01 or abs(_ovsp_offset_y - 0.5) > 0.01:
                     _apply_pattern_offset(_ovsp_arr, shape, _ovsp_offset_x, _ovsp_offset_y)
+                if _ovsp_box_size < 100:
+                    _ovsp_arr = _apply_spec_pattern_box_size(_ovsp_arr, shape, _ovsp_box_size, _ovsp_offset_x, _ovsp_offset_y)
                 _ovsp_delta = (_ovsp_arr - 0.5) * 2.0
                 _ovsp_contrib = _ovsp_delta * _ovsp_range
                 if "M" in _ovsp_channels:
@@ -937,19 +1050,23 @@ def compose_finish(base_id, pattern_id, shape, mask, seed, sm, scale=1.0, spec_m
                 _ovsp_offset_y = float(_ovsp.get("offset_y", 0.5))
                 _ovsp_scale = float(_ovsp.get("scale", 1.0))
                 _ovsp_rotation = float(_ovsp.get("rotation", 0))
+                _ovsp_box_size = int(_ovsp.get("box_size", 100))
                 _ovsp_range = float(_ovsp.get("range", 40.0))
                 _ovsp_params = _ovsp.get("params", {})
-                _ovsp_arr = _ovsp_fn(shape, seed + seed_offset + hash(_ovsp_name) % 10000, sm, **_ovsp_params)
-                if abs(_ovsp_scale - 1.0) > 0.01:
-                    _oh, _ow = shape[0], shape[1]
-                    if _ovsp_scale < 1.0:
-                        _ovsp_arr = _tile_fractional(_ovsp_arr, 1.0 / _ovsp_scale, _oh, _ow)
-                    else:
+                _ovsp_seed = seed + seed_offset + hash(_ovsp_name) % 10000
+                if _ovsp_scale < 1.0 and abs(_ovsp_scale - 1.0) > 0.01:
+                    _ovsp_arr = _scale_down_spec_pattern(_ovsp_fn, _ovsp_scale, shape, _ovsp_seed, sm, _ovsp_params)
+                else:
+                    _ovsp_arr = _ovsp_fn(shape, _ovsp_seed, sm, **_ovsp_params)
+                    if abs(_ovsp_scale - 1.0) > 0.01:
+                        _oh, _ow = shape[0], shape[1]
                         _ovsp_arr = _crop_center_array(_ovsp_arr, _ovsp_scale, _oh, _ow)
                 if abs(_ovsp_rotation) > 0.5:
                     _ovsp_arr = _rotate_single_array(_ovsp_arr, _ovsp_rotation, shape)
                 if abs(_ovsp_offset_x - 0.5) > 0.01 or abs(_ovsp_offset_y - 0.5) > 0.01:
                     _apply_pattern_offset(_ovsp_arr, shape, _ovsp_offset_x, _ovsp_offset_y)
+                if _ovsp_box_size < 100:
+                    _ovsp_arr = _apply_spec_pattern_box_size(_ovsp_arr, shape, _ovsp_box_size, _ovsp_offset_x, _ovsp_offset_y)
                 _ovsp_delta = (_ovsp_arr - 0.5) * 2.0
                 _ovsp_contrib = _ovsp_delta * _ovsp_range
                 if "M" in _ovsp_channels:
@@ -1066,6 +1183,10 @@ def compose_finish_stacked(base_id, all_patterns, shape, mask, seed, sm, spec_mu
         if base.get("noise_CC", 0) > 0:
             CC_arr = np.full(base_shape, float(base_CC), dtype=np.float32)
             CC_arr = CC_arr + noise * base.get("noise_CC", 0) * _sm_base
+        if _bss < 0.999:
+            _neutral_M, _neutral_R = 0.0, 128.0
+            M_arr = _neutral_M + (M_arr - _neutral_M) * _bss
+            R_arr = _neutral_R + (R_arr - _neutral_R) * _bss
     elif base.get("perlin"):
         p_oct = base.get("perlin_octaves", 4)
         p_pers = base.get("perlin_persistence", 0.5)
@@ -1076,6 +1197,10 @@ def compose_finish_stacked(base_id, all_patterns, shape, mask, seed, sm, spec_mu
         if base.get("noise_CC", 0) > 0:
             CC_arr = np.full(base_shape, float(base_CC), dtype=np.float32)
             CC_arr = CC_arr + noise * base.get("noise_CC", 0) * _sm_base
+        if _bss < 0.999:
+            _neutral_M, _neutral_R = 0.0, 128.0
+            M_arr = _neutral_M + (M_arr - _neutral_M) * _bss
+            R_arr = _neutral_R + (R_arr - _neutral_R) * _bss
     elif "noise_scales" in base:
         noise_weights = base.get("noise_weights", [1.0/len(base["noise_scales"])] * len(base["noise_scales"]))
         noise = multi_scale_noise(base_shape, base["noise_scales"], noise_weights, seed + 100)
@@ -1084,9 +1209,18 @@ def compose_finish_stacked(base_id, all_patterns, shape, mask, seed, sm, spec_mu
         if base.get("noise_CC", 0) > 0:
             CC_arr = np.full(base_shape, float(base_CC), dtype=np.float32)
             CC_arr = CC_arr + noise * base.get("noise_CC", 0) * _sm_base
+        if _bss < 0.999:
+            _neutral_M, _neutral_R = 0.0, 128.0
+            M_arr = _neutral_M + (M_arr - _neutral_M) * _bss
+            R_arr = _neutral_R + (R_arr - _neutral_R) * _bss
     else:
-        M_arr = np.full(base_shape, base_M, dtype=np.float32)
-        R_arr = np.full(base_shape, base_R, dtype=np.float32)
+        # Flat-value base (no noise/perlin/custom spec fn) — apply spec strength
+        # by lerping toward "zero effect" neutral. bss=1.0 → full base values, bss=0 → flat paint.
+        # Neutral = no metallic (M=0), mid roughness (R=128), minimal clearcoat.
+        # Chrome at 5%: M≈13 (barely metallic), R≈122 (rough) — hint of chrome only.
+        _neutral_M, _neutral_R = 0.0, 128.0
+        M_arr = np.full(base_shape, _neutral_M + (base_M - _neutral_M) * _bss, dtype=np.float32)
+        R_arr = np.full(base_shape, _neutral_R + (base_R - _neutral_R) * _bss, dtype=np.float32)
 
     if base_scale != 1.0 and base_scale > 0 and (base_shape[0] != shape[0] or base_shape[1] != shape[1]):
         M_arr = _resize_array(M_arr, shape[0], shape[1])
@@ -1205,18 +1339,24 @@ def compose_finish_stacked(base_id, all_patterns, shape, mask, seed, sm, spec_mu
             sp_offset_y = float(sp_layer.get("offset_y", 0.5))
             sp_scale = float(sp_layer.get("scale", 1.0))
             sp_rotation = float(sp_layer.get("rotation", 0))
+            sp_box_size = int(sp_layer.get("box_size", 100))
             # Generate pattern (CPU) -> transform (CPU) -> transfer to GPU
-            sp_arr = sp_fn(base_shape, seed + 5000 + hash(sp_name) % 10000, _sm_base, **sp_params)
-            if abs(sp_scale - 1.0) > 0.01:
-                h, w = base_shape[0], base_shape[1]
-                if sp_scale < 1.0:
-                    sp_arr = _tile_fractional(sp_arr, 1.0 / sp_scale, h, w)
-                else:
-                    sp_arr = _crop_center_array(sp_arr, sp_scale, h, w)
+            _sp_seed = seed + 5000 + hash(sp_name) % 10000
+            if sp_scale < 1.0 and abs(sp_scale - 1.0) > 0.01:
+                # Scale down: regenerate at higher resolution then downsample (no tile seams)
+                sp_arr = _scale_down_spec_pattern(sp_fn, sp_scale, base_shape, _sp_seed, _sm_base, sp_params)
+            else:
+                sp_arr = sp_fn(base_shape, _sp_seed, _sm_base, **sp_params)
+                # Apply scale (crop for scale > 1)
+                if abs(sp_scale - 1.0) > 0.01:
+                    sp_arr = _crop_center_array(sp_arr, sp_scale, base_shape[0], base_shape[1])
             if abs(sp_rotation) > 0.5:
                 sp_arr = _rotate_single_array(sp_arr, sp_rotation, base_shape)
             if abs(sp_offset_x - 0.5) > 0.01 or abs(sp_offset_y - 0.5) > 0.01:
                 _apply_pattern_offset(sp_arr, base_shape, sp_offset_x, sp_offset_y)
+            # Apply box size masking (restrict pattern to a sub-region)
+            if sp_box_size < 100:
+                sp_arr = _apply_spec_pattern_box_size(sp_arr, base_shape, sp_box_size, sp_offset_x, sp_offset_y)
             if _gpu_active:
                 sp_arr = to_gpu(sp_arr)
             sp_delta = (sp_arr - 0.5) * 2.0
@@ -1354,7 +1494,7 @@ def compose_finish_stacked(base_id, all_patterns, shape, mask, seed, sm, spec_mu
         M_final = M_arr * mask + 5.0 * (1 - mask)
         R_final = R_arr * mask + 100.0 * (1 - mask)
         spec[:,:,0] = to_cpu(xp.clip(M_final, 0, 255).astype(xp.uint8))
-        spec[:,:,1] = to_cpu(xp.clip(R_final, 0, 255).astype(xp.uint8))
+        spec[:,:,1] = to_cpu(_ggx_safe_R(R_final, M_final, lib=xp).astype(xp.uint8))
         _is_cc_arr = hasattr(final_CC, 'shape')
         if _is_cc_arr:
             final_CC = to_gpu(final_CC)
@@ -1367,7 +1507,7 @@ def compose_finish_stacked(base_id, all_patterns, shape, mask, seed, sm, spec_mu
         M_final = M_arr * mask + 5.0 * (1 - mask)
         R_final = R_arr * mask + 100.0 * (1 - mask)
         spec[:,:,0] = np.clip(M_final, 0, 255).astype(np.uint8)
-        spec[:,:,1] = np.clip(R_final, 0, 255).astype(np.uint8)
+        spec[:,:,1] = _ggx_safe_R(R_final, M_final).astype(np.uint8)
         spec[:,:,2] = np.clip(final_CC * mask, 0, 255).astype(np.uint8)
         spec[:,:,3] = 255
 
@@ -1407,7 +1547,7 @@ def compose_finish_stacked(base_id, all_patterns, shape, mask, seed, sm, spec_mu
                 _sb_M_final = _sb_M_arr * mask + 5.0 * (1 - mask)
                 _sb_R_final = _sb_R_arr * mask + 100.0 * (1 - mask)
                 spec_secondary[:,:,0] = np.clip(_sb_M_final, 0, 255).astype(np.uint8)
-                spec_secondary[:,:,1] = np.clip(_sb_R_final, 0, 255).astype(np.uint8)
+                spec_secondary[:,:,1] = _ggx_safe_R(_sb_R_final, _sb_M_final).astype(np.uint8)
                 spec_secondary[:,:,2] = np.clip(_sb_CC_arr * mask, 0, 255).astype(np.uint8)
                 spec_secondary[:,:,3] = 255
             _sb_bm_norm = _normalize_second_base_blend_mode(second_base_blend_mode)
@@ -1467,7 +1607,7 @@ def compose_finish_stacked(base_id, all_patterns, shape, mask, seed, sm, spec_mu
                 _tb_M_final = _tb_M_arr * mask + 5.0 * (1 - mask)
                 _tb_R_final = _tb_R_arr * mask + 100.0 * (1 - mask)
                 spec_tertiary[:,:,0] = np.clip(_tb_M_final, 0, 255).astype(np.uint8)
-                spec_tertiary[:,:,1] = np.clip(_tb_R_final, 0, 255).astype(np.uint8)
+                spec_tertiary[:,:,1] = _ggx_safe_R(_tb_R_final, _tb_M_final).astype(np.uint8)
                 spec_tertiary[:,:,2] = np.clip(_tb_CC_arr * mask, 0, 255).astype(np.uint8)
                 spec_tertiary[:,:,3] = 255
             _tb_bm_norm = _normalize_second_base_blend_mode(third_base_blend_mode)
@@ -1629,19 +1769,23 @@ def compose_finish_stacked(base_id, all_patterns, shape, mask, seed, sm, spec_mu
                 _ovsp_offset_y = float(_ovsp.get("offset_y", 0.5))
                 _ovsp_scale = float(_ovsp.get("scale", 1.0))
                 _ovsp_rotation = float(_ovsp.get("rotation", 0))
+                _ovsp_box_size = int(_ovsp.get("box_size", 100))
                 _ovsp_range = float(_ovsp.get("range", 40.0))
                 _ovsp_params = _ovsp.get("params", {})
-                _ovsp_arr = _ovsp_fn(shape, seed + 7000 + hash(_ovsp_name) % 10000, sm, **_ovsp_params)
-                if abs(_ovsp_scale - 1.0) > 0.01:
-                    _oh, _ow = shape[0], shape[1]
-                    if _ovsp_scale < 1.0:
-                        _ovsp_arr = _tile_fractional(_ovsp_arr, 1.0 / _ovsp_scale, _oh, _ow)
-                    else:
+                _ovsp_seed = seed + 7000 + hash(_ovsp_name) % 10000
+                if _ovsp_scale < 1.0 and abs(_ovsp_scale - 1.0) > 0.01:
+                    _ovsp_arr = _scale_down_spec_pattern(_ovsp_fn, _ovsp_scale, shape, _ovsp_seed, sm, _ovsp_params)
+                else:
+                    _ovsp_arr = _ovsp_fn(shape, _ovsp_seed, sm, **_ovsp_params)
+                    if abs(_ovsp_scale - 1.0) > 0.01:
+                        _oh, _ow = shape[0], shape[1]
                         _ovsp_arr = _crop_center_array(_ovsp_arr, _ovsp_scale, _oh, _ow)
                 if abs(_ovsp_rotation) > 0.5:
                     _ovsp_arr = _rotate_single_array(_ovsp_arr, _ovsp_rotation, shape)
                 if abs(_ovsp_offset_x - 0.5) > 0.01 or abs(_ovsp_offset_y - 0.5) > 0.01:
                     _apply_pattern_offset(_ovsp_arr, shape, _ovsp_offset_x, _ovsp_offset_y)
+                if _ovsp_box_size < 100:
+                    _ovsp_arr = _apply_spec_pattern_box_size(_ovsp_arr, shape, _ovsp_box_size, _ovsp_offset_x, _ovsp_offset_y)
                 _ovsp_delta = (_ovsp_arr - 0.5) * 2.0
                 _ovsp_contrib = _ovsp_delta * _ovsp_range
                 if "M" in _ovsp_channels:
@@ -1680,19 +1824,23 @@ def compose_finish_stacked(base_id, all_patterns, shape, mask, seed, sm, spec_mu
                 _ovsp_offset_y = float(_ovsp.get("offset_y", 0.5))
                 _ovsp_scale = float(_ovsp.get("scale", 1.0))
                 _ovsp_rotation = float(_ovsp.get("rotation", 0))
+                _ovsp_box_size = int(_ovsp.get("box_size", 100))
                 _ovsp_range = float(_ovsp.get("range", 40.0))
                 _ovsp_params = _ovsp.get("params", {})
-                _ovsp_arr = _ovsp_fn(shape, seed + seed_offset + hash(_ovsp_name) % 10000, sm, **_ovsp_params)
-                if abs(_ovsp_scale - 1.0) > 0.01:
-                    _oh, _ow = shape[0], shape[1]
-                    if _ovsp_scale < 1.0:
-                        _ovsp_arr = _tile_fractional(_ovsp_arr, 1.0 / _ovsp_scale, _oh, _ow)
-                    else:
+                _ovsp_seed = seed + seed_offset + hash(_ovsp_name) % 10000
+                if _ovsp_scale < 1.0 and abs(_ovsp_scale - 1.0) > 0.01:
+                    _ovsp_arr = _scale_down_spec_pattern(_ovsp_fn, _ovsp_scale, shape, _ovsp_seed, sm, _ovsp_params)
+                else:
+                    _ovsp_arr = _ovsp_fn(shape, _ovsp_seed, sm, **_ovsp_params)
+                    if abs(_ovsp_scale - 1.0) > 0.01:
+                        _oh, _ow = shape[0], shape[1]
                         _ovsp_arr = _crop_center_array(_ovsp_arr, _ovsp_scale, _oh, _ow)
                 if abs(_ovsp_rotation) > 0.5:
                     _ovsp_arr = _rotate_single_array(_ovsp_arr, _ovsp_rotation, shape)
                 if abs(_ovsp_offset_x - 0.5) > 0.01 or abs(_ovsp_offset_y - 0.5) > 0.01:
                     _apply_pattern_offset(_ovsp_arr, shape, _ovsp_offset_x, _ovsp_offset_y)
+                if _ovsp_box_size < 100:
+                    _ovsp_arr = _apply_spec_pattern_box_size(_ovsp_arr, shape, _ovsp_box_size, _ovsp_offset_x, _ovsp_offset_y)
                 _ovsp_delta = (_ovsp_arr - 0.5) * 2.0
                 _ovsp_contrib = _ovsp_delta * _ovsp_range
                 if "M" in _ovsp_channels:

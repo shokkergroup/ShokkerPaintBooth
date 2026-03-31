@@ -132,30 +132,84 @@ def spec_black_chrome(shape, seed, sm, base_m, base_r):
 # The color shifts with viewing angle (thicker apparent path at edges).
 # ==================================================================
 
+def _hsv_to_rgb(h, s, v):
+    """Inline HSV→RGB for thin-film interference. h in degrees [0,360)."""
+    h = h % 360.0
+    c = v * s
+    x = c * (1.0 - abs((h / 60.0) % 2.0 - 1.0))
+    m = v - c
+    if h < 60:   r, g, b = c, x, 0.0
+    elif h < 120: r, g, b = x, c, 0.0
+    elif h < 180: r, g, b = 0.0, c, x
+    elif h < 240: r, g, b = 0.0, x, c
+    elif h < 300: r, g, b = x, 0.0, c
+    else:         r, g, b = c, 0.0, x
+    return (r + m, g + m, b + m)
+
+
 def paint_blue_chrome_v2(paint, shape, mask, seed, pm, bb):
-    """Blue chrome: mirror with subtle icy blue tint; preserves base, no heavy interference."""
+    """Blue chrome: real thin-film interference simulation.
+    Per-pixel FBM film thickness → hue LUT (blue→purple→gold→green-blue)
+    blended 50/50 with chrome base. Creates iridescent oil-slick-on-chrome look."""
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
+
+    # Chrome base — desaturated, bright (mirror substrate)
     gray = base.mean(axis=2, keepdims=True)
-    # Chrome base (desaturated, bright)
-    chrome_base = np.clip(gray * 0.9 + base * 0.1, 0, 1)
-    # Subtle icy blue tint only (no thin-film rainbow)
-    chrome_base[:, :, 0] = np.clip(chrome_base[:, :, 0] - 0.02, 0, 1)
-    chrome_base[:, :, 1] = np.clip(chrome_base[:, :, 1] + 0.01, 0, 1)
-    chrome_base[:, :, 2] = np.clip(chrome_base[:, :, 2] + 0.08, 0, 1)
+    chrome_base = np.clip(gray * 0.88 + base * 0.12, 0, 1)
+
+    # 2-octave FBM film thickness map: 0.3 – 1.0
+    n1 = multi_scale_noise((h, w), [8, 16], [0.6, 0.4], seed + 71)
+    n2 = multi_scale_noise((h, w), [4,  8], [0.5, 0.5], seed + 72)
+    thickness = np.clip(0.3 + (n1 * 0.5 + n2 * 0.5) * 0.7, 0.3, 1.0).astype(np.float32)
+
+    # Thin-film hue LUT: thickness → hue (degrees)
+    # 0.3→blue(240), 0.5→purple(280), 0.7→gold(50), 1.0→green-blue(180)
+    # Piecewise linear interpolation across four stops
+    t = thickness
+    hue = np.where(t < 0.5,
+                   240.0 + (t - 0.3) / 0.2 * 40.0,      # 240→280 (blue→purple)
+                   np.where(t < 0.7,
+                            280.0 + (t - 0.5) / 0.2 * (-230.0),  # 280→50 (purple→gold, wraps)
+                            50.0  + (t - 0.7) / 0.3 * 130.0))    # 50→180 (gold→green-blue)
+    hue = hue.astype(np.float32) % 360.0
+
+    # Convert hue map to RGB (vectorised)
+    # S=0.7, V=0.90 for vivid but not over-saturated thin-film color
+    S = np.float32(0.70)
+    V = np.float32(0.90)
+    c_arr  = V * S
+    h60    = (hue / 60.0) % 2.0
+    x_arr  = c_arr * (1.0 - np.abs(h60 - 1.0))
+    m_arr  = V - c_arr
+    hi     = (hue / 60.0).astype(np.int32) % 6
+
+    tf_r = np.where(hi == 0, c_arr, np.where(hi == 1, x_arr, np.where(hi == 2, m_arr,
+           np.where(hi == 3, m_arr, np.where(hi == 4, x_arr, c_arr))))) + m_arr
+    tf_g = np.where(hi == 0, x_arr, np.where(hi == 1, c_arr, np.where(hi == 2, c_arr,
+           np.where(hi == 3, x_arr, np.where(hi == 4, m_arr, m_arr))))) + m_arr
+    tf_b = np.where(hi == 0, m_arr, np.where(hi == 1, m_arr, np.where(hi == 2, x_arr,
+           np.where(hi == 3, c_arr, np.where(hi == 4, c_arr, x_arr))))) + m_arr
+    thin_film = np.stack([tf_r, tf_g, tf_b], axis=-1).astype(np.float32)
+
+    # Lerp: 50% chrome base + 50% thin-film color
+    effect = np.clip(chrome_base * 0.5 + thin_film * 0.5, 0, 1).astype(np.float32)
+
     blend = np.clip(pm, 0.0, 1.0)
     result = np.clip(
         base * (1.0 - mask[:,:,np.newaxis] * blend) +
-        chrome_base * (mask[:,:,np.newaxis] * blend), 0, 1)
+        effect * (mask[:,:,np.newaxis] * blend), 0, 1)
     return np.clip(result + bb[:,:,np.newaxis] * 0.4 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
 
 
 def spec_blue_chrome(shape, seed, sm, base_m, base_r):
-    """Blue chrome: mirror spec, flat (no noise)."""
+    """Blue chrome spec: spatially varied via FBM — still near-mirror but not flat.
+    M: 220-255 (very metallic), R: 2-8 (near-mirror), CC: 14-18."""
     h, w = shape[:2] if len(shape) > 2 else shape
-    M = np.full((h, w), 255.0, dtype=np.float32)
-    R = np.full((h, w), 2.0, dtype=np.float32)
-    CC = np.full((h, w), 16.0, dtype=np.float32)  # CC=16 max clearcoat blue chrome
+    noise = multi_scale_noise((h, w), [8, 16], [0.6, 0.4], seed + 73)
+    M  = np.clip(220.0 + noise * 35.0, 0, 255).astype(np.float32)
+    R  = np.clip(2.0   + noise *  6.0, 0, 255).astype(np.float32)
+    CC = np.clip(14.0  + noise *  4.0, 0,  16).astype(np.float32)
     return M, R, CC
 
 # ==================================================================
@@ -229,11 +283,21 @@ def paint_satin_chrome_v2(paint, shape, mask, seed, pm, bb):
 
 
 def spec_satin_chrome(shape, seed, sm, base_m, base_r):
-    """Satin chrome: high metallic, moderate R (silky not mirror), flat spec."""
+    """Satin chrome: high metallic, R with directional horizontal brush-grain anisotropy.
+    Matches paint_satin_chrome_v2's sin(y*0.8) groove direction — horizontal brush lines
+    scatter light perpendicular to brush direction (anisotropic roughness variation).
+    """
     h, w = shape[:2] if len(shape) > 2 else shape
-    M = np.full((h, w), 250.0, dtype=np.float32)
-    R = np.full((h, w), 45.0, dtype=np.float32)
-    CC = np.full((h, w), 40.0, dtype=np.float32)  # CC=40 satin chrome
+    rng = np.random.RandomState(seed + 285)
+    # Horizontal brush lines: per-row low-freq base + fine per-pixel scatter
+    brush_row = rng.randn(h, 1).astype(np.float32)          # direction: constant across row
+    brush_px  = rng.randn(h, w).astype(np.float32) * 0.3    # micro-texture within lines
+    brush = brush_row + brush_px                              # broadcasts to (h, w)
+    # R: base 45, ±(10 + sm*8) directional anisotropy, clamped to satin range [15, 85]
+    amplitude = 10.0 + sm * 8.0
+    R  = np.clip(45.0 + brush * amplitude, 15.0, 85.0).astype(np.float32)
+    M  = np.full((h, w), 250.0, dtype=np.float32)
+    CC = np.full((h, w), 40.0,  dtype=np.float32)
     return M, R, CC
 
 

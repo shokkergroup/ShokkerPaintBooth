@@ -56,6 +56,20 @@ NEW_PATTERN_IDS = [
     "shimmer_void_dust",       # dark field + sparse high-energy spark dust
     "shimmer_turbine_sheen",   # curved turbine blades with rotating sheen cues
     "shimmer_spectral_mesh",   # spectral mesh lattice with mixed chrome/matte behavior
+
+    # ── INTRICATE & ORNATE — Batch 1 (2026-03-28) ────────────────────────────
+    "damascus_steel",       # Folded-metal layered bands with flowing distortion field
+    "sacred_geometry",      # Flower of Life 3-wave hex interference rings
+    "lace_filigree",        # Delicate interlaced openwork — orthogonal + diagonal grids
+    "stained_glass",        # Voronoi cells with thick dark grout borders
+    "brushed_metal_fine",   # Three-frequency directional micro-scratch brushing
+    "carbon_3k_weave",      # 3K satin-braid diagonal carbon fiber variant
+    "honeycomb_organic",    # Warped 3-wave hex — organic irregular honeycomb cells
+    "baroque_scrollwork",   # Spiral+flourish S-curve ornate scrollwork
+    "art_nouveau_vine",     # Sinuous vine stems with branching Art Nouveau tendrils
+    "penrose_quasi",        # 5-fold quasicrystal — aperiodic Penrose-like tiling
+    "topographic_dense",    # Dense contour lines over multi-scale noise height field
+    "interference_rings",   # Newton's-ring multi-source radial interference bands
 ]
 
 

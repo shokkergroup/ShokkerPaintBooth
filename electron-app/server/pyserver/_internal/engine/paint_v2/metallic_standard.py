@@ -50,7 +50,7 @@ def spec_candy_apple(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
     thick = multi_scale_noise((h, w), [16, 32], [0.5, 0.5], seed + 702)
     M = np.clip(130.0 + thick * 50.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(4.0 + thick * 7.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(4.0 + thick * 7.0 * sm, 15, 255).astype(np.float32)
     CC = np.clip(20.0 + thick * 6.0, 0, 255).astype(np.float32)
     return M, R, CC
 
@@ -80,7 +80,7 @@ def spec_champagne_metallic(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
     orient = multi_scale_noise((h, w), [2, 4, 8], [0.3, 0.35, 0.35], seed + 711)
     M = np.clip(150.0 + orient * 60.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(8.0 + orient * 10.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(8.0 + orient * 10.0 * sm, 15, 255).astype(np.float32)
     CC = np.clip(14.0 + orient * 5.0, 0, 255).astype(np.float32)
     return M, R, CC
 
@@ -115,7 +115,7 @@ def spec_metal_flake_base(shape, seed, sm, base_m, base_r):
     rng = np.random.RandomState(seed + 720)
     flake = multi_scale_noise((h, w), [1, 2, 4], [0.3, 0.4, 0.3], seed + 721)
     M = np.clip(190.0 + flake * 50.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(6.0 + flake * 12.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(6.0 + flake * 12.0 * sm, 15, 255).astype(np.float32)
     CC = np.clip(12.0 + flake * 5.0, 0, 255).astype(np.float32)
     return M, R, CC
 
@@ -151,7 +151,7 @@ def spec_original_metal_flake(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
     flake = multi_scale_noise((h, w), [4, 8], [0.5, 0.5], seed + 731)
     M = np.clip(200.0 + flake * 50.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(5.0 + flake * 15.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(5.0 + flake * 15.0 * sm, 15, 255).astype(np.float32)
     CC = np.clip(10.0 + flake * 6.0, 0, 255).astype(np.float32)
     return M, R, CC
 
@@ -181,7 +181,7 @@ def spec_champagne_flake(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
     flake = multi_scale_noise((h, w), [1, 2, 4], [0.3, 0.35, 0.35], seed + 741)
     M = np.clip(165.0 + flake * 55.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(7.0 + flake * 10.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(7.0 + flake * 10.0 * sm, 15, 255).astype(np.float32)
     CC = np.clip(14.0 + flake * 5.0, 0, 255).astype(np.float32)
     return M, R, CC
 
@@ -212,7 +212,7 @@ def spec_fine_silver_flake(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
     particle = multi_scale_noise((h, w), [1, 2], [0.5, 0.5], seed + 751)
     M = np.clip(185.0 + particle * 55.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(4.0 + particle * 8.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(4.0 + particle * 8.0 * sm, 15, 255).astype(np.float32)
     CC = np.clip(15.0 + particle * 5.0, 0, 255).astype(np.float32)
     return M, R, CC
 
@@ -249,7 +249,7 @@ def spec_blue_ice_flake(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
     crystal = multi_scale_noise((h, w), [4, 8, 16], [0.3, 0.35, 0.35], seed + 761)
     M = np.clip(140.0 + crystal * 60.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(6.0 + crystal * 10.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(6.0 + crystal * 10.0 * sm, 15, 255).astype(np.float32)
     CC = np.clip(16.0 + crystal * 5.0, 0, 255).astype(np.float32)
     return M, R, CC
 
@@ -284,7 +284,7 @@ def spec_bronze_flake(shape, seed, sm, base_m, base_r):
     alloy = multi_scale_noise((h, w), [8, 16, 32], [0.3, 0.4, 0.3], seed + 771)
     oxide = multi_scale_noise((h, w), [16, 32, 64], [0.35, 0.35, 0.3], seed + 772)
     M = np.clip(160.0 + alloy * 50.0 * sm - oxide * 30.0, 0, 255).astype(np.float32)
-    R = np.clip(10.0 + oxide * 20.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(10.0 + oxide * 20.0 * sm, 15, 255).astype(np.float32)
     CC = np.clip(10.0 + (1.0 - oxide) * 6.0, 0, 255).astype(np.float32)
     return M, R, CC
 
@@ -318,7 +318,7 @@ def spec_gunmetal_flake(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
     angle = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.4, 0.3], seed + 781)
     M = np.clip(145.0 + angle * 60.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(8.0 + angle * 10.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(8.0 + angle * 10.0 * sm, 15, 255).astype(np.float32)
     CC = np.clip(14.0 + angle * 5.0, 0, 255).astype(np.float32)
     return M, R, CC
 
@@ -349,7 +349,7 @@ def spec_green_flake(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
     flake = multi_scale_noise((h, w), [1, 2, 4], [0.3, 0.35, 0.35], seed + 791)
     M = np.clip(130.0 + flake * 55.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(7.0 + flake * 10.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(7.0 + flake * 10.0 * sm, 15, 255).astype(np.float32)
     CC = np.clip(14.0 + flake * 5.0, 0, 255).astype(np.float32)
     return M, R, CC
 
@@ -382,7 +382,7 @@ def spec_fire_flake(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
     temp = multi_scale_noise((h, w), [8, 16, 32], [0.3, 0.4, 0.3], seed + 801)
     M = np.clip(140.0 + temp * 60.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(6.0 + temp * 10.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(6.0 + temp * 10.0 * sm, 15, 255).astype(np.float32)
     CC = np.clip(12.0 + temp * 6.0, 0, 255).astype(np.float32)
     return M, R, CC
 
@@ -415,7 +415,7 @@ def spec_midnight_pearl(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
     mica = multi_scale_noise((h, w), [2, 4, 8], [0.3, 0.35, 0.35], seed + 812)
     M = np.clip(70.0 + mica * 50.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(5.0 + mica * 8.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(5.0 + mica * 8.0 * sm, 15, 255).astype(np.float32)
     CC = np.clip(16.0 + mica * 5.0, 0, 255).astype(np.float32)
     return M, R, CC
 
@@ -449,7 +449,7 @@ def spec_pearlescent_white(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
     mica = multi_scale_noise((h, w), [2, 4, 8], [0.3, 0.35, 0.35], seed + 821)
     M = np.clip(85.0 + mica * 50.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(5.0 + mica * 7.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(5.0 + mica * 7.0 * sm, 15, 255).astype(np.float32)
     CC = np.clip(16.0 + mica * 5.0, 0, 255).astype(np.float32)
     return M, R, CC
 
@@ -489,6 +489,6 @@ def spec_pewter(shape, seed, sm, base_m, base_r):
     boundary = np.clip(boundary / (boundary.max() + 1e-8), 0, 1)
     # Pewter: moderate metallic, boundaries rougher
     M = np.clip(120.0 + grain * 40.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(14.0 + boundary * 20.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(14.0 + boundary * 20.0 * sm, 15, 255).astype(np.float32)
     CC = np.clip(10.0 + (1.0 - boundary) * 6.0, 0, 255).astype(np.float32)
     return M, R, CC

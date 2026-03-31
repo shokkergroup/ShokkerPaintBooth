@@ -7,19 +7,24 @@ TABLE OF CONTENTS - Use these line numbers to jump to sections:
 ================================================================
   SECTION 1: SETUP & STATIC SERVING (L25-L95)
     Flask app, CORS, static file serving, 404 handler
+    /thumbnails/<path> static route (immutable cache, pre-baked PNGs)
 
   SECTION 2: CONFIG, STATUS & LICENSE (L96-L316)
     /status, /config, /license, /build-check, thumbnail logging
 
   SECTION 3: FINISH DATA API (L317-L710)
     /finish-groups, /api/finish-data, /api/thumbnail-status,
-    /api/clear-cache, /api/pattern-layer, apply_paint_recolor,
+    /api/clear-cache, /api/thumb-regen/<type>/<id>,
+    /api/pattern-layer, apply_paint_recolor,
     _build_finish_data_payload, _id_to_display_name
 
   SECTION 4: SWATCH RENDERING (L711-L1535)
     /api/swatch/<type>/<key>, /swatch/*, _render_swatch_bytes,
     _apply_fallback_gradient, _swatch_placeholder_png,
-    _render_pattern_swatch_from_image_path, _prebake_swatches
+    _render_pattern_swatch_from_image_path, _prebake_swatches,
+    _prebake_spec_patterns, _generate_spec_preview_image,
+    _generate_spec_metal_image, _queue_thumbnail_regen,
+    _load_thumbnail_manifest, _save_thumbnail_manifest, _get_fn_hash
 
   SECTION 5: RENDER PIPELINE (L1536-L2230)
     /preview-render, /render, preview_tga, /preview/<job_id>,
@@ -55,6 +60,33 @@ import sys
 import traceback
 import io
 import base64
+import threading
+import hashlib
+from datetime import datetime
+
+# ----------------------------------------------------------------
+# Preview render serialisation — prevents CPU thrashing when the
+# UI fires multiple /preview-render requests before the previous
+# one finishes (e.g. slider dragging, zone switching).
+#
+# _preview_abort  — set this Event to tell an in-flight render it
+#                   should give up (currently used as a signal; the
+#                   actual check is the lock timeout below).
+# _preview_render_lock — only one preview renders at a time.
+#                   Acquiring it with a short timeout means stale
+#                   requests return 429 instead of stacking up.
+# ----------------------------------------------------------------
+_preview_render_lock = threading.Lock()
+_preview_abort = threading.Event()
+
+# ----------------------------------------------------------------
+# Incremental preview cache metadata (actual zone-result caching
+# lives inside build_multi_zone._zone_cache in shokker_engine_v2).
+# These track the last paint file + mtime seen by the preview
+# endpoint so the engine cache can be invalidated when the file
+# changes or the preview scale changes.
+# ----------------------------------------------------------------
+_preview_cache_paint_key = None  # "<paint_file_path>|<mtime>|<scale>"
 
 # --- Fix OSError [Errno 22] on print() when stdout/stderr pipes break (Electron) ---
 class _SafeStream:
@@ -87,6 +119,12 @@ except ImportError:
     from config import CFG
 # engine package provides V5 registries (BASE_REGISTRY, PATTERN_REGISTRY, MONOLITHIC_REGISTRY) via __getattr__
 
+# GPU acceleration detection
+try:
+    from engine.gpu import gpu_info
+except ImportError:
+    def gpu_info(): return {'backend': 'cpu', 'name': 'CPU', 'vram_mb': 0, 'accelerated': False, 'icon': 'CPU'}
+
 # Setup Flask
 app = Flask(__name__)
 CORS(app)
@@ -94,6 +132,23 @@ CORS(app)
 @app.errorhandler(404)
 def _handle_404(e):
     return jsonify({"error": "not_found", "path": request.path}), 404
+
+@app.route('/favicon.ico')
+def favicon():
+    return '', 204  # No content — stops the 404 without needing an actual icon file
+
+@app.route('/thumbnails/<path:filename>')
+def serve_thumbnail(filename):
+    """Serve pre-baked thumbnails directly as static files — no generation, maximum speed."""
+    thumb_path = os.path.join(THUMBNAIL_DIR, filename)
+    if os.path.exists(thumb_path):
+        resp = send_file(thumb_path, mimetype='image/png')
+        # Long cache: thumbnails only change when content changes (hash-managed)
+        resp.headers['Cache-Control'] = 'public, max-age=31536000, immutable'
+        return resp
+    # If thumbnail doesn't exist yet, return 404 so JS onerror can fall back to API
+    return jsonify({"error": "thumbnail_not_found", "path": filename}), 404
+
 
 @app.route('/<path:filename>')
 def serve_static_assets(filename):
@@ -256,13 +311,31 @@ def save_config(cfg):
 @app.route('/build-check', methods=['GET'])
 def build_check():
     """Diagnostic endpoint - returns server status and configuration."""
+    # Read actual version from electron-app/package.json if available
+    _pkg_version = "5.9.2"
+    try:
+        import json as _json
+        for _pkg_path in [
+            os.path.join(SERVER_DIR, 'electron-app', 'package.json'),   # dev mode: V5/electron-app/package.json
+            os.path.join(os.path.dirname(SERVER_DIR), 'package.json'),  # electron-app/package.json (installed)
+            os.path.join(SERVER_DIR, '..', 'package.json'),             # fallback
+        ]:
+            if os.path.isfile(_pkg_path):
+                with open(_pkg_path, 'r') as _f:
+                    _pkg_version = _json.load(_f).get('version', _pkg_version)
+                break
+    except Exception:
+        pass
     return jsonify({
-        "build": 29,
-        "version": "6.0.1-alpha",
+        "build": "V5",
+        "version": _pkg_version,
         "status": "running",
+        "debug": False,
+        "engine": "Shokker Engine V5 - Modular Architecture",
         "pid": os.getpid(),
         "port": int(os.environ.get('SHOKKER_PORT', 59876)),
         "server_dir": SERVER_DIR,
+        "gpu": gpu_info(),
     })
 
 @app.route('/status', methods=['GET'])
@@ -302,7 +375,8 @@ def status():
         "license": {
             "active": _license_active,
             "key_masked": (_license_key[:12] + "****") if _license_key else "",
-        }
+        },
+        "gpu": gpu_info(),
     })
 
 
@@ -577,65 +651,156 @@ def api_clear_cache():
     return jsonify({"status": "ok", "message": "Swatch and finish-data caches cleared."})
 
 
+@app.route('/api/thumb-regen/<finish_type>/<finish_id>', methods=['POST'])
+def regen_thumbnail(finish_type, finish_id):
+    """Force regeneration of a specific thumbnail. Useful for dev / after hot-adding a finish.
+    finish_type: spec_patterns | bases | patterns | monolithics
+    """
+    _queue_thumbnail_regen(finish_type, finish_id)
+    return jsonify({"status": "queued", "finish_type": finish_type, "id": finish_id})
+
+
 @app.route('/api/spec-pattern-preview/<pattern_id>')
 def spec_pattern_preview(pattern_id):
-    """Generate a 128x64 preview thumbnail for a spec pattern."""
-    from engine.spec_patterns import PATTERN_CATALOG
-    import numpy as np
+    """Generate a 192x64 3-panel M/R/CC split preview thumbnail for a spec pattern.
+    Layout: [M grayscale | R grayscale | CC inverted grayscale] each 64x64, labeled.
+    Uses _generate_spec_preview_image() — same function as the pre-baker (DRY).
+    Kept as fallback for JS onerror handlers when static thumbnail not yet baked."""
+    # Support cache-bust via ?v= query param
+    bust = request.args.get('v', '')
 
-    # Check cache first
-    cache_dir = os.path.join(SERVER_DIR, 'thumbnails', 'spec_patterns')
+    # Check disk cache first (skip if cache-bust param provided)
+    cache_dir = os.path.join(THUMBNAIL_DIR, 'spec_patterns')
     os.makedirs(cache_dir, exist_ok=True)
     cache_path = os.path.join(cache_dir, f'{pattern_id}.png')
 
-    if os.path.exists(cache_path):
+    if os.path.exists(cache_path) and not bust:
         return send_file(cache_path, mimetype='image/png')
 
-    fn = PATTERN_CATALOG.get(pattern_id)
-    if not fn:
-        # Return a 1x1 transparent PNG
-        from PIL import Image as _PILImage
-        img = _PILImage.new('RGBA', (1, 1), (0, 0, 0, 0))
-        buf = io.BytesIO()
-        img.save(buf, 'PNG')
-        buf.seek(0)
-        return send_file(buf, mimetype='image/png')
-
-    # Generate the pattern at preview size
-    shape = (64, 128)
-    seed = 42
-    sm = 1.0
+    # Generate using shared function
+    img = _generate_spec_preview_image(pattern_id)
+    buf = io.BytesIO()
+    img.save(buf, 'PNG')
+    buf.seek(0)
+    # Save to disk for future static serving
     try:
-        arr = fn(shape, seed, sm)
-    except Exception as e:
-        logger.warning(f"Spec pattern preview error for {pattern_id}: {e}")
-        from PIL import Image as _PILImage
-        img = _PILImage.new('RGBA', (128, 64), (40, 40, 40, 255))
-        buf = io.BytesIO()
-        img.save(buf, 'PNG')
-        buf.seek(0)
-        return send_file(buf, mimetype='image/png')
+        img.save(cache_path, 'PNG')
+    except Exception:
+        pass
+    return send_file(buf, mimetype='image/png')
 
-    # Convert 0-1 float array to a visual representation
-    # Color gradient: dark blue -> teal -> gold/orange
-    arr = np.clip(arr, 0, 1).astype(np.float32)
 
-    r = np.clip(arr * 2.5 - 0.5, 0, 1) * 255    # Gold kicks in at 0.4+
-    g = np.clip(0.3 + arr * 0.5, 0, 0.85) * 255  # Teal-ish green
-    b = np.clip(0.4 - arr * 0.3, 0.05, 0.5) * 255  # Blue fades as value rises
+@app.route('/api/spec-pattern-preview-metal/<pattern_id>')
+def spec_pattern_preview_metal(pattern_id):
+    """Render spec pattern as if applied to a chrome/metallic surface simulation. 128x128.
+    Uses _generate_spec_metal_image() — same function as the pre-baker (DRY).
+    Kept as fallback for JS onerror handlers when static thumbnail not yet baked."""
+    bust = request.args.get('v', '')
 
-    # Build RGBA image
-    from PIL import Image as _PILImage
-    rgba = np.zeros((shape[0], shape[1], 4), dtype=np.uint8)
-    rgba[:, :, 0] = r.astype(np.uint8)
-    rgba[:, :, 1] = g.astype(np.uint8)
-    rgba[:, :, 2] = b.astype(np.uint8)
+    cache_dir = os.path.join(THUMBNAIL_DIR, 'spec_patterns_metal')
+    os.makedirs(cache_dir, exist_ok=True)
+    cache_path = os.path.join(cache_dir, f'{pattern_id}.png')
+
+    if os.path.exists(cache_path) and not bust:
+        return send_file(cache_path, mimetype='image/png')
+
+    img = _generate_spec_metal_image(pattern_id)
+    buf = io.BytesIO()
+    img.save(buf, 'PNG')
+    buf.seek(0)
+    try:
+        img.save(cache_path, 'PNG')
+    except Exception:
+        pass
+    return send_file(buf, mimetype='image/png')
+
+
+@app.route('/api/spec-preview-composite', methods=['POST'])
+def spec_preview_composite():
+    """Render a 256x128 composite preview of spec pattern stack over a base finish.
+    Body: { zone_spec_stack: [...], base_finish: 'chrome'|'matte'|'brushed'|'carbon' }
+    """
+    from engine.spec_patterns import PATTERN_CATALOG
+    import numpy as np
+    from PIL import Image as _PILImage, ImageDraw as _ImageDraw
+
+    data = request.get_json(force=True, silent=True) or {}
+    spec_stack = data.get('zone_spec_stack', [])
+    base_finish = data.get('base_finish', 'chrome')
+
+    W, H = 256, 128
+
+    # Render base finish gradient background
+    yy, xx = np.mgrid[0:H, 0:W]
+    norm_x = xx / W
+    norm_y = yy / H
+
+    if base_finish == 'chrome':
+        # Mirror-like gradient: bright top-center, dark edges
+        dist = np.sqrt((norm_x - 0.5) ** 2 * 0.5 + (norm_y - 0.3) ** 2)
+        lum = np.clip(1.0 - dist * 1.2, 0.15, 1.0)
+        base_r = np.clip(lum * 0.90 + 0.08, 0, 1)
+        base_g = np.clip(lum * 0.94 + 0.05, 0, 1)
+        base_b = np.clip(lum * 1.05 + 0.03, 0, 1)
+    elif base_finish == 'matte':
+        # Flat dark matte, very subtle gradient
+        lum = np.clip(0.15 + norm_x * 0.05 + (1 - norm_y) * 0.05, 0, 1)
+        base_r = lum * 0.85
+        base_g = lum * 0.85
+        base_b = lum * 0.85
+    elif base_finish == 'brushed':
+        # Brushed metal: horizontal streaks
+        streak = (np.sin(norm_y * H * 0.8) * 0.08 + 0.72)
+        lum = np.clip(streak + (1 - norm_x) * 0.1, 0.3, 0.95)
+        base_r = lum * 0.88
+        base_g = lum * 0.91
+        base_b = lum * 0.98
+    elif base_finish == 'carbon':
+        # Carbon fiber pattern: dark with weave highlights
+        weave_x = (np.sin(norm_x * W * 0.5) * 0.5 + 0.5)
+        weave_y = (np.sin(norm_y * H * 0.5) * 0.5 + 0.5)
+        weave = weave_x * weave_y
+        lum = np.clip(weave * 0.3 + 0.05, 0, 0.4)
+        base_r = lum * 0.9
+        base_g = lum * 0.95
+        base_b = lum
+    else:
+        lum = np.ones((H, W), dtype=np.float32) * 0.6
+        base_r = base_g = base_b = lum
+
+    # Composite spec stack: blend each layer's pattern as a luminance modulation
+    composite_mod = np.ones((H, W), dtype=np.float32)
+    for layer in spec_stack[:5]:
+        pid = layer.get('pattern', '')
+        opacity = (layer.get('opacity', 50)) / 100.0
+        fn = PATTERN_CATALOG.get(pid)
+        if fn is None:
+            continue
+        try:
+            pat = fn((H, W), 42, 1.0)
+            pat = np.clip(pat, 0, 1).astype(np.float32)
+            # Normal blend: scale by opacity
+            composite_mod = composite_mod * (1.0 - opacity) + pat * opacity
+        except Exception as ex:
+            logger.warning(f"spec-preview-composite layer error {pid}: {ex}")
+
+    # Apply composite mod to base channels
+    final_r = np.clip(base_r * composite_mod, 0, 1)
+    final_g = np.clip(base_g * composite_mod, 0, 1)
+    final_b = np.clip(base_b * composite_mod, 0, 1)
+
+    rgba = np.zeros((H, W, 4), dtype=np.uint8)
+    rgba[:, :, 0] = (final_r * 255).astype(np.uint8)
+    rgba[:, :, 1] = (final_g * 255).astype(np.uint8)
+    rgba[:, :, 2] = (final_b * 255).astype(np.uint8)
     rgba[:, :, 3] = 255
 
     img = _PILImage.fromarray(rgba, 'RGBA')
-    img.save(cache_path, 'PNG')
 
-    return send_file(cache_path, mimetype='image/png')
+    buf = io.BytesIO()
+    img.save(buf, 'PNG')
+    buf.seek(0)
+    return send_file(buf, mimetype='image/png')
 
 
 @app.route('/api/finish-data', methods=['GET'])
@@ -1570,6 +1735,235 @@ PREBAKE_PRIORITY_BASE_IDS = [
 ]
 
 
+# ----------------------------------------------------------------
+# Thumbnail manifest system — hash-based invalidation
+# Thread-safe lock for manifest read/write
+# ----------------------------------------------------------------
+_THUMBNAIL_MANIFEST_LOCK = threading.Lock()
+
+
+def _load_thumbnail_manifest():
+    """Load or create the thumbnail hash manifest."""
+    manifest_path = os.path.join(THUMBNAIL_DIR, '_manifest.json')
+    if os.path.exists(manifest_path):
+        try:
+            with open(manifest_path, 'r') as f:
+                return json.load(f)
+        except Exception:
+            pass
+    return {"version": 2, "spec_patterns": {}, "bases": {}, "patterns": {}, "monolithics": {}}
+
+
+def _save_thumbnail_manifest(manifest):
+    """Save the thumbnail hash manifest (call under _THUMBNAIL_MANIFEST_LOCK)."""
+    manifest_path = os.path.join(THUMBNAIL_DIR, '_manifest.json')
+    os.makedirs(THUMBNAIL_DIR, exist_ok=True)
+    with open(manifest_path, 'w') as f:
+        json.dump(manifest, f, indent=2)
+
+
+def _get_fn_hash(fn):
+    """Get a short hash of a function's source code for change detection."""
+    try:
+        import inspect
+        src = inspect.getsource(fn)
+        return hashlib.md5(src.encode()).hexdigest()[:12]
+    except Exception:
+        return "unknown"
+
+
+def _generate_spec_preview_image(pattern_id):
+    """Generate 194x64 3-panel M/R/CC split preview for a spec pattern. Returns PIL Image."""
+    from engine.spec_patterns import PATTERN_CATALOG
+    import numpy as np
+    from PIL import Image as _PILImage, ImageDraw as _ImageDraw
+
+    fn = PATTERN_CATALOG.get(pattern_id)
+    if not fn:
+        return _PILImage.new('RGBA', (194, 64), (40, 40, 40, 255))
+
+    shape = (64, 64)
+    seed = 42
+    sm = 1.0
+    try:
+        arr = fn(shape, seed, sm)
+    except Exception as e:
+        logger.warning(f"Spec preview gen error for {pattern_id}: {e}")
+        return _PILImage.new('RGBA', (194, 64), (40, 40, 40, 255))
+
+    arr = np.clip(arr, 0, 1).astype(np.float32)
+    if arr.ndim == 3:
+        arr = arr.mean(axis=2)
+    m_gray = (arr * 255).astype(np.uint8)
+    r_gray = (arr * 255).astype(np.uint8)
+    cc_gray = (255 - arr * 255).astype(np.uint8)
+
+    # Canvas is 194px wide: 3 panels of 64px each + 2 single-pixel dividers (cols 64, 129)
+    out = np.zeros((64, 194, 4), dtype=np.uint8)
+    out[:, 0:64, 0] = m_gray
+    out[:, 0:64, 1] = m_gray
+    out[:, 0:64, 2] = m_gray
+    out[:, 0:64, 3] = 255
+    out[:, 64, :] = [30, 30, 30, 255]
+    out[:, 65:129, 0] = r_gray
+    out[:, 65:129, 1] = r_gray
+    out[:, 65:129, 2] = r_gray
+    out[:, 65:129, 3] = 255
+    out[:, 129, :] = [30, 30, 30, 255]
+    out[:, 130:194, 0] = cc_gray
+    out[:, 130:194, 1] = cc_gray
+    out[:, 130:194, 2] = cc_gray
+    out[:, 130:194, 3] = 255
+
+    img = _PILImage.fromarray(out, 'RGBA')
+    draw = _ImageDraw.Draw(img)
+    for label, x in [('M', 2), ('R', 67), ('CC', 132)]:
+        draw.text((x + 1, 54), label, fill=(0, 0, 0, 200))
+        draw.text((x, 53), label, fill=(255, 255, 255, 220))
+    return img
+
+
+def _generate_spec_metal_image(pattern_id):
+    """Generate 128x128 metallic surface simulation for a spec pattern. Returns PIL Image."""
+    from engine.spec_patterns import PATTERN_CATALOG
+    import numpy as np
+    from PIL import Image as _PILImage
+
+    fn = PATTERN_CATALOG.get(pattern_id)
+    if not fn:
+        return _PILImage.new('RGBA', (128, 128), (60, 60, 60, 255))
+
+    shape = (128, 128)
+    seed = 42
+    sm = 1.0
+    try:
+        arr = fn(shape, seed, sm)
+    except Exception as e:
+        logger.warning(f"Spec metal gen error for {pattern_id}: {e}")
+        return _PILImage.new('RGBA', (128, 128), (60, 60, 60, 255))
+
+    arr = np.clip(arr, 0, 1).astype(np.float32)
+    h, w = shape
+    yy, xx = np.mgrid[0:h, 0:w]
+    base_lighting = 1.0 - (xx / w * 0.4 + yy / h * 0.3)
+    base_lighting = np.clip(base_lighting, 0.2, 1.0)
+    metallic_factor = arr
+    roughness = arr
+    specular_sharpness = 1.0 - roughness * 0.8
+    ambient = 0.25
+    final_lum = base_lighting * metallic_factor * specular_sharpness + ambient * (1.0 - metallic_factor)
+    final_lum = np.clip(final_lum, 0, 1)
+    r_ch = np.clip(final_lum * 0.88 + 0.06, 0, 1)
+    g_ch = np.clip(final_lum * 0.92 + 0.04, 0, 1)
+    b_ch = np.clip(final_lum * 1.05 + 0.02, 0, 1)
+
+    rgba = np.zeros((h, w, 4), dtype=np.uint8)
+    rgba[:, :, 0] = (r_ch * 255).astype(np.uint8)
+    rgba[:, :, 1] = (g_ch * 255).astype(np.uint8)
+    rgba[:, :, 2] = (b_ch * 255).astype(np.uint8)
+    rgba[:, :, 3] = 255
+    return _PILImage.fromarray(rgba, 'RGBA')
+
+
+def _prebake_spec_patterns():
+    """Pre-bake all spec pattern thumbnails that are missing or stale. Runs in background thread."""
+    try:
+        from engine.spec_patterns import PATTERN_CATALOG
+    except Exception as e:
+        logger.warning(f"Spec pattern prebake: could not import PATTERN_CATALOG: {e}")
+        return
+
+    spec_dir = os.path.join(THUMBNAIL_DIR, 'spec_patterns')
+    spec_metal_dir = os.path.join(THUMBNAIL_DIR, 'spec_patterns_metal')
+    os.makedirs(spec_dir, exist_ok=True)
+    os.makedirs(spec_metal_dir, exist_ok=True)
+
+    with _THUMBNAIL_MANIFEST_LOCK:
+        manifest = _load_thumbnail_manifest()
+    sp_manifest = manifest.get('spec_patterns', {})
+    changed = False
+    generated = 0
+    skipped = 0
+    errors = 0
+
+    pattern_items = list(PATTERN_CATALOG.items())
+    for pattern_id, fn in pattern_items:
+        thumb_path = os.path.join(spec_dir, f"{pattern_id}.png")
+        metal_path = os.path.join(spec_metal_dir, f"{pattern_id}.png")
+        current_hash = _get_fn_hash(fn)
+        cached_entry = sp_manifest.get(pattern_id, {})
+
+        # Skip if both thumbnails exist AND hash matches (function unchanged)
+        if (os.path.exists(thumb_path) and os.path.exists(metal_path)
+                and cached_entry.get('hash') == current_hash):
+            skipped += 1
+            continue
+
+        try:
+            img = _generate_spec_preview_image(pattern_id)
+            img.save(thumb_path)
+            metal_img = _generate_spec_metal_image(pattern_id)
+            metal_img.save(metal_path)
+
+            sp_manifest[pattern_id] = {
+                'hash': current_hash,
+                'generated': datetime.utcnow().isoformat()
+            }
+            changed = True
+            generated += 1
+        except Exception as e:
+            errors += 1
+            logger.warning(f"Spec thumb bake failed for {pattern_id}: {e}")
+
+        # Yield CPU between thumbnails if large batch
+        if len(pattern_items) > 50:
+            time.sleep(0.05)
+
+    if changed:
+        manifest['spec_patterns'] = sp_manifest
+        with _THUMBNAIL_MANIFEST_LOCK:
+            _save_thumbnail_manifest(manifest)
+
+    logger.info(f"Spec pattern thumbnails: {generated} generated, {skipped} cached, {errors} errors")
+
+
+def _queue_thumbnail_regen(finish_type, finish_id, fn=None):
+    """Queue a thumbnail for regeneration (e.g. after a new finish is added at runtime).
+    finish_type: 'spec_patterns' | 'bases' | 'patterns' | 'monolithics'
+    finish_id: the ID string
+    fn: the function (for hash computation), or None to force regen
+    """
+    def _regen():
+        time.sleep(0.5)
+        try:
+            if finish_type == 'spec_patterns':
+                from engine.spec_patterns import PATTERN_CATALOG
+                fn_to_use = fn or PATTERN_CATALOG.get(finish_id)
+                if fn_to_use:
+                    spec_dir = os.path.join(THUMBNAIL_DIR, 'spec_patterns')
+                    spec_metal_dir = os.path.join(THUMBNAIL_DIR, 'spec_patterns_metal')
+                    os.makedirs(spec_dir, exist_ok=True)
+                    os.makedirs(spec_metal_dir, exist_ok=True)
+                    thumb_path = os.path.join(spec_dir, f"{finish_id}.png")
+                    metal_path = os.path.join(spec_metal_dir, f"{finish_id}.png")
+                    img = _generate_spec_preview_image(finish_id)
+                    img.save(thumb_path)
+                    metal_img = _generate_spec_metal_image(finish_id)
+                    metal_img.save(metal_path)
+                    with _THUMBNAIL_MANIFEST_LOCK:
+                        manifest = _load_thumbnail_manifest()
+                        manifest.setdefault('spec_patterns', {})[finish_id] = {
+                            'hash': _get_fn_hash(fn_to_use),
+                            'generated': datetime.utcnow().isoformat()
+                        }
+                        _save_thumbnail_manifest(manifest)
+                    logger.info(f"Thumbnail regen complete: spec_patterns/{finish_id}")
+        except Exception as e:
+            logger.warning(f"Thumbnail regen failed for {finish_type}/{finish_id}: {e}")
+
+    threading.Thread(target=_regen, daemon=True).start()
+
+
 def _prebake_swatches():
     """Pre-render base, pattern, priority bases at 48px, and some monolithics at startup.
 
@@ -1630,6 +2024,8 @@ def _prebake_swatches():
 # Kick off swatch pre-bake at startup (non-blocking, daemon thread)
 import threading as _threading
 _threading.Thread(target=_prebake_swatches, daemon=True, name='swatch-prebake').start()
+# Kick off spec pattern thumbnail pre-bake (lower priority, runs after swatches)
+_threading.Thread(target=_prebake_spec_patterns, daemon=True, name='spec-thumb-prebake').start()
 
 
 @app.route('/debug-rotation-log', methods=['GET'])
@@ -1660,6 +2056,14 @@ def preview_render_endpoint():
         "resolution": [512, 512]
     }
     """
+    # Signal any in-flight preview to abort, then wait for the lock.
+    # If the previous render is still finishing after 2 s, reject this
+    # request with 429 so the UI can retry rather than pile up renders.
+    _preview_abort.set()
+    acquired = _preview_render_lock.acquire(timeout=5.0)
+    if not acquired:
+        return jsonify({"error": "Preview busy — previous render still finishing"}), 429
+    _preview_abort.clear()
     try:
         data = request.get_json()
         if not data:
@@ -1679,8 +2083,39 @@ def preview_render_endpoint():
         preview_scale = float(data.get("preview_scale", 0.25))
         preview_scale = max(0.0625, min(1.0, preview_scale))  # Clamp 1/16 to 1x
 
+        # Incremental rendering hints from client
+        changed_zone = data.get("changed_zone", -1)
+        zone_hashes = data.get("zone_hashes", [])
+
+        # Invalidate engine zone cache when paint file or preview scale changes.
+        # The engine cache (build_multi_zone._zone_cache) keys on zone settings only;
+        # if the underlying paint file or resolution changes we must flush it so
+        # cached spec/paint arrays from a different canvas size don't get reused.
+        global _preview_cache_paint_key
+        try:
+            _paint_mtime = os.path.getmtime(paint_file)
+        except OSError:
+            _paint_mtime = 0
+        _new_paint_key = f"{paint_file}|{_paint_mtime}"
+        if _new_paint_key != _preview_cache_paint_key:
+            _preview_cache_paint_key = _new_paint_key
+            # Clear the engine-level zone cache when the PAINT FILE changes.
+            # Scale changes should NOT flush the cache — the engine includes
+            # canvas dimensions in its per-zone cache key so different scales
+            # naturally produce different cache entries without flushing.
+            try:
+                import shokker_engine_v2 as _eng
+                if hasattr(_eng.build_multi_zone, '_zone_cache'):
+                    _eng.build_multi_zone._zone_cache.clear()
+                    logger.info(f"[preview-cache] Invalidated zone cache (paint file changed)")
+            except Exception:
+                pass
+        if changed_zone >= 0 or zone_hashes:
+            logger.info(f"[preview-cache] changed_zone={changed_zone}, {len(zone_hashes)} zone hashes received")
+
         # Decal spec finishes (list of {specFinish: "gloss"} for non-"none" decals)
         decal_spec_finishes = data.get("decal_spec_finishes", [])
+        decal_mask_base64 = data.get("decal_mask_base64")  # separate decal-only alpha mask
         decal_paint_path_preview = None  # set below if paint_image_base64 is decoded
 
         # If client sent a composited paint (paint + baked-in decals), decode and use it
@@ -1903,13 +2338,22 @@ def preview_render_endpoint():
                     parts.append(f"stack[{li}]={layer.get('id','?')}@scale={layer.get('scale',1.0)}")
             logger.info("  ".join(parts))
 
+        # Early abort: if a newer request already signaled abort, skip the render
+        if _preview_abort.is_set():
+            return jsonify({"error": "Preview superseded by newer request"}), 429
+
         # Run the preview render
         paint_rgb, spec_rgba, elapsed_ms = engine.preview_render(
             actual_paint_file, server_zones, seed=seed, preview_scale=preview_scale,
             import_spec_map=import_spec_map,
             decal_spec_finishes=decal_spec_finishes if decal_spec_finishes else None,
             decal_paint_path=decal_paint_path_preview,
+            decal_mask_base64=decal_mask_base64 or None,
         )
+
+        # Post-render abort: if a newer request arrived during render, discard result
+        if _preview_abort.is_set():
+            return jsonify({"error": "Preview superseded during render"}), 429
 
         # Convert paint to base64 PNG (main preview)
         paint_b64 = numpy_to_base64_png(paint_rgb)
@@ -1958,6 +2402,12 @@ def preview_render_endpoint():
     except Exception as e:
         logger.error(f"Preview render failed: {e}\n{traceback.format_exc()}")
         return jsonify({"error": str(e)}), 500
+    finally:
+        # Always release the preview render lock so the next request can proceed.
+        try:
+            _preview_render_lock.release()
+        except RuntimeError:
+            pass  # Lock was already released (e.g. early-return path above)
 
 
 @app.route('/render', methods=['POST'])
@@ -1995,9 +2445,23 @@ def render():
     #         "license_required": True
     #     }), 403
 
+    # Cancel any in-flight preview render so it doesn't compete for CPU
+    _preview_abort.set()
+    # Acquire render lock to prevent preview and full render from running simultaneously
+    acquired = _preview_render_lock.acquire(timeout=5.0)
+    if not acquired:
+        logger.warning("Full render waiting for preview lock — forcing acquisition")
+        # Force it — full renders take priority
+        try:
+            _preview_render_lock.release()
+        except RuntimeError:
+            pass
+        _preview_render_lock.acquire(timeout=1.0)
+
     try:
         data = request.get_json()
         if not data:
+            _preview_render_lock.release()
             return jsonify({"error": "No JSON body provided"}), 400
 
         paint_file = data.get("paint_file")
@@ -2040,6 +2504,7 @@ def render():
 
         # Decal spec finishes (list of {specFinish: "gloss"} for non-"none" decals)
         decal_spec_finishes = data.get("decal_spec_finishes", [])
+        decal_mask_base64 = data.get("decal_mask_base64")  # separate decal-only alpha mask
         decal_paint_path = None  # set below if paint_image_base64 is decoded
 
         # Validate optional files
@@ -2212,6 +2677,7 @@ def render():
             stamp_spec_finish=stamp_spec_finish,
             decal_spec_finishes=decal_spec_finishes if decal_spec_finishes else None,
             decal_paint_path=decal_paint_path,
+            decal_mask_base64=decal_mask_base64 or None,
         )
 
         elapsed = time.time() - start
@@ -2438,6 +2904,12 @@ def render():
     except Exception as e:
         logger.error(f"Render error: {traceback.format_exc()}")
         return jsonify({"error": str(e), "traceback": traceback.format_exc()}), 500
+    finally:
+        # Release render lock so previews can resume
+        try:
+            _preview_render_lock.release()
+        except RuntimeError:
+            pass  # Already released
 
 
 def _photoshop_exchange_root():
@@ -4086,6 +4558,34 @@ def api_shokk_delete():
         return jsonify({"error": str(e)}), 500
 
 
+@app.route('/api/shokk/rename', methods=['POST'])
+def api_shokk_rename():
+    """Rename a .shokk in the user library (never factory). Body: { old_name, new_name }"""
+    mgr = _get_shokk_manager()
+    if not mgr:
+        return jsonify({"error": "SHOKK manager unavailable"}), 500
+    try:
+        data = request.get_json() or {}
+        old_name = data.get("old_name", "").strip()
+        new_name = data.get("new_name", "").strip()
+        if not old_name.endswith(".shokk") or not new_name.endswith(".shokk"):
+            return jsonify({"error": "Invalid filename — must end in .shokk"}), 400
+        # Sanitize new name: allow alphanumeric, spaces, dashes, underscores, dots
+        safe_new = "".join(c if c.isalnum() or c in " ._-" else "_" for c in new_name)
+        if not safe_new or safe_new == ".shokk":
+            return jsonify({"error": "Invalid new name"}), 400
+        old_path = os.path.join(mgr.library_dir, old_name)
+        new_path = os.path.join(mgr.library_dir, safe_new)
+        if not os.path.exists(old_path):
+            return jsonify({"error": "File not found"}), 404
+        if os.path.exists(new_path):
+            return jsonify({"error": f'A file named "{safe_new}" already exists'}), 409
+        os.rename(old_path, new_path)
+        return jsonify({"ok": True, "new_name": safe_new})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 @app.route('/api/export-spec-channels', methods=['POST'])
 def api_export_spec_channels():
     """
@@ -4176,8 +4676,23 @@ def api_export_spec_channels():
         # PS Export output: use user-specified dir, or a dedicated PS_Exports folder
         # NEVER save into a job_* folder (those get auto-purged)
         _user_out = data.get("output_dir", "").strip()
-        if _user_out and os.path.isdir(_user_out):
-            out_dir = _user_out
+        logger.info(f"PS Export: output_dir from request = '{_user_out}' (len={len(_user_out) if _user_out else 0})")
+        # Resolve relative paths to absolute — browser folder pickers return relative paths
+        if _user_out and not os.path.isabs(_user_out):
+            logger.warning(f"PS Export: relative path detected '{_user_out}', resolving to absolute")
+            # Try resolving relative to the output folder first, then fall back to default
+            _resolved = os.path.join(OUTPUT_FOLDER, "PS_Exports", _user_out)
+            _user_out = _resolved
+            logger.info(f"PS Export: resolved to '{_user_out}'")
+        if _user_out:
+            # Create directory if it doesn't exist — user explicitly chose this path
+            try:
+                os.makedirs(_user_out, exist_ok=True)
+                out_dir = _user_out
+                logger.info(f"PS Export: using user-specified output dir: {_user_out}")
+            except Exception as _dir_err:
+                logger.warning(f"PS Export: could not create output dir '{_user_out}': {_dir_err}, using default")
+                out_dir = os.path.join(OUTPUT_FOLDER, "PS_Exports")
         else:
             # Dedicated PS_Exports folder that auto-purge NEVER touches
             out_dir = os.path.join(OUTPUT_FOLDER, "PS_Exports")

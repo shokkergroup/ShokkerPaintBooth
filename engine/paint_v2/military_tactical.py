@@ -91,7 +91,7 @@ def spec_cerakote_gloss(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
     polish = multi_scale_noise((h, w), [32, 64], [0.5, 0.5], seed + 1326)
     M = np.clip(10.0 + polish * 12.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(8.0 + polish * 10.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(8.0 + polish * 10.0 * sm, 15, 255).astype(np.float32)  # GGX floor
     CC = np.clip(12.0 + polish * 5.0, 0, 255).astype(np.float32)
     return M, R, CC
 

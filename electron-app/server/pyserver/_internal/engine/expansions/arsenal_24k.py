@@ -230,6 +230,12 @@ def _multi_scale_noise(shape, scales, weights, seed):
         arr = np.array(img).astype(np.float32) / 255.0
         arr = arr * (small.max() - small.min()) + small.min()
         result += arr * weight
+    # Normalize to [0, 1] range
+    r_min, r_max = result.min(), result.max()
+    if r_max - r_min > 1e-8:
+        result = (result - r_min) / (r_max - r_min)
+    else:
+        result = np.full_like(result, 0.5)
     return result
 
 
@@ -1254,7 +1260,7 @@ def _base_spec_plasma_core(shape, seed, sm, base_M, base_R):
     hot = np.where(veins > 0.65, (veins - 0.65) / 0.35, 0).astype(np.float32)
     M_arr = np.full(shape, base_M * 0.6, dtype=np.float32) + hot * 120 * sm
     R_arr = np.full(shape, base_R + 60, dtype=np.float32) - hot * 80 * sm
-    R_arr = np.clip(R_arr, 0, 255)
+    R_arr = np.clip(R_arr, 15, 255)  # GGX floor: plasma_core M=220 non-chrome, must stay ≥15
     return (M_arr, R_arr)
 
 def _base_spec_bioluminescent(shape, seed, sm, base_M, base_R):
@@ -1271,7 +1277,7 @@ def _base_spec_bioluminescent(shape, seed, sm, base_M, base_R):
     bright_dots = np.where(dots > 0.95, (dots - 0.95) * 15.0, 0).astype(np.float32)
     M_arr = np.full(shape, base_M, dtype=np.float32) + flow * 50 * sm + bright_dots * 100 * sm
     R_arr = np.full(shape, base_R, dtype=np.float32) + (1 - flow) * 40 * sm - bright_dots * 30 * sm
-    R_arr = np.clip(R_arr, 0, 255)
+    R_arr = np.clip(R_arr, 15, 255)  # GGX floor
     return (M_arr, R_arr)
 
 def _base_spec_holographic(shape, seed, sm, base_M, base_R):
@@ -1325,7 +1331,7 @@ def _base_spec_dark_matter(shape, seed, sm, base_M, base_R):
     combined = np.clip(band1 * 0.6 + band2 * 0.4, 0, 1)
     M_arr = np.full(shape, base_M, dtype=np.float32) + combined * 60 * sm
     R_arr = np.full(shape, base_R, dtype=np.float32) - combined * 40 * sm
-    R_arr = np.clip(R_arr, 0, 255)
+    R_arr = np.clip(R_arr, 15, 255)  # GGX floor
     return (M_arr, R_arr)
 
 def _base_spec_superconductor(shape, seed, sm, base_M, base_R):
@@ -1351,7 +1357,7 @@ def _base_spec_solar_panel(shape, seed, sm, base_M, base_R):
     # Cell body: moderate metallic, moderate roughness (silicon)
     M_arr = np.full(shape, base_M, dtype=np.float32) + grid * 80 * sm
     R_arr = np.full(shape, base_R, dtype=np.float32) - grid * 35 * sm + (1 - grid) * 15 * sm
-    R_arr = np.clip(R_arr, 0, 255)
+    R_arr = np.clip(R_arr, 15, 255)  # GGX floor: solar_panel M=10 dielectric, bus-bar R can dip below 15
     return (M_arr, R_arr)
 
 # --- INDUSTRIAL & TACTICAL SPEC FUNCTIONS ---
@@ -1382,7 +1388,7 @@ def _base_spec_submarine(shape, seed, sm, base_M, base_R):
     # Tile body: uniform high roughness (anechoic coating)
     M_arr = np.full(shape, base_M, dtype=np.float32) + grid * 20 * sm
     R_arr = np.full(shape, base_R, dtype=np.float32) - grid * 30 * sm
-    R_arr = np.clip(R_arr, 0, 255)
+    R_arr = np.clip(R_arr, 15, 255)  # GGX floor
     # Micro variation within tiles
     rng = np.random.RandomState(seed + 550)
     micro = rng.random((h, w)).astype(np.float32) * 8 * sm
@@ -6502,9 +6508,9 @@ def make_flat_spec_fn(M, R, CC, noise_M=0, noise_R=0, noise_scales=None, noise_w
             spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
         if noise_scales and noise_R > 0:
             rn = _multi_scale_noise(shape, noise_scales, noise_weights or [0.3, 0.4, 0.3], seed + 200)
-            spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask) + rn * noise_R * sm * mask, 0, 255).astype(np.uint8)
+            spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask) + rn * noise_R * sm * mask, 15, 255).astype(np.uint8)
         else:
-            spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+            spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
         spec[:,:,2] = CC
         spec[:,:,3] = 255
         return spec
@@ -6736,7 +6742,7 @@ def _spec_cs_24k(shape, mask, seed, sm, spec_a=None, spec_b=None):
     m_noise = _multi_scale_noise(shape, [16, 32], [0.5, 0.5], seed + 6100)
     M_arr = M_arr + m_noise * 5 * sm
     spec[:,:,0] = np.clip(M_arr * mask, 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R_arr * mask, 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R_arr * mask, 15, 255).astype(np.uint8)
     spec[:,:,2] = np.clip(CC_arr * mask, 16, 255).astype(np.uint8)
     spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -6753,7 +6759,7 @@ def _spec_cs_v5_24k(shape, mask, seed, sm, M_base=225, M_range=30, CC_range=14):
     R_arr = R_base + (1.0 - field) * R_range + noise * 5 * sm
     CC_arr = 16 + field * CC_range * 0.5
     spec[:,:,0] = np.clip(M_arr * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R_arr * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R_arr * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)  # GGX floor
     spec[:,:,2] = np.clip(CC_arr * mask, 16, 255).astype(np.uint8)
     spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -6929,7 +6935,7 @@ def _spec_prizm_24k(shape, mask, seed, sm, metallic=225, roughness=14, clearcoat
     M_arr = metallic + noise * 4 * sm
     R_arr = roughness + noise * 3 * sm
     spec[:,:,0] = np.clip(M_arr * mask, 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R_arr * mask, 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R_arr * mask, 15, 255).astype(np.uint8)
     spec[:,:,2] = np.where(mask > 0.5, np.clip(clearcoat, 16, 255), 16).astype(np.uint8)
     spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -7101,7 +7107,7 @@ def spec_tornado_alley(shape, mask, seed, sm):
     M = 30 + spiral * 30 + noise * 10 * sm
     R = 100 + (1 - spiral) * 80 + noise * 20 * sm
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = 16; spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)  # CC was 0=mirror
     return spec
 
@@ -7116,7 +7122,7 @@ def spec_volcanic_glass(shape, mask, seed, sm):
     M = 30 + veins_s * 80 + noise * 10 * sm
     R = 5 + veins_s * 20 + noise * 5 * sm
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = np.clip((16 - veins_s * 10) * mask, 16, 255).astype(np.uint8)
     spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -7130,7 +7136,7 @@ def spec_frozen_lake(shape, mask, seed, sm):
     M = 20 + bubbles * 40 + noise * 8 * sm
     R = 6 + bubbles * 30 + noise * 5 * sm
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = np.clip(16 * mask, 16, 255).astype(np.uint8)
     spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -7145,7 +7151,7 @@ def spec_desert_mirage(shape, mask, seed, sm):
     M = 15 + shimmer * 25 + noise * 8 * sm
     R = 60 + (1 - shimmer) * 60 + noise * 15 * sm
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = 16; spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)  # CC was 0=mirror
     return spec
 
@@ -7158,7 +7164,7 @@ def spec_ocean_floor(shape, mask, seed, sm):
     M = 20 + bio_spots * 80 + noise * 8 * sm
     R = 80 - bio_spots * 50 + noise * 12 * sm
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = np.clip(bio_spots * 10 * mask, 16, 255).astype(np.uint8)
     spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -7176,7 +7182,7 @@ def spec_meteor_shower(shape, mask, seed, sm):
     M = 30 + trail * 180 + noise * 10 * sm
     R = 100 - trail * 80 + noise * 15 * sm
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = np.clip(trail * 12 * mask, 16, 255).astype(np.uint8)
     spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -7269,7 +7275,7 @@ def spec_voodoo(shape, mask, seed, sm):
     M = 25 + marks_s * 80 + noise * 8 * sm
     R = 160 - marks_s * 120 + noise * 15 * sm
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = np.clip(marks_s * 8 * mask, 16, 255).astype(np.uint8)
     spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -7284,7 +7290,7 @@ def spec_reaper(shape, mask, seed, sm):
     M = 15 + noise * 10 * sm
     R = 180 + cuts * 50 + noise * 20 * sm
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = 16; spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)  # CC was 0=mirror
     return spec
 
@@ -7300,7 +7306,7 @@ def spec_possessed(shape, mask, seed, sm):
     M = 20 + rings * 80 + noise * 10 * sm
     R = 150 - rings * 80 + noise * 15 * sm
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = np.clip(rings * 8 * mask, 16, 255).astype(np.uint8)
     spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -7314,7 +7320,7 @@ def spec_wraith(shape, mask, seed, sm):
     M = 10 + phase * 90 + noise * 12 * sm
     R = 160 - phase * 80 + noise * 18 * sm
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = np.clip(phase * 6 * mask, 16, 255).astype(np.uint8)
     spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -7330,7 +7336,7 @@ def spec_cursed(shape, mask, seed, sm):
     M = 20 + veins_s * 100 + noise * 8 * sm
     R = 170 - veins_s * 140 + noise * 12 * sm
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = np.clip(veins_s * 10 * mask, 16, 255).astype(np.uint8)
     spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -7347,7 +7353,7 @@ def spec_eclipse(shape, mask, seed, sm):
     M = 5 + corona * 200 + noise * 5 * sm
     R = 220 - corona * 200 + noise * 10 * sm
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = np.clip(corona * 14 * mask, 16, 255).astype(np.uint8)
     spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -7361,7 +7367,7 @@ def spec_nightmare(shape, mask, seed, sm):
     M = 30 + warp * 60 + noise * 15 * sm
     R = 130 + (1 - warp) * 80 + noise * 20 * sm
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = np.clip(warp * 4 * mask, 16, 255).astype(np.uint8)
     spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -7644,7 +7650,7 @@ def spec_croc_leather(shape, mask, seed, sm):
     M = 30 + scale_grid * 40 + noise * 8 * sm
     R = 50 + (1 - scale_grid) * 60 + noise * 10 * sm
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = np.clip(16 * mask, 16, 255).astype(np.uint8)
     spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -7659,7 +7665,7 @@ def spec_hammered_copper(shape, mask, seed, sm):
     M = 170 + dimples * 40 + noise * 15 * sm
     R = 40 + (1 - dimples) * 50 + noise * 15 * sm
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = 60; spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)  # CC was 0=mirror
     return spec
 
@@ -7668,12 +7674,14 @@ def spec_dark_brushed_steel(shape, mask, seed, sm):
     h, w = shape
     spec = np.zeros((h, w, 4), dtype=np.uint8)
     noise = _multi_scale_noise(shape, [2, 4, 8], [0.3, 0.4, 0.3], seed + 1220)
-    # Horizontal brush direction
-    x_noise = _multi_scale_noise(shape, [2, 4], [0.5, 0.5], seed + 1221)
+    # WEAK-041 FIX: true directional horizontal scratch bands — sin(y*freq) with noise warp
+    # replaces isotropic _multi_scale_noise that produced indistinct random metallic (not brushed)
+    y_coord = np.linspace(0, 1, h, dtype=np.float32).reshape(h, 1)
+    x_noise = np.abs(np.sin(y_coord * 180.0 + noise * 0.15)) ** np.float32(0.4)
     M = 200 + noise * 20 * sm
     R = 50 + x_noise * 50 + noise * 15 * sm
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = 60; spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)  # CC was 0=mirror
     return spec
 
@@ -7688,7 +7696,7 @@ def spec_etched_metal(shape, mask, seed, sm):
     M = 160 + etch_soft * 30 + noise * 12 * sm
     R = 30 + (1 - etch_soft) * 40 + noise * 10 * sm
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = 200; spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)  # CC was 0=mirror
     return spec
 
@@ -7701,7 +7709,7 @@ def spec_sandstone(shape, mask, seed, sm):
     M = 15 + noise * 8 * sm
     R = 150 + grain * 40 + noise * 20 * sm
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = 180; spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)  # CC was 0=mirror
     return spec
 
@@ -7714,7 +7722,7 @@ def spec_petrified_wood(shape, mask, seed, sm):
     M = 25 + grain * 20 + noise * 8 * sm
     R = 100 + noise * 60 + grain * 20 * sm
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = 80; spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)  # CC was 0=mirror
     return spec
 
@@ -7727,7 +7735,7 @@ def spec_forged_iron(shape, mask, seed, sm):
     M = 180 + impacts * 30 + noise * 15 * sm
     R = 60 + impacts * 60 + noise * 20 * sm
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = 16; spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)  # CC was 0=mirror
     return spec
 
@@ -7741,7 +7749,7 @@ def spec_acid_etched_glass(shape, mask, seed, sm):
     R = 20 + frost * 100 + noise * 15 * sm
     CC = np.clip(16 - frost * 12, 16, 255)
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = np.clip(CC * mask, 16, 255).astype(np.uint8)
     spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -7755,7 +7763,7 @@ def spec_concrete(shape, mask, seed, sm):
     M = 6 + noise * 4 * sm
     R = 170 + agg * 40 + noise * 15 * sm
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = 240; spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)  # CC was 0=mirror
     return spec
 
@@ -7769,7 +7777,7 @@ def spec_cast_iron(shape, mask, seed, sm):
     M = 160 + noise * 20 * sm - pits * 40
     R = 80 + pits * 80 + noise * 25 * sm
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = 100; spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)  # CC was 0=mirror
     return spec
 
@@ -7923,7 +7931,7 @@ def spec_portal(shape, mask, seed, sm):
     M = 60 + vortex * 100 + rim * 60 + noise * 12 * sm
     R = 15 + (1 - vortex) * 25 + noise * 8 * sm
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = np.clip(16 * mask, 16, 255).astype(np.uint8)
     spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -7941,7 +7949,7 @@ def spec_time_warp(shape, mask, seed, sm):
     M = 60 + spiral * 60 + noise * 12 * sm
     R = 20 + (1 - spiral) * 40 + noise * 10 * sm
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = np.clip(16 * mask, 16, 255).astype(np.uint8)
     spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -7955,7 +7963,7 @@ def spec_antimatter(shape, mask, seed, sm):
     M = 180 + invert * 30 + noise * 15 * sm
     R = 5 + (1 - invert) * 15 + noise * 8 * sm
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = 16; spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)  # CC was 0=mirror
     return spec
 
@@ -7971,7 +7979,7 @@ def spec_singularity(shape, mask, seed, sm):
     M = 5 + (1 - pull) * 80 + noise * 8 * sm
     R = 200 + pull * 40 - (1 - pull) * 100 + noise * 15 * sm
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = 16; spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)  # CC was 0=mirror
     return spec
 
@@ -7984,7 +7992,7 @@ def spec_dreamscape(shape, mask, seed, sm):
     M = 40 + cloud * 40 + noise * 8 * sm
     R = 30 + (1 - cloud) * 30 + noise * 8 * sm
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = np.clip(16 * mask, 16, 255).astype(np.uint8)
     spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -7999,7 +8007,7 @@ def spec_acid_trip(shape, mask, seed, sm):
     M = 80 + wave1 * 80 + wave2 * 40 + noise * 15 * sm
     R = 10 + (1 - wave1) * 20 + noise * 8 * sm
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = np.clip(16 * mask, 16, 255).astype(np.uint8)
     spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -8013,7 +8021,7 @@ def spec_mirage(shape, mask, seed, sm):
     M = 20 + shimmer * 25 + noise * 8 * sm
     R = 50 + (1 - shimmer) * 60 + noise * 15 * sm
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = 16; spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)  # CC was 0=mirror
     return spec
 
@@ -8027,7 +8035,7 @@ def spec_fourth_dimension(shape, mask, seed, sm):
     M = 150 + facets * 60 + noise * 15 * sm
     R = 10 + edges * 30 + noise * 8 * sm
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = np.clip(16 * mask, 16, 255).astype(np.uint8)
     spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -8041,7 +8049,7 @@ def spec_glitch_reality(shape, mask, seed, sm):
     M = 60 + blocks * 140 + noise * 25 * sm
     R = 30 + (1 - blocks) * 100 + noise * 20 * sm
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = np.clip(blocks * 14 * mask, 16, 255).astype(np.uint8)
     spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -8056,7 +8064,7 @@ def spec_phantom_zone(shape, mask, seed, sm):
     M = 130 + crystal * 40 + noise * 12 * sm
     R = 15 + edges * 60 + noise * 10 * sm
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = np.clip((16 - edges * 10) * mask, 16, 255).astype(np.uint8)
     spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -8646,7 +8654,7 @@ def spec_acid_rain(shape, mask, seed, sm):
     M = 30 + noise * 10 * sm
     R = 50 + corrode * 100 + noise * 15 * sm
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = np.clip((16 - corrode * 12) * mask, 16, 255).astype(np.uint8)
     spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -8659,7 +8667,7 @@ def spec_black_ice(shape, mask, seed, sm):
     M = 25 + noise * 8 * sm
     R = 4 + noise * 4 * sm
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = np.clip(16 * mask, 16, 255).astype(np.uint8)
     spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -8673,7 +8681,7 @@ def spec_blizzard(shape, mask, seed, sm):
     M = 40 + snow * 20 + noise * 8 * sm
     R = 30 + (1 - snow) * 40 + noise * 10 * sm
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = np.clip((16 + snow * 2) * mask, 16, 255).astype(np.uint8)
     spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -8687,7 +8695,7 @@ def spec_dew_drop(shape, mask, seed, sm):
     M = 35 + drops * 60 + noise * 8 * sm
     R = 15 + (1 - drops) * 10 + noise * 5 * sm
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = np.clip(16 * mask, 16, 255).astype(np.uint8)
     spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -8701,7 +8709,7 @@ def spec_dust_storm(shape, mask, seed, sm):
     M = 15 + noise * 8 * sm
     R = 100 + grain * 40 + noise * 20 * sm
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = 200; spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)  # CC was 0=mirror
     return spec
 
@@ -8715,7 +8723,7 @@ def spec_fog_bank(shape, mask, seed, sm):
     M = 10 + fog * 15 + noise * 5 * sm
     R = 40 + fog * 60 + noise * 15 * sm
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = np.clip((16 - fog * 10) * mask, 16, 255).astype(np.uint8)
     spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -8729,7 +8737,7 @@ def spec_hail_damage(shape, mask, seed, sm):
     M = 60 + noise * 15 * sm
     R = 30 + dents * 80 + noise * 15 * sm
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = np.clip((16 - dents * 10) * mask, 16, 255).astype(np.uint8)
     spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -8744,7 +8752,7 @@ def spec_heat_wave(shape, mask, seed, sm):
     M = 20 + wave * 25 + noise * 8 * sm
     R = 50 + (1 - wave) * 50 + noise * 12 * sm
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = 16; spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)  # CC was 0=mirror
     return spec
 
@@ -8762,7 +8770,7 @@ def spec_hurricane(shape, mask, seed, sm):
     M = 25 + spiral * 30 + eye * 40 + noise * 8 * sm
     R = 80 + (1 - spiral) * 60 - eye * 60 + noise * 15 * sm
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = 16; spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)  # CC was 0=mirror
     return spec
 
@@ -8777,7 +8785,7 @@ def spec_lightning_strike(shape, mask, seed, sm):
     M = 30 + bolt_s * 200 + noise * 8 * sm
     R = 80 - bolt_s * 70 + noise * 10 * sm
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = np.clip(bolt_s * 14 * mask, 16, 255).astype(np.uint8)
     spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -8793,7 +8801,7 @@ def spec_magma_flow(shape, mask, seed, sm):
     M = 40 + lava_s * 140 + noise * 10 * sm
     R = 140 - lava_s * 130 + noise * 15 * sm
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = np.clip(lava_s * 10 * mask, 16, 255).astype(np.uint8)
     spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -8808,7 +8816,7 @@ def spec_monsoon(shape, mask, seed, sm):
     M = 25 + rain * 20 + noise * 8 * sm
     R = 60 + (1 - rain) * 40 + noise * 15 * sm
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = np.clip(rain * 10 * mask, 16, 255).astype(np.uint8)
     spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -8823,7 +8831,7 @@ def spec_permafrost(shape, mask, seed, sm):
     M = 20 + facets * 30 + noise * 8 * sm
     R = 8 + facets * 12 + noise * 5 * sm
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = np.clip(16 * mask, 16, 255).astype(np.uint8)
     spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -8838,7 +8846,7 @@ def spec_solar_wind(shape, mask, seed, sm):
     M = 100 + aurora * 60 + noise * 15 * sm
     R = 15 + (1 - aurora) * 20 + noise * 8 * sm
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = np.clip(16 * mask, 16, 255).astype(np.uint8)
     spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -8854,7 +8862,7 @@ def spec_tidal_wave(shape, mask, seed, sm):
     M = 35 + crest * 50 + noise * 10 * sm
     R = 50 + (1 - wave) * 40 + noise * 12 * sm
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = np.clip(crest * 12 * mask, 16, 255).astype(np.uint8)
     spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -9041,7 +9049,7 @@ def spec_banshee(shape, mask, seed, sm):
     M = 15 + wail * 30 + noise * 10 * sm
     R = 120 + (1 - wail) * 100 + noise * 20 * sm
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = np.clip(16 * mask, 16, 255).astype(np.uint8)
     spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -9059,7 +9067,7 @@ def spec_blood_oath(shape, mask, seed, sm):
     M = 20 + drip * 100 + noise * 8 * sm
     R = 200 - drip * 170 + noise * 15 * sm
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = np.clip(drip * 8 * mask, 16, 255).astype(np.uint8)
     spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -9075,7 +9083,7 @@ def spec_catacombs(shape, mask, seed, sm):
     M = 8 + noise2 * 5 * sm
     R = 160 + crack * 80 + noise1 * 20 * sm
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = 16; spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)  # CC was 0=mirror
     return spec
 
@@ -9092,7 +9100,7 @@ def spec_dark_ritual(shape, mask, seed, sm):
     R = 200 - runes_soft * 180 + noise * 10 * sm
     CC = np.clip(runes_soft * 16, 16, 255)
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = np.clip(CC * mask, 16, 255).astype(np.uint8)
     spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -9106,7 +9114,7 @@ def spec_death_metal(shape, mask, seed, sm):
     M = 160 + noise * 30 * sm
     R = 100 + scratch * 80 + noise * 20 * sm
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = 80; spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)  # CC was 0=mirror
     return spec
 
@@ -9121,7 +9129,7 @@ def spec_demon_forge(shape, mask, seed, sm):
     M = 30 + crack_soft * 200 + noise * 10 * sm
     R = 180 - crack_soft * 170 + noise * 15 * sm
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = np.clip(crack_soft * 10 * mask, 16, 255).astype(np.uint8)
     spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -9135,7 +9143,7 @@ def spec_gargoyle(shape, mask, seed, sm):
     M = 10 + noise * 8 * sm
     R = 180 + erosion * 50 + noise * 15 * sm
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = 160; spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)  # CC was 0=mirror
     return spec
 
@@ -9148,7 +9156,7 @@ def spec_graveyard(shape, mask, seed, sm):
     M = 8 + fog * 15 + noise * 5 * sm
     R = 200 - fog * 40 + noise * 10 * sm
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = 180; spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)  # CC was 0=mirror
     return spec
 
@@ -9161,7 +9169,7 @@ def spec_haunted(shape, mask, seed, sm):
     M = 15 + ghost_spots * 100 + noise * 10 * sm
     R = 170 - ghost_spots * 120 + noise * 15 * sm
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = np.clip(ghost_spots * 6 * mask, 16, 255).astype(np.uint8)
     spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -9177,7 +9185,7 @@ def spec_hellhound(shape, mask, seed, sm):
     M = 50 + ember_soft * 160 + noise * 15 * sm
     R = 140 - ember_soft * 120 + noise * 20 * sm
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = np.clip(ember_soft * 10 * mask, 16, 255).astype(np.uint8)
     spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -9194,7 +9202,7 @@ def spec_iron_maiden(shape, mask, seed, sm):
     M = 140 + rivets * 60 + noise * 20 * sm
     R = 120 + noise * 40 * sm - rivets * 60
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = 80; spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)  # CC was 0=mirror
     return spec
 
@@ -9209,7 +9217,7 @@ def spec_lich_king(shape, mask, seed, sm):
     R = 140 - facets * 100 + noise * 20 * sm
     CC = np.clip(facets * 16, 16, 255)
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = np.clip(CC * mask, 16, 255).astype(np.uint8)
     spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -9223,7 +9231,7 @@ def spec_necrotic(shape, mask, seed, sm):
     M = 10 + decay * 15 + noise * 5 * sm
     R = 140 + decay * 90 + noise * 25 * sm
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = 16; spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)  # CC was 0=mirror
     return spec
 
@@ -9238,7 +9246,7 @@ def spec_shadow_realm(shape, mask, seed, sm):
     M = 5 + (1 - depth) * 10 + noise * 3 * sm
     R = 220 + noise * 15 * sm
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = 16; spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)  # CC was 0=mirror
     return spec
 
@@ -9253,7 +9261,7 @@ def spec_spectral(shape, mask, seed, sm):
     R = 100 + (1 - shimmer) * 80 + noise * 15 * sm
     CC = np.clip(shimmer * 16, 16, 255)
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = np.clip(CC * mask, 16, 255).astype(np.uint8)
     spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -9894,7 +9902,7 @@ def spec_granite(shape, mask, seed, sm):
     M = 40 + speckle * 30 + noise * 10 * sm
     R = 80 + noise * 50 + speckle * 20 * sm
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = 180; spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)  # CC was 0=mirror
     return spec
 
@@ -9906,7 +9914,7 @@ def spec_obsidian_glass(shape, mask, seed, sm):
     M = 25 + noise * 12 * sm
     R = 6 + noise * 5 * sm
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = np.clip(16 * mask, 16, 255).astype(np.uint8)
     spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -9921,7 +9929,7 @@ def spec_slate_tile(shape, mask, seed, sm):
     M = 30 + layers * 15 + noise * 8 * sm
     R = 110 + (1 - layers) * 50 + noise * 20 * sm
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = 160; spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)  # CC was 0=mirror
     return spec
 
@@ -9934,7 +9942,7 @@ def spec_volcanic_rock(shape, mask, seed, sm):
     M = 20 + noise * 10 * sm
     R = 140 + pores * 60 + noise * 25 * sm
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = 220; spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)  # CC was 0=mirror
     return spec
 
@@ -10027,7 +10035,7 @@ def spec_astral(shape, mask, seed, sm):
     M = 50 + glow * 50 + noise * 10 * sm
     R = 20 + (1 - glow) * 20 + noise * 8 * sm
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = np.clip(16 * mask, 16, 255).astype(np.uint8)
     spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -10042,7 +10050,7 @@ def spec_crystal_cave(shape, mask, seed, sm):
     M = 100 + facets * 80 + noise * 15 * sm
     R = 8 + edges * 25 + noise * 6 * sm
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = np.clip(16 * mask, 16, 255).astype(np.uint8)
     spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -10058,7 +10066,7 @@ def spec_dark_fairy(shape, mask, seed, sm):
     M = 30 + magic_s * 60 + noise * 8 * sm
     R = 70 + (1 - magic_s) * 40 + noise * 12 * sm
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = np.clip(magic_s * 10 * mask, 16, 255).astype(np.uint8)
     spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -10072,7 +10080,7 @@ def spec_dragon_breath(shape, mask, seed, sm):
     M = 100 + heat * 80 + noise * 15 * sm
     R = 8 + (1 - heat) * 25 + noise * 8 * sm
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = np.clip(16 * mask, 16, 255).astype(np.uint8)
     spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -10086,7 +10094,7 @@ def spec_enchanted(shape, mask, seed, sm):
     M = 40 + sparkle * 80 + noise * 10 * sm
     R = 20 + (1 - sparkle) * 20 + noise * 8 * sm
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = np.clip(16 * mask, 16, 255).astype(np.uint8)
     spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -10100,7 +10108,7 @@ def spec_ethereal(shape, mask, seed, sm):
     M = 30 + ghost * 25 + noise * 8 * sm
     R = 25 + ghost * 15 + noise * 6 * sm
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = np.clip(16 * mask, 16, 255).astype(np.uint8)
     spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -10117,7 +10125,7 @@ def spec_fractal_dimension(shape, mask, seed, sm):
     M = 60 + rings * 60 + noise * 12 * sm
     R = 15 + (1 - rings) * 20 + noise * 8 * sm
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = np.clip(16 * mask, 16, 255).astype(np.uint8)
     spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -10132,7 +10140,7 @@ def spec_hallucination(shape, mask, seed, sm):
     M = 40 + warp1 * 80 + warp2 * 30 + noise * 12 * sm
     R = 15 + (1 - warp1) * 30 + noise * 10 * sm
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = np.clip(16 * mask, 16, 255).astype(np.uint8)
     spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -10147,7 +10155,7 @@ def spec_levitation(shape, mask, seed, sm):
     M = 30 + lift * 50 + noise * 10 * sm
     R = 20 + (1 - lift) * 20 + noise * 8 * sm
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = np.clip(16 * mask, 16, 255).astype(np.uint8)
     spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -10164,7 +10172,7 @@ def spec_multiverse(shape, mask, seed, sm):
     M = 50 + rings * 80 + noise * 12 * sm
     R = 15 + (1 - rings) * 30 + noise * 10 * sm
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = np.clip(16 * mask, 16, 255).astype(np.uint8)
     spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -10178,7 +10186,7 @@ def spec_nebula_core(shape, mask, seed, sm):
     M = 30 + stars * 120 + noise * 10 * sm
     R = 60 - stars * 40 + noise * 10 * sm
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = np.clip(stars * 12 * mask, 16, 255).astype(np.uint8)
     spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -10193,7 +10201,7 @@ def spec_simulation(shape, mask, seed, sm):
     M = 50 + scan * 40 + noise * 10 * sm
     R = 20 + (1 - scan) * 20 + noise * 8 * sm
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = np.clip(16 * mask, 16, 255).astype(np.uint8)
     spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -10208,7 +10216,7 @@ def spec_tesseract(shape, mask, seed, sm):
     M = 80 + facets * 80 + noise * 12 * sm
     R = 10 + edges * 30 + noise * 8 * sm
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = np.clip(16 * mask, 16, 255).astype(np.uint8)
     spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -10223,7 +10231,7 @@ def spec_void_walker(shape, mask, seed, sm):
     M = 5 + shimmer * 40 + noise * 5 * sm
     R = 180 - shimmer * 80 + noise * 15 * sm
     spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = np.clip(shimmer * 10 * mask, 16, 255).astype(np.uint8)
     spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -10729,7 +10737,7 @@ def spec_mill_scale(shape, mask, seed, sm):
     M  = 170 + flakes * 45 - fine_noise * 20 * sm
     R  = 185 + (1 - flakes) * 40 + fine_noise * 20 * sm
     spec[:,:,0] = np.clip(M * mask + 5*(1-mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 180*(1-mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 180*(1-mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = 220  # CC was 0=mirror
     spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -10764,7 +10772,7 @@ def spec_grinding_marks(shape, mask, seed, sm):
     M = 210 + streak * 30 + base_noise * 10 * sm
     R = 160 + (1 - streak) * 50 + x_noise * 20 * sm
     spec[:,:,0] = np.clip(M * mask + 5*(1-mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 180*(1-mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 180*(1-mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = 180  # CC was 0=mirror
     spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -10799,7 +10807,7 @@ def spec_raw_weld(shape, mask, seed, sm):
     R = 90 + bead * 80 + noise * 20 * sm      # Rough bead, smoother between
     CC_val = np.clip((1 - heat_zones) * 16, 16, 255)  # Slight CC at cooler zones only
     spec[:,:,0] = np.clip(M * mask + 5*(1-mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 150*(1-mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 150*(1-mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = np.clip(CC_val * mask, 16, 255).astype(np.uint8)
     spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -10833,7 +10841,7 @@ def spec_bare_aluminum(shape, mask, seed, sm):
     M = 165 + grain_noise * 20 * sm
     R = 85 + tool_marks * 60 + grain_noise * 18 * sm
     spec[:,:,0] = np.clip(M * mask + 5*(1-mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 120*(1-mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 120*(1-mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = 160  # CC was 0=mirror
     spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -10864,7 +10872,7 @@ def spec_phosphate_coat(shape, mask, seed, sm):
     M = 110 + crystal_noise * 25 * sm + large_noise * 15
     R = 190 + crystal_noise * 30 * sm
     spec[:,:,0] = np.clip(M * mask + 5*(1-mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 180*(1-mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 180*(1-mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = 200  # CC was 0=mirror
     spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -10897,7 +10905,7 @@ def spec_raw_concrete(shape, mask, seed, sm):
     M = 5 + minerals * 20 + form * 5 * sm
     R = 190 + agg * 40 + form * 20 * sm
     spec[:,:,0] = np.clip(M * mask + 2*(1-mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 200*(1-mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 200*(1-mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = 250  # CC was 0=mirror
     spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -10930,7 +10938,7 @@ def spec_worn_asphalt(shape, mask, seed, sm):
     M = 8 + chip_glint * 18 + binder * 4 * sm
     R = 215 + pebble * 35 + binder * 5 * sm
     spec[:,:,0] = np.clip(M * mask + 2*(1-mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 220*(1-mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 220*(1-mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = 240  # CC was 0=mirror
     spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -10965,7 +10973,7 @@ def spec_chrome_oxidized(shape, mask, seed, sm):
     R  = 3   * (1 - ox) + 160 * ox + fine * 15 * sm
     CC_val = np.clip((1 - ox) * 16, 16, 255)  # CC fades with oxidation
     spec[:,:,0] = np.clip(M * mask + 5*(1-mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100*(1-mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100*(1-mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = np.clip(CC_val * mask, 16, 255).astype(np.uint8)
     spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -11005,7 +11013,7 @@ def spec_carbon_raw(shape, mask, seed, sm):
     M = 100 + weave * 50 + noise * 12 * sm
     R = 120 + (1 - weave) * 60 + noise * 15 * sm
     spec[:,:,0] = np.clip(M * mask + 5*(1-mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 150*(1-mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 150*(1-mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = 200  # CC was 0=mirror
     spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -11043,7 +11051,7 @@ def spec_heat_blued(shape, mask, seed, sm):
     ox_map = np.clip(heat_noise * 0.5 + 0.5, 0, 1)
     CC_val = np.clip(ox_map * 16, 16, 255)
     spec[:,:,0] = np.clip(M * mask + 5*(1-mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R * mask + 100*(1-mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100*(1-mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = np.clip(CC_val * mask, 16, 255).astype(np.uint8)
     spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -11082,6 +11090,270 @@ EXPANSION_MONOLITHICS.update({
     "chrome_oxidized":   (spec_chrome_oxidized, paint_chrome_oxidized),
     "carbon_raw":        (spec_carbon_raw, paint_carbon_raw),
     "heat_blued":        (spec_heat_blued, paint_heat_blued),
+})
+
+# =============================================================================
+# METALS & FORGED MONOLITHICS - March 2026 (8 new premium metal finishes)
+# =============================================================================
+
+def spec_forged_titanium(shape, mask, seed, sm):
+    """Forged Titanium - heat-treated titanium with blue-gold oxidation bands.
+    High metallic, low roughness, high CC for interference color shimmer."""
+    h, w = shape
+    spec = np.zeros((h, w, 4), dtype=np.uint8)
+    y = np.linspace(0, 1, h, dtype=np.float32).reshape(h, 1)
+    noise = _multi_scale_noise(shape, [8, 16, 32], [0.3, 0.4, 0.3], seed + 4100)
+    # Oxidation bands follow y-axis with slight warping
+    bands = np.sin((y + noise * 0.08) * np.pi * 6) * 0.5 + 0.5
+    M = np.clip(210 + bands * 10 + noise * 8 * sm, 0, 255)
+    R = np.clip(20 + (1 - bands) * 10 + noise * 6 * sm, 0, 255)
+    CC = np.clip(180 + bands * 40 + noise * 15, 0, 255)
+    spec[:, :, 0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:, :, 1] = np.clip(R * mask + 80 * (1 - mask), 15, 255).astype(np.uint8)
+    spec[:, :, 2] = np.clip(CC * mask + 16 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
+    return spec
+
+def paint_forged_titanium(paint, shape, mask, seed, pm, bb):
+    """Forged Titanium - blue-gold banded hue shift using sin(y) oxidation zones."""
+    h, w = shape
+    y = np.linspace(0, 1, h, dtype=np.float32).reshape(h, 1)
+    noise = _multi_scale_noise(shape, [8, 16, 32], [0.3, 0.4, 0.3], seed + 4100)
+    bands = np.sin((y + noise * 0.08) * np.pi * 6) * 0.5 + 0.5
+    gray = paint.mean(axis=2, keepdims=True)
+    # Desaturate toward metallic base
+    paint = paint * (1 - 0.25 * pm * mask[:, :, np.newaxis]) + gray * 0.25 * pm * mask[:, :, np.newaxis]
+    # Gold zones: warm red-yellow shift
+    paint[:, :, 0] = np.clip(paint[:, :, 0] + bands * 0.12 * pm * mask, 0, 1)
+    paint[:, :, 1] = np.clip(paint[:, :, 1] + bands * 0.08 * pm * mask, 0, 1)
+    # Blue zones: cool blue shift
+    paint[:, :, 2] = np.clip(paint[:, :, 2] + (1 - bands) * 0.15 * pm * mask, 0, 1)
+    return np.clip(paint + bb * 0.3 * mask[:, :, np.newaxis], 0, 1)
+
+
+def spec_brushed_gunmetal(shape, mask, seed, sm):
+    """Brushed Gunmetal - directional brushed dark gunmetal with fine grain.
+    Very high metallic, very low roughness, high CC for tight highlights."""
+    h, w = shape
+    spec = np.zeros((h, w, 4), dtype=np.uint8)
+    # Horizontal grain noise (varies along x axis)
+    x_noise = _multi_scale_noise(shape, [3, 6, 12], [0.5, 0.3, 0.2], seed + 4110)
+    fine_noise = _multi_scale_noise(shape, [1, 2], [0.7, 0.3], seed + 4111)
+    grain = np.abs(np.sin(x_noise * 20 + fine_noise * 3)) ** 0.3
+    M = np.clip(230 + grain * 10 + fine_noise * 5 * sm, 0, 255)
+    R = np.clip(12 + (1 - grain) * 8 + fine_noise * 4 * sm, 0, 255)
+    CC = np.clip(210 + grain * 20, 0, 255)
+    spec[:, :, 0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:, :, 1] = np.clip(R * mask + 80 * (1 - mask), 15, 255).astype(np.uint8)
+    spec[:, :, 2] = np.clip(CC * mask + 16 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
+    return spec
+
+def paint_brushed_gunmetal(paint, shape, mask, seed, pm, bb):
+    """Brushed Gunmetal - dark grey with horizontal grain noise highlights."""
+    h, w = shape
+    x_noise = _multi_scale_noise(shape, [3, 6, 12], [0.5, 0.3, 0.2], seed + 4110)
+    fine_noise = _multi_scale_noise(shape, [1, 2], [0.7, 0.3], seed + 4111)
+    grain = np.abs(np.sin(x_noise * 20 + fine_noise * 3)) ** 0.3
+    gray = paint.mean(axis=2, keepdims=True)
+    # Heavy desaturation toward dark gunmetal
+    paint = paint * (1 - 0.40 * pm * mask[:, :, np.newaxis]) + gray * 0.40 * pm * mask[:, :, np.newaxis]
+    paint = np.clip(paint - 0.10 * pm * mask[:, :, np.newaxis], 0, 1)
+    # Grain highlights — bright silver streaks
+    paint = np.clip(paint + grain[:, :, np.newaxis] * 0.08 * pm * mask[:, :, np.newaxis], 0, 1)
+    # Slight blue-steel tint
+    paint[:, :, 2] = np.clip(paint[:, :, 2] + 0.03 * pm * mask, 0, 1)
+    return np.clip(paint + bb * 0.3 * mask[:, :, np.newaxis], 0, 1)
+
+
+def spec_cast_iron_raw(shape, mask, seed, sm):
+    """Raw Cast Iron - rough sand-cast iron with porous surface texture.
+    Low metallic, very high roughness, near-zero CC."""
+    h, w = shape
+    spec = np.zeros((h, w, 4), dtype=np.uint8)
+    pore_noise = _multi_scale_noise(shape, [4, 8, 16, 32], [0.2, 0.3, 0.3, 0.2], seed + 4120)
+    fine_noise = _multi_scale_noise(shape, [2, 4], [0.6, 0.4], seed + 4121)
+    # Porous surface: deep pits where noise is low
+    pores = np.clip(pore_noise * 0.5 + 0.5, 0, 1)
+    M = np.clip(75 + pores * 10 + fine_noise * 5 * sm, 0, 255)
+    R = np.clip(195 + (1 - pores) * 15 + fine_noise * 10 * sm, 0, 255)
+    CC = np.clip(5 + pores * 10, 0, 255)
+    spec[:, :, 0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:, :, 1] = np.clip(R * mask + 180 * (1 - mask), 15, 255).astype(np.uint8)
+    spec[:, :, 2] = np.clip(CC * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
+    return spec
+
+def paint_cast_iron_raw(paint, shape, mask, seed, pm, bb):
+    """Raw Cast Iron - near-black with porous noise texture darkening pits."""
+    h, w = shape
+    pore_noise = _multi_scale_noise(shape, [4, 8, 16, 32], [0.2, 0.3, 0.3, 0.2], seed + 4120)
+    pores = np.clip(pore_noise * 0.5 + 0.5, 0, 1)
+    gray = paint.mean(axis=2, keepdims=True)
+    # Very heavy desaturation and darkening
+    paint = paint * (1 - 0.50 * pm * mask[:, :, np.newaxis]) + gray * 0.50 * pm * mask[:, :, np.newaxis]
+    paint = np.clip(paint - 0.20 * pm * mask[:, :, np.newaxis], 0, 1)
+    # Pits are darker; peaks slightly lighter
+    paint = np.clip(paint + (pores - 0.5) * 0.08 * pm * mask[:, :, np.newaxis], 0, 1)
+    # Slight warm rust tint in pit zones
+    paint[:, :, 0] = np.clip(paint[:, :, 0] + (1 - pores) * 0.04 * pm * mask, 0, 1)
+    return np.clip(paint + bb * 0.2 * mask[:, :, np.newaxis], 0, 1)
+
+
+def spec_polished_brass(shape, mask, seed, sm):
+    """Polished Brass - mirror-polished brass with warm golden reflection.
+    Maximum metallic, minimum roughness, maximum CC for mirror finish."""
+    h, w = shape
+    spec = np.zeros((h, w, 4), dtype=np.uint8)
+    micro_noise = _multi_scale_noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + 4130)
+    M = np.clip(250 + micro_noise * 3 * sm, 0, 255)
+    R = np.clip(5 + micro_noise * 3 * sm, 0, 255)
+    CC = np.clip(240 + micro_noise * 8, 0, 255)
+    spec[:, :, 0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:, :, 1] = np.clip(R * mask + 30 * (1 - mask), 15, 255).astype(np.uint8)
+    spec[:, :, 2] = np.clip(CC * mask + 16 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
+    return spec
+
+def paint_polished_brass(paint, shape, mask, seed, pm, bb):
+    """Polished Brass - golden yellow with mirror-smooth warm golden specular."""
+    h, w = shape
+    micro_noise = _multi_scale_noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + 4130)
+    gray = paint.mean(axis=2, keepdims=True)
+    # Partial desaturation then strong gold tint
+    paint = paint * (1 - 0.15 * pm * mask[:, :, np.newaxis]) + gray * 0.15 * pm * mask[:, :, np.newaxis]
+    # Strong golden warmth
+    paint[:, :, 0] = np.clip(paint[:, :, 0] + 0.18 * pm * mask, 0, 1)
+    paint[:, :, 1] = np.clip(paint[:, :, 1] + 0.10 * pm * mask, 0, 1)
+    paint[:, :, 2] = np.clip(paint[:, :, 2] - 0.05 * pm * mask, 0, 1)
+    # Micro-variation for realism
+    paint = np.clip(paint + micro_noise[:, :, np.newaxis] * 0.02 * pm * mask[:, :, np.newaxis], 0, 1)
+    return np.clip(paint + bb * 0.4 * mask[:, :, np.newaxis], 0, 1)
+
+
+def spec_annealed_steel(shape, mask, seed, sm):
+    """Annealed Steel - heat-annealed steel with rainbow temper colors.
+    High metallic, low roughness, high CC for iridescent oxidation shimmer."""
+    h, w = shape
+    spec = np.zeros((h, w, 4), dtype=np.uint8)
+    y = np.linspace(0, 1, h, dtype=np.float32).reshape(h, 1)
+    noise = _multi_scale_noise(shape, [8, 16, 32], [0.3, 0.4, 0.3], seed + 4140)
+    # Temper color field driven by combined y + noise
+    field = np.clip((y + noise * 0.12) % 1.0, 0, 1)
+    M = np.clip(205 + field * 10 + noise * 5 * sm, 0, 255)
+    R = np.clip(25 + (1 - field) * 10 + noise * 5 * sm, 0, 255)
+    CC = np.clip(175 + field * 30 + noise * 10, 0, 255)
+    spec[:, :, 0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:, :, 1] = np.clip(R * mask + 80 * (1 - mask), 15, 255).astype(np.uint8)
+    spec[:, :, 2] = np.clip(CC * mask + 16 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
+    return spec
+
+def paint_annealed_steel(paint, shape, mask, seed, pm, bb):
+    """Annealed Steel - rainbow temper using full hue ramp through the field."""
+    h, w = shape
+    y = np.linspace(0, 1, h, dtype=np.float32).reshape(h, 1)
+    noise = _multi_scale_noise(shape, [8, 16, 32], [0.3, 0.4, 0.3], seed + 4140)
+    field = np.clip((y + noise * 0.12) % 1.0, 0, 1)
+    gray = paint.mean(axis=2, keepdims=True)
+    paint = paint * (1 - 0.20 * pm * mask[:, :, np.newaxis]) + gray * 0.20 * pm * mask[:, :, np.newaxis]
+    # Cycle: straw(0-0.2) -> gold(0.2-0.4) -> purple(0.4-0.6) -> blue(0.6-0.8) -> grey(0.8-1.0)
+    straw = np.clip(1.0 - np.abs(field - 0.1) / 0.15, 0, 1)
+    gold  = np.clip(1.0 - np.abs(field - 0.3) / 0.15, 0, 1)
+    purp  = np.clip(1.0 - np.abs(field - 0.5) / 0.15, 0, 1)
+    blue  = np.clip(1.0 - np.abs(field - 0.7) / 0.15, 0, 1)
+    paint[:, :, 0] = np.clip(paint[:, :, 0] + (straw * 0.10 + gold * 0.12 - blue * 0.04) * pm * mask, 0, 1)
+    paint[:, :, 1] = np.clip(paint[:, :, 1] + (straw * 0.06 + gold * 0.08 - purp * 0.02) * pm * mask, 0, 1)
+    paint[:, :, 2] = np.clip(paint[:, :, 2] + (purp * 0.08 + blue * 0.14) * pm * mask, 0, 1)
+    return np.clip(paint + bb * 0.35 * mask[:, :, np.newaxis], 0, 1)
+
+
+def spec_oxidized_bronze(shape, mask, seed, sm):
+    """Oxidized Bronze - ancient bronze with verdigris green patina overlay.
+    Medium metallic, medium roughness, moderate CC from patina layer."""
+    h, w = shape
+    spec = np.zeros((h, w, 4), dtype=np.uint8)
+    patina_noise = _multi_scale_noise(shape, [4, 8, 16, 32], [0.2, 0.3, 0.3, 0.2], seed + 4150)
+    fine_noise = _multi_scale_noise(shape, [2, 4], [0.6, 0.4], seed + 4151)
+    patina = np.clip(patina_noise * 0.5 + 0.5, 0, 1)
+    M = np.clip(145 + (1 - patina) * 30 + fine_noise * 10 * sm, 0, 255)
+    R = np.clip(110 + patina * 30 + fine_noise * 12 * sm, 0, 255)
+    CC = np.clip(50 + (1 - patina) * 30 + fine_noise * 8, 0, 255)
+    spec[:, :, 0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:, :, 1] = np.clip(R * mask + 120 * (1 - mask), 15, 255).astype(np.uint8)
+    spec[:, :, 2] = np.clip(CC * mask + 16 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
+    return spec
+
+def paint_oxidized_bronze(paint, shape, mask, seed, pm, bb):
+    """Oxidized Bronze - dark bronze base with green verdigris patina overlay."""
+    h, w = shape
+    patina_noise = _multi_scale_noise(shape, [4, 8, 16, 32], [0.2, 0.3, 0.3, 0.2], seed + 4150)
+    patina = np.clip(patina_noise * 0.5 + 0.5, 0, 1)
+    gray = paint.mean(axis=2, keepdims=True)
+    paint = paint * (1 - 0.30 * pm * mask[:, :, np.newaxis]) + gray * 0.30 * pm * mask[:, :, np.newaxis]
+    # Bronze base: warm red-brown
+    paint[:, :, 0] = np.clip(paint[:, :, 0] + (1 - patina) * 0.10 * pm * mask, 0, 1)
+    paint[:, :, 1] = np.clip(paint[:, :, 1] + (1 - patina) * 0.04 * pm * mask, 0, 1)
+    # Patina overlay: verdigris green
+    paint[:, :, 1] = np.clip(paint[:, :, 1] + patina * 0.12 * pm * mask, 0, 1)
+    paint[:, :, 2] = np.clip(paint[:, :, 2] + patina * 0.06 * pm * mask, 0, 1)
+    paint[:, :, 0] = np.clip(paint[:, :, 0] - patina * 0.04 * pm * mask, 0, 1)
+    # Overall darkening for aged look
+    paint = np.clip(paint - 0.08 * pm * mask[:, :, np.newaxis], 0, 1)
+    return np.clip(paint + bb * 0.3 * mask[:, :, np.newaxis], 0, 1)
+
+
+def spec_damascus_steel(shape, mask, seed, sm):
+    """Damascus Steel - folded steel pattern with visible layer striations.
+    Very high metallic, low roughness, high CC for crystalline clarity."""
+    h, w = shape
+    spec = np.zeros((h, w, 4), dtype=np.uint8)
+    y = np.linspace(0, 1, h, dtype=np.float32).reshape(h, 1)
+    x = np.linspace(0, 1, w, dtype=np.float32).reshape(1, w)
+    warp_noise = _multi_scale_noise(shape, [4, 8], [0.5, 0.5], seed + 4160)
+    fine_noise = _multi_scale_noise(shape, [16, 32], [0.5, 0.5], seed + 4161)
+    # Folded layer bands — warped diagonal striations
+    layers = np.sin((y * 0.6 + x * 0.4 + warp_noise * 0.15) * np.pi * 28) * 0.5 + 0.5
+    M = np.clip(220 + layers * 20 + fine_noise * 5 * sm, 0, 255)
+    R = np.clip(15 + (1 - layers) * 10 + fine_noise * 5 * sm, 0, 255)
+    CC = np.clip(200 + layers * 20 + fine_noise * 8, 0, 255)
+    spec[:, :, 0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:, :, 1] = np.clip(R * mask + 60 * (1 - mask), 15, 255).astype(np.uint8)
+    spec[:, :, 2] = np.clip(CC * mask + 16 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
+    return spec
+
+def paint_damascus_steel(paint, shape, mask, seed, pm, bb):
+    """Damascus Steel - alternating light/dark steel bands following fold pattern."""
+    h, w = shape
+    y = np.linspace(0, 1, h, dtype=np.float32).reshape(h, 1)
+    x = np.linspace(0, 1, w, dtype=np.float32).reshape(1, w)
+    warp_noise = _multi_scale_noise(shape, [4, 8], [0.5, 0.5], seed + 4160)
+    fine_noise = _multi_scale_noise(shape, [16, 32], [0.5, 0.5], seed + 4161)
+    layers = np.sin((y * 0.6 + x * 0.4 + warp_noise * 0.15) * np.pi * 28) * 0.5 + 0.5
+    gray = paint.mean(axis=2, keepdims=True)
+    # Desaturate toward steel grey
+    paint = paint * (1 - 0.35 * pm * mask[:, :, np.newaxis]) + gray * 0.35 * pm * mask[:, :, np.newaxis]
+    # Bright layers are lighter (polished), dark layers are deeper
+    paint = np.clip(paint + (layers - 0.5) * 0.14 * pm * mask[:, :, np.newaxis], 0, 1)
+    # Slight cool blue in dark bands
+    paint[:, :, 2] = np.clip(paint[:, :, 2] + (1 - layers) * 0.04 * pm * mask, 0, 1)
+    # Fine grain micro-detail
+    paint = np.clip(paint + fine_noise[:, :, np.newaxis] * 0.02 * pm * mask[:, :, np.newaxis], 0, 1)
+    return np.clip(paint + bb * 0.35 * mask[:, :, np.newaxis], 0, 1)
+
+
+# Register the 7 new Metals & Forged finishes
+# (hammered_copper already registered in EXPANSION_MONOLITHICS above)
+EXPANSION_MONOLITHICS.update({
+    "forged_titanium":   (spec_forged_titanium, paint_forged_titanium),
+    "brushed_gunmetal":  (spec_brushed_gunmetal, paint_brushed_gunmetal),
+    "cast_iron_raw":     (spec_cast_iron_raw, paint_cast_iron_raw),
+    "polished_brass":    (spec_polished_brass, paint_polished_brass),
+    "annealed_steel":    (spec_annealed_steel, paint_annealed_steel),
+    "oxidized_bronze":   (spec_oxidized_bronze, paint_oxidized_bronze),
+    "damascus_steel":    (spec_damascus_steel, paint_damascus_steel),
 })
 
 # Also register in the specials_groups UI metadata (appended to Texture & Surface)
@@ -11259,6 +11531,366 @@ def integrate_expansion(engine_module):
     engine_module.PATTERN_REGISTRY.update(EXPANSION_PATTERNS)
     engine_module.MONOLITHIC_REGISTRY.update(EXPANSION_MONOLITHICS)
 
+    # --- Register Aurora & Chromatic Flow using already-initialized engine module ---
+    # CRITICAL: Aurora paint functions live in engine/chameleon.py. That module is loaded
+    # by shokker_engine_v2 as "__shokker_chameleon__" (via importlib.util) and its paint_*
+    # functions are injected directly into engine_module via globals().update(_ch_fns).
+    # We must NOT use "import engine.chameleon" here — that would import a DIFFERENT,
+    # uninitialized module instance where _engine=None, causing AttributeError at render time.
+    # Instead, look up the functions directly from engine_module (already injected).
+    _aurora_id_map = [
+        ("aurora_borealis",        "paint_aurora_borealis"),
+        ("aurora_solar_wind",      "paint_aurora_solar_wind"),
+        ("aurora_nebula",          "paint_aurora_nebula"),
+        ("aurora_chromatic_surge", "paint_aurora_chromatic_surge"),
+        ("aurora_frozen_flame",    "paint_aurora_frozen_flame"),
+        ("aurora_deep_ocean",      "paint_aurora_deep_ocean"),
+        ("aurora_volcanic",        "paint_aurora_volcanic"),
+        ("aurora_ethereal",        "paint_aurora_ethereal"),
+        ("aurora_toxic_current",   "paint_aurora_toxic_current"),
+        ("aurora_midnight_silk",   "paint_aurora_midnight_silk"),
+        # Extended set — 20 new Aurora & Chromatic Flow presets
+        ("aurora_electric_candy",  "paint_aurora_electric_candy"),
+        ("aurora_ocean_phosphor",  "paint_aurora_ocean_phosphor"),
+        ("aurora_molten_earth",    "paint_aurora_molten_earth"),
+        ("aurora_arctic_shimmer",  "paint_aurora_arctic_shimmer"),
+        ("aurora_neon_storm",      "paint_aurora_neon_storm"),
+        ("aurora_twilight_veil",   "paint_aurora_twilight_veil"),
+        ("aurora_dragon_fire",     "paint_aurora_dragon_fire"),
+        ("aurora_crystal_prism",   "paint_aurora_crystal_prism"),
+        ("aurora_shadow_silk",     "paint_aurora_shadow_silk"),
+        ("aurora_copper_patina",   "paint_aurora_copper_patina"),
+        ("aurora_poison_ivy",      "paint_aurora_poison_ivy"),
+        ("aurora_champagne_dream", "paint_aurora_champagne_dream"),
+        ("aurora_thunderhead",     "paint_aurora_thunderhead"),
+        ("aurora_coral_reef",      "paint_aurora_coral_reef"),
+        ("aurora_black_rainbow",   "paint_aurora_black_rainbow"),
+        ("aurora_cherry_blossom",  "paint_aurora_cherry_blossom"),
+        ("aurora_plasma_reactor",  "paint_aurora_plasma_reactor"),
+        ("aurora_autumn_ember",    "paint_aurora_autumn_ember"),
+        ("aurora_ice_crystal",     "paint_aurora_ice_crystal"),
+        ("aurora_supernova",       "paint_aurora_supernova"),
+    ]
+    _aurora_registered = 0
+    for _aid, _afn in _aurora_id_map:
+        _paint_fn = getattr(engine_module, _afn, None)
+        if _paint_fn is not None:
+            engine_module.MONOLITHIC_REGISTRY[_aid] = (_spec_chameleon_24k, _paint_fn)
+            _aurora_registered += 1
+        else:
+            print(f"[24K Arsenal] WARNING: Aurora paint fn '{_afn}' not found in engine — "
+                  f"chameleon module may not be loaded. '{_aid}' will have no color.")
+    if _aurora_registered:
+        print(f"[24K Arsenal] Registered {_aurora_registered}/30 Aurora & Chromatic Flow finishes")
+
+    # --- Register Chromatic Flake monolithic finishes ---
+    # Factory-generated multi-color micro-flake effects. Each palette has 4-5 colors
+    # distributed via multi-scale noise creating subtle color shifting across the canvas.
+    # Uses local _multi_scale_noise (already defined in this module) — NOT engine.chameleon.
+
+    def _chromatic_flake_paint(paint, shape, mask, seed, pm, bb,
+                               colors, flake_scale=3, cluster_scale=30, flow_scale=200):
+        """Chromatic Flake paint — replace color with multi-color micro-flake pattern."""
+        if pm < 0.01:
+            return paint
+        h, w = shape[:2] if len(shape) > 2 else shape
+        rng = np.random.RandomState(seed)
+
+        # Fine flakes — per-pixel random assignment weighted by cluster noise
+        # Generate actual micro-flake texture at the specified scale
+        if flake_scale <= 1:
+            fine_noise = rng.rand(h, w).astype(np.float32)
+        else:
+            # Create flakes at the specified grain size, then upscale
+            fh = max(4, h // flake_scale)
+            fw = max(4, w // flake_scale)
+            small_flakes = rng.rand(fh, fw).astype(np.float32)
+            from PIL import Image as _PILImage
+            fine_noise = np.array(_PILImage.fromarray((small_flakes * 255).astype(np.uint8)).resize((w, h), _PILImage.NEAREST)).astype(np.float32) / 255.0
+
+        # Medium clusters — which color dominates in each region
+        cluster = _multi_scale_noise((h, w), [cluster_scale, cluster_scale * 2],
+                                     [0.7, 0.3], seed + 100)
+
+        # Large flow — overall color gradient across the car
+        flow = _multi_scale_noise((h, w), [flow_scale, int(flow_scale * 1.5)],
+                                  [0.8, 0.2], seed + 200)
+
+        # Combine: fine flakes dominate, cluster for variation, flow for overall tendency
+        combined = fine_noise * 0.5 + cluster * 0.3 + flow * 0.2
+
+        # Quantize into color bins
+        n_colors = len(colors)
+        color_idx = np.clip((combined * n_colors).astype(np.int32), 0, n_colors - 1)
+
+        # Build recolored paint (colors are 0-255 int, paint is 0-1 float)
+        result = paint.copy()
+        for i, (r, g, b) in enumerate(colors):
+            cmask = (color_idx == i)
+            result[cmask, 0] = r / 255.0
+            result[cmask, 1] = g / 255.0
+            result[cmask, 2] = b / 255.0
+
+        # Blend with original paint using pm, respect zone mask
+        out = paint.copy()
+        m3 = mask[:, :, np.newaxis] if mask.ndim == 2 else mask
+        blended = paint[:, :, :3] * (1.0 - pm) + result[:, :, :3] * pm
+        out[:, :, :3] = blended * m3 + paint[:, :, :3] * (1.0 - m3)
+        # Apply brightness boost
+        out = np.clip(out + bb * 0.4 * m3, 0, 1)
+        return out
+
+    def _chromatic_flake_spec(shape, mask, seed, sm,
+                              colors, spec_profiles,
+                              flake_scale=3, cluster_scale=30, flow_scale=200):
+        """Chromatic Flake spec — per-color M/R/CC values aligned with paint noise."""
+        h, w = shape[:2] if len(shape) > 2 else shape
+        rng = np.random.RandomState(seed)
+
+        # Reproduce the same noise fields as paint to keep colors aligned
+        # Generate actual micro-flake texture at the specified scale
+        if flake_scale <= 1:
+            fine_noise = rng.rand(h, w).astype(np.float32)
+        else:
+            # Create flakes at the specified grain size, then upscale
+            fh = max(4, h // flake_scale)
+            fw = max(4, w // flake_scale)
+            small_flakes = rng.rand(fh, fw).astype(np.float32)
+            from PIL import Image as _PILImage
+            fine_noise = np.array(_PILImage.fromarray((small_flakes * 255).astype(np.uint8)).resize((w, h), _PILImage.NEAREST)).astype(np.float32) / 255.0
+        cluster = _multi_scale_noise((h, w), [cluster_scale, cluster_scale * 2],
+                                     [0.7, 0.3], seed + 100)
+        flow = _multi_scale_noise((h, w), [flow_scale, int(flow_scale * 1.5)],
+                                  [0.8, 0.2], seed + 200)
+        combined = fine_noise * 0.5 + cluster * 0.3 + flow * 0.2
+        n_colors = len(colors)
+        color_idx = np.clip((combined * n_colors).astype(np.int32), 0, n_colors - 1)
+
+        # Build spec arrays
+        spec = np.zeros((h, w, 4), dtype=np.uint8)
+        # Add per-pixel noise for sparkle variation
+        sparkle = _multi_scale_noise((h, w), [2, 4], [0.6, 0.4], seed + 300)
+
+        for i, (base_M, base_R, base_CC) in enumerate(spec_profiles):
+            cmask = (color_idx == i)
+            spec[cmask, 0] = np.clip(base_M + sparkle[cmask] * 15 * sm, 0, 255).astype(np.uint8)
+            spec[cmask, 1] = np.clip(base_R + sparkle[cmask] * 10 * sm, 0, 255).astype(np.uint8)
+            spec[cmask, 2] = np.clip(base_CC, 16, 255).astype(np.uint8)
+
+        # Alpha channel from mask
+        spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
+        return spec
+
+    # 30 Chromatic Flake palette presets
+    # Each: (id, display_name, desc, swatch, colors_rgb_list, spec_profiles_list)
+    #   colors: list of (R, G, B) 0-255
+    #   spec_profiles: list of (M, R, CC) per color
+    _CF_PRESETS = [
+        ("cf_midnight_galaxy", "Midnight Galaxy",
+         "Deep navy, electric purple, teal, silver, dark magenta micro-flake shimmer",
+         "#1a1a44",
+         [(20, 20, 60), (100, 30, 180), (30, 140, 140), (180, 180, 195), (120, 20, 90)],
+         [(160, 15, 18), (140, 20, 20), (150, 12, 18), (200, 8, 16), (130, 22, 20)]),
+
+        ("cf_volcanic_ember", "Volcanic Ember",
+         "Deep red, burnt orange, gold, charcoal, crimson multi-flake fire shimmer",
+         "#8b2500",
+         [(140, 20, 10), (180, 90, 20), (210, 180, 50), (50, 45, 40), (170, 20, 30)],
+         [(120, 30, 22), (130, 25, 20), (170, 15, 18), (60, 50, 30), (110, 35, 22)]),
+
+        ("cf_arctic_aurora", "Arctic Aurora",
+         "Ice blue, mint green, lavender, white, pale cyan crystalline flake",
+         "#c8e8ff",
+         [(180, 210, 240), (160, 230, 190), (190, 170, 220), (240, 240, 245), (180, 230, 235)],
+         [(180, 10, 16), (160, 12, 16), (170, 14, 18), (210, 6, 16), (175, 10, 16)]),
+
+        ("cf_black_opal", "Black Opal",
+         "Black, deep green, deep blue, purple flash, copper — precious stone flake",
+         "#0a0a12",
+         [(15, 15, 18), (10, 60, 30), (15, 20, 70), (80, 20, 100), (160, 100, 50)],
+         [(200, 8, 16), (180, 12, 18), (190, 10, 16), (160, 18, 20), (170, 15, 18)]),
+
+        ("cf_dragon_scale", "Dragon Scale",
+         "Emerald, gold, dark red, bronze, olive — ancient reptilian flake",
+         "#2a6030",
+         [(20, 120, 40), (200, 180, 50), (120, 20, 15), (160, 120, 60), (90, 100, 40)],
+         [(150, 18, 20), (180, 12, 18), (110, 30, 24), (160, 15, 18), (120, 25, 22)]),
+
+        ("cf_toxic_nebula", "Toxic Nebula",
+         "Neon green, black, electric purple, acid yellow, dark teal biohazard flake",
+         "#22cc44",
+         [(50, 240, 60), (15, 15, 15), (130, 30, 200), (220, 230, 30), (20, 80, 70)],
+         [(140, 20, 20), (40, 50, 30), (130, 22, 20), (160, 15, 18), (100, 30, 24)]),
+
+        ("cf_rose_gold_dust", "Rose Gold Dust",
+         "Rose pink, gold, copper, cream, blush — luxury micro-flake dust",
+         "#e8a0a0",
+         [(210, 150, 150), (210, 185, 80), (190, 120, 70), (240, 230, 210), (220, 175, 165)],
+         [(180, 10, 16), (190, 8, 16), (170, 12, 18), (160, 14, 16), (175, 10, 16)]),
+
+        ("cf_deep_space", "Deep Space",
+         "Black, deep blue, purple, silver sparkle, dark teal — cosmic void flake",
+         "#0a0a1a",
+         [(10, 10, 15), (15, 20, 60), (50, 15, 70), (170, 175, 185), (15, 50, 55)],
+         [(180, 10, 16), (170, 12, 18), (150, 16, 20), (210, 6, 16), (140, 18, 20)]),
+
+        ("cf_phoenix_feather", "Phoenix Feather",
+         "Orange, red, gold, amber, dark scarlet — burning plumage flake",
+         "#ee6622",
+         [(230, 120, 20), (200, 30, 20), (220, 190, 50), (210, 160, 40), (130, 15, 15)],
+         [(150, 18, 20), (120, 28, 24), (180, 10, 16), (160, 14, 18), (100, 35, 26)]),
+
+        ("cf_frozen_mercury", "Frozen Mercury",
+         "Silver, ice blue, platinum, pearl white, steel grey — liquid metal flake",
+         "#c8ccd0",
+         [(190, 195, 200), (180, 210, 230), (210, 210, 215), (235, 235, 238), (140, 145, 155)],
+         [(220, 5, 16), (200, 8, 16), (230, 4, 16), (210, 6, 16), (190, 10, 16)]),
+
+        ("cf_jungle_venom", "Jungle Venom",
+         "Dark green, lime, black, gold, toxic yellow — serpent scale flake",
+         "#1a4020",
+         [(20, 60, 15), (120, 210, 40), (12, 12, 12), (190, 170, 40), (200, 210, 30)],
+         [(130, 22, 22), (150, 15, 18), (50, 45, 28), (170, 12, 18), (155, 14, 18)]),
+
+        ("cf_cobalt_storm", "Cobalt Storm",
+         "Deep blue, electric blue, slate, silver, navy — thunderstorm flake",
+         "#1a2266",
+         [(20, 25, 90), (40, 100, 220), (100, 105, 115), (180, 185, 195), (15, 18, 55)],
+         [(170, 12, 18), (160, 15, 18), (140, 20, 22), (200, 8, 16), (150, 16, 20)]),
+
+        ("cf_sunset_strip", "Sunset Strip",
+         "Coral, magenta, gold, peach, deep orange — Hollywood boulevard flake",
+         "#ee6655",
+         [(230, 110, 90), (200, 50, 120), (220, 190, 60), (240, 190, 160), (210, 100, 30)],
+         [(160, 14, 18), (140, 20, 20), (180, 10, 16), (170, 12, 16), (150, 16, 18)]),
+
+        ("cf_absinthe_dreams", "Absinthe Dreams",
+         "Chartreuse, dark green, gold, emerald, black — green fairy flake",
+         "#88aa20",
+         [(160, 200, 20), (20, 60, 20), (200, 180, 50), (30, 140, 60), (15, 15, 10)],
+         [(150, 15, 18), (110, 28, 24), (175, 10, 16), (140, 18, 20), (50, 45, 28)]),
+
+        ("cf_titanium_rain", "Titanium Rain",
+         "Gunmetal, silver, dark grey, blue-grey, platinum — industrial metal flake",
+         "#707880",
+         [(90, 95, 100), (180, 185, 190), (60, 62, 65), (100, 110, 125), (210, 212, 218)],
+         [(200, 8, 16), (215, 6, 16), (160, 18, 20), (180, 12, 18), (225, 4, 16)]),
+
+        ("cf_blood_moon", "Blood Moon",
+         "Dark crimson, orange, black, deep red, rust — lunar eclipse flake",
+         "#550808",
+         [(100, 10, 10), (190, 100, 20), (12, 10, 10), (130, 15, 12), (150, 70, 30)],
+         [(110, 30, 24), (150, 18, 20), (40, 50, 30), (100, 35, 26), (130, 22, 22)]),
+
+        ("cf_peacock_strut", "Peacock Strut",
+         "Teal, royal blue, emerald, gold, deep purple — iridescent feather flake",
+         "#1a8888",
+         [(30, 140, 140), (40, 50, 170), (30, 150, 60), (200, 180, 50), (60, 20, 110)],
+         [(170, 12, 18), (160, 14, 18), (150, 16, 20), (185, 10, 16), (140, 20, 20)]),
+
+        ("cf_champagne_frost", "Champagne Frost",
+         "Pale gold, cream, silver, champagne, pearl — elegant celebration flake",
+         "#e8dcc0",
+         [(220, 200, 150), (240, 235, 220), (195, 200, 205), (215, 195, 145), (230, 228, 225)],
+         [(195, 8, 16), (180, 10, 16), (210, 6, 16), (190, 8, 16), (200, 7, 16)]),
+
+        ("cf_neon_viper", "Neon Viper",
+         "Hot pink, electric blue, neon green, black, purple — aggressive neon flake",
+         "#ee22aa",
+         [(240, 40, 160), (30, 100, 230), (50, 240, 60), (15, 12, 18), (140, 30, 190)],
+         [(150, 16, 18), (160, 14, 18), (145, 18, 20), (40, 48, 28), (135, 20, 20)]),
+
+        ("cf_obsidian_fire", "Obsidian Fire",
+         "Black, dark red, orange glow, charcoal, ember — volcanic glass flake",
+         "#1a0808",
+         [(12, 10, 10), (100, 15, 10), (210, 120, 20), (45, 42, 40), (180, 60, 15)],
+         [(180, 10, 16), (110, 30, 24), (160, 15, 18), (80, 35, 26), (140, 20, 20)]),
+
+        ("cf_mermaid_scale", "Mermaid Scale",
+         "Aqua, purple, teal, silver, seafoam — underwater shimmer flake",
+         "#44ccbb",
+         [(80, 210, 210), (130, 60, 170), (40, 150, 140), (190, 195, 200), (140, 220, 200)],
+         [(170, 12, 18), (145, 18, 20), (155, 15, 18), (205, 7, 16), (165, 12, 18)]),
+
+        ("cf_carbon_prizm", "Carbon Prizm",
+         "Charcoal base with subtle rainbow color-shift micro-flake",
+         "#333340",
+         [(55, 52, 58), (60, 50, 50), (50, 55, 60), (58, 50, 55), (52, 58, 52)],
+         [(160, 18, 20), (155, 20, 22), (165, 16, 20), (150, 22, 22), (158, 19, 20)]),
+
+        ("cf_molten_copper", "Molten Copper",
+         "Copper, bronze, gold, burnt orange, dark brown — liquid forge flake",
+         "#cc7744",
+         [(190, 110, 50), (160, 120, 60), (210, 180, 50), (180, 90, 20), (70, 40, 20)],
+         [(175, 12, 18), (165, 14, 18), (185, 10, 16), (155, 18, 20), (100, 30, 24)]),
+
+        ("cf_electric_storm", "Electric Storm",
+         "Purple, electric blue, white flash, dark grey, violet — lightning flake",
+         "#6644cc",
+         [(100, 40, 180), (40, 100, 230), (230, 235, 240), (55, 55, 60), (130, 60, 170)],
+         [(150, 16, 18), (165, 12, 18), (220, 5, 16), (100, 28, 24), (140, 18, 20)]),
+
+        ("cf_desert_mirage", "Desert Mirage",
+         "Sand gold, terracotta, dusty rose, sage, camel — arid shimmer flake",
+         "#ccaa77",
+         [(200, 175, 110), (180, 100, 70), (190, 150, 140), (140, 160, 120), (195, 170, 130)],
+         [(150, 18, 20), (130, 24, 24), (155, 16, 18), (135, 22, 22), (148, 18, 20)]),
+
+        ("cf_venom_strike", "Venom Strike",
+         "Acid green, black, neon yellow, dark emerald, lime — toxic attack flake",
+         "#44ee22",
+         [(80, 220, 30), (10, 12, 8), (210, 230, 20), (15, 70, 25), (140, 220, 50)],
+         [(145, 18, 20), (40, 48, 28), (160, 14, 18), (110, 28, 24), (150, 16, 18)]),
+
+        ("cf_sapphire_ice", "Sapphire Ice",
+         "Deep sapphire, ice blue, white, crystal blue, navy — frozen gem flake",
+         "#2244aa",
+         [(25, 40, 140), (180, 215, 240), (235, 238, 242), (80, 150, 210), (15, 20, 65)],
+         [(180, 10, 16), (195, 8, 16), (215, 5, 16), (175, 12, 18), (160, 15, 18)]),
+
+        ("cf_inferno_chrome", "Inferno Chrome",
+         "Chrome silver, fire red, orange, gold, dark steel — blazing metal flake",
+         "#cc4422",
+         [(195, 200, 205), (200, 35, 15), (225, 130, 20), (215, 185, 50), (80, 82, 88)],
+         [(225, 5, 16), (120, 28, 24), (155, 16, 18), (180, 10, 16), (180, 12, 18)]),
+
+        ("cf_phantom_violet", "Phantom Violet",
+         "Deep violet, silver, black, lavender, dark purple — spectral flake",
+         "#3a1870",
+         [(60, 20, 100), (185, 188, 195), (12, 10, 15), (170, 150, 200), (45, 15, 75)],
+         [(150, 16, 18), (210, 6, 16), (50, 45, 28), (165, 12, 18), (130, 22, 22)]),
+
+        ("cf_solar_flare", "Solar Flare",
+         "Bright gold, white-hot, amber, orange, deep yellow — stellar eruption flake",
+         "#eeaa22",
+         [(230, 200, 40), (245, 240, 220), (210, 160, 40), (230, 140, 25), (220, 200, 30)],
+         [(190, 8, 16), (225, 4, 16), (175, 12, 18), (165, 14, 18), (185, 10, 16)]),
+    ]
+
+    # Factory: generate paint_fn and spec_fn closures for each preset
+    _cf_registered = 0
+    for _cf_id, _cf_name, _cf_desc, _cf_swatch, _cf_colors, _cf_specs in _CF_PRESETS:
+        # Capture loop variables in default args
+        def _make_cf_paint(colors=_cf_colors):
+            def _paint(paint, shape, mask, seed, pm, bb):
+                return _chromatic_flake_paint(paint, shape, mask, seed, pm, bb, colors)
+            _paint.__name__ = f"paint_{_cf_id}"
+            return _paint
+
+        def _make_cf_spec(colors=_cf_colors, spec_profiles=_cf_specs):
+            def _spec(shape, mask, seed, sm):
+                return _chromatic_flake_spec(shape, mask, seed, sm, colors, spec_profiles)
+            _spec.__name__ = f"spec_{_cf_id}"
+            return _spec
+
+        _pf = _make_cf_paint()
+        _sf = _make_cf_spec()
+        engine_module.MONOLITHIC_REGISTRY[_cf_id] = (_sf, _pf)
+        _cf_registered += 1
+
+    if _cf_registered:
+        print(f"[24K Arsenal] Registered {_cf_registered}/30 Chromatic Flake finishes")
+
     # --- Sort registries alphabetically after merge ---
     for reg_name in ('BASE_REGISTRY', 'PATTERN_REGISTRY', 'MONOLITHIC_REGISTRY'):
         reg = getattr(engine_module, reg_name, None)
@@ -11399,6 +12031,20 @@ def get_expansion_group_map():
     }
 
     return {"bases": bases_groups, "patterns": patterns_groups, "specials": specials_groups}
+
+
+# ============================================================
+# Aurora & Chromatic Flow — registered inside integrate_expansion()
+# ============================================================
+# NOTE: Aurora paint functions are NOT registered here at module scope.
+# They are registered inside integrate_expansion() where we have a reference
+# to the already-initialized engine_module, so we can look up the paint
+# functions that were injected by integrate_chameleon (via globals().update).
+#
+# DO NOT use "import engine.chameleon" here — it produces a separate,
+# uninitialized module instance (_engine=None) and breaks rendering.
+#
+# The aurora ID → paint function name map is defined in integrate_expansion().
 
 
 def get_expansion_counts():

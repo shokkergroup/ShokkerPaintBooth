@@ -10,7 +10,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SHOKKER PAINT BOOTH — v5 Alpha</title>
+    <title>Shokker Paint Booth</title>
     <link rel="icon" href="data:," />
     <link rel="stylesheet" href="paint-booth-v2.css">
     <script src="fusion-swatches.js"></script>
@@ -66,11 +66,13 @@
             padding: 6px 12px;
             border-radius: 6px;
             font-size: 13px;
+            transition: border-color 0.15s, box-shadow 0.15s;
         }
 
         .shokk-search:focus {
             outline: none;
             border-color: var(--accent-gold, #ffaa00);
+            box-shadow: 0 0 0 2px rgba(255, 170, 0, 0.18);
         }
 
         .shokk-modal-path {
@@ -340,7 +342,23 @@
         <div class="header-brand">
             <h1>SHOKKER PAINT BOOTH</h1>
             <div class="subtitle">
-                <span id="liveBuildBadge" class="version-badge" title="Version">v5</span>
+                <span id="liveBuildBadge" class="version-badge" title="Version">...</span>
+                <script>
+                // Fetch real version from server and update badge + title
+                (function(){
+                    var port = window._SHOKKER_PORT || 59876;
+                    fetch('http://localhost:' + port + '/build-check').then(function(r){return r.json();}).then(function(d){
+                        var badge = document.getElementById('liveBuildBadge');
+                        if (badge && d.version) {
+                            var v = d.version.replace('-alpha','').replace('-beta','');
+                            badge.textContent = 'v' + v;
+                            badge.title = 'Version ' + d.version;
+                            document.title = 'Shokker Paint Booth v' + v;
+                        }
+                    }).catch(function(){});
+                })();
+                </script>
+                <span id="gpuStatusBadge" class="version-badge" style="margin-left:6px;font-size:9px;color:#888;" title="GPU Status">...</span>
                 <span id="comboCount" style="display:none;"></span>
                 <span id="b21check" style="display:none;"></span>
             </div>
@@ -386,12 +404,15 @@
         <div class="header-right">
             <span id="autosaveBadge"
                 style="font-size: 8px; color: var(--accent-green); opacity: 0.4; transition: opacity 0.3s;">Auto-saved</span>
-            <button id="easy-mode-btn" onclick="toggleEasyMode()"
-                style="background: #1a1a1a; color: #E87A20; border: 1px solid #333; padding: 4px 12px;
-                       border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold;"
-                title="Toggle between Easy Mode (simplified) and Advanced Mode (full controls)">
-              ⚡ ADVANCED
-            </button>
+            <div id="ui-mode-toggle" class="ui-mode-pill" onclick="toggleUIMode()" title="Toggle between Simple (fewer controls) and Advanced (full controls)">
+                <span class="ui-mode-option" data-mode="simple">Simple</span>
+                <span class="ui-mode-option active" data-mode="advanced">Advanced</span>
+            </div>
+            <span style="display:inline-flex;align-items:center;gap:2px;margin:0 4px;" title="UI Scale — Ctrl+Plus to zoom in, Ctrl+Minus to zoom out">
+                <button onclick="setUIScale(-1)" style="background:none;border:1px solid #444;color:#aaa;width:18px;height:18px;font-size:11px;cursor:pointer;border-radius:3px;padding:0;line-height:1;">−</button>
+                <span id="uiScaleLabel" style="font-size:9px;color:#888;min-width:28px;text-align:center;">100%</span>
+                <button onclick="setUIScale(1)" style="background:none;border:1px solid #444;color:#aaa;width:18px;height:18px;font-size:11px;cursor:pointer;border-radius:3px;padding:0;line-height:1;">+</button>
+            </span>
             <button class="gear-btn" onclick="showShortcutLegend()" title="Keyboard shortcuts (?)"
                 style="font-size:12px; opacity:0.6;">?</button>
             <button class="gear-btn" id="settingsGearBtn" onclick="toggleSettingsDropdown()" title="Settings">⚙</button>
@@ -639,6 +660,10 @@
                     <div style="font-weight: 800; color: var(--accent-green); font-size: 10px; letter-spacing: 0.5px;">✓ SPEC MAP LOADED (Layer 0)</div>
                     <div id="specFromShokkLabel" style="color: var(--text-dim); font-size: 9px;">From SHOKK — zones paint on top. Render uses this spec.</div>
                 </div>
+                <!-- Zone Quick-View Bar (colored chips for each zone) -->
+                <div class="zone-quickview-bar" id="zoneQuickViewBar">
+                    <!-- Populated by renderZoneQuickView() -->
+                </div>
                 <!-- Zone List -->
                 <div class="zone-list-wrapper" id="zoneList">
                     <!-- Zones rendered by JS -->
@@ -704,9 +729,10 @@
                             style="border-color:var(--accent-blue); color:var(--accent-blue);"
                             title="Export to folder below: paint_base + 4 spec channel PNGs">🎨 PS Export</button>
                         <div class="ps-export-section" style="display:flex; align-items:center; gap:4px; flex-wrap:wrap;">
-                            <input type="text" id="leftPanelPsExportFolder" placeholder="PS Export folder"
+                            <input type="text" id="leftPanelPsExportFolder" placeholder="Type full path here"
                                 style="max-width:160px; padding:4px 8px; font-size:10px; background:var(--surface); border:1px solid var(--border); border-radius:4px; color:var(--text);"
-                                title="Folder where PS Export writes files. Shared with LOAD SHOKK library.">
+                                title="Type or paste the FULL folder path (e.g. E:\My Exports). Browser Browse button may not work — type the path instead."
+                                oninput="(function(v){if(typeof PS_EXPORT_FOLDER_KEY!=='undefined')localStorage.setItem(PS_EXPORT_FOLDER_KEY,v);var o=document.getElementById('shokkPsExportFolder');if(o)o.value=v;})(this.value)">
                             <button type="button" class="template-btn" onclick="browsePsExportFolder('leftPanelPsExportFolder')"
                                 style="font-size:10px; padding:4px 8px;" title="Choose folder in File Explorer">Browse</button>
                         </div>
@@ -1355,6 +1381,23 @@
                 <!-- Rendered by JS -->
             </div>
 
+            <!-- Fine Tuning Panel (overlays Finish Library when open) -->
+            <div id="fineTuningPanel" class="fine-tuning-panel" style="display:none;">
+                <div class="fine-tuning-header">
+                    <button class="btn btn-sm fine-tuning-back" onclick="closeFineTuning()" title="Back to Finish Library">&larr; Library</button>
+                    <span class="fine-tuning-title" id="fineTuningTitle">FINE TUNING</span>
+                </div>
+                <div class="fine-tuning-options">
+                    <label style="display:flex;align-items:center;gap:4px;font-size:10px;color:var(--text-dim);cursor:pointer;">
+                        <input type="checkbox" id="ftAccordionMode" checked onchange="window._ftAccordionMode=this.checked">
+                        Auto-collapse sections
+                    </label>
+                </div>
+                <div class="fine-tuning-body" id="fineTuningBody">
+                    <!-- Dynamically populated by openFineTuning() -->
+                </div>
+            </div>
+
             <!-- Action bar cleaned — Render moved to canvas float, config/modes in gear dropdown -->
         </div>
     </div>
@@ -1898,7 +1941,8 @@
                     title="Export selected SHOKK to folder below (paint + 4 spec channel PNGs)">🎨 PS Export</button>
                 <input type="text" id="shokkPsExportFolder" placeholder="PS Export folder (optional)"
                     style="max-width:200px; padding:4px 8px; font-size:10px; background:var(--surface); border:1px solid var(--border); border-radius:4px; color:var(--text);"
-                    title="Folder where PS Export writes files. Leave blank for default.">
+                    title="Folder where PS Export writes files. Leave blank for default."
+                    oninput="(function(v){if(typeof PS_EXPORT_FOLDER_KEY!=='undefined')localStorage.setItem(PS_EXPORT_FOLDER_KEY,v);var o=document.getElementById('leftPanelPsExportFolder');if(o)o.value=v;})(this.value)">
                 <button type="button" class="btn btn-sm" onclick="browsePsExportFolder('shokkPsExportFolder')"
                     style="font-size:10px; padding:4px 8px;" title="Choose folder in File Explorer">Browse</button>
                 <span

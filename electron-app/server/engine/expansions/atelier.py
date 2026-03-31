@@ -35,7 +35,7 @@ def _atelier_spec(M=120, R=35, CC=45):
     def spec_fn(shape, mask, seed, sm):
         spec = np.zeros((shape[0], shape[1], 4), dtype=np.uint8)
         spec[:, :, 0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-        spec[:, :, 1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+        spec[:, :, 1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
         spec[:, :, 2] = CC
         spec[:, :, 3] = 255
         return spec
@@ -352,7 +352,7 @@ def _spec_micro_flake_burst(shape, mask, seed, sm):
     CC = 16.0 + (1 - flake_density) * 80 + cc_ind01 * 30
 
     spec[:, :, 0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:, :, 1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:, :, 1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:, :, 2] = np.clip(CC * mask + 40 * (1 - mask), 0, 255).astype(np.uint8)
     spec[:, :, 3] = 255
     return spec
@@ -393,7 +393,7 @@ def _spec_marble_vein_fine(shape, mask, seed, sm):
     CC = 16.0 + 90.0 * cc_ind01
 
     spec[:, :, 0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:, :, 1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:, :, 1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:, :, 2] = np.clip(CC * mask + 40 * (1 - mask), 0, 255).astype(np.uint8)
     spec[:, :, 3] = 255
     return spec
@@ -427,7 +427,7 @@ def _spec_obsidian_glass(shape, mask, seed, sm):
     CC = 16.0 + 100.0 * cc_ind01
 
     spec[:, :, 0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:, :, 1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:, :, 1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:, :, 2] = np.clip(CC * mask + 40 * (1 - mask), 0, 255).astype(np.uint8)
     spec[:, :, 3] = 255
     return spec
@@ -470,7 +470,7 @@ def _spec_silk_weave(shape, mask, seed, sm):
     CC = 16.0 + 90.0 * cc_ind01
 
     spec[:, :, 0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:, :, 1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:, :, 1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:, :, 2] = np.clip(CC * mask + 40 * (1 - mask), 0, 255).astype(np.uint8)
     spec[:, :, 3] = 255
     return spec
@@ -516,7 +516,7 @@ def _spec_ceramic_glaze(shape, mask, seed, sm):
     CC = CC * (1 - crazing) + crazing * 120
 
     spec[:, :, 0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:, :, 1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:, :, 1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:, :, 2] = np.clip(CC * mask + 40 * (1 - mask), 0, 255).astype(np.uint8)
     spec[:, :, 3] = 255
     return spec
@@ -549,7 +549,7 @@ def _spec_brushed_titanium(shape, mask, seed, sm):
     CC = 16 + cc_ind01 * 90
 
     spec[:, :, 0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:, :, 1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:, :, 1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:, :, 2] = np.clip(CC * mask + 40 * (1 - mask), 0, 255).astype(np.uint8)
     spec[:, :, 3] = 255
     return spec
@@ -597,7 +597,7 @@ def _spec_gold_leaf_micro(shape, mask, seed, sm):
     CC = 16.0 + leaf_area * 20 + cc_ind01 * 80
 
     spec[:, :, 0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:, :, 1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:, :, 1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:, :, 2] = np.clip(CC * mask + 40 * (1 - mask), 0, 255).astype(np.uint8)
     spec[:, :, 3] = 255
     return spec
@@ -632,7 +632,7 @@ def _spec_fluid_metal(shape, mask, seed, sm):
     CC = 16.0 + 100.0 * cc_ind01
 
     spec[:, :, 0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:, :, 1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:, :, 1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:, :, 2] = np.clip(CC * mask + 40 * (1 - mask), 0, 255).astype(np.uint8)
     spec[:, :, 3] = 255
     return spec

@@ -270,21 +270,25 @@ def paint_heat_treated_v2(paint, shape, mask, seed, pm, bb):
 
 def spec_heat_treated(shape, seed, sm, base_m, base_r):
     h, w = shape = shape if len(shape) == 2 else shape[:2]
-    
+
     # Tempered steel (hard, moderately specular)
     M = np.full((h, w), np.clip(base_m + 0.2, 0, 1), dtype=np.float32)
-    
-    # Very slight surface variation
+
+    # Very slight surface variation from tempering color bands
     micro = multi_scale_noise((h, w), [4, 8], [0.3, 0.2], seed + 1509)
-    M = np.clip(M + (micro + 1.0) / 4.0 * 0.08 * 255.0, 0, 255).astype(np.float32)
-    
-    # Cool specular tone
-    R = np.full((h, w), np.clip(base_r * 0.92, 0, 1), dtype=np.float32)
-    
-    # High clarity (polished tempered surface)
-    CC = np.full((h, w), 0.8, dtype=np.float32)
-    
-    return M, R, CC
+    M = np.clip(M + np.maximum(0, micro - 0.3) * 0.15, 0, 1).astype(np.float32)
+
+    # Temper zone affects roughness - blued areas are smoother, straw areas rougher
+    temp_zones = multi_scale_noise((h, w), [2, 3, 6], [0.4, 0.35, 0.25], seed + 1508)
+    temp_zones = (temp_zones + 1.0) / 2.0
+    R = np.clip(base_r * (0.85 + temp_zones * 0.15), 0, 1).astype(np.float32)
+
+    # Clarity varies with tempering - blued zones have higher clarity
+    CC = np.clip(0.7 + temp_zones * 0.15, 0, 1).astype(np.float32)
+
+    return (np.clip(M * 255.0, 0, 255).astype(np.float32),
+            np.clip(R * 255.0, 0, 255).astype(np.float32),
+            np.clip(CC * 255.0, 0, 255).astype(np.float32))
 
 
 # PATINA BRONZE - Verdigris copper carbonate formation model

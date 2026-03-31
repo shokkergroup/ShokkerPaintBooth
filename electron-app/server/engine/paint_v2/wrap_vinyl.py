@@ -141,7 +141,7 @@ def spec_color_flip(shape, seed, sm, base_m, base_r):
     # M: high metallic throughout (chrome-like), highest at transition
     M = np.clip(180.0 + transition * 60.0 * sm + fine * 15.0 * sm, 0, 255).astype(np.float32)
     # R: very low (glossy), slightly higher at transitions for diffuse color shift
-    R = np.clip(4.0 + transition * 8.0 * sm + fine * 3.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(4.0 + transition * 8.0 * sm + fine * 3.0 * sm, 15, 255).astype(np.float32)  # GGX floor
     # CC: max clearcoat glossy film
     CC = np.clip(16.0 + (1.0 - transition) * 5.0 * sm, 16, 255).astype(np.float32)
 
@@ -203,47 +203,39 @@ def spec_gloss_wrap(shape, seed, sm, base_m, base_r):
 # =============================================================================
 
 def paint_liquid_wrap_v2(paint, shape, mask, seed, pm, bb):
-    """
-    Liquid metal effect using curl noise for organic flow patterns.
-    Simulates mercury-like pooling and drip behavior.
-    """
+    """Liquid rubber/vinyl peel coat: WEAK-016 FIX — stretchy rubber/vinyl character.
+    Distinct from satin_wrap: fine Perlin micro-texture + slight darkening at stretch points.
+    Previously simulated liquid-metal pooling — wrong material character for rubber peel coat."""
     h, w = shape[:2] if len(shape) > 2 else shape
-    
-    # Curl noise for organic liquid flow (approximated via cross-derivatives)
-    base_noise = multi_scale_noise((h, w), [2, 4, 8], [0.4, 0.35, 0.25], seed + 2512)
-    deriv_noise = multi_scale_noise((h, w), [2, 4, 8], [0.4, 0.35, 0.25], seed + 2513)
-    
-    # Approximation of curl: perpendicular gradient flow
-    curl_x = deriv_noise
-    curl_y = base_noise
-    
-    # Liquid pooling effect: concentration toward low areas
-    pooling = np.clip(1.0 - np.abs(curl_x - curl_y), 0, 1)
-    pooling = np.power(pooling, 1.5)
-    
-    # Metallic shimmer with liquid surface tension (sharp highlights)
-    surface = 0.9 + 0.1 * multi_scale_noise((h, w), [1, 2], [0.6, 0.4], seed + 2514)
-    liquid_effect = np.stack([surface, surface, surface], axis=-1) * (0.8 + 0.2 * pooling[:,:,np.newaxis])
-    
-    # Apply with pool-based blending
-    blend = pm * np.clip(pooling[:,:,np.newaxis], 0.2, 1.0)
-    result = np.clip(paint * (1.0 - mask[:,:,np.newaxis] * blend) + 
-                     liquid_effect * (mask[:,:,np.newaxis] * blend), 0, 1)
-    return result.astype(np.float32)
+    # Fine rubber compound particle variation texture
+    rubber_grain = multi_scale_noise((h, w), [2, 4, 8], [0.45, 0.35, 0.2], seed + 2512)
+    # Stretch point simulation: gradient noise for high-curvature area darkening
+    stretch_pts  = multi_scale_noise((h, w), [1, 2, 3], [0.5, 0.3, 0.2], seed + 2513)
+    # Slight darkening at stretch peaks (0-5% darker where rubber stretches)
+    stretch_darken = 1.0 - np.clip((stretch_pts - 0.7) / 0.3, 0, 1) * 0.05 * pm
+    # ~10% desaturation: rubber coat slightly mutes the underlying color
+    gray = paint.mean(axis=2, keepdims=True)
+    desaturated = paint * 0.90 + gray * 0.10
+    # Fine rubber grain: subtle brightness variation from compound particles
+    grain_effect = 1.0 + (rubber_grain - 0.5) * 0.03 * pm
+    result = np.clip(desaturated * stretch_darken[:,:,np.newaxis] * grain_effect[:,:,np.newaxis], 0, 1)
+    blend = pm * mask[:,:,np.newaxis]
+    return np.clip(paint * (1.0 - blend) + result * blend, 0, 1).astype(np.float32)
 
 
 def spec_liquid_wrap(shape, seed, sm, base_m, base_r):
-    """
-    Liquid rubber peel coat: dielectric polymer, the rubber IS the coat.
-    M near 0, moderate roughness from rubbery texture, CC from self-sealing.
-    """
+    """Liquid rubber peel coat spec: WEAK-016 FIX — rubber/vinyl character distinct from satin_wrap.
+    G: 60-100 (slightly rougher than satin), no metallic (R near 0), fine Perlin texture.
+    Previously: R=22-37 (too smooth), CC=50-58 — nearly identical range to satin_wrap."""
     h, w = shape
-    
-    tension = multi_scale_noise((h, w), [3, 6, 12], [0.35, 0.35, 0.3], seed + 2516)
-    metallic = np.clip(2.0 + tension * 4.0 * sm, 0, 255).astype(np.float32)
-    roughness = np.clip(22.0 + tension * 15.0 * sm, 0, 255).astype(np.float32)
-    cc = np.clip(50.0 + tension * 8.0, 0, 255).astype(np.float32)
-    
+    # Fine Perlin texture for rubber compound surface variation
+    rubber_tex = multi_scale_noise((h, w), [2, 4, 8], [0.45, 0.35, 0.2], seed + 2516)
+    # M: near zero — rubber/vinyl is dielectric, no metallic character
+    metallic  = np.clip(0.0 + rubber_tex * 3.0 * sm, 0, 255).astype(np.float32)
+    # R: 60-100 range — slightly rougher than satin (satin ~35-55), rubber is not as smooth
+    roughness = np.clip(60.0 + rubber_tex * 40.0 * sm, 0, 255).astype(np.float32)
+    # CC: same satin-ish range (40-58) — rubber self-seals like vinyl
+    cc        = np.clip(40.0 + rubber_tex * 18.0, 16, 255).astype(np.float32)
     return (metallic, roughness, cc)
 
 
@@ -404,39 +396,22 @@ def spec_stealth_wrap(shape, seed, sm, base_m, base_r):
 # =============================================================================
 
 def paint_textured_wrap_v2(paint, shape, mask, seed, pm, bb):
-    """
-    Carbon fiber texture using wave interference for weave pattern.
-    Creates realistic woven overlay with alternating fiber direction.
-    """
+    """Orange-peel embossed vinyl wrap. Applies raised-dimple surface texture to the
+    user's base paint color — preserves any chosen color, adds 3D emboss character
+    via bump modulation (peaks lighter, valleys darker). No hardcoded color."""
     h, w = shape[:2] if len(shape) > 2 else shape
-    
-    y, x = get_mgrid((h, w))
-    
-    # Two-directional wave pattern for weave
-    weave_1 = np.sin(12 * np.pi * x / w) * np.sin(12 * np.pi * y / h)
-    weave_2 = np.sin(12 * np.pi * x / w + np.pi/4) * np.cos(12 * np.pi * y / h + np.pi/4)
-    
-    # Combine weaves with phase offset
-    weave = 0.6 * weave_1 + 0.4 * weave_2
-    weave = (weave + 1.0) / 2.0  # Normalize to [0, 1]
-    
-    # Add stochastic fiber variations
-    fiber_noise = multi_scale_noise((h, w), [1, 2, 4, 8], [0.3, 0.25, 0.25, 0.2], seed + 2529)
-    texture_pattern = 0.7 * weave + 0.3 * fiber_noise
-    
-    # Carbon fiber color (dark gray with slight sheen)
-    carbon_base = np.array([0.25, 0.25, 0.26])
-    carbon_sheen = carbon_base + 0.1 * texture_pattern[:,:,np.newaxis]
-    carbon_effect = np.stack([carbon_sheen[:,:,0], carbon_sheen[:,:,1], carbon_sheen[:,:,2]], axis=-1)
-    
-    # Texture depth variation
-    depth = 0.9 + 0.08 * (texture_pattern - 0.5)[:,:,np.newaxis]
-    carbon_effect = carbon_effect * depth
-    
-    blend = pm * (0.85 + 0.15 * texture_pattern[:,:,np.newaxis])
-    result = np.clip(paint * (1.0 - mask[:,:,np.newaxis] * blend) + 
-                     carbon_effect * (mask[:,:,np.newaxis] * blend), 0, 1)
-    return result.astype(np.float32)
+    # Coarse bump map: large dimples characteristic of orange-peel vinyl texture
+    bump_coarse = multi_scale_noise((h, w), [8, 16], [0.55, 0.45], seed + 2529)
+    # Fine surface grain: micro-texture variation on vinyl film surface
+    bump_fine = multi_scale_noise((h, w), [2, 4], [0.5, 0.5], seed + 2530)
+    # Combine into orange-peel pattern (75% coarse dimples, 25% fine grain)
+    texture = np.clip(0.75 * bump_coarse + 0.25 * bump_fine, 0, 1)
+    # Brightness modulation: peaks +14%, valleys -14% (light on bumps, shadow in dimples)
+    bump_mod = (1.0 + 0.28 * (texture - 0.5))[:, :, np.newaxis]
+    textured = np.clip(paint * bump_mod, 0, 1)
+    blend = pm * (0.80 + 0.20 * texture[:, :, np.newaxis])
+    result = paint * (1.0 - mask[:, :, np.newaxis] * blend) + textured * (mask[:, :, np.newaxis] * blend)
+    return np.clip(result, 0, 1).astype(np.float32)
 
 
 def spec_textured_wrap(shape, seed, sm, base_m, base_r):

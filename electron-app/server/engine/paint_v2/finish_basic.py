@@ -86,20 +86,30 @@ def spec_chameleon(shape, seed, sm, base_m, base_r):
 # ============================================================================
 
 def paint_clear_matte_v2(paint, shape, mask, seed, pm, bb):
-    """Clear matte: solid flat finish, no texture."""
-    darken = np.clip(paint * 0.87, 0, 1)
-    flat = np.clip((darken - 0.5) * 0.72 + 0.5, 0, 1)
-    return flat * mask[:,:,np.newaxis] + paint * (1 - mask[:,:,np.newaxis])
+    """Clear matte: WEAK-013 FIX — precision matte clearcoat preserves base color almost perfectly.
+    Matte clearcoat (BMW Frozen, Porsche Chalk style) does not tint or darken — just a tiny
+    value increase (0.02) from the protective clear layer. No contrast reduction."""
+    protected = np.clip(paint + 0.02, 0, 1)
+    return protected * mask[:,:,np.newaxis] + paint * (1 - mask[:,:,np.newaxis])
 
 def spec_clear_matte(shape, seed, sm, base_m, base_r):
-    """Clear matte spec: CC=130 visibly flat. Returns (M, R, CC)."""
+    """Clear matte spec: WEAK-013 FIX — precision engineered matte clearcoat (factory matte cars).
+    Very uniform roughness with very low amplitude noise (±5, not ±30) — matte clearcoats are
+    engineered to be consistent. Near-zero metallic with fine-scale dust flicker (0-15).
+    B/CC: 180-200 (not as extreme as flat matte — slight sheen from protective clear).
+    Previously: flat constant near-duplicate of living_matte. Returns (M, R, CC)."""
     h, w = shape
-    metal = np.full((h, w), base_m / 255.0, dtype=np.float32)
-    spec  = np.full((h, w), base_r / 255.0, dtype=np.float32)
-    cc    = np.full((h, w), 130.0 / 255.0,  dtype=np.float32)
-    return (np.clip(metal * 255, 0, 255).astype(np.float32),
-            np.clip(spec  * 255, 0, 255).astype(np.float32),
-            np.clip(cc    * 255, 0, 255).astype(np.float32))
+    # Very low amplitude FBM — engineered uniformity, not organic variation
+    precision_fbm = multi_scale_noise((h, w), [16, 32, 64], [0.6, 0.3, 0.1], seed + 1300)
+    # Fine-scale dust-particle noise for metallic flicker (very high frequency, tiny scale)
+    dust_noise = multi_scale_noise((h, w), [64, 128], [0.7, 0.3], seed + 1301)
+    # M: near-zero metallic — fine-scale dust particle flicker only (0-15 range)
+    M  = np.clip(dust_noise * 15.0 * sm, 0, 255).astype(np.float32)
+    # R: uniform G=200-220, very low amplitude (±5 noise) — engineered consistency
+    R  = np.clip(210.0 + precision_fbm * 10.0 * sm - 5.0, 0, 255).astype(np.float32)
+    # CC: 180-200 — matte clearcoat has slight sheen, not dead flat
+    CC = np.clip(190.0 + precision_fbm * 10.0 - 5.0, 160, 255).astype(np.float32)
+    return (M, R, CC)
 
 
 # ============================================================================
@@ -149,32 +159,71 @@ def spec_flat_black(shape, seed, sm, base_m, base_r):
 # ============================================================================
 
 def paint_frozen_v2(paint, shape, mask, seed, pm, bb):
-    """Frozen metallic: pass-through paint, spec drives it."""
-    return paint.copy()
+    """Frozen (ice-crystal): WEAK-017 FIX — distinct from frozen_matte.
+    Ice-crystal frozen effect: slight blue iridescence giving cold metallic character.
+    Frozen = crystalline sparkle; frozen_matte = frosted/etched uniform surface."""
+    h, w = shape[:2] if len(shape) > 2 else shape
+    out = paint.copy()
+    blend = np.clip(pm, 0.0, 1.0) * mask
+    # Slight blue iridescence: push toward cool blue-ice
+    out[:, :, 0] = np.clip(out[:, :, 0] - 0.025 * blend, 0, 1)  # reduce red slightly
+    out[:, :, 2] = np.clip(out[:, :, 2] + 0.04  * blend, 0, 1)  # boost blue for icy cast
+    return out
 
 def spec_frozen(shape, seed, sm, base_m, base_r):
-    """Frozen spec: moderate matte metallic, flat. Returns (M, R, CC)."""
+    """Frozen spec: WEAK-017 FIX — ice-crystal pattern using Worley-style distance to random points.
+    High spec variation, crystalline roughness pattern — distinctly different from frozen_matte's
+    uniform micro-roughness. Previously: flat constant output identical to frozen_matte."""
     h, w = shape
-    metal = np.full((h, w), base_m / 255.0, dtype=np.float32)
-    spec  = np.full((h, w), base_r / 255.0, dtype=np.float32)
-    cc    = np.full((h, w), 16.0 / 255.0,   dtype=np.float32)
-    return (np.clip(metal * 255, 0, 255).astype(np.float32),
-            np.clip(spec  * 255, 0, 255).astype(np.float32),
-            np.clip(cc    * 255, 0, 255).astype(np.float32))
+    # Worley-style crystalline pattern: distance to nearest random seed points
+    rng = np.random.RandomState(seed + 7700)
+    n_crystals = 80
+    pts_y = rng.uniform(0, h, n_crystals).astype(np.float32)
+    pts_x = rng.uniform(0, w, n_crystals).astype(np.float32)
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+    # Compute distance to nearest crystal center
+    dist = np.full((h, w), 1e9, dtype=np.float32)
+    for i in range(n_crystals):
+        d = np.sqrt((yy - pts_y[i]) ** 2 + (xx - pts_x[i]) ** 2)
+        dist = np.minimum(dist, d)
+    # Normalize distance field to 0-1
+    crystal = np.clip(dist / (dist.max() + 1e-6), 0, 1)
+    # M: base metallic with crystalline sparkle variation (high spec variation)
+    M  = np.clip(base_m + crystal * 40.0 * sm - 20.0, 0, 255).astype(np.float32)
+    # R: crystalline roughness — variation at crystal boundaries creates sharp specular edges
+    R  = np.clip(base_r + (1.0 - crystal) * 35.0 * sm, 0, 255).astype(np.float32)
+    # CC: slight variation following crystal edges
+    CC = np.clip(16.0 + crystal * 20.0 * sm, 16, 255).astype(np.float32)
+    return (M, R, CC)
 
 def paint_frozen_matte_v2(paint, shape, mask, seed, pm, bb):
-    """Frozen matte: pass-through, spec handles it."""
-    return paint.copy()
+    """Frozen matte (frosted glass): WEAK-017 FIX — distinct from frozen (ice-crystal).
+    Frosted/etched glass surface character: slight desaturation + brightness reduction
+    simulating translucency. No blue iridescence, no crystalline sparkle — uniform diffusion."""
+    h, w = shape[:2] if len(shape) > 2 else shape
+    out = paint.copy()
+    gray = out.mean(axis=2, keepdims=True)
+    # Slight desaturation for frosted translucency effect
+    desaturated = out * 0.93 + gray * 0.07
+    # Slight brightness reduction: frosted surface scatters and absorbs more
+    dimmed = np.clip(desaturated * 0.96, 0, 1)
+    blend = np.clip(pm, 0.0, 1.0) * mask[:, :, np.newaxis]
+    return np.clip(out * (1.0 - blend) + dimmed * blend, 0, 1)
 
 def spec_frozen_matte(shape, seed, sm, base_m, base_r):
-    """Frozen matte spec: high roughness, flat. Returns (M, R, CC)."""
+    """Frozen matte spec: WEAK-017 FIX — frosted/etched glass surface, distinct from frozen.
+    Uniform micro-roughness (G: 200-230), no crystalline pattern.
+    Previously: flat constants identical structure to spec_frozen."""
     h, w = shape
-    metal = np.full((h, w), base_m / 255.0, dtype=np.float32)
-    spec  = np.full((h, w), base_r / 255.0, dtype=np.float32)
-    cc    = np.full((h, w), 80.0 / 255.0,    dtype=np.float32)  # CC=80 frozen matte
-    return (np.clip(metal * 255, 0, 255).astype(np.float32),
-            np.clip(spec  * 255, 0, 255).astype(np.float32),
-            np.clip(cc    * 255, 0, 255).astype(np.float32))
+    # Fine uniform micro-roughness: isotropic FBM at small scales (frosted surface)
+    frost_fbm = multi_scale_noise((h, w), [2, 3, 5], [0.5, 0.3, 0.2], seed + 7710)
+    # M: low metallic — frosted matte suppresses metallic highlights (0-30 range)
+    M  = np.clip(base_m * 0.12 + frost_fbm * 10.0 * sm, 0, 255).astype(np.float32)
+    # R: uniform high micro-roughness 200-230 — frosted surface is uniformly rough
+    R  = np.clip(200.0 + frost_fbm * 30.0 * sm, 0, 255).astype(np.float32)
+    # CC: high/flat CC (CC=160-200) — frosted = no clearcoat sparkle
+    CC = np.clip(160.0 + frost_fbm * 40.0, 16, 255).astype(np.float32)
+    return (M, R, CC)
 
 
 # ============================================================================
@@ -239,20 +288,35 @@ def spec_liquid_obsidian(shape, seed, sm, base_m, base_r):
 # ============================================================================
 
 def paint_living_matte_v2(paint, shape, mask, seed, pm, bb):
-    """Living matte: solid organic matte, no Perlin variation."""
-    darken = np.clip(paint * 0.88, 0, 1)
-    flat = np.clip((darken - 0.5) * 0.75 + 0.5, 0, 1)
-    return flat * mask[:,:,np.newaxis] + paint * (1 - mask[:,:,np.newaxis])
+    """Living matte: WEAK-013 FIX — organic irregular matte with slight patchy character.
+    Slight desaturation and darkening simulate a natural matte surface with irregular absorption.
+    Previously: solid flat finish identical in character to clear_matte."""
+    h, w = shape[:2] if len(shape) > 2 else shape
+    gray = paint.mean(axis=2, keepdims=True)
+    # Slight desaturation for organic chalky undertone
+    desat = paint * 0.88 + gray * 0.12
+    # Moderate darkening — organic matte absorbs more light than clearcoat matte
+    flat = np.clip((desat - 0.5) * 0.75 + 0.5, 0, 1)
+    darkened = np.clip(flat * 0.92, 0, 1)
+    return darkened * mask[:,:,np.newaxis] + paint * (1 - mask[:,:,np.newaxis])
 
 def spec_living_matte(shape, seed, sm, base_m, base_r):
-    """Living matte spec: CC=140 organic flat matte. Returns (M, R, CC)."""
+    """Living matte spec: WEAK-013 FIX — organic irregular matte with high-amplitude 3-octave FBM.
+    Noticeably patchy G: 210-255, high amplitude variation — distinctly different from the
+    precision-engineered uniform clear_matte. Natural surface irregularity (dirt, skin oil,
+    uneven spray absorption). Previously: flat constants, near-duplicate of clear_matte. Returns (M, R, CC)."""
     h, w = shape
-    metal = np.full((h, w), base_m / 255.0, dtype=np.float32)
-    spec  = np.full((h, w), base_r / 255.0, dtype=np.float32)
-    cc    = np.full((h, w), 140.0 / 255.0,  dtype=np.float32)
-    return (np.clip(metal * 255, 0, 255).astype(np.float32),
-            np.clip(spec  * 255, 0, 255).astype(np.float32),
-            np.clip(cc    * 255, 0, 255).astype(np.float32))
+    # High-amplitude 3-octave FBM — organic, patchy surface variation
+    organic_fbm = multi_scale_noise((h, w), [4, 8, 16], [0.5, 0.33, 0.17], seed + 1310)
+    # Secondary variation layer for additional patchiness
+    patch_fbm   = multi_scale_noise((h, w), [6, 12, 24], [0.5, 0.35, 0.15], seed + 1311)
+    # M: near-zero metallic — slight random organic variation (0-20 range)
+    M  = np.clip(organic_fbm * 20.0 * sm, 0, 255).astype(np.float32)
+    # R: patchy roughness G=210-255 — high amplitude, noticeably irregular
+    R  = np.clip(232.0 + organic_fbm * 45.0 * sm - 22.0, 0, 255).astype(np.float32)
+    # CC: patchy coverage variation (175-230) — organic matte has uneven protective quality
+    CC = np.clip(202.0 + patch_fbm * 55.0 - 27.0, 160, 255).astype(np.float32)
+    return (M, R, CC)
 
 
 # ============================================================================
@@ -260,20 +324,31 @@ def spec_living_matte(shape, seed, sm, base_m, base_r):
 # ============================================================================
 
 def paint_matte_v2(paint, shape, mask, seed, pm, bb):
-    """Matte: flat, no noise, no pattern."""
-    darken = np.clip(paint * 0.85, 0, 1)
-    flat = np.clip((darken - 0.5) * 0.70 + 0.5, 0, 1)
-    return flat * mask[:,:,np.newaxis] + paint * (1 - mask[:,:,np.newaxis])
+    """Matte: WEAK-010 FIX — ~12% desaturation + slight darkening for chalky matte undertone.
+    Previously: 0.85 darkening with flat contrast reduction — no color character for matte."""
+    h, w = shape[:2] if len(shape) > 2 else shape
+    gray = paint.mean(axis=2, keepdims=True)
+    # ~12% desaturation for chalky undertone
+    desat = paint * 0.88 + gray * 0.12
+    # Slight contrast reduction + darkening (~5%) to simulate matte light absorption
+    flat = np.clip((desat - 0.5) * 0.75 + 0.5, 0, 1)
+    darkened = np.clip(flat * 0.95, 0, 1)
+    return darkened * mask[:,:,np.newaxis] + paint * (1 - mask[:,:,np.newaxis])
 
 def spec_matte(shape, seed, sm, base_m, base_r):
-    """Matte spec: CC=160 heavily degraded = no visible sheen. Returns (M, R, CC)."""
+    """Matte spec: WEAK-010 FIX — 3-octave FBM roughness variation G: 220-255.
+    Near-zero metallic with micro-variation (R_ch: 0-30), CC near flat with noise.
+    Previously: flat constants — zero spatial variation in any channel."""
     h, w = shape
-    metal = np.full((h, w), base_m / 255.0, dtype=np.float32)
-    spec  = np.full((h, w), base_r / 255.0, dtype=np.float32)
-    cc    = np.full((h, w), 160.0 / 255.0,  dtype=np.float32)
-    return (np.clip(metal * 255, 0, 255).astype(np.float32),
-            np.clip(spec  * 255, 0, 255).astype(np.float32),
-            np.clip(cc    * 255, 0, 255).astype(np.float32))
+    rough_fbm = multi_scale_noise((h, w), [8, 16, 32], [0.5, 0.3, 0.2], seed + 4100)
+    # M: near-zero with micro-variation (0-30 range)
+    M  = np.clip(rough_fbm * 30.0 * sm, 0, 255).astype(np.float32)
+    # R: matte roughness 220-255 spatially varied
+    R  = np.clip(220.0 + rough_fbm * 35.0 * sm, 0, 255).astype(np.float32)
+    # CC: near-flat (200-230) with slight noise variation
+    cc_noise = multi_scale_noise((h, w), [4, 8, 16], [0.4, 0.35, 0.25], seed + 4101)
+    CC = np.clip(200.0 + cc_noise * 30.0, 160, 255).astype(np.float32)
+    return (M, R, CC)
 
 
 # ============================================================================
@@ -368,7 +443,7 @@ def spec_orange_peel_gloss(shape, seed, sm, base_m, base_r):
     M = np.clip(base_m + cells * 15.0 * sm - 7.0, 0, 255).astype(np.float32)
     # R: the key channel - orange peel creates roughness variation (bumpy micro-texture)
     # Peaks are smoother (light catches), valleys are rougher
-    R = np.clip(base_r + (1.0 - cells) * 30.0 * sm + cells * 5.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(base_r + (1.0 - cells) * 30.0 * sm + cells * 5.0 * sm, 15, 255).astype(np.float32)
     # CC: standard glossy with micro-texture variation
     CC = np.clip(16.0 + (1.0 - cells) * 12.0 * sm, 16, 255).astype(np.float32)
     return M, R, CC
@@ -438,19 +513,26 @@ def spec_primer(shape, seed, sm, base_m, base_r):
 # ============================================================================
 
 def paint_satin_v2(paint, shape, mask, seed, pm, bb):
-    """Satin: soft sheen, no pattern."""
+    """Satin: soft sheen, no pattern. Preserve saturation (satin = preserve color vibrancy)."""
     soft = np.clip(paint * 0.97 + 0.02, 0, 1)
     return soft * mask[:,:,np.newaxis] + paint * (1 - mask[:,:,np.newaxis])
 
 def spec_satin(shape, seed, sm, base_m, base_r):
-    """Satin spec: CC=70 moderate clearcoat degradation. Returns (M, R, CC)."""
+    """Satin spec: WEAK-011 FIX — real 2-octave FBM sheen variation. R: 80-140, CC: 40-90.
+    Previously: flat constants, R formula produced constant 100 everywhere regardless of mask."""
     h, w = shape
-    metal = np.full((h, w), base_m / 255.0, dtype=np.float32)
-    spec  = np.full((h, w), base_r / 255.0, dtype=np.float32)
-    cc    = np.full((h, w), 70.0 / 255.0,   dtype=np.float32)
-    return (np.clip(metal * 255, 0, 255).astype(np.float32),
-            np.clip(spec  * 255, 0, 255).astype(np.float32),
-            np.clip(cc    * 255, 0, 255).astype(np.float32))
+    # 2-octave FBM for subtle satin sheen variation
+    sheen_coarse = multi_scale_noise((h, w), [8, 16], [0.55, 0.45], seed + 3800)
+    sheen_fine   = multi_scale_noise((h, w), [2,  4],  [0.6,  0.4], seed + 3801)
+    sheen_fbm    = sheen_coarse * 0.7 + sheen_fine * 0.3
+    # M: near-zero with micro-variation for subtle satin sheen (range 0-18)
+    M  = np.clip(sheen_fbm * 18.0 * sm, 0, 255).astype(np.float32)
+    # R: satin roughness 80-140 with spatial noise
+    R  = np.clip(80.0 + sheen_fbm * 60.0 * sm, 0, 255).astype(np.float32)
+    # CC: satin clearcoat 40-90 with slight noise (moderately glossy)
+    cc_noise = multi_scale_noise((h, w), [4, 8], [0.5, 0.5], seed + 3802)
+    CC = np.clip(40.0 + cc_noise * 50.0, 16, 255).astype(np.float32)
+    return (M, R, CC)
 
 
 # ============================================================================
@@ -476,19 +558,35 @@ def spec_satin_metal(shape, seed, sm, base_m, base_r):
 # ============================================================================
 
 def paint_scuffed_satin_v2(paint, shape, mask, seed, pm, bb):
-    """Scuffed satin: clean foundation, no pattern."""
-    soft = np.clip(paint * 0.96 + 0.03, 0, 1)
-    return soft * mask[:,:,np.newaxis] + paint * (1 - mask[:,:,np.newaxis])
+    """Scuffed satin: WEAK-015 FIX — physically corrected to be rougher/duller than clean satin.
+    Scuffing removes surface gloss: ~8% desaturation + micro-abrasion darkening.
+    Previously brightened via paint*0.96+0.03 which was physically backward."""
+    h, w = shape[:2] if len(shape) > 2 else shape
+    gray = paint.mean(axis=2, keepdims=True)
+    desat = paint * 0.92 + gray * 0.08
+    darkened = np.clip(desat * 0.97, 0, 1)
+    micro = multi_scale_noise((h, w), [2, 4, 8], [0.5, 0.3, 0.2], seed + 5902)
+    darkened = np.clip(darkened * (1.0 - micro[:,:,np.newaxis] * 0.04 * pm), 0, 1)
+    return darkened * mask[:,:,np.newaxis] + paint * (1 - mask[:,:,np.newaxis])
 
 def spec_scuffed_satin(shape, seed, sm, base_m, base_r):
-    """Scuffed satin spec: CC=90 rougher than satin. Returns (M, R, CC)."""
+    """Scuffed satin spec: WEAK-015 FIX — must be ROUGHER and DULLER than plain satin.
+    Plain satin: R=95, CC=70. Scuffed must be: R=160-200 (higher), CC=90-140 (higher/duller).
+    Also: scuffing exposes micro-metal highlights — occasional bright spots in R (metallic) channel.
+    Previously: R=90/255 flat, CC=90/255 — was actually smoother and nearly same as satin."""
     h, w = shape
-    metal = np.full((h, w), base_m / 255.0, dtype=np.float32)
-    spec  = np.full((h, w), base_r / 255.0, dtype=np.float32)
-    cc    = np.full((h, w), 90.0 / 255.0,   dtype=np.float32)
-    return (np.clip(metal * 255, 0, 255).astype(np.float32),
-            np.clip(spec  * 255, 0, 255).astype(np.float32),
-            np.clip(cc    * 255, 0, 255).astype(np.float32))
+    # FBM noise for scuff texture variation
+    scuff_fbm = multi_scale_noise((h, w), [2, 4, 8], [0.45, 0.35, 0.2], seed + 5903)
+    # R (Metallic): scuffing exposes micro-metal highlights — mostly low but occasional bright spots
+    # Base low metallic (0-25) with sparse bright highlights (up to 180+)
+    bright_spots = multi_scale_noise((h, w), [1, 2], [0.7, 0.3], seed + 5904)
+    bright_mask  = np.clip((bright_spots - 0.88) / 0.12, 0, 1)  # top 12% become bright spots
+    M = np.clip(scuff_fbm * 25.0 * sm + bright_mask * 180.0, 0, 255).astype(np.float32)
+    # G (Roughness): 160-200 range — significantly rougher than base satin (R=95)
+    R = np.clip(160.0 + scuff_fbm * 40.0 * sm, 15, 255).astype(np.float32)
+    # B (Clearcoat): 90-140 range — duller than satin (CC=70) — scuffed = less glossy
+    CC = np.clip(90.0 + scuff_fbm * 50.0, 16, 255).astype(np.float32)
+    return (M, R, CC)
 
 
 # ============================================================================

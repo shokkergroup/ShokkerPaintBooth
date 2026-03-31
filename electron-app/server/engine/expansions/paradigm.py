@@ -1404,7 +1404,7 @@ def spec_void(shape, mask, seed, sm):
     CC = np.clip(140 + void_field * 80 + edge * 35, 16, 255)
 
     spec[:, :, 0] = np.clip(M * mask, 0, 255).astype(np.uint8)
-    spec[:, :, 1] = np.clip(R * mask, 0, 255).astype(np.uint8)
+    spec[:, :, 1] = np.clip(R * mask, 15, 255).astype(np.uint8)  # GGX floor
     spec[:, :, 2] = CC.astype(np.uint8)
     spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -1455,7 +1455,7 @@ def spec_living_chrome(shape, mask, seed, sm):
     CC = 16 + undulation * 80  # span 80, min 16
 
     spec[:, :, 0] = np.clip(M * mask, 0, 255).astype(np.uint8)
-    spec[:, :, 1] = np.clip(R * mask, 0, 255).astype(np.uint8)
+    spec[:, :, 1] = np.clip(R * mask, 15, 255).astype(np.uint8)  # GGX floor
     spec[:, :, 2] = np.clip(CC, 16, 96).astype(np.uint8)
     spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -1543,7 +1543,7 @@ def spec_quantum(shape, mask, seed, sm):
     R_full = R_full * sm
 
     spec[:, :, 0] = np.clip(M_full * mask, 0, 255).astype(np.uint8)
-    spec[:, :, 1] = np.clip(R_full * mask, 0, 255).astype(np.uint8)
+    spec[:, :, 1] = np.clip(R_full * mask, 15, 255).astype(np.uint8)  # GGX floor
     spec[:, :, 2] = np.where(mask > 0.5, CC_full, 0).astype(np.uint8)
     spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -1607,7 +1607,7 @@ def spec_aurora(shape, mask, seed, sm):
     CC = np.clip(16 + (1 - aurora) * 90, 16, 106)  # Use aurora for CC variation (span 90)
 
     spec[:, :, 0] = np.clip(M * mask, 0, 255).astype(np.uint8)
-    spec[:, :, 1] = np.clip(R * mask, 0, 255).astype(np.uint8)
+    spec[:, :, 1] = np.clip(R * mask, 15, 255).astype(np.uint8)  # GGX floor
     spec[:, :, 2] = np.where(mask > 0.5, CC, 0).astype(np.uint8)
     spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -1681,7 +1681,7 @@ def spec_magnetic(shape, mask, seed, sm):
     CC = 16 + (1 - lines) * 80  # span 80, min 16
 
     spec[:, :, 0] = np.clip(M * mask, 0, 255).astype(np.uint8)
-    spec[:, :, 1] = np.clip(R * mask, 0, 255).astype(np.uint8)
+    spec[:, :, 1] = np.clip(R * mask, 15, 255).astype(np.uint8)  # GGX floor
     spec[:, :, 2] = np.clip(CC, 16, 96).astype(np.uint8)
     spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -1749,7 +1749,7 @@ def spec_ember(shape, mask, seed, sm):
     R = ((1 - heat) * 150 + ember_r_noise * 40 + 5) * sm
 
     spec[:, :, 0] = np.clip(M * mask, 0, 255).astype(np.uint8)
-    spec[:, :, 1] = np.clip(R * mask, 0, 255).astype(np.uint8)
+    spec[:, :, 1] = np.clip(R * mask, 15, 255).astype(np.uint8)  # GGX floor
     spec[:, :, 2] = np.clip(16 + heat * 80, 16, 96).astype(np.uint8)  # Cool=CC=16 max clearcoat, hot=CC=96 duller from heat damage
     spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -1810,7 +1810,7 @@ def spec_stealth(shape, mask, seed, sm):
     CC = facet_CC[cell_id]
 
     spec[:, :, 0] = np.clip(M * mask, 0, 255).astype(np.uint8)
-    spec[:, :, 1] = np.clip(R * mask, 0, 255).astype(np.uint8)
+    spec[:, :, 1] = np.clip(R * mask, 15, 255).astype(np.uint8)  # GGX floor
     spec[:, :, 2] = CC.astype(np.uint8)
     spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -1877,7 +1877,7 @@ def spec_glass_armor(shape, mask, seed, sm):
     CC = np.clip(16 + is_edge * 40 + (1 - is_edge) * 60, 16, 96)
 
     spec[:, :, 0] = np.clip(M * mask, 0, 255).astype(np.uint8)
-    spec[:, :, 1] = np.clip(R * mask, 0, 255).astype(np.uint8)
+    spec[:, :, 1] = np.clip(R * mask, 15, 255).astype(np.uint8)  # GGX floor
     spec[:, :, 2] = np.clip(CC * mask, 0, 255).astype(np.uint8)
     spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -1951,7 +1951,7 @@ def spec_static(shape, mask, seed, sm):
     R = ((1 - noise_full) * 200 + scan_line * 55) * sm
 
     spec[:, :, 0] = np.clip(M * mask, 0, 255).astype(np.uint8)
-    spec[:, :, 1] = np.clip(R * mask, 0, 255).astype(np.uint8)
+    spec[:, :, 1] = np.clip(R * mask, 15, 255).astype(np.uint8)  # GGX floor
     CC = np.clip(16 + (spec[:, :, 0].astype(np.float32) / 255.0) * 80 + scan_line * 20, 16, 116)
     spec[:, :, 2] = CC.astype(np.uint8)
     spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
@@ -2019,7 +2019,7 @@ def spec_mercury_pool(shape, mask, seed, sm):
     CC = 16 + pool_smooth * 80  # span 80, min 16
 
     spec[:, :, 0] = np.clip(M * mask, 0, 255).astype(np.uint8)
-    spec[:, :, 1] = np.clip(R * mask, 0, 255).astype(np.uint8)
+    spec[:, :, 1] = np.clip(R * mask, 15, 255).astype(np.uint8)  # GGX floor
     spec[:, :, 2] = np.clip(CC, 16, 96).astype(np.uint8)
     spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -2379,7 +2379,7 @@ def spec_phase_shift(shape, mask, seed, sm):
     M = np.clip(M + noise * stripe_phase_f, 0, 255)
 
     spec[:, :, 0] = np.clip(M * mask, 0, 255).astype(np.uint8)
-    spec[:, :, 1] = np.clip(R * mask, 0, 255).astype(np.uint8)
+    spec[:, :, 1] = np.clip(R * mask, 15, 255).astype(np.uint8)  # GGX floor
     spec[:, :, 2] = np.clip(CC * mask, 0, 255).astype(np.uint8)
     spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -2471,7 +2471,7 @@ def spec_gravity_well(shape, mask, seed, sm):
     CC = np.clip(16 + (1 - well) * 90, 16, 106)  # span 90, min 16
 
     spec[:, :, 0] = np.clip(M * mask, 0, 255).astype(np.uint8)
-    spec[:, :, 1] = np.clip(R * mask, 0, 255).astype(np.uint8)
+    spec[:, :, 1] = np.clip(R * mask, 15, 255).astype(np.uint8)  # GGX floor
     spec[:, :, 2] = np.clip(CC * mask, 0, 255).astype(np.uint8)
     spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -2536,7 +2536,7 @@ def spec_thin_film(shape, mask, seed, sm):
     CC = np.clip(16 + (1 - film) * 90, 16, 106)  # span 90, min 16
 
     spec[:, :, 0] = np.clip(M * mask, 0, 255).astype(np.uint8)
-    spec[:, :, 1] = np.clip(R * mask, 0, 255).astype(np.uint8)
+    spec[:, :, 1] = np.clip(R * mask, 15, 255).astype(np.uint8)  # GGX floor
     spec[:, :, 2] = np.clip(CC * mask, 0, 255).astype(np.uint8)
     spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -2596,7 +2596,7 @@ def spec_blackbody(shape, mask, seed, sm):
     R = ((1 - temp) * 180 + bb_r_noise * 40 + 5) * sm
 
     spec[:, :, 0] = np.clip(M * mask, 0, 255).astype(np.uint8)
-    spec[:, :, 1] = np.clip(R * mask, 0, 255).astype(np.uint8)
+    spec[:, :, 1] = np.clip(R * mask, 15, 255).astype(np.uint8)  # GGX floor
     spec[:, :, 2] = np.clip(16 + temp * 100, 16, 116).astype(np.uint8)  # Cold=CC=16 glossy, hot=CC=116 heat-degraded clearcoat
     spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -2702,7 +2702,7 @@ def spec_wormhole(shape, mask, seed, sm):
     R = R * sm
 
     spec[:, :, 0] = np.clip(M * mask, 0, 255).astype(np.uint8)
-    spec[:, :, 1] = np.clip(R * mask, 0, 255).astype(np.uint8)
+    spec[:, :, 1] = np.clip(R * mask, 15, 255).astype(np.uint8)  # GGX floor
     spec[:, :, 2] = np.clip(CC * mask, 0, 255).astype(np.uint8)
     spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -2774,7 +2774,7 @@ def spec_crystal_lattice(shape, mask, seed, sm):
     CC = np.clip(16 + (1 - node_sum) * 90, 16, 106)  # span 90, min 16
 
     spec[:, :, 0] = np.clip(M * mask, 0, 255).astype(np.uint8)
-    spec[:, :, 1] = np.clip(R * mask, 0, 255).astype(np.uint8)
+    spec[:, :, 1] = np.clip(R * mask, 15, 255).astype(np.uint8)  # GGX floor
     spec[:, :, 2] = np.clip(CC * mask, 0, 255).astype(np.uint8)
     spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -2872,7 +2872,7 @@ def spec_pulse(shape, mask, seed, sm):
     CC = np.clip(16 + (1 - field) * 90, 16, 106)  # span 90, min 16
 
     spec[:, :, 0] = np.clip(M * mask, 0, 255).astype(np.uint8)
-    spec[:, :, 1] = np.clip(R * mask, 0, 255).astype(np.uint8)
+    spec[:, :, 1] = np.clip(R * mask, 15, 255).astype(np.uint8)  # GGX floor
     spec[:, :, 2] = np.clip(CC, 16, 106).astype(np.uint8)
     spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -3190,7 +3190,7 @@ _PARADIGM_SPEC_FNS = _get_paradigm_base_specs()
 PARADIGM_BASES = {
     # PARADIGM - Elemental Forces (CC 16 = max clearcoat; R 0-255 only)
     "p_superfluid": {
-        "M": 0, "R": 0, "CC": 16,
+        "M": 0, "R": 2, "CC": 16,
         "paint_fn": paint_superfluid,
         "base_spec_fn": _PARADIGM_SPEC_FNS["p_superfluid"],
         "desc": "Frictionless liquid helium behavior; flowing, crawling bose-einstein condensate",
@@ -3240,7 +3240,7 @@ PARADIGM_BASES = {
         "desc": "Programmable Utility Fog: A shifting swarm of nanobots transitioning between matte void and absolute mirror",
     },
     "p_erised": {
-        "M": 255, "R": 0, "CC": 16,
+        "M": 255, "R": 2, "CC": 16,
         "paint_fn": paint_negative_mirror,
         "base_spec_fn": _PARADIGM_SPEC_FNS["p_erised"],
         "desc": "Negative Normal Mirror: Physically exotic negative roughness bounds bending reflections past realistic distortion",

@@ -4,6 +4,7 @@ Registry patch for Candy Special category.
 
 REGISTRY_PATCH = {
     "candy": "paint_candy_v2",
+    "candy_apple": "paint_candy_apple_v2",   # WEAK-036 FIX: was paint_smoked_darken (15% gray, no red physics)
     "candy_burgundy": "paint_candy_burgundy_v2",
     "candy_chrome": "paint_candy_chrome_v2",
     "candy_emerald": "paint_candy_emerald_v2",
@@ -21,6 +22,7 @@ REGISTRY_PATCH = {
 
 SPEC_PATCH = {
     "candy": "spec_candy",
+    "candy_apple": "spec_candy",             # WEAK-036 FIX: reuses generic candy spec (M=230/R=2 gives bright sparse flake)
     "candy_burgundy": "spec_candy_burgundy",
     "candy_chrome": "spec_candy_chrome",
     "candy_emerald": "spec_candy_emerald",

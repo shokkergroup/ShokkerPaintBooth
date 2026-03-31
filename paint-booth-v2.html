@@ -12,6 +12,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shokker Paint Booth</title>
     <link rel="icon" href="data:," />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="paint-booth-v2.css">
     <script src="fusion-swatches.js"></script>
     <script src="swatch-upgrades.js"></script>
@@ -66,11 +69,13 @@
             padding: 6px 12px;
             border-radius: 6px;
             font-size: 13px;
+            transition: border-color 0.15s, box-shadow 0.15s;
         }
 
         .shokk-search:focus {
             outline: none;
             border-color: var(--accent-gold, #ffaa00);
+            box-shadow: 0 0 0 2px rgba(255, 170, 0, 0.18);
         }
 
         .shokk-modal-path {
@@ -402,12 +407,10 @@
         <div class="header-right">
             <span id="autosaveBadge"
                 style="font-size: 8px; color: var(--accent-green); opacity: 0.4; transition: opacity 0.3s;">Auto-saved</span>
-            <button id="easy-mode-btn" onclick="toggleEasyMode()"
-                style="background: #1a1a1a; color: #E87A20; border: 1px solid #333; padding: 4px 12px;
-                       border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold;"
-                title="Toggle between Easy Mode (simplified) and Advanced Mode (full controls)">
-              ⚡ ADVANCED
-            </button>
+            <div id="ui-mode-toggle" class="ui-mode-pill" onclick="toggleUIMode()" title="Toggle between Simple (fewer controls) and Advanced (full controls)">
+                <span class="ui-mode-option" data-mode="simple">Simple</span>
+                <span class="ui-mode-option active" data-mode="advanced">Advanced</span>
+            </div>
             <span style="display:inline-flex;align-items:center;gap:2px;margin:0 4px;" title="UI Scale — Ctrl+Plus to zoom in, Ctrl+Minus to zoom out">
                 <button onclick="setUIScale(-1)" style="background:none;border:1px solid #444;color:#aaa;width:18px;height:18px;font-size:11px;cursor:pointer;border-radius:3px;padding:0;line-height:1;">−</button>
                 <span id="uiScaleLabel" style="font-size:9px;color:#888;min-width:28px;text-align:center;">100%</span>
@@ -659,6 +662,10 @@
                 <div id="specFromShokkBanner" style="display: none; margin-bottom: 8px; padding: 8px 10px; background: linear-gradient(135deg, rgba(0,200,80,0.15), rgba(0,150,200,0.08)); border: 1px solid rgba(0,200,80,0.5); border-radius: 6px; font-size: 11px;">
                     <div style="font-weight: 800; color: var(--accent-green); font-size: 10px; letter-spacing: 0.5px;">✓ SPEC MAP LOADED (Layer 0)</div>
                     <div id="specFromShokkLabel" style="color: var(--text-dim); font-size: 9px;">From SHOKK — zones paint on top. Render uses this spec.</div>
+                </div>
+                <!-- Zone Quick-View Bar (colored chips for each zone) -->
+                <div class="zone-quickview-bar" id="zoneQuickViewBar">
+                    <!-- Populated by renderZoneQuickView() -->
                 </div>
                 <!-- Zone List -->
                 <div class="zone-list-wrapper" id="zoneList">
@@ -1375,6 +1382,23 @@
             <!-- Finish Library -->
             <div class="finish-library" id="finishLibrary">
                 <!-- Rendered by JS -->
+            </div>
+
+            <!-- Fine Tuning Panel (overlays Finish Library when open) -->
+            <div id="fineTuningPanel" class="fine-tuning-panel" style="display:none;">
+                <div class="fine-tuning-header">
+                    <button class="btn btn-sm fine-tuning-back" onclick="closeFineTuning()" title="Back to Finish Library">&larr; Library</button>
+                    <span class="fine-tuning-title" id="fineTuningTitle">FINE TUNING</span>
+                </div>
+                <div class="fine-tuning-options">
+                    <label style="display:flex;align-items:center;gap:4px;font-size:10px;color:var(--text-dim);cursor:pointer;">
+                        <input type="checkbox" id="ftAccordionMode" checked onchange="window._ftAccordionMode=this.checked">
+                        Auto-collapse sections
+                    </label>
+                </div>
+                <div class="fine-tuning-body" id="fineTuningBody">
+                    <!-- Dynamically populated by openFineTuning() -->
+                </div>
             </div>
 
             <!-- Action bar cleaned — Render moved to canvas float, config/modes in gear dropdown -->

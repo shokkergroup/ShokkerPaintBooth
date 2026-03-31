@@ -48,7 +48,7 @@ def spec_copper_metallic(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
     ed = multi_scale_noise((h, w), [8, 16, 32], [0.3, 0.4, 0.3], seed + 900)
     M = np.clip(200.0 + ed * 45.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(6.0 + ed * 10.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(6.0 + ed * 10.0 * sm, 15, 255).astype(np.float32)
     CC = np.clip(12.0 + ed * 5.0, 0, 255).astype(np.float32)
     return M, R, CC
 
@@ -85,7 +85,7 @@ def spec_diamond_coat(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
     flake = multi_scale_noise((h, w), [1, 2], [0.5, 0.5], seed + 911)
     M = np.clip(170.0 + flake * 60.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(3.0 + flake * 6.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(3.0 + flake * 6.0 * sm, 15, 255).astype(np.float32)
     CC = np.clip(20.0 + flake * 6.0, 0, 255).astype(np.float32)
     return M, R, CC
 
@@ -125,7 +125,7 @@ def spec_electric_ice(shape, seed, sm, base_m, base_r):
     n1 = multi_scale_noise((h, w), [8, 16, 32], [0.3, 0.4, 0.3], seed + 921)
     ridge = np.clip((np.abs(np.gradient(n1, axis=0)) + np.abs(np.gradient(n1, axis=1))) * 8.0, 0, 1)
     M = np.clip(120.0 + ridge * 60.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(5.0 + ridge * 10.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(5.0 + ridge * 10.0 * sm, 15, 255).astype(np.float32)
     CC = np.clip(16.0 + ridge * 5.0, 0, 255).astype(np.float32)
     return M, R, CC
 
@@ -157,7 +157,7 @@ def spec_gunmetal_metallic(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
     slope = multi_scale_noise((h, w), [4, 8, 16], [0.3, 0.35, 0.35], seed + 931)
     M = np.clip(160.0 + slope * 50.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(12.0 + slope * 15.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(12.0 + slope * 15.0 * sm, 15, 255).astype(np.float32)
     CC = np.clip(10.0 + slope * 5.0, 0, 255).astype(np.float32)
     return M, R, CC
 
@@ -189,7 +189,7 @@ def spec_standard_metallic(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
     scatter = multi_scale_noise((h, w), [4, 8, 16], [0.3, 0.35, 0.35], seed + 941)
     M = np.clip(155.0 + scatter * 50.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(10.0 + scatter * 12.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(10.0 + scatter * 12.0 * sm, 15, 255).astype(np.float32)
     CC = np.clip(12.0 + scatter * 5.0, 0, 255).astype(np.float32)
     return M, R, CC
 
@@ -222,7 +222,7 @@ def spec_pearl_classic(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
     layer = multi_scale_noise((h, w), [8, 16, 32], [0.3, 0.4, 0.3], seed + 951)
     M = np.clip(90.0 + layer * 55.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(5.0 + layer * 8.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(5.0 + layer * 8.0 * sm, 15, 255).astype(np.float32)
     CC = np.clip(16.0 + layer * 5.0, 0, 255).astype(np.float32)
     return M, R, CC
 
@@ -259,7 +259,7 @@ def spec_plasma_metal(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
     ion = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.4, 0.3], seed + 961)
     M = np.clip(150.0 + ion * 55.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(8.0 + (1.0 - ion) * 18.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(8.0 + (1.0 - ion) * 18.0 * sm, 15, 255).astype(np.float32)
     CC = np.clip(14.0 + ion * 6.0, 0, 255).astype(np.float32)
     return M, R, CC
 
@@ -293,7 +293,7 @@ def spec_rose_gold_metallic(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
     cu = multi_scale_noise((h, w), [8, 16, 32], [0.3, 0.4, 0.3], seed + 971)
     M = np.clip(185.0 + cu * 50.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(6.0 + cu * 10.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(6.0 + cu * 10.0 * sm, 15, 255).astype(np.float32)
     CC = np.clip(14.0 + cu * 5.0, 0, 255).astype(np.float32)
     return M, R, CC
 
@@ -329,6 +329,6 @@ def spec_satin_gold(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
     brush = multi_scale_noise((h, w), [32, 64, 128], [0.3, 0.4, 0.3], seed + 981)
     M = np.clip(170.0 + brush * 50.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(15.0 + brush * 12.0 * sm, 0, 255).astype(np.float32)  # satin = moderate rough
+    R = np.clip(15.0 + brush * 12.0 * sm, 15, 255).astype(np.float32)  # satin = moderate rough
     CC = np.clip(8.0 + brush * 5.0, 0, 255).astype(np.float32)
     return M, R, CC

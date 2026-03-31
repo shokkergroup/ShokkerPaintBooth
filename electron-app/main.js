@@ -598,18 +598,33 @@ ipcMain.handle('get-quick-navs', async () => {
 // ===== BUILD 25: KILL ZOMBIE SERVERS =====
 // Previous app launches may leave shokker-server.exe processes running.
 // These zombies squat on the app port and intercept requests meant for the new server.
+// CRITICAL: Never taskkill our own EXE name — that kills the running app!
+// Only kill leftover Python server processes and old V5 zombies.
 function killZombieServers() {
   return new Promise((resolve) => {
     const { execSync } = require('child_process');
     try {
-      // Find all shokker-paint-booth-v5.exe processes and kill them
+      // Kill old V5 zombie processes (safe — different EXE name)
       execSync('taskkill /F /IM shokker-paint-booth-v5.exe /T 2>nul', { windowsHide: true, timeout: 5000 });
-      console.log('[Electron] Killed zombie shokker-paint-booth-v5 processes');
-    } catch (e) {
-      // No processes found or other error - that's fine
-      console.log('[Electron] No zombie servers found (or kill failed)');
-    }
-    // Small delay to let ports be released
+      debugLog('[Zombie] Killed old V5 zombies');
+    } catch (e) { /* no V5 processes — fine */ }
+    try {
+      // Kill orphaned Python servers that might be hogging port 59876
+      // Use netstat to find PID on our port, then kill just that PID (not our own)
+      const myPid = process.pid;
+      const result = execSync('netstat -ano | findstr :59876 | findstr LISTENING',
+        { encoding: 'utf-8', windowsHide: true, timeout: 5000 });
+      const lines = result.trim().split('\n');
+      for (const line of lines) {
+        const parts = line.trim().split(/\s+/);
+        const pid = parseInt(parts[parts.length - 1]);
+        if (pid && pid !== myPid && pid > 4) {
+          execSync(`taskkill /F /PID ${pid} 2>nul`, { windowsHide: true, timeout: 3000 });
+          debugLog(`[Zombie] Killed process ${pid} on port 59876`);
+        }
+      }
+    } catch (e) { /* nothing on port — fine */ }
+    debugLog('[Zombie] Cleanup done');
     setTimeout(resolve, 500);
   });
 }
@@ -686,10 +701,28 @@ function startServer(port) {
     serverProcess = spawn(spawnExe, spawnArgs, {
       env: spawnEnv,
       cwd: spawnCwd,
-      stdio: 'ignore',
+      stdio: ['ignore', 'pipe', 'pipe'],
       windowsHide: true,
       detached: false
     });
+
+    // Capture stdout/stderr for debug logging (prevents silent failures)
+    if (serverProcess.stdout) {
+      serverProcess.stdout.on('data', (data) => {
+        const lines = data.toString().split('\n').filter(l => l.trim());
+        for (const line of lines.slice(0, 5)) {  // Cap to prevent log spam
+          debugLog(`[Server:out] ${line.trim()}`);
+        }
+      });
+    }
+    if (serverProcess.stderr) {
+      serverProcess.stderr.on('data', (data) => {
+        const lines = data.toString().split('\n').filter(l => l.trim());
+        for (const line of lines.slice(0, 10)) {
+          debugLog(`[Server:err] ${line.trim()}`);
+        }
+      });
+    }
 
     serverProcess.on('error', (err) => {
       debugLog(`[Server] ERROR: Failed to start: ${err.message}`);
@@ -698,6 +731,9 @@ function startServer(port) {
 
     serverProcess.on('exit', (code) => {
       debugLog(`[Server] Exited with code ${code}`);
+      if (code !== 0 && code !== null) {
+        debugLog(`[Server] CRASH DETECTED: Python server exited with code ${code}`);
+      }
       serverProcess = null;
     });
 
@@ -718,12 +754,27 @@ function startServer(port) {
       sock.connect(port, '127.0.0.1');
     }, 250);
 
-    // Timeout after 45s (first launch can be slow on HDDs)
+    // Timeout after 60s (first launch can be slow on HDDs)
     setTimeout(() => {
       clearInterval(pollInterval);
-      console.log('[Electron] Server startup timeout, trying anyway...');
-      resolve(port);
-    }, 45000);
+      debugLog('[Server] TIMEOUT: Server did not respond after 60 seconds');
+      // Check if process is still alive
+      if (serverProcess && serverProcess.exitCode === null) {
+        debugLog('[Server] Process is still running — resolving anyway');
+        resolve(port);
+      } else {
+        debugLog('[Server] Process is DEAD — showing error dialog');
+        const { dialog: dlg } = require('electron');
+        dlg.showErrorBox('Shokker Paint Booth - Server Failed',
+          'The Python engine failed to start.\n\n' +
+          'Check the debug log at:\n' + DEBUG_LOG + '\n\n' +
+          'Common causes:\n' +
+          '• Antivirus blocking python.exe\n' +
+          '• Missing Visual C++ Redistributable\n' +
+          '• Port 59876 in use by another app');
+        resolve(port);  // Still resolve so app can at least show something
+      }
+    }, 60000);
   });
 }
 
@@ -763,6 +814,52 @@ function createWindow(port) {
   mainWindow.on('closed', () => { mainWindow = null; });
 }
 
+// ===== SPLASH / LOADING WINDOW =====
+let splashWindow = null;
+function showSplash(statusText) {
+  if (splashWindow) {
+    try { splashWindow.webContents.send('splash-status', statusText); } catch (_) {}
+    return;
+  }
+  splashWindow = new BrowserWindow({
+    width: 420, height: 260, frame: false, resizable: false,
+    transparent: false, backgroundColor: '#0a0a0a',
+    alwaysOnTop: true, skipTaskbar: false,
+    webPreferences: { nodeIntegration: false, contextIsolation: true,
+      preload: path.join(__dirname, 'license-preload.js') }
+  });
+  const splashHtml = `<!DOCTYPE html><html><head><meta charset="utf-8"><style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Segoe UI',sans-serif;background:#0a0a0a;color:#e0e0e0;
+      display:flex;flex-direction:column;align-items:center;justify-content:center;
+      height:100vh;padding:30px;-webkit-app-region:drag}
+    h1{font-size:22px;font-weight:700;color:#E87A20;margin-bottom:10px;letter-spacing:1px}
+    .status{font-size:14px;color:#999;margin-top:8px;text-align:center}
+    .spinner{width:32px;height:32px;border:3px solid #333;border-top:3px solid #E87A20;
+      border-radius:50%;animation:spin 1s linear infinite;margin:16px auto 8px}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    </style></head><body>
+    <h1>SHOKKER PAINT BOOTH</h1>
+    <div class="spinner"></div>
+    <div class="status" id="status">${statusText || 'Starting...'}</div>
+    <script>
+      const {ipcRenderer} = require('electron');
+      ipcRenderer.on('splash-status', (e, msg) => {
+        document.getElementById('status').textContent = msg;
+      });
+    </script>
+    </body></html>`;
+  splashWindow.loadURL('data:text/html;charset=utf-8,' + encodeURIComponent(splashHtml));
+  splashWindow.on('closed', () => { splashWindow = null; });
+}
+
+function closeSplash() {
+  if (splashWindow) {
+    try { splashWindow.close(); } catch (_) {}
+    splashWindow = null;
+  }
+}
+
 // ===== APP LIFECYCLE =====
 app.whenReady().then(async () => {
   try {
@@ -777,13 +874,19 @@ app.whenReady().then(async () => {
     }
     debugLog('[Startup] License validated - starting app');
 
+    // Show splash immediately so user knows something is happening
+    showSplash('Starting engine...');
+
     // Kill zombies then use HARDCODED port 59876
     debugLog('[Startup] Killing zombie servers...');
+    showSplash('Cleaning up...');
     await killZombieServers();
     serverPort = 59876;
     debugLog(`[Startup] Starting server on port ${serverPort}...`);
+    showSplash('Starting Python server...');
     await startServer(serverPort);
     debugLog('[Startup] Server started');
+    showSplash('Loading interface...');
 
     // WORKAROUND: PyInstaller --onefile extracts to temp dir, so server can't find HTML.
     // Hit /build-check to get the server's actual SERVER_DIR, then copy HTML there if missing.
@@ -817,6 +920,13 @@ app.whenReady().then(async () => {
     debugLog('[Startup] Creating window...');
     createWindow(serverPort);
     debugLog('[Startup] Window created - app should be visible');
+    // Close splash once main window is ready to show
+    mainWindow.webContents.once('did-finish-load', () => {
+      closeSplash();
+      debugLog('[Startup] Splash closed, main window loaded');
+    });
+    // Fallback: close splash after 10s even if page load is slow
+    setTimeout(closeSplash, 10000);
 
     // ===== AUTO-UPDATER =====
     // Check for updates after app is fully loaded (silent check, no nagging)

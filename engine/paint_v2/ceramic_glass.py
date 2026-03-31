@@ -87,7 +87,7 @@ def spec_crystal_clear(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
     curve = multi_scale_noise((h, w), [32, 64, 128], [0.3, 0.4, 0.3], seed + 210)
     M = np.clip(base_m * 0.05 + curve * 3.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(5.0 + curve * 10.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(5.0 + curve * 10.0 * sm, 15, 255).astype(np.float32)
     CC = np.clip(20.0 + curve * 10.0, 0, 255).astype(np.float32)
     return M, R, CC
 
@@ -164,7 +164,7 @@ def spec_obsidian_glass(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
     micro = multi_scale_noise((h, w), [4, 8, 16], [0.3, 0.4, 0.3], seed + 230)
     M = np.clip(base_m * 0.05 + micro * 4.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(8.0 + micro * 15.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(8.0 + micro * 15.0 * sm, 15, 255).astype(np.float32)
     CC = np.clip(5.0 + micro * 5.0, 0, 255).astype(np.float32)
     return M, R, CC
 
@@ -222,7 +222,7 @@ def spec_porcelain_depth(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
     craze = multi_scale_noise((h, w), [1, 2], [0.5, 0.5], seed + 241)
     M = np.clip(base_m * 0.05 + craze * 3.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(25.0 + craze * 20.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(25.0 + craze * 20.0 * sm, 15, 255).astype(np.float32)
     CC = np.clip(16.0 + craze * 8.0, 0, 255).astype(np.float32)
     return M, R, CC
 
@@ -296,6 +296,6 @@ def spec_tempered_glass(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
     stress = multi_scale_noise((h, w), [16, 32], [0.5, 0.5], seed + 250)
     M = np.clip(base_m * 0.05 + stress * 3.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(4.0 + stress * 8.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(4.0 + stress * 8.0 * sm, 15, 255).astype(np.float32)
     CC = np.clip(20.0 + stress * 10.0, 0, 255).astype(np.float32)
     return M, R, CC

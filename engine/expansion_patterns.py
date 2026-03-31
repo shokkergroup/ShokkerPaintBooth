@@ -714,12 +714,19 @@ def _texture_expansion(shape, mask, seed, sm, variant):
     if "50s_starburst" in variant:
         val = _radial_starburst(shape, 16, rotation=0.1)
         return _pack(val, -80, 80)
-    if "50s_bullet" in variant or "50s_rocket" in variant:
-        # Speed lines: decreasing horizontal stripes + oval
+    if "50s_bullet" in variant:
+        # Speed lines: decreasing horizontal stripes + bullet oval
         val = _stripe_horizontal(shape, 14).astype(np.float32)
         Y, X = _get_grid(shape)
         oval = np.clip(1 - (X + 0.5)**2 * 4 - Y**2 * 8, 0, 1)
         return _pack(np.maximum(val * 0.6, oval), -80, 60)
+    if "50s_rocket" in variant:
+        # Tall pointed nose cone + stabilizer fins — LAZY-EXPAND-007 FIX
+        Y, X = _get_grid(shape)
+        nose = np.exp(-((X)**2 * 18 + (Y + 0.3)**2 * 1.5))
+        fin_l = np.exp(-((X + 0.2)**2 * 80 + (Y - 0.5)**2 * 8)) * (Y > 0.3).astype(np.float32)
+        fin_r = np.exp(-((X - 0.2)**2 * 80 + (Y - 0.5)**2 * 8)) * (Y > 0.3).astype(np.float32)
+        return _pack(np.clip(nose + fin_l + fin_r, 0, 1).astype(np.float32), -80, 60)
     if "50s_tailfin" in variant:
         Y, X = _get_grid(shape)
         fin = np.clip(1 - np.abs(Y - X * 0.7) * 4, 0, 1) * (X > -0.2).astype(np.float32)
@@ -748,7 +755,7 @@ def _texture_expansion(shape, mask, seed, sm, variant):
         return _pack(np.clip(lines, 0, 1), -120, 120)
 
     # ── 60s ─────────────────────────────────────────────
-    if "60s_flower" in variant or "60s_petal" in variant:
+    if "60s_flower" in variant or "60s_petal" in variant or "woodstock" in variant:
         Y, X = _get_grid(shape)
         r = np.sqrt(X**2 + Y**2)
         a = np.arctan2(Y, X)
@@ -763,12 +770,33 @@ def _texture_expansion(shape, mask, seed, sm, variant):
         right = np.exp(-(Y - (X + -0.6 * 0.0))**2 * 30) * (Y < 0).astype(np.float32)
         val = np.clip(ring + vert + left + right, 0, 1)
         return _pack(val, -60, 60)
-    if "60s_swirl" in variant or "60s_lavalamp" in variant:
-        val = _noise_simple(shape, seed, 2.5)
-        val = (val > 0.45).astype(np.float32)
+    if "60s_swirl" in variant:
+        # Groovy swirl: angular warp around center → hypnotic spiral poster art
+        Y2, X2 = _get_grid(shape)
+        r = np.sqrt(X2**2 + Y2**2) + 1e-8
+        angle = np.arctan2(Y2, X2)
+        warp = r * np.pi * 5
+        sx = r * np.cos(angle + warp)
+        sy = r * np.sin(angle + warp)
+        val = ((np.sin(sx * np.pi * 2.5 + sy * np.pi * 2.5) * 0.5 + 0.5) > 0.5).astype(np.float32)
         return _pack(val, -60, 60)
-    if "60s_mod_stripe" in variant or "60s_wide_stripe" in variant:
+    if "60s_lavalamp" in variant:
+        # Lava lamp: coarse organic blobs biased toward rising from below
+        Y2, X2 = _get_grid(shape)
+        val = _noise_simple(shape, seed, 1.3)
+        y_pull = (-Y2 * 0.15).astype(np.float32)  # negative Y = top → more blobs risen upward
+        val = (np.clip(val + y_pull, 0, 1) > 0.5).astype(np.float32)
+        return _pack(val, -60, 60)
+    if "60s_mod_stripe" in variant:
+        # Mod stripe: 6 even horizontal stripes (classic 60s equal-band design)
         val = _stripe_horizontal(shape, 6)
+        return _pack(val, -80, 80)
+    if "60s_wide_stripe" in variant:
+        # Wide stripe: bold 2:1 wide-to-narrow pairs (Carnaby Street / Twiggy era)
+        h2, w2 = shape
+        y_pos = np.arange(h2, dtype=np.float32)[:, None] / h2 * 6.0  # 3 pairs
+        cycle = y_pos % 2.0
+        val = (cycle < 1.33).astype(np.float32) * np.ones((h2, w2), dtype=np.float32)
         return _pack(val, -80, 80)
     if "60s_thin_stripe" in variant:
         val = _stripe_horizontal(shape, 16)
@@ -809,6 +837,10 @@ def _texture_expansion(shape, mask, seed, sm, variant):
                             val[ny, nx] = 1.0
         return _pack(np.clip(val, 0, 1), -100, 80)
 
+    if "patchwork" in variant:
+        # 70s patchwork: rough checkerboard blocks + noise for organic quilt feel
+        val = _checkerboard(shape, 6) * 0.7 + _noise_simple(shape, seed, 8) * 0.3
+        return _pack(np.clip(val, 0, 1), -60, 60)
     if "70s_wide_stripe" in variant or "70s_bicentennial" in variant:
         val = _stripe_horizontal(shape, 5)
         return _pack(val, -80, 80)
@@ -822,13 +854,21 @@ def _texture_expansion(shape, mask, seed, sm, variant):
     if "70s_shag" in variant:
         val = _noise_simple(shape, seed, 20) * 0.7 + _stripe_diagonal(shape, 45, 30) * 0.3
         return _pack(np.clip(val, 0, 1), -40, 40)
-    if "70s_earth_geo" in variant or "70s_orange_curve" in variant:
+    if "70s_earth_geo" in variant:
+        # Earth geo: topographic contour steps — 70s geological poster aesthetic
         Y, X = _get_grid(shape)
         geo = np.sin(X * np.pi * 3 + Y * np.pi * 2) * 0.5 + 0.5
-        return _pack(geo.astype(np.float32), -60, 60)
+        n_levels = 6
+        stepped = (np.floor(geo * n_levels) / n_levels).astype(np.float32)
+        return _pack(stepped, -60, 60)
+    if "70s_orange_curve" in variant:
+        # Orange curve: single bold sinusoidal arch band (The Racing Stripe)
+        Y, X = _get_grid(shape)
+        arch = np.exp(-((Y - np.sin(X * np.pi * 0.7) * 0.4)**2) * 5)
+        return _pack(np.clip(arch, 0, 1).astype(np.float32), -60, 60)
 
     # ── 80s ─────────────────────────────────────────────
-    if "80s_neon_grid" in variant or "80s_outrun" in variant:
+    if "80s_neon_grid" in variant or "80s_neon_hex" in variant or "80s_outrun" in variant:
         h2, w2 = shape
         val = np.zeros((h2, w2), dtype=np.float32)
         horizon = int(h2 * 0.45)
@@ -852,7 +892,7 @@ def _texture_expansion(shape, mask, seed, sm, variant):
         val = _checkerboard(shape, 8) * 0.4 + _stripe_diagonal(shape, 30, 8) * 0.3
         val += _scatter_dots(shape, 30, 0.04, seed) * 0.8
         return _pack(np.clip(val, 0, 1), -80, 80)
-    if "80s_angle" in variant or "80s_triangle" in variant:
+    if "80s_angle" in variant or "80s_triangle" in variant or "my_little_friend" in variant or "yo_joe" in variant:
         val = _stripe_diagonal(shape, 45, 6)
         return _pack(val, -80, 80)
     if "80s_synth_sun" in variant:
@@ -861,15 +901,24 @@ def _texture_expansion(shape, mask, seed, sm, variant):
         stripes = _stripe_horizontal(shape, 12) * sun_mask
         circle = np.clip(1 - (X**2 + (Y + 0.1)**2) / 0.5, 0, 1)
         return _pack(np.clip(stripes * circle + circle * 0.2, 0, 1), -80, 80)
+    if "acid_washed" in variant:
+        # 80s acid wash denim: mottled noise field over fine diagonal grain
+        val = _noise_simple(shape, seed, 5) * 0.65 + _stripe_diagonal(shape, 75, 12) * 0.35
+        return _pack(np.clip(val, 0, 1), -50, 50)
     if "80s_bolt" in variant:
         e2 = _engine()
         return e2.texture_lightning(shape, mask, seed, sm)
     if "80s_pastel_zig" in variant:
         val = _stripe_diagonal(shape, 70, 8)
         return _pack(val, -60, 60)
-    if "80s_vapor" in variant or "80s_pixel" in variant:
-        val = _checkerboard(shape, 16) * 0.5 + _noise_simple(shape, seed, 4) * 0.3
-        return _pack(np.clip(val, 0, 1), -60, 60)
+    if "80s_vapor" in variant:
+        # Smooth large-scale noise blobs — vaporwave soft gradients — LAZY-EXPAND-006 FIX
+        val = _noise_simple(shape, seed, 1.0)
+        return _pack(val, -60, 60)
+    if "80s_pixel" in variant:
+        # Clean 8-bit pixel checkerboard — LAZY-EXPAND-006 FIX
+        val = _checkerboard(shape, 16).astype(np.float32)
+        return _pack(val, -60, 60)
 
     # ── 90s ─────────────────────────────────────────────
     if "90s_grunge" in variant:
@@ -877,6 +926,14 @@ def _texture_expansion(shape, mask, seed, sm, variant):
         return _pack(np.clip(val, 0, 1), -60, 40)
     if "90s_minimal_stripe" in variant or "90s_bold_stripe" in variant:
         val = _stripe_horizontal(shape, 3 if "bold" in variant else 8)
+        return _pack(val, -80, 80)
+    if "trolls" in variant:
+        # Mottled organic blob field — troll doll wild texture — LAZY-EXPAND-008 FIX
+        val = (_noise_simple(shape, seed, 1.8) > 0.4).astype(np.float32)
+        return _pack(val, -60, 80)
+    if "tama90s" in variant:
+        # Bold wide drum-wrap stripes — LAZY-EXPAND-008 FIX
+        val = _stripe_horizontal(shape, 4)
         return _pack(val, -80, 80)
     if "90s_alt_cross" in variant:
         Y, X = _get_grid(shape)
@@ -897,14 +954,26 @@ def _texture_expansion(shape, mask, seed, sm, variant):
     if "90s_dot_matrix" in variant:
         val = _scatter_dots(shape, 150, 0.015, seed)
         return _pack(val, -80, 80)
+    if "floppy_disk" in variant:
+        # 90s floppy disk: grid of data blocks + central access slot
+        Y2, X2 = _get_grid(shape)
+        val = _checkerboard(shape, 10) * 0.4
+        slot = np.clip(1 - np.abs(Y2) * 6, 0, 1) * (np.abs(X2) < 0.28).astype(np.float32)
+        return _pack(np.clip(val + slot * 0.9, 0, 1), -80, 80)
     if "90s_indie" in variant:
         val = _noise_simple(shape, seed, 6) * 0.5 + _stripe_diagonal(shape, 20, 6) * 0.3
         return _pack(np.clip(val, 0, 1), -50, 50)
 
     # ── MUSIC ────────────────────────────────────────────
-    if "music_lightning_bolt" in variant or "music_arrow_bold" in variant:
+    if "music_lightning_bolt" in variant:
         e2 = _engine()
         return e2.texture_lightning(shape, mask, seed, sm)
+    if "music_arrow_bold" in variant:
+        # Rightward ">" chevron: interior-fill cone, vertex at right, opening at left — WARN-EXPAND-001 FIX
+        # clip(0.18 - (|Y| - X*0.7), 0, 1) * (X>0): bright inside cone abs(Y) < X*0.7, tip at right edge
+        Y, X = _get_grid(shape)
+        arrow = np.clip(0.18 - (np.abs(Y) - X * 0.7), 0, 1) * (X > 0).astype(np.float32)
+        return _pack(arrow.astype(np.float32), -100, 80)
     if "music_wing_sweep" in variant:
         Y, X = _get_grid(shape)
         # Wing: broad sweep from centre-right, curving up
@@ -932,6 +1001,34 @@ def _texture_expansion(shape, mask, seed, sm, variant):
     if "music_flame_ribbon" in variant:
         val = _flame_tongues(shape, 5, seed) * 0.7 + _stripe_diagonal(shape, 15, 3) * 0.3
         return _pack(np.clip(val, 0, 1), -140, 120)
+    if "music_blues" in variant:
+        # Blues: rolling sine-wave staff lines — notes flowing across
+        Y2, X2 = _get_grid(shape)
+        val = (np.sin(Y2 * np.pi * 6 + np.sin(X2 * np.pi * 2) * 0.8) * 0.5 + 0.5).astype(np.float32)
+        return _pack(val, -80, 60)
+    if "music_strat" in variant:
+        # Stratocaster: contoured body double-curve silhouette
+        Y2, X2 = _get_grid(shape)
+        c1 = np.exp(-(np.abs(Y2 - np.sin(X2 * np.pi * 0.8) * 0.35))**2 / 0.015)
+        c2 = np.exp(-(np.abs(Y2 + np.sin(X2 * np.pi * 0.6) * 0.25))**2 / 0.015)
+        return _pack(np.clip(c1 + c2, 0, 1).astype(np.float32), -100, 80)
+    if "music_the_artist" in variant:
+        # The Artist (Prince): ornate symbol — concentric rings with radiating wedges
+        val = _concentric_rings(shape, 5) * 0.6 + _radial_starburst(shape, 8) * 0.4
+        return _pack(np.clip(val, 0, 1), -100, 80)
+    if "music_smilevana" in variant:
+        # Nirvana smiley: face circle + X-dot eyes
+        Y2, X2 = _get_grid(shape)
+        r = np.sqrt(X2**2 + Y2**2)
+        ring = np.exp(-(r - 0.55)**2 / 0.006)
+        leye = np.exp(-((X2 + 0.22)**2 + (Y2 - 0.15)**2) / 0.004)
+        reye = np.exp(-((X2 - 0.22)**2 + (Y2 - 0.15)**2) / 0.004)
+        return _pack(np.clip(ring + leye + reye, 0, 1).astype(np.float32), -120, 80)
+    if "music_licked" in variant:
+        # KISS tongue: bold downward-curved band (Simmons-style tongue logo)
+        Y2, X2 = _get_grid(shape)
+        tongue = np.exp(-(X2**2 * 12 + (Y2 + 0.1 + X2**2 * 0.5)**2 * 5))
+        return _pack(np.clip(tongue, 0, 1).astype(np.float32), -120, 80)
 
     # ── ASTRO ────────────────────────────────────────────
     if "astro_moon_phases" in variant:
@@ -1070,14 +1167,14 @@ def _paint_expansion(paint, shape, mask, seed, pm, bb, variant):
                 return e.paint_pinstripe(paint, shape, mask, seed + seed_off, pm, bb)
 
         if any(k in variant for k in ("flower", "petal", "peace", "swirl", "lavalamp",
-                                       "orange_curve", "earth_geo")):
+                                       "orange_curve", "earth_geo", "woodstock", "patchwork")):
             try:
                 return e.paint_wave_shimmer(paint, shape, mask, seed + seed_off, pm, bb)
             except Exception:
                 return e.paint_ripple_reflect(paint, shape, mask, seed + seed_off, pm, bb)
 
         if any(k in variant for k in ("opart", "gogo", "vapor", "pixel", "geo_minimal",
-                                       "chrome_bubble")):
+                                       "chrome_bubble", "floppy_disk")):
             try:
                 return e.paint_interference_shift(paint, shape, mask, seed + seed_off, pm, bb)
             except Exception:
@@ -1089,10 +1186,10 @@ def _paint_expansion(paint, shape, mask, seed, pm, bb, variant):
             except Exception:
                 return e.paint_coarse_flake(paint, shape, mask, seed + seed_off, pm, bb)
 
-        if any(k in variant for k in ("neon_grid", "outrun", "y2k", "synth_sun")):
+        if any(k in variant for k in ("neon_grid", "neon_hex", "outrun", "y2k", "synth_sun")):
             return e.paint_tron_glow(paint, shape, mask, seed + seed_off, pm, bb)
 
-        if "grunge" in variant or "indie" in variant or "shag" in variant:
+        if "grunge" in variant or "indie" in variant or "shag" in variant or "acid_washed" in variant:
             try:
                 return e.paint_scratch_marks(paint, shape, mask, seed + seed_off, pm, bb)
             except Exception:
@@ -1107,7 +1204,8 @@ def _paint_expansion(paint, shape, mask, seed, pm, bb, variant):
     if variant.startswith("music_"):
         if any(k in variant for k in ("lightning_bolt", "slash_bold", "star_burst", "arrow_bold")):
             return e.paint_lightning_glow(paint, shape, mask, seed + seed_off, pm, bb)
-        if any(k in variant for k in ("wing_sweep", "script_curve", "flame_ribbon")):
+        if any(k in variant for k in ("wing_sweep", "script_curve", "flame_ribbon",
+                                       "blues", "strat")):
             try:
                 return e.paint_wave_shimmer(paint, shape, mask, seed + seed_off, pm, bb)
             except Exception:
@@ -1962,23 +2060,22 @@ def _shimmer_turbine_sheen(shape, seed=0):
 
 
 def _shimmer_spectral_mesh(shape, seed=0):
-    """DISTANCE-TO-LINES: three families of parallel lines at 0°, 60°, 120° — triangular mesh."""
+    """DIFFRACTION RINGS: concentric sinusoidal rings with 3-fold spiral warp.
+    Models normal-incidence diffraction grating (Newton's ring interference pattern).
+    Structurally distinct from hex_circuit (tiling 3-family parallel lines):
+    this is radially symmetric with no periodic tiling unit."""
     Y, X = _get_grid(shape)
     rng = np.random.default_rng(seed)
-    line_width = 0.035
-    spacing = 0.08
-    phases = rng.uniform(0, spacing, size=3).astype(np.float32)
-    angles = np.array([0.0, np.pi / 3.0, 2.0 * np.pi / 3.0], dtype=np.float32)
-    out = np.zeros((shape[0], shape[1]), dtype=np.float32)
-    for i in range(3):
-        a = angles[i]
-        p = phases[i]
-        proj = X * np.cos(a) + Y * np.sin(a) + p
-        # Distance to nearest line (periodic with spacing)
-        proj_mod = (proj + 2.0) % spacing - spacing * 0.5
-        dist = np.abs(proj_mod)
-        line_val = np.maximum(0.0, 1.0 - dist / line_width)
-        out = np.maximum(out, line_val.astype(np.float32))
+    ring_freq = float(rng.uniform(30.0, 38.0))
+    spiral_amp = float(rng.uniform(0.030, 0.055))
+    Y_f = Y.astype(np.float32)
+    X_f = X.astype(np.float32)
+    angle = np.arctan2(Y_f, X_f)
+    r = np.sqrt(X_f ** 2 + Y_f ** 2)
+    # 3-fold spiral warp breaks pure radial degeneracy — creates spiraling ring modulation
+    spiral_warp = np.sin(angle * 3.0) * spiral_amp
+    rings = np.sin((r + spiral_warp) * ring_freq) * 0.5 + 0.5
+    out = rings.astype(np.float32)
     out = (out - out.min()) / (out.max() - out.min() + 1e-8)
     return np.clip(out, 0.0, 1.0).astype(np.float32)
 

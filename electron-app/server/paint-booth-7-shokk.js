@@ -716,7 +716,6 @@ async function exportSpecChannels(fromLibrary) {
             (typeof localStorage !== 'undefined' && localStorage.getItem(PS_EXPORT_FOLDER_KEY)) || '';
         var outputDir = out;
         if (outputDir) body.output_dir = outputDir;
-        console.log('[PS Export] output_dir from inputs:', JSON.stringify(outputDir), '| body:', JSON.stringify(body));
 
         if (fromLibrary && _selectedShokkPath) {
             showToast('Extracting and exporting from SHOKK file…');
@@ -735,12 +734,11 @@ async function exportSpecChannels(fromLibrary) {
         const data = await res.json();
         if (!data.ok) throw new Error(data.error || 'Export failed');
 
-        const actualDir = data.out_dir || '';
         const paths = Object.values(data.paths);
+        const dir = paths.length ? paths[0].replace(/[^/\\]*$/, '') : '';
         const fileCount = paths.length;
-        console.log('[PS Export] Server used out_dir:', actualDir, '| files:', fileCount, '| paths:', JSON.stringify(data.paths));
-        if (actualDir && typeof localStorage !== 'undefined') localStorage.setItem(PS_EXPORT_FOLDER_KEY, actualDir);
-        showToast(`✅ ${fileCount} files exported to: ${actualDir}`);
+        if (dir && typeof localStorage !== 'undefined') localStorage.setItem(PS_EXPORT_FOLDER_KEY, dir);
+        showToast(`✅ ${fileCount} files exported to: ${dir}`);
 
         // Show a details panel
         const details = Object.entries(data.paths)

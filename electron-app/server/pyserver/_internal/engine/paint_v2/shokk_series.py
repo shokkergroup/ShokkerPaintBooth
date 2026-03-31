@@ -116,7 +116,7 @@ def spec_shokk_blood(shape, seed, sm, base_m, base_r):
 
     # Veins are wet (low roughness, moderate metallic)
     M = np.clip(base_m + vein * 60.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(base_r - vein * 80.0 * sm + 20.0, 0, 255).astype(np.float32)
+    R = np.clip(base_r - vein * 80.0 * sm + 20.0, 15, 255).astype(np.float32)
     CC = np.clip(20 + vein * 30.0, 0, 255).astype(np.float32)
     return M, R, CC
 
@@ -215,7 +215,7 @@ def spec_shokk_pulse(shape, seed, sm, base_m, base_r):
 
     # Energy channels = metallic + smooth; background = rough dielectric
     M = np.clip(base_m * 0.3 + energy * 200.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(base_r + 40.0 - energy * 120.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(base_r + 40.0 - energy * 120.0 * sm, 15, 255).astype(np.float32)
     CC = np.clip(10.0 + energy * 20.0, 0, 255).astype(np.float32)
     return M, R, CC
 
@@ -312,7 +312,7 @@ def spec_shokk_static(shape, seed, sm, base_m, base_r):
         gh = rng.randint(1, max(2, h // 128))
         glitch_map[gy:min(gy+gh, h), :] = 1.0
     M = np.clip(base_m + glitch_map * 80.0 * sm + static * 20.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(base_r * rough_band - static * 15.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(base_r * rough_band - static * 15.0 * sm, 15, 255).astype(np.float32)
     CC = np.clip(16.0 - glitch_map * 10.0, 0, 255).astype(np.float32)
     return M, R, CC
 
@@ -446,7 +446,7 @@ def spec_shokk_venom(shape, seed, sm, base_m, base_r):
     # Wet pooled acid: low roughness, some metallic (dissolved metal particles)
     # Dry residue: high roughness, no metallic
     M = np.clip(base_m * 0.5 + drip * 50.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(base_r + 30.0 - drip * 100.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(base_r + 30.0 - drip * 100.0 * sm, 15, 255).astype(np.float32)
     # Thick pools get clearcoat (surface tension creates smooth meniscus)
     thick = np.clip((drip - 0.5) * 2.0, 0, 1)
     CC = np.clip(5.0 + thick * 25.0, 0, 255).astype(np.float32)
@@ -538,7 +538,7 @@ def spec_shokk_void(shape, seed, sm, base_m, base_r):
     # Essentially zero metallic — this is a dielectric absorber, not a metal
     M = np.clip(base_m * 0.05 + micro * 3.0 * sm, 0, 255).astype(np.float32)
     # Extremely high roughness — the micro-texture traps light
-    R = np.clip(220.0 + micro * 30.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(220.0 + micro * 30.0 * sm, 15, 255).astype(np.float32)
     # Near-zero clearcoat — no specular reflection layer
     CC = np.clip(2.0 + micro * 3.0, 0, 255).astype(np.float32)
     return M, R, CC

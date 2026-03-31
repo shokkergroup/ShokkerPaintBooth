@@ -199,7 +199,7 @@ def spec_shokk_flux(shape, seed, sm, base_m, base_r):
     M = np.full(shape, 220.0, dtype=np.float32) + thickness * 25 * sm
     R = np.full(shape, 4.0, dtype=np.float32) + thickness * 6 * sm
     CC = 16.0 + thickness * 42 * sm
-    return np.clip(M, 0, 255), np.clip(R, 0, 255), np.clip(CC, 0, 255).astype(np.float32)
+    return np.clip(M, 0, 255), np.clip(R, 15, 255), np.clip(CC, 0, 255).astype(np.float32)
 
 def paint_shokk_flux(paint, shape, mask, seed, pm, bb):
     noise = _perlin_upscale(shape, seed + 100)
@@ -229,7 +229,7 @@ def spec_shokk_phase(shape, seed, sm, base_m, base_r):
     r_noise = multi_scale_noise(shape, [4, 8], [0.5, 0.5], seed + 202)
     R = R + r_noise * 8 * sm
     CC = np.full(shape, 20.0, dtype=np.float32)
-    return np.clip(M, 0, 255), np.clip(R, 0, 255), CC
+    return np.clip(M, 0, 255), np.clip(R, 15, 255), CC
 
 def paint_shokk_phase(paint, shape, mask, seed, pm, bb):
     labels, _ = _voronoi_cells(shape, 120, seed + 200)
@@ -263,7 +263,7 @@ def spec_shokk_dual(shape, seed, sm, base_m, base_r):
     v_param = np.clip(yy / h + v_noise * 0.3, 0, 1)
     # Combined two-axis creates complex M/R pattern
     M = np.clip(40.0 + h_param * 160.0 * sm + v_param * 60.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(8.0 + (1.0 - h_param) * 40.0 * sm + v_param * 20.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(8.0 + (1.0 - h_param) * 40.0 * sm + v_param * 20.0 * sm, 15, 255).astype(np.float32)
     CC = np.full(shape, 16.0, dtype=np.float32)
     return M, R, CC
 
@@ -313,7 +313,7 @@ def spec_shokk_spectrum(shape, seed, sm, base_m, base_r):
     R = 6.0 + np.abs(np.sin(groove_phase)) * 35.0 * sm + n2 * 8 * sm
     # CC with spectral interference thickness
     CC = 16.0 + np.abs(np.sin(groove_phase * 0.7 + n2 * 2.0)) * 30 * sm
-    return np.clip(M, 0, 255).astype(np.float32), np.clip(R, 0, 255).astype(np.float32), np.clip(CC, 16, 255).astype(np.float32)
+    return np.clip(M, 0, 255).astype(np.float32), np.clip(R, 15, 255).astype(np.float32), np.clip(CC, 16, 255).astype(np.float32)
 
 def paint_shokk_spectrum(paint, shape, mask, seed, pm, bb):
     if pm == 0.0:
@@ -362,7 +362,7 @@ def spec_shokk_aurora(shape, seed, sm, base_m, base_r):
     CC = np.full(shape, 16.0, dtype=np.float32)
     n = multi_scale_noise(shape, [8, 16], [0.5, 0.5], seed + 500)
     M = M + n * 8 * sm
-    return np.clip(M, 0, 255).astype(np.float32), np.clip(R, 0, 255).astype(np.float32), CC
+    return np.clip(M, 0, 255).astype(np.float32), np.clip(R, 15, 255).astype(np.float32), CC
 
 def paint_shokk_aurora(paint, shape, mask, seed, pm, bb):
     h, w = shape
@@ -401,7 +401,7 @@ def spec_shokk_helix(shape, seed, sm, base_m, base_r):
     M = np.full(shape, 215.0, dtype=np.float32)
     n = multi_scale_noise(shape, [4, 8], [0.5, 0.5], seed + 601)
     M = M + n * 10 * sm
-    return np.clip(M, 0, 255), np.clip(R_var, 0, 255).astype(np.float32), CC_var.astype(np.float32)
+    return np.clip(M, 0, 255), np.clip(R_var, 15, 255).astype(np.float32), CC_var.astype(np.float32)
 
 def paint_shokk_helix(paint, shape, mask, seed, pm, bb):
     phase = _spiral_field(shape, seed + 600, arms=2, tightness=0.10)
@@ -430,7 +430,7 @@ def spec_shokk_catalyst(shape, seed, sm, base_m, base_r):
     n = multi_scale_noise(shape, [4, 8], [0.5, 0.5], seed + 701)
     R = R + n * 4 * sm
     CC = np.full(shape, 16.0, dtype=np.float32)
-    return np.clip(M, 0, 255), np.clip(R, 0, 255), CC
+    return np.clip(M, 0, 255), np.clip(R, 15, 255), CC
 
 def paint_shokk_catalyst(paint, shape, mask, seed, pm, bb):
     labels, field = _bz_reaction(shape, seed + 700, n_waves=5, n_colors=4)
@@ -458,7 +458,7 @@ def spec_shokk_mirage(shape, seed, sm, base_m, base_r):
     wave = np.sin(n * 6.0) * 0.5 + 0.5
     R = R + wave * 3 * sm
     CC = np.full(shape, 16.0, dtype=np.float32)  # CC=16 max clearcoat
-    return np.clip(M, 0, 255), np.clip(R, 0, 255).astype(np.float32), CC
+    return np.clip(M, 0, 255), np.clip(R, 15, 255).astype(np.float32), CC
 
 def paint_shokk_mirage(paint, shape, mask, seed, pm, bb):
     h, w = shape
@@ -490,7 +490,7 @@ def spec_shokk_polarity(shape, seed, sm, base_m, base_r):
     # R: domain_interior=10, domain_boundary=55
     R = np.where(edges > 0.5, 55.0, 10.0).astype(np.float32)
     CC = np.full(shape, 16.0, dtype=np.float32)
-    return np.clip(M, 0, 255), np.clip(R, 0, 255), CC
+    return np.clip(M, 0, 255), np.clip(R, 15, 255), CC
 
 def paint_shokk_polarity(paint, shape, mask, seed, pm, bb):
     small = (min(shape[0], 512), min(shape[1], 512))
@@ -560,7 +560,7 @@ def spec_shokk_prism(shape, seed, sm, base_m, base_r):
     CC = 16.0 + caustic * 44
     n = multi_scale_noise(shape, [8, 16], [0.5, 0.5], seed + 1101)
     M = M + n * 8 * sm
-    return np.clip(M, 0, 255).astype(np.float32), np.clip(R, 0, 255).astype(np.float32), np.clip(CC, 0, 255).astype(np.float32)
+    return np.clip(M, 0, 255).astype(np.float32), np.clip(R, 15, 255).astype(np.float32), np.clip(CC, 0, 255).astype(np.float32)
 
 def paint_shokk_prism(paint, shape, mask, seed, pm, bb):
     caustic = _caustic_pattern(shape, seed + 1100, n_sources=30)
@@ -585,7 +585,7 @@ def spec_shokk_wraith(shape, seed, sm, base_m, base_r):
     n = multi_scale_noise(shape, [2, 4], [0.5, 0.5], seed + 1201)
     R = R + n * 3 * sm
     CC = np.full(shape, 16.0, dtype=np.float32)
-    return np.clip(M, 0, 255).astype(np.float32), np.clip(R, 0, 255), CC
+    return np.clip(M, 0, 255).astype(np.float32), np.clip(R, 15, 255), CC
 
 def paint_shokk_wraith(paint, shape, mask, seed, pm, bb):
     n = multi_scale_noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + 1202)
@@ -615,7 +615,7 @@ def spec_shokk_tesseract(shape, seed, sm, base_m, base_r):
     R = R_per_face[face_id]
     overlap = (np.abs(z1 - z2) < 0.15).astype(np.float32)
     CC = overlap * 60.0
-    return np.clip(M, 0, 255), np.clip(R, 0, 255), np.clip(CC, 0, 255).astype(np.float32)
+    return np.clip(M, 0, 255), np.clip(R, 15, 255), np.clip(CC, 0, 255).astype(np.float32)
 
 def paint_shokk_tesseract(paint, shape, mask, seed, pm, bb):
     h, w = shape
@@ -657,7 +657,7 @@ def spec_shokk_fusion(shape, seed, sm, base_m, base_r):
     # R: hot_core(torus_t=1) R=5, cool_edge(torus_t=0) R=70
     R = 70.0 - torus_t * 65.0
     CC = np.full(shape, 16.0, dtype=np.float32)
-    return np.clip(M, 0, 255).astype(np.float32), np.clip(R, 0, 255).astype(np.float32), CC
+    return np.clip(M, 0, 255).astype(np.float32), np.clip(R, 15, 255).astype(np.float32), CC
 
 def paint_shokk_fusion(paint, shape, mask, seed, pm, bb):
     h, w = shape
@@ -724,7 +724,7 @@ def spec_shokk_vortex(shape, seed, sm, base_m, base_r):
     CC = 16 + spiral2 * 40
     n = multi_scale_noise(shape, [8, 16], [0.5, 0.5], seed + 1600)
     M = M + n * 8 * sm
-    return np.clip(M, 0, 255), np.clip(R, 0, 255).astype(np.float32), np.clip(CC, 0, 255).astype(np.float32)
+    return np.clip(M, 0, 255), np.clip(R, 15, 255).astype(np.float32), np.clip(CC, 0, 255).astype(np.float32)
 
 def paint_shokk_vortex(paint, shape, mask, seed, pm, bb):
     h, w = shape
@@ -755,7 +755,7 @@ def spec_shokk_surge(shape, seed, sm, base_m, base_r):
     CC = np.full(shape, 16.0, dtype=np.float32)
     n = multi_scale_noise(shape, [4, 8], [0.5, 0.5], seed + 1701)
     M = M + n * 6 * sm
-    return np.clip(M, 0, 255).astype(np.float32), np.clip(R, 0, 255).astype(np.float32), CC
+    return np.clip(M, 0, 255).astype(np.float32), np.clip(R, 15, 255).astype(np.float32), CC
 
 def paint_shokk_surge(paint, shape, mask, seed, pm, bb):
     field = _standing_wave(shape, seed + 1700, n_waves=5)
@@ -782,7 +782,7 @@ def spec_shokk_cipher(shape, seed, sm, base_m, base_r):
     M = 220.0 + (hidden - 0.5) * 24 * sm
     R = 8.0 + (hidden - 0.5) * 8 * sm
     CC = np.full(shape, 16.0, dtype=np.float32)
-    return np.clip(M, 0, 255).astype(np.float32), np.clip(R, 0, 255).astype(np.float32), CC
+    return np.clip(M, 0, 255).astype(np.float32), np.clip(R, 15, 255).astype(np.float32), CC
 
 def paint_shokk_cipher(paint, shape, mask, seed, pm, bb):
     hidden = _perlin_upscale(shape, seed + 1800, octaves=6, persistence=0.45, lacunarity=2.5)
@@ -806,7 +806,7 @@ def spec_shokk_inferno(shape, seed, sm, base_m, base_r):
     R = 100.0 - temp * 95.0
     # CC: cool(temp=0) CC=16, hot(temp=1) CC=80 (heat degrades clearcoat)
     CC = np.clip(16.0 + temp * 64.0, 16, 255).astype(np.float32)
-    return np.clip(M, 0, 255).astype(np.float32), np.clip(R, 0, 255).astype(np.float32), CC
+    return np.clip(M, 0, 255).astype(np.float32), np.clip(R, 15, 255).astype(np.float32), CC
 
 def paint_shokk_inferno(paint, shape, mask, seed, pm, bb):
     noise = _perlin_upscale(shape, seed + 1900, octaves=5, persistence=0.6, lacunarity=2.0)
@@ -841,7 +841,7 @@ def spec_shokk_apex(shape, seed, sm, base_m, base_r):
     reinforce = layer1_cc * dither * (1.0 - groove)
     M = M + reinforce * 20
     R = R - reinforce * 5
-    return np.clip(M, 0, 255).astype(np.float32), np.clip(R, 0, 255).astype(np.float32), np.clip(CC, 0, 255).astype(np.float32)
+    return np.clip(M, 0, 255).astype(np.float32), np.clip(R, 15, 255).astype(np.float32), np.clip(CC, 0, 255).astype(np.float32)
 
 def paint_shokk_apex(paint, shape, mask, seed, pm, bb):
     layer1 = _perlin_upscale(shape, seed + 2000)

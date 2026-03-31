@@ -62,60 +62,90 @@ def spec_chrome_wrap(shape, seed, sm, base_m, base_r):
 
 def paint_color_flip_v2(paint, shape, mask, seed, pm, bb):
     """
-    Dichroic vinyl with view-angle color shift using polar coordinate mapping.
-    Creates rainbow iridescence effect.
+    Chromatic flip-wrap: colors wrap/invert at extreme viewing angles.
+    Like a chrome that flips between two color states with dramatic wrap transition.
+    Dichroic-style — not just rainbow iridescence, but a FLIP between two distinct colors.
     """
+    if pm == 0.0:
+        return paint
     h, w = shape[:2] if len(shape) > 2 else shape
-    
+
     y, x = get_mgrid((h, w))
-    # Normalize to [-1, 1]
-    y_norm = (y / h - 0.5) * 2
-    x_norm = (x / w - 0.5) * 2
-    
-    # Polar angle for hue rotation
-    angle = np.arctan2(y_norm, x_norm) / np.pi  # [-1, 1]
-    radius = np.sqrt(y_norm**2 + x_norm**2)
-    
-    # Multi-layer iridescence — softer detail so base isn't too busy
-    irido_base = multi_scale_noise((h, w), [4, 8, 16], [0.35, 0.35, 0.3], seed + 2505)
-    irido_detail = multi_scale_noise((h, w), [2, 4, 8], [0.4, 0.35, 0.25], seed + 2506)
-    
-    # Hue cycling: angle-dominated, subtle detail
-    hue_offset = angle * 0.5 + irido_detail * 0.1
-    
-    # RGB hue rotation (simple approximation)
-    r = 0.5 + 0.5 * np.sin(hue_offset * np.pi + 0)
-    g = 0.5 + 0.5 * np.sin(hue_offset * np.pi + 2.09)
-    b = 0.5 + 0.5 * np.sin(hue_offset * np.pi + 4.19)
-    
-    flip_effect = np.stack([r, g, b], axis=-1) * (0.7 + 0.3 * irido_base[:,:,np.newaxis])
-    
-    blend = pm * (0.6 + 0.4 * radius[:,:,np.newaxis])
-    result = np.clip(paint * (1.0 - mask[:,:,np.newaxis] * blend) + 
+
+    # Noise-based viewing angle simulation (simulates body curvature)
+    angle_noise = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.35, 0.35], seed + 2505)
+    fine_noise = multi_scale_noise((h, w), [4, 8], [0.6, 0.4], seed + 2506)
+
+    # Viewing angle parameter: combines position + body noise
+    y_norm = y / max(h - 1, 1)
+    x_norm = x / max(w - 1, 1)
+    # Angle parameter driven by surface curvature simulation
+    angle_param = np.clip(
+        y_norm * 0.3 + x_norm * 0.25 + angle_noise * 0.3 + fine_noise * 0.15,
+        0, 1
+    )
+
+    # Two-state chromatic flip: State A and State B
+    rng = np.random.RandomState(seed + 2507)
+    # Generate two complementary premium colors
+    hue_a = rng.uniform(0, 1)
+    hue_b = (hue_a + 0.45 + rng.uniform(-0.1, 0.1)) % 1.0  # near-complementary
+    # Convert hues to saturated RGB
+    def hue2rgb(h_val):
+        r = np.abs(h_val * 6 - 3) - 1
+        g = 2 - np.abs(h_val * 6 - 2)
+        b = 2 - np.abs(h_val * 6 - 4)
+        return np.clip(r, 0, 1) * 0.85 + 0.1, np.clip(g, 0, 1) * 0.8 + 0.1, np.clip(b, 0, 1) * 0.85 + 0.1
+
+    ar, ag, ab = hue2rgb(hue_a)
+    br, bg, bb_c = hue2rgb(hue_b)
+
+    # Sharp-ish flip transition (steeper sigmoid, not linear)
+    flip = 1.0 / (1.0 + np.exp(-(angle_param - 0.5) * 12.0))  # steep sigmoid
+    # Chrome-like metallic shimmer at transition zone
+    transition_zone = np.clip(1.0 - np.abs(angle_param - 0.5) * 4.0, 0, 1)
+    chrome_shimmer = transition_zone * 0.15
+
+    r_ch = ar * (1.0 - flip) + br * flip + chrome_shimmer
+    g_ch = ag * (1.0 - flip) + bg * flip + chrome_shimmer * 0.8
+    b_ch = ab * (1.0 - flip) + bb_c * flip + chrome_shimmer * 0.6
+
+    flip_effect = np.stack([
+        np.clip(r_ch, 0, 1),
+        np.clip(g_ch, 0, 1),
+        np.clip(b_ch, 0, 1)
+    ], axis=-1).astype(np.float32)
+
+    blend = pm * 0.82
+    result = np.clip(paint * (1.0 - mask[:,:,np.newaxis] * blend) +
                      flip_effect * (mask[:,:,np.newaxis] * blend), 0, 1)
     return result.astype(np.float32)
 
 
 def spec_color_flip(shape, seed, sm, base_m, base_r):
     """
-    Color flip specular: moderate metallic with multi-layer interference.
+    Color flip spec: high metallic chrome-like base with angle-dependent
+    roughness variation for dichroic effect. Very glossy.
     """
     h, w = shape
-    
-    # Iridescent effect reduces roughness in highlights
-    irido = multi_scale_noise((h, w), [2, 4, 8], [0.4, 0.35, 0.25], seed + 2507)
-    
-    metallic = 0.55 + 0.35 * irido
-    
-    # Variable roughness for angle-dependent appearance
-    roughness = 0.08 + 0.06 * multi_scale_noise((h, w), [1, 3, 6], [0.5, 0.3, 0.2], seed + 2508)
-    
-    # Full clearcoat for glossy color-flip film (CC 16 = max gloss)
-    clearcoat = np.full((h, w), 16.0, dtype=np.float32)
-    
-    return (np.clip(metallic * 255.0, 0, 255).astype(np.float32), 
-            np.clip(roughness * 255.0, 0, 255).astype(np.float32),
-            np.clip(clearcoat, 16, 255).astype(np.float32))
+
+    # Angle simulation noise
+    angle_noise = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.35, 0.35], seed + 2505)
+    fine = multi_scale_noise((h, w), [2, 4, 8], [0.4, 0.35, 0.25], seed + 2507)
+    y, x = get_mgrid((h, w))
+    angle_param = np.clip(y / max(h - 1, 1) * 0.3 + x / max(w - 1, 1) * 0.25 + angle_noise * 0.3, 0, 1)
+
+    # Transition zone gets different spec
+    transition = np.clip(1.0 - np.abs(angle_param - 0.5) * 4.0, 0, 1)
+
+    # M: high metallic throughout (chrome-like), highest at transition
+    M = np.clip(180.0 + transition * 60.0 * sm + fine * 15.0 * sm, 0, 255).astype(np.float32)
+    # R: very low (glossy), slightly higher at transitions for diffuse color shift
+    R = np.clip(4.0 + transition * 8.0 * sm + fine * 3.0 * sm, 15, 255).astype(np.float32)  # GGX floor
+    # CC: max clearcoat glossy film
+    CC = np.clip(16.0 + (1.0 - transition) * 5.0 * sm, 16, 255).astype(np.float32)
+
+    return M, R, CC
 
 
 # =============================================================================
@@ -173,47 +203,39 @@ def spec_gloss_wrap(shape, seed, sm, base_m, base_r):
 # =============================================================================
 
 def paint_liquid_wrap_v2(paint, shape, mask, seed, pm, bb):
-    """
-    Liquid metal effect using curl noise for organic flow patterns.
-    Simulates mercury-like pooling and drip behavior.
-    """
+    """Liquid rubber/vinyl peel coat: WEAK-016 FIX — stretchy rubber/vinyl character.
+    Distinct from satin_wrap: fine Perlin micro-texture + slight darkening at stretch points.
+    Previously simulated liquid-metal pooling — wrong material character for rubber peel coat."""
     h, w = shape[:2] if len(shape) > 2 else shape
-    
-    # Curl noise for organic liquid flow (approximated via cross-derivatives)
-    base_noise = multi_scale_noise((h, w), [2, 4, 8], [0.4, 0.35, 0.25], seed + 2512)
-    deriv_noise = multi_scale_noise((h, w), [2, 4, 8], [0.4, 0.35, 0.25], seed + 2513)
-    
-    # Approximation of curl: perpendicular gradient flow
-    curl_x = deriv_noise
-    curl_y = base_noise
-    
-    # Liquid pooling effect: concentration toward low areas
-    pooling = np.clip(1.0 - np.abs(curl_x - curl_y), 0, 1)
-    pooling = np.power(pooling, 1.5)
-    
-    # Metallic shimmer with liquid surface tension (sharp highlights)
-    surface = 0.9 + 0.1 * multi_scale_noise((h, w), [1, 2], [0.6, 0.4], seed + 2514)
-    liquid_effect = np.stack([surface, surface, surface], axis=-1) * (0.8 + 0.2 * pooling[:,:,np.newaxis])
-    
-    # Apply with pool-based blending
-    blend = pm * np.clip(pooling[:,:,np.newaxis], 0.2, 1.0)
-    result = np.clip(paint * (1.0 - mask[:,:,np.newaxis] * blend) + 
-                     liquid_effect * (mask[:,:,np.newaxis] * blend), 0, 1)
-    return result.astype(np.float32)
+    # Fine rubber compound particle variation texture
+    rubber_grain = multi_scale_noise((h, w), [2, 4, 8], [0.45, 0.35, 0.2], seed + 2512)
+    # Stretch point simulation: gradient noise for high-curvature area darkening
+    stretch_pts  = multi_scale_noise((h, w), [1, 2, 3], [0.5, 0.3, 0.2], seed + 2513)
+    # Slight darkening at stretch peaks (0-5% darker where rubber stretches)
+    stretch_darken = 1.0 - np.clip((stretch_pts - 0.7) / 0.3, 0, 1) * 0.05 * pm
+    # ~10% desaturation: rubber coat slightly mutes the underlying color
+    gray = paint.mean(axis=2, keepdims=True)
+    desaturated = paint * 0.90 + gray * 0.10
+    # Fine rubber grain: subtle brightness variation from compound particles
+    grain_effect = 1.0 + (rubber_grain - 0.5) * 0.03 * pm
+    result = np.clip(desaturated * stretch_darken[:,:,np.newaxis] * grain_effect[:,:,np.newaxis], 0, 1)
+    blend = pm * mask[:,:,np.newaxis]
+    return np.clip(paint * (1.0 - blend) + result * blend, 0, 1).astype(np.float32)
 
 
 def spec_liquid_wrap(shape, seed, sm, base_m, base_r):
-    """
-    Liquid rubber peel coat: dielectric polymer, the rubber IS the coat.
-    M near 0, moderate roughness from rubbery texture, CC from self-sealing.
-    """
+    """Liquid rubber peel coat spec: WEAK-016 FIX — rubber/vinyl character distinct from satin_wrap.
+    G: 60-100 (slightly rougher than satin), no metallic (R near 0), fine Perlin texture.
+    Previously: R=22-37 (too smooth), CC=50-58 — nearly identical range to satin_wrap."""
     h, w = shape
-    
-    tension = multi_scale_noise((h, w), [3, 6, 12], [0.35, 0.35, 0.3], seed + 2516)
-    metallic = np.clip(2.0 + tension * 4.0 * sm, 0, 255).astype(np.float32)
-    roughness = np.clip(22.0 + tension * 15.0 * sm, 0, 255).astype(np.float32)
-    cc = np.clip(50.0 + tension * 8.0, 0, 255).astype(np.float32)
-    
+    # Fine Perlin texture for rubber compound surface variation
+    rubber_tex = multi_scale_noise((h, w), [2, 4, 8], [0.45, 0.35, 0.2], seed + 2516)
+    # M: near zero — rubber/vinyl is dielectric, no metallic character
+    metallic  = np.clip(0.0 + rubber_tex * 3.0 * sm, 0, 255).astype(np.float32)
+    # R: 60-100 range — slightly rougher than satin (satin ~35-55), rubber is not as smooth
+    roughness = np.clip(60.0 + rubber_tex * 40.0 * sm, 0, 255).astype(np.float32)
+    # CC: same satin-ish range (40-58) — rubber self-seals like vinyl
+    cc        = np.clip(40.0 + rubber_tex * 18.0, 16, 255).astype(np.float32)
     return (metallic, roughness, cc)
 
 
@@ -374,39 +396,22 @@ def spec_stealth_wrap(shape, seed, sm, base_m, base_r):
 # =============================================================================
 
 def paint_textured_wrap_v2(paint, shape, mask, seed, pm, bb):
-    """
-    Carbon fiber texture using wave interference for weave pattern.
-    Creates realistic woven overlay with alternating fiber direction.
-    """
+    """Orange-peel embossed vinyl wrap. Applies raised-dimple surface texture to the
+    user's base paint color — preserves any chosen color, adds 3D emboss character
+    via bump modulation (peaks lighter, valleys darker). No hardcoded color."""
     h, w = shape[:2] if len(shape) > 2 else shape
-    
-    y, x = get_mgrid((h, w))
-    
-    # Two-directional wave pattern for weave
-    weave_1 = np.sin(12 * np.pi * x / w) * np.sin(12 * np.pi * y / h)
-    weave_2 = np.sin(12 * np.pi * x / w + np.pi/4) * np.cos(12 * np.pi * y / h + np.pi/4)
-    
-    # Combine weaves with phase offset
-    weave = 0.6 * weave_1 + 0.4 * weave_2
-    weave = (weave + 1.0) / 2.0  # Normalize to [0, 1]
-    
-    # Add stochastic fiber variations
-    fiber_noise = multi_scale_noise((h, w), [1, 2, 4, 8], [0.3, 0.25, 0.25, 0.2], seed + 2529)
-    texture_pattern = 0.7 * weave + 0.3 * fiber_noise
-    
-    # Carbon fiber color (dark gray with slight sheen)
-    carbon_base = np.array([0.25, 0.25, 0.26])
-    carbon_sheen = carbon_base + 0.1 * texture_pattern[:,:,np.newaxis]
-    carbon_effect = np.stack([carbon_sheen[:,:,0], carbon_sheen[:,:,1], carbon_sheen[:,:,2]], axis=-1)
-    
-    # Texture depth variation
-    depth = 0.9 + 0.08 * (texture_pattern - 0.5)[:,:,np.newaxis]
-    carbon_effect = carbon_effect * depth
-    
-    blend = pm * (0.85 + 0.15 * texture_pattern[:,:,np.newaxis])
-    result = np.clip(paint * (1.0 - mask[:,:,np.newaxis] * blend) + 
-                     carbon_effect * (mask[:,:,np.newaxis] * blend), 0, 1)
-    return result.astype(np.float32)
+    # Coarse bump map: large dimples characteristic of orange-peel vinyl texture
+    bump_coarse = multi_scale_noise((h, w), [8, 16], [0.55, 0.45], seed + 2529)
+    # Fine surface grain: micro-texture variation on vinyl film surface
+    bump_fine = multi_scale_noise((h, w), [2, 4], [0.5, 0.5], seed + 2530)
+    # Combine into orange-peel pattern (75% coarse dimples, 25% fine grain)
+    texture = np.clip(0.75 * bump_coarse + 0.25 * bump_fine, 0, 1)
+    # Brightness modulation: peaks +14%, valleys -14% (light on bumps, shadow in dimples)
+    bump_mod = (1.0 + 0.28 * (texture - 0.5))[:, :, np.newaxis]
+    textured = np.clip(paint * bump_mod, 0, 1)
+    blend = pm * (0.80 + 0.20 * texture[:, :, np.newaxis])
+    result = paint * (1.0 - mask[:, :, np.newaxis] * blend) + textured * (mask[:, :, np.newaxis] * blend)
+    return np.clip(result, 0, 1).astype(np.float32)
 
 
 def spec_textured_wrap(shape, seed, sm, base_m, base_r):

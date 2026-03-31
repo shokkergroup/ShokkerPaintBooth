@@ -56,7 +56,7 @@ def spec_ambulance_white(shape, seed, sm, base_m, base_r):
     bead = (rng.rand(h, w) > 0.92).astype(np.float32)
     # White paint: zero metallic, low roughness, retro-reflective beads add specular
     M = np.clip(5.0 + bead * 15.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(8.0 + bead * 4.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(8.0 + bead * 4.0 * sm, 15, 255).astype(np.float32)
     CC = np.clip(14.0 + bead * 3.0, 0, 255).astype(np.float32)
     return M, R, CC
 
@@ -104,7 +104,7 @@ def spec_dealer_pearl(shape, seed, sm, base_m, base_r):
     mica = multi_scale_noise((h, w), [2, 4, 8], [0.3, 0.4, 0.3], seed + 611)
     depth = multi_scale_noise((h, w), [32, 64, 128], [0.3, 0.4, 0.3], seed + 613)
     M = np.clip(80.0 + mica * 60.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(5.0 + depth * 8.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(5.0 + depth * 8.0 * sm, 15, 255).astype(np.float32)
     CC = np.clip(18.0 + depth * 6.0, 0, 255).astype(np.float32)
     return M, R, CC
 
@@ -150,7 +150,7 @@ def spec_factory_basecoat(shape, seed, sm, base_m, base_r):
     overlap = np.exp(-((pass_phase - 0.5) ** 2) / (2.0 * 0.12 ** 2))
     # Factory basecoat: moderate metallic, controlled roughness
     M = np.clip(110.0 + overlap * 30.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(12.0 + overlap * 8.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(12.0 + overlap * 8.0 * sm, 15, 255).astype(np.float32)
     CC = np.clip(14.0 + overlap * 4.0, 0, 255).astype(np.float32)
     return M, R, CC
 
@@ -192,7 +192,7 @@ def spec_fire_engine(shape, seed, sm, base_m, base_r):
     scatter = multi_scale_noise((h, w), [4, 8, 16], [0.3, 0.35, 0.35], seed + 631)
     # Fire engine: no metallic (solid pigment), very low roughness (high gloss)
     M = np.clip(8.0 + scatter * 10.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(3.0 + scatter * 6.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(3.0 + scatter * 6.0 * sm, 15, 255).astype(np.float32)
     CC = np.clip(18.0 + scatter * 5.0, 0, 255).astype(np.float32)
     return M, R, CC
 
@@ -229,7 +229,7 @@ def spec_fleet_white(shape, seed, sm, base_m, base_r):
     crosslink = multi_scale_noise((h, w), [32, 64, 128], [0.3, 0.35, 0.35], seed + 641)
     # Fleet white: zero metallic, moderate roughness (not showroom gloss)
     M = np.clip(2.0 + crosslink * 4.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(18.0 + crosslink * 12.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(18.0 + crosslink * 12.0 * sm, 15, 255).astype(np.float32)
     CC = np.clip(10.0 + crosslink * 4.0, 0, 255).astype(np.float32)
     return M, R, CC
 
@@ -269,7 +269,7 @@ def spec_police_black(shape, seed, sm, base_m, base_r):
     particle = multi_scale_noise((h, w), [8, 16, 32], [0.3, 0.4, 0.3], seed + 651)
     # Police black: zero metallic, moderate roughness (subdued stealth gloss)
     M = np.clip(3.0 + particle * 6.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(12.0 + particle * 10.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(12.0 + particle * 10.0 * sm, 15, 255).astype(np.float32)
     CC = np.clip(12.0 + particle * 4.0, 0, 255).astype(np.float32)
     return M, R, CC
 
@@ -309,7 +309,7 @@ def spec_school_bus(shape, seed, sm, base_m, base_r):
     hals = multi_scale_noise((h, w), [32, 64], [0.5, 0.5], seed + 662)
     # School bus: no metallic, moderate roughness from UV stabilizer haze
     M = np.clip(4.0 + hals * 6.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(15.0 + hals * 12.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(15.0 + hals * 12.0 * sm, 15, 255).astype(np.float32)
     CC = np.clip(10.0 + hals * 4.0, 0, 255).astype(np.float32)
     return M, R, CC
 
@@ -353,7 +353,7 @@ def spec_showroom_clear(shape, seed, sm, base_m, base_r):
     depth = multi_scale_noise((h, w), [64, 128], [0.5, 0.5], seed + 674)
     # Showroom: preserves base metallic, ultra-low roughness (mirror clear)
     M = np.clip(base_m * 0.8 + depth * 20.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(2.0 + depth * 4.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(2.0 + depth * 4.0 * sm, 15, 255).astype(np.float32)
     CC = np.clip(22.0 + depth * 6.0, 0, 255).astype(np.float32)
     return M, R, CC
 
@@ -401,6 +401,6 @@ def spec_taxi_yellow(shape, seed, sm, base_m, base_r):
     chromophore = 1.0 - np.exp(-2.5 * np.clip(uv, 0, 1))
     # Worn taxi: zero metallic, high roughness from chalking
     M = np.clip(3.0 + chalk * 5.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(25.0 + chromophore * 40.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(25.0 + chromophore * 40.0 * sm, 15, 255).astype(np.float32)
     CC = np.clip(4.0 + (1.0 - chromophore) * 8.0, 0, 255).astype(np.float32)
     return M, R, CC

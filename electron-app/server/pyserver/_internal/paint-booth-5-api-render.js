@@ -378,7 +378,10 @@ const ShokkerAPI = {
             if (extras.output_dir) body.output_dir = extras.output_dir;
             if (extras.import_spec_map) body.import_spec_map = extras.import_spec_map;
             if (extras.paint_image_base64) body.paint_image_base64 = extras.paint_image_base64;
+            if (extras.decal_mask_base64) body.decal_mask_base64 = extras.decal_mask_base64;
+            if (extras.decal_spec_finishes && extras.decal_spec_finishes.length) body.decal_spec_finishes = extras.decal_spec_finishes;
         }
+        this.resetStatusInterval(); // Reset polling backoff on every render
         const res = await fetch(this.baseUrl + '/render', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -403,6 +406,8 @@ const ShokkerAPI = {
         if (extras) {
             if (extras.import_spec_map) body.import_spec_map = extras.import_spec_map;
             if (extras.paint_image_base64) body.paint_image_base64 = extras.paint_image_base64;
+            if (extras.decal_mask_base64) body.decal_mask_base64 = extras.decal_mask_base64;
+            if (extras.decal_spec_finishes && extras.decal_spec_finishes.length) body.decal_spec_finishes = extras.decal_spec_finishes;
         }
         const res = await fetch(this.baseUrl + '/api/export-to-photoshop', {
             method: 'POST',
@@ -455,21 +460,37 @@ const ShokkerAPI = {
         // const comboEl = document.getElementById('comboCount');
         if (llRow && this.config) {
             llRow.style.display = 'flex';
-            const cb = document.getElementById('liveLinkCheckbox');
             const badge = document.getElementById('liveLinkBadge');
-            if (cb) cb.checked = this.config.live_link_enabled || false;
+            if (!this._liveLinkSynced) {
+                const cb = document.getElementById('liveLinkCheckbox');
+                if (cb) { cb.checked = this.config.live_link_enabled || false; this._liveLinkSynced = true; }
+            }
             if (badge) badge.style.display = this.config.live_link_enabled ? 'inline' : 'none';
         }
-        // Sync car file naming checkbox from saved config
-        if (this.config) {
+        // Sync car file naming checkbox from saved config (only on first load, not every poll)
+        if (this.config && !this._customNumberSynced) {
             const cnCb = document.getElementById('useCustomNumberCheckbox');
-            if (cnCb) cnCb.checked = this.config.use_custom_number !== false;
+            if (cnCb) { cnCb.checked = this.config.use_custom_number !== false; this._customNumberSynced = true; }
         }
     },
 
     startPolling() {
+        this._statusInterval = 10000;
         this.checkStatus();
-        setInterval(() => this.checkStatus(), 10000);
+        const statusPoll = () => {
+            this.checkStatus().then(() => {
+                // Slow down polling when idle (no recent renders)
+                this._statusInterval = Math.min(this._statusInterval * 1.5, 120000); // max 2 minutes
+                setTimeout(statusPoll, this._statusInterval);
+            }).catch(() => {
+                setTimeout(statusPoll, this._statusInterval);
+            });
+        };
+        setTimeout(statusPoll, this._statusInterval);
+    },
+
+    resetStatusInterval() {
+        this._statusInterval = 10000;
     }
 };
 
@@ -743,6 +764,9 @@ async function doFleetRender() {
         }
         if (z.base || (z.finish && z.pattern && z.pattern !== 'none')) zoneObj.pattern_spec_mult = Number(z.patternSpecMult ?? 1);
         if (z.base || (z.finish && z.pattern && z.pattern !== 'none')) { zoneObj.pattern_offset_x = Math.max(0, Math.min(1, Number(z.patternOffsetX ?? 0.5))); zoneObj.pattern_offset_y = Math.max(0, Math.min(1, Number(z.patternOffsetY ?? 0.5))); zoneObj.pattern_flip_h = !!z.patternFlipH; zoneObj.pattern_flip_v = !!z.patternFlipV; }
+        if (z.patternPlacement === 'fit' || z.patternFitZone) zoneObj.pattern_fit_zone = true;
+        if (z.hardEdge) zoneObj.hard_edge = true;
+        if (z.patternPlacement === 'manual') zoneObj.pattern_manual = true;
         if (z.base || z.finish) { zoneObj.base_offset_x = Math.max(0, Math.min(1, Number(z.baseOffsetX ?? 0.5))); zoneObj.base_offset_y = Math.max(0, Math.min(1, Number(z.baseOffsetY ?? 0.5))); zoneObj.base_rotation = Number(z.baseRotation ?? 0); zoneObj.base_flip_h = !!z.baseFlipH; zoneObj.base_flip_v = !!z.baseFlipV; }
         if (z.wear && z.wear > 0) zoneObj.wear_level = z.wear;
         // Spec pattern overlays
@@ -753,7 +777,12 @@ async function doFleetRender() {
                 blend_mode: sp.blendMode || 'normal',
                 channels: sp.channels || 'MR',
                 range: sp.range || 40,
-                params: sp.params || {}
+                params: sp.params || {},
+                offset_x: sp.offsetX || 0.5,
+                offset_y: sp.offsetY || 0.5,
+                scale: sp.scale || 1.0,
+                rotation: sp.rotation || 0,
+                box_size: sp.boxSize || 100
             }));
         }
         if (z.overlaySpecPatternStack && z.overlaySpecPatternStack.length > 0) {
@@ -763,7 +792,57 @@ async function doFleetRender() {
                 blend_mode: sp.blendMode || 'normal',
                 channels: sp.channels || 'MR',
                 range: sp.range || 40,
-                params: sp.params || {}
+                params: sp.params || {},
+                offset_x: sp.offsetX || 0.5,
+                offset_y: sp.offsetY || 0.5,
+                scale: sp.scale || 1.0,
+                rotation: sp.rotation || 0,
+                box_size: sp.boxSize || 100
+            }));
+        }
+        if (z.thirdOverlaySpecPatternStack && z.thirdOverlaySpecPatternStack.length > 0) {
+            zoneObj.third_overlay_spec_pattern_stack = z.thirdOverlaySpecPatternStack.map(sp => ({
+                pattern: sp.pattern,
+                opacity: (sp.opacity ?? 50) / 100,
+                blend_mode: sp.blendMode || 'normal',
+                channels: sp.channels || 'MR',
+                range: sp.range || 40,
+                params: sp.params || {},
+                offset_x: sp.offsetX || 0.5,
+                offset_y: sp.offsetY || 0.5,
+                scale: sp.scale || 1.0,
+                rotation: sp.rotation || 0,
+                box_size: sp.boxSize || 100
+            }));
+        }
+        if (z.fourthOverlaySpecPatternStack && z.fourthOverlaySpecPatternStack.length > 0) {
+            zoneObj.fourth_overlay_spec_pattern_stack = z.fourthOverlaySpecPatternStack.map(sp => ({
+                pattern: sp.pattern,
+                opacity: (sp.opacity ?? 50) / 100,
+                blend_mode: sp.blendMode || 'normal',
+                channels: sp.channels || 'MR',
+                range: sp.range || 40,
+                params: sp.params || {},
+                offset_x: sp.offsetX || 0.5,
+                offset_y: sp.offsetY || 0.5,
+                scale: sp.scale || 1.0,
+                rotation: sp.rotation || 0,
+                box_size: sp.boxSize || 100
+            }));
+        }
+        if (z.fifthOverlaySpecPatternStack && z.fifthOverlaySpecPatternStack.length > 0) {
+            zoneObj.fifth_overlay_spec_pattern_stack = z.fifthOverlaySpecPatternStack.map(sp => ({
+                pattern: sp.pattern,
+                opacity: (sp.opacity ?? 50) / 100,
+                blend_mode: sp.blendMode || 'normal',
+                channels: sp.channels || 'MR',
+                range: sp.range || 40,
+                params: sp.params || {},
+                offset_x: sp.offsetX || 0.5,
+                offset_y: sp.offsetY || 0.5,
+                scale: sp.scale || 1.0,
+                rotation: sp.rotation || 0,
+                box_size: sp.boxSize || 100
             }));
         }
         // v6.0 advanced finish params
@@ -790,6 +869,13 @@ async function doFleetRender() {
             if (z.secondBasePatternHarden != null) zoneObj.second_base_pattern_harden = !!z.secondBasePatternHarden;
             zoneObj.second_base_pattern_offset_x = Math.max(0, Math.min(1, Number(z.secondBasePatternOffsetX ?? 0.5)));
             zoneObj.second_base_pattern_offset_y = Math.max(0, Math.min(1, Number(z.secondBasePatternOffsetY ?? 0.5)));
+            if (z.secondBaseFitZone) zoneObj.second_base_fit_zone = true;
+            if (z.secondBaseHueShift) zoneObj.second_base_hue_shift = z.secondBaseHueShift;
+            if (z.secondBaseSaturation) zoneObj.second_base_saturation = z.secondBaseSaturation;
+            if (z.secondBaseBrightness) zoneObj.second_base_brightness = z.secondBaseBrightness;
+            if (z.secondBasePatternHueShift) zoneObj.second_base_pattern_hue_shift = z.secondBasePatternHueShift;
+            if (z.secondBasePatternSaturation) zoneObj.second_base_pattern_saturation = z.secondBasePatternSaturation;
+            if (z.secondBasePatternBrightness) zoneObj.second_base_pattern_brightness = z.secondBasePatternBrightness;
         }
         if ((z.thirdBase || z.thirdBaseColorSource) && (z.thirdBaseStrength || 0) > 0) {
             const _tbColor = (z.thirdBaseColor || '#ffffff').toString();
@@ -811,6 +897,10 @@ async function doFleetRender() {
             if (z.thirdBasePatternHarden != null) zoneObj.third_base_pattern_harden = !!z.thirdBasePatternHarden;
             zoneObj.third_base_pattern_offset_x = Math.max(0, Math.min(1, Number(z.thirdBasePatternOffsetX ?? 0.5)));
             zoneObj.third_base_pattern_offset_y = Math.max(0, Math.min(1, Number(z.thirdBasePatternOffsetY ?? 0.5)));
+            if (z.thirdBaseFitZone) zoneObj.third_base_fit_zone = true;
+            if (z.thirdBaseHueShift) zoneObj.third_base_hue_shift = z.thirdBaseHueShift;
+            if (z.thirdBaseSaturation) zoneObj.third_base_saturation = z.thirdBaseSaturation;
+            if (z.thirdBaseBrightness) zoneObj.third_base_brightness = z.thirdBaseBrightness;
         }
         if ((z.fourthBase || z.fourthBaseColorSource) && (z.fourthBaseStrength || 0) > 0) {
             const _fbColor = (z.fourthBaseColor || '#ffffff').toString();
@@ -830,6 +920,10 @@ async function doFleetRender() {
             zoneObj.fourth_base_pattern_strength = Math.max(0, Math.min(2, Number(z.fourthBasePatternStrength ?? 1)));
             zoneObj.fourth_base_pattern_offset_x = Math.max(0, Math.min(1, Number(z.fourthBasePatternOffsetX ?? 0.5)));
             zoneObj.fourth_base_pattern_offset_y = Math.max(0, Math.min(1, Number(z.fourthBasePatternOffsetY ?? 0.5)));
+            if (z.fourthBaseFitZone) zoneObj.fourth_base_fit_zone = true;
+            if (z.fourthBaseHueShift) zoneObj.fourth_base_hue_shift = z.fourthBaseHueShift;
+            if (z.fourthBaseSaturation) zoneObj.fourth_base_saturation = z.fourthBaseSaturation;
+            if (z.fourthBaseBrightness) zoneObj.fourth_base_brightness = z.fourthBaseBrightness;
         }
         if ((z.fifthBase || z.fifthBaseColorSource) && (z.fifthBaseStrength || 0) > 0) {
             const _fifColor = (z.fifthBaseColor || '#ffffff').toString();
@@ -849,6 +943,10 @@ async function doFleetRender() {
             zoneObj.fifth_base_pattern_strength = Math.max(0, Math.min(2, Number(z.fifthBasePatternStrength ?? 1)));
             zoneObj.fifth_base_pattern_offset_x = Math.max(0, Math.min(1, Number(z.fifthBasePatternOffsetX ?? 0.5)));
             zoneObj.fifth_base_pattern_offset_y = Math.max(0, Math.min(1, Number(z.fifthBasePatternOffsetY ?? 0.5)));
+            if (z.fifthBaseFitZone) zoneObj.fifth_base_fit_zone = true;
+            if (z.fifthBaseHueShift) zoneObj.fifth_base_hue_shift = z.fifthBaseHueShift;
+            if (z.fifthBaseSaturation) zoneObj.fifth_base_saturation = z.fifthBaseSaturation;
+            if (z.fifthBaseBrightness) zoneObj.fifth_base_brightness = z.fifthBaseBrightness;
         }
         return zoneObj;
     });
@@ -979,6 +1077,9 @@ async function doSeasonRender() {
         }
         if (z.base || (z.finish && z.pattern && z.pattern !== 'none')) zoneObj.pattern_spec_mult = Number(z.patternSpecMult ?? 1);
         if (z.base || (z.finish && z.pattern && z.pattern !== 'none')) { zoneObj.pattern_offset_x = Math.max(0, Math.min(1, Number(z.patternOffsetX ?? 0.5))); zoneObj.pattern_offset_y = Math.max(0, Math.min(1, Number(z.patternOffsetY ?? 0.5))); zoneObj.pattern_flip_h = !!z.patternFlipH; zoneObj.pattern_flip_v = !!z.patternFlipV; }
+        if (z.patternPlacement === 'fit' || z.patternFitZone) zoneObj.pattern_fit_zone = true;
+        if (z.hardEdge) zoneObj.hard_edge = true;
+        if (z.patternPlacement === 'manual') zoneObj.pattern_manual = true;
         if (z.base || z.finish) { zoneObj.base_offset_x = Math.max(0, Math.min(1, Number(z.baseOffsetX ?? 0.5))); zoneObj.base_offset_y = Math.max(0, Math.min(1, Number(z.baseOffsetY ?? 0.5))); zoneObj.base_rotation = Number(z.baseRotation ?? 0); zoneObj.base_flip_h = !!z.baseFlipH; zoneObj.base_flip_v = !!z.baseFlipV; }
         if (z.wear && z.wear > 0) zoneObj.wear_level = z.wear;
         // Spec pattern overlays
@@ -989,7 +1090,12 @@ async function doSeasonRender() {
                 blend_mode: sp.blendMode || 'normal',
                 channels: sp.channels || 'MR',
                 range: sp.range || 40,
-                params: sp.params || {}
+                params: sp.params || {},
+                offset_x: sp.offsetX || 0.5,
+                offset_y: sp.offsetY || 0.5,
+                scale: sp.scale || 1.0,
+                rotation: sp.rotation || 0,
+                box_size: sp.boxSize || 100
             }));
         }
         if (z.overlaySpecPatternStack && z.overlaySpecPatternStack.length > 0) {
@@ -999,7 +1105,57 @@ async function doSeasonRender() {
                 blend_mode: sp.blendMode || 'normal',
                 channels: sp.channels || 'MR',
                 range: sp.range || 40,
-                params: sp.params || {}
+                params: sp.params || {},
+                offset_x: sp.offsetX || 0.5,
+                offset_y: sp.offsetY || 0.5,
+                scale: sp.scale || 1.0,
+                rotation: sp.rotation || 0,
+                box_size: sp.boxSize || 100
+            }));
+        }
+        if (z.thirdOverlaySpecPatternStack && z.thirdOverlaySpecPatternStack.length > 0) {
+            zoneObj.third_overlay_spec_pattern_stack = z.thirdOverlaySpecPatternStack.map(sp => ({
+                pattern: sp.pattern,
+                opacity: (sp.opacity ?? 50) / 100,
+                blend_mode: sp.blendMode || 'normal',
+                channels: sp.channels || 'MR',
+                range: sp.range || 40,
+                params: sp.params || {},
+                offset_x: sp.offsetX || 0.5,
+                offset_y: sp.offsetY || 0.5,
+                scale: sp.scale || 1.0,
+                rotation: sp.rotation || 0,
+                box_size: sp.boxSize || 100
+            }));
+        }
+        if (z.fourthOverlaySpecPatternStack && z.fourthOverlaySpecPatternStack.length > 0) {
+            zoneObj.fourth_overlay_spec_pattern_stack = z.fourthOverlaySpecPatternStack.map(sp => ({
+                pattern: sp.pattern,
+                opacity: (sp.opacity ?? 50) / 100,
+                blend_mode: sp.blendMode || 'normal',
+                channels: sp.channels || 'MR',
+                range: sp.range || 40,
+                params: sp.params || {},
+                offset_x: sp.offsetX || 0.5,
+                offset_y: sp.offsetY || 0.5,
+                scale: sp.scale || 1.0,
+                rotation: sp.rotation || 0,
+                box_size: sp.boxSize || 100
+            }));
+        }
+        if (z.fifthOverlaySpecPatternStack && z.fifthOverlaySpecPatternStack.length > 0) {
+            zoneObj.fifth_overlay_spec_pattern_stack = z.fifthOverlaySpecPatternStack.map(sp => ({
+                pattern: sp.pattern,
+                opacity: (sp.opacity ?? 50) / 100,
+                blend_mode: sp.blendMode || 'normal',
+                channels: sp.channels || 'MR',
+                range: sp.range || 40,
+                params: sp.params || {},
+                offset_x: sp.offsetX || 0.5,
+                offset_y: sp.offsetY || 0.5,
+                scale: sp.scale || 1.0,
+                rotation: sp.rotation || 0,
+                box_size: sp.boxSize || 100
             }));
         }
         // v6.0 advanced finish params
@@ -1026,6 +1182,13 @@ async function doSeasonRender() {
             if (z.secondBasePatternHarden != null) zoneObj.second_base_pattern_harden = !!z.secondBasePatternHarden;
             zoneObj.second_base_pattern_offset_x = Math.max(0, Math.min(1, Number(z.secondBasePatternOffsetX ?? 0.5)));
             zoneObj.second_base_pattern_offset_y = Math.max(0, Math.min(1, Number(z.secondBasePatternOffsetY ?? 0.5)));
+            if (z.secondBaseFitZone) zoneObj.second_base_fit_zone = true;
+            if (z.secondBaseHueShift) zoneObj.second_base_hue_shift = z.secondBaseHueShift;
+            if (z.secondBaseSaturation) zoneObj.second_base_saturation = z.secondBaseSaturation;
+            if (z.secondBaseBrightness) zoneObj.second_base_brightness = z.secondBaseBrightness;
+            if (z.secondBasePatternHueShift) zoneObj.second_base_pattern_hue_shift = z.secondBasePatternHueShift;
+            if (z.secondBasePatternSaturation) zoneObj.second_base_pattern_saturation = z.secondBasePatternSaturation;
+            if (z.secondBasePatternBrightness) zoneObj.second_base_pattern_brightness = z.secondBasePatternBrightness;
         }
         if ((z.thirdBase || z.thirdBaseColorSource) && (z.thirdBaseStrength || 0) > 0) {
             const _tbColor = (z.thirdBaseColor || '#ffffff').toString();
@@ -1047,6 +1210,10 @@ async function doSeasonRender() {
             if (z.thirdBasePatternHarden != null) zoneObj.third_base_pattern_harden = !!z.thirdBasePatternHarden;
             zoneObj.third_base_pattern_offset_x = Math.max(0, Math.min(1, Number(z.thirdBasePatternOffsetX ?? 0.5)));
             zoneObj.third_base_pattern_offset_y = Math.max(0, Math.min(1, Number(z.thirdBasePatternOffsetY ?? 0.5)));
+            if (z.thirdBaseFitZone) zoneObj.third_base_fit_zone = true;
+            if (z.thirdBaseHueShift) zoneObj.third_base_hue_shift = z.thirdBaseHueShift;
+            if (z.thirdBaseSaturation) zoneObj.third_base_saturation = z.thirdBaseSaturation;
+            if (z.thirdBaseBrightness) zoneObj.third_base_brightness = z.thirdBaseBrightness;
         }
         if ((z.fourthBase || z.fourthBaseColorSource) && (z.fourthBaseStrength || 0) > 0) {
             const _fbColor = (z.fourthBaseColor || '#ffffff').toString();
@@ -1066,6 +1233,10 @@ async function doSeasonRender() {
             zoneObj.fourth_base_pattern_strength = Math.max(0, Math.min(2, Number(z.fourthBasePatternStrength ?? 1)));
             zoneObj.fourth_base_pattern_offset_x = Math.max(0, Math.min(1, Number(z.fourthBasePatternOffsetX ?? 0.5)));
             zoneObj.fourth_base_pattern_offset_y = Math.max(0, Math.min(1, Number(z.fourthBasePatternOffsetY ?? 0.5)));
+            if (z.fourthBaseFitZone) zoneObj.fourth_base_fit_zone = true;
+            if (z.fourthBaseHueShift) zoneObj.fourth_base_hue_shift = z.fourthBaseHueShift;
+            if (z.fourthBaseSaturation) zoneObj.fourth_base_saturation = z.fourthBaseSaturation;
+            if (z.fourthBaseBrightness) zoneObj.fourth_base_brightness = z.fourthBaseBrightness;
         }
         if ((z.fifthBase || z.fifthBaseColorSource) && (z.fifthBaseStrength || 0) > 0) {
             const _fifColor = (z.fifthBaseColor || '#ffffff').toString();
@@ -1085,6 +1256,10 @@ async function doSeasonRender() {
             zoneObj.fifth_base_pattern_strength = Math.max(0, Math.min(2, Number(z.fifthBasePatternStrength ?? 1)));
             zoneObj.fifth_base_pattern_offset_x = Math.max(0, Math.min(1, Number(z.fifthBasePatternOffsetX ?? 0.5)));
             zoneObj.fifth_base_pattern_offset_y = Math.max(0, Math.min(1, Number(z.fifthBasePatternOffsetY ?? 0.5)));
+            if (z.fifthBaseFitZone) zoneObj.fifth_base_fit_zone = true;
+            if (z.fifthBaseHueShift) zoneObj.fifth_base_hue_shift = z.fifthBaseHueShift;
+            if (z.fifthBaseSaturation) zoneObj.fifth_base_saturation = z.fifthBaseSaturation;
+            if (z.fifthBaseBrightness) zoneObj.fifth_base_brightness = z.fifthBaseBrightness;
         }
         return zoneObj;
     });
@@ -1254,6 +1429,9 @@ function buildServerZonesForRender(zones) {
             zoneObj.pattern_flip_h = !!z.patternFlipH;
             zoneObj.pattern_flip_v = !!z.patternFlipV;
         }
+        if (z.patternPlacement === 'fit' || z.patternFitZone) zoneObj.pattern_fit_zone = true;
+        if (z.hardEdge) zoneObj.hard_edge = true;
+        if (z.patternPlacement === 'manual') zoneObj.pattern_manual = true;
         if (z.base || z.finish) {
             zoneObj.base_offset_x = Math.max(0, Math.min(1, Number(z.baseOffsetX ?? 0.5)));
             zoneObj.base_offset_y = Math.max(0, Math.min(1, Number(z.baseOffsetY ?? 0.5)));
@@ -1270,7 +1448,12 @@ function buildServerZonesForRender(zones) {
                 blend_mode: sp.blendMode || 'normal',
                 channels: sp.channels || 'MR',
                 range: sp.range || 40,
-                params: sp.params || {}
+                params: sp.params || {},
+                offset_x: sp.offsetX || 0.5,
+                offset_y: sp.offsetY || 0.5,
+                scale: sp.scale || 1.0,
+                rotation: sp.rotation || 0,
+                box_size: sp.boxSize || 100
             }));
         }
         if (z.overlaySpecPatternStack && z.overlaySpecPatternStack.length > 0) {
@@ -1280,7 +1463,57 @@ function buildServerZonesForRender(zones) {
                 blend_mode: sp.blendMode || 'normal',
                 channels: sp.channels || 'MR',
                 range: sp.range || 40,
-                params: sp.params || {}
+                params: sp.params || {},
+                offset_x: sp.offsetX || 0.5,
+                offset_y: sp.offsetY || 0.5,
+                scale: sp.scale || 1.0,
+                rotation: sp.rotation || 0,
+                box_size: sp.boxSize || 100
+            }));
+        }
+        if (z.thirdOverlaySpecPatternStack && z.thirdOverlaySpecPatternStack.length > 0) {
+            zoneObj.third_overlay_spec_pattern_stack = z.thirdOverlaySpecPatternStack.map(sp => ({
+                pattern: sp.pattern,
+                opacity: (sp.opacity ?? 50) / 100,
+                blend_mode: sp.blendMode || 'normal',
+                channels: sp.channels || 'MR',
+                range: sp.range || 40,
+                params: sp.params || {},
+                offset_x: sp.offsetX || 0.5,
+                offset_y: sp.offsetY || 0.5,
+                scale: sp.scale || 1.0,
+                rotation: sp.rotation || 0,
+                box_size: sp.boxSize || 100
+            }));
+        }
+        if (z.fourthOverlaySpecPatternStack && z.fourthOverlaySpecPatternStack.length > 0) {
+            zoneObj.fourth_overlay_spec_pattern_stack = z.fourthOverlaySpecPatternStack.map(sp => ({
+                pattern: sp.pattern,
+                opacity: (sp.opacity ?? 50) / 100,
+                blend_mode: sp.blendMode || 'normal',
+                channels: sp.channels || 'MR',
+                range: sp.range || 40,
+                params: sp.params || {},
+                offset_x: sp.offsetX || 0.5,
+                offset_y: sp.offsetY || 0.5,
+                scale: sp.scale || 1.0,
+                rotation: sp.rotation || 0,
+                box_size: sp.boxSize || 100
+            }));
+        }
+        if (z.fifthOverlaySpecPatternStack && z.fifthOverlaySpecPatternStack.length > 0) {
+            zoneObj.fifth_overlay_spec_pattern_stack = z.fifthOverlaySpecPatternStack.map(sp => ({
+                pattern: sp.pattern,
+                opacity: (sp.opacity ?? 50) / 100,
+                blend_mode: sp.blendMode || 'normal',
+                channels: sp.channels || 'MR',
+                range: sp.range || 40,
+                params: sp.params || {},
+                offset_x: sp.offsetX || 0.5,
+                offset_y: sp.offsetY || 0.5,
+                scale: sp.scale || 1.0,
+                rotation: sp.rotation || 0,
+                box_size: sp.boxSize || 100
             }));
         }
         if ((z.ccQuality ?? 100) !== 100) zoneObj.cc_quality = (z.ccQuality ?? 100) / 100;
@@ -1313,6 +1546,13 @@ function buildServerZonesForRender(zones) {
             if (z.secondBasePatternHarden != null) zoneObj.second_base_pattern_harden = !!z.secondBasePatternHarden;
             zoneObj.second_base_pattern_offset_x = Math.max(0, Math.min(1, Number(z.secondBasePatternOffsetX ?? 0.5)));
             zoneObj.second_base_pattern_offset_y = Math.max(0, Math.min(1, Number(z.secondBasePatternOffsetY ?? 0.5)));
+            if (z.secondBaseFitZone) zoneObj.second_base_fit_zone = true;
+            if (z.secondBaseHueShift) zoneObj.second_base_hue_shift = z.secondBaseHueShift;
+            if (z.secondBaseSaturation) zoneObj.second_base_saturation = z.secondBaseSaturation;
+            if (z.secondBaseBrightness) zoneObj.second_base_brightness = z.secondBaseBrightness;
+            if (z.secondBasePatternHueShift) zoneObj.second_base_pattern_hue_shift = z.secondBasePatternHueShift;
+            if (z.secondBasePatternSaturation) zoneObj.second_base_pattern_saturation = z.secondBasePatternSaturation;
+            if (z.secondBasePatternBrightness) zoneObj.second_base_pattern_brightness = z.secondBasePatternBrightness;
         }
         if ((z.thirdBase || z.thirdBaseColorSource) && (z.thirdBaseStrength || 0) > 0) {
             const _tbColor = (z.thirdBaseColor || '#ffffff').toString();
@@ -1334,6 +1574,10 @@ function buildServerZonesForRender(zones) {
             if (z.thirdBasePatternHarden != null) zoneObj.third_base_pattern_harden = !!z.thirdBasePatternHarden;
             zoneObj.third_base_pattern_offset_x = Math.max(0, Math.min(1, Number(z.thirdBasePatternOffsetX ?? 0.5)));
             zoneObj.third_base_pattern_offset_y = Math.max(0, Math.min(1, Number(z.thirdBasePatternOffsetY ?? 0.5)));
+            if (z.thirdBaseFitZone) zoneObj.third_base_fit_zone = true;
+            if (z.thirdBaseHueShift) zoneObj.third_base_hue_shift = z.thirdBaseHueShift;
+            if (z.thirdBaseSaturation) zoneObj.third_base_saturation = z.thirdBaseSaturation;
+            if (z.thirdBaseBrightness) zoneObj.third_base_brightness = z.thirdBaseBrightness;
         }
         if ((z.fourthBase || z.fourthBaseColorSource) && (z.fourthBaseStrength || 0) > 0) {
             const _fbColor = (z.fourthBaseColor || '#ffffff').toString();
@@ -1355,6 +1599,10 @@ function buildServerZonesForRender(zones) {
             if (z.fourthBasePatternHarden != null) zoneObj.fourth_base_pattern_harden = !!z.fourthBasePatternHarden;
             zoneObj.fourth_base_pattern_offset_x = Math.max(0, Math.min(1, Number(z.fourthBasePatternOffsetX ?? 0.5)));
             zoneObj.fourth_base_pattern_offset_y = Math.max(0, Math.min(1, Number(z.fourthBasePatternOffsetY ?? 0.5)));
+            if (z.fourthBaseFitZone) zoneObj.fourth_base_fit_zone = true;
+            if (z.fourthBaseHueShift) zoneObj.fourth_base_hue_shift = z.fourthBaseHueShift;
+            if (z.fourthBaseSaturation) zoneObj.fourth_base_saturation = z.fourthBaseSaturation;
+            if (z.fourthBaseBrightness) zoneObj.fourth_base_brightness = z.fourthBaseBrightness;
         }
         if ((z.fifthBase || z.fifthBaseColorSource) && (z.fifthBaseStrength || 0) > 0) {
             const _fifColor = (z.fifthBaseColor || '#ffffff').toString();
@@ -1376,6 +1624,10 @@ function buildServerZonesForRender(zones) {
             if (z.fifthBasePatternHarden != null) zoneObj.fifth_base_pattern_harden = !!z.fifthBasePatternHarden;
             zoneObj.fifth_base_pattern_offset_x = Math.max(0, Math.min(1, Number(z.fifthBasePatternOffsetX ?? 0.5)));
             zoneObj.fifth_base_pattern_offset_y = Math.max(0, Math.min(1, Number(z.fifthBasePatternOffsetY ?? 0.5)));
+            if (z.fifthBaseFitZone) zoneObj.fifth_base_fit_zone = true;
+            if (z.fifthBaseHueShift) zoneObj.fifth_base_hue_shift = z.fifthBaseHueShift;
+            if (z.fifthBaseSaturation) zoneObj.fifth_base_saturation = z.fifthBaseSaturation;
+            if (z.fifthBaseBrightness) zoneObj.fifth_base_brightness = z.fifthBaseBrightness;
         }
         const hasSpatialRefinement = z.spatialMask && z.spatialMask.some(v => v > 0);
         if (!hasSpatialRefinement && z.regionMask && z.regionMask.some(v => v > 0)) {
@@ -1431,6 +1683,11 @@ async function doExportToPhotoshop() {
     if (typeof compositeDecalsForRender === 'function' && typeof decalLayers !== 'undefined' && decalLayers.length > 0) {
         const compositeCanvas = compositeDecalsForRender();
         if (compositeCanvas) extras.paint_image_base64 = compositeCanvas.toDataURL('image/png');
+        // Also send the decal-only alpha mask for correct spec stamping
+        if (typeof compositeDecalMaskForRender === 'function') {
+            const maskDataUrl = compositeDecalMaskForRender();
+            if (maskDataUrl) extras.decal_mask_base64 = maskDataUrl;
+        }
     }
     // Spec Stamps for PS export
     if (typeof compositeStampsForRender === 'function' && typeof window.stampLayers !== 'undefined' && window.stampLayers.length > 0) {
@@ -1557,7 +1814,10 @@ async function doRender() {
 
     // Import spec map (merge mode) — from SHOKK or manual import; use window fallback so SHOKK-loaded spec is never missed
     const activeSpecPath = (typeof importedSpecMapPath !== 'undefined' && importedSpecMapPath) ? importedSpecMapPath : (window.importedSpecMapPath || null);
-    if (activeSpecPath) extras.import_spec_map = activeSpecPath;
+    if (activeSpecPath) {
+        extras.import_spec_map = activeSpecPath;
+        console.log('[doRender] Merge mode: imported spec map =', activeSpecPath);
+    }
 
     // Decals: composite paint + decals and send as image so render includes them
     if (typeof compositeDecalsForRender === 'function' && typeof decalLayers !== 'undefined' && decalLayers.length > 0) {
@@ -1565,6 +1825,19 @@ async function doRender() {
         if (compositeCanvas) {
             const dataUrl = compositeCanvas.toDataURL('image/png');
             extras.paint_image_base64 = dataUrl;
+        }
+        // Send separate decal-only alpha mask so the engine can correctly identify
+        // decal pixels without relying on the composite image alpha (which is 255 everywhere)
+        if (typeof compositeDecalMaskForRender === 'function') {
+            const maskDataUrl = compositeDecalMaskForRender();
+            if (maskDataUrl) extras.decal_mask_base64 = maskDataUrl;
+        }
+        // Send per-decal spec finish info to server
+        const decalSpecs = decalLayers
+            .filter(dl => dl.visible && dl.specFinish && dl.specFinish !== 'none')
+            .map(dl => ({ specFinish: dl.specFinish }));
+        if (decalSpecs.length > 0) {
+            extras.decal_spec_finishes = decalSpecs;
         }
     }
 

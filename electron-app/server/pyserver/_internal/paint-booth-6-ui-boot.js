@@ -141,6 +141,19 @@
             if (decalLayers[idx]) { decalLayers[idx].flipV = !!val; renderDecalOverlay(); }
         }
 
+        function snapDecalToCanvas(idx) {
+            if (!decalLayers[idx]) return;
+            decalLayers[idx].x = 0;
+            decalLayers[idx].y = 0;
+            decalLayers[idx].scale = 1.0;
+            decalLayers[idx].rotation = 0;
+            decalLayers[idx].flipH = false;
+            decalLayers[idx].flipV = false;
+            renderDecalList();
+            renderDecalOverlay();
+            if (typeof showToast === 'function') showToast('Decal snapped to canvas — position (0,0), scale 1.0', 'success');
+        }
+
         function setDecalScale(idx, val) {
             decalLayers[idx].scale = parseFloat(val);
             renderDecalOverlay();
@@ -195,6 +208,7 @@
                 <button onclick="setDecalFlipH(${idx}, !decalLayers[${idx}].flipH)" title="Flip H">↔</button>
                 <button onclick="setDecalFlipV(${idx}, !decalLayers[${idx}].flipV)" title="Flip V">↕</button>
                 <button onclick="toggleDecalVisibility(${idx})" title="Toggle visibility">${d.visible ? '&#x1F441;' : '&#x1F6AB;'}</button>
+                <button onclick="snapDecalToCanvas(${idx})" title="Snap to Canvas — reset to position (0,0), scale 1.0, no rotation" style="color:#00C8C8;">⊞</button>
                 <button onclick="removeDecal(${idx})" title="Remove">&times;</button>
             </div>
             <select onchange="decalLayers[${idx}].specFinish = this.value; renderDecalOverlay();"
@@ -325,6 +339,37 @@
             ctx.drawImage(paintCanvas, 0, 0);
             drawDecalsOnContext(ctx, c.width, c.height);
             return c;
+        }
+
+        function compositeDecalMaskForRender() {
+            // Returns a base64 PNG of just the decal alpha mask (grayscale).
+            // Drawing only decals onto a transparent canvas, then extracting the alpha channel.
+            // This is sent alongside the composite as decal_mask_base64 so the engine
+            // can correctly identify which pixels are decals vs. paint background.
+            const paintCanvas = document.getElementById('paintCanvas');
+            if (!paintCanvas || decalLayers.length === 0) return null;
+
+            // Draw only decals onto a blank (fully transparent) canvas
+            const maskCanvas = document.createElement('canvas');
+            maskCanvas.width = paintCanvas.width;
+            maskCanvas.height = paintCanvas.height;
+            const maskCtx = maskCanvas.getContext('2d');
+            // Leave background transparent — draw only decals
+            drawDecalsOnContext(maskCtx, maskCanvas.width, maskCanvas.height);
+
+            // Extract alpha channel → grayscale PNG
+            const imgData = maskCtx.getImageData(0, 0, maskCanvas.width, maskCanvas.height);
+            const d = imgData.data;
+            // Write alpha into R/G/B so the image reads as a proper grayscale mask
+            for (let i = 0; i < d.length; i += 4) {
+                const a = d[i + 3];
+                d[i] = a;
+                d[i + 1] = a;
+                d[i + 2] = a;
+                d[i + 3] = 255;
+            }
+            maskCtx.putImageData(imgData, 0, 0);
+            return maskCanvas.toDataURL('image/png');
         }
 
         // Number generator
@@ -3035,10 +3080,21 @@
                     const d = JSON.parse(rawText);
                     // Server info logged to console only — not shown in header
                     console.log(`[BUILD-CHECK] Server B${d.build} | PID:${d.pid} | port:${d.shokker_port_env}`);
-                    document.title = `Shokker Paint Booth v6.0`;
+                    document.title = `Shokker Paint Booth v${d.version || '5'}`;
+                    // GPU status badge
+                    if (d.gpu) {
+                        var gpuBadge = document.getElementById('gpuStatusBadge');
+                        if (gpuBadge) {
+                            gpuBadge.textContent = d.gpu.icon + ' ' + (d.gpu.accelerated ? d.gpu.name : 'CPU');
+                            gpuBadge.title = d.gpu.accelerated ?
+                                'GPU Accelerated: ' + d.gpu.name + ' (' + d.gpu.vram_mb + 'MB VRAM)' :
+                                'CPU Mode -- install CuPy for GPU acceleration';
+                            gpuBadge.style.color = d.gpu.accelerated ? '#00ff88' : '#888';
+                        }
+                    }
                 } catch (jsonErr) {
                     console.warn(`[BUILD-CHECK] HTTP ${res.status} NOT JSON: "${rawText.substring(0, 60)}..."`);
-                    document.title = `Shokker Paint Booth v6.0`;
+                    document.title = `Shokker Paint Booth`;
                 }
             } catch (e) {
                 console.error('[BUILD-CHECK] FAILED:', e);

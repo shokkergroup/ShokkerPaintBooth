@@ -5,14 +5,14 @@ Registry patch for Finish Basic category.
 REGISTRY_PATCH = {
     "blackout": "paint_blackout_v2",
     "ceramic": "paint_ceramic_v2",
-    "chameleon": "paint_chameleon_v2",
+    # "chameleon" removed — WEAK-037 FIX: paint_chameleon_v2 is pass-through; BASE_REGISTRY uses paint_cp_chameleon (HSV hue shift)
     "clear_matte": "paint_clear_matte_v2",
     "eggshell": "paint_eggshell_v2",
     "flat_black": "paint_flat_black_v2",
     "frozen": "paint_frozen_v2",
     "frozen_matte": "paint_frozen_matte_v2",
     "gloss": "paint_gloss_v2",
-    "iridescent": "paint_iridescent_v2",
+    # "iridescent" removed — WEAK-038 FIX: paint_iridescent_v2 is pass-through; BASE_REGISTRY uses paint_cp_iridescent (3-phase rainbow)
     "liquid_obsidian": "paint_liquid_obsidian_v2",
     "living_matte": "paint_living_matte_v2",
     "matte": "paint_matte_v2",
@@ -38,14 +38,14 @@ REGISTRY_PATCH = {
 SPEC_PATCH = {
     "blackout": "spec_blackout",
     "ceramic": "spec_ceramic",
-    "chameleon": "spec_chameleon",
+    # "chameleon" removed — WEAK-037 FIX: flat-constant spec_chameleon replaced; BASE_REGISTRY M=160/R=25/CC=16 with perlin noise will apply
     "clear_matte": "spec_clear_matte",
     "eggshell": "spec_eggshell",
     "flat_black": "spec_flat_black",
     "frozen": "spec_frozen",
     "frozen_matte": "spec_frozen_matte",
     "gloss": "spec_gloss",
-    "iridescent": "spec_iridescent",
+    # "iridescent" removed — WEAK-038 FIX: flat-constant spec_iridescent replaced; BASE_REGISTRY M=200/R=10/CC=16 noise_scales=[2,4] will apply
     "liquid_obsidian": "spec_liquid_obsidian",
     "living_matte": "spec_living_matte",
     "matte": "spec_matte",

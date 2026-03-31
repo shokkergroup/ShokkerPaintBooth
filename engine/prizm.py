@@ -300,7 +300,7 @@ def spec_prizm(shape, mask, seed, sm, metallic=225, roughness=14, clearcoat=30):
 
     # Apply mask
     spec[:, :, 0] = np.clip(M_arr * mask, 0, 255).astype(np.uint8)
-    spec[:, :, 1] = np.clip(R_arr * mask, 0, 255).astype(np.uint8)
+    spec[:, :, 1] = np.clip(R_arr * mask, 15, 255).astype(np.uint8)  # GGX floor
     spec[:, :, 2] = np.where(mask > 0.5, clearcoat, 0).astype(np.uint8)
     spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec

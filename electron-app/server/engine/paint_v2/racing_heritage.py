@@ -89,7 +89,7 @@ def spec_bullseye_chrome_rh(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
     ring = multi_scale_noise((h, w), [8, 16], [0.5, 0.5], seed + 1011)
     M = np.clip(210.0 + ring * 35.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(3.0 + ring * 6.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(3.0 + ring * 6.0 * sm, 15, 255).astype(np.float32)
     CC = np.clip(16.0 + ring * 6.0, 16, 255).astype(np.float32)
     return M, R, CC
 
@@ -123,7 +123,7 @@ def spec_checkered_chrome_rh(shape, seed, sm, base_m, base_r):
     checker = np.abs(((y/64).astype(int)%2) - ((x/64).astype(int)%2)).astype(np.float32)
     # White squares: full clearcoat chrome. Black: matte (dull CC)
     M = np.clip(checker * 220.0 * sm + (1.0 - checker) * 10.0, 0, 255).astype(np.float32)
-    R = np.clip(checker * 4.0 + (1.0 - checker) * 80.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(checker * 4.0 + (1.0 - checker) * 80.0 * sm, 15, 255).astype(np.float32)
     CC = np.clip(checker * 16.0 + (1.0 - checker) * 120.0, 16, 255).astype(np.float32)
     return M, R, CC
 
@@ -186,7 +186,7 @@ def spec_drag_strip_gloss(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
     depth = multi_scale_noise((h, w), [32, 64, 128], [0.3, 0.4, 0.3], seed + 1041)
     M = np.clip(base_m * 0.7 + depth * 25.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(2.0 + depth * 4.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(2.0 + depth * 4.0 * sm, 15, 255).astype(np.float32)
     CC = np.clip(16.0 + depth * 4.0, 16, 255).astype(np.float32)
     return M, R, CC
 
@@ -251,7 +251,7 @@ def spec_heat_shield(shape, seed, sm, base_m, base_r):
     y, x = get_mgrid((h, w))
     temp = np.clip(1.0 - y / max(h - 1, 1), 0, 1)
     M = np.clip(220.0 - temp * 60.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(8.0 + temp * 45.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(8.0 + temp * 45.0 * sm, 15, 255).astype(np.float32)
     CC = np.clip(16.0 + temp * 8.0, 16, 255).astype(np.float32)
     return M, R, CC
 
@@ -282,7 +282,7 @@ def spec_pace_car_pearl(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
     mica = multi_scale_noise((h, w), [2, 4, 8], [0.3, 0.35, 0.35], seed + 1072)
     M = np.clip(100.0 + mica * 60.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(4.0 + mica * 8.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(4.0 + mica * 8.0 * sm, 15, 255).astype(np.float32)
     CC = np.clip(16.0 + mica * 6.0, 16, 255).astype(np.float32)
     return M, R, CC
 
@@ -311,7 +311,7 @@ def spec_pit_lane_matte(shape, seed, sm, base_m, base_r):
     rubber = multi_scale_noise((h, w), [4, 8, 16], [0.3, 0.35, 0.35], seed + 1081)
     marks = np.clip((rubber - 0.6) * 4.0 * 255.0, 0, 255)
     M = np.clip(8.0 + rubber * 10.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(120.0 + marks * 0.25 * sm, 0, 255).astype(np.float32)
+    R = np.clip(120.0 + marks * 0.25 * sm, 15, 255).astype(np.float32)
     CC = np.clip(140.0 + rubber * 30.0, 16, 255).astype(np.float32)
     return M, R, CC
 
@@ -337,7 +337,7 @@ def spec_race_day_gloss(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
     polish = multi_scale_noise((h, w), [64, 128], [0.5, 0.5], seed + 1091)
     M = np.clip(base_m * 0.8 + polish * 20.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(1.0 + polish * 3.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(1.0 + polish * 3.0 * sm, 15, 255).astype(np.float32)
     CC = np.clip(16.0 + polish * 4.0, 16, 255).astype(np.float32)
     return M, R, CC
 
@@ -381,7 +381,7 @@ def spec_rally_mud(shape, seed, sm, base_m, base_r):
     dried = multi_scale_noise((h, w), [2, 4, 8], [0.3, 0.35, 0.35], seed + 1101)
     splat_approx = multi_scale_noise((h, w), [8, 16], [0.5, 0.5], seed + 1102)
     M = np.clip(15.0 + dried * 15.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(160.0 + splat_approx * 40.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(160.0 + splat_approx * 40.0 * sm, 15, 255).astype(np.float32)
     CC = np.clip(70.0 + splat_approx * 40.0, 16, 255).astype(np.float32)
     return M, R, CC
 
@@ -417,7 +417,7 @@ def spec_rat_rod_primer(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
     spray = multi_scale_noise((h, w), [8, 16, 32], [0.3, 0.4, 0.3], seed + 1111)
     M = np.clip(5.0 + spray * 6.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(195.0 + spray * 25.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(195.0 + spray * 25.0 * sm, 15, 255).astype(np.float32)
     CC = np.clip(185.0 + spray * 20.0, 16, 255).astype(np.float32)
     return M, R, CC
 
@@ -451,7 +451,7 @@ def spec_stock_car_enamel(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
     peel = multi_scale_noise((h, w), [2, 4, 8], [0.3, 0.35, 0.35], seed + 1122)
     M = np.clip(6.0 + peel * 8.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(15.0 + peel * 18.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(15.0 + peel * 18.0 * sm, 15, 255).astype(np.float32)
     CC = np.clip(16.0 + peel * 6.0, 16, 255).astype(np.float32)
     return M, R, CC
 
@@ -491,6 +491,6 @@ def spec_victory_lane(shape, seed, sm, base_m, base_r):
     rng = np.random.RandomState(seed + 1130)
     sparkle = (rng.rand(h, w) > 0.92).astype(np.float32)
     M = np.clip(60.0 + sparkle * 120.0 * sm + density * 20.0, 0, 255).astype(np.float32)
-    R = np.clip(4.0 + density * 6.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(4.0 + density * 6.0 * sm, 15, 255).astype(np.float32)
     CC = np.clip(16.0 + density * 6.0, 16, 255).astype(np.float32)
     return M, R, CC

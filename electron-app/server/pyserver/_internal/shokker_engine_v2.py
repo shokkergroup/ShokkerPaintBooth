@@ -39,8 +39,11 @@ import numpy as np
 from PIL import Image, ImageFilter
 import struct
 import os
+import os as _os
 import json
 import time
+from concurrent.futures import ThreadPoolExecutor
+from scipy.ndimage import gaussian_filter as _scipy_gaussian_filter
 
 from engine.utils import write_tga_32bit, write_tga_24bit, get_mgrid, generate_perlin_noise_2d, perlin_multi_octave
 from engine.core import (
@@ -68,6 +71,15 @@ from engine.compose import (
     compose_finish, compose_finish_stacked, compose_paint_mod, compose_paint_mod_stacked,
     _get_pattern_mask, _apply_spec_blend_mode, _apply_hsb_adjustments,
 )
+
+# GPU acceleration
+try:
+    from engine.gpu import xp, to_cpu, to_gpu, is_gpu
+except ImportError:
+    import numpy as xp
+    def to_cpu(a): return a
+    def to_gpu(a): return a
+    def is_gpu(): return False
 
 
 def _engine_rot_debug(msg):
@@ -142,7 +154,7 @@ def spec_glitch(shape, mask, seed, sm):
         M_arr[y_start:y_end, :] = np.clip(M_arr[y_start:y_end, :] + tear_offset, 0, 255)
     spec[:,:,0] = np.clip(M_arr * mask, 0, 255).astype(np.uint8)
     spec[:,:,1] = np.clip(R_arr * mask, 0, 255).astype(np.uint8)
-    spec[:,:,2] = 0; spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
+    spec[:,:,2] = np.where(mask > 0.5, 16, 0).astype(np.uint8); spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)  # WARN-GLITCH-001 FIX: CC=16 floor avoids GGX whitewash
     return spec
 
 def paint_glitch(paint, shape, mask, seed, pm, bb):
@@ -416,8 +428,8 @@ def paint_holographic_full(paint, shape, mask, seed, pm, bb):
 FINISH_REGISTRY = {
     # --- STANDARD ---
     "gloss":              (spec_gloss,             paint_none),
-    "matte":              (spec_matte,             paint_none),
-    "satin":              (spec_satin,             paint_none),
+    "matte":              (spec_matte,             paint_matte_flat),  # WEAK-010: upgraded from paint_none
+    "satin":              (spec_satin,             paint_none),         # WEAK-011: spec_satin now has real FBM
     "metallic":           (spec_metallic,          paint_subtle_flake),
     "pearl":              (spec_pearl,             paint_fine_sparkle),
     "chrome":             (spec_chrome,            paint_chrome_brighten),
@@ -455,7 +467,49 @@ FINISH_REGISTRY = {
     "ember_glow":         (spec_ember_glow,        paint_ember_glow),
     "phantom":            (spec_phantom,           paint_phantom_fade),
     "blackout":           (spec_blackout,          paint_none),
+    # ── RESEARCH SESSION 6: 8 New Special Finishes (2026-03-29) ─────────────
+    "iridescent_fog":        (spec_iridescent_fog,        paint_iridescent_fog),
+    "chrome_delete_edge":    (spec_chrome_delete_edge,    paint_chrome_delete_edge),
+    "carbon_clearcoat_lock": (spec_carbon_clearcoat_phaselock, paint_carbon_clearcoat_phaselock),
+    "racing_scratch":        (spec_racing_scratch,        paint_racing_scratch),
+    "pearlescent_flip":      (spec_pearlescent_flip,      paint_pearlescent_flip),
+    "frost_crystal":         (spec_frost_crystal,         paint_frost_crystal),
+    "satin_wax":             (spec_satin_wax,             paint_satin_wax),
+    "uv_night_accent":       (spec_uv_night_accent,       paint_uv_night_accent),
 }
+
+# Wire v2 paint implementations into FINISH_REGISTRY (BROKEN-001/002, WEAK-003/005)
+try:
+    from engine.paint_v2.candy_special import (
+        paint_candy_v2 as _paint_candy_v2,
+        paint_jelly_pearl_v2 as _paint_jelly_pearl_v2,
+        paint_spectraflame_v2 as _paint_spectraflame_v2,
+        spec_jelly_pearl as _spec_jelly_pearl,
+    )
+    import numpy as _np_fr
+
+    def _adapt_bb(fn):
+        """Wrap v2 paint fn to handle scalar bb (FINISH_REGISTRY callers may pass scalar)."""
+        def _wrapped(paint, shape, mask, seed, pm, bb):
+            bb_val = bb
+            try:
+                if _np_fr.isscalar(bb):
+                    h, w = shape[:2] if isinstance(shape, (tuple, list)) and len(shape) >= 2 else paint.shape[:2]
+                    bb_val = _np_fr.full((int(h), int(w)), float(bb), dtype=_np_fr.float32)
+                elif hasattr(bb, "ndim") and bb.ndim == 0:
+                    h, w = shape[:2] if isinstance(shape, (tuple, list)) and len(shape) >= 2 else paint.shape[:2]
+                    bb_val = _np_fr.full((int(h), int(w)), float(bb), dtype=_np_fr.float32)
+            except Exception:
+                bb_val = bb
+            return fn(paint, shape, mask, seed, pm, bb_val)
+        return _wrapped
+
+    FINISH_REGISTRY["candy"] = (FINISH_REGISTRY["candy"][0], _adapt_bb(_paint_candy_v2))
+    FINISH_REGISTRY["jelly_pearl"] = (_spec_jelly_pearl, _adapt_bb(_paint_jelly_pearl_v2))  # CONCERN-CX-001: use dedicated spec fn
+    FINISH_REGISTRY["pearl"] = (spec_pearl, _adapt_bb(_paint_jelly_pearl_v2))  # WEAK-018: upgraded pearl paint to jelly_pearl_v2
+    FINISH_REGISTRY["spectraflame"] = (FINISH_REGISTRY.get("spectraflame", (spec_candy, paint_spectraflame))[0], _adapt_bb(_paint_spectraflame_v2))
+except Exception as _v2_fr_exc:
+    print(f"[V2 FINISH_REGISTRY] v2 wire-in skipped: {_v2_fr_exc}")
 
 
 # ================================================================
@@ -508,25 +562,6 @@ def texture_kevlar_weave(shape, mask, seed, sm):
     # Slightly softer contrast than CF
     kv = np.clip(kv * 1.15 - 0.08, 0, 1)
     return {"pattern_val": kv, "R_range": 45.0, "M_range": 20.0, "CC": None}
-
-def texture_basket_weave(shape, mask, seed, sm):
-    """Basket weave - large over/under blocks, very obvious at any scale."""
-    h, w = shape
-    y, x = get_mgrid((h, w))
-    weave_size = 36  # Big basket blocks
-    # Over-under: 2-wide tow bundles alternate
-    bundle_x = (x // weave_size) % 2
-    bundle_y = (y // weave_size) % 2
-    # Checkerboard of horizontal vs vertical dominance
-    checker = (bundle_x ^ bundle_y).astype(np.float32)
-    # Within each cell, subtle tow curvature
-    cell_x = (x % weave_size) / weave_size
-    cell_y = (y % weave_size) / weave_size
-    curve_h = np.sin(cell_x * np.pi) * 0.3
-    curve_v = np.sin(cell_y * np.pi) * 0.3
-    bw = checker * (0.6 + curve_h) + (1 - checker) * (0.4 + curve_v)
-    bw = np.clip(bw, 0, 1)
-    return {"pattern_val": bw, "R_range": 55.0, "M_range": 30.0, "CC": None}
 
 def texture_forged_carbon(shape, mask, seed, sm):
     """Chopped carbon chunks - both M and R vary per chunk."""
@@ -1590,24 +1625,6 @@ def paint_damascus_layer(paint, shape, mask, seed, pm, bb):
     paint = np.clip(paint + (wave - 0.5)[:,:,np.newaxis] * 0.04 * pm * mask[:,:,np.newaxis], 0, 1)
     return paint
 
-def texture_houndstooth(shape, mask, seed, sm):
-    """Houndstooth - classic four-pointed tooth check pattern."""
-    h, w = shape
-    y, x = get_mgrid((h, w))
-    cell = max(24, min(h, w) // 32)
-    cy = (y // cell) % 2
-    cx = (x // cell) % 2
-    sy = (y % cell).astype(np.float32) / cell
-    sx = (x % cell).astype(np.float32) / cell
-    check = (cy ^ cx).astype(np.float32)
-    tooth_ur = ((cy == 0) & (cx == 0) & (sy < sx) & (sy < 0.5) & (sx < 0.5)).astype(np.float32)
-    tooth_dl = ((cy == 1) & (cx == 1) & (sy > sx) & (sy > 0.5) & (sx > 0.5)).astype(np.float32)
-    tooth_ul = ((cy == 0) & (cx == 1) & (sy < (1.0 - sx)) & (sy < 0.5) & (sx > 0.5)).astype(np.float32)
-    tooth_dr = ((cy == 1) & (cx == 0) & (sy > (1.0 - sx)) & (sy > 0.5) & (sx < 0.5)).astype(np.float32)
-    pattern = np.clip(check + tooth_ur + tooth_dl + tooth_ul + tooth_dr, 0, 1)
-    return {"pattern_val": pattern, "R_range": 70.0, "M_range": -40.0, "CC": None}
-
-
 def paint_houndstooth_contrast(paint, shape, mask, seed, pm, bb):
     """Houndstooth - alternating brightness for classic pattern visibility."""
     h, w = shape
@@ -1660,16 +1677,33 @@ def spec_oil_slick(shape, mask, seed, sm):
     return spec
 
 def spec_galaxy(shape, mask, seed, sm):
-    """Galaxy - deep space nebula with star clusters."""
+    """Galaxy - deep space nebula with discrete star point reflections.
+    FIXED WEAK-021: star density reduced from 2% to 0.5% for discrete points not noise field.
+    Star pixels: M=230+ (high metallic peak), R=2 (mirror-like near-zero roughness).
+    Nebula pixels: moderate M=80-150, R=30-60. Gaussian star metallic dot via blur."""
     spec = np.zeros((shape[0], shape[1], 4), dtype=np.uint8)
     h, w = shape
     nebula = multi_scale_noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed+100)
     nebula_val = np.clip((nebula + 0.5) * 1.2, 0, 1)
-    rng = np.random.RandomState(seed + 200)
-    stars = (rng.random((h, w)).astype(np.float32) > 0.98).astype(np.float32)
-    combined = np.clip(nebula_val * 0.6 + stars * 0.4, 0, 1)
-    spec[:,:,0] = np.clip((80 + combined * 175) * mask + 5 * (1-mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip((30 + nebula_val * 40 + stars * 20) * mask + 100 * (1-mask), 0, 255).astype(np.uint8)
+    # LCG hash star field matching paint function star positions (~0.5% density for spec)
+    flat_idx = np.arange(h * w, dtype=np.uint32)
+    lcg = ((flat_idx * 1664525 + (seed & 0xFFFF)) * 22695477 + 1013904223) & 0xFFFFFFFF
+    stars = (lcg % 1000 < 5).reshape(h, w).astype(np.float32)  # ~0.5% of pixels
+    # Gaussian spread so each star metallic peak is a dot not a single pixel
+    from PIL import Image as _PILImage, ImageFilter as _PILFilter
+    stars_img = _PILImage.fromarray(np.clip(stars * 255, 0, 255).astype(np.uint8), mode='L')
+    stars_spread = np.array(stars_img.filter(_PILFilter.GaussianBlur(radius=1.5))).astype(np.float32) / 255.0
+    # Spec channels:
+    # M (red): nebula=80-150, star peaks=220-255
+    M_nebula = 80 + nebula_val * 70
+    M_stars = np.clip(stars_spread * 255 * 1.2, 0, 255)
+    M = np.clip(M_nebula + M_stars, 0, 255)
+    # R (green): nebula=30-60, star pixels=2 (mirror-like reflection)
+    R_nebula = 30 + nebula_val * 30
+    R_stars = stars_spread * 255  # stars_spread blended DOWN: star pixels pull R to 2
+    R = np.clip(R_nebula - R_stars * 0.8, 2, 255)
+    spec[:,:,0] = np.clip(M * mask + 5 * (1-mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R * mask + 100 * (1-mask), 0, 255).astype(np.uint8)
     spec[:,:,2] = 16; spec[:,:,3] = 255
     return spec
 
@@ -2867,16 +2901,6 @@ def texture_chevron_fine(shape, mask, seed, sm):
     chev = (v < period // 2).astype(np.float32)
     return {"pattern_val": chev, "R_range": 65.0, "M_range": -40.0, "CC": None}
 
-def texture_herringbone(shape, mask, seed, sm):
-    """Classic herringbone V zigzag."""
-    h, w = shape
-    y, x = get_mgrid((h, w))
-    cell = max(16, min(h, w) // 32)
-    row = (y // cell).astype(np.int32) % 2
-    v = (x.astype(np.float32) + row * (cell // 2)) % cell
-    herr = (v < cell * 0.55).astype(np.float32)
-    return {"pattern_val": herr, "R_range": 72.0, "M_range": -42.0, "CC": None}
-
 def texture_aztec_steps(shape, mask, seed, sm):
     """Stepped Aztec-style geometric blocks."""
     h, w = shape
@@ -2886,16 +2910,6 @@ def texture_aztec_steps(shape, mask, seed, sm):
     sx = (x // step).astype(np.int32) % 2
     aztec = ((sy + sx) % 2).astype(np.float32)
     return {"pattern_val": aztec, "R_range": 68.0, "M_range": -38.0, "CC": None}
-
-def texture_art_deco_fan(shape, mask, seed, sm):
-    """Art deco fan / sunburst rays."""
-    h, w = shape
-    y, x = get_mgrid((h, w))
-    cy, cx = h / 2.0, w / 2.0
-    yy, xx = y.astype(np.float32) - cy, x.astype(np.float32) - cx
-    angle = np.arctan2(yy, xx)
-    rays = np.sin(angle * 12) * 0.5 + 0.5
-    return {"pattern_val": rays, "R_range": 80.0, "M_range": -50.0, "CC": None}
 
 def texture_ripple_dense(shape, mask, seed, sm):
     """Denser concentric ripples."""
@@ -3322,14 +3336,16 @@ BLEND_BASES = {
 # Organized by category, alphabetized within each section. 58 bases total.
 BASE_REGISTRY = {
     # ── STANDARD FINISHES ──────────────────────────────────────────────
-    "ceramic":          {"M": 60,  "R": 8,   "CC": 16, "paint_fn": paint_ceramic_gloss,   "desc": "Ultra-smooth ceramic coating deep wet shine",
+    "ceramic":          {"M": 10,  "R": 8,   "CC": 16, "paint_fn": paint_ceramic_gloss,   "desc": "Ultra-smooth ceramic coating deep wet shine — BASE-031 FIX: M=10 (dielectric nano-ceramic)",
                          "perlin": True, "perlin_octaves": 2, "perlin_persistence": 0.3, "perlin_lacunarity": 2.0, "noise_M": 30, "noise_R": 15},
     "gloss":            {"M": 0,   "R": 20,  "CC": 16, "paint_fn": paint_none,            "desc": "Standard glossy clearcoat"},
     "piano_black":      {"M": 5,   "R": 3,   "CC": 16, "paint_fn": paint_none,            "desc": "Deep piano black ultra-gloss mirror finish",
                          "perlin": True, "perlin_octaves": 2, "perlin_persistence": 0.3, "perlin_lacunarity": 2.0, "noise_M": 15, "noise_R": 10},
-    "satin":            {"M": 0,   "R": 100, "CC": 50,  "paint_fn": paint_none,            "desc": "Soft satin semi-gloss clearcoat - CC=50 protective but not gloss"},
-    "scuffed_satin":    {"M": 0,   "R": 80,  "CC": 16,  "paint_fn": paint_none,            "desc": "Clearcoated but with visible surface texture - orange peel lite"},
-    "silk":             {"M": 30,  "R": 85,  "CC": 16,  "paint_fn": paint_silk_sheen,      "desc": "Silky smooth fabric-like sheen"},
+    "satin":            {"M": 0,   "R": 100, "CC": 50,  "paint_fn": paint_none,            "desc": "Soft satin semi-gloss clearcoat - CC=50 protective but not gloss — WEAK-014: noise variation",
+                         "noise_scales": [4, 8, 16], "noise_weights": [0.3, 0.4, 0.3], "noise_R": 20},
+    "scuffed_satin":    {"M": 0,   "R": 160, "CC": 110, "paint_fn": paint_scuffed_satin_fn, "desc": "Scuffed satin — WEAK-015 FIX: rougher+duller than plain satin (R=160, CC=110 vs satin R=100, CC=50)",
+                         "noise_scales": [4, 8, 16], "noise_weights": [0.3, 0.4, 0.3], "noise_R": 30, "noise_M": 12},
+    "silk":             {"M": 30,  "R": 85,  "CC": 50,  "paint_fn": paint_silk_sheen,      "desc": "Silky smooth fabric-like sheen — BASE-028 FIX: CC=50 (silk sheen, not full gloss)"},
     "wet_look":         {"M": 10,  "R": 5,   "CC": 16, "paint_fn": paint_wet_gloss,       "desc": "Deep wet clearcoat show shine"},
     # ── METALLIC & FLAKE ──────────────────────────────────────────────
     "copper":           {"M": 190, "R": 55,  "CC": 16, "paint_fn": paint_warm_metal,      "desc": "Warm oxidized copper metallic",
@@ -3343,14 +3359,16 @@ BASE_REGISTRY = {
     "metallic":         {"M": 200, "R": 50,  "CC": 16, "paint_fn": paint_subtle_flake,    "desc": "Standard metallic with visible flake",
                          "noise_scales": [4, 8, 16], "noise_weights": [0.2, 0.4, 0.4], "noise_M": 40, "noise_R": 18},
     "pearl":            {"M": 100, "R": 40,  "CC": 16, "paint_fn": paint_fine_sparkle,    "desc": "Pearlescent iridescent sheen",
-                         "noise_scales": [16, 32, 64], "noise_weights": [0.3, 0.4, 0.3], "noise_M": 20, "noise_R": 12},
-    "pearlescent_white":{"M": 120, "R": 30,  "CC": 16, "paint_fn": paint_fine_sparkle,    "desc": "Tri-coat pearlescent white deep sparkle",
-                         "noise_scales": [16, 32, 64], "noise_weights": [0.3, 0.4, 0.3], "noise_M": 25, "noise_R": 10},
-    "plasma_metal":     {"M": 230, "R": 18,  "CC": 16, "paint_fn": paint_plasma_shift,    "desc": "Electric plasma purple-blue metallic shift",
-                         "noise_scales": [4, 8, 16], "noise_weights": [0.3, 0.4, 0.3], "noise_M": 20, "noise_R": 12},
+                         "noise_scales": [16, 32, 64], "noise_weights": [0.3, 0.4, 0.3], "noise_M": 20, "noise_R": 12,
+                         "base_spec_fn": spec_pearl_base},
+    "pearlescent_white":{"M": 120, "R": 30,  "CC": 16, "paint_fn": paint_pearlescent_white_fn, "desc": "Tri-coat pearlescent white — HSV shimmer, tri-coat noise simulation",
+                         "noise_scales": [16, 32, 64], "noise_weights": [0.3, 0.4, 0.3], "noise_M": 25, "noise_R": 10,
+                         "base_spec_fn": spec_pearlescent_white_base},
+    "plasma_metal":     {"M": 230, "R": 18,  "CC": 16, "paint_fn": paint_plasma_shift,    "desc": "Electric plasma vein metallic — glowing blue/magenta FBM sin-vein structure",
+                         "noise_scales": [8, 16, 32], "noise_weights": [0.4, 0.35, 0.25], "noise_M": 55, "noise_R": 30},
     "rose_gold":        {"M": 240, "R": 12,  "CC": 16, "paint_fn": paint_rose_gold_tint,  "desc": "Pink-gold metallic warm shimmer",
                          "noise_scales": [4, 8, 16], "noise_weights": [0.2, 0.4, 0.4], "noise_M": 15, "noise_R": 10},
-    "satin_gold":       {"M": 235, "R": 60,  "CC": 0,  "paint_fn": paint_warm_metal,      "desc": "Satin gold metallic warm sheen",
+    "satin_gold":       {"M": 235, "R": 60,  "CC": 16, "paint_fn": paint_warm_metal,      "desc": "Satin gold metallic warm sheen — BASE-010 FIX: CC=16 (already fixed in canonical 2026-03-08)",
                          "noise_scales": [4, 8, 16], "noise_weights": [0.3, 0.4, 0.3], "noise_M": 15, "noise_R": 18},
     # ── CHROME & MIRROR ───────────────────────────────────────────────
     "chrome":           {"M": 255, "R": 2,   "CC": 0,  "paint_fn": paint_chrome_brighten, "desc": "Pure mirror chrome",
@@ -3360,25 +3378,25 @@ BASE_REGISTRY = {
     "mercury":          {"M": 255, "R": 3,   "CC": 0,  "paint_fn": paint_mercury_pool,    "desc": "Liquid mercury pooling mirror - desaturated chrome flow",
                          "perlin": True, "perlin_octaves": 2, "perlin_persistence": 0.5, "perlin_lacunarity": 1.8, "noise_M": 30, "noise_R": 10},
     # mirror_gold removed - M=255 G=2 identical to chrome; gold tint comes from paint color layer
-    "satin_chrome":     {"M": 250, "R": 45,  "CC": 0,  "paint_fn": paint_chrome_brighten, "desc": "BMW silky satin chrome",
+    "satin_chrome":     {"M": 250, "R": 45,  "CC": 40, "paint_fn": paint_chrome_brighten, "desc": "BMW silky satin chrome — BASE-005 FIX: CC=40 (satin sheen)",
                          "noise_scales": [4, 8], "noise_weights": [0.4, 0.6], "noise_M": 20, "noise_R": 25},
-    "surgical_steel":   {"M": 245, "R": 6,   "CC": 0,  "paint_fn": paint_chrome_brighten, "desc": "Medical grade mirror surgical steel",
+    "surgical_steel":   {"M": 245, "R": 6,   "CC": 16, "paint_fn": paint_chrome_brighten, "desc": "Medical grade mirror surgical steel — BASE-006 FIX: CC=16 (sealed surgical steel)",
                          "noise_scales": [1, 2, 4], "noise_weights": [0.5, 0.3, 0.2], "noise_M": 15, "noise_R": 8},
     # ── CANDY & CLEARCOAT VARIANTS ────────────────────────────────────
     "candy":            {"M": 200, "R": 15,  "CC": 16, "paint_fn": paint_fine_sparkle,    "desc": "Deep wet candy transparent glass",
                          "noise_scales": [1, 2, 4], "noise_weights": [0.5, 0.3, 0.2], "noise_M": 35, "noise_R": 15},
-    "candy_chrome":     {"M": 250, "R": 4,   "CC": 16, "paint_fn": paint_spectraflame,    "desc": "Candy-tinted chrome - deep color over mirror base",
+    "candy_chrome":     {"M": 250, "R": 15,  "CC": 16, "paint_fn": paint_spectraflame,    "desc": "Candy-tinted chrome - deep color over mirror base",
                          "noise_scales": [1, 2, 4], "noise_weights": [0.5, 0.3, 0.2], "noise_M": 60, "noise_R": 15},
     "clear_matte":      {"M": 0,   "R": 160, "CC": 80,  "paint_fn": paint_none,            "desc": "Matte clearcoat - has a coat but it's rough (CC=80 scuffed)"},
-    "smoked":           {"M": 15,  "R": 10,  "CC": 16, "paint_fn": paint_smoked_darken,   "desc": "Smoked tinted darkened clearcoat"},
-    "spectraflame":     {"M": 245, "R": 8,   "CC": 16, "paint_fn": paint_spectraflame,    "desc": "Hot Wheels candy-over-chrome deep sparkle",
+    "smoked":           {"M": 15,  "R": 30,  "CC": 16, "paint_fn": paint_smoked_darken,   "desc": "Smoked tinted darkened clearcoat — BASE-043 FIX: R=30 (smoked haze roughness, not near-mirror)"},
+    "spectraflame":     {"M": 245, "R": 15,  "CC": 16, "paint_fn": paint_spectraflame,    "desc": "Hot Wheels candy-over-chrome deep sparkle",
                          "noise_scales": [1, 2, 3], "noise_weights": [0.6, 0.25, 0.15], "noise_M": 80, "noise_R": 25},
     "tinted_clear":     {"M": 40,  "R": 8,   "CC": 16, "paint_fn": paint_tinted_clearcoat,"desc": "Deep tinted clearcoat over base color",
                          "perlin": True, "perlin_octaves": 3, "perlin_persistence": 0.4, "perlin_lacunarity": 2.0, "noise_M": 12, "noise_R": 10},
     # ── GAP-FILL: COATED OVER METAL / DEEP GLASS ────────────────────────
     "hydrographic":     {"M": 240, "R": 5,   "CC": 16, "paint_fn": paint_chrome_brighten, "desc": "Mirror metal under maximum deep clearcoat - wet glass over chrome",
                          "noise_scales": [1, 2, 4], "noise_weights": [0.5, 0.3, 0.2], "noise_M": 20, "noise_R": 6},
-    "jelly_pearl":      {"M": 120, "R": 10,  "CC": 16, "paint_fn": paint_fine_sparkle,    "desc": "Ultra-wet candy pearl - max depth, like looking through colored glass",
+    "jelly_pearl":      {"M": 120, "R": 15,  "CC": 16, "paint_fn": paint_fine_sparkle,    "desc": "Ultra-wet candy pearl - max depth, like looking through colored glass",
                          "noise_scales": [4, 8, 16], "noise_weights": [0.3, 0.4, 0.3], "noise_M": 18, "noise_R": 8},
     "orange_peel_gloss":{"M": 0,   "R": 160, "CC": 16, "paint_fn": paint_none,            "desc": "Orange-peel texture sealed under thick clearcoat",
                          "perlin": True, "perlin_octaves": 3, "perlin_persistence": 0.7, "perlin_lacunarity": 2.2, "noise_M": 0, "noise_R": 40},
@@ -3387,64 +3405,73 @@ BASE_REGISTRY = {
     # ── MATTE & FLAT ─────────────────────────────────────────────────
     "blackout":         {"M": 30,  "R": 220, "CC": 35,  "paint_fn": paint_none,            "desc": "Stealth murdered-out - thin protective matte coat (CC=35)",
                          "perlin": True, "perlin_octaves": 2, "perlin_persistence": 0.3, "perlin_lacunarity": 2.0, "noise_M": 8, "noise_R": 15},
-    "flat_black":       {"M": 0,   "R": 250, "CC": 0,  "paint_fn": paint_none,            "desc": "Dead flat zero-sheen black - no reflection at all"},
-    "frozen":           {"M": 225, "R": 140, "CC": 0,  "paint_fn": paint_subtle_flake,    "desc": "Frozen icy matte metal",
-                         "noise_scales": [8, 16, 32], "noise_weights": [0.3, 0.4, 0.3], "noise_M": 30, "noise_R": 30},
-    "frozen_matte":     {"M": 210, "R": 160, "CC": 0,  "paint_fn": paint_subtle_flake,    "desc": "BMW Individual frozen matte metallic",
-                         "noise_scales": [8, 16, 32], "noise_weights": [0.3, 0.4, 0.3], "noise_M": 20, "noise_R": 25},
-    "matte":            {"M": 0,   "R": 215, "CC": 0,  "paint_fn": paint_none,            "desc": "Flat matte zero shine"},
-    "vantablack":       {"M": 0,   "R": 255, "CC": 0,  "paint_fn": paint_none,            "desc": "Absolute void zero reflection",
+    "flat_black":       {"M": 0,   "R": 250, "CC": 220, "paint_fn": paint_none,            "desc": "Dead flat zero-sheen black — BASE-002 FIX: CC=220 (dead flat)"},
+    "frozen":           {"M": 225, "R": 140, "CC": 100, "paint_fn": paint_subtle_flake,    "desc": "Frozen icy metallic — WEAK-017 FIX: distinct ice-crystal character vs frozen_matte — BASE-007 FIX: CC=100 (BMW Frozen protective matte clear)",
+                         "noise_scales": [4, 8, 16], "noise_weights": [0.2, 0.45, 0.35], "noise_M": 40, "noise_R": 35},
+    "frozen_matte":     {"M": 60,  "R": 210, "CC": 175, "paint_fn": paint_subtle_flake,    "desc": "BMW Individual frozen matte — WEAK-017 FIX: frosted uniform micro-roughness, no sparkle — BASE-008 FIX: CC=175 (frosted/flat)",
+                         "noise_scales": [2, 3, 5], "noise_weights": [0.5, 0.3, 0.2], "noise_M": 10, "noise_R": 20},
+    "matte":            {"M": 0,   "R": 215, "CC": 215, "paint_fn": paint_matte_flat,      "desc": "Flat matte zero shine — WEAK-012: upgraded from paint_none + noise variation — BASE-001 FIX: CC=215 (flat matte clearcoat range)",
+                         "noise_scales": [8, 16, 32], "noise_weights": [0.5, 0.3, 0.2], "noise_R": 25},
+    "vantablack":       {"M": 0,   "R": 255, "CC": 240, "paint_fn": paint_none,            "desc": "Absolute void zero reflection — BASE-003 FIX: CC=240 (maximum degradation)",
                          "noise_scales": [1, 2, 4], "noise_weights": [0.5, 0.3, 0.2], "noise_M": 3, "noise_R": 5},
     "volcanic":         {"M": 80,  "R": 180, "CC": 70,  "paint_fn": paint_volcanic_ash,    "desc": "Volcanic ash coating - the ash layer IS the coat, heavily degraded (CC=70)"},
     # ── BRUSHED & DIRECTIONAL GRAIN ──────────────────────────────────
-    "brushed_aluminum": {"M": 230, "R": 55,  "CC": 0,  "paint_fn": paint_brushed_grain,   "desc": "Brushed natural aluminum directional grain",
+    "brushed_aluminum": {"M": 200, "R": 55,  "CC": 16, "paint_fn": paint_brushed_grain,   "desc": "Brushed natural aluminum directional grain — BASE-026 FIX: M=200 (real brushed aluminum); also CC=16 (sealed grain coat)",
                          "brush_grain": True, "noise_M": 15, "noise_R": 30},
-    "brushed_titanium": {"M": 180, "R": 70,  "CC": 0,  "paint_fn": paint_brushed_grain,   "desc": "Heavy directional titanium grain",
+    "brushed_titanium": {"M": 180, "R": 70,  "CC": 16, "paint_fn": paint_brushed_grain,   "desc": "Heavy directional titanium grain — CC fixed from 0 to 16",
                          "brush_grain": True, "noise_M": 25, "noise_R": 45},
-    "satin_metal":      {"M": 235, "R": 65,  "CC": 16, "paint_fn": paint_subtle_flake,    "desc": "Subtle brushed satin metallic",
+    "satin_metal":      {"M": 235, "R": 65,  "CC": 55, "paint_fn": paint_subtle_flake,    "desc": "Subtle brushed satin metallic — BASE-027 FIX: CC=55 (satin character, not full gloss)",
                          "brush_grain": True, "noise_R": 20},
     # ── TACTICAL & INDUSTRIAL ────────────────────────────────────────
-    "cerakote":         {"M": 40,  "R": 130, "CC": 30,  "paint_fn": paint_tactical_flat,   "desc": "Mil-spec ceramic tactical coating - hard coat, low sheen (CC=30)",
+    "cerakote":         {"M": 40,  "R": 130, "CC": 160, "paint_fn": paint_tactical_flat,   "desc": "Mil-spec ceramic tactical coating - dead flat (CC=160) — BASE-018 FIX: CC=160 (mil-spec ceramic is dead flat, not near-gloss)",
                          "perlin": True, "perlin_octaves": 2, "perlin_persistence": 0.4, "perlin_lacunarity": 2.0, "noise_M": 15, "noise_R": 20},
-    "duracoat":         {"M": 25,  "R": 170, "CC": 35,  "paint_fn": paint_tactical_flat,   "desc": "Tactical epoxy coat - air-dried dull finish (CC=35 faint protection)",
+    "duracoat":         {"M": 25,  "R": 170, "CC": 150, "paint_fn": paint_tactical_flat,   "desc": "Tactical epoxy coat - air-dried flat finish (CC=150) — BASE-019 FIX: CC=150 (air-dry tactical epoxy is flat, not near-gloss)",
                          "perlin": True, "perlin_octaves": 2, "perlin_persistence": 0.45, "perlin_lacunarity": 2.0, "noise_M": 12, "noise_R": 25},
     "powder_coat":      {"M": 20,  "R": 155, "CC": 40,  "paint_fn": paint_none,            "desc": "Thick powder coat - cured protective surface, semi-matte (CC=40)",
                          "perlin": True, "perlin_octaves": 3, "perlin_persistence": 0.5, "perlin_lacunarity": 2.0, "noise_M": 15, "noise_R": 30},
-    "rugged":           {"M": 50,  "R": 190, "CC": 25,  "paint_fn": paint_tactical_flat,   "desc": "Rugged off-road coat - very rough protective layer (CC=25 barely there)",
+    "rugged":           {"M": 50,  "R": 190, "CC": 175, "paint_fn": paint_tactical_flat,   "desc": "Rugged off-road coat - very rough protective layer (CC=175 dead flat) — BASE-020 FIX: CC=175 (rugged off-road coat is dead flat, not near-gloss)",
                          "perlin": True, "perlin_octaves": 3, "perlin_persistence": 0.6, "perlin_lacunarity": 2.0, "noise_M": 20, "noise_R": 35},
     # ── RAW METAL & WEATHERED ────────────────────────────────────────
-    "anodized":         {"M": 170, "R": 80,  "CC": 0,  "paint_fn": paint_subtle_flake,    "desc": "Gritty matte anodized aluminum",
+    "anodized":         {"M": 170, "R": 80,  "CC": 140, "paint_fn": paint_subtle_flake,    "desc": "Gritty matte anodized aluminum — BASE-004 FIX: CC=140 (unsealed anodized)",
                          "noise_scales": [4, 8, 16], "noise_weights": [0.3, 0.4, 0.3], "noise_M": 20, "noise_R": 25},
     "burnt_headers":    {"M": 190, "R": 45,  "CC": 0,  "paint_fn": paint_burnt_metal,     "desc": "Exhaust header heat-treated gold-blue oxide",
                          "noise_scales": [8, 16, 32], "noise_weights": [0.3, 0.4, 0.3], "noise_M": 30, "noise_R": 20},
     "galvanized":       {"M": 195, "R": 65,  "CC": 30,  "paint_fn": paint_galvanized_speckle, "desc": "Hot-dip galvanized zinc - the zinc IS the coat (CC=30 thin metallic coat)",
                          "noise_scales": [4, 8, 16], "noise_weights": [0.4, 0.3, 0.3], "noise_M": 25, "noise_R": 30},
-    "heat_treated":     {"M": 185, "R": 35,  "CC": 0,  "paint_fn": paint_heat_tint,       "desc": "Heat-treated titanium blue-gold zones",
-                         "noise_scales": [8, 16], "noise_weights": [0.4, 0.6], "noise_M": 20, "noise_R": 15},
-    "patina_bronze":    {"M": 160, "R": 90,  "CC": 0,  "paint_fn": paint_patina_green,    "desc": "Aged oxidized bronze with green patina",
+    "heat_treated":     {"M": 140, "R": 80,  "CC": 16, "paint_fn": paint_heat_tint,       "desc": "Heat-treated tool steel (gun barrel/blade) — muted straw/bronze/peacock oxide",
+                         "noise_scales": [8, 16], "noise_weights": [0.4, 0.6], "noise_M": 18, "noise_R": 25},
+    "patina_bronze":    {"M": 160, "R": 90,  "CC": 100, "paint_fn": paint_patina_green,    "desc": "Aged oxidized bronze with green patina — BASE-032 FIX: CC=100 (oxidized, no fresh clearcoat)",
                          "noise_scales": [8, 16, 32], "noise_weights": [0.3, 0.4, 0.3], "noise_M": 30, "noise_R": 35},
     "patina_coat":      {"M": 100, "R": 150, "CC": 50, "paint_fn": paint_patina_green,    "desc": "Old weathered paint with fresh satin clearcoat sprayed over - protected patina",
                          "noise_scales": [8, 16, 32], "noise_weights": [0.3, 0.4, 0.3], "noise_M": 25, "noise_R": 35},
-    "battle_patina":    {"M": 200, "R": 150, "CC": 50, "paint_fn": paint_burnt_metal,     "desc": "Heavily worn metal base with thin protective satin coat - used racecar look",
+    "battle_patina":    {"M": 140, "R": 150, "CC": 50, "paint_fn": paint_burnt_metal,     "desc": "Heavily worn metal base with thin protective satin coat - used racecar look — BASE-036 FIX: M=140 (worn+patina reduces metallic)",
                          "noise_scales": [4, 8, 16], "noise_weights": [0.3, 0.4, 0.3], "noise_M": 30, "noise_R": 40},
-    "cerakote_gloss":   {"M": 200, "R": 70,  "CC": 16, "paint_fn": paint_tactical_flat,   "desc": "Industrial ceramic coating over metal - glossy sealed finish",
+    "cerakote_gloss":   {"M": 100, "R": 70,  "CC": 16, "paint_fn": paint_tactical_flat,   "desc": "Cerakote gloss - polymer ceramic glossy sealed finish — BASE-023 FIX: M=100 (polymer ceramic, not near-chrome metallic)",
                          "noise_scales": [4, 8, 16], "noise_weights": [0.3, 0.4, 0.3], "noise_M": 20, "noise_R": 20},
-    "raw_aluminum":     {"M": 240, "R": 30,  "CC": 0,  "paint_fn": paint_raw_aluminum,    "desc": "Bare unfinished aluminum sheet metal",
+    "raw_aluminum":     {"M": 200, "R": 30,  "CC": 100, "paint_fn": paint_raw_aluminum,    "desc": "Bare unfinished aluminum sheet metal — BASE-033 FIX: M=200 (real bare aluminum), CC=100 (no clearcoat on bare metal)",
                          "noise_scales": [4, 8], "noise_weights": [0.4, 0.6], "noise_M": 25, "noise_R": 25},
-    "sandblasted":      {"M": 200, "R": 180, "CC": 0,  "paint_fn": paint_none,            "desc": "Raw sandblasted metal rough texture",
+    "sandblasted":      {"M": 200, "R": 180, "CC": 155, "paint_fn": paint_none,            "desc": "Raw sandblasted metal rough texture — BASE-009 FIX: CC=155 (no clearcoat, stripped metal)",
                          "noise_scales": [2, 4, 8], "noise_weights": [0.3, 0.4, 0.3], "noise_M": 20, "noise_R": 30},
     # titanium_raw removed - M=200 G=50 identical to metallic; differentiate via paint color
+    # ── EXOTIC BASE FINISHES (RESEARCH-008) ──────────────────────────
+    "chromaflair":      {"M": 210, "R": 12,  "CC": 18, "paint_fn": paint_chromaflair,      "desc": "ChromaFlair Light Shift — 3-angle color flip via multi-stop hue rotation",
+                         "base_spec_fn": spec_chromaflair_base},
+    "xirallic":         {"M": 170, "R": 20,  "CC": 18, "paint_fn": paint_xirallic,          "desc": "Xirallic Crystal Flake — large sparse alumina flakes with iron oxide blue-silver interference",
+                         "base_spec_fn": spec_xirallic_base},
+    "anodized_exotic":  {"M": 110, "R": 38,  "CC": 45, "paint_fn": paint_anodized_exotic,   "desc": "Anodized Exotic — dye-impregnated oxide layer, semi-gloss, subtle hex pore micro-texture",
+                         "base_spec_fn": spec_anodized_exotic_base},
     # ── EXOTIC & COLOR-SHIFT ─────────────────────────────────────────
     "chameleon":        {"M": 160, "R": 25,  "CC": 16, "paint_fn": paint_cp_chameleon,  "desc": "Dual-tone chameleon color-shift driven by surface angle",
                          "perlin": True, "perlin_octaves": 3, "perlin_persistence": 0.6, "perlin_lacunarity": 1.8, "noise_M": 60, "noise_R": 35},
-    "iridescent":       {"M": 210, "R": 20,  "CC": 16, "paint_fn": paint_iridescent_shift,"desc": "Rainbow angle-shift iridescent wrap",
+    "iridescent":       {"M": 200, "R": 20,  "CC": 16, "paint_fn": paint_iridescent_shift,"desc": "Rainbow angle-shift iridescent wrap — BASE-038 FIX: M=200 (iridescent wrap, not chrome-level)",
                          "perlin": True, "perlin_octaves": 4, "perlin_persistence": 0.5, "perlin_lacunarity": 2.0, "noise_M": 50, "noise_R": 25},
     # ── WRAP & COATING ───────────────────────────────────────────────
-    "liquid_wrap":      {"M": 80,  "R": 110, "CC": 50,  "paint_fn": paint_satin_wrap,      "desc": "Liquid rubber peel coat - the rubber IS the clearcoat layer (CC=50 satin-ish)"},
-    "primer":           {"M": 0,   "R": 200, "CC": 20,  "paint_fn": paint_primer_flat,     "desc": "Raw primer - thin base coat, barely sealing (CC=20 barely there)"},
+    "liquid_wrap":      {"M": 0,   "R": 80,  "CC": 50,  "paint_fn": paint_liquid_wrap_fn,  "desc": "Liquid rubber peel coat — WEAK-016 FIX: rubber/vinyl micro-texture character, distinct from satin_wrap",
+                         "noise_scales": [4, 8, 16], "noise_weights": [0.3, 0.4, 0.3], "noise_R": 18, "noise_M": 5},
+    "primer":           {"M": 0,   "R": 200, "CC": 175, "paint_fn": paint_primer_flat,     "desc": "Raw primer - zero sheen, no clearcoat (CC=175) — BASE-021 FIX: CC=175 (raw primer has no clearcoat)"},
     "satin_wrap":       {"M": 0,   "R": 130, "CC": 60,  "paint_fn": paint_satin_wrap,      "desc": "Vinyl wrap satin surface - the film IS the coat layer (CC=60)"},
     # ── ORGANIC / PERLIN NOISE ───────────────────────────────────────
-    "living_matte":     {"M": 0,   "R": 180, "CC": 45,  "paint_fn": paint_none,            "desc": "Organic matte - natural coat with Perlin surface variation (CC=45 protected)",
+    "living_matte":     {"M": 0,   "R": 180, "CC": 160, "paint_fn": paint_none,            "desc": "Organic matte - natural organic matte surface (CC=160) — BASE-022 FIX: CC=160 (matte finish, not satin range)",
                          "perlin": True, "perlin_octaves": 3, "perlin_persistence": 0.6, "noise_M": 0, "noise_R": 30},
     "organic_metal":    {"M": 210, "R": 45,  "CC": 16, "paint_fn": paint_subtle_flake,    "desc": "Organic flowing metallic with Perlin noise terrain",
                          "perlin": True, "perlin_octaves": 4, "perlin_persistence": 0.5, "noise_M": 35, "noise_R": 20, "noise_CC": 8},
@@ -3471,6 +3498,31 @@ BASE_REGISTRY = {
 }
 # Register clearcoat blend bases into main registry
 BASE_REGISTRY.update(BLEND_BASES)
+
+# WEAK-018 FIX: Wire paint_jelly_pearl_v2 into BASE_REGISTRY pearl entry.
+# Must run after BASE_REGISTRY is built. Uses same _adapt_bb wrapper pattern as FINISH_REGISTRY.
+try:
+    from engine.paint_v2.candy_special import paint_jelly_pearl_v2 as _pjpv2
+    import numpy as _np_weak018
+    def _adapt_bb_base(fn):
+        """Wrap v2 paint fn to handle scalar bb for BASE_REGISTRY callers."""
+        def _wrapped(paint, shape, mask, seed, pm, bb):
+            bb_val = bb
+            try:
+                if _np_weak018.isscalar(bb):
+                    h, w = shape[:2] if isinstance(shape, (tuple, list)) and len(shape) >= 2 else paint.shape[:2]
+                    bb_val = _np_weak018.full((int(h), int(w)), float(bb), dtype=_np_weak018.float32)
+                elif hasattr(bb, "ndim") and bb.ndim == 0:
+                    h, w = shape[:2] if isinstance(shape, (tuple, list)) and len(shape) >= 2 else paint.shape[:2]
+                    bb_val = _np_weak018.full((int(h), int(w)), float(bb), dtype=_np_weak018.float32)
+            except Exception:
+                bb_val = bb
+            return fn(paint, shape, mask, seed, pm, bb_val)
+        return _wrapped
+    BASE_REGISTRY["pearl"]["paint_fn"] = _adapt_bb_base(_pjpv2)
+    print("[WEAK-018 FIX] pearl paint_fn wired to paint_jelly_pearl_v2 (HSV shimmer, platelet particles)")
+except Exception as _weak018_exc:
+    print(f"[WEAK-018 FIX] pearl v2 wire-in skipped: {_weak018_exc}")
 
 # ================================================================
 # BATCH 1: Dedicated texture functions for broken pattern aliases
@@ -4495,6 +4547,2120 @@ def texture_aurora_bands_v2(shape, mask, seed, sm):
     return {"pattern_val": pattern, "R_range": -60.0, "M_range": 50.0, "CC": None}
 
 
+# ── INTRICATE & ORNATE — Texture functions (Batch 1, 2026-03-28) ─────────────
+
+def texture_sacred_geometry(shape, mask, seed, sm):
+    """Sacred geometry - Flower of Life: three 120°-offset cosine waves make hex ring mandalas."""
+    h, w = shape
+    y, x = get_mgrid((h, w))
+    yf, xf = y.astype(np.float32), x.astype(np.float32)
+    freq = 2.0 * np.pi / max(1.0, sm * 22.0)
+    a0 = np.cos(xf * freq)
+    a1 = np.cos(xf * (-0.5) * freq + yf * 0.866025 * freq)
+    a2 = np.cos(xf * (-0.5) * freq - yf * 0.866025 * freq)
+    v  = np.abs((a0 + a1 + a2) / 3.0)
+    a0b = np.cos(xf * freq * 2.0)
+    a1b = np.cos(xf * (-0.5) * freq * 2.0 + yf * 0.866025 * freq * 2.0)
+    a2b = np.cos(xf * (-0.5) * freq * 2.0 - yf * 0.866025 * freq * 2.0)
+    v  += np.abs((a0b + a1b + a2b) / 3.0) * 0.4
+    return {"pattern_val": np.clip(v / 1.4, 0.0, 1.0), "R_range": 80.0, "M_range": 40.0, "CC": None}
+
+
+def texture_lace_filigree(shape, mask, seed, sm):
+    """Lace filigree - orthogonal + diagonal sinusoidal grids combined for intricate cross-lattice openwork."""
+    h, w = shape
+    y, x = get_mgrid((h, w))
+    yf, xf = y.astype(np.float32), x.astype(np.float32)
+    freq = 2.0 * np.pi / max(1.0, sm * 14.0)
+    ortho = np.sqrt(np.minimum(np.abs(np.sin(xf * freq)), np.abs(np.sin(yf * freq))))
+    diag  = np.sqrt(np.minimum(
+        np.abs(np.sin((xf + yf) * freq * 0.707)),
+        np.abs(np.sin((xf - yf) * freq * 0.707))
+    ))
+    return {"pattern_val": np.clip(np.sqrt(ortho * diag) * 1.8, 0.0, 1.0), "R_range": 75.0, "M_range": -35.0, "CC": None}
+
+
+def texture_stained_glass_voronoi(shape, mask, seed, sm):
+    """Stained glass - Voronoi panes with random luminance and dark grout-line boundaries."""
+    h, w = shape
+    n_cells = min(max(25, int(min(h, w) / max(1.0, sm * 5.5))), 100)
+    rng = np.random.default_rng(seed + 5501)
+    cell_id = _voronoi_cells_fast(shape, n_cells, 5501, seed)
+    cell_lum = rng.uniform(0.3, 1.0, size=int(cell_id.max()) + 1).astype(np.float32)
+    crack = _voronoi_cracks_fast(shape, n_cells, 5501, seed, crack_width=6.0)
+    return {"pattern_val": (cell_lum[cell_id] * (1.0 - crack * 0.92)).astype(np.float32),
+            "R_range": 55.0, "M_range": -45.0, "CC": None}
+
+
+def texture_brushed_metal_fine(shape, mask, seed, sm):
+    """Brushed metal fine - three-frequency anisotropic directional micro-scratch grain."""
+    h, w = shape
+    y, x = get_mgrid((h, w))
+    xf = x.astype(np.float32)
+    f1 = np.abs(np.sin(xf * 2.0 * np.pi / max(1.0, sm * 12.0)))
+    f2 = np.abs(np.sin(xf * 2.0 * np.pi / max(1.0, sm * 5.0)))
+    f3 = np.abs(np.sin(xf * 2.0 * np.pi / max(1.0, sm * 2.5)))
+    noise = multi_scale_noise(shape, [8, 16], [0.6, 0.4], seed + 5502)
+    v = (f1 * 0.5 + f2 * 0.3 + f3 * 0.2) + (noise + 1.0) * 0.04
+    return {"pattern_val": np.clip(v, 0.0, 1.0).astype(np.float32), "R_range": 50.0, "M_range": -65.0, "CC": None}
+
+
+def texture_carbon_3k_weave(shape, mask, seed, sm):
+    """Carbon 3K weave - two interleaved ±45° diagonal satin-braid tow directions."""
+    h, w = shape
+    y, x = get_mgrid((h, w))
+    yf, xf = y.astype(np.float32), x.astype(np.float32)
+    tow = max(1.0, sm * 9.0)
+    d_a = (xf + yf) / tow
+    d_b = (xf - yf) / tow + 0.5
+    tow_a = np.sin(d_a * np.pi * 2.0) * 0.5 + 0.5
+    tow_b = np.sin(d_b * np.pi * 2.0) * 0.5 + 0.5
+    bundle = np.abs(np.sin(d_a * np.pi * 6.0)) * 0.15
+    return {"pattern_val": np.clip((tow_a * 0.55 + tow_b * 0.45) * (0.85 + bundle), 0.0, 1.0).astype(np.float32),
+            "R_range": 55.0, "M_range": -60.0, "CC": None}
+
+
+def texture_honeycomb_organic(shape, mask, seed, sm):
+    """Honeycomb organic - hex grid warped by low-freq noise for irregular natural cell shapes."""
+    h, w = shape
+    y, x = get_mgrid((h, w))
+    yf, xf = y.astype(np.float32), x.astype(np.float32)
+    warp = sm * 12.0
+    wx = xf + multi_scale_noise(shape, [4, 8], [0.6, 0.4], seed + 5504) * warp
+    wy = yf + multi_scale_noise(shape, [4, 8], [0.6, 0.4], seed + 5505) * warp
+    freq = 2.0 * np.pi / max(1.0, sm * 18.0)
+    a0 = np.cos(wx * freq)
+    a1 = np.cos(wx * (-0.5) * freq + wy * 0.866025 * freq)
+    a2 = np.cos(wx * (-0.5) * freq - wy * 0.866025 * freq)
+    v_wall = np.clip(-((a0 + a1 + a2) / 3.0) * 4.0 + 0.5, 0.0, 1.0)
+    return {"pattern_val": v_wall, "R_range": 65.0, "M_range": -50.0, "CC": None}
+
+
+def texture_baroque_scrollwork(shape, mask, seed, sm):
+    """Baroque scrollwork - tiled Archimedean spiral array with sinusoidal 3-lobe flourish."""
+    h, w = shape
+    y, x = get_mgrid((h, w))
+    yf, xf = y.astype(np.float32), x.astype(np.float32)
+    cell_sz = max(4.0, sm * 48.0)
+    lx = (xf % cell_sz) - cell_sz * 0.5
+    ly = (yf % cell_sz) - cell_sz * 0.5
+    r = np.sqrt(lx ** 2 + ly ** 2) + 0.001
+    theta = np.arctan2(ly, lx)
+    arm_pitch = cell_sz * 0.35
+    spiral = np.abs(np.sin(r * np.pi * 2.0 / arm_pitch - theta))
+    flourish = np.abs(np.sin(theta * 3.0)) * 0.3 + 0.7
+    cell_fade = np.clip(1.0 - (r / (cell_sz * 0.45)) ** 3, 0.0, 1.0)
+    return {"pattern_val": np.clip(spiral * flourish * cell_fade, 0.0, 1.0).astype(np.float32),
+            "R_range": 70.0, "M_range": -40.0, "CC": None}
+
+
+def texture_art_nouveau_vine(shape, mask, seed, sm):
+    """Art Nouveau vine - noise-warped vertical stems with a rotated branch lattice overlay."""
+    h, w = shape
+    y, x = get_mgrid((h, w))
+    yf, xf = y.astype(np.float32), x.astype(np.float32)
+    warp = multi_scale_noise(shape, [4, 8, 16], [0.5, 0.3, 0.2], seed + 5507) * sm * 15.0
+    period = max(1.0, sm * 55.0)
+    local_x = (xf + warp) % period
+    stem = np.clip(1.0 - np.minimum(local_x, period - local_x) / max(1.0, sm * 2.5), 0.0, 1.0)
+    warp2 = multi_scale_noise(shape, [8, 16], [0.6, 0.4], seed + 5508) * sm * 10.0
+    period2 = max(1.0, sm * 28.0)
+    local_x2 = (xf * 0.866 + yf * 0.5 + warp2) % period2
+    branch = np.clip(1.0 - np.minimum(local_x2, period2 - local_x2) / max(1.0, sm * 1.5), 0.0, 1.0) * 0.65
+    return {"pattern_val": np.clip(stem + branch, 0.0, 1.0).astype(np.float32),
+            "R_range": 65.0, "M_range": -35.0, "CC": None}
+
+
+def texture_penrose_quasi(shape, mask, seed, sm):
+    """Penrose quasicrystal - five 72°-spaced cosine projections with fundamental + third harmonic."""
+    h, w = shape
+    y, x = get_mgrid((h, w))
+    yf, xf = y.astype(np.float32), x.astype(np.float32)
+    freq = 2.0 * np.pi / max(1.0, sm * 20.0)
+    v  = np.zeros((h, w), dtype=np.float32)
+    v2 = np.zeros((h, w), dtype=np.float32)
+    for k in range(5):
+        angle = k * np.pi * 2.0 / 5.0
+        cx_k, cy_k = np.cos(angle), np.sin(angle)
+        proj = xf * cx_k + yf * cy_k
+        v  += np.cos(proj * freq)
+        v2 += np.cos(proj * freq * 3.0)
+    return {"pattern_val": np.clip(np.abs(v / 5.0) * 0.7 + np.abs(v2 / 5.0) * 0.35, 0.0, 1.0),
+            "R_range": 75.0, "M_range": 45.0, "CC": None}
+
+
+def texture_topographic_dense(shape, mask, seed, sm):
+    """Topographic dense - 35 tightly-spaced contour lines over a rich multi-scale noise height field."""
+    h, w = shape
+    height = multi_scale_noise(shape, [2, 4, 8, 16, 32], [0.4, 0.25, 0.2, 0.1, 0.05], seed + 5509)
+    height = (height + 1.0) * 0.5
+    contour = np.abs(np.sin(height * 35.0 * np.pi))
+    return {"pattern_val": (contour < 0.06).astype(np.float32), "R_range": 60.0, "M_range": -55.0, "CC": None}
+
+
+def texture_interference_rings(shape, mask, seed, sm):
+    """Newton ring interference - four radially offset point sources produce multi-source ring beating."""
+    h, w = shape
+    y, x = get_mgrid((h, w))
+    yf, xf = y.astype(np.float32), x.astype(np.float32)
+    freq = 2.0 * np.pi / max(1.0, sm * 18.0)
+    cx, cy = w * 0.5, h * 0.5
+    off = min(h, w) * 0.18
+    v = (np.cos(np.sqrt((xf - cx + off) ** 2 + (yf - cy     ) ** 2) * freq)
+       + np.cos(np.sqrt((xf - cx - off) ** 2 + (yf - cy     ) ** 2) * freq)
+       + np.cos(np.sqrt((xf - cx     ) ** 2 + (yf - cy + off) ** 2) * freq)
+       + np.cos(np.sqrt((xf - cx     ) ** 2 + (yf - cy - off) ** 2) * freq))
+    return {"pattern_val": (v / 4.0 * 0.5 + 0.5).astype(np.float32), "R_range": 70.0, "M_range": 50.0, "CC": None}
+
+
+# ── TRIBAL & ANCIENT — Texture functions (Batch 2, 2026-03-28) ──────────────
+
+def texture_maori_koru(shape, mask, seed, sm):
+    """Maori koru — tiled logarithmic spiral fern frond uncoiling in each cell."""
+    h, w = shape
+    y, x = get_mgrid((h, w))
+    yf, xf = y.astype(np.float32), x.astype(np.float32)
+    cell_sz = max(4.0, sm * 52.0)
+    lx = (xf % cell_sz) - cell_sz * 0.5
+    ly = (yf % cell_sz) - cell_sz * 0.5
+    r = np.sqrt(lx ** 2 + ly ** 2) + 0.001
+    theta = np.arctan2(ly, lx)
+    b = 0.18
+    spiral_phase = np.log(r / max(1.0, cell_sz * 0.06)) - b * theta
+    v = np.abs(np.sin(spiral_phase * np.pi * 2.0)) * 0.5 + 0.5
+    fade = np.clip(1.0 - (r / (cell_sz * 0.48)) ** 4, 0.0, 1.0)
+    return {"pattern_val": (v * fade).astype(np.float32), "R_range": 65.0, "M_range": -40.0, "CC": None}
+
+
+def texture_polynesian_tapa(shape, mask, seed, sm):
+    """Polynesian tapa cloth — alternating horizontal bands of zigzag vs crosshatch."""
+    h, w = shape
+    y, x = get_mgrid((h, w))
+    yf, xf = y.astype(np.float32), x.astype(np.float32)
+    band_h = max(4.0, sm * 20.0)
+    band_idx = (yf / band_h).astype(np.int32)
+    freq = 2.0 * np.pi / max(1.0, sm * 10.0)
+    zigzag = np.abs(np.sin(xf * freq + (yf % band_h) * 0.15))
+    cross = np.minimum(np.abs(np.sin(xf * freq)), np.abs(np.sin(yf * freq)))
+    v = np.where((band_idx % 2) == 0, zigzag, cross * 1.4)
+    return {"pattern_val": np.clip(v, 0.0, 1.0).astype(np.float32), "R_range": 55.0, "M_range": -45.0, "CC": None}
+
+
+def texture_aztec_sun(shape, mask, seed, sm):
+    """Aztec sun stone — radial calendar wheel with spokes and concentric ring bands."""
+    h, w = shape
+    y, x = get_mgrid((h, w))
+    yf, xf = y.astype(np.float32), x.astype(np.float32)
+    cell_sz = max(4.0, sm * 56.0)
+    lx = (xf % cell_sz) - cell_sz * 0.5
+    ly = (yf % cell_sz) - cell_sz * 0.5
+    r = np.sqrt(lx ** 2 + ly ** 2) + 0.001
+    theta = np.arctan2(ly, lx)
+    r_norm = r / (cell_sz * 0.48)
+    spokes = np.abs(np.sin(theta * 10.0)) ** 6
+    rings = np.abs(np.sin(r_norm * 8.0 * np.pi)) ** 3
+    v = (spokes * 0.55 + rings * 0.45) * np.clip(1.0 - r_norm ** 3, 0.0, 1.0)
+    return {"pattern_val": np.clip(v, 0.0, 1.0).astype(np.float32), "R_range": 70.0, "M_range": -50.0, "CC": None}
+
+
+def texture_celtic_trinity(shape, mask, seed, sm):
+    """Celtic triquetra — three interlocked ring arcs at 120° offsets in tiled cells."""
+    h, w = shape
+    y, x = get_mgrid((h, w))
+    yf, xf = y.astype(np.float32), x.astype(np.float32)
+    cell_sz = max(4.0, sm * 50.0)
+    lx = (xf % cell_sz) - cell_sz * 0.5
+    ly = (yf % cell_sz) - cell_sz * 0.5
+    ring_r = cell_sz * 0.24
+    ring_t = max(1.0, sm * 1.8)
+    v = np.zeros((h, w), dtype=np.float32)
+    for ang in [0.0, 2.094395, 4.18879]:
+        cx_k = np.cos(ang) * ring_r * 0.55
+        cy_k = np.sin(ang) * ring_r * 0.55
+        dist = np.sqrt((lx - cx_k) ** 2 + (ly - cy_k) ** 2)
+        ring = np.clip(1.0 - np.abs(dist - ring_r) / ring_t, 0.0, 1.0)
+        v = np.maximum(v, ring)
+    return {"pattern_val": v, "R_range": 70.0, "M_range": -35.0, "CC": None}
+
+
+def texture_viking_knotwork(shape, mask, seed, sm):
+    """Viking interlace — diagonal over-under strand braid with parity switching."""
+    h, w = shape
+    y, x = get_mgrid((h, w))
+    yf, xf = y.astype(np.float32), x.astype(np.float32)
+    cell = max(4.0, sm * 22.0)
+    strand_w = max(1.0, sm * 2.5)
+    d1 = (xf + yf) / cell
+    d2 = (xf - yf) / cell
+    s1 = np.abs((d1 % 1.0) - 0.5) * cell
+    s2 = np.abs((d2 % 1.0) - 0.5) * cell
+    strand1 = np.clip(1.0 - s1 / strand_w, 0.0, 1.0)
+    strand2 = np.clip(1.0 - s2 / strand_w, 0.0, 1.0)
+    parity = ((d1.astype(np.int32) + d2.astype(np.int32)) % 2).astype(np.float32)
+    v = strand1 * (0.5 + parity * 0.5) + strand2 * (0.5 + (1.0 - parity) * 0.5)
+    return {"pattern_val": np.clip(v, 0.0, 1.0).astype(np.float32), "R_range": 65.0, "M_range": -45.0, "CC": None}
+
+
+def texture_native_geometric(shape, mask, seed, sm):
+    """Native American diamond blanket — L1 diamond lattice with alternating border stripes."""
+    h, w = shape
+    y, x = get_mgrid((h, w))
+    yf, xf = y.astype(np.float32), x.astype(np.float32)
+    cell = max(4.0, sm * 28.0)
+    lx = (xf % cell) / cell - 0.5
+    ly = (yf % cell) / cell - 0.5
+    l1 = np.abs(lx) + np.abs(ly)
+    diamond = (l1 < 0.36).astype(np.float32)
+    stripe = np.abs(np.sin((xf + yf) * np.pi / max(1.0, sm * 7.0))) ** 8
+    v = diamond * 0.7 + stripe * 0.3
+    return {"pattern_val": np.clip(v, 0.0, 1.0).astype(np.float32), "R_range": 60.0, "M_range": -50.0, "CC": None}
+
+
+def texture_inca_step(shape, mask, seed, sm):
+    """Inca step fret — L-shape step motif with alternating rotation in tiled cells."""
+    h, w = shape
+    y, x = get_mgrid((h, w))
+    yf, xf = y.astype(np.float32), x.astype(np.float32)
+    cell = max(4.0, sm * 24.0)
+    cx_i = (xf / cell).astype(np.int32)
+    cy_i = (yf / cell).astype(np.int32)
+    lx = (xf % cell) / cell
+    ly = (yf % cell) / cell
+    parity = (cx_i + cy_i) % 2
+    lx_r = np.where(parity == 0, lx, 1.0 - ly)
+    ly_r = np.where(parity == 0, ly, lx)
+    arm_w = 0.18
+    h_arm = ((ly_r < arm_w) & (lx_r > 0.1)).astype(np.float32)
+    v_arm = ((lx_r < arm_w) & (ly_r < 0.7)).astype(np.float32)
+    return {"pattern_val": np.clip(h_arm + v_arm, 0.0, 1.0), "R_range": 60.0, "M_range": -55.0, "CC": None}
+
+
+def texture_aboriginal_dots(shape, mask, seed, sm):
+    """Aboriginal concentric ring dot art — periodic ring clusters on a regular grid."""
+    h, w = shape
+    y, x = get_mgrid((h, w))
+    yf, xf = y.astype(np.float32), x.astype(np.float32)
+    spacing = max(4.0, sm * 30.0)
+    ring_sp = max(1.0, sm * 4.5)
+    dot_r = max(0.5, sm * 1.8)
+    gx = np.round(xf / spacing) * spacing
+    gy = np.round(yf / spacing) * spacing
+    r = np.sqrt((xf - gx) ** 2 + (yf - gy) ** 2) + 0.001
+    ring_phase = (r % ring_sp) / ring_sp
+    rings = np.clip(1.0 - np.abs(ring_phase - 0.5) / (dot_r / ring_sp), 0.0, 1.0)
+    rings *= (r < ring_sp * 3.5).astype(np.float32)
+    return {"pattern_val": rings, "R_range": 55.0, "M_range": -40.0, "CC": None}
+
+
+def texture_turkish_arabesque(shape, mask, seed, sm):
+    """Ottoman arabesque — crossed sinusoidal lattice producing interlaced medallion lines."""
+    h, w = shape
+    y, x = get_mgrid((h, w))
+    yf, xf = y.astype(np.float32), x.astype(np.float32)
+    freq = 2.0 * np.pi / max(1.0, sm * 28.0)
+    a = np.sin(xf * freq) * np.cos(yf * freq * 0.5)
+    b = np.cos(xf * freq * 0.5) * np.sin(yf * freq)
+    prod = np.abs(a * b)
+    v = np.exp(-prod * 12.0)
+    return {"pattern_val": v.astype(np.float32), "R_range": 65.0, "M_range": -45.0, "CC": None}
+
+
+def texture_eight_point_star(shape, mask, seed, sm):
+    """8-pointed geometric star — four directional arm distances forming star tiling."""
+    h, w = shape
+    y, x = get_mgrid((h, w))
+    yf, xf = y.astype(np.float32), x.astype(np.float32)
+    cell = max(4.0, sm * 36.0)
+    lx = (xf % cell) - cell * 0.5
+    ly = (yf % cell) - cell * 0.5
+    arm_t = max(1.0, sm * 3.0)
+    d_h = np.abs(ly)
+    d_v = np.abs(lx)
+    d_d1 = np.abs(lx + ly) * 0.707
+    d_d2 = np.abs(lx - ly) * 0.707
+    min_dist = np.minimum(np.minimum(d_h, d_v), np.minimum(d_d1, d_d2))
+    star = np.clip(1.0 - min_dist / arm_t, 0.0, 1.0)
+    r = np.sqrt(lx ** 2 + ly ** 2)
+    center = np.clip(1.0 - (r - cell * 0.08) / max(1.0, sm * 1.5), 0.0, 1.0)
+    return {"pattern_val": np.clip(star + center * 0.5, 0.0, 1.0).astype(np.float32),
+            "R_range": 70.0, "M_range": -50.0, "CC": None}
+
+
+def texture_egyptian_lotus(shape, mask, seed, sm):
+    """Egyptian lotus frieze — radial teardrop petal cluster with center stalk."""
+    h, w = shape
+    y, x = get_mgrid((h, w))
+    yf, xf = y.astype(np.float32), x.astype(np.float32)
+    cell = max(4.0, sm * 44.0)
+    lx = (xf % cell) - cell * 0.5
+    ly = (yf % cell) - cell * 0.5
+    r = np.sqrt(lx ** 2 + ly ** 2) + 0.001
+    theta = np.arctan2(lx, -ly)
+    n_petals = 6
+    petal_r = cell * 0.30
+    petal_angle = (theta % (2.0 * np.pi / n_petals)) - np.pi / n_petals
+    radial_hit = np.abs(r - petal_r * 0.7)
+    angular_hit = np.abs(petal_angle) * r
+    petal = np.clip(1.0 - (radial_hit * 0.06 + angular_hit * 0.08) / max(0.01, sm * 2.5), 0.0, 1.0)
+    stalk = np.clip(1.0 - (np.abs(lx) * 4.0 + np.maximum(0.0, -ly) * 0.05) / max(1.0, sm * 3.0), 0.0, 1.0)
+    return {"pattern_val": np.clip(petal * 0.8 + stalk * 0.3, 0.0, 1.0).astype(np.float32),
+            "R_range": 60.0, "M_range": -40.0, "CC": None}
+
+
+def texture_chinese_cloud(shape, mask, seed, sm):
+    """Chinese ruyi cloud scroll — L-inf rectangular ring spirals with softened corners."""
+    h, w = shape
+    y, x = get_mgrid((h, w))
+    yf, xf = y.astype(np.float32), x.astype(np.float32)
+    cell = max(4.0, sm * 40.0)
+    lx = (xf % cell) - cell * 0.5
+    ly = (yf % cell) - cell * 0.5
+    l_inf = np.maximum(np.abs(lx), np.abs(ly))
+    ring_sp = max(1.0, sm * 5.5)
+    ring_phase = (l_inf % ring_sp) / ring_sp
+    rings = (np.sin(ring_phase * np.pi * 2.0) * 0.5 + 0.5) ** 2
+    l2 = np.sqrt(lx ** 2 + ly ** 2) + 0.001
+    corner_blend = np.clip((l_inf - l2 * 0.85) / max(0.01, cell * 0.08), 0.0, 1.0)
+    v = rings * (1.0 - corner_blend * 0.5)
+    return {"pattern_val": np.clip(v, 0.0, 1.0).astype(np.float32), "R_range": 60.0, "M_range": -45.0, "CC": None}
+
+
+# ── NATURAL TEXTURES — Texture functions (Batch 3, 2026-03-28) ──────────────
+
+def texture_marble_veining(shape, mask, seed, sm):
+    """Marble veining — turbulence-warped sine vein network with secondary frequency."""
+    h, w = shape
+    y, x = get_mgrid((h, w))
+    xf = x.astype(np.float32)
+    noise1 = multi_scale_noise(shape, [2, 4, 8, 16, 32], [0.40, 0.30, 0.15, 0.10, 0.05], seed + 6001)
+    noise2 = multi_scale_noise(shape, [2, 4, 8, 16],     [0.50, 0.30, 0.15, 0.05],       seed + 6002)
+    freq = 2.0 * np.pi / max(1.0, sm * 60.0)
+    v1 = np.abs(np.sin(xf * freq + noise1 * 8.0 + noise2 * 3.0))
+    v2 = np.abs(np.sin(xf * freq * 2.3 + noise1 * 5.0))
+    return {"pattern_val": np.clip(v1 * 0.6 + v2 * 0.4, 0.0, 1.0).astype(np.float32),
+            "R_range": 55.0, "M_range": -45.0, "CC": None}
+
+
+def texture_wood_burl(shape, mask, seed, sm):
+    """Wood burl — multiple swirling concentric ring centers warped by noise."""
+    h, w = shape
+    y, x = get_mgrid((h, w))
+    yf, xf = y.astype(np.float32), x.astype(np.float32)
+    rng = np.random.default_rng(seed + 6003)
+    n_burls = 3
+    cx_arr = rng.uniform(w * 0.15, w * 0.85, size=n_burls).astype(np.float32)
+    cy_arr = rng.uniform(h * 0.15, h * 0.85, size=n_burls).astype(np.float32)
+    warp = multi_scale_noise(shape, [4, 8, 16], [0.50, 0.35, 0.15], seed + 6004) * (sm * 25.0)
+    ring_sp = max(1.0, sm * 8.0)
+    v = np.zeros((h, w), dtype=np.float32)
+    for i in range(n_burls):
+        wx = (xf + warp) - cx_arr[i]
+        wy = (yf + warp * 0.7) - cy_arr[i]
+        r = np.sqrt(wx ** 2 + wy ** 2)
+        rings = np.abs(np.sin(r * np.pi / ring_sp))
+        v = np.maximum(v, rings)
+    return {"pattern_val": v, "R_range": 50.0, "M_range": -55.0, "CC": None}
+
+
+def texture_seigaiha_scales(shape, mask, seed, sm):
+    """Japanese seigaiha — rows of overlapping arched half-circle scale tiles."""
+    h, w = shape
+    y, x = get_mgrid((h, w))
+    yf, xf = y.astype(np.float32), x.astype(np.float32)
+    scale_w = max(4.0, sm * 36.0)
+    row_h = scale_w * 0.30  # row advance (overlap)
+    ring_t = max(0.5, sm * 2.0)
+    row_i = (yf / row_h).astype(np.int32)
+    offset = (row_i % 2) * (scale_w * 0.5)
+    lx = ((xf + offset) % scale_w) - scale_w * 0.5
+    ly = (yf % row_h)
+    r = np.sqrt(lx ** 2 + (ly + scale_w * 0.05) ** 2)
+    arc = np.clip(1.0 - np.abs(r - scale_w * 0.48) / ring_t, 0.0, 1.0)
+    # Only upper portion of circle (ly < threshold suppresses lower arc)
+    arc *= np.clip(1.0 - ly / (row_h * 0.9), 0.0, 1.0)
+    return {"pattern_val": arc, "R_range": 65.0, "M_range": -40.0, "CC": None}
+
+
+def texture_ammonite_chambers(shape, mask, seed, sm):
+    """Ammonite chambers — log-spiral shell walls with radial suture divisions."""
+    h, w = shape
+    y, x = get_mgrid((h, w))
+    yf, xf = y.astype(np.float32), x.astype(np.float32)
+    cx, cy = w * 0.5, h * 0.5
+    lx, ly = xf - cx, yf - cy
+    r = np.sqrt(lx ** 2 + ly ** 2) + 0.001
+    theta = np.arctan2(ly, lx)
+    b = 0.22
+    min_r = max(1.0, min(w, h) * 0.03)
+    log_r = np.log(np.maximum(r, min_r))
+    spiral_val = log_r / b - theta / (2.0 * np.pi)
+    # Chamber walls
+    walls = np.abs(np.sin(spiral_val * np.pi * 2.0))
+    # Radial sutures
+    n_chambers = 8
+    suture = np.abs(np.sin(theta * n_chambers)) ** 10
+    v = walls * 0.65 + suture * 0.35
+    max_r = min(w, h) * 0.46
+    fade = np.clip(1.0 - (r / max_r) ** 3, 0.0, 1.0)
+    return {"pattern_val": np.clip(v * fade, 0.0, 1.0).astype(np.float32),
+            "R_range": 65.0, "M_range": -50.0, "CC": None}
+
+
+def texture_peacock_eye(shape, mask, seed, sm):
+    """Peacock feather eye — elliptical concentric rings with 20-barb radial overlay."""
+    h, w = shape
+    y, x = get_mgrid((h, w))
+    yf, xf = y.astype(np.float32), x.astype(np.float32)
+    cell = max(4.0, sm * 52.0)
+    lx = (xf % cell) - cell * 0.5
+    ly = (yf % cell) - cell * 0.5
+    r = np.sqrt(lx ** 2 + (ly * 1.3) ** 2) + 0.001
+    theta = np.arctan2(ly, lx)
+    ring_sp = max(1.0, sm * 5.0)
+    rings = np.abs(np.sin(r * np.pi / ring_sp))
+    n_barbs = 20
+    barbs = np.abs(np.sin(theta * n_barbs * 0.5)) ** 10
+    center = np.clip(1.0 - r / max(1.0, cell * 0.08), 0.0, 1.0)
+    v = rings * (0.55 + barbs * 0.45) + center * 0.7
+    fade = np.clip(1.0 - (r / (cell * 0.46)) ** 3, 0.0, 1.0)
+    return {"pattern_val": np.clip(v * fade, 0.0, 1.0).astype(np.float32),
+            "R_range": 70.0, "M_range": -45.0, "CC": None}
+
+
+def texture_dragonfly_wing(shape, mask, seed, sm):
+    """Dragonfly wing venation — dense Voronoi cell cracks for thin wing veins."""
+    h, w = shape
+    n_cells = min(max(60, int(min(h, w) / max(1.0, sm * 3.5))), 200)
+    cracks = _voronoi_cracks_fast(shape, n_cells, 6006, seed, crack_width=3.0)
+    return {"pattern_val": cracks.astype(np.float32), "R_range": 60.0, "M_range": -50.0, "CC": None}
+
+
+def texture_insect_compound(shape, mask, seed, sm):
+    """Insect compound eye — hex close-packed ommatidia with ring + center dot."""
+    h, w = shape
+    y, x = get_mgrid((h, w))
+    yf, xf = y.astype(np.float32), x.astype(np.float32)
+    hex_w = max(4.0, sm * 20.0)
+    hex_h = hex_w * 0.866025
+    row_i = (yf / hex_h).astype(np.int32)
+    offset = (row_i % 2) * (hex_w * 0.5)
+    lx = ((xf + offset) % hex_w) - hex_w * 0.5
+    ly = (yf % hex_h) - hex_h * 0.5
+    r = np.sqrt(lx ** 2 + ly ** 2)
+    omm_r = hex_w * 0.42
+    ring_t = max(0.5, sm * 1.5)
+    ring = np.clip(1.0 - np.abs(r - omm_r) / ring_t, 0.0, 1.0)
+    center = np.clip(1.0 - r / (omm_r * 0.55), 0.0, 1.0) * 0.35
+    return {"pattern_val": np.clip(ring + center, 0.0, 1.0).astype(np.float32),
+            "R_range": 65.0, "M_range": -50.0, "CC": None}
+
+
+def texture_diatom_radial(shape, mask, seed, sm):
+    """Diatom microorganism — 16-fold radial symmetry with spokes, rings, and dots."""
+    h, w = shape
+    y, x = get_mgrid((h, w))
+    yf, xf = y.astype(np.float32), x.astype(np.float32)
+    cell = max(4.0, sm * 50.0)
+    lx = (xf % cell) - cell * 0.5
+    ly = (yf % cell) - cell * 0.5
+    r = np.sqrt(lx ** 2 + ly ** 2) + 0.001
+    theta = np.arctan2(ly, lx)
+    n_spokes = 16
+    spokes = np.abs(np.sin(theta * n_spokes * 0.5)) ** 8
+    ring_sp = max(1.0, sm * 5.5)
+    rings = (np.sin(r * np.pi / ring_sp) * 0.5 + 0.5) ** 4
+    dot_phase = np.abs(np.sin(theta * n_spokes * 0.5 + r * 0.25)) ** 8
+    fade = np.clip(1.0 - (r / (cell * 0.48)) ** 4, 0.0, 1.0)
+    v = (spokes * 0.35 + rings * 0.40 + dot_phase * 0.25) * fade
+    return {"pattern_val": np.clip(v, 0.0, 1.0).astype(np.float32), "R_range": 70.0, "M_range": 50.0, "CC": None}
+
+
+def texture_coral_polyp(shape, mask, seed, sm):
+    """Coral polyp tiling — 8-tentacle radial star with concentric oral disk rings."""
+    h, w = shape
+    y, x = get_mgrid((h, w))
+    yf, xf = y.astype(np.float32), x.astype(np.float32)
+    cell = max(4.0, sm * 30.0)
+    lx = (xf % cell) - cell * 0.5
+    ly = (yf % cell) - cell * 0.5
+    r = np.sqrt(lx ** 2 + ly ** 2) + 0.001
+    theta = np.arctan2(ly, lx)
+    n_tentacles = 8
+    tentacles = (np.cos(theta * n_tentacles) * 0.5 + 0.5) ** 4
+    radial_fade = np.clip(1.0 - r / (cell * 0.46), 0.0, 1.0)
+    ring_sp = max(1.0, sm * 6.0)
+    disk = np.abs(np.sin(r * np.pi * 2.0 / ring_sp))
+    v = disk * 0.4 + tentacles * radial_fade * 0.6
+    return {"pattern_val": np.clip(v, 0.0, 1.0).astype(np.float32), "R_range": 60.0, "M_range": -40.0, "CC": None}
+
+
+def texture_birch_bark(shape, mask, seed, sm):
+    """Birch bark — noise-warped horizontal lenticel bands with vertical cracks."""
+    h, w = shape
+    y, x = get_mgrid((h, w))
+    yf, xf = y.astype(np.float32), x.astype(np.float32)
+    noise_h = multi_scale_noise(shape, [4, 8], [0.6, 0.4], seed + 6010) * (sm * 15.0)
+    lenticel_freq = max(1.0, sm * 25.0)
+    # Lenticels: dark horizontal bands
+    lenticels = (np.abs(np.sin((yf + noise_h * 0.3) * np.pi / lenticel_freq)) < 0.10).astype(np.float32)
+    noise_v = multi_scale_noise(shape, [2, 4, 8], [0.5, 0.3, 0.2], seed + 6011) * (sm * 20.0)
+    crack_freq = max(1.0, sm * 40.0)
+    # Vertical cracks: thin sinuous lines
+    cracks = (np.abs(np.sin((xf + noise_v) * np.pi / crack_freq)) < 0.05).astype(np.float32)
+    # Base is mostly bright (white birch)
+    grain = (multi_scale_noise(shape, [1, 2], [0.6, 0.4], seed + 6012) * 0.12 + 0.88).astype(np.float32)
+    v = grain * (1.0 - lenticels * 0.75) * (1.0 - cracks * 0.45)
+    return {"pattern_val": np.clip(v, 0.0, 1.0).astype(np.float32), "R_range": 40.0, "M_range": -60.0, "CC": None}
+
+
+def texture_pine_cone_scale(shape, mask, seed, sm):
+    """Pine cone scale — dual diagonal sine families forming interlocked diamond tiles."""
+    h, w = shape
+    y, x = get_mgrid((h, w))
+    yf, xf = y.astype(np.float32), x.astype(np.float32)
+    cell = max(4.0, sm * 28.0)
+    # Two diagonal families at ±35°
+    proj1 = xf * 0.81915 + yf * 0.57358   # cos35, sin35
+    proj2 = xf * 0.81915 - yf * 0.57358   # cos-35, sin-35
+    s1 = np.abs(np.sin(proj1 * np.pi / cell))
+    s2 = np.abs(np.sin(proj2 * np.pi / cell))
+    # Minimum gives raised ridges at diamond intersections
+    v = np.minimum(s1, s2)
+    return {"pattern_val": np.clip(1.0 - v * 2.2, 0.0, 1.0).astype(np.float32),
+            "R_range": 60.0, "M_range": -50.0, "CC": None}
+
+
+def texture_geode_crystal(shape, mask, seed, sm):
+    """Geode crystal facets — Voronoi cells with per-facet directional sheen lines."""
+    h, w = shape
+    y, x = get_mgrid((h, w))
+    yf, xf = y.astype(np.float32), x.astype(np.float32)
+    n_crystals = min(max(8, int(min(h, w) / max(1.0, sm * 10.0))), 40)
+    cell_id = _voronoi_cells_fast(shape, n_crystals, 6012, seed)
+    cracks = _voronoi_cracks_fast(shape, n_crystals, 6012, seed, crack_width=4.0)
+    rng = np.random.default_rng(seed + 6012)
+    n_cells = int(cell_id.max()) + 1
+    cell_angle = rng.uniform(0.0, np.pi, size=n_cells).astype(np.float32)
+    angle = cell_angle[cell_id]
+    dirx = np.cos(angle)
+    diry = np.sin(angle)
+    facet_sp = max(1.0, sm * 4.0)
+    facet_lines = np.abs(np.sin((xf * dirx + yf * diry) * np.pi / facet_sp))
+    v = facet_lines * (1.0 - cracks * 0.88)
+    return {"pattern_val": np.clip(v, 0.0, 1.0).astype(np.float32), "R_range": 80.0, "M_range": 55.0, "CC": None}
+
+
+# ── TECH & CIRCUIT — Texture functions (Batch 4, 2026-03-28) ──────────────
+
+def texture_circuit_traces(shape, mask, seed, sm):
+    """PCB circuit board — orthogonal grid traces with via pad rings at intersections."""
+    h, w = shape
+    y, x = get_mgrid((h, w))
+    yf, xf = y.astype(np.float32), x.astype(np.float32)
+    pitch = np.float32(max(6.0, sm * 22.0))
+    tw    = np.float32(max(1.5, sm * 2.5))
+    xmod  = xf % pitch
+    ymod  = yf % pitch
+    h_tr  = np.clip((tw - np.abs(ymod - pitch * np.float32(0.5))) / tw, 0.0, 1.0)
+    v_tr  = np.clip((tw - np.abs(xmod - pitch * np.float32(0.5))) / tw, 0.0, 1.0)
+    traces = np.maximum(h_tr, v_tr)
+    pad_r  = tw * np.float32(3.2)
+    cx     = xmod - pitch * np.float32(0.5)
+    cy     = ymod - pitch * np.float32(0.5)
+    d_node = np.sqrt(cx ** 2 + cy ** 2)
+    outer  = np.clip((pad_r - d_node) / tw, 0.0, 1.0)
+    inner  = np.clip((d_node - pad_r * np.float32(0.45)) / tw, 0.0, 1.0)
+    pad    = outer * inner
+    return {"pattern_val": np.maximum(traces, pad * np.float32(0.9)).astype(np.float32),
+            "R_range": 80.0, "M_range": 65.0, "CC": None}
+
+
+def texture_hex_circuit(shape, mask, seed, sm):
+    """Hexagonal circuit grid — three-direction parallel lines forming hex trace network."""
+    h, w = shape
+    y, x = get_mgrid((h, w))
+    yf, xf = y.astype(np.float32), x.astype(np.float32)
+    spacing = np.float32(max(8.0, sm * 20.0))
+    tw      = np.float32(max(1.5, sm * 2.0))
+    sqrt3   = np.float32(1.7320508)
+    dirs = [(np.float32(0.0),           np.float32(1.0)),
+            (sqrt3 * np.float32(0.5),   np.float32(0.5)),
+            (sqrt3 * np.float32(0.5),   np.float32(-0.5))]
+    v = np.zeros((h, w), dtype=np.float32)
+    for bx, by in dirs:
+        proj = xf * bx + yf * by
+        mod  = proj % spacing
+        dist = np.minimum(mod, spacing - mod)
+        v    = np.maximum(v, np.clip((tw - dist) / tw, 0.0, 1.0))
+    return {"pattern_val": v, "R_range": 75.0, "M_range": 55.0, "CC": None}
+
+
+def texture_biomech_cables(shape, mask, seed, sm):
+    """Biomechanical cable bundles — sinusoidal twisted cables with circumferential ribs."""
+    h, w = shape
+    y, x = get_mgrid((h, w))
+    yf, xf = y.astype(np.float32), x.astype(np.float32)
+    cable_w    = np.float32(max(6.0, sm * 16.0))
+    cable_r    = np.float32(max(1.5, sm * 2.5))
+    twist_freq = np.float32(2.0 * np.pi / max(1.0, sm * 50.0))
+    rib_freq   = np.float32(2.0 * np.pi / max(1.0, sm * 10.0))
+    cable_idx  = np.floor(xf / cable_w).astype(np.float32)
+    lx         = xf % cable_w
+    parity     = (cable_idx % np.float32(2.0)) * np.float32(np.pi)
+    twist      = np.sin(yf * twist_freq + cable_idx * np.float32(1.57) + parity) * (cable_w * np.float32(0.3))
+    dist       = np.abs(lx - cable_w * np.float32(0.5) - twist)
+    body       = np.clip((cable_r - dist) / cable_r, 0.0, 1.0)
+    rib        = np.abs(np.cos(yf * rib_freq)).astype(np.float32) ** 6
+    v          = body * (np.float32(0.55) + rib * np.float32(0.45))
+    return {"pattern_val": v.astype(np.float32), "R_range": 65.0, "M_range": 40.0, "CC": None}
+
+
+def texture_dendrite_web(shape, mask, seed, sm):
+    """Dendrite web — multi-scale fractal branching vein network."""
+    n_main = min(max(12, int(min(shape[0], shape[1]) / max(1.0, sm * 12.0))), 60)
+    n_fine = min(max(40, int(min(shape[0], shape[1]) / max(1.0, sm * 5.0))), 180)
+    c_main = _voronoi_cracks_fast(shape, n_main, 7004, seed, crack_width=4.0)
+    c_fine = _voronoi_cracks_fast(shape, n_fine,  7005, seed, crack_width=2.0)
+    v = np.maximum(c_main * np.float32(0.9), c_fine * np.float32(0.6))
+    return {"pattern_val": v.astype(np.float32), "R_range": 55.0, "M_range": -30.0, "CC": None}
+
+
+def texture_crystal_lattice(shape, mask, seed, sm):
+    """Crystal lattice — 45°-rotated diamond rhombus grid with atom nodes at vertices."""
+    h, w = shape
+    y, x = get_mgrid((h, w))
+    yf, xf = y.astype(np.float32), x.astype(np.float32)
+    pitch   = np.float32(max(8.0, sm * 22.0))
+    tw      = np.float32(max(1.5, sm * 2.5))
+    inv_r2  = np.float32(0.7071068)
+    u       = (xf + yf) * inv_r2
+    vc      = (xf - yf) * inv_r2
+    umod    = u  % pitch
+    vcmod   = vc % pitch
+    u_line  = np.clip((tw - np.minimum(umod, pitch - umod)) / tw, 0.0, 1.0)
+    v_line  = np.clip((tw - np.minimum(vcmod, pitch - vcmod)) / tw, 0.0, 1.0)
+    du      = np.minimum(umod, pitch - umod)
+    dv      = np.minimum(vcmod, pitch - vcmod)
+    d_node  = np.sqrt(du ** 2 + dv ** 2)
+    node    = np.clip((tw * np.float32(3.5) - d_node) / tw, 0.0, 1.0)
+    v       = np.maximum(np.maximum(u_line, v_line), node)
+    return {"pattern_val": v.astype(np.float32), "R_range": 80.0, "M_range": 55.0, "CC": None}
+
+
+def texture_chainmail_hex(shape, mask, seed, sm):
+    """Hex chainmail — interlocking circular wire rings in hexagonal close-pack arrangement."""
+    h, w = shape
+    y, x = get_mgrid((h, w))
+    yf, xf = y.astype(np.float32), x.astype(np.float32)
+    ring_r  = np.float32(max(5.0, sm * 12.0))
+    ring_tw = np.float32(max(1.5, sm * 2.0))
+    sqrt3   = np.float32(1.7320508)
+    col_p   = ring_r * np.float32(1.85)
+    row_p   = col_p * sqrt3 * np.float32(0.5)
+    ex  = xf % col_p - col_p * np.float32(0.5)
+    ey  = yf % row_p - row_p * np.float32(0.5)
+    er  = np.sqrt(ex ** 2 + ey ** 2)
+    ox  = (xf + col_p * np.float32(0.5)) % col_p - col_p * np.float32(0.5)
+    oy  = (yf + row_p * np.float32(0.5)) % row_p - row_p * np.float32(0.5)
+    or_ = np.sqrt(ox ** 2 + oy ** 2)
+    even = np.clip((ring_tw - np.abs(er  - ring_r)) / ring_tw, 0.0, 1.0)
+    odd  = np.clip((ring_tw - np.abs(or_ - ring_r)) / ring_tw, 0.0, 1.0)
+    return {"pattern_val": np.maximum(even, odd).astype(np.float32),
+            "R_range": 70.0, "M_range": 50.0, "CC": None}
+
+
+def texture_graphene_hex(shape, mask, seed, sm):
+    """Graphene lattice — honeycomb bond network with atom nodes at unit cell positions."""
+    h, w = shape
+    y, x = get_mgrid((h, w))
+    yf, xf = y.astype(np.float32), x.astype(np.float32)
+    sqrt3   = np.float32(1.7320508)
+    bond    = np.float32(max(4.0, sm * 10.0))
+    spacing = bond * sqrt3
+    tw      = np.float32(max(0.8, sm * 1.5))
+    atom_r  = np.float32(max(1.5, sm * 2.2))
+    v = np.zeros((h, w), dtype=np.float32)
+    for angle_deg in (0.0, 60.0, 120.0):
+        a    = float(angle_deg) * np.pi / 180.0
+        bx   = np.float32(np.cos(a))
+        by   = np.float32(np.sin(a))
+        proj = xf * bx + yf * by
+        mod  = proj % spacing
+        dist = np.minimum(mod, spacing - mod)
+        v    = np.maximum(v, np.clip((tw - dist) / tw, 0.0, 1.0))
+    a_val = bond * sqrt3
+    b_val = bond * np.float32(1.5)
+    for sx, sy in ((np.float32(0.0), np.float32(0.0)),
+                   (a_val * np.float32(0.5), b_val * np.float32(0.333))):
+        dx   = ((xf - sx) + a_val * np.float32(0.5)) % a_val - a_val * np.float32(0.5)
+        dy   = ((yf - sy) + b_val * np.float32(0.5)) % b_val - b_val * np.float32(0.5)
+        dist = np.sqrt(dx ** 2 + dy ** 2)
+        v    = np.maximum(v, np.clip((atom_r - dist) / atom_r, 0.0, 1.0))
+    return {"pattern_val": v.astype(np.float32), "R_range": 75.0, "M_range": 55.0, "CC": None}
+
+
+def texture_gear_mesh(shape, mask, seed, sm):
+    """Interlocking gear mesh — toothed circular gear with spokes and hub, tiled."""
+    h, w = shape
+    y, x = get_mgrid((h, w))
+    yf, xf = y.astype(np.float32), x.astype(np.float32)
+    gear_r   = np.float32(max(8.0, sm * 18.0))
+    cell_sz  = gear_r * np.float32(2.3)
+    n_teeth  = max(8, int(float(gear_r) / 2.5))
+    tooth_h  = np.float32(max(1.5, sm * 2.5))
+    rim_tw   = np.float32(max(1.2, sm * 1.8))
+    n_spokes = max(4, n_teeth // 2)
+    lx    = xf % cell_sz - cell_sz * np.float32(0.5)
+    ly    = yf % cell_sz - cell_sz * np.float32(0.5)
+    r     = np.sqrt(lx ** 2 + ly ** 2) + np.float32(0.001)
+    theta = np.arctan2(ly, lx).astype(np.float32)
+    tooth_mod = np.sin(theta * np.float32(n_teeth)) * tooth_h
+    rim       = np.clip((rim_tw - np.abs(r - gear_r - tooth_mod)) / rim_tw, 0.0, 1.0)
+    hub_r     = gear_r * np.float32(0.22)
+    hub       = np.clip((rim_tw - np.abs(r - hub_r)) / rim_tw, 0.0, 1.0)
+    hub_fill  = np.clip((hub_r * np.float32(0.45) - r) / (hub_r * np.float32(0.45)), 0.0, 1.0)
+    sp_period = np.float32(2.0 * np.pi / n_spokes)
+    sp_phase  = theta % sp_period
+    sp_dist   = np.minimum(sp_phase, sp_period - sp_phase)
+    sp_tw_rad = np.clip(rim_tw / r, np.float32(0.0), np.float32(0.4))
+    between   = (r > hub_r * np.float32(1.5)) & (r < gear_r - tooth_h * np.float32(1.5))
+    spokes    = np.where(between,
+                         np.clip((sp_tw_rad - sp_dist) / np.maximum(sp_tw_rad, np.float32(1e-4)), 0.0, 1.0),
+                         np.float32(0.0))
+    v = np.maximum(np.maximum(rim, hub), np.maximum(hub_fill * np.float32(0.7), spokes))
+    return {"pattern_val": v.astype(np.float32), "R_range": 70.0, "M_range": 50.0, "CC": None}
+
+
+def texture_vinyl_record(shape, mask, seed, sm):
+    """Vinyl record — ultra-fine concentric groove rings with label ring and spindle hole."""
+    h, w = shape
+    y, x = get_mgrid((h, w))
+    yf, xf = y.astype(np.float32), x.astype(np.float32)
+    cell_sz    = np.float32(max(16.0, sm * 50.0))
+    lx         = xf % cell_sz - cell_sz * np.float32(0.5)
+    ly         = yf % cell_sz - cell_sz * np.float32(0.5)
+    r          = np.sqrt(lx ** 2 + ly ** 2) + np.float32(0.001)
+    groove_p   = np.float32(max(2.5, sm * 3.5))
+    groove_tw  = np.float32(max(0.5, sm * 0.8))
+    groove_mod = r % groove_p
+    gr_dist    = np.minimum(groove_mod, groove_p - groove_mod)
+    grooves    = np.clip((groove_tw - gr_dist) / groove_tw, 0.0, 1.0)
+    label_r    = cell_sz * np.float32(0.25)
+    grooves    = np.where(r < label_r, np.float32(0.3), grooves)
+    lr_tw      = groove_tw * np.float32(2.0)
+    label_ring = np.clip((lr_tw - np.abs(r - label_r)) / lr_tw, 0.0, 1.0)
+    hole_r     = cell_sz * np.float32(0.04)
+    v          = np.where(r < hole_r, np.float32(0.0), grooves)
+    v          = np.maximum(v, label_ring * np.float32(0.8))
+    return {"pattern_val": np.clip(v, 0.0, 1.0).astype(np.float32),
+            "R_range": 55.0, "M_range": 35.0, "CC": None}
+
+
+def texture_fiber_optic(shape, mask, seed, sm):
+    """Fiber optic bundle — genuine hex-packed fiber cross-sections with per-fiber random
+    brightness, cladding dark boundary ring, and TIR off-center bright spot per fiber.
+    Visually distinct from chainmail_hex: varied luminance, dark cladding, TIR highlights."""
+    h, w = shape
+    y, x = get_mgrid((h, w))
+    yf, xf = y.astype(np.float32), x.astype(np.float32)
+    sqrt3   = np.float32(1.7320508)
+    # Fiber geometry — ~8px diameter fiber at sm=1
+    fiber_r  = np.float32(max(4.0, sm * 9.0))
+    col_p    = fiber_r * np.float32(2.05)   # tight hex packing
+    row_p    = col_p * sqrt3 * np.float32(0.5)
+    core_r   = fiber_r * np.float32(0.68)   # glass core radius
+    clad_w   = fiber_r * np.float32(0.18)   # cladding band width
+    tir_r    = core_r * np.float32(0.28)    # TIR spot radius
+
+    # --- Sublattice A: even rows ---
+    col_a = np.floor(xf / col_p).astype(np.int32)
+    row_a = np.floor(yf / row_p).astype(np.int32)
+    lx_a  = xf - (col_a.astype(np.float32) + np.float32(0.5)) * col_p
+    ly_a  = yf - (row_a.astype(np.float32) + np.float32(0.5)) * row_p
+    dist_a = np.sqrt(lx_a ** 2 + ly_a ** 2)
+
+    # --- Sublattice B: offset by (col_p/2, row_p/2) ---
+    col_b = np.floor((xf - col_p * np.float32(0.5)) / col_p).astype(np.int32)
+    row_b = np.floor((yf - row_p * np.float32(0.5)) / row_p).astype(np.int32)
+    lx_b  = (xf - col_p * np.float32(0.5)) - (col_b.astype(np.float32) + np.float32(0.5)) * col_p
+    ly_b  = (yf - row_p * np.float32(0.5)) - (row_b.astype(np.float32) + np.float32(0.5)) * row_p
+    dist_b = np.sqrt(lx_b ** 2 + ly_b ** 2)
+
+    # Pick nearest fiber center for each pixel
+    use_b    = dist_b < dist_a
+    nearest  = np.where(use_b, dist_b, dist_a)
+    fiber_cx = np.where(use_b,
+                        (col_b.astype(np.float32) + np.float32(0.5)) * col_p + col_p * np.float32(0.5),
+                        (col_a.astype(np.float32) + np.float32(0.5)) * col_p)
+    fiber_cy = np.where(use_b,
+                        (row_b.astype(np.float32) + np.float32(0.5)) * row_p + row_p * np.float32(0.5),
+                        (row_a.astype(np.float32) + np.float32(0.5)) * row_p)
+    cell_col = np.where(use_b, col_b, col_a)
+    cell_row = np.where(use_b, row_b + np.int32(1000), row_a)
+
+    # Per-fiber brightness (fiber_id hash → pseudo-random 0.3–1.0)
+    fid       = (cell_col.astype(np.int64) * np.int64(1619) +
+                 cell_row.astype(np.int64) * np.int64(31337) +
+                 np.int64(int(seed) & 0xFFFF)).astype(np.int64)
+    fid_norm  = ((fid * np.int64(6364136223846793005) + np.int64(1442695040888963407)) >> np.int64(33)
+                 & np.int64(0x7FFFFFFF)).astype(np.float32) / np.float32(0x7FFFFFFF)
+    fiber_bright = np.float32(0.3) + fid_norm * np.float32(0.7)
+
+    # Per-fiber TIR offset (small off-center bright spot — varies per fiber)
+    tir_ox = (((fid * np.int64(2246822519)) >> np.int64(33) & np.int64(0x7FFFFFFF)).astype(np.float32)
+              / np.float32(0x7FFFFFFF) - np.float32(0.5)) * core_r * np.float32(1.1)
+    tir_oy = (((fid * np.int64(3266489917)) >> np.int64(33) & np.int64(0x7FFFFFFF)).astype(np.float32)
+              / np.float32(0x7FFFFFFF) - np.float32(0.5)) * core_r * np.float32(1.1)
+    tir_dist = np.sqrt((xf - fiber_cx - tir_ox) ** 2 + (yf - fiber_cy - tir_oy) ** 2)
+
+    # Radial zones within each fiber
+    in_fiber   = nearest < fiber_r                           # within total fiber area
+    in_core    = nearest < core_r                            # glass core (light guides here)
+    in_clad    = (nearest >= core_r) & (nearest < fiber_r)  # cladding (dark absorber)
+    # Core: bright gradient, modulated by per-fiber brightness
+    core_val   = np.clip((core_r - nearest) / np.maximum(core_r, np.float32(1e-4)), 0.0, 1.0)
+    core_out   = core_val * fiber_bright
+    # Cladding: dark ring — cladding absorbs evanescent light, boundary is the darkest zone
+    clad_dist_inner = nearest - core_r          # 0 at core boundary, clad_w at outer
+    clad_val   = np.clip(clad_dist_inner / np.maximum(clad_w, np.float32(1e-4)), 0.0, 1.0)
+    # 0 at core edge → 1 at outer edge; invert: dark at edges of core, dark at outer rim
+    clad_dark  = np.float32(1.0) - np.abs(clad_val * np.float32(2.0) - np.float32(1.0))
+    clad_out   = np.float32(0.04) + clad_dark * np.float32(0.0)  # essentially black
+    # TIR highlight: bright off-center spot within core only
+    tir_spot   = np.clip((tir_r - tir_dist) / np.maximum(tir_r, np.float32(1e-4)), 0.0, 1.0)
+    tir_out    = tir_spot * np.float32(0.55) * fiber_bright
+
+    # Compose: outside fibers = near-black inter-fiber gap
+    v = np.where(in_core,
+                 np.clip(core_out + tir_out, 0.0, 1.0),
+                 np.where(in_clad,
+                          clad_out,
+                          np.float32(0.02)))
+    return {"pattern_val": v.astype(np.float32), "R_range": 65.0, "M_range": 45.0, "CC": None}
+
+
+def texture_sonar_ping(shape, mask, seed, sm):
+    """Sonar/radar ping — expanding concentric rings from multiple offset source points."""
+    h, w = shape
+    y, x = get_mgrid((h, w))
+    yf, xf = y.astype(np.float32), x.astype(np.float32)
+    n_src   = min(max(2, int(min(h, w) / max(1.0, sm * 60.0))), 5)
+    rng     = np.random.default_rng(seed + 7011)
+    src_x   = rng.uniform(w * 0.15, w * 0.85, size=n_src).astype(np.float32)
+    src_y   = rng.uniform(h * 0.15, h * 0.85, size=n_src).astype(np.float32)
+    ring_p  = np.float32(max(8.0, sm * 22.0))
+    ring_tw = np.float32(max(1.5, sm * 2.5))
+    fade_sc = np.float32(1.0 / max(1.0, sm * 80.0))
+    v = np.zeros((h, w), dtype=np.float32)
+    for sx, sy in zip(src_x, src_y):
+        dx   = xf - np.float32(sx)
+        dy   = yf - np.float32(sy)
+        r    = np.sqrt(dx ** 2 + dy ** 2)
+        mod  = r % ring_p
+        rd   = np.minimum(mod, ring_p - mod)
+        fade = np.exp(-r * fade_sc).astype(np.float32)
+        ring = np.clip((ring_tw - rd) / ring_tw, 0.0, 1.0) * (np.float32(0.5) + fade * np.float32(0.5))
+        v    = np.maximum(v, ring)
+    return {"pattern_val": v.astype(np.float32), "R_range": 60.0, "M_range": 40.0, "CC": None}
+
+
+def texture_waveform_stack(shape, mask, seed, sm):
+    """Waveform stack — multiple layered oscilloscope sine traces offset vertically."""
+    h, w = shape
+    y, x = get_mgrid((h, w))
+    yf, xf = y.astype(np.float32), x.astype(np.float32)
+    wave_sp = np.float32(max(6.0, sm * 24.0))
+    n_waves = min(max(4, int(h / max(1.0, sm * 28.0))), 20)
+    tw      = np.float32(max(1.0, sm * 1.5))
+    v = np.zeros((h, w), dtype=np.float32)
+    for i in range(n_waves + 1):
+        cy        = np.float32((i + 0.5) * float(wave_sp))
+        freq      = np.float32(2.0 * np.pi / max(1.0, sm * (25.0 + i * 7.0)))
+        amplitude = np.float32(max(1.5, sm * 4.5) * (1.0 + (i % 3) * 0.25))
+        wave_y    = cy + np.sin(xf * freq + np.float32(i * 0.8)) * amplitude
+        dist      = np.abs(yf - wave_y)
+        v         = np.maximum(v, np.clip((tw - dist) / tw, 0.0, 1.0))
+    return {"pattern_val": v.astype(np.float32), "R_range": 60.0, "M_range": 40.0, "CC": None}
+
+
+# ── ART DECO & GEOMETRIC — Texture functions (Batch 5, 2026-03-28) ──────────────
+
+def texture_art_deco_fan(shape, mask, seed, sm):
+    """Art Deco fan — tiled semicircular fans with radiating spokes and concentric arc bands."""
+    h, w = shape
+    y, x = get_mgrid((h, w))
+    yf, xf   = y.astype(np.float32), x.astype(np.float32)
+    cell_w   = np.float32(max(10.0, sm * 28.0))
+    cell_h   = cell_w * np.float32(0.8)
+    n_spokes = max(5, int(float(cell_w) / 3.5))
+    spoke_tw = np.float32(max(1.0, sm * 1.5))
+    arc_p    = np.float32(max(2.5, sm * 4.0))
+    lx       = xf % cell_w - cell_w * np.float32(0.5)
+    ly       = yf % cell_h
+    r        = np.sqrt(lx ** 2 + ly ** 2) + np.float32(0.001)
+    theta    = np.arctan2(lx, ly)
+    half_ang = np.float32(np.pi * 0.44)
+    in_fan   = (np.abs(theta) < half_ang) & (r < cell_h * np.float32(0.95))
+    sp_range  = half_ang * np.float32(2.0)
+    sp_period = sp_range / np.float32(n_spokes)
+    sp_phase  = (theta + half_ang) % sp_period
+    sp_dist   = np.minimum(sp_phase, sp_period - sp_phase)
+    sp_tw_rad = spoke_tw / np.maximum(r, np.float32(3.0))
+    spokes    = np.where(in_fan, np.clip((sp_tw_rad - sp_dist) / np.maximum(sp_tw_rad, np.float32(1e-4)), 0.0, 1.0), np.float32(0.0))
+    arc_mod  = r % arc_p
+    arc_dist = np.minimum(arc_mod, arc_p - arc_mod)
+    arcs     = np.where(in_fan, np.clip((spoke_tw - arc_dist) / spoke_tw, 0.0, 1.0), np.float32(0.0))
+    v        = np.maximum(spokes, arcs * np.float32(0.6))
+    return {"pattern_val": v.astype(np.float32), "R_range": 70.0, "M_range": 50.0, "CC": None}
+
+
+def texture_chevron_stack(shape, mask, seed, sm):
+    """Chevron stack — stacked V-chevrons via triangular-wave centerline."""
+    h, w = shape
+    y, x = get_mgrid((h, w))
+    yf, xf  = y.astype(np.float32), x.astype(np.float32)
+    pitch   = np.float32(max(5.0, sm * 16.0))
+    cell_w  = pitch * np.float32(2.0)
+    tw      = np.float32(max(1.5, sm * 2.0))
+    x_phase  = xf % cell_w
+    y_center = np.abs(x_phase - pitch)
+    raw  = (yf % pitch) - y_center
+    dist = np.minimum(np.abs(raw), pitch - np.abs(raw))
+    v    = np.clip((tw - dist) / tw, 0.0, 1.0)
+    return {"pattern_val": v.astype(np.float32), "R_range": 65.0, "M_range": 45.0, "CC": None}
+
+
+def texture_quatrefoil(shape, mask, seed, sm):
+    """Quatrefoil — four overlapping circle-arc leaves forming a Gothic foil lattice."""
+    h, w = shape
+    y, x = get_mgrid((h, w))
+    yf, xf = y.astype(np.float32), x.astype(np.float32)
+    cell  = np.float32(max(8.0, sm * 22.0))
+    tw    = np.float32(max(1.5, sm * 2.0))
+    lx    = xf % cell - cell * np.float32(0.5)
+    ly    = yf % cell - cell * np.float32(0.5)
+    half  = cell * np.float32(0.5)
+    cr    = cell * np.float32(0.5)
+    v     = np.zeros((h, w), dtype=np.float32)
+    for cx, cy in ((np.float32(0.0), half), (np.float32(0.0), -half),
+                   (half, np.float32(0.0)), (-half, np.float32(0.0))):
+        dx  = lx - cx
+        dy  = ly - cy
+        r   = np.sqrt(dx ** 2 + dy ** 2)
+        arc = np.abs(r - cr)
+        v   = np.maximum(v, np.clip((tw - arc) / tw, 0.0, 1.0))
+    return {"pattern_val": v.astype(np.float32), "R_range": 65.0, "M_range": 45.0, "CC": None}
+
+
+def texture_herringbone(shape, mask, seed, sm):
+    """Herringbone — alternating-parity diagonal stripe directions in staggered cells."""
+    h, w = shape
+    y, x = get_mgrid((h, w))
+    yf, xf = y.astype(np.float32), x.astype(np.float32)
+    cell_w = np.float32(max(6.0, sm * 18.0))
+    cell_h = cell_w * np.float32(0.5)
+    tw     = np.float32(max(1.2, sm * 1.8))
+    col_b  = np.floor(xf / cell_w).astype(np.float32)
+    row_b  = np.floor(yf / cell_h).astype(np.float32)
+    parity = (col_b + row_b) % np.float32(2.0) > np.float32(0.5)
+    lx     = xf % cell_w
+    ly     = yf % cell_h
+    slope  = cell_h / cell_w
+    diag1  = ly - lx * slope
+    diag2  = ly + lx * slope - cell_h
+    raw    = np.where(parity, diag2, diag1)
+    dist   = np.abs(raw) * np.float32(0.7071)
+    v      = np.clip((tw - dist) / tw, 0.0, 1.0)
+    return {"pattern_val": v.astype(np.float32), "R_range": 65.0, "M_range": 45.0, "CC": None}
+
+
+def texture_basket_weave(shape, mask, seed, sm):
+    """Basket weave — alternating horizontal/vertical strand blocks in 2×2 parity grid."""
+    h, w = shape
+    y, x = get_mgrid((h, w))
+    yf, xf = y.astype(np.float32), x.astype(np.float32)
+    block  = np.float32(max(5.0, sm * 14.0))
+    tw     = np.float32(max(1.0, sm * 1.5))
+    col_b  = np.floor(xf / block).astype(np.float32)
+    row_b  = np.floor(yf / block).astype(np.float32)
+    parity = (col_b + row_b) % np.float32(2.0) > np.float32(0.5)
+    lx     = xf % block
+    ly     = yf % block
+    half_b = block * np.float32(0.5)
+    h_dist = np.minimum(ly % half_b, half_b - ly % half_b)
+    v_dist = np.minimum(lx % half_b, half_b - lx % half_b)
+    dist   = np.where(parity, v_dist, h_dist)
+    v      = np.clip((tw - dist) / tw, 0.0, 1.0)
+    return {"pattern_val": v.astype(np.float32), "R_range": 60.0, "M_range": 40.0, "CC": None}
+
+
+def texture_houndstooth(shape, mask, seed, sm):
+    """Houndstooth — combined offset 45°-rotated checkerboards creating 4-pointed star tiles."""
+    h, w = shape
+    y, x = get_mgrid((h, w))
+    yf, xf = y.astype(np.float32), x.astype(np.float32)
+    pitch = np.float32(max(6.0, sm * 14.0))
+    u     = (xf + yf) / pitch
+    vc    = (xf - yf) / pitch
+    sq1   = np.floor(u)               % np.float32(2.0)
+    sq2   = np.floor(vc)              % np.float32(2.0)
+    sq3   = np.floor(u  + np.float32(0.5)) % np.float32(2.0)
+    sq4   = np.floor(vc + np.float32(0.5)) % np.float32(2.0)
+    base  = ((sq1 + sq2) % np.float32(2.0) > np.float32(0.5)).astype(np.float32)
+    notch = ((sq3 + sq4) % np.float32(2.0) > np.float32(0.5)).astype(np.float32)
+    v     = np.maximum(base * np.float32(0.9), notch * np.float32(0.7))
+    return {"pattern_val": v.astype(np.float32), "R_range": 60.0, "M_range": 40.0, "CC": None}
+
+
+def texture_argyle(shape, mask, seed, sm):
+    """Argyle — diamond outline grid with diagonal crosshatch lines in alternate diamonds."""
+    h, w = shape
+    y, x = get_mgrid((h, w))
+    yf, xf = y.astype(np.float32), x.astype(np.float32)
+    pitch = np.float32(max(8.0, sm * 20.0))
+    tw    = np.float32(max(1.5, sm * 2.0))
+    u     = (xf + yf) / pitch
+    vc    = (xf - yf) / pitch
+    u_mod  = u  % np.float32(2.0)
+    vc_mod = vc % np.float32(2.0)
+    du     = np.minimum(u_mod, np.float32(2.0) - u_mod) * pitch * np.float32(0.5)
+    dv     = np.minimum(vc_mod, np.float32(2.0) - vc_mod) * pitch * np.float32(0.5)
+    diamonds = np.clip((tw - np.minimum(du, dv)) / tw, 0.0, 1.0)
+    check  = (np.floor(u) + np.floor(vc)) % np.float32(2.0) > np.float32(0.5)
+    fu     = u  - np.floor(u)
+    fv     = vc - np.floor(vc)
+    d_c1   = np.minimum(fu, np.float32(1.0) - fu) * pitch * np.float32(1.414)
+    d_c2   = np.minimum(fv, np.float32(1.0) - fv) * pitch * np.float32(1.414)
+    ctw    = np.float32(max(0.8, sm * 1.2))
+    cross  = np.where(check,
+                      np.maximum(np.clip((ctw - d_c1) / ctw, 0.0, 1.0),
+                                 np.clip((ctw - d_c2) / ctw, 0.0, 1.0)) * np.float32(0.5),
+                      np.float32(0.0))
+    v = np.maximum(diamonds, cross)
+    return {"pattern_val": np.clip(v, 0.0, 1.0).astype(np.float32), "R_range": 65.0, "M_range": 45.0, "CC": None}
+
+
+def texture_tartan(shape, mask, seed, sm):
+    """Tartan plaid — intersecting stripe families at varying widths forming a plaid grid."""
+    h, w = shape
+    y, x = get_mgrid((h, w))
+    yf, xf   = y.astype(np.float32), x.astype(np.float32)
+    stripe_w = np.float32(max(4.0, sm * 10.0))
+    tw       = np.float32(max(0.8, sm * 1.2))
+    period   = np.float32(11.0) * stripe_w
+    borders  = [0.0, 1.0, 3.0, 4.0, 7.0, 8.0, 10.0, 11.0]
+    xmod     = xf % period
+    ymod     = yf % period
+    dx = np.full((h, w), np.float32(1e6))
+    dy = np.full((h, w), np.float32(1e6))
+    for bnd in borders:
+        bv = np.float32(bnd) * stripe_w
+        dx = np.minimum(dx, np.abs(xmod - bv))
+        dy = np.minimum(dy, np.abs(ymod - bv))
+    v = np.maximum(np.clip((tw - dx) / tw, 0.0, 1.0), np.clip((tw - dy) / tw, 0.0, 1.0))
+    return {"pattern_val": v.astype(np.float32), "R_range": 60.0, "M_range": 40.0, "CC": None}
+
+
+def texture_op_art_rings(shape, mask, seed, sm):
+    """Op-art squares — concentric L-inf square rings creating optical pulsation illusion."""
+    h, w = shape
+    y, x = get_mgrid((h, w))
+    yf, xf  = y.astype(np.float32), x.astype(np.float32)
+    cell_sz = np.float32(max(12.0, sm * 40.0))
+    ring_p  = np.float32(max(3.0, sm * 5.0))
+    tw      = np.float32(max(1.0, sm * 1.5))
+    lx      = xf % cell_sz - cell_sz * np.float32(0.5)
+    ly      = yf % cell_sz - cell_sz * np.float32(0.5)
+    linf    = np.maximum(np.abs(lx), np.abs(ly))
+    ring_mod  = linf % ring_p
+    ring_dist = np.minimum(ring_mod, ring_p - ring_mod)
+    v = np.clip((tw - ring_dist) / tw, 0.0, 1.0)
+    return {"pattern_val": v.astype(np.float32), "R_range": 65.0, "M_range": 45.0, "CC": None}
+
+
+def texture_moire_grid(shape, mask, seed, sm):
+    """Moiré grid — two slightly angled parallel line families creating interference fringes."""
+    h, w = shape
+    y, x = get_mgrid((h, w))
+    yf, xf  = y.astype(np.float32), x.astype(np.float32)
+    spacing = np.float32(max(6.0, sm * 14.0))
+    tw      = np.float32(max(1.0, sm * 1.5))
+    angle   = np.float32(0.12)
+    cos_a   = np.float32(np.cos(float(angle)))
+    sin_a   = np.float32(np.sin(float(angle)))
+    m1  = yf % spacing
+    d1  = np.minimum(m1, spacing - m1)
+    m2  = (xf * sin_a + yf * cos_a) % spacing
+    d2  = np.minimum(m2, spacing - m2)
+    v   = np.maximum(np.clip((tw - d1) / tw, 0.0, 1.0), np.clip((tw - d2) / tw, 0.0, 1.0))
+    return {"pattern_val": v.astype(np.float32), "R_range": 60.0, "M_range": 40.0, "CC": None}
+
+
+def texture_lozenge_tile(shape, mask, seed, sm):
+    """Lozenge tile — offset-row diamond shapes with clean L1-norm border outline."""
+    h, w = shape
+    y, x = get_mgrid((h, w))
+    yf, xf = y.astype(np.float32), x.astype(np.float32)
+    loz_w  = np.float32(max(8.0, sm * 20.0))
+    loz_h  = loz_w * np.float32(0.6)
+    tw     = np.float32(max(1.5, sm * 2.0))
+    row    = np.floor(yf / loz_h).astype(np.float32)
+    offset = (row % np.float32(2.0)) * loz_w * np.float32(0.5)
+    lx     = (xf + offset) % loz_w - loz_w * np.float32(0.5)
+    ly     = yf % loz_h - loz_h * np.float32(0.5)
+    l1     = np.abs(lx) / (loz_w * np.float32(0.5)) + np.abs(ly) / (loz_h * np.float32(0.5))
+    border = np.abs(l1 - np.float32(1.0)) * np.minimum(loz_w, loz_h) * np.float32(0.5)
+    v      = np.clip((tw - border) / tw, 0.0, 1.0)
+    return {"pattern_val": v.astype(np.float32), "R_range": 65.0, "M_range": 45.0, "CC": None}
+
+
+def texture_ogee_lattice(shape, mask, seed, sm):
+    """Ogee lattice — sinusoidally-warped grid creating S-curve Gothic arch shapes."""
+    h, w = shape
+    y, x = get_mgrid((h, w))
+    yf, xf = y.astype(np.float32), x.astype(np.float32)
+    pitch  = np.float32(max(8.0, sm * 24.0))
+    tw     = np.float32(max(1.5, sm * 2.0))
+    amp    = pitch * np.float32(0.35)
+    freq   = np.float32(2.0 * np.pi) / pitch
+    x_warp = (xf - amp * np.sin(yf * freq)) % pitch
+    d_v    = np.minimum(x_warp, pitch - x_warp)
+    y_warp = (yf - amp * np.sin(xf * freq + np.float32(np.pi))) % pitch
+    d_h    = np.minimum(y_warp, pitch - y_warp)
+    v      = np.maximum(np.clip((tw - d_v) / tw, 0.0, 1.0), np.clip((tw - d_h) / tw, 0.0, 1.0))
+    return {"pattern_val": v.astype(np.float32), "R_range": 65.0, "M_range": 45.0, "CC": None}
+
+
+# ── MATHEMATICAL & FRACTAL — Texture functions (Batch 6, 2026-03-28) ──────────────
+
+def texture_reaction_diffusion(shape, mask, seed, sm):
+    """Gray-Scott Turing pattern — activator-inhibitor noise creates spot/stripe morphologies."""
+    h, w = shape
+    act_sc = np.float32(max(8.0, sm * 16.0))
+    inh_sc = act_sc * np.float32(2.8)
+    act  = multi_scale_noise(shape, [float(act_sc), float(act_sc) * 0.6], [0.75, 0.25], seed)
+    inh  = multi_scale_noise(shape, [float(inh_sc), float(inh_sc) * 0.5], [0.80, 0.20], seed + 200)
+    diff = act.astype(np.float32) * np.float32(1.4) - inh.astype(np.float32)
+    mn, mx = float(diff.min()), float(diff.max())
+    dn   = (diff - np.float32(mn)) / np.float32(max(mx - mn, 1e-6))
+    spots = np.clip((dn - np.float32(0.52)) * np.float32(8.0), 0.0, 1.0)
+    return {"pattern_val": spots, "R_range": 70.0, "M_range": 55.0, "CC": None}
+
+
+def texture_fractal_fern(shape, mask, seed, sm):
+    """Barnsley fern — vectorized 800-chain IFS density accumulation with 3x3 spread."""
+    h, w = shape
+    rng = np.random.default_rng(int(seed) % (2 ** 31))
+    n_chains, n_burnin, n_samples = 200, 15, 60  # reduced from 800/25/100 for speed
+    ifs = np.array([
+        [ 0.0,   0.0,   0.0,  0.16,  0.0,  0.0 ],
+        [ 0.85,  0.04, -0.04, 0.85,  0.0,  1.6 ],
+        [ 0.20, -0.26,  0.23, 0.22,  0.0,  1.6 ],
+        [-0.15,  0.28,  0.26, 0.24,  0.0,  0.44],
+    ], dtype=np.float32)
+    cum_p = np.array([0.01, 0.86, 0.93], dtype=np.float32)
+    x = np.zeros(n_chains, dtype=np.float32)
+    y = np.zeros(n_chains, dtype=np.float32)
+    xs_list, ys_list = [], []
+    for step in range(n_burnin + n_samples):
+        r = rng.random(n_chains).astype(np.float32)
+        t = (r[:, np.newaxis] > cum_p[np.newaxis, :]).sum(axis=1)
+        p = ifs[t]
+        x, y = p[:, 0] * x + p[:, 1] * y + p[:, 4], p[:, 2] * x + p[:, 3] * y + p[:, 5]
+        if step >= n_burnin:
+            xs_list.append(x.copy())
+            ys_list.append(y.copy())
+    xs = np.concatenate(xs_list)
+    ys = np.concatenate(ys_list)
+    xi = np.clip(((xs + np.float32(2.8)) / np.float32(5.6) * w).astype(np.int32), 0, w - 1)
+    yi = np.clip(((np.float32(10.0) - ys) / np.float32(10.0) * h).astype(np.int32), 0, h - 1)
+    density = np.zeros((h, w), dtype=np.float32)
+    for dr in range(-1, 2):
+        for dc in range(-1, 2):
+            np.add.at(density, (np.clip(yi + dr, 0, h - 1), np.clip(xi + dc, 0, w - 1)), np.float32(1.0))
+    mx = float(density.max())
+    if mx > 0:
+        density /= np.float32(mx)
+    return {"pattern_val": np.clip(density, 0.0, 1.0), "R_range": 70.0, "M_range": 50.0, "CC": None}
+
+
+def texture_hilbert_curve(shape, mask, seed, sm):
+    """Hilbert space-filling curve maze — closed walls between non-adjacent cells."""
+    h, w = shape
+    y_g, x_g = get_mgrid((h, w))
+    yf = y_g.astype(np.float32)
+    xf = x_g.astype(np.float32)
+    grid_n  = 16
+    cell_hf = np.float32(h) / np.float32(grid_n)
+    cell_wf = np.float32(w) / np.float32(grid_n)
+    wall_tw = np.float32(max(1.5, min(float(cell_hf), float(cell_wf)) * 0.07))
+
+    def _d2xy(n, d):
+        x = y = 0
+        s = 1
+        t = d
+        while s < n:
+            rx = 1 if (t & 2) else 0
+            ry = 1 if (t & 1) ^ rx else 0
+            if ry == 0:
+                if rx == 1:
+                    x = s - 1 - x
+                    y = s - 1 - y
+                x, y = y, x
+            x += s * rx
+            y += s * ry
+            t >>= 2
+            s <<= 1
+        return x, y
+
+    hidx = np.zeros((grid_n, grid_n), dtype=np.int32)
+    for d in range(grid_n * grid_n):
+        cx_h, cy_h = _d2xy(grid_n, d)
+        hidx[cy_h, cx_h] = d
+    h_closed = np.abs(np.diff(hidx, axis=1)) != 1
+    v_closed = np.abs(np.diff(hidx, axis=0)) != 1
+    cy_px = np.clip((yf / cell_hf).astype(np.int32), 0, grid_n - 1)
+    cx_px = np.clip((xf / cell_wf).astype(np.int32), 0, grid_n - 1)
+    vv = np.zeros((h, w), dtype=np.float32)
+    for k in range(grid_n - 1):
+        wall_x   = np.float32(k + 1) * cell_wf
+        dist     = np.abs(xf - wall_x)
+        near     = dist < wall_tw
+        if not near.any():
+            continue
+        closed   = h_closed[cy_px, k]
+        strength = np.clip((wall_tw - dist) / wall_tw, 0.0, 1.0)
+        vv = np.where(near & closed, np.maximum(vv, strength), vv)
+    for k in range(grid_n - 1):
+        wall_y   = np.float32(k + 1) * cell_hf
+        dist     = np.abs(yf - wall_y)
+        near     = dist < wall_tw
+        if not near.any():
+            continue
+        closed   = v_closed[k, cx_px]
+        strength = np.clip((wall_tw - dist) / wall_tw, 0.0, 1.0)
+        vv = np.where(near & closed, np.maximum(vv, strength), vv)
+    return {"pattern_val": vv, "R_range": 70.0, "M_range": 50.0, "CC": None}
+
+
+def texture_lorenz_slice(shape, mask, seed, sm):
+    """Lorenz butterfly attractor — 600-chain ODE density projected onto x/z plane."""
+    h, w = shape
+    rng = np.random.default_rng(int(seed) % (2 ** 31))
+    n_chains, n_burnin, n_samples = 150, 20, 80  # reduced from 600/100/500 for speed
+    dt    = np.float32(0.015)
+    sigma = np.float32(10.0)
+    rho   = np.float32(28.0)
+    beta  = np.float32(8.0 / 3.0)
+    x = rng.uniform(-15.0, 15.0, n_chains).astype(np.float32)
+    y = rng.uniform(-15.0, 15.0, n_chains).astype(np.float32)
+    z = rng.uniform(10.0, 35.0, n_chains).astype(np.float32)
+    xs_list, zs_list = [], []
+    for step in range(n_burnin + n_samples):
+        dx = sigma * (y - x) * dt
+        dy = (x * (rho - z) - y) * dt
+        dz = (x * y - beta * z) * dt
+        x += dx;  y += dy;  z += dz
+        if step >= n_burnin:
+            xs_list.append(x.copy())
+            zs_list.append(z.copy())
+    xs = np.concatenate(xs_list)
+    zs = np.concatenate(zs_list)
+    xi = np.clip(((xs + np.float32(27.0)) / np.float32(54.0) * w).astype(np.int32), 0, w - 1)
+    zi = np.clip(((np.float32(52.0) - zs) / np.float32(54.0) * h).astype(np.int32), 0, h - 1)
+    density = np.zeros((h, w), dtype=np.float32)
+    np.add.at(density, (zi, xi), np.float32(1.0))
+    mx = float(density.max())
+    if mx > 0:
+        density /= np.float32(mx)
+    return {"pattern_val": np.clip(density, 0.0, 1.0), "R_range": 75.0, "M_range": 55.0, "CC": None}
+
+
+def texture_julia_boundary(shape, mask, seed, sm):
+    """Julia set fractal — smooth escape-time coloring of z to z-squared-plus-c iteration."""
+    h, w = shape
+    y_g, x_g = get_mgrid((h, w))
+    c_opts = [(-0.7269, 0.1889), (-0.40, 0.600), (0.285, 0.010), (-0.835, -0.2321)]
+    cr, ci  = c_opts[int(seed) % 4]
+    scale   = np.float32(3.2 / max(h, w))
+    zr = (x_g.astype(np.float32) - w * 0.5) * scale
+    zi = (y_g.astype(np.float32) - h * 0.5) * scale
+    result   = np.zeros((h, w), dtype=np.float32)
+    max_iter = 20  # was 36 — reduced for speed at 2048x2048
+    for _ in range(max_iter):
+        active = (zr * zr + zi * zi) < 4.0
+        zr_n   = np.where(active, zr * zr - zi * zi + cr, zr)
+        zi_n   = np.where(active, 2.0 * zr * zi + ci, zi)
+        result += active.astype(np.float32)
+        zr, zi = zr_n, zi_n
+    result /= np.float32(max_iter)
+    return {"pattern_val": result, "R_range": 80.0, "M_range": 60.0, "CC": None}
+
+
+def texture_wave_standing(shape, mask, seed, sm):
+    """2D Chladni standing wave — orthogonal and diagonal cosine product nodal pattern."""
+    h, w = shape
+    y_g, x_g = get_mgrid((h, w))
+    yf    = y_g.astype(np.float32)
+    xf    = x_g.astype(np.float32)
+    freq  = np.float32(2.0 * np.pi / max(8.0, sm * 22.0))
+    freq_d = freq / np.float32(np.sqrt(2.0))
+    wave1  = np.cos(xf * freq) * np.cos(yf * freq)
+    wave2  = np.cos((xf + yf) * freq_d) * np.cos((xf - yf) * freq_d)
+    comb   = wave1 * np.float32(0.55) + wave2 * np.float32(0.45)
+    mn, mx = float(comb.min()), float(comb.max())
+    v = (comb - np.float32(mn)) / np.float32(max(mx - mn, 1e-6))
+    return {"pattern_val": v, "R_range": 65.0, "M_range": 45.0, "CC": None}
+
+
+def texture_lissajous_web(shape, mask, seed, sm):
+    """Lissajous web — implicit sin(3x) minus sin(4y+pi/2) zero-contour family tiled."""
+    h, w = shape
+    y_g, x_g = get_mgrid((h, w))
+    yf     = y_g.astype(np.float32)
+    xf     = x_g.astype(np.float32)
+    period = np.float32(max(10.0, sm * 28.0))
+    a_f    = np.float32(3.0)
+    b_f    = np.float32(4.0)
+    delta  = np.float32(np.pi * 0.5)
+    tw     = np.float32(max(1.5, sm * 2.5))
+    ux     = xf % period / period * np.float32(2.0 * np.pi)
+    uy     = yf % period / period * np.float32(2.0 * np.pi)
+    diff   = np.abs(np.sin(a_f * ux) - np.sin(b_f * uy + delta))
+    line_w = tw * np.float32(3.0) / np.maximum(period, np.float32(1.0))
+    v      = np.clip(np.float32(1.0) - diff / np.maximum(line_w, np.float32(1e-4)), 0.0, 1.0)
+    return {"pattern_val": v, "R_range": 70.0, "M_range": 50.0, "CC": None}
+
+
+def texture_dragon_curve(shape, mask, seed, sm):
+    """Real dragon curve fractal — fold-sequence bit-pattern algorithm.
+    Computes at 1/4 resolution then upscales for speed (was minutes at 2048x2048).
+    Produces the genuine space-filling right-angle fractal, not a crosshatch."""
+    h, w = shape
+    # Downsample for speed — compute at 1/4 res, upscale result
+    ds = max(1, min(4, h // 256))
+    rh, rw = h // ds, w // ds
+    yf = get_mgrid((rh, rw))[0].astype(np.float32)
+    xf = get_mgrid((rh, rw))[1].astype(np.float32)
+    n_iter  = 11  # was 12 (4096 steps) → 11 (2048 steps)
+    n_steps = 1 << n_iter
+
+    # --- Build dragon curve path via fold-sequence bit-trick ---
+    # For each step t, turn direction = +1 (left) or -1 (right)
+    # turn(t) = +1 if floor(t / lsb(t) / 2) is even, else -1
+    # Equivalent: bit above the lowest set bit of t
+    # Heading: 0=right, 1=up, 2=left, 3=down
+    dx_dir = [1, 0, -1, 0]
+    dy_dir = [0, -1, 0, 1]   # y increases downward in image coords
+    px = np.empty(n_steps + 1, dtype=np.float64)
+    py = np.empty(n_steps + 1, dtype=np.float64)
+    px[0] = 0.0
+    py[0] = 0.0
+    heading = 0
+    for t in range(1, n_steps + 1):
+        # Walk one unit in current heading
+        px[t] = px[t - 1] + dx_dir[heading]
+        py[t] = py[t - 1] + dy_dir[heading]
+        if t < n_steps:
+            # Compute turn for NEXT step using bit-trick on t
+            lsb = t & (-t)                    # lowest set bit of t
+            bit_above = (t // lsb) >> 1       # bit above lsb position
+            turn = 1 if (bit_above % 2 == 0) else -1
+            heading = (heading + turn) % 4
+
+    # Normalize path to DOWNSAMPLED canvas with margin
+    margin = 0.08
+    px_min, px_max = px.min(), px.max()
+    py_min, py_max = py.min(), py.max()
+    span_x = max(px_max - px_min, 1.0)
+    span_y = max(py_max - py_min, 1.0)
+    scale_fit = min((rw * (1.0 - 2 * margin)) / span_x,
+                    (rh * (1.0 - 2 * margin)) / span_y)
+    off_x = rw * margin + (rw * (1.0 - 2 * margin) - span_x * scale_fit) * 0.5
+    off_y = rh * margin + (rh * (1.0 - 2 * margin) - span_y * scale_fit) * 0.5
+    px_s = ((px - px_min) * scale_fit + off_x).astype(np.float32)
+    py_s = ((py - py_min) * scale_fit + off_y).astype(np.float32)
+
+    # Line width scaled with sm (and canvas size)
+    line_w = np.float32(max(1.5, sm * 2.5))
+    glow_w = line_w * np.float32(3.5)
+
+    # --- Distance field: min dist to any segment (at reduced resolution) ---
+    min_dist = np.full((rh, rw), np.float32(1e9))
+    chunk = 256
+    for start in range(0, n_steps, chunk):
+        end   = min(start + chunk, n_steps)
+        ax    = px_s[start:end][:, np.newaxis, np.newaxis]
+        ay    = py_s[start:end][:, np.newaxis, np.newaxis]
+        bx    = px_s[start + 1:end + 1][:, np.newaxis, np.newaxis]
+        by_   = py_s[start + 1:end + 1][:, np.newaxis, np.newaxis]
+        abx   = bx - ax
+        aby   = by_ - ay
+        ab2   = abx * abx + aby * aby + np.float32(1e-8)
+        apx   = xf[np.newaxis] - ax
+        apy   = yf[np.newaxis] - ay
+        t_    = np.clip((apx * abx + apy * aby) / ab2, 0.0, 1.0)
+        closx = ax + t_ * abx
+        closy = ay + t_ * aby
+        d2    = (xf[np.newaxis] - closx) ** 2 + (yf[np.newaxis] - closy) ** 2
+        min_d2_batch = d2.min(axis=0)
+        min_dist = np.minimum(min_dist, min_d2_batch)
+    min_dist = np.sqrt(np.maximum(min_dist, np.float32(0.0)))
+
+    on_path = np.clip((line_w - min_dist) / np.maximum(line_w, np.float32(1e-4)), 0.0, 1.0)
+    glow    = np.clip((glow_w - min_dist) / np.maximum(glow_w, np.float32(1e-4)),
+                      0.0, 1.0) * np.float32(0.3)
+    v       = np.clip(on_path + glow * (np.float32(1.0) - on_path), 0.0, 1.0)
+
+    # Upscale to full resolution if downsampled
+    if ds > 1:
+        v_img = Image.fromarray((v * 255).astype(np.uint8))
+        v = np.array(v_img.resize((w, h), Image.BILINEAR)).astype(np.float32) / 255.0
+    return {"pattern_val": v.astype(np.float32), "R_range": 70.0, "M_range": 50.0, "CC": None}
+
+
+def texture_diffraction_grating(shape, mask, seed, sm):
+    """Holographic diffraction grating — 6 sinusoidal gratings at 30-degree intervals."""
+    h, w = shape
+    y_g, x_g = get_mgrid((h, w))
+    yf    = y_g.astype(np.float32)
+    xf    = x_g.astype(np.float32)
+    freq  = np.float32(2.0 * np.pi / max(4.0, sm * 8.0))
+    n_ang = 6
+    v     = np.zeros((h, w), dtype=np.float32)
+    for i in range(n_ang):
+        angle = np.float32(np.pi * i / n_ang)
+        ca    = np.float32(np.cos(float(angle)))
+        sa    = np.float32(np.sin(float(angle)))
+        v    += np.cos(freq * (xf * ca + yf * sa))
+    v = (v / np.float32(n_ang) + np.float32(1.0)) * np.float32(0.5)
+    v = np.clip(v * v, 0.0, 1.0)
+    return {"pattern_val": v, "R_range": 80.0, "M_range": 65.0, "CC": None}
+
+
+def texture_perlin_terrain(shape, mask, seed, sm):
+    """Topographic terrain — multi-octave noise with ridged sharpening for erosion scarring."""
+    h, w = shape
+    base    = float(max(20.0, sm * 60.0))
+    scales  = [base, base / 2.0, base / 4.0, base / 8.0, base / 16.0]
+    weights = [0.50, 0.25, 0.14, 0.07, 0.04]
+    terrain = multi_scale_noise(shape, scales, weights, seed).astype(np.float32)
+    ridged  = np.float32(1.0) - np.abs(terrain * np.float32(2.0) - np.float32(1.0))
+    v       = terrain * np.float32(0.4) + ridged * np.float32(0.6)
+    mn, mx  = float(v.min()), float(v.max())
+    v       = (v - np.float32(mn)) / np.float32(max(mx - mn, 1e-6))
+    v       = np.power(np.clip(v, np.float32(1e-6), np.float32(1.0)), np.float32(0.7))
+    return {"pattern_val": v, "R_range": 55.0, "M_range": 35.0, "CC": None}
+
+
+def texture_phyllotaxis(shape, mask, seed, sm):
+    """Phyllotaxis spiral — Fibonacci golden-angle seed packing distance field."""
+    h, w = shape
+    y_g, x_g = get_mgrid((h, w))
+    cy, cx   = h // 2, w // 2
+    yf       = (y_g - cy).astype(np.float32)
+    xf       = (x_g - cx).astype(np.float32)
+    golden_a = np.float32(2.399911)
+    seed_r   = np.float32(max(2.5, sm * 5.0))
+    dot_r    = np.float32(max(2.0, sm * 3.5))
+    r_max    = np.float32(min(h, w) // 2)
+    n_seeds  = min(800, max(60, int(float(r_max) ** 2 / max(float(seed_r ** 2), 1.0) * 0.80)))
+    n_approx = (np.sqrt(xf * xf + yf * yf) + np.float32(1e-3)) / seed_r
+    n_approx = n_approx * n_approx
+    delta    = 18
+    min_d_sq = np.full((h, w), np.float32(1e9))
+    for dn in range(-delta, delta + 1):
+        n_c  = np.clip(n_approx + np.float32(dn), 0.0, np.float32(n_seeds - 1))
+        nf   = n_c.astype(np.int32).astype(np.float32)
+        sx   = np.sqrt(nf) * seed_r * np.cos(nf * golden_a)
+        sy   = np.sqrt(nf) * seed_r * np.sin(nf * golden_a)
+        d_sq = (xf - sx) ** 2 + (yf - sy) ** 2
+        min_d_sq = np.minimum(min_d_sq, d_sq)
+    v = np.clip(np.float32(1.0) - np.sqrt(np.maximum(min_d_sq, np.float32(0.0))) / dot_r, 0.0, 1.0)
+    return {"pattern_val": v, "R_range": 65.0, "M_range": 45.0, "CC": None}
+
+
+def texture_truchet_flow(shape, mask, seed, sm):
+    """Truchet flow tiles — random quarter-circle arcs creating organic flowing curves."""
+    h, w = shape
+    y_g, x_g = get_mgrid((h, w))
+    yf      = y_g.astype(np.float32)
+    xf      = x_g.astype(np.float32)
+    tile_sz = np.float32(max(8.0, sm * 22.0))
+    tw      = np.float32(max(1.5, sm * 2.0))
+    half    = tile_sz * np.float32(0.5)
+    t_col   = np.floor(xf / tile_sz).astype(np.int64)
+    t_row   = np.floor(yf / tile_sz).astype(np.int64)
+    lx      = xf % tile_sz
+    ly      = yf % tile_sz
+    hash_v  = (t_col * np.int64(1619) + t_row * np.int64(31337) + np.int64(int(seed))) % np.int64(2)
+    orient  = hash_v.astype(np.bool_)
+    d0a = np.abs(np.sqrt(lx * lx + ly * ly) - half)
+    d0b = np.abs(np.sqrt((lx - tile_sz) ** 2 + (ly - tile_sz) ** 2) - half)
+    d0  = np.minimum(d0a, d0b)
+    d1a = np.abs(np.sqrt((lx - tile_sz) ** 2 + ly * ly) - half)
+    d1b = np.abs(np.sqrt(lx * lx + (ly - tile_sz) ** 2) - half)
+    d1  = np.minimum(d1a, d1b)
+    dist = np.where(orient, d1, d0)
+    v    = np.clip((tw - dist) / tw, 0.0, 1.0)
+    return {"pattern_val": v, "R_range": 65.0, "M_range": 45.0, "CC": None}
+
+
+# ── OP-ART & VISUAL ILLUSIONS — Texture functions (Batch 7, 2026-03-28) ────────────
+
+def texture_concentric_op(shape, mask, seed, sm):
+    """Bridget Riley-style concentric band illusion — two frequencies produce optical vibration beat."""
+    h, w = shape
+    y_g, x_g = get_mgrid((h, w))
+    cy, cx   = h // 2, w // 2
+    yf = (y_g - cy).astype(np.float32); xf = (x_g - cx).astype(np.float32)
+    r  = np.sqrt(xf * xf + yf * yf)
+    p  = np.float32(max(6.0, sm * 16.0))
+    v1 = np.sin(r * np.float32(2.0 * np.pi) / p)
+    v2 = np.sin(r * np.float32(2.0 * np.pi) / (p * np.float32(1.618)))
+    v  = (v1 + v2) * np.float32(0.5)
+    v  = (v + np.float32(1.0)) * np.float32(0.5)
+    return {"pattern_val": np.clip(v, 0.0, 1.0), "R_range": 80.0, "M_range": 60.0, "CC": None}
+
+def texture_checker_warp(shape, mask, seed, sm):
+    """Sine-warped checkerboard — sinusoidal displacement creates bulging grid illusion."""
+    h, w = shape
+    y_g, x_g = get_mgrid((h, w))
+    yf = y_g.astype(np.float32); xf = x_g.astype(np.float32)
+    p   = np.float32(max(8.0, sm * 20.0))
+    wa  = np.float32(max(3.0, sm * 8.0))
+    wf  = np.float32(2.0 * np.pi / (p * 4.0))
+    xw  = xf + wa * np.sin(yf * wf)
+    yw  = yf + wa * np.sin(xf * wf)
+    cx_i = np.floor(xw / p).astype(np.int32) % 2
+    cy_i = np.floor(yw / p).astype(np.int32) % 2
+    v   = ((cx_i + cy_i) % 2).astype(np.float32)
+    return {"pattern_val": v, "R_range": 75.0, "M_range": 55.0, "CC": None}
+
+def texture_barrel_distort(shape, mask, seed, sm):
+    """Barrel-lens distorted checkerboard — straight lines bow outward from image center."""
+    h, w  = shape
+    y_g, x_g = get_mgrid((h, w))
+    cy, cx    = h // 2, w // 2
+    half_r    = np.float32(min(h, w) * 0.5)
+    yf = (y_g - cy).astype(np.float32) / half_r
+    xf = (x_g - cx).astype(np.float32) / half_r
+    r2 = xf * xf + yf * yf
+    k  = np.float32(0.35)
+    xu = (xf * (np.float32(1.0) + k * r2)) * half_r + np.float32(cx)
+    yu = (yf * (np.float32(1.0) + k * r2)) * half_r + np.float32(cy)
+    p  = np.float32(max(8.0, sm * 20.0))
+    gx = np.floor(xu / p).astype(np.int32) % 2
+    gy = np.floor(yu / p).astype(np.int32) % 2
+    v  = ((gx + gy) % 2).astype(np.float32)
+    return {"pattern_val": v, "R_range": 70.0, "M_range": 50.0, "CC": None}
+
+def texture_moire_interference(shape, mask, seed, sm):
+    """Two grids at slightly different scale and 15-degree rotation — classic moiré beat fringes."""
+    h, w = shape
+    y_g, x_g = get_mgrid((h, w))
+    yf = y_g.astype(np.float32); xf = x_g.astype(np.float32)
+    f1  = np.float32(2.0 * np.pi / max(8.0, sm * 16.0))
+    f2  = f1 * np.float32(1.07)
+    ang = np.float32(np.pi / 12.0)
+    ca  = np.float32(np.cos(float(ang))); sa = np.float32(np.sin(float(ang)))
+    g1  = np.sin(xf * f1) * np.sin(yf * f1)
+    xr  = xf * ca - yf * sa; yr = xf * sa + yf * ca
+    g2  = np.sin(xr * f2) * np.sin(yr * f2)
+    v   = (g1 + g2) * np.float32(0.5)
+    v   = (v + np.float32(1.0)) * np.float32(0.5)
+    return {"pattern_val": np.clip(v, 0.0, 1.0), "R_range": 80.0, "M_range": 65.0, "CC": None}
+
+def texture_twisted_rings(shape, mask, seed, sm):
+    """Concentric rings twisted by radius via Archimedean phase — spring/vortex optical illusion."""
+    h, w = shape
+    y_g, x_g = get_mgrid((h, w))
+    cy, cx    = h // 2, w // 2
+    yf = (y_g - cy).astype(np.float32); xf = (x_g - cx).astype(np.float32)
+    r     = np.sqrt(xf * xf + yf * yf)
+    theta = np.arctan2(yf, xf)
+    p     = np.float32(max(6.0, sm * 14.0))
+    twist = np.float32(0.022)
+    twisted_r = r - twist * r * r + theta * np.float32(float(p) / (2.0 * np.pi))
+    v     = np.sin(twisted_r * np.float32(2.0 * np.pi) / p)
+    v     = (v + np.float32(1.0)) * np.float32(0.5)
+    return {"pattern_val": v, "R_range": 75.0, "M_range": 55.0, "CC": None}
+
+def texture_spiral_hypnotic(shape, mask, seed, sm):
+    """Archimedean spiral banded by phase — rotating depth vortex optical illusion."""
+    h, w = shape
+    y_g, x_g = get_mgrid((h, w))
+    cy, cx    = h // 2, w // 2
+    yf = (y_g - cy).astype(np.float32); xf = (x_g - cx).astype(np.float32)
+    r     = np.sqrt(xf * xf + yf * yf)
+    theta = np.arctan2(yf, xf)
+    a     = np.float32(max(4.0, sm * 10.0))
+    phase = (r / a - theta / np.float32(2.0 * np.pi)) % np.float32(1.0)
+    v     = np.sin(phase * np.float32(2.0 * np.pi))
+    v     = (v + np.float32(1.0)) * np.float32(0.5)
+    return {"pattern_val": v, "R_range": 80.0, "M_range": 60.0, "CC": None}
+
+def texture_necker_grid(shape, mask, seed, sm):
+    """Isometric cube tiling — three-brightness face shading creates Necker cube 3D/2D illusion."""
+    h, w = shape
+    y_g, x_g = get_mgrid((h, w))
+    yf = y_g.astype(np.float32); xf = x_g.astype(np.float32)
+    cell = np.float32(max(12.0, sm * 28.0))
+    sq3  = np.float32(np.sqrt(3.0))
+    u    = xf / (cell * sq3) + yf / cell
+    v_c  = -xf / (cell * sq3) + yf / cell
+    uf   = u - np.floor(u); vf = v_c - np.floor(v_c)
+    top  = (uf < np.float32(0.5)) & (vf < np.float32(0.5))
+    right = (uf >= np.float32(0.5)) & (vf < np.float32(0.5))
+    bot  = (uf >= np.float32(0.5)) & (vf >= np.float32(0.5))
+    v_out = np.where(top | bot, np.float32(0.85),
+            np.where(right,     np.float32(0.20), np.float32(0.48)))
+    du   = np.minimum(uf, np.float32(1.0) - uf)
+    dv   = np.minimum(vf, np.float32(1.0) - vf)
+    tw   = np.float32(2.0) / cell
+    v_out = np.where((du < tw) | (dv < tw), np.float32(0.03), v_out)
+    return {"pattern_val": v_out, "R_range": 70.0, "M_range": 50.0, "CC": None}
+
+def texture_radial_pulse(shape, mask, seed, sm):
+    """24 radial spokes with radius-modulated width — apparent inward pulse motion illusion."""
+    h, w = shape
+    y_g, x_g = get_mgrid((h, w))
+    cy, cx    = h // 2, w // 2
+    yf = (y_g - cy).astype(np.float32); xf = (x_g - cx).astype(np.float32)
+    r     = np.sqrt(xf * xf + yf * yf)
+    theta = np.arctan2(yf, xf)
+    n_sp  = 24
+    sp    = np.float32(2.0 * np.pi / n_sp)
+    tn    = theta % sp
+    dc    = np.abs(tn - sp * np.float32(0.5))
+    rp    = np.float32(max(8.0, sm * 20.0))
+    hw    = sp * (np.float32(0.28) + np.float32(0.22) * np.sin(r * np.float32(2.0 * np.pi) / rp))
+    v     = np.clip((hw - dc) / np.maximum(hw, np.float32(1e-6)), 0.0, 1.0)
+    return {"pattern_val": v, "R_range": 75.0, "M_range": 55.0, "CC": None}
+
+def texture_hex_op(shape, mask, seed, sm):
+    """Nested hexagonal shells via hex Chebyshev distance — 3D optical tunnel illusion."""
+    h, w = shape
+    y_g, x_g = get_mgrid((h, w))
+    cy, cx    = h // 2, w // 2
+    yf = (y_g - cy).astype(np.float32); xf = (x_g - cx).astype(np.float32)
+    sq3  = np.float32(np.sqrt(3.0))
+    q    = xf * np.float32(2.0 / 3.0)
+    rr   = -xf * np.float32(1.0 / 3.0) + yf * sq3 * np.float32(1.0 / 3.0)
+    hex_d = np.maximum(np.abs(q), np.maximum(np.abs(rr), np.abs(q + rr)))
+    p    = np.float32(max(8.0, sm * 18.0))
+    v    = np.sin(hex_d / p * np.float32(2.0 * np.pi))
+    v    = (v + np.float32(1.0)) * np.float32(0.5)
+    v    = np.clip(v * np.float32(1.6) - np.float32(0.20), 0.0, 1.0)
+    return {"pattern_val": v, "R_range": 75.0, "M_range": 55.0, "CC": None}
+
+def texture_pinwheel_tiling(shape, mask, seed, sm):
+    """7 golden-angle overlapping grids approximate aperiodic pinwheel — no repeating tile direction."""
+    h, w = shape
+    y_g, x_g = get_mgrid((h, w))
+    yf = y_g.astype(np.float32); xf = x_g.astype(np.float32)
+    p      = np.float32(max(10.0, sm * 24.0))
+    golden = np.float32(2.399911)
+    v      = np.zeros((h, w), dtype=np.float32)
+    for i in range(7):
+        ang = golden * np.float32(i)
+        ca  = np.float32(np.cos(float(ang))); sa = np.float32(np.sin(float(ang)))
+        xu  = xf * ca + yf * sa; yu = -xf * sa + yf * ca
+        tx  = (xu % p) / p; ty = (yu % p) / p
+        d   = np.abs(tx - np.float32(0.5)) + np.abs(ty - np.float32(0.5))
+        w_i = np.float32(1.0 / (i + 1))
+        v   = np.maximum(v, w_i * np.clip(np.float32(1.0) - d * np.float32(2.8), 0.0, 1.0))
+    mn, mx = float(v.min()), float(v.max())
+    v = (v - np.float32(mn)) / np.float32(max(mx - mn, 1e-6))
+    return {"pattern_val": v, "R_range": 70.0, "M_range": 50.0, "CC": None}
+
+def texture_impossible_grid(shape, mask, seed, sm):
+    """Phase-inverted alternating square cells — interior/exterior swap creates impossible connectivity."""
+    h, w = shape
+    y_g, x_g = get_mgrid((h, w))
+    yf = y_g.astype(np.float32); xf = x_g.astype(np.float32)
+    cell  = np.float32(max(12.0, sm * 28.0))
+    gf_x  = (xf % cell) / cell; gf_y = (yf % cell) / cell
+    cx_i  = np.floor(xf / cell).astype(np.int32) % 2
+    cy_i  = np.floor(yf / cell).astype(np.int32) % 2
+    par   = ((cx_i + cy_i) % 2).astype(np.bool_)
+    d     = np.maximum(np.abs(gf_x - np.float32(0.5)), np.abs(gf_y - np.float32(0.5))) * np.float32(2.0)
+    d_inv = np.float32(1.0) - d
+    d_out = np.where(par, d_inv, d)
+    v     = np.sin(d_out * np.float32(4.0 * np.pi))
+    v     = (v + np.float32(1.0)) * np.float32(0.5)
+    return {"pattern_val": v, "R_range": 70.0, "M_range": 50.0, "CC": None}
+
+def texture_rose_curve(shape, mask, seed, sm):
+    """Rhodonea k=5 polar rose — petal outline with radial fill, tiled as repeating field."""
+    h, w = shape
+    y_g, x_g = get_mgrid((h, w))
+    yf   = y_g.astype(np.float32); xf = x_g.astype(np.float32)
+    p    = np.float32(max(20.0, sm * 48.0))
+    half = p * np.float32(0.5)
+    lx   = xf % p - half; ly = yf % p - half
+    lr   = np.sqrt(lx * lx + ly * ly)
+    lt   = np.arctan2(ly, lx)
+    rose_r = half * np.float32(0.84) * np.abs(np.cos(np.float32(5.0) * lt))
+    d    = np.abs(lr - rose_r)
+    tw   = np.float32(max(2.0, sm * 3.0))
+    edge = np.clip((tw - d) / tw, 0.0, 1.0)
+    fill = np.where(lr < rose_r,
+                    np.clip((rose_r - lr) / np.maximum(rose_r, np.float32(1.0)) * np.float32(1.5),
+                            0.0, np.float32(0.65)),
+                    np.float32(0.0))
+    v    = np.maximum(edge, fill)
+    return {"pattern_val": np.clip(v, 0.0, 1.0), "R_range": 70.0, "M_range": 50.0, "CC": None}
+
+
+# ── ART DECO DEPTH + TEXTILE — Texture functions (Batch 8, 2026-03-28) ─────────────
+
+def texture_art_deco_sunburst(shape, mask, seed, sm):
+    """Chrysler Building Art Deco sunburst — 36 radial spokes with 5 concentric ring bands."""
+    h, w = shape
+    y_g, x_g = get_mgrid((h, w))
+    cy, cx   = h // 2, w // 2
+    yf = (y_g - cy).astype(np.float32); xf = (x_g - cx).astype(np.float32)
+    r     = np.sqrt(xf * xf + yf * yf)
+    theta = np.arctan2(yf, xf)
+    n_sp  = 36
+    sp    = np.float32(2.0 * np.pi / n_sp)
+    tn    = theta % sp
+    dc    = np.minimum(tn, sp - tn)
+    arc_d = dc * np.maximum(r, np.float32(1.0))
+    sw    = np.float32(max(3.0, sm * 5.0))
+    spokes = np.clip((sw - arc_d) / sw, 0.0, 1.0)
+    r_max = np.float32(min(h, w) * 0.5)
+    rads  = [0.25, 0.42, 0.56, 0.70, 0.84]
+    bw    = np.float32(max(3.0, sm * 5.0))
+    rings = np.zeros((h, w), dtype=np.float32)
+    for rp in rads:
+        d = np.abs(r - r_max * np.float32(rp))
+        rings = np.maximum(rings, np.clip((bw - d) / bw, 0.0, 1.0))
+    v = np.maximum(spokes, rings)
+    return {"pattern_val": v, "R_range": 80.0, "M_range": 60.0, "CC": None}
+
+def texture_art_deco_chevron(shape, mask, seed, sm):
+    """Bold Art Deco double-stripe chevrons — nested V-shapes with wide gaps, classic 1920s style."""
+    h, w = shape
+    y_g, x_g = get_mgrid((h, w))
+    yf = y_g.astype(np.float32); xf = x_g.astype(np.float32)
+    period = np.float32(max(10.0, sm * 24.0))
+    cx_f   = np.float32(w * 0.5)
+    v_dist = np.abs(xf - cx_f) + yf
+    vmod   = (v_dist % period) / period
+    b1 = np.float32(0.12); b2 = np.float32(0.28)
+    b3 = np.float32(0.52); b4 = np.float32(0.68)
+    v  = np.where(((vmod >= b1) & (vmod < b2)) | ((vmod >= b3) & (vmod < b4)),
+                  np.float32(1.0), np.float32(0.0))
+    return {"pattern_val": v, "R_range": 75.0, "M_range": 55.0, "CC": None}
+
+def texture_greek_meander(shape, mask, seed, sm):
+    """Greek key meander — right-angle hook spiral motif tiled in alternating-parity rows."""
+    h, w = shape
+    y_g, x_g = get_mgrid((h, w))
+    yf = y_g.astype(np.float32); xf = x_g.astype(np.float32)
+    cell  = np.float32(max(8.0, sm * 20.0))
+    tw    = np.float32(max(1.2, sm * 1.8))
+    xmod  = xf % cell; ymod = yf % cell
+    col_i = np.floor(xf / cell).astype(np.int32)
+    row_i = np.floor(yf / cell).astype(np.int32)
+    flip  = ((col_i + row_i) % 2).astype(np.bool_)
+    xm    = np.where(flip, cell - xmod - np.float32(1.0), xmod)
+    y1 = cell * np.float32(0.15); y2 = cell * np.float32(0.50); y3 = cell * np.float32(0.85)
+    x1 = cell * np.float32(0.15); x2 = cell * np.float32(0.85)
+    tw1 = tw + np.float32(1.0)
+    d_h1 = np.abs(ymod - y1)
+    d_h2 = np.where(xm > cell * np.float32(0.45), np.abs(ymod - y2), tw1)
+    d_h3 = np.abs(ymod - y3)
+    d_v1 = np.where(ymod < cell * np.float32(0.55), np.abs(xm - x1), tw1)
+    d_v2 = np.abs(xm - x2)
+    d_min = np.minimum(d_h1, np.minimum(d_h2, np.minimum(d_h3, np.minimum(d_v1, d_v2))))
+    v = np.clip((tw - d_min) / tw, 0.0, 1.0)
+    return {"pattern_val": v, "R_range": 70.0, "M_range": 50.0, "CC": None}
+
+def texture_moroccan_zellige(shape, mask, seed, sm):
+    """Moroccan zellige 8-pointed star — two overlapping L-inf norms create Islamic star tile."""
+    h, w = shape
+    y_g, x_g = get_mgrid((h, w))
+    yf = y_g.astype(np.float32); xf = x_g.astype(np.float32)
+    cell  = np.float32(max(12.0, sm * 28.0))
+    tw    = np.float32(max(1.5, sm * 2.5))
+    lx    = xf % cell - cell * np.float32(0.5)
+    ly    = yf % cell - cell * np.float32(0.5)
+    sq_n  = np.maximum(np.abs(lx), np.abs(ly))
+    diag_n = (np.abs(lx) + np.abs(ly)) * np.float32(0.7071)
+    star_r = cell * np.float32(0.42)
+    d1    = np.abs(sq_n - star_r)
+    d2    = np.abs(diag_n - star_r)
+    d_out = np.minimum(d1, d2)
+    outline = np.clip((tw - d_out) / tw, 0.0, 1.0)
+    in_star = (sq_n < star_r) & (diag_n < star_r)
+    fill    = np.where(in_star, np.float32(0.55), np.float32(0.0))
+    v       = np.maximum(outline, fill)
+    return {"pattern_val": np.clip(v, 0.0, 1.0), "R_range": 75.0, "M_range": 55.0, "CC": None}
+
+def texture_escher_reptile(shape, mask, seed, sm):
+    """Escher-style hex reptile tessellation — alternating shaded cells with organic boundary."""
+    h, w = shape
+    y_g, x_g = get_mgrid((h, w))
+    yf = y_g.astype(np.float32); xf = x_g.astype(np.float32)
+    cell  = np.float32(max(14.0, sm * 32.0))
+    sq3   = np.float32(np.sqrt(3.0))
+    u     = xf / (cell * sq3) + yf / cell
+    vc_   = -xf / (cell * sq3) + yf / cell
+    uf    = u - np.floor(u); vf = vc_ - np.floor(vc_)
+    du    = np.minimum(uf, np.float32(1.0) - uf)
+    dv    = np.minimum(vf, np.float32(1.0) - vf)
+    deform = np.sin(uf * np.float32(6.0 * np.pi)) * np.sin(vf * np.float32(4.0 * np.pi)) * np.float32(0.07)
+    d_bnd  = np.minimum(du + deform, dv + deform)
+    tw     = np.float32(2.5) / cell
+    uid    = np.floor(u).astype(np.int32)
+    vid    = np.floor(vc_).astype(np.int32)
+    alt    = ((uid + vid) % 2).astype(np.bool_)
+    fill   = np.where(alt, np.float32(0.65), np.float32(0.15))
+    v      = np.where(d_bnd < tw, np.float32(1.0), fill)
+    return {"pattern_val": np.clip(v, 0.0, 1.0), "R_range": 70.0, "M_range": 50.0, "CC": None}
+
+def texture_constructivist(shape, mask, seed, sm):
+    """Soviet Constructivist — orthogonal grid + 45-degree diagonals + bold horizontal band."""
+    h, w = shape
+    y_g, x_g = get_mgrid((h, w))
+    yf = y_g.astype(np.float32); xf = x_g.astype(np.float32)
+    p    = np.float32(max(10.0, sm * 24.0))
+    tw   = np.float32(max(1.5, sm * 2.5))
+    h_d  = np.abs((yf % p) - p * np.float32(0.5))
+    v_d  = np.abs((xf % p) - p * np.float32(0.5))
+    vv   = np.clip((tw - np.minimum(h_d, v_d)) / tw, 0.0, 1.0)
+    dp   = p * np.float32(1.4142)
+    d45  = (xf + yf) % dp
+    d45_d = np.minimum(d45, dp - d45)
+    vv   = np.maximum(vv, np.clip((tw - d45_d) / tw, 0.0, 1.0) * np.float32(0.7))
+    band_p = p * np.float32(3.0)
+    band_d = np.abs((yf % band_p) - band_p * np.float32(0.5))
+    band_w = tw * np.float32(3.0)
+    vv     = np.maximum(vv, np.clip((band_w - band_d) / band_w, 0.0, 1.0) * np.float32(0.85))
+    mn, mx = float(vv.min()), float(vv.max())
+    vv = (vv - np.float32(mn)) / np.float32(max(mx - mn, 1e-6))
+    return {"pattern_val": vv, "R_range": 70.0, "M_range": 50.0, "CC": None}
+
+def texture_bauhaus_system(shape, mask, seed, sm):
+    """Bauhaus primary form grid — circle, square, and diamond outline shapes alternating in cells."""
+    h, w = shape
+    y_g, x_g = get_mgrid((h, w))
+    yf = y_g.astype(np.float32); xf = x_g.astype(np.float32)
+    cell  = np.float32(max(12.0, sm * 28.0))
+    r_sh  = cell * np.float32(0.38)
+    tw    = np.float32(max(1.5, sm * 2.0))
+    col_i = np.floor(xf / cell).astype(np.int32)
+    row_i = np.floor(yf / cell).astype(np.int32)
+    lx    = xf % cell - cell * np.float32(0.5)
+    ly    = yf % cell - cell * np.float32(0.5)
+    shid  = (col_i + row_i * 3) % 3
+    circ_d    = np.abs(np.sqrt(lx * lx + ly * ly) - r_sh)
+    sq_d      = np.abs(np.maximum(np.abs(lx), np.abs(ly)) - r_sh)
+    diamond_d = np.abs((np.abs(lx) + np.abs(ly)) * np.float32(0.7071) - r_sh)
+    d_out = np.where(shid == 0, circ_d,
+            np.where(shid == 1, sq_d, diamond_d))
+    v = np.clip((tw - d_out) / tw, 0.0, 1.0)
+    return {"pattern_val": v, "R_range": 70.0, "M_range": 50.0, "CC": None}
+
+def texture_celtic_plait(shape, mask, seed, sm):
+    """Celtic plait braid — two diagonal strand families with alternating over-under weave."""
+    h, w = shape
+    y_g, x_g = get_mgrid((h, w))
+    yf = y_g.astype(np.float32); xf = x_g.astype(np.float32)
+    p    = np.float32(max(8.0, sm * 18.0))
+    sw   = np.float32(max(2.5, sm * 4.0))
+    sq2  = np.float32(np.sqrt(2.0))
+    d1   = (xf + yf) / sq2; d2 = (xf - yf) / sq2
+    d1c  = np.abs(d1 % p - p * np.float32(0.5))
+    d2c  = np.abs(d2 % p - p * np.float32(0.5))
+    s1   = d1c < sw; s2 = d2c < sw
+    cell2 = np.floor(d2 / p).astype(np.int32) % 2
+    top1  = s1 & (~s2 | (cell2 == 0))
+    top2  = s2 & (~s1 | (cell2 != 0))
+    v     = np.where(top1, np.float32(0.90),
+            np.where(top2, np.float32(0.40), np.float32(0.05)))
+    return {"pattern_val": np.clip(v, 0.0, 1.0), "R_range": 75.0, "M_range": 55.0, "CC": None}
+
+def texture_cane_weave(shape, mask, seed, sm):
+    """Cane/rattan weave — orthogonal H+V grid with alternating over-under crossings.
+    LAZY-008 FIX: replaced diagonal ±45 projections (was ≈celtic_plait) with true
+    basket-weave structure: H canes run left-right, V canes run top-bottom,
+    crossings alternate which cane is on top via checkerboard cell parity."""
+    h, w = shape
+    y_g, x_g = get_mgrid((h, w))
+    yf = y_g.astype(np.float32); xf = x_g.astype(np.float32)
+    p  = np.float32(max(7.0, sm * 15.0))   # cell period in pixels
+    sw = np.float32(max(2.0, sm * 3.5))    # strand half-width
+    # Orthogonal bands: H strand centred on each row period, V strand on each col period
+    h_pos    = np.abs((yf % p) - p * np.float32(0.5))
+    v_pos    = np.abs((xf % p) - p * np.float32(0.5))
+    h_strand = h_pos < sw
+    v_strand = v_pos < sw
+    # Over-under: checkerboard by integer cell index (not diagonal)
+    cell = (np.floor(xf / p).astype(np.int32) + np.floor(yf / p).astype(np.int32)) % 2
+    h_top  = h_strand & v_strand & (cell == 0)   # H cane on top at even crossing
+    v_top  = h_strand & v_strand & (cell != 0)   # V cane on top at odd crossing
+    h_only = h_strand & ~v_strand
+    v_only = v_strand & ~h_strand
+    v      = np.where(h_top,  np.float32(0.88),
+             np.where(v_top,  np.float32(0.44),
+             np.where(h_only, np.float32(0.82),
+             np.where(v_only, np.float32(0.78),
+                              np.float32(0.06)))))
+    return {"pattern_val": np.clip(v, 0.0, 1.0), "R_range": 55.0, "M_range": 35.0, "CC": None}
+
+def texture_cable_knit(shape, mask, seed, sm):
+    """Cable knit — two rope-twist strands crossing per column period with subtle rib background."""
+    h, w = shape
+    y_g, x_g = get_mgrid((h, w))
+    yf = y_g.astype(np.float32); xf = x_g.astype(np.float32)
+    col_w = np.float32(max(6.0, sm * 14.0))
+    row_p = np.float32(max(8.0, sm * 18.0))
+    tw    = np.float32(max(1.5, sm * 2.0))
+    xmod  = xf % col_w; ymod = yf % row_p
+    phase = ymod / row_p
+    s1_x  = col_w * (np.float32(0.25) + np.float32(0.5) * phase)
+    s1_xb = col_w * (np.float32(0.75) - np.float32(0.5) * (phase - np.float32(0.5)))
+    s1_pos = np.where(phase < np.float32(0.5), s1_x, s1_xb)
+    s2_pos = col_w - s1_pos
+    d1    = np.abs(xmod - s1_pos); d2 = np.abs(xmod - s2_pos)
+    v     = np.clip((tw - np.minimum(d1, d2)) / tw, 0.0, 1.0)
+    rib   = np.abs(xmod / col_w - np.float32(0.5)) * np.float32(2.0)
+    v     = np.maximum(v, np.float32(0.12) * (np.float32(1.0) - rib))
+    return {"pattern_val": np.clip(v, 0.0, 1.0), "R_range": 65.0, "M_range": 45.0, "CC": None}
+
+def texture_damask_brocade(shape, mask, seed, sm):
+    """Damask brocade — four-petal rose with outer ring and diamond accent, figure-vs-ground."""
+    h, w = shape
+    y_g, x_g = get_mgrid((h, w))
+    yf = y_g.astype(np.float32); xf = x_g.astype(np.float32)
+    p    = np.float32(max(16.0, sm * 40.0))
+    half = p * np.float32(0.5)
+    lx   = xf % p - half; ly = yf % p - half
+    r    = np.sqrt(lx * lx + ly * ly)
+    lt   = np.arctan2(ly, lx)
+    rose_r = half * np.float32(0.62) * np.abs(np.cos(np.float32(2.0) * lt))
+    ring_r = half * np.float32(0.80)
+    diag   = (np.abs(lx) + np.abs(ly)) * np.float32(0.7071)
+    diag_r = half * np.float32(0.28)
+    in_rose = r < rose_r
+    in_ring = (r > ring_r * np.float32(0.88)) & (r < ring_r)
+    in_diag = diag < diag_r
+    v = np.where(in_rose | in_ring | in_diag, np.float32(0.85), np.float32(0.12))
+    return {"pattern_val": v, "R_range": 70.0, "M_range": 50.0, "CC": None}
+
+def texture_tatami_grid(shape, mask, seed, sm):
+    """Tatami grid — Japanese 2:1 mat rectangles staggered in alternating rows with border lines."""
+    h, w = shape
+    y_g, x_g = get_mgrid((h, w))
+    yf = y_g.astype(np.float32); xf = x_g.astype(np.float32)
+    mat_w = np.float32(max(12.0, sm * 28.0))
+    mat_h = mat_w * np.float32(0.5)
+    tw    = np.float32(max(1.5, sm * 2.0))
+    row_i = np.floor(yf / mat_h).astype(np.int32)
+    ymod  = yf % mat_h
+    row_even = (row_i % 2) == 0
+    col_x    = np.where(row_even, xf, xf + mat_w * np.float32(0.5))
+    xmod     = col_x % mat_w
+    dx       = np.minimum(xmod, mat_w - xmod)
+    dy       = np.minimum(ymod, mat_h - ymod)
+    d        = np.minimum(dx, dy)
+    v        = np.clip((tw - d) / tw, 0.0, 1.0)
+    grain    = np.float32(1.0) - np.abs(xmod / mat_w * np.float32(2.0) - np.float32(1.0))
+    v        = np.maximum(v, grain * np.float32(0.10))
+    return {"pattern_val": np.clip(v, 0.0, 1.0), "R_range": 55.0, "M_range": 35.0, "CC": None}
+
+
+# ── FINAL 4 — To 100 Patterns (🏁 Batch 9, 2026-03-28) ───────────────────────────────
+
+def texture_hypocycloid(shape, mask, seed, sm):
+    """Tiled 5-cusped Spirograph hypocycloid — parametric star outline sampled from k=5 hypotrochoid curve."""
+    h, w  = shape
+    ci    = min(max(20, int(sm * 48)), 24)
+    R     = np.float32(ci * 0.44)
+    r     = R * np.float32(0.2)          # k=5: r = R/5
+    Rr    = R - r                         # 4r
+    n_t   = 360
+    t_arr = np.linspace(0.0, 2.0 * np.pi, n_t, dtype=np.float32)
+    cx_t  = Rr * np.cos(t_arr) + r * np.cos((Rr / r) * t_arr)
+    cy_t  = Rr * np.sin(t_arr) - r * np.sin((Rr / r) * t_arr)
+    yi    = np.arange(ci, dtype=np.float32) - np.float32(ci // 2)
+    xi    = np.arange(ci, dtype=np.float32) - np.float32(ci // 2)
+    yc, xc = np.meshgrid(yi, xi, indexing='ij')
+    min_d = np.full((ci, ci), np.float32(1e9))
+    for ti in range(0, n_t, 90):
+        te    = min(ti + 90, n_t)
+        dx    = xc[:, :, None] - cx_t[None, None, ti:te]
+        dy    = yc[:, :, None] - cy_t[None, None, ti:te]
+        min_d = np.minimum(min_d, np.sqrt(dx * dx + dy * dy).min(axis=2))
+    sw     = np.float32(max(1.5, sm * 2.5))
+    cell_v = np.clip((sw - min_d) / sw, np.float32(0.0), np.float32(1.0))
+    ny = int(np.ceil(h / ci)) + 1; nx = int(np.ceil(w / ci)) + 1
+    tiled  = np.tile(cell_v, (ny, nx))[:h, :w]
+    return {"pattern_val": tiled.astype(np.float32), "R_range": 80.0, "M_range": 60.0, "CC": None}
+
+def texture_voronoi_relaxed(shape, mask, seed, sm):
+    """Centroidal Voronoi relaxed cells — jitter-grid seeds give uniform organic cell borders."""
+    h, w     = shape
+    rng      = np.random.RandomState(seed + 940)
+    cell_d   = max(12.0, sm * 30.0)
+    ds       = max(1, min(4, h // 256))
+    sh, sw_d = h // ds, w // ds
+    cd       = max(4, int(cell_d / ds))
+    ny_s     = sh // cd + 2;  nx_s = sw_d // cd + 2
+    gy = (np.arange(ny_s) * cd).astype(np.float32)
+    gx = (np.arange(nx_s) * cd).astype(np.float32)
+    gxg, gyg = np.meshgrid(gx, gy)
+    jit    = float(cd) * 0.35
+    pts_y  = np.clip(gyg + rng.uniform(-jit, jit, gyg.shape), 0, sh - 1).astype(np.float32).flatten()
+    pts_x  = np.clip(gxg + rng.uniform(-jit, jit, gxg.shape), 0, sw_d - 1).astype(np.float32).flatten()
+    n_pts  = min(len(pts_y), 150)
+    pts_y  = pts_y[:n_pts];  pts_x = pts_x[:n_pts]
+    y_g, x_g = np.mgrid[0:sh, 0:sw_d]
+    yf = y_g.astype(np.float32);  xf = x_g.astype(np.float32)
+    dist1  = np.full((sh, sw_d), np.float32(1e9))
+    dist2  = np.full((sh, sw_d), np.float32(1e9))
+    for i in range(n_pts):
+        d      = np.sqrt((yf - pts_y[i]) ** 2 + (xf - pts_x[i]) ** 2)
+        new_d2 = np.where(d < dist1, dist1, np.where(d < dist2, d, dist2))
+        dist1  = np.minimum(dist1, d)
+        dist2  = new_d2
+    cw = np.float32(max(2.0, sm * 4.0))
+    v  = np.clip(np.float32(1.0) - (dist2 - dist1) / cw, np.float32(0.0), np.float32(1.0))
+    if ds > 1:
+        v_img = Image.fromarray((v * 255).astype(np.uint8))
+        v = np.array(v_img.resize((w, h), Image.BILINEAR)).astype(np.float32) / 255.0
+    return {"pattern_val": v, "R_range": 70.0, "M_range": 50.0, "CC": None}
+
+def texture_wave_ripple_2d(shape, mask, seed, sm):
+    """2D wave ripple interference — 4 circular wave sources creating constructive/destructive ring patterns."""
+    h, w    = shape
+    y_g, x_g = get_mgrid((h, w))
+    yf = y_g.astype(np.float32);  xf = x_g.astype(np.float32)
+    src  = [(h * 0.25, w * 0.25), (h * 0.75, w * 0.75),
+            (h * 0.20, w * 0.80), (h * 0.80, w * 0.20)]
+    freq = np.float32(2.0 * np.pi / max(8.0, sm * 20.0))
+    v    = np.zeros((h, w), dtype=np.float32)
+    for sy, sx in src:
+        r_s = np.sqrt((yf - np.float32(sy)) ** 2 + (xf - np.float32(sx)) ** 2)
+        v   = v + np.sin(r_s * freq)
+    v = v * np.float32(0.25) * np.float32(0.5) + np.float32(0.5)
+    return {"pattern_val": np.clip(v, 0.0, 1.0), "R_range": 80.0, "M_range": 60.0, "CC": None}
+
+def texture_sierpinski_tri(shape, mask, seed, sm):
+    """Sierpinski gasket — Pascal triangle mod-2 via bitwise (xi & yi)==0 on scaled integer grid."""
+    h, w    = shape
+    y_g, x_g = get_mgrid((h, w))
+    scale   = max(2, int(sm * 6))
+    xi      = (x_g // scale).astype(np.int32) & 0x3FF
+    yi      = (y_g // scale).astype(np.int32) & 0x3FF
+    v       = ((xi & yi) == 0).astype(np.float32)
+    return {"pattern_val": v, "R_range": 75.0, "M_range": 55.0, "CC": None}
+
+
 # --- PATTERN TEXTURE REGISTRY ---
 # !! ARCHITECTURE GUARD - READ BEFORE MODIFYING !!
 # See ARCHITECTURE.md for full documentation.
@@ -4509,15 +6675,13 @@ def texture_aurora_bands_v2(shape, mask, seed, sm):
 PATTERN_REGISTRY = {
     "acid_wash":         {"texture_fn": texture_acid_wash,        "paint_fn": paint_acid_etch,        "variable_cc": True,  "desc": "Corroded acid-etched surface"},
     "aero_flow": {"texture_fn": texture_aero_flow_v2, "paint_fn": paint_pinstripe, "variable_cc": False, "desc": "Aerodynamic flow visualization streaks"},
-    "argyle": {"texture_fn": texture_plaid, "paint_fn": paint_plaid_tint, "variable_cc": False, "desc": "Diamond/rhombus overlapping argyle"},
     "art_deco": {"texture_fn": texture_art_deco_fan, "paint_fn": paint_chevron_contrast, "variable_cc": False, "desc": "1920s geometric fan/sunburst motif"},
     "asphalt_texture": {"texture_fn": texture_asphalt_v2, "paint_fn": paint_static_noise_grain, "variable_cc": False, "desc": "Road surface aggregate texture"},
     "atomic_orbital": {"texture_fn": texture_ripple_dense, "paint_fn": paint_ripple_reflect, "variable_cc": False, "desc": "Electron cloud probability orbital rings"},
-    "aurora_bands": {"texture_fn": texture_aurora_bands_v2, "paint_fn": paint_wave_shimmer, "variable_cc": False, "desc": "Northern lights wavy curtain bands"},
+    "aurora_bands": {"texture_fn": texture_aurora_bands_v2, "paint_fn": paint_aurora, "variable_cc": False, "desc": "Northern lights wavy curtain bands"},
     "aztec": {"texture_fn": texture_aztec_steps_v2, "paint_fn": paint_chevron_contrast, "variable_cc": False, "desc": "Angular stepped Aztec geometric blocks"},
     "bamboo_stalk": {"texture_fn": texture_bamboo_stalk_v2, "paint_fn": paint_pinstripe, "variable_cc": False, "desc": "Vertical bamboo stalks with joints"},
     "barbed_wire":       {"texture_fn": texture_barbed_wire,     "paint_fn": paint_barbed_scratch,   "variable_cc": False, "desc": "Twisted wire with barb spikes"},
-    "basket_weave": {"texture_fn": texture_basket_weave, "paint_fn": paint_carbon_darken, "variable_cc": False, "desc": "Over-under basket weave pattern"},
     "battle_worn":       {"texture_fn": texture_battle_worn,      "paint_fn": paint_scratch_marks,    "variable_cc": True,  "desc": "Scratched weathered damage"},
     "binary_code": {"texture_fn": texture_binary_code_v2, "paint_fn": paint_tron_glow, "variable_cc": False, "desc": "Streaming 0s and 1s binary data"},
     "biohazard": {"texture_fn": texture_biohazard_symbol, "paint_fn": paint_spiderweb_crack, "variable_cc": False, "desc": "Repeating biohazard trefoil symbol"},
@@ -4574,7 +6738,7 @@ PATTERN_REGISTRY = {
     "giraffe": {"texture_fn": texture_giraffe, "paint_fn": paint_leopard_spots, "variable_cc": False, "desc": "Irregular polygon giraffe spot patches"},
     "glacier_crack": {"texture_fn": texture_cracked_ice, "paint_fn": paint_ice_cracks, "variable_cc": False, "desc": "Deep blue-white glacial ice fissures"},
     "glitch_scan": {"texture_fn": texture_glitch_scan_v2, "paint_fn": paint_hologram_lines, "variable_cc": False, "desc": "Horizontal glitch scanline displacement"},
-    "gothic_cross": {"texture_fn": texture_gothic_cross_v2, "paint_fn": paint_celtic_emboss, "variable_cc": False, "desc": "Ornate gothic cathedral cross grid"},
+    "gothic_arch": {"texture_fn": texture_gothic_cross_v2, "paint_fn": paint_celtic_emboss, "variable_cc": False, "desc": "Ornate gothic cathedral cross grid"},
     "gothic_scroll": {"texture_fn": texture_gothic_scroll_v2, "paint_fn": paint_damascus_layer, "variable_cc": False, "desc": "Flowing dark ornamental scroll filigree"},
     "grating": {"texture_fn": texture_grating_heavy, "paint_fn": paint_pinstripe, "variable_cc": False, "desc": "Industrial floor grating parallel bars"},
     "greek_key": {"texture_fn": texture_tribal_meander, "paint_fn": paint_chevron_contrast, "variable_cc": False, "desc": "Continuous right-angle meander border"},
@@ -4583,16 +6747,14 @@ PATTERN_REGISTRY = {
     "halfpipe": {"texture_fn": texture_wave_gentle, "paint_fn": paint_wave_shimmer, "variable_cc": False, "desc": "Curved halfpipe ramp cross-section"},
     "hammered":          {"texture_fn": texture_hammered,         "paint_fn": paint_hammered_dimples, "variable_cc": False, "desc": "Hand-hammered dimple pattern"},
     "hellfire": {"texture_fn": texture_flame_aggressive, "paint_fn": paint_lava_glow, "variable_cc": True, "desc": "[Legacy] Hellfire - superseded by flame_hellfire_column"},
-    "herringbone": {"texture_fn": texture_herringbone_v2, "paint_fn": paint_chevron_contrast, "variable_cc": False, "desc": "V-shaped zigzag brick/tile pattern"},
     "hex_mesh":          {"texture_fn": texture_hex_mesh,         "paint_fn": paint_hex_emboss,       "variable_cc": False, "desc": "Honeycomb wire grid"},
     "hibiscus": {"texture_fn": texture_hibiscus_v2, "paint_fn": paint_celtic_emboss, "variable_cc": False, "desc": "Hawaiian hibiscus flower pattern"},
     "hologram":          {"texture_fn": texture_hologram,         "paint_fn": paint_hologram_lines,   "variable_cc": False, "desc": "Horizontal scanline projection"},
     "holographic": {"texture_fn": texture_holographic_flake, "paint_fn": paint_coarse_flake, "variable_cc": False, "desc": "Hologram diffraction grating rainbow"},
     "holographic_flake": {"texture_fn": texture_holographic_flake,"paint_fn": paint_coarse_flake,     "variable_cc": False, "desc": "Rainbow prismatic micro-grid flake"},
-    "houndstooth":       {"texture_fn": texture_houndstooth,    "paint_fn": paint_houndstooth_contrast, "variable_cc": False, "desc": "Classic houndstooth check textile"},
     "inferno": {"texture_fn": texture_flame_wild, "paint_fn": paint_lava_glow, "variable_cc": True, "desc": "[Legacy] Inferno - superseded by flame_inferno_wall"},
     "interference":      {"texture_fn": texture_interference,     "paint_fn": paint_interference_shift,"variable_cc": False, "desc": "Flowing rainbow wave bands"},
-    "iron_cross": {"texture_fn": texture_iron_cross_v2, "paint_fn": paint_celtic_emboss, "variable_cc": False, "desc": "Bold Iron Cross motif array"},
+    "iron_emblem": {"texture_fn": texture_iron_cross_v2, "paint_fn": paint_celtic_emboss, "variable_cc": False, "desc": "Bold Iron Cross motif array"},
     # "japanese_wave" REMOVED - Artistic & Cultural image-based (engine/registry.py)
     "kevlar_weave": {"texture_fn": texture_kevlar_weave, "paint_fn": paint_carbon_darken, "variable_cc": False, "desc": "Tight aramid fiber golden weave"},
     "knurled": {"texture_fn": texture_crosshatch, "paint_fn": paint_crosshatch_ink, "variable_cc": False, "desc": "Machine knurling diagonal cross-hatch"},
@@ -4624,7 +6786,7 @@ PATTERN_REGISTRY = {
     # "paisley" REMOVED - Artistic & Cultural replaced by image-based (engine/registry.py)
     "palm_frond": {"texture_fn": texture_palm_frond_v2, "paint_fn": paint_pinstripe, "variable_cc": False, "desc": "Tropical palm leaf frond silhouettes"},
     "peeling_paint": {"texture_fn": texture_battle_worn, "paint_fn": paint_scratch_marks, "variable_cc": True, "desc": "Curling paint peel flake patches"},
-    "pentagram": {"texture_fn": texture_pentagram_star, "paint_fn": paint_spiderweb_crack, "variable_cc": False, "desc": "Five-pointed star geometric array"},
+    "five_point_star": {"texture_fn": texture_pentagram_star, "paint_fn": paint_spiderweb_crack, "variable_cc": False, "desc": "Five-pointed star geometric array"},
     "perforated": {"texture_fn": texture_metal_flake, "paint_fn": paint_coarse_flake, "variable_cc": False, "desc": "Evenly punched round hole grid"},
     "pinstripe":         {"texture_fn": texture_pinstripe,       "paint_fn": paint_pinstripe,        "variable_cc": False, "desc": "Thin parallel racing stripes"},
     "pinstripe_flames": {"texture_fn": texture_pinstripe_diagonal, "paint_fn": paint_pinstripe, "variable_cc": False, "desc": "[Legacy] Pinstripe flames - superseded by flame_pinstripe_outline"},
@@ -4711,6 +6873,115 @@ PATTERN_REGISTRY = {
     "wind_tunnel": {"texture_fn": texture_pinstripe_diagonal, "paint_fn": paint_pinstripe, "variable_cc": False, "desc": "Flow visualization smoke streaks"},
     "wood_grain":        {"texture_fn": texture_wood_grain,      "paint_fn": paint_wood_grain,       "variable_cc": False, "desc": "Natural flowing wood grain texture"},
     "zebra": {"texture_fn": texture_zebra_stripe, "paint_fn": paint_pinstripe, "variable_cc": False, "desc": "Bold black-white zebra stripe pattern"},
+    # ── Intricate & Ornate (★) — Batch 1 (2026-03-28) ───────────────────────────
+    "art_nouveau_vine":   {"texture_fn": texture_art_nouveau_vine,    "paint_fn": paint_celtic_emboss,      "variable_cc": False, "desc": "Art Nouveau noise-warped sinuous vine stems and branch lattice"},
+    "baroque_scrollwork": {"texture_fn": texture_baroque_scrollwork,  "paint_fn": paint_celtic_emboss,      "variable_cc": False, "desc": "Tiled Archimedean spiral scrollwork with 3-lobe flourish modulation"},
+    "brushed_metal_fine": {"texture_fn": texture_brushed_metal_fine,  "paint_fn": paint_pinstripe,          "variable_cc": False, "desc": "Three-frequency anisotropic directional micro-scratch grain"},
+    "carbon_3k_weave":    {"texture_fn": texture_carbon_3k_weave,     "paint_fn": paint_carbon_darken,      "variable_cc": False, "desc": "Satin-braid diagonal ±45° carbon 3K tow weave"},
+    "damascus_steel":     {"texture_fn": texture_damascus,            "paint_fn": paint_damascus_layer,     "variable_cc": False, "desc": "Folded-metal sinuous Damascus steel layered bands"},
+    "honeycomb_organic":  {"texture_fn": texture_honeycomb_organic,   "paint_fn": paint_hex_emboss,         "variable_cc": False, "desc": "Noise-warped hex grid for irregular organic honeycomb cells"},
+    "interference_rings": {"texture_fn": texture_interference_rings,  "paint_fn": paint_ripple_reflect,     "variable_cc": False, "desc": "Newton ring four-source radial interference beating"},
+    "lace_filigree":      {"texture_fn": texture_lace_filigree,       "paint_fn": paint_crosshatch_ink,     "variable_cc": False, "desc": "Orthogonal and diagonal sinusoidal cross-grid openwork"},
+    "penrose_quasi":      {"texture_fn": texture_penrose_quasi,       "paint_fn": paint_interference_shift, "variable_cc": False, "desc": "Five 72°-spaced cosine projections Penrose quasicrystal tiling"},
+    "hex_mandala":        {"texture_fn": texture_sacred_geometry,     "paint_fn": paint_interference_shift, "variable_cc": False, "desc": "Three 120°-offset plane waves Flower of Life hexagonal mandalas"},
+    "stained_glass":      {"texture_fn": texture_stained_glass_voronoi,"paint_fn": paint_mosaic_tint,       "variable_cc": False, "desc": "Voronoi panes with random luminance and dark grout lines"},
+    "topographic_dense":  {"texture_fn": texture_topographic_dense,   "paint_fn": paint_topographic_line,  "variable_cc": False, "desc": "35 tightly-spaced contour lines over multi-scale noise height field"},
+    # ── Tribal & Ancient (✨) — Batch 2 (2026-03-28) ─────────────────────────
+    "spiral_fern":        {"texture_fn": texture_maori_koru,          "paint_fn": paint_celtic_emboss,      "variable_cc": False, "desc": "Maori koru logarithmic spiral fern frond uncoiling in tiled cells"},
+    "zigzag_bands":       {"texture_fn": texture_polynesian_tapa,     "paint_fn": paint_crosshatch_ink,     "variable_cc": False, "desc": "Polynesian tapa cloth alternating zigzag and crosshatch band rows"},
+    "radial_calendar":    {"texture_fn": texture_aztec_sun,           "paint_fn": paint_celtic_emboss,      "variable_cc": False, "desc": "Aztec sun stone radial spoke and concentric ring calendar wheel"},
+    "triple_knot":        {"texture_fn": texture_celtic_trinity,      "paint_fn": paint_celtic_emboss,      "variable_cc": False, "desc": "Celtic triquetra three interlocked rings at 120° in tiled cells"},
+    "diagonal_interlace": {"texture_fn": texture_viking_knotwork,     "paint_fn": paint_celtic_emboss,      "variable_cc": False, "desc": "Viking diagonal over-under interlace braid with parity switching"},
+    "diamond_blanket":    {"texture_fn": texture_native_geometric,    "paint_fn": paint_crosshatch_ink,     "variable_cc": False, "desc": "Native American L1 diamond blanket lattice with border stripes"},
+    "step_fret":          {"texture_fn": texture_inca_step,           "paint_fn": paint_crosshatch_ink,     "variable_cc": False, "desc": "Inca step fret L-shape motif with alternating rotation tiling"},
+    "concentric_dot_rings": {"texture_fn": texture_aboriginal_dots,   "paint_fn": paint_ripple_reflect,     "variable_cc": False, "desc": "Aboriginal periodic concentric ring dot clusters on a regular grid"},
+    "medallion_lattice":  {"texture_fn": texture_turkish_arabesque,   "paint_fn": paint_mosaic_tint,        "variable_cc": False, "desc": "Ottoman crossed sinusoidal lattice producing interlaced medallion lines"},
+    "eight_point_star":   {"texture_fn": texture_eight_point_star,    "paint_fn": paint_interference_shift, "variable_cc": False, "desc": "8-pointed geometric star four-direction arm distance tiling"},
+    "petal_frieze":       {"texture_fn": texture_egyptian_lotus,      "paint_fn": paint_mosaic_tint,        "variable_cc": False, "desc": "Egyptian lotus frieze radial teardrop petal cluster with center stalk"},
+    "cloud_scroll":       {"texture_fn": texture_chinese_cloud,       "paint_fn": paint_ripple_reflect,     "variable_cc": False, "desc": "Chinese ruyi cloud L-inf rectangular ring scroll with corner softening"},
+    # ── Natural Textures (🌿) — Batch 3 (2026-03-28) ─────────────────────────
+    "marble_veining":     {"texture_fn": texture_marble_veining,      "paint_fn": paint_damascus_layer,     "variable_cc": False, "desc": "Turbulence-warped sinusoidal marble vein network with secondary veins"},
+    "wood_burl":          {"texture_fn": texture_wood_burl,           "paint_fn": paint_pinstripe,          "variable_cc": False, "desc": "Multi-center swirling concentric ellipse burl figure with noise warp"},
+    "seigaiha_scales":    {"texture_fn": texture_seigaiha_scales,     "paint_fn": paint_celtic_emboss,      "variable_cc": False, "desc": "Japanese seigaiha overlapping arched half-circle scale tiles"},
+    "ammonite_chambers":  {"texture_fn": texture_ammonite_chambers,   "paint_fn": paint_interference_shift, "variable_cc": False, "desc": "Ammonite log-spiral shell walls with radial suture divisions"},
+    "peacock_eye":        {"texture_fn": texture_peacock_eye,         "paint_fn": paint_interference_shift, "variable_cc": False, "desc": "Peacock feather eye elliptical rings with 20-barb radial overlay"},
+    "dragonfly_wing":     {"texture_fn": texture_dragonfly_wing,      "paint_fn": paint_mosaic_tint,        "variable_cc": False, "desc": "Dragonfly wing dense Voronoi venation network with thin cell walls"},
+    "insect_compound":    {"texture_fn": texture_insect_compound,     "paint_fn": paint_hex_emboss,         "variable_cc": False, "desc": "Insect compound eye hex close-packed ommatidium ring array"},
+    "diatom_radial":      {"texture_fn": texture_diatom_radial,       "paint_fn": paint_interference_shift, "variable_cc": False, "desc": "Radial diatom microorganism 16-spoke rings and inter-spoke dots"},
+    "coral_polyp":        {"texture_fn": texture_coral_polyp,         "paint_fn": paint_mosaic_tint,        "variable_cc": False, "desc": "Coral polyp tiling 8-tentacle radial star with oral disk rings"},
+    "birch_bark":         {"texture_fn": texture_birch_bark,          "paint_fn": paint_pinstripe,          "variable_cc": False, "desc": "Birch bark noise-warped horizontal lenticel bands with cracks"},
+    "pine_cone_scale":    {"texture_fn": texture_pine_cone_scale,     "paint_fn": paint_celtic_emboss,      "variable_cc": False, "desc": "Phyllotaxis dual diagonal sine families forming diamond scale tiles"},
+    "geode_crystal":      {"texture_fn": texture_geode_crystal,       "paint_fn": paint_interference_shift, "variable_cc": False, "desc": "Geode Voronoi crystal facets with per-facet directional sheen lines"},
+    # ── Tech & Circuit (⚙️) — Batch 4 (2026-03-28) ─────────────────────────
+    "circuit_traces":  {"texture_fn": texture_circuit_traces,  "paint_fn": paint_interference_shift, "variable_cc": False, "desc": "PCB orthogonal grid traces with via pad rings at intersections"},
+    "hex_circuit":     {"texture_fn": texture_hex_circuit,     "paint_fn": paint_hex_emboss,         "variable_cc": False, "desc": "Hexagonal circuit grid three-direction parallel lines forming hex trace network"},
+    "biomech_cables":  {"texture_fn": texture_biomech_cables,  "paint_fn": paint_pinstripe,          "variable_cc": False, "desc": "Sinusoidal twisted cable bundles with circumferential rib details"},
+    "dendrite_web":    {"texture_fn": texture_dendrite_web,    "paint_fn": paint_mosaic_tint,        "variable_cc": False, "desc": "Multi-scale fractal branching vein network via layered Voronoi cracks"},
+    "crystal_lattice": {"texture_fn": texture_crystal_lattice, "paint_fn": paint_celtic_emboss,      "variable_cc": False, "desc": "45°-rotated diamond rhombus grid with atom nodes at lattice vertices"},
+    "chainmail_hex":   {"texture_fn": texture_chainmail_hex,   "paint_fn": paint_hex_emboss,         "variable_cc": False, "desc": "Interlocking circular wire rings in hexagonal close-pack arrangement"},
+    "graphene_hex":    {"texture_fn": texture_graphene_hex,    "paint_fn": paint_interference_shift, "variable_cc": False, "desc": "Honeycomb bond network with atom nodes at graphene unit cell positions"},
+    "gear_mesh":       {"texture_fn": texture_gear_mesh,       "paint_fn": paint_celtic_emboss,      "variable_cc": False, "desc": "Toothed circular gear with spokes and hub — tiled mechanical mesh"},
+    "vinyl_record":    {"texture_fn": texture_vinyl_record,    "paint_fn": paint_ripple_reflect,     "variable_cc": False, "desc": "Ultra-fine concentric groove rings with label area and spindle hole"},
+    "fiber_optic":     {"texture_fn": texture_fiber_optic,     "paint_fn": paint_mosaic_tint,        "variable_cc": False, "desc": "Hexagonally close-packed fiber core cross-sections with cladding ring"},
+    "sonar_ping":      {"texture_fn": texture_sonar_ping,      "paint_fn": paint_ripple_reflect,     "variable_cc": False, "desc": "Expanding concentric rings from multiple offset radar/sonar source points"},
+    "waveform_stack":  {"texture_fn": texture_waveform_stack,  "paint_fn": paint_pinstripe,          "variable_cc": False, "desc": "Multiple layered oscilloscope sine traces offset vertically across surface"},
+    # ── Art Deco & Geometric (🎨) — Batch 5 (2026-03-28) ─────────────────────────
+    "art_deco_fan":   {"texture_fn": texture_art_deco_fan,   "paint_fn": paint_interference_shift, "variable_cc": False, "desc": "Tiled semicircular fans with radiating spokes and concentric arc bands"},
+    "chevron_stack":  {"texture_fn": texture_chevron_stack,  "paint_fn": paint_pinstripe,          "variable_cc": False, "desc": "Stacked V-chevrons via triangular-wave centerline periodic in y"},
+    "quatrefoil":     {"texture_fn": texture_quatrefoil,     "paint_fn": paint_celtic_emboss,      "variable_cc": False, "desc": "Four overlapping circle-arc leaves forming a Gothic quatrefoil foil lattice"},
+    "herringbone":    {"texture_fn": texture_herringbone,    "paint_fn": paint_crosshatch_ink,     "variable_cc": False, "desc": "Alternating-parity diagonal stripe directions in staggered rectangular cells"},
+    "basket_weave":   {"texture_fn": texture_basket_weave,   "paint_fn": paint_crosshatch_ink,     "variable_cc": False, "desc": "Alternating horizontal and vertical strand blocks in 2x2 parity grid"},
+    "houndstooth":    {"texture_fn": texture_houndstooth,    "paint_fn": paint_mosaic_tint,        "variable_cc": False, "desc": "Combined offset 45-degree rotated checkerboards creating 4-pointed star tile pattern"},
+    "argyle":         {"texture_fn": texture_argyle,         "paint_fn": paint_interference_shift, "variable_cc": False, "desc": "L1-norm diamond outline grid with diagonal crosshatch in alternate diamonds"},
+    "tartan":         {"texture_fn": texture_tartan,         "paint_fn": paint_pinstripe,          "variable_cc": False, "desc": "Intersecting stripe families with sett widths forming plaid grid"},
+    "op_art_rings":   {"texture_fn": texture_op_art_rings,   "paint_fn": paint_ripple_reflect,     "variable_cc": False, "desc": "Concentric L-inf square rings creating optical pulsation illusion"},
+    "moire_grid":     {"texture_fn": texture_moire_grid,     "paint_fn": paint_interference_shift, "variable_cc": False, "desc": "Two slightly angled parallel line families creating interference fringe patterns"},
+    "lozenge_tile":   {"texture_fn": texture_lozenge_tile,   "paint_fn": paint_celtic_emboss,      "variable_cc": False, "desc": "Offset-row diamond lozenge shapes with L1-norm border outline"},
+    "ogee_lattice":   {"texture_fn": texture_ogee_lattice,   "paint_fn": paint_mosaic_tint,        "variable_cc": False, "desc": "Sinusoidally-warped grid creating S-curve Gothic ogee arch lattice shapes"},
+    # ── Mathematical & Fractal (🌀) — Batch 6 (2026-03-28) ─────────────────────────
+    "reaction_diffusion":  {"texture_fn": texture_reaction_diffusion,  "paint_fn": paint_mosaic_tint,        "variable_cc": False, "desc": "Gray-Scott Turing activator-inhibitor spot/stripe morphogenesis approximation"},
+    "fractal_fern":        {"texture_fn": texture_fractal_fern,        "paint_fn": paint_mosaic_tint,        "variable_cc": False, "desc": "Barnsley fern IFS attractor density map via 800-chain parallel iteration"},
+    "hilbert_curve":       {"texture_fn": texture_hilbert_curve,       "paint_fn": paint_interference_shift, "variable_cc": False, "desc": "Hilbert space-filling curve maze — walls rendered between non-adjacent cells"},
+    "lorenz_slice":        {"texture_fn": texture_lorenz_slice,        "paint_fn": paint_mosaic_tint,        "variable_cc": False, "desc": "Lorenz butterfly attractor density projected onto x/z plane via ODE iteration"},
+    "julia_boundary":      {"texture_fn": texture_julia_boundary,      "paint_fn": paint_interference_shift, "variable_cc": False, "desc": "Julia set z-squared-plus-c fractal boundary smooth escape-time coloring"},
+    "wave_standing":       {"texture_fn": texture_wave_standing,       "paint_fn": paint_ripple_reflect,     "variable_cc": False, "desc": "2D Chladni standing wave nodal lines from orthogonal and diagonal cosine products"},
+    "lissajous_web":       {"texture_fn": texture_lissajous_web,       "paint_fn": paint_interference_shift, "variable_cc": False, "desc": "Lissajous web sin(3x)-sin(4y+pi/2) implicit zero-contour family tiled periodically"},
+    "dragon_curve":        {"texture_fn": texture_dragon_curve,        "paint_fn": paint_celtic_emboss,      "variable_cc": False, "desc": "Dragon curve fractal approximation via 5 levels of 45-degree-rotated right-angle grids"},
+    "diffraction_grating": {"texture_fn": texture_diffraction_grating, "paint_fn": paint_ripple_reflect,     "variable_cc": False, "desc": "Holographic diffraction grating — 6 sinusoidal gratings at 30-degree intervals squared"},
+    "perlin_terrain":      {"texture_fn": texture_perlin_terrain,      "paint_fn": paint_mosaic_tint,        "variable_cc": False, "desc": "Multi-octave terrain noise with ridged sharpening for erosion scar morphology"},
+    "phyllotaxis":         {"texture_fn": texture_phyllotaxis,         "paint_fn": paint_hex_emboss,         "variable_cc": False, "desc": "Fibonacci phyllotaxis golden-angle seed spiral packing distance field"},
+    "truchet_flow":        {"texture_fn": texture_truchet_flow,        "paint_fn": paint_celtic_emboss,      "variable_cc": False, "desc": "Truchet quarter-circle arc tiles — random orientation creates organic flowing paths"},
+    # ── Op-Art & Visual Illusions (🔮) — Batch 7 (2026-03-28) ─────────────────────────
+    "concentric_op":       {"texture_fn": texture_concentric_op,       "paint_fn": paint_ripple_reflect,     "variable_cc": False, "desc": "Bridget Riley dual-frequency concentric bands producing optical vibration beat"},
+    "checker_warp":        {"texture_fn": texture_checker_warp,        "paint_fn": paint_interference_shift, "variable_cc": False, "desc": "Sine-warped checkerboard — sinusoidal displacement creates bulging impossible grid illusion"},
+    "barrel_distort":      {"texture_fn": texture_barrel_distort,      "paint_fn": paint_interference_shift, "variable_cc": False, "desc": "Barrel lens distortion applied to checkerboard — straight lines bow outward from center"},
+    "moire_interference":  {"texture_fn": texture_moire_interference,  "paint_fn": paint_ripple_reflect,     "variable_cc": False, "desc": "Two grids at 7% different scale and 15-degree rotation producing moiré beat fringes"},
+    "twisted_rings":       {"texture_fn": texture_twisted_rings,       "paint_fn": paint_celtic_emboss,      "variable_cc": False, "desc": "Concentric rings twisted by radius via Archimedean phase — spring vortex illusion"},
+    "spiral_hypnotic":     {"texture_fn": texture_spiral_hypnotic,     "paint_fn": paint_ripple_reflect,     "variable_cc": False, "desc": "Archimedean spiral banded by phase offset — rotating depth vortex optical illusion"},
+    "necker_grid":         {"texture_fn": texture_necker_grid,         "paint_fn": paint_hex_emboss,         "variable_cc": False, "desc": "Isometric cube tiling with three-brightness face shading — Necker cube 3D/2D illusion"},
+    "radial_pulse":        {"texture_fn": texture_radial_pulse,        "paint_fn": paint_mosaic_tint,        "variable_cc": False, "desc": "24 radial spokes with radius-modulated width — apparent inward pulse motion illusion"},
+    "hex_op":              {"texture_fn": texture_hex_op,              "paint_fn": paint_hex_emboss,         "variable_cc": False, "desc": "Nested hexagonal shells via hex Chebyshev distance — 3D optical tunnel illusion"},
+    "pinwheel_tiling":     {"texture_fn": texture_pinwheel_tiling,     "paint_fn": paint_mosaic_tint,        "variable_cc": False, "desc": "7 golden-angle overlapping grids approximate aperiodic pinwheel — no repeating tile direction"},
+    "impossible_grid":     {"texture_fn": texture_impossible_grid,     "paint_fn": paint_interference_shift, "variable_cc": False, "desc": "Phase-inverted alternating square cells with banded L-inf metric — impossible connectivity illusion"},
+    "rose_curve":          {"texture_fn": texture_rose_curve,          "paint_fn": paint_mosaic_tint,        "variable_cc": False, "desc": "Rhodonea k=5 polar rose tiled field — five-petal outline with radial gradient fill"},
+    # ── Art Deco Depth + Textile (🏛️🧵) — Batch 8 (2026-03-28) ────────────────────────
+    "art_deco_sunburst":   {"texture_fn": texture_art_deco_sunburst,   "paint_fn": paint_ripple_reflect,     "variable_cc": False, "desc": "Chrysler Building Art Deco sunburst — 36 radial spokes with 5 concentric decorative ring bands"},
+    "art_deco_chevron":    {"texture_fn": texture_art_deco_chevron,    "paint_fn": paint_celtic_emboss,      "variable_cc": False, "desc": "Bold Art Deco double-stripe nested V chevrons with wide gaps — classic 1920s style"},
+    "greek_meander":       {"texture_fn": texture_greek_meander,       "paint_fn": paint_mosaic_tint,        "variable_cc": False, "desc": "Greek key meander right-angle hook spiral motif tiled in alternating-parity rows"},
+    "star_tile_mosaic":    {"texture_fn": texture_moroccan_zellige,    "paint_fn": paint_interference_shift, "variable_cc": False, "desc": "Moroccan zellige 8-pointed star — two overlapping L-inf norms create Islamic star tile"},
+    "escher_reptile":      {"texture_fn": texture_escher_reptile,      "paint_fn": paint_hex_emboss,         "variable_cc": False, "desc": "Escher-style hex reptile tessellation — alternating shaded cells with organic boundary deformation"},
+    "constructivist":      {"texture_fn": texture_constructivist,      "paint_fn": paint_mosaic_tint,        "variable_cc": False, "desc": "Soviet Constructivist — orthogonal grid plus 45-degree diagonals and bold horizontal band"},
+    "bauhaus_system":      {"texture_fn": texture_bauhaus_system,      "paint_fn": paint_mosaic_tint,        "variable_cc": False, "desc": "Bauhaus primary form grid — circle, square, and diamond outline shapes alternating in cells"},
+    "celtic_plait":        {"texture_fn": texture_celtic_plait,        "paint_fn": paint_celtic_emboss,      "variable_cc": False, "desc": "Celtic plait braid — two diagonal strand families with alternating over-under weave"},
+    "cane_weave":          {"texture_fn": texture_cane_weave,          "paint_fn": paint_mosaic_tint,        "variable_cc": False, "desc": "Cane/rattan weave — orthogonal H+V basket grid with alternating over-under crossings at each cell"},
+    "cable_knit":          {"texture_fn": texture_cable_knit,          "paint_fn": paint_mosaic_tint,        "variable_cc": False, "desc": "Cable knit — vertical rope-twist columns with two strands crossing per period"},
+    "damask_brocade":      {"texture_fn": texture_damask_brocade,      "paint_fn": paint_ripple_reflect,     "variable_cc": False, "desc": "Damask brocade — four-petal rose with outer ring and diamond accent, figure-vs-ground contrast"},
+    "tatami_grid":         {"texture_fn": texture_tatami_grid,         "paint_fn": paint_mosaic_tint,        "variable_cc": False, "desc": "Tatami grid — Japanese 2:1 mat rectangles staggered alternating rows with border lines"},
+    # ── Final 4 — To 100 Patterns (🏁 Batch 9, 2026-03-28) ──────────────────────────
+    "hypocycloid":         {"texture_fn": texture_hypocycloid,         "paint_fn": paint_mosaic_tint,        "variable_cc": False, "desc": "Tiled 5-cusped Spirograph hypocycloid — parametric star outline from k=5 hypotrochoid curve"},
+    "voronoi_relaxed":     {"texture_fn": texture_voronoi_relaxed,     "paint_fn": paint_interference_shift, "variable_cc": False, "desc": "Centroidal Voronoi relaxed cells — jitter-grid seeds give uniform organic cell borders"},
+    "wave_ripple_2d":      {"texture_fn": texture_wave_ripple_2d,      "paint_fn": paint_ripple_reflect,     "variable_cc": False, "desc": "2D circular wave interference from 4 sources — constructive/destructive ring patterns"},
+    "sierpinski_tri":      {"texture_fn": texture_sierpinski_tri,      "paint_fn": paint_mosaic_tint,        "variable_cc": False, "desc": "Sierpinski gasket via Pascal triangle mod 2 — bitwise integer test produces deep fractal"},
 }
 
 # Stubs for engine/chameleon.py functions - real implementations injected at startup.
@@ -4772,7 +7043,7 @@ paint_prizm_venom        = _prizm_stub_paint
 
 # --- MONOLITHIC FINISHES (can't decompose) ---
 MONOLITHIC_REGISTRY = {
-    "aurora":             (spec_aurora,        paint_aurora),
+    "aurora":             (spec_aurora_borealis_mono,  paint_aurora_borealis_mono),  # WEAK-040: upgraded from legacy 2-sine wave to domain-warped curtain aurora
     "cel_shade":          (spec_cel_shade,     paint_cel_shade),
     "chameleon_arctic":   (spec_chameleon_pro, paint_chameleon_arctic),
     "chameleon_amethyst": (spec_chameleon_pro, paint_chameleon_amethyst),
@@ -4813,7 +7084,7 @@ MONOLITHIC_REGISTRY = {
     "liquid_metal": (spec_liquid_metal,  paint_liquid_reflect),
     "mystichrome":        (spec_chameleon_pro, paint_mystichrome),
     "neon_glow":    (spec_neon_glow,     paint_neon_edge),
-    "oil_slick":    (spec_oil_slick,     paint_oil_slick),
+    "oil_slick":    (spec_oil_slick,     paint_oil_slick_full),  # WEAK-039 FIX: was paint_oil_slick (10% sine, near-invisible); full = FBM thin-film 360° hue at 70% blend
     "phantom":      (spec_phantom,      paint_phantom_fade),
     "prizm_adaptive":     (spec_prizm_adaptive,     paint_prizm_adaptive),
     "prizm_arctic":       (spec_prizm_arctic,       paint_prizm_arctic),
@@ -4835,6 +7106,17 @@ MONOLITHIC_REGISTRY = {
     "thermochromic":      (spec_thermochromic, paint_thermochromic),
     "weathered_paint": (spec_weathered_paint, paint_weathered_peel),
     "worn_chrome":  (spec_worn_chrome,   paint_patina),
+    # ── RESEARCH-008: New Exotic Monolithic Bases ──────────────
+    "oil_slick_base":      (spec_oil_slick_base,      paint_oil_slick_full),
+    "thermal_titanium":    (spec_thermal_titanium,     paint_thermal_titanium),
+    "galaxy_nebula_base":  (spec_galaxy_nebula_base,   paint_galaxy_nebula_full),
+    # ── RESEARCH SESSION 6: 6 New Monolithic Finishes (2026-03-29) ──────────
+    "aurora_borealis_mono":  (spec_aurora_borealis_mono,  paint_aurora_borealis_mono),
+    "deep_space_void":       (spec_deep_space_void,        paint_deep_space_void),
+    "polished_obsidian_mono":(spec_polished_obsidian_mono, paint_polished_obsidian_mono),
+    "patinated_bronze":      (spec_patinated_bronze,       paint_patinated_bronze),
+    "reactive_plasma":       (spec_reactive_plasma,        paint_reactive_plasma),
+    "molten_metal":          (spec_molten_metal,           paint_molten_metal),
 }
 
 
@@ -4955,6 +7237,39 @@ except ImportError:
 except Exception as e:
     print(f"[Atelier] Load error: {e}")
 
+
+# ================================================================
+# REGISTRY MERGE — Bring in ALL entries from engine.registry that didn't
+# survive the circular import chain. This includes:
+#   - Foundation bases (f_*) from base_registry_data.py
+#   - Image-based patterns from assets/patterns/ directory
+#   - Staging decade patterns from _staging/pattern_upgrades/
+#   - User pattern examples from basespatterns_examples/
+#   - Any other entries added by engine/registry.py's _build_registries()
+# ================================================================
+try:
+    from engine.registry import _build_registries as _br
+    _full_base, _full_pat, _full_mono, _full_fin, _full_fus = _br()
+    _added_b = _added_p = _added_m = 0
+    for k, v in _full_base.items():
+        if k not in BASE_REGISTRY:
+            BASE_REGISTRY[k] = v
+            _added_b += 1
+    for k, v in _full_pat.items():
+        if k not in PATTERN_REGISTRY:
+            PATTERN_REGISTRY[k] = v
+            _added_p += 1
+    for k, v in _full_mono.items():
+        if k not in MONOLITHIC_REGISTRY:
+            MONOLITHIC_REGISTRY[k] = v
+            _added_m += 1
+    if _added_b or _added_p or _added_m:
+        print(f"  Engine loaded: {len(BASE_REGISTRY)} bases, {len(PATTERN_REGISTRY)} patterns, {len(MONOLITHIC_REGISTRY)} monolithics")
+        if _added_b: print(f"  [Registry merge] +{_added_b} bases (Foundation, expansions)")
+        if _added_p: print(f"  [Registry merge] +{_added_p} patterns (image-based, decades, examples)")
+        if _added_m: print(f"  [Registry merge] +{_added_m} monolithics")
+except Exception as _merge_err:
+    print(f"  [Registry merge] Warning: {_merge_err}")
 
 # ================================================================
 # GENERIC FALLBACK RENDERER - moved to engine.render
@@ -5095,19 +7410,52 @@ def overlay_pattern_paint(paint, pattern_id, shape, mask, seed, pm, bb, scale=1.
     image_path = pattern.get("image_path")
     if image_path:
         try:
-            from engine.render import _load_image_pattern
-            pv = _load_image_pattern(image_path, shape, scale=scale, rotation=rotation)
-            if pv is not None:
-                pv = np.asarray(pv, dtype=np.float32)
-                pv_min, pv_max = float(pv.min()), float(pv.max())
-                if pv_max - pv_min > 1e-8:
-                    pv = (pv - pv_min) / (pv_max - pv_min)
+            from engine.render import _load_image_pattern, _load_color_image_pattern
+            # Load the FULL COLOR version for paint overlay
+            rgba = _load_color_image_pattern(image_path, shape, scale=scale, rotation=rotation)
+            if rgba is not None and rgba.shape[2] >= 4:
+                alpha = rgba[:, :, 3]
+                rgb = rgba[:, :, :3]
+                # Check if image has REAL transparency or is fully opaque
+                has_real_transparency = float(alpha.min()) < 0.95
+                if has_real_transparency:
+                    # Image has transparent areas — use alpha as blend mask
+                    alpha_3d = (alpha[:, :, np.newaxis] * opacity).astype(np.float32)
+                    paint[:, :, :3] = np.clip(
+                        paint_before[:, :, :3] * (1.0 - alpha_3d) + rgb * alpha_3d,
+                        0, 1
+                    ).astype(np.float32)
                 else:
-                    pv = np.ones_like(pv) * 0.5
-                pv_3d = pv[:, :, np.newaxis] * opacity * spec_mult * 0.35
-                paint = np.clip(paint_before * (1.0 - pv_3d) + paint * pv_3d, 0, 1).astype(np.float32)
-        except Exception:
-            pass
+                    # Fully opaque image (like Art Deco) — use SCREEN blend so bright
+                    # pattern areas show on top of existing paint, dark areas are transparent
+                    # Screen blend: result = 1 - (1-a)(1-b) = a + b - a*b
+                    screen = paint_before[:, :, :3] + rgb - paint_before[:, :, :3] * rgb
+                    blend_3d = np.full_like(screen[:, :, :1], opacity, dtype=np.float32)
+                    paint[:, :, :3] = np.clip(
+                        paint_before[:, :, :3] * (1.0 - blend_3d) + screen * blend_3d,
+                        0, 1
+                    ).astype(np.float32)
+                    print(f"    [OVERLAY PAINT] Screen-blended opaque image pattern at {opacity*100:.0f}%")
+            elif rgba is not None:
+                # Fewer than 4 channels — use Screen blend
+                screen = paint_before[:, :, :3] + rgba[:, :, :3] - paint_before[:, :, :3] * rgba[:, :, :3]
+                blend_3d = np.full_like(screen[:, :, :1], opacity, dtype=np.float32)
+                paint[:, :, :3] = np.clip(
+                    paint_before[:, :, :3] * (1.0 - blend_3d) + screen * blend_3d,
+                    0, 1
+                ).astype(np.float32)
+            else:
+                # Fallback to grayscale if color load fails
+                pv = _load_image_pattern(image_path, shape, scale=scale, rotation=rotation)
+                if pv is not None:
+                    pv = np.asarray(pv, dtype=np.float32)
+                    pv_min, pv_max = float(pv.min()), float(pv.max())
+                    if pv_max - pv_min > 1e-8:
+                        pv = (pv - pv_min) / (pv_max - pv_min)
+                    pv_3d = pv[:, :, np.newaxis] * opacity
+                    paint = np.clip(paint_before * (1.0 - pv_3d) + paint * pv_3d, 0, 1).astype(np.float32)
+        except Exception as _img_err:
+            print(f"    [OVERLAY PAINT] Image pattern paint failed: {_img_err}")
         return paint
     tex_fn = pattern.get("texture_fn")
     if tex_fn is not None:
@@ -5144,7 +7492,7 @@ def overlay_pattern_paint(paint, pattern_id, shape, mask, seed, pm, bb, scale=1.
 # MULTI-ZONE BUILD - THE CORE (FIXED!)
 # ================================================================
 
-def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51, save_debug_images=False, import_spec_map=None, car_prefix="car_num", stamp_image=None, stamp_spec_finish="gloss", preview_mode=False, decal_spec_finishes=None, decal_paint_path=None):
+def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51, save_debug_images=False, import_spec_map=None, car_prefix="car_num", stamp_image=None, stamp_spec_finish="gloss", preview_mode=False, decal_spec_finishes=None, decal_paint_path=None, decal_mask_base64=None):
     """
     Apply different finishes to different color-detected zones.
 
@@ -5205,6 +7553,16 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
     print(f"  Zones: {len(zones)}")
     print(f"  Combinations: {len(BASE_REGISTRY)} bases x {len(PATTERN_REGISTRY)} patterns = {len(BASE_REGISTRY) * len(PATTERN_REGISTRY)}+")
     print("=" * 60)
+
+    # ---- Zone result cache (preview_mode only) ----
+    # Persists across calls as a function attribute so unchanged zones are skipped.
+    # Each entry: { 'zone_spec': np.array, 'paint_delta': np.array, 'mask': np.array }
+    # 'paint_delta' is the paint array AFTER this zone was applied minus the paint BEFORE,
+    # masked to the zone — so we can replay it without re-running the full pipeline.
+    # Cache is invalidated externally (by server.py) when paint file or scale changes.
+    import hashlib as _hashlib
+    if not hasattr(build_multi_zone, '_zone_cache'):
+        build_multi_zone._zone_cache = {}
 
     start_time = time.time()
     if not preview_mode:
@@ -5297,6 +7655,8 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
             continue
 
         # Parse selector(s) - can be a single selector or a LIST of selectors (multi-color zone)
+        hard_edge = zone.get("hard_edge", False)
+        _blur = 0 if hard_edge else 3
         if isinstance(color_desc, list):
             # Multi-color zone: union of multiple color selectors
             # Each element is a dict like {"color_rgb": [R,G,B], "tolerance": 40}
@@ -5306,7 +7666,7 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
                     sub_selector = sub_desc
                 else:
                     sub_selector = parse_color_description(str(sub_desc))
-                sub_mask = build_zone_mask(scheme, stats, sub_selector, blur_radius=3)
+                sub_mask = build_zone_mask(scheme, stats, sub_selector, blur_radius=_blur)
                 union_mask = np.maximum(union_mask, sub_mask)  # OR/union
             mask = union_mask
             print(f"    Zone {i+1} [{zone['name']}]: multi-color ({len(color_desc)} selectors)")
@@ -5315,13 +7675,13 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
             if selector.get("remainder"):
                 zone_masks.append(None)  # Placeholder
                 continue
-            mask = build_zone_mask(scheme, stats, selector, blur_radius=3)
+            mask = build_zone_mask(scheme, stats, selector, blur_radius=_blur)
         else:
             selector = parse_color_description(str(color_desc))
             if selector.get("remainder"):
                 zone_masks.append(None)  # Placeholder
                 continue
-            mask = build_zone_mask(scheme, stats, selector, blur_radius=3)
+            mask = build_zone_mask(scheme, stats, selector, blur_radius=_blur)
 
         # ---- SPATIAL MASK: intersect color mask with drawn include/exclude regions ----
         # spatial_mask is a 2D numpy array: 0=unset, 1=include, 2=exclude
@@ -5360,8 +7720,17 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
     for i in range(len(zone_masks)):
         if zone_masks[i] is not None:
             soft = zone_masks[i]
-            # Keep soft edges at the boundary but harden the core
-            zone_masks[i] = np.where(soft > HARD_THRESHOLD, 1.0, soft / HARD_THRESHOLD * soft).astype(np.float32)
+            # Skip blur + hardening for masks with no meaningful content
+            if np.max(soft) < 0.01:
+                zone_masks[i] = np.zeros_like(soft)
+                continue
+            hard_edge = zones[i].get("hard_edge", False) if i < len(zones) else False
+            if hard_edge:
+                # Binary mask — no soft edges at all
+                zone_masks[i] = np.where(soft > 0.01, 1.0, 0.0).astype(np.float32)
+            else:
+                # Keep soft edges at the boundary but harden the core
+                zone_masks[i] = np.where(soft > HARD_THRESHOLD, 1.0, soft / HARD_THRESHOLD * soft).astype(np.float32)
 
     # Rebuild claimed from hardened masks (so remainder doesn't bleed into them)
     claimed_hard = np.zeros((h, w), dtype=np.float32)
@@ -5376,9 +7745,7 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
         # Remainder = everything not yet claimed (using hardened masks)
         remainder_mask = np.clip(1.0 - claimed_hard, 0, 1)
         # Blur for soft edges at zone boundaries only
-        rm_img = Image.fromarray((remainder_mask * 255).astype(np.uint8))
-        rm_img = rm_img.filter(ImageFilter.GaussianBlur(radius=2))
-        remainder_mask = np.array(rm_img).astype(np.float32) / 255.0
+        remainder_mask = _scipy_gaussian_filter(remainder_mask, sigma=2)
         # Zero out remainder inside claimed zones to prevent overwriting
         remainder_mask = np.where(claimed_hard > 0.5, 0.0, remainder_mask).astype(np.float32)
 
@@ -5407,30 +7774,30 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
             imp_img = Image.open(import_spec_map)
             # Handle both RGBA (32-bit) and RGB (24-bit) spec maps
             if imp_img.mode == 'RGBA':
-                combined_spec = np.array(imp_img).astype(np.uint8)
+                combined_spec = np.array(imp_img).astype(np.float32)
             elif imp_img.mode == 'RGB':
-                rgb = np.array(imp_img).astype(np.uint8)
-                alpha = np.full((rgb.shape[0], rgb.shape[1], 1), 255, dtype=np.uint8)
+                rgb = np.array(imp_img).astype(np.float32)
+                alpha = np.full((rgb.shape[0], rgb.shape[1], 1), 255, dtype=np.float32)
                 combined_spec = np.concatenate([rgb, alpha], axis=2)
             else:
                 imp_img = imp_img.convert('RGBA')
-                combined_spec = np.array(imp_img).astype(np.uint8)
+                combined_spec = np.array(imp_img).astype(np.float32)
             # Resize to match paint if needed
             if combined_spec.shape[0] != h or combined_spec.shape[1] != w:
-                imp_resized = Image.fromarray(combined_spec).resize((w, h), Image.LANCZOS)
-                combined_spec = np.array(imp_resized).astype(np.uint8)
+                imp_resized = Image.fromarray(combined_spec.astype(np.uint8)).resize((w, h), Image.LANCZOS)
+                combined_spec = np.array(imp_resized).astype(np.float32)
             print(f"    Imported spec: {combined_spec.shape[1]}x{combined_spec.shape[0]} RGBA")
             print(f"    Zones will MERGE on top of imported spec map")
         except Exception as e:
             print(f"    WARNING: Failed to load import spec map: {e}")
             print(f"    Falling back to default spec")
-            combined_spec = np.zeros((h, w, 4), dtype=np.uint8)
+            combined_spec = np.zeros((h, w, 4), dtype=np.float32)
             combined_spec[:,:,0] = 5       # Low metallic
             combined_spec[:,:,1] = 100     # Medium-rough
             combined_spec[:,:,2] = 16      # Max clearcoat
             combined_spec[:,:,3] = 255     # Full spec mask
     else:
-        combined_spec = np.zeros((h, w, 4), dtype=np.uint8)
+        combined_spec = np.zeros((h, w, 4), dtype=np.float32)
         combined_spec[:,:,0] = 5       # Low metallic
         combined_spec[:,:,1] = 100     # Medium-rough
         combined_spec[:,:,2] = 16      # Max clearcoat
@@ -5444,6 +7811,10 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
     #   3. Legacy: zone has "finish" in FINISH_REGISTRY => existing spec_fn/paint_fn
     t_finishes = time.time()
     print(f"\n  Applying finishes...")
+    # Shared thread pool for spec generation — reused across all zones instead of
+    # creating/destroying a new ThreadPoolExecutor per zone (saves pool overhead).
+    # max_workers=2: one for current zone's spec, one for next zone's spec (pipelining).
+    _shared_spec_pool = ThreadPoolExecutor(max_workers=min(2, _os.cpu_count() or 1))
     for i, zone in enumerate(zones):
         t_zone = time.time()
         name = zone["name"]
@@ -5463,6 +7834,69 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
         if zone_mask is None or np.max(zone_mask) < 0.01:
             print(f"    [{name}] => SKIPPED (no matching pixels)")
             continue
+
+        # ---- Zone-level cache (preview_mode only) ----
+        # Compute a hash of all zone settings + mask fingerprint.
+        # If matched, replay the cached zone_spec and paint_delta instead of re-rendering.
+        _zone_cache_key = None
+        if preview_mode:
+            try:
+                # Build a stable cache key from zone settings + mask fingerprint.
+                # We exclude the zone mask data itself (too large) and instead fingerprint
+                # it via shape + sum + max so minor floating-point drift doesn't cause
+                # spurious cache misses.
+                _zone_key_data = {
+                    k: v for k, v in zone.items()
+                    if k not in ("region_mask", "spatial_mask", "name")
+                }
+                _zm_sig = f"{zone_mask.shape}:{zone_mask.sum():.4f}:{zone_mask.max():.4f}:{h}x{w}"
+                _zone_raw = str(sorted(_zone_key_data.items())) + _zm_sig
+                _zone_cache_key = _hashlib.md5(_zone_raw.encode()).hexdigest()
+                if _zone_cache_key in build_multi_zone._zone_cache:
+                    cached = build_multi_zone._zone_cache[_zone_cache_key]
+                    zone_spec = cached['zone_spec']
+                    # Replay paint delta: add the cached paint modification back onto current paint
+                    _pdelta = cached['paint_delta']
+                    _pmask = cached['mask']
+                    paint = np.where(_pmask[:, :, np.newaxis] > 0.01,
+                                     np.clip(paint + _pdelta, 0, 1), paint).astype(np.float32)
+                    print(f"    [{name}] => CACHE HIT (skipped re-render)")
+                    # Jump directly to the combined_spec blending step below
+                    # (reuse cached zone_spec, paint already updated)
+                    # GPU-accelerated when CuPy is available
+                    hard_edge = zone.get("hard_edge", False)
+                    if is_gpu():
+                        _zs_g = to_gpu(zone_spec.astype(np.float32))
+                        _m3d_g = to_gpu(zone_mask[:, :, np.newaxis])
+                        _cs_g = to_gpu(combined_spec)
+                        if hard_edge:
+                            combined_spec = to_cpu(xp.where(_m3d_g > 0.01, _zs_g, _cs_g))
+                        else:
+                            strong = _m3d_g > 0.5
+                            soft = (_m3d_g > 0.05) & ~strong
+                            blended = xp.clip(_zs_g * _m3d_g + _cs_g * (1 - _m3d_g), 0, 255)
+                            combined_spec = to_cpu(xp.where(strong, _zs_g, xp.where(soft, blended, _cs_g)))
+                    else:
+                        mask3d = zone_mask[:, :, np.newaxis]
+                        if hard_edge:
+                            combined_spec = np.where(mask3d > 0.01, zone_spec, combined_spec)
+                        else:
+                            strong = mask3d > 0.5
+                            soft = (mask3d > 0.05) & ~strong
+                            blended = np.clip(
+                                zone_spec.astype(np.float32) * mask3d +
+                                combined_spec * (1 - mask3d),
+                                0, 255
+                            )
+                            combined_spec = np.where(strong, zone_spec.astype(np.float32), np.where(soft, blended, combined_spec))
+                    print(f"      [{name}] zone time (cached): {time.time()-t_zone:.2f}s")
+                    continue
+            except Exception as _ce:
+                _zone_cache_key = None  # Cache lookup failed — fall through to normal render
+                print(f"    [{name}] zone cache lookup error (falling through): {_ce}")
+
+        # Snapshot paint before this zone renders so we can store the delta
+        _paint_before = paint.copy() if (preview_mode and _zone_cache_key) else None
 
         # Custom intensity overrides per-zone slider values
         # Custom sliders now use 0-1 normalized range (same as presets),
@@ -5577,6 +8011,9 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
             _v6kw["base_flip_v"] = bool(zone.get("base_flip_v", False))
             if zone.get("spec_pattern_stack"): _v6kw["spec_pattern_stack"] = zone["spec_pattern_stack"]
             if zone.get("overlay_spec_pattern_stack"): _v6kw["overlay_spec_pattern_stack"] = zone["overlay_spec_pattern_stack"]
+            if zone.get("third_overlay_spec_pattern_stack"): _v6kw["third_overlay_spec_pattern_stack"] = zone["third_overlay_spec_pattern_stack"]
+            if zone.get("fourth_overlay_spec_pattern_stack"): _v6kw["fourth_overlay_spec_pattern_stack"] = zone["fourth_overlay_spec_pattern_stack"]
+            if zone.get("fifth_overlay_spec_pattern_stack"): _v6kw["fifth_overlay_spec_pattern_stack"] = zone["fifth_overlay_spec_pattern_stack"]
             if _z_cc is not None: _v6kw["cc_quality"] = _z_cc
             if _z_bb: _v6kw["blend_base"] = _z_bb; _v6kw["blend_dir"] = _z_bd; _v6kw["blend_amount"] = _z_ba; print(f"    [{name}] v6.1 BLEND: base={_z_bb}, dir={_z_bd}, amount={_z_ba:.2f}")
             if _z_pc: _v6kw["paint_color"] = _z_pc
@@ -5616,6 +8053,12 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
                 _v6kw["second_base_pattern_offset_x"] = _sb_ox
                 _v6kw["second_base_pattern_offset_y"] = _sb_oy
                 _v6kw["second_base_pattern_scale"] = _sb_pscale
+            _v6kw["second_base_hue_shift"] = float(zone.get("second_base_hue_shift", 0))
+            _v6kw["second_base_saturation"] = float(zone.get("second_base_saturation", 0))
+            _v6kw["second_base_brightness"] = float(zone.get("second_base_brightness", 0))
+            _v6kw["second_base_pattern_hue_shift"] = float(zone.get("second_base_pattern_hue_shift", 0))
+            _v6kw["second_base_pattern_saturation"] = float(zone.get("second_base_pattern_saturation", 0))
+            _v6kw["second_base_pattern_brightness"] = float(zone.get("second_base_pattern_brightness", 0))
             _v6kw["second_base_color_source"] = zone.get("second_base_color_source")
             _z_tb = zone.get("third_base")
             if _z_tb:
@@ -5651,6 +8094,9 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
                 _v6kw["third_base_pattern_offset_x"] = _tb_ox
                 _v6kw["third_base_pattern_offset_y"] = _tb_oy
                 _v6kw["third_base_pattern_scale"] = _tb_pscale
+            _v6kw["third_base_hue_shift"] = float(zone.get("third_base_hue_shift", 0))
+            _v6kw["third_base_saturation"] = float(zone.get("third_base_saturation", 0))
+            _v6kw["third_base_brightness"] = float(zone.get("third_base_brightness", 0))
             _v6kw["third_base_color_source"] = zone.get("third_base_color_source")
             _z_fb = zone.get("fourth_base")
             if _z_fb:
@@ -5686,6 +8132,9 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
                 _v6kw["fourth_base_pattern_offset_x"] = _fb_ox
                 _v6kw["fourth_base_pattern_offset_y"] = _fb_oy
                 _v6kw["fourth_base_pattern_scale"] = _fb_pscale
+            _v6kw["fourth_base_hue_shift"] = float(zone.get("fourth_base_hue_shift", 0))
+            _v6kw["fourth_base_saturation"] = float(zone.get("fourth_base_saturation", 0))
+            _v6kw["fourth_base_brightness"] = float(zone.get("fourth_base_brightness", 0))
             _v6kw["fourth_base_color_source"] = zone.get("fourth_base_color_source")
             _z_fif = zone.get("fifth_base")
             if _z_fif:
@@ -5721,6 +8170,9 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
                 _v6kw["fifth_base_pattern_offset_x"] = _fif_ox
                 _v6kw["fifth_base_pattern_offset_y"] = _fif_oy
                 _v6kw["fifth_base_pattern_scale"] = _fif_pscale
+            _v6kw["fifth_base_hue_shift"] = float(zone.get("fifth_base_hue_shift", 0))
+            _v6kw["fifth_base_saturation"] = float(zone.get("fifth_base_saturation", 0))
+            _v6kw["fifth_base_brightness"] = float(zone.get("fifth_base_brightness", 0))
             _v6kw["fifth_base_color_source"] = zone.get("fifth_base_color_source")
             _v6kw["monolithic_registry"] = MONOLITHIC_REGISTRY
 
@@ -5736,7 +8188,16 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
                                          "offset_y": float(zone.get("pattern_offset_y", 0.5))})
                 for ps in pattern_stack[:3]:  # Max 3 additional
                     pid = ps.get("id", "none")
-                    if pid != "none" and pid in PATTERN_REGISTRY:
+                    _pid_in_reg = pid in PATTERN_REGISTRY
+                    print(f"    [STACK] Pattern layer: id='{pid}' in_registry={_pid_in_reg}")
+                    if not _pid_in_reg and pid != "none":
+                        # Try common ID transformations
+                        _alt_id = pid.replace(" ", "_").replace("-", "_")
+                        if _alt_id in PATTERN_REGISTRY:
+                            print(f"    [STACK] Found as '{_alt_id}' — using that instead")
+                            pid = _alt_id
+                            _pid_in_reg = True
+                    if pid != "none" and _pid_in_reg:
                         all_patterns.append({
                             "id": pid,
                             "opacity": float(ps.get("opacity", 1.0)),
@@ -5751,10 +8212,10 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
                 # v6.1: build blend paint kwargs
                 _v6paint = {"base_strength": _v6kw.get("base_strength", 1.0), "base_spec_strength": _v6kw.get("base_spec_strength", 1.0), "base_color_mode": _v6kw.get("base_color_mode", "source"), "base_color": _v6kw.get("base_color", [1.0, 1.0, 1.0]), "base_color_source": _v6kw.get("base_color_source"), "base_color_strength": _v6kw.get("base_color_strength", 1.0), "base_hue_offset": _v6kw.get("base_hue_offset", 0), "base_saturation_adjust": _v6kw.get("base_saturation_adjust", 0), "base_brightness_adjust": _v6kw.get("base_brightness_adjust", 0), "pattern_intensity": pattern_intensity_01}
                 if _z_bb: _v6paint["blend_base"] = _z_bb; _v6paint["blend_dir"] = _z_bd; _v6paint["blend_amount"] = _z_ba
-                if _z_sb or _v6kw.get("second_base_color_source"): _v6paint["second_base"] = _z_sb; _v6paint["second_base_color_source"] = _v6kw.get("second_base_color_source"); _v6paint["second_base_color"] = _v6kw.get("second_base_color", [1.0, 1.0, 1.0]); _v6paint["second_base_strength"] = _v6kw.get("second_base_strength", 0.0); _v6paint["second_base_spec_strength"] = _v6kw.get("second_base_spec_strength", 1.0); _v6paint["second_base_blend_mode"] = _v6kw.get("second_base_blend_mode", "noise"); _v6paint["second_base_noise_scale"] = _v6kw.get("second_base_noise_scale", 24); _v6paint["second_base_scale"] = _v6kw.get("second_base_scale", 1.0); _v6paint["second_base_pattern"] = _v6kw.get("second_base_pattern"); _v6paint["second_base_pattern_scale"] = _v6kw.get("second_base_pattern_scale", 1.0); _v6paint["second_base_pattern_rotation"] = _v6kw.get("second_base_pattern_rotation", 0.0); _v6paint["second_base_pattern_opacity"] = _v6kw.get("second_base_pattern_opacity", 1.0); _v6paint["second_base_pattern_strength"] = _v6kw.get("second_base_pattern_strength", 1.0); _v6paint["second_base_pattern_invert"] = _v6kw.get("second_base_pattern_invert", False); _v6paint["second_base_pattern_harden"] = _v6kw.get("second_base_pattern_harden", False); _v6paint["second_base_pattern_offset_x"] = _v6kw.get("second_base_pattern_offset_x", 0.5); _v6paint["second_base_pattern_offset_y"] = _v6kw.get("second_base_pattern_offset_y", 0.5)
-                if _z_tb or _v6kw.get("third_base_color_source"): _v6paint["third_base"] = _z_tb; _v6paint["third_base_color_source"] = _v6kw.get("third_base_color_source"); _v6paint["third_base_color"] = _v6kw.get("third_base_color", [1.0, 1.0, 1.0]); _v6paint["third_base_strength"] = _v6kw.get("third_base_strength", 0.0); _v6paint["third_base_spec_strength"] = _v6kw.get("third_base_spec_strength", 1.0); _v6paint["third_base_blend_mode"] = _v6kw.get("third_base_blend_mode", "noise"); _v6paint["third_base_noise_scale"] = _v6kw.get("third_base_noise_scale", 24); _v6paint["third_base_scale"] = _v6kw.get("third_base_scale", 1.0); _v6paint["third_base_pattern"] = _v6kw.get("third_base_pattern"); _v6paint["third_base_pattern_scale"] = _v6kw.get("third_base_pattern_scale", 1.0); _v6paint["third_base_pattern_rotation"] = _v6kw.get("third_base_pattern_rotation", 0.0); _v6paint["third_base_pattern_opacity"] = _v6kw.get("third_base_pattern_opacity", 1.0); _v6paint["third_base_pattern_strength"] = _v6kw.get("third_base_pattern_strength", 1.0); _v6paint["third_base_pattern_invert"] = _v6kw.get("third_base_pattern_invert", False); _v6paint["third_base_pattern_harden"] = _v6kw.get("third_base_pattern_harden", False); _v6paint["third_base_pattern_offset_x"] = _v6kw.get("third_base_pattern_offset_x", 0.5); _v6paint["third_base_pattern_offset_y"] = _v6kw.get("third_base_pattern_offset_y", 0.5)
-                if _z_fb or _v6kw.get("fourth_base_color_source"): _v6paint["fourth_base"] = _z_fb; _v6paint["fourth_base_color_source"] = _v6kw.get("fourth_base_color_source"); _v6paint["fourth_base_color"] = _v6kw.get("fourth_base_color", [1.0, 1.0, 1.0]); _v6paint["fourth_base_strength"] = _v6kw.get("fourth_base_strength", 0.0); _v6paint["fourth_base_spec_strength"] = _v6kw.get("fourth_base_spec_strength", 1.0); _v6paint["fourth_base_blend_mode"] = _v6kw.get("fourth_base_blend_mode", "noise"); _v6paint["fourth_base_noise_scale"] = _v6kw.get("fourth_base_noise_scale", 24); _v6paint["fourth_base_scale"] = _v6kw.get("fourth_base_scale", 1.0); _v6paint["fourth_base_pattern"] = _v6kw.get("fourth_base_pattern"); _v6paint["fourth_base_pattern_scale"] = _v6kw.get("fourth_base_pattern_scale", 1.0); _v6paint["fourth_base_pattern_rotation"] = _v6kw.get("fourth_base_pattern_rotation", 0.0); _v6paint["fourth_base_pattern_opacity"] = _v6kw.get("fourth_base_pattern_opacity", 1.0); _v6paint["fourth_base_pattern_strength"] = _v6kw.get("fourth_base_pattern_strength", 1.0); _v6paint["fourth_base_pattern_invert"] = _v6kw.get("fourth_base_pattern_invert", False); _v6paint["fourth_base_pattern_harden"] = _v6kw.get("fourth_base_pattern_harden", False); _v6paint["fourth_base_pattern_offset_x"] = _v6kw.get("fourth_base_pattern_offset_x", 0.5); _v6paint["fourth_base_pattern_offset_y"] = _v6kw.get("fourth_base_pattern_offset_y", 0.5)
-                if _z_fif or _v6kw.get("fifth_base_color_source"): _v6paint["fifth_base"] = _z_fif; _v6paint["fifth_base_color_source"] = _v6kw.get("fifth_base_color_source"); _v6paint["fifth_base_color"] = _v6kw.get("fifth_base_color", [1.0, 1.0, 1.0]); _v6paint["fifth_base_strength"] = _v6kw.get("fifth_base_strength", 0.0); _v6paint["fifth_base_spec_strength"] = _v6kw.get("fifth_base_spec_strength", 1.0); _v6paint["fifth_base_blend_mode"] = _v6kw.get("fifth_base_blend_mode", "noise"); _v6paint["fifth_base_noise_scale"] = _v6kw.get("fifth_base_noise_scale", 24); _v6paint["fifth_base_scale"] = _v6kw.get("fifth_base_scale", 1.0); _v6paint["fifth_base_pattern"] = _v6kw.get("fifth_base_pattern"); _v6paint["fifth_base_pattern_scale"] = _v6kw.get("fifth_base_pattern_scale", 1.0); _v6paint["fifth_base_pattern_rotation"] = _v6kw.get("fifth_base_pattern_rotation", 0.0); _v6paint["fifth_base_pattern_opacity"] = _v6kw.get("fifth_base_pattern_opacity", 1.0); _v6paint["fifth_base_pattern_strength"] = _v6kw.get("fifth_base_pattern_strength", 1.0); _v6paint["fifth_base_pattern_invert"] = _v6kw.get("fifth_base_pattern_invert", False); _v6paint["fifth_base_pattern_harden"] = _v6kw.get("fifth_base_pattern_harden", False); _v6paint["fifth_base_pattern_offset_x"] = _v6kw.get("fifth_base_pattern_offset_x", 0.5); _v6paint["fifth_base_pattern_offset_y"] = _v6kw.get("fifth_base_pattern_offset_y", 0.5)
+                if _z_sb or _v6kw.get("second_base_color_source"): _v6paint["second_base"] = _z_sb; _v6paint["second_base_color_source"] = _v6kw.get("second_base_color_source"); _v6paint["second_base_color"] = _v6kw.get("second_base_color", [1.0, 1.0, 1.0]); _v6paint["second_base_strength"] = _v6kw.get("second_base_strength", 0.0); _v6paint["second_base_spec_strength"] = _v6kw.get("second_base_spec_strength", 1.0); _v6paint["second_base_blend_mode"] = _v6kw.get("second_base_blend_mode", "noise"); _v6paint["second_base_noise_scale"] = _v6kw.get("second_base_noise_scale", 24); _v6paint["second_base_scale"] = _v6kw.get("second_base_scale", 1.0); _v6paint["second_base_pattern"] = _v6kw.get("second_base_pattern"); _v6paint["second_base_pattern_scale"] = _v6kw.get("second_base_pattern_scale", 1.0); _v6paint["second_base_pattern_rotation"] = _v6kw.get("second_base_pattern_rotation", 0.0); _v6paint["second_base_pattern_opacity"] = _v6kw.get("second_base_pattern_opacity", 1.0); _v6paint["second_base_pattern_strength"] = _v6kw.get("second_base_pattern_strength", 1.0); _v6paint["second_base_pattern_invert"] = _v6kw.get("second_base_pattern_invert", False); _v6paint["second_base_pattern_harden"] = _v6kw.get("second_base_pattern_harden", False); _v6paint["second_base_pattern_offset_x"] = _v6kw.get("second_base_pattern_offset_x", 0.5); _v6paint["second_base_pattern_offset_y"] = _v6kw.get("second_base_pattern_offset_y", 0.5); _v6paint["second_base_hue_shift"] = _v6kw.get("second_base_hue_shift", 0); _v6paint["second_base_saturation"] = _v6kw.get("second_base_saturation", 0); _v6paint["second_base_brightness"] = _v6kw.get("second_base_brightness", 0); _v6paint["second_base_pattern_hue_shift"] = _v6kw.get("second_base_pattern_hue_shift", 0); _v6paint["second_base_pattern_saturation"] = _v6kw.get("second_base_pattern_saturation", 0); _v6paint["second_base_pattern_brightness"] = _v6kw.get("second_base_pattern_brightness", 0)
+                if _z_tb or _v6kw.get("third_base_color_source"): _v6paint["third_base"] = _z_tb; _v6paint["third_base_color_source"] = _v6kw.get("third_base_color_source"); _v6paint["third_base_color"] = _v6kw.get("third_base_color", [1.0, 1.0, 1.0]); _v6paint["third_base_strength"] = _v6kw.get("third_base_strength", 0.0); _v6paint["third_base_spec_strength"] = _v6kw.get("third_base_spec_strength", 1.0); _v6paint["third_base_blend_mode"] = _v6kw.get("third_base_blend_mode", "noise"); _v6paint["third_base_noise_scale"] = _v6kw.get("third_base_noise_scale", 24); _v6paint["third_base_scale"] = _v6kw.get("third_base_scale", 1.0); _v6paint["third_base_pattern"] = _v6kw.get("third_base_pattern"); _v6paint["third_base_pattern_scale"] = _v6kw.get("third_base_pattern_scale", 1.0); _v6paint["third_base_pattern_rotation"] = _v6kw.get("third_base_pattern_rotation", 0.0); _v6paint["third_base_pattern_opacity"] = _v6kw.get("third_base_pattern_opacity", 1.0); _v6paint["third_base_pattern_strength"] = _v6kw.get("third_base_pattern_strength", 1.0); _v6paint["third_base_pattern_invert"] = _v6kw.get("third_base_pattern_invert", False); _v6paint["third_base_pattern_harden"] = _v6kw.get("third_base_pattern_harden", False); _v6paint["third_base_pattern_offset_x"] = _v6kw.get("third_base_pattern_offset_x", 0.5); _v6paint["third_base_pattern_offset_y"] = _v6kw.get("third_base_pattern_offset_y", 0.5); _v6paint["third_base_hue_shift"] = _v6kw.get("third_base_hue_shift", 0); _v6paint["third_base_saturation"] = _v6kw.get("third_base_saturation", 0); _v6paint["third_base_brightness"] = _v6kw.get("third_base_brightness", 0)
+                if _z_fb or _v6kw.get("fourth_base_color_source"): _v6paint["fourth_base"] = _z_fb; _v6paint["fourth_base_color_source"] = _v6kw.get("fourth_base_color_source"); _v6paint["fourth_base_color"] = _v6kw.get("fourth_base_color", [1.0, 1.0, 1.0]); _v6paint["fourth_base_strength"] = _v6kw.get("fourth_base_strength", 0.0); _v6paint["fourth_base_spec_strength"] = _v6kw.get("fourth_base_spec_strength", 1.0); _v6paint["fourth_base_blend_mode"] = _v6kw.get("fourth_base_blend_mode", "noise"); _v6paint["fourth_base_noise_scale"] = _v6kw.get("fourth_base_noise_scale", 24); _v6paint["fourth_base_scale"] = _v6kw.get("fourth_base_scale", 1.0); _v6paint["fourth_base_pattern"] = _v6kw.get("fourth_base_pattern"); _v6paint["fourth_base_pattern_scale"] = _v6kw.get("fourth_base_pattern_scale", 1.0); _v6paint["fourth_base_pattern_rotation"] = _v6kw.get("fourth_base_pattern_rotation", 0.0); _v6paint["fourth_base_pattern_opacity"] = _v6kw.get("fourth_base_pattern_opacity", 1.0); _v6paint["fourth_base_pattern_strength"] = _v6kw.get("fourth_base_pattern_strength", 1.0); _v6paint["fourth_base_pattern_invert"] = _v6kw.get("fourth_base_pattern_invert", False); _v6paint["fourth_base_pattern_harden"] = _v6kw.get("fourth_base_pattern_harden", False); _v6paint["fourth_base_pattern_offset_x"] = _v6kw.get("fourth_base_pattern_offset_x", 0.5); _v6paint["fourth_base_pattern_offset_y"] = _v6kw.get("fourth_base_pattern_offset_y", 0.5); _v6paint["fourth_base_hue_shift"] = _v6kw.get("fourth_base_hue_shift", 0); _v6paint["fourth_base_saturation"] = _v6kw.get("fourth_base_saturation", 0); _v6paint["fourth_base_brightness"] = _v6kw.get("fourth_base_brightness", 0)
+                if _z_fif or _v6kw.get("fifth_base_color_source"): _v6paint["fifth_base"] = _z_fif; _v6paint["fifth_base_color_source"] = _v6kw.get("fifth_base_color_source"); _v6paint["fifth_base_color"] = _v6kw.get("fifth_base_color", [1.0, 1.0, 1.0]); _v6paint["fifth_base_strength"] = _v6kw.get("fifth_base_strength", 0.0); _v6paint["fifth_base_spec_strength"] = _v6kw.get("fifth_base_spec_strength", 1.0); _v6paint["fifth_base_blend_mode"] = _v6kw.get("fifth_base_blend_mode", "noise"); _v6paint["fifth_base_noise_scale"] = _v6kw.get("fifth_base_noise_scale", 24); _v6paint["fifth_base_scale"] = _v6kw.get("fifth_base_scale", 1.0); _v6paint["fifth_base_pattern"] = _v6kw.get("fifth_base_pattern"); _v6paint["fifth_base_pattern_scale"] = _v6kw.get("fifth_base_pattern_scale", 1.0); _v6paint["fifth_base_pattern_rotation"] = _v6kw.get("fifth_base_pattern_rotation", 0.0); _v6paint["fifth_base_pattern_opacity"] = _v6kw.get("fifth_base_pattern_opacity", 1.0); _v6paint["fifth_base_pattern_strength"] = _v6kw.get("fifth_base_pattern_strength", 1.0); _v6paint["fifth_base_pattern_invert"] = _v6kw.get("fifth_base_pattern_invert", False); _v6paint["fifth_base_pattern_harden"] = _v6kw.get("fifth_base_pattern_harden", False); _v6paint["fifth_base_pattern_offset_x"] = _v6kw.get("fifth_base_pattern_offset_x", 0.5); _v6paint["fifth_base_pattern_offset_y"] = _v6kw.get("fifth_base_pattern_offset_y", 0.5); _v6paint["fifth_base_hue_shift"] = _v6kw.get("fifth_base_hue_shift", 0); _v6paint["fifth_base_saturation"] = _v6kw.get("fifth_base_saturation", 0); _v6paint["fifth_base_brightness"] = _v6kw.get("fifth_base_brightness", 0)
                 _v6paint["monolithic_registry"] = _v6kw.get("monolithic_registry")
                 _v6paint["base_offset_x"] = _v6kw.get("base_offset_x", 0.5)
                 _v6paint["base_offset_y"] = _v6kw.get("base_offset_y", 0.5)
@@ -5764,11 +8225,25 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
                 _v6paint["pattern_offset_x"] = _v6kw.get("pattern_offset_x", 0.5)
                 _v6paint["pattern_offset_y"] = _v6kw.get("pattern_offset_y", 0.5)
                 if all_patterns:
-                    zone_spec = compose_finish_stacked(base_id, all_patterns, shape, zone_mask, seed + i * 13, sm, spec_mult=spec_mult, base_scale=zone_base_scale, **_v6kw)
-                    paint = compose_paint_mod_stacked(base_id, all_patterns, paint, shape, zone_mask, seed + i * 13, pm, bb, **_v6paint)
+                    # Parallel: spec in background thread while paint mod runs in foreground
+                    if True:  # was: ThreadPoolExecutor per-zone. Now uses _shared_spec_pool
+                        _spec_ex = _shared_spec_pool
+                        _spec_fut = _spec_ex.submit(compose_finish_stacked, base_id, all_patterns, shape, zone_mask, seed + i * 13, sm, spec_mult=spec_mult, base_scale=zone_base_scale, **_v6kw)
+                        _paint_was_gpu = is_gpu() and hasattr(paint, '__cuda_array_interface__')
+                        if _paint_was_gpu: paint = to_cpu(paint)
+                        paint = compose_paint_mod_stacked(base_id, all_patterns, paint, shape, zone_mask, seed + i * 13, pm, bb, **_v6paint)
+                        if _paint_was_gpu: paint = to_gpu(paint)
+                        zone_spec = _spec_fut.result()
                 else:
-                    zone_spec = compose_finish(base_id, "none", shape, zone_mask, seed + i * 13, sm, spec_mult=spec_mult, base_scale=zone_base_scale, **_v6kw)
-                    paint = compose_paint_mod(base_id, "none", paint, shape, zone_mask, seed + i * 13, pm, bb, **_v6paint)
+                    # Parallel: spec in background thread while paint mod runs in foreground
+                    if True:  # was: ThreadPoolExecutor per-zone. Now uses _shared_spec_pool
+                        _spec_ex = _shared_spec_pool
+                        _spec_fut = _spec_ex.submit(compose_finish, base_id, "none", shape, zone_mask, seed + i * 13, sm, spec_mult=spec_mult, base_scale=zone_base_scale, **_v6kw)
+                        _paint_was_gpu = is_gpu() and hasattr(paint, '__cuda_array_interface__')
+                        if _paint_was_gpu: paint = to_cpu(paint)
+                        paint = compose_paint_mod(base_id, "none", paint, shape, zone_mask, seed + i * 13, pm, bb, **_v6paint)
+                        if _paint_was_gpu: paint = to_gpu(paint)
+                        zone_spec = _spec_fut.result()
             else:
                 # SINGLE PATTERN: original path
                 label = f"{base_id}" + (f" + {pattern_id}" if pattern_id != "none" else "")
@@ -5778,18 +8253,25 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
                 print(f"    [{name}] => {label} ({intensity}){scale_label}{rot_label}{bs_label} [compositing]")
                 _v6paint = {"base_strength": _v6kw.get("base_strength", 1.0), "base_spec_strength": _v6kw.get("base_spec_strength", 1.0), "base_color_mode": _v6kw.get("base_color_mode", "source"), "base_color": _v6kw.get("base_color", [1.0, 1.0, 1.0]), "base_color_source": _v6kw.get("base_color_source"), "base_color_strength": _v6kw.get("base_color_strength", 1.0), "base_hue_offset": _v6kw.get("base_hue_offset", 0), "base_saturation_adjust": _v6kw.get("base_saturation_adjust", 0), "base_brightness_adjust": _v6kw.get("base_brightness_adjust", 0), "pattern_intensity": pattern_intensity_01}
                 if _z_bb: _v6paint["blend_base"] = _z_bb; _v6paint["blend_dir"] = _z_bd; _v6paint["blend_amount"] = _z_ba
-                if _z_sb or _v6kw.get("second_base_color_source"): _v6paint["second_base"] = _z_sb; _v6paint["second_base_color_source"] = _v6kw.get("second_base_color_source"); _v6paint["second_base_color"] = _v6kw.get("second_base_color", [1.0, 1.0, 1.0]); _v6paint["second_base_strength"] = _v6kw.get("second_base_strength", 0.0); _v6paint["second_base_spec_strength"] = _v6kw.get("second_base_spec_strength", 1.0); _v6paint["second_base_blend_mode"] = _v6kw.get("second_base_blend_mode", "noise"); _v6paint["second_base_noise_scale"] = _v6kw.get("second_base_noise_scale", 24); _v6paint["second_base_scale"] = _v6kw.get("second_base_scale", 1.0); _v6paint["second_base_pattern"] = _v6kw.get("second_base_pattern"); _v6paint["second_base_pattern_scale"] = _v6kw.get("second_base_pattern_scale", 1.0); _v6paint["second_base_pattern_rotation"] = _v6kw.get("second_base_pattern_rotation", 0.0); _v6paint["second_base_pattern_opacity"] = _v6kw.get("second_base_pattern_opacity", 1.0); _v6paint["second_base_pattern_strength"] = _v6kw.get("second_base_pattern_strength", 1.0); _v6paint["second_base_pattern_invert"] = _v6kw.get("second_base_pattern_invert", False); _v6paint["second_base_pattern_harden"] = _v6kw.get("second_base_pattern_harden", False); _v6paint["second_base_pattern_offset_x"] = _v6kw.get("second_base_pattern_offset_x", 0.5); _v6paint["second_base_pattern_offset_y"] = _v6kw.get("second_base_pattern_offset_y", 0.5)
-                if _z_tb or _v6kw.get("third_base_color_source"): _v6paint["third_base"] = _z_tb; _v6paint["third_base_color_source"] = _v6kw.get("third_base_color_source"); _v6paint["third_base_color"] = _v6kw.get("third_base_color", [1.0, 1.0, 1.0]); _v6paint["third_base_strength"] = _v6kw.get("third_base_strength", 0.0); _v6paint["third_base_spec_strength"] = _v6kw.get("third_base_spec_strength", 1.0); _v6paint["third_base_blend_mode"] = _v6kw.get("third_base_blend_mode", "noise"); _v6paint["third_base_noise_scale"] = _v6kw.get("third_base_noise_scale", 24); _v6paint["third_base_scale"] = _v6kw.get("third_base_scale", 1.0); _v6paint["third_base_pattern"] = _v6kw.get("third_base_pattern"); _v6paint["third_base_pattern_scale"] = _v6kw.get("third_base_pattern_scale", 1.0); _v6paint["third_base_pattern_rotation"] = _v6kw.get("third_base_pattern_rotation", 0.0); _v6paint["third_base_pattern_opacity"] = _v6kw.get("third_base_pattern_opacity", 1.0); _v6paint["third_base_pattern_strength"] = _v6kw.get("third_base_pattern_strength", 1.0); _v6paint["third_base_pattern_invert"] = _v6kw.get("third_base_pattern_invert", False); _v6paint["third_base_pattern_harden"] = _v6kw.get("third_base_pattern_harden", False); _v6paint["third_base_pattern_offset_x"] = _v6kw.get("third_base_pattern_offset_x", 0.5); _v6paint["third_base_pattern_offset_y"] = _v6kw.get("third_base_pattern_offset_y", 0.5)
-                if _z_fb or _v6kw.get("fourth_base_color_source"): _v6paint["fourth_base"] = _z_fb; _v6paint["fourth_base_color_source"] = _v6kw.get("fourth_base_color_source"); _v6paint["fourth_base_color"] = _v6kw.get("fourth_base_color", [1.0, 1.0, 1.0]); _v6paint["fourth_base_strength"] = _v6kw.get("fourth_base_strength", 0.0); _v6paint["fourth_base_spec_strength"] = _v6kw.get("fourth_base_spec_strength", 1.0); _v6paint["fourth_base_blend_mode"] = _v6kw.get("fourth_base_blend_mode", "noise"); _v6paint["fourth_base_noise_scale"] = _v6kw.get("fourth_base_noise_scale", 24); _v6paint["fourth_base_scale"] = _v6kw.get("fourth_base_scale", 1.0); _v6paint["fourth_base_pattern"] = _v6kw.get("fourth_base_pattern"); _v6paint["fourth_base_pattern_scale"] = _v6kw.get("fourth_base_pattern_scale", 1.0); _v6paint["fourth_base_pattern_rotation"] = _v6kw.get("fourth_base_pattern_rotation", 0.0); _v6paint["fourth_base_pattern_opacity"] = _v6kw.get("fourth_base_pattern_opacity", 1.0); _v6paint["fourth_base_pattern_strength"] = _v6kw.get("fourth_base_pattern_strength", 1.0); _v6paint["fourth_base_pattern_invert"] = _v6kw.get("fourth_base_pattern_invert", False); _v6paint["fourth_base_pattern_harden"] = _v6kw.get("fourth_base_pattern_harden", False); _v6paint["fourth_base_pattern_offset_x"] = _v6kw.get("fourth_base_pattern_offset_x", 0.5); _v6paint["fourth_base_pattern_offset_y"] = _v6kw.get("fourth_base_pattern_offset_y", 0.5)
-                if _z_fif or _v6kw.get("fifth_base_color_source"): _v6paint["fifth_base"] = _z_fif; _v6paint["fifth_base_color_source"] = _v6kw.get("fifth_base_color_source"); _v6paint["fifth_base_color"] = _v6kw.get("fifth_base_color", [1.0, 1.0, 1.0]); _v6paint["fifth_base_strength"] = _v6kw.get("fifth_base_strength", 0.0); _v6paint["fifth_base_spec_strength"] = _v6kw.get("fifth_base_spec_strength", 1.0); _v6paint["fifth_base_blend_mode"] = _v6kw.get("fifth_base_blend_mode", "noise"); _v6paint["fifth_base_noise_scale"] = _v6kw.get("fifth_base_noise_scale", 24); _v6paint["fifth_base_scale"] = _v6kw.get("fifth_base_scale", 1.0); _v6paint["fifth_base_pattern"] = _v6kw.get("fifth_base_pattern"); _v6paint["fifth_base_pattern_scale"] = _v6kw.get("fifth_base_pattern_scale", 1.0); _v6paint["fifth_base_pattern_rotation"] = _v6kw.get("fifth_base_pattern_rotation", 0.0); _v6paint["fifth_base_pattern_opacity"] = _v6kw.get("fifth_base_pattern_opacity", 1.0); _v6paint["fifth_base_pattern_strength"] = _v6kw.get("fifth_base_pattern_strength", 1.0); _v6paint["fifth_base_pattern_invert"] = _v6kw.get("fifth_base_pattern_invert", False); _v6paint["fifth_base_pattern_harden"] = _v6kw.get("fifth_base_pattern_harden", False); _v6paint["fifth_base_pattern_offset_x"] = _v6kw.get("fifth_base_pattern_offset_x", 0.5); _v6paint["fifth_base_pattern_offset_y"] = _v6kw.get("fifth_base_pattern_offset_y", 0.5)
+                if _z_sb or _v6kw.get("second_base_color_source"): _v6paint["second_base"] = _z_sb; _v6paint["second_base_color_source"] = _v6kw.get("second_base_color_source"); _v6paint["second_base_color"] = _v6kw.get("second_base_color", [1.0, 1.0, 1.0]); _v6paint["second_base_strength"] = _v6kw.get("second_base_strength", 0.0); _v6paint["second_base_spec_strength"] = _v6kw.get("second_base_spec_strength", 1.0); _v6paint["second_base_blend_mode"] = _v6kw.get("second_base_blend_mode", "noise"); _v6paint["second_base_noise_scale"] = _v6kw.get("second_base_noise_scale", 24); _v6paint["second_base_scale"] = _v6kw.get("second_base_scale", 1.0); _v6paint["second_base_pattern"] = _v6kw.get("second_base_pattern"); _v6paint["second_base_pattern_scale"] = _v6kw.get("second_base_pattern_scale", 1.0); _v6paint["second_base_pattern_rotation"] = _v6kw.get("second_base_pattern_rotation", 0.0); _v6paint["second_base_pattern_opacity"] = _v6kw.get("second_base_pattern_opacity", 1.0); _v6paint["second_base_pattern_strength"] = _v6kw.get("second_base_pattern_strength", 1.0); _v6paint["second_base_pattern_invert"] = _v6kw.get("second_base_pattern_invert", False); _v6paint["second_base_pattern_harden"] = _v6kw.get("second_base_pattern_harden", False); _v6paint["second_base_pattern_offset_x"] = _v6kw.get("second_base_pattern_offset_x", 0.5); _v6paint["second_base_pattern_offset_y"] = _v6kw.get("second_base_pattern_offset_y", 0.5); _v6paint["second_base_hue_shift"] = _v6kw.get("second_base_hue_shift", 0); _v6paint["second_base_saturation"] = _v6kw.get("second_base_saturation", 0); _v6paint["second_base_brightness"] = _v6kw.get("second_base_brightness", 0); _v6paint["second_base_pattern_hue_shift"] = _v6kw.get("second_base_pattern_hue_shift", 0); _v6paint["second_base_pattern_saturation"] = _v6kw.get("second_base_pattern_saturation", 0); _v6paint["second_base_pattern_brightness"] = _v6kw.get("second_base_pattern_brightness", 0)
+                if _z_tb or _v6kw.get("third_base_color_source"): _v6paint["third_base"] = _z_tb; _v6paint["third_base_color_source"] = _v6kw.get("third_base_color_source"); _v6paint["third_base_color"] = _v6kw.get("third_base_color", [1.0, 1.0, 1.0]); _v6paint["third_base_strength"] = _v6kw.get("third_base_strength", 0.0); _v6paint["third_base_spec_strength"] = _v6kw.get("third_base_spec_strength", 1.0); _v6paint["third_base_blend_mode"] = _v6kw.get("third_base_blend_mode", "noise"); _v6paint["third_base_noise_scale"] = _v6kw.get("third_base_noise_scale", 24); _v6paint["third_base_scale"] = _v6kw.get("third_base_scale", 1.0); _v6paint["third_base_pattern"] = _v6kw.get("third_base_pattern"); _v6paint["third_base_pattern_scale"] = _v6kw.get("third_base_pattern_scale", 1.0); _v6paint["third_base_pattern_rotation"] = _v6kw.get("third_base_pattern_rotation", 0.0); _v6paint["third_base_pattern_opacity"] = _v6kw.get("third_base_pattern_opacity", 1.0); _v6paint["third_base_pattern_strength"] = _v6kw.get("third_base_pattern_strength", 1.0); _v6paint["third_base_pattern_invert"] = _v6kw.get("third_base_pattern_invert", False); _v6paint["third_base_pattern_harden"] = _v6kw.get("third_base_pattern_harden", False); _v6paint["third_base_pattern_offset_x"] = _v6kw.get("third_base_pattern_offset_x", 0.5); _v6paint["third_base_pattern_offset_y"] = _v6kw.get("third_base_pattern_offset_y", 0.5); _v6paint["third_base_hue_shift"] = _v6kw.get("third_base_hue_shift", 0); _v6paint["third_base_saturation"] = _v6kw.get("third_base_saturation", 0); _v6paint["third_base_brightness"] = _v6kw.get("third_base_brightness", 0)
+                if _z_fb or _v6kw.get("fourth_base_color_source"): _v6paint["fourth_base"] = _z_fb; _v6paint["fourth_base_color_source"] = _v6kw.get("fourth_base_color_source"); _v6paint["fourth_base_color"] = _v6kw.get("fourth_base_color", [1.0, 1.0, 1.0]); _v6paint["fourth_base_strength"] = _v6kw.get("fourth_base_strength", 0.0); _v6paint["fourth_base_spec_strength"] = _v6kw.get("fourth_base_spec_strength", 1.0); _v6paint["fourth_base_blend_mode"] = _v6kw.get("fourth_base_blend_mode", "noise"); _v6paint["fourth_base_noise_scale"] = _v6kw.get("fourth_base_noise_scale", 24); _v6paint["fourth_base_scale"] = _v6kw.get("fourth_base_scale", 1.0); _v6paint["fourth_base_pattern"] = _v6kw.get("fourth_base_pattern"); _v6paint["fourth_base_pattern_scale"] = _v6kw.get("fourth_base_pattern_scale", 1.0); _v6paint["fourth_base_pattern_rotation"] = _v6kw.get("fourth_base_pattern_rotation", 0.0); _v6paint["fourth_base_pattern_opacity"] = _v6kw.get("fourth_base_pattern_opacity", 1.0); _v6paint["fourth_base_pattern_strength"] = _v6kw.get("fourth_base_pattern_strength", 1.0); _v6paint["fourth_base_pattern_invert"] = _v6kw.get("fourth_base_pattern_invert", False); _v6paint["fourth_base_pattern_harden"] = _v6kw.get("fourth_base_pattern_harden", False); _v6paint["fourth_base_pattern_offset_x"] = _v6kw.get("fourth_base_pattern_offset_x", 0.5); _v6paint["fourth_base_pattern_offset_y"] = _v6kw.get("fourth_base_pattern_offset_y", 0.5); _v6paint["fourth_base_hue_shift"] = _v6kw.get("fourth_base_hue_shift", 0); _v6paint["fourth_base_saturation"] = _v6kw.get("fourth_base_saturation", 0); _v6paint["fourth_base_brightness"] = _v6kw.get("fourth_base_brightness", 0)
+                if _z_fif or _v6kw.get("fifth_base_color_source"): _v6paint["fifth_base"] = _z_fif; _v6paint["fifth_base_color_source"] = _v6kw.get("fifth_base_color_source"); _v6paint["fifth_base_color"] = _v6kw.get("fifth_base_color", [1.0, 1.0, 1.0]); _v6paint["fifth_base_strength"] = _v6kw.get("fifth_base_strength", 0.0); _v6paint["fifth_base_spec_strength"] = _v6kw.get("fifth_base_spec_strength", 1.0); _v6paint["fifth_base_blend_mode"] = _v6kw.get("fifth_base_blend_mode", "noise"); _v6paint["fifth_base_noise_scale"] = _v6kw.get("fifth_base_noise_scale", 24); _v6paint["fifth_base_scale"] = _v6kw.get("fifth_base_scale", 1.0); _v6paint["fifth_base_pattern"] = _v6kw.get("fifth_base_pattern"); _v6paint["fifth_base_pattern_scale"] = _v6kw.get("fifth_base_pattern_scale", 1.0); _v6paint["fifth_base_pattern_rotation"] = _v6kw.get("fifth_base_pattern_rotation", 0.0); _v6paint["fifth_base_pattern_opacity"] = _v6kw.get("fifth_base_pattern_opacity", 1.0); _v6paint["fifth_base_pattern_strength"] = _v6kw.get("fifth_base_pattern_strength", 1.0); _v6paint["fifth_base_pattern_invert"] = _v6kw.get("fifth_base_pattern_invert", False); _v6paint["fifth_base_pattern_harden"] = _v6kw.get("fifth_base_pattern_harden", False); _v6paint["fifth_base_pattern_offset_x"] = _v6kw.get("fifth_base_pattern_offset_x", 0.5); _v6paint["fifth_base_pattern_offset_y"] = _v6kw.get("fifth_base_pattern_offset_y", 0.5); _v6paint["fifth_base_hue_shift"] = _v6kw.get("fifth_base_hue_shift", 0); _v6paint["fifth_base_saturation"] = _v6kw.get("fifth_base_saturation", 0); _v6paint["fifth_base_brightness"] = _v6kw.get("fifth_base_brightness", 0)
                 _v6paint["monolithic_registry"] = _v6kw.get("monolithic_registry")
                 _v6paint["base_offset_x"] = _v6kw.get("base_offset_x", 0.5)
                 _v6paint["base_offset_y"] = _v6kw.get("base_offset_y", 0.5)
                 _v6paint["base_rotation"] = _v6kw.get("base_rotation", 0)
                 _v6paint["base_flip_h"] = _v6kw.get("base_flip_h", False)
                 _v6paint["base_flip_v"] = _v6kw.get("base_flip_v", False)
-                zone_spec = compose_finish(base_id, pattern_id, shape, zone_mask, seed + i * 13, sm, scale=zone_scale, spec_mult=spec_mult, rotation=zone_rotation, base_scale=zone_base_scale, **_v6kw)
-                paint = compose_paint_mod(base_id, pattern_id, paint, shape, zone_mask, seed + i * 13, pm, bb, scale=zone_scale, rotation=zone_rotation, **_v6paint)
+                # Parallel: spec in background thread while paint mod runs in foreground
+                if True:  # was: ThreadPoolExecutor per-zone. Now uses _shared_spec_pool
+                    _spec_ex = _shared_spec_pool
+                    _spec_fut = _spec_ex.submit(compose_finish, base_id, pattern_id, shape, zone_mask, seed + i * 13, sm, scale=zone_scale, spec_mult=spec_mult, rotation=zone_rotation, base_scale=zone_base_scale, **_v6kw)
+                    _paint_was_gpu = is_gpu() and hasattr(paint, '__cuda_array_interface__')
+                    if _paint_was_gpu: paint = to_cpu(paint)
+                    paint = compose_paint_mod(base_id, pattern_id, paint, shape, zone_mask, seed + i * 13, pm, bb, scale=zone_scale, rotation=zone_rotation, **_v6paint)
+                    if _paint_was_gpu: paint = to_gpu(paint)
+                    zone_spec = _spec_fut.result()
 
         elif finish_name and zone.get("finish_colors") and (
             finish_name.startswith("grad_") or finish_name.startswith("gradm_")
@@ -5862,6 +8344,66 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
             if mono_pat and mono_pat != "none" and mono_pat in PATTERN_REGISTRY:
                 zone_spec = overlay_pattern_on_spec(zone_spec, mono_pat, shape, zone_mask, seed + i * 13 + 99, sm, mono_pat_scale, mono_pat_opacity, spec_mult=spec_mult, rotation=mono_pat_rotation)
                 paint = overlay_pattern_paint(paint, mono_pat, shape, zone_mask, seed + i * 13 + 99, pm, bb, mono_pat_scale, mono_pat_opacity, rotation=mono_pat_rotation)
+
+            # Pattern stack on monolithic: apply additional stacked patterns on top
+            _mono_pattern_stack = zone.get("pattern_stack", [])
+            if _mono_pattern_stack:
+                for _mps_idx, _mps in enumerate(_mono_pattern_stack[:3]):
+                    _mps_id = _mps.get("id", "none")
+                    if _mps_id == "none" or _mps_id not in PATTERN_REGISTRY:
+                        # Try underscore transformation for image-based patterns
+                        _mps_alt = _mps_id.replace(" ", "_").replace("-", "_")
+                        if _mps_alt in PATTERN_REGISTRY:
+                            _mps_id = _mps_alt
+                        else:
+                            print(f"    [MONO STACK] Pattern '{_mps.get('id')}' not in registry, skipping")
+                            continue
+                    _mps_opacity = float(_mps.get("opacity", 1.0))
+                    _mps_scale = float(_mps.get("scale", 1.0)) * mono_auto_scale
+                    _mps_rotation = float(_mps.get("rotation", 0))
+                    print(f"    [MONO STACK] Applying stacked pattern {_mps_idx+2}: '{_mps_id}' opacity={_mps_opacity} scale={_mps_scale}")
+                    zone_spec = overlay_pattern_on_spec(zone_spec, _mps_id, shape, zone_mask, seed + i * 13 + 200 + _mps_idx * 31, sm, _mps_scale, _mps_opacity, spec_mult=spec_mult, rotation=_mps_rotation)
+                    paint = overlay_pattern_paint(paint, _mps_id, shape, zone_mask, seed + i * 13 + 200 + _mps_idx * 31, pm, bb, _mps_scale, _mps_opacity, rotation=_mps_rotation)
+
+            # Spec pattern stack on monolithic: apply spec patterns to zone_spec
+            _mono_spec_patterns = zone.get("spec_pattern_stack", [])
+            if _mono_spec_patterns:
+                from engine.spec_patterns import PATTERN_CATALOG
+                for _msp in _mono_spec_patterns:
+                    _msp_name = _msp.get("pattern", "")
+                    _msp_fn = PATTERN_CATALOG.get(_msp_name)
+                    if _msp_fn is None:
+                        continue
+                    _msp_opacity = float(_msp.get("opacity", 0.5))
+                    _msp_blend = _msp.get("blend_mode", "normal")
+                    _msp_channels = _msp.get("channels", "MR")
+                    _msp_scale = float(_msp.get("scale", 1.0))
+                    _msp_rotation = float(_msp.get("rotation", 0))
+                    _msp_range = float(_msp.get("range", 40.0))
+                    _msp_params = _msp.get("params", {})
+                    _msp_arr = _msp_fn(shape, seed + 5000 + hash(_msp_name) % 10000, sm, **_msp_params)
+                    if abs(_msp_scale - 1.0) > 0.01:
+                        if _msp_scale < 1.0:
+                            _msp_arr = _tile_fractional(_msp_arr, 1.0 / _msp_scale, shape[0], shape[1])
+                        else:
+                            _msp_arr = _crop_center_array(_msp_arr, _msp_scale, shape[0], shape[1])
+                    if abs(_msp_rotation) > 0.5:
+                        _msp_arr = _rotate_single_array(_msp_arr, _msp_rotation, shape)
+                    _msp_delta = (_msp_arr - 0.5) * 2.0
+                    _msp_contrib = _msp_delta * _msp_range
+                    _msp_M = zone_spec[:,:,0].astype(np.float32)
+                    _msp_R = zone_spec[:,:,1].astype(np.float32)
+                    _msp_CC = zone_spec[:,:,2].astype(np.float32)
+                    if "M" in _msp_channels:
+                        _msp_M = _apply_spec_blend_mode(_msp_M, _msp_contrib, _msp_opacity, _msp_blend)
+                    if "R" in _msp_channels:
+                        _msp_R = _apply_spec_blend_mode(_msp_R, _msp_contrib, _msp_opacity, _msp_blend)
+                    if "C" in _msp_channels:
+                        _msp_CC = _apply_spec_blend_mode(_msp_CC, _msp_contrib, _msp_opacity, _msp_blend)
+                    zone_spec[:,:,0] = np.clip(_msp_M, 0, 255).astype(np.uint8)
+                    zone_spec[:,:,1] = np.clip(_msp_R, 0, 255).astype(np.uint8)
+                    zone_spec[:,:,2] = np.clip(_msp_CC, 16, 255).astype(np.uint8)
+                    print(f"    [MONO SPEC] Applied spec pattern '{_msp_name}' opacity={_msp_opacity}")
 
             # Dual Layer Base Overlay on monolithic (same as base+pattern path)
             _z_sb = zone.get("second_base")
@@ -5943,8 +8485,6 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
                             _pat_mask = 1.0 - _pat_mask
                         if zone.get("second_base_pattern_harden"):
                             _pat_mask = np.clip((_pat_mask.astype(np.float32) - 0.45) / 0.15, 0, 1)
-                    if _pat_mask is not None and _sb_bm_norm == "pattern_vivid":
-                        print(f"[POP DEBUG] mode={_sb_bm}, pattern_id={_pat_id}, pat_in_reg={_pat_id in PATTERN_REGISTRY if _pat_id else False}, pattern_mask_is_None=False")
                     if _has_sb_spec:
                         zone_spec, _ = blend_dual_base_spec(
                             zone_spec, spec_secondary,
@@ -6036,7 +8576,6 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
             # PATH 4: GENERIC FALLBACK - client-defined finish with color data
             zone_rotation = float(zone.get("rotation", 0))
             _engine_rot_debug(f"  [{name}] -> PATH 4 (generic fallback): finish={finish_name}, rotation={zone_rotation}, fc_keys={list(zone.get('finish_colors',{}).keys())}")
-            print(f"    [DEBUG-ROT] PATH4: finish={finish_name}, zone.rotation={zone.get('rotation')}, parsed={zone_rotation}")
             zone_spec, paint = render_generic_finish(finish_name, zone, paint, shape, zone_mask, seed + i * 13, sm, pm, bb, rotation=zone_rotation)
             if zone_spec is None:
                 continue
@@ -6053,20 +8592,53 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
             print(f"    WARNING: Unknown finish/base '{label}', skipping")
             continue
 
+        # ---- Store zone result in cache (preview_mode only) ----
+        if preview_mode and _zone_cache_key and _paint_before is not None:
+            try:
+                _paint_delta = (paint - _paint_before).astype(np.float32)
+                build_multi_zone._zone_cache[_zone_cache_key] = {
+                    'zone_spec': zone_spec.copy(),
+                    'paint_delta': _paint_delta,
+                    'mask': zone_mask.copy(),
+                }
+                # Limit cache size: keep at most 64 zone entries (avoids unbounded RAM growth)
+                if len(build_multi_zone._zone_cache) > 64:
+                    _oldest = next(iter(build_multi_zone._zone_cache))
+                    del build_multi_zone._zone_cache[_oldest]
+            except Exception as _cse:
+                pass  # Cache store failure is non-fatal
+
         # Apply zone spec with hard ownership: where mask is strong, fully replace
         # Vectorized across all 4 channels at once for speed
-        mask3d = zone_mask[:,:,np.newaxis]  # (h, w, 1)
-        strong = mask3d > 0.5
-        soft = (mask3d > 0.05) & ~strong
-        blended = np.clip(
-            zone_spec.astype(np.float32) * mask3d +
-            combined_spec.astype(np.float32) * (1 - mask3d),
-            0, 255
-        ).astype(np.uint8)
-        combined_spec = np.where(strong, zone_spec, np.where(soft, blended, combined_spec))
+        # GPU-accelerated when CuPy is available
+        if is_gpu():
+            _zs_g = to_gpu(zone_spec.astype(np.float32))
+            _m3d_g = to_gpu(zone_mask[:,:,np.newaxis])
+            _cs_g = to_gpu(combined_spec)
+            hard_edge = zone.get("hard_edge", False)
+            if hard_edge:
+                combined_spec = to_cpu(xp.where(_m3d_g > 0.01, _zs_g, _cs_g))
+            else:
+                strong = _m3d_g > 0.5
+                soft = (_m3d_g > 0.05) & ~strong
+                blended = xp.clip(_zs_g * _m3d_g + _cs_g * (1 - _m3d_g), 0, 255)
+                combined_spec = to_cpu(xp.where(strong, _zs_g, xp.where(soft, blended, _cs_g)))
+        else:
+            mask3d = zone_mask[:,:,np.newaxis]  # (h, w, 1)
+            hard_edge = zone.get("hard_edge", False)
+            if hard_edge:
+                combined_spec = np.where(mask3d > 0.01, zone_spec.astype(np.float32), combined_spec)
+            else:
+                strong = mask3d > 0.5
+                soft = (mask3d > 0.05) & ~strong
+                blended = np.clip(
+                    zone_spec.astype(np.float32) * mask3d +
+                    combined_spec * (1 - mask3d),
+                    0, 255
+                )
+                combined_spec = np.where(strong, zone_spec.astype(np.float32), np.where(soft, blended, combined_spec))
 
-        if os.environ.get("SHOKKER_TIMING") == "1":
-            print(f"      [{name}] zone time: {time.time()-t_zone:.2f}s")
+        print(f"      [{name}] zone time: {time.time()-t_zone:.2f}s")
 
     # ---- Per-zone wear: BATCHED (single apply_wear call for ALL zones) ----
     # Instead of N separate apply_wear calls (each 5-8s), compute once at max level
@@ -6079,9 +8651,10 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
         print(f"\n  Batched per-zone wear: {len(wear_zones)} zones, max wear={max_wear}%")
         t_wear = time.time()
         worn_spec, worn_paint = apply_wear(
-            combined_spec.copy(), (np.clip(paint, 0, 1) * 255).astype(np.uint8),
+            combined_spec.astype(np.uint8), (np.clip(paint, 0, 1) * 255).astype(np.uint8),
             max_wear, seed + 777
         )
+        worn_spec_f = worn_spec.astype(np.float32)
         # Blend worn results per zone, scaled by each zone's wear fraction
         for zi, zone, zm, wl in wear_zones:
             wear_frac = wl / max_wear  # 0.0-1.0 how much of the max wear this zone gets
@@ -6090,14 +8663,14 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
             # Interpolate between unworn and worn based on wear fraction
             if wear_frac >= 0.99:
                 # Full strength - just swap
-                combined_spec = np.where(mask3d, worn_spec, combined_spec)
+                combined_spec = np.where(mask3d, worn_spec_f, combined_spec)
                 paint = np.where(mask3d, worn_paint.astype(np.float32) / 255.0, paint)
             else:
-                # Partial strength - lerp between original and worn
+                # Partial strength - lerp between original and worn (all float32)
                 spec_lerp = np.clip(
-                    combined_spec.astype(np.float32) * (1 - wear_frac) +
-                    worn_spec.astype(np.float32) * wear_frac, 0, 255
-                ).astype(np.uint8)
+                    combined_spec * (1 - wear_frac) +
+                    worn_spec_f * wear_frac, 0, 255
+                )
                 paint_lerp = np.clip(
                     paint * (1 - wear_frac) +
                     worn_paint.astype(np.float32) / 255.0 * wear_frac, 0, 1
@@ -6160,12 +8733,33 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
                 "f_gel_coat": spec_gloss,
                 "f_baked_enamel": spec_gloss,
             }
-            # Load the composited paint (paint + decals baked in) — alpha = decal mask
+            # Load the composited paint (paint + decals baked in)
             decal_comp = Image.open(decal_paint_path).convert('RGBA')
             if decal_comp.size != (w, h):
                 decal_comp = decal_comp.resize((w, h), Image.LANCZOS)
             decal_arr = np.array(decal_comp)
-            decal_alpha = decal_arr[:, :, 3].astype(np.float32) / 255.0  # 0-1 mask
+
+            # Prefer the separate decal-only alpha mask sent from the client.
+            # The composite image has a fully-opaque paint background so its alpha
+            # channel is 255 everywhere — useless as a mask. The dedicated mask
+            # encodes only the decal pixels as grey values, which is what we need.
+            if decal_mask_base64:
+                try:
+                    import base64 as _b64, io as _io
+                    _raw = decal_mask_base64
+                    if ',' in _raw:
+                        _raw = _raw.split(',', 1)[1]
+                    mask_img = Image.open(_io.BytesIO(_b64.b64decode(_raw))).convert('L')
+                    if mask_img.size != (w, h):
+                        mask_img = mask_img.resize((w, h), Image.LANCZOS)
+                    decal_alpha = np.array(mask_img, dtype=np.float32) / 255.0
+                    print(f"  Decal spec: using dedicated alpha mask ({decal_alpha.max():.3f} max)")
+                except Exception as _me:
+                    print(f"  Decal spec: mask decode failed ({_me}), falling back to composite alpha")
+                    decal_alpha = decal_arr[:, :, 3].astype(np.float32) / 255.0
+            else:
+                # Fallback: extract alpha from composite (may be all-255 if paint has opaque bg)
+                decal_alpha = decal_arr[:, :, 3].astype(np.float32) / 255.0
 
             if decal_alpha.max() > 0.01:
                 # Use the first entry's spec finish for all decal areas
@@ -6176,10 +8770,11 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
 
                 # Blend decal spec onto combined_spec using decal alpha
                 alpha4 = decal_alpha[:, :, np.newaxis]
-                combined_spec = (
-                    combined_spec.astype(np.float32) * (1.0 - alpha4) +
-                    decal_spec.astype(np.float32) * alpha4
-                ).astype(np.uint8)
+                combined_spec = np.clip(
+                    combined_spec * (1.0 - alpha4) +
+                    decal_spec.astype(np.float32) * alpha4,
+                    0, 255
+                )
 
                 decal_px = int(np.sum(decal_alpha > 0.01))
                 print(f"  Decal spec applied: {decal_px:,} pixels, finish={spec_name}")
@@ -6226,10 +8821,11 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
 
                 # Blend stamp spec onto combined_spec (all 4 channels)
                 alpha4 = stamp_alpha[:, :, np.newaxis]
-                combined_spec = (
-                    combined_spec.astype(np.float32) * (1.0 - alpha4) +
-                    stamp_spec.astype(np.float32) * alpha4
-                ).astype(np.uint8)
+                combined_spec = np.clip(
+                    combined_spec * (1.0 - alpha4) +
+                    stamp_spec.astype(np.float32) * alpha4,
+                    0, 255
+                )
 
                 stamp_px = np.sum(stamp_alpha > 0.01)
                 print(f"  Stamp applied: {stamp_px:,} pixels affected, finish={stamp_spec_finish}")
@@ -6239,15 +8835,16 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
             print(f"  Stamp ERROR: {e}")
         print(f"  Stamp time: {time.time()-t_stamp:.2f}s")
 
-    # Convert paint to uint8
+    # Convert paint and spec to uint8 (single conversion point)
     t_save = time.time()
     paint_rgb = (np.clip(paint, 0, 1) * 255).astype(np.uint8)
     if paint_rgb.shape[2] == 4:
         paint_rgb = paint_rgb[:, :, :3]
+    combined_spec_u8 = np.clip(combined_spec, 0, 255).astype(np.uint8)
 
     # ---- PREVIEW MODE: return arrays directly, skip all file I/O ----
     if preview_mode:
-        return (paint_rgb, combined_spec)
+        return (paint_rgb, combined_spec_u8)
 
     # Save outputs - car_prefix is "car_num" (custom numbers) or "car" (no custom numbers)
     # Spec map is ALWAYS car_spec regardless of custom number setting
@@ -6255,11 +8852,11 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
     spec_path = os.path.join(output_dir, f"car_spec_{iracing_id}.tga")
 
     write_tga_24bit(paint_path, paint_rgb)
-    write_tga_32bit(spec_path, combined_spec)
+    write_tga_32bit(spec_path, combined_spec_u8)
 
     # Save previews
     Image.fromarray(paint_rgb).save(os.path.join(output_dir, "PREVIEW_paint.png"))
-    Image.fromarray(combined_spec).save(os.path.join(output_dir, "PREVIEW_spec.png"))
+    Image.fromarray(combined_spec_u8).save(os.path.join(output_dir, "PREVIEW_spec.png"))
 
     # Save individual zone mask previews (only when debug images requested)
     if save_debug_images:
@@ -6301,7 +8898,7 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
         print(f"  Zone previews saved for debugging")
     print(f"{'=' * 60}")
 
-    return paint_rgb, combined_spec, zone_masks
+    return paint_rgb, combined_spec_u8, zone_masks
 
 
 # ================================================================
@@ -6309,7 +8906,7 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
 # ================================================================
 
 def preview_render(paint_file, zones, seed=51, preview_scale=0.25, import_spec_map=None,
-                   decal_spec_finishes=None, decal_paint_path=None):
+                   decal_spec_finishes=None, decal_paint_path=None, decal_mask_base64=None):
     """Live preview: runs the FULL render pipeline at reduced resolution.
 
     Uses build_multi_zone with preview_mode=True so the preview matches
@@ -6389,6 +8986,7 @@ def preview_render(paint_file, zones, seed=51, preview_scale=0.25, import_spec_m
             preview_mode=True,
             decal_spec_finishes=decal_spec_finishes,
             decal_paint_path=preview_decal_path,
+            decal_mask_base64=decal_mask_base64,
         )
         paint_rgb, combined_spec = result
     except Exception as e:
@@ -6546,11 +9144,12 @@ def build_helmet_spec(helmet_paint_file, output_dir, zones, iracing_id="23371", 
     paint = paint_rgb.astype(np.float32) / 255.0
 
     # Build spec using same zone logic as cars
-    combined_spec = np.zeros((h, w, 4), dtype=np.uint8)
+    combined_spec = np.zeros((h, w, 4), dtype=np.float32)
     combined_spec[:,:,1] = 100  # default R
     combined_spec[:,:,3] = 255  # full spec mask
 
     claimed = np.zeros(shape, dtype=np.float32)
+    _shared_spec_pool = ThreadPoolExecutor(max_workers=min(2, _os.cpu_count() or 1))
 
     for i, zone in enumerate(zones):
         name = zone.get("name", f"Zone {i+1}")
@@ -6607,6 +9206,9 @@ def build_helmet_spec(helmet_paint_file, output_dir, zones, iracing_id="23371", 
             _v6kw["base_flip_v"] = bool(zone.get("base_flip_v", False))
             if zone.get("spec_pattern_stack"): _v6kw["spec_pattern_stack"] = zone["spec_pattern_stack"]
             if zone.get("overlay_spec_pattern_stack"): _v6kw["overlay_spec_pattern_stack"] = zone["overlay_spec_pattern_stack"]
+            if zone.get("third_overlay_spec_pattern_stack"): _v6kw["third_overlay_spec_pattern_stack"] = zone["third_overlay_spec_pattern_stack"]
+            if zone.get("fourth_overlay_spec_pattern_stack"): _v6kw["fourth_overlay_spec_pattern_stack"] = zone["fourth_overlay_spec_pattern_stack"]
+            if zone.get("fifth_overlay_spec_pattern_stack"): _v6kw["fifth_overlay_spec_pattern_stack"] = zone["fifth_overlay_spec_pattern_stack"]
             if _z_cc is not None: _v6kw["cc_quality"] = _z_cc
             if _z_bb: _v6kw["blend_base"] = _z_bb; _v6kw["blend_dir"] = _z_bd; _v6kw["blend_amount"] = _z_ba
             if _z_pc: _v6kw["paint_color"] = _z_pc
@@ -6645,6 +9247,12 @@ def build_helmet_spec(helmet_paint_file, output_dir, zones, iracing_id="23371", 
                 _v6kw["second_base_pattern_offset_x"] = _sb_oxN
                 _v6kw["second_base_pattern_offset_y"] = _sb_oyN
                 _v6kw["second_base_pattern_scale"] = _sb_pscaleN
+            _v6kw["second_base_hue_shift"] = float(zone.get("second_base_hue_shift", 0))
+            _v6kw["second_base_saturation"] = float(zone.get("second_base_saturation", 0))
+            _v6kw["second_base_brightness"] = float(zone.get("second_base_brightness", 0))
+            _v6kw["second_base_pattern_hue_shift"] = float(zone.get("second_base_pattern_hue_shift", 0))
+            _v6kw["second_base_pattern_saturation"] = float(zone.get("second_base_pattern_saturation", 0))
+            _v6kw["second_base_pattern_brightness"] = float(zone.get("second_base_pattern_brightness", 0))
             _v6kw["second_base_color_source"] = zone.get("second_base_color_source")
             _z_tb = zone.get("third_base")
             if _z_tb:
@@ -6680,6 +9288,9 @@ def build_helmet_spec(helmet_paint_file, output_dir, zones, iracing_id="23371", 
                 _v6kw["third_base_pattern_offset_x"] = _tb_oxN
                 _v6kw["third_base_pattern_offset_y"] = _tb_oyN
                 _v6kw["third_base_pattern_scale"] = _tb_pscaleN
+            _v6kw["third_base_hue_shift"] = float(zone.get("third_base_hue_shift", 0))
+            _v6kw["third_base_saturation"] = float(zone.get("third_base_saturation", 0))
+            _v6kw["third_base_brightness"] = float(zone.get("third_base_brightness", 0))
             _v6kw["third_base_color_source"] = zone.get("third_base_color_source")
             _z_fb = zone.get("fourth_base")
             if _z_fb:
@@ -6715,6 +9326,9 @@ def build_helmet_spec(helmet_paint_file, output_dir, zones, iracing_id="23371", 
                 _v6kw["fourth_base_pattern_offset_x"] = _fb_oxN
                 _v6kw["fourth_base_pattern_offset_y"] = _fb_oyN
                 _v6kw["fourth_base_pattern_scale"] = _fb_pscaleN
+            _v6kw["fourth_base_hue_shift"] = float(zone.get("fourth_base_hue_shift", 0))
+            _v6kw["fourth_base_saturation"] = float(zone.get("fourth_base_saturation", 0))
+            _v6kw["fourth_base_brightness"] = float(zone.get("fourth_base_brightness", 0))
             _v6kw["fourth_base_color_source"] = zone.get("fourth_base_color_source")
             _z_fif = zone.get("fifth_base")
             if _z_fif:
@@ -6750,6 +9364,9 @@ def build_helmet_spec(helmet_paint_file, output_dir, zones, iracing_id="23371", 
                 _v6kw["fifth_base_pattern_offset_x"] = _fif_oxN
                 _v6kw["fifth_base_pattern_offset_y"] = _fif_oyN
                 _v6kw["fifth_base_pattern_scale"] = _fif_pscaleN
+            _v6kw["fifth_base_hue_shift"] = float(zone.get("fifth_base_hue_shift", 0))
+            _v6kw["fifth_base_saturation"] = float(zone.get("fifth_base_saturation", 0))
+            _v6kw["fifth_base_brightness"] = float(zone.get("fifth_base_brightness", 0))
             _v6kw["fifth_base_color_source"] = zone.get("fifth_base_color_source")
             _v6kw["monolithic_registry"] = MONOLITHIC_REGISTRY
 
@@ -6777,10 +9394,10 @@ def build_helmet_spec(helmet_paint_file, output_dir, zones, iracing_id="23371", 
                 print(f"    [{name}] => {label} ({intensity}) [stacked compositing]")
                 _v6paint = {"base_strength": _v6kw.get("base_strength", 1.0), "base_spec_strength": _v6kw.get("base_spec_strength", 1.0), "base_color_mode": _v6kw.get("base_color_mode", "source"), "base_color": _v6kw.get("base_color", [1.0, 1.0, 1.0]), "base_color_source": _v6kw.get("base_color_source"), "base_color_strength": _v6kw.get("base_color_strength", 1.0), "base_hue_offset": _v6kw.get("base_hue_offset", 0), "base_saturation_adjust": _v6kw.get("base_saturation_adjust", 0), "base_brightness_adjust": _v6kw.get("base_brightness_adjust", 0)}
                 if _z_bb: _v6paint["blend_base"] = _z_bb; _v6paint["blend_dir"] = _z_bd; _v6paint["blend_amount"] = _z_ba
-                if _z_sb or _v6kw.get("second_base_color_source"): _v6paint["second_base"] = _z_sb; _v6paint["second_base_color_source"] = _v6kw.get("second_base_color_source"); _v6paint["second_base_color"] = _v6kw.get("second_base_color", [1.0, 1.0, 1.0]); _v6paint["second_base_strength"] = _v6kw.get("second_base_strength", 0.0); _v6paint["second_base_spec_strength"] = _v6kw.get("second_base_spec_strength", 1.0); _v6paint["second_base_blend_mode"] = _v6kw.get("second_base_blend_mode", "noise"); _v6paint["second_base_noise_scale"] = _v6kw.get("second_base_noise_scale", 24); _v6paint["second_base_scale"] = _v6kw.get("second_base_scale", 1.0); _v6paint["second_base_pattern"] = _v6kw.get("second_base_pattern"); _v6paint["second_base_pattern_scale"] = _v6kw.get("second_base_pattern_scale", 1.0); _v6paint["second_base_pattern_rotation"] = _v6kw.get("second_base_pattern_rotation", 0.0); _v6paint["second_base_pattern_opacity"] = _v6kw.get("second_base_pattern_opacity", 1.0); _v6paint["second_base_pattern_strength"] = _v6kw.get("second_base_pattern_strength", 1.0); _v6paint["second_base_pattern_invert"] = _v6kw.get("second_base_pattern_invert", False); _v6paint["second_base_pattern_harden"] = _v6kw.get("second_base_pattern_harden", False); _v6paint["second_base_pattern_offset_x"] = _v6kw.get("second_base_pattern_offset_x", 0.5); _v6paint["second_base_pattern_offset_y"] = _v6kw.get("second_base_pattern_offset_y", 0.5)
-                if _z_tb or _v6kw.get("third_base_color_source"): _v6paint["third_base"] = _z_tb; _v6paint["third_base_color_source"] = _v6kw.get("third_base_color_source"); _v6paint["third_base_color"] = _v6kw.get("third_base_color", [1.0, 1.0, 1.0]); _v6paint["third_base_strength"] = _v6kw.get("third_base_strength", 0.0); _v6paint["third_base_spec_strength"] = _v6kw.get("third_base_spec_strength", 1.0); _v6paint["third_base_blend_mode"] = _v6kw.get("third_base_blend_mode", "noise"); _v6paint["third_base_noise_scale"] = _v6kw.get("third_base_noise_scale", 24); _v6paint["third_base_scale"] = _v6kw.get("third_base_scale", 1.0); _v6paint["third_base_pattern"] = _v6kw.get("third_base_pattern"); _v6paint["third_base_pattern_scale"] = _v6kw.get("third_base_pattern_scale", 1.0); _v6paint["third_base_pattern_rotation"] = _v6kw.get("third_base_pattern_rotation", 0.0); _v6paint["third_base_pattern_opacity"] = _v6kw.get("third_base_pattern_opacity", 1.0); _v6paint["third_base_pattern_strength"] = _v6kw.get("third_base_pattern_strength", 1.0); _v6paint["third_base_pattern_invert"] = _v6kw.get("third_base_pattern_invert", False); _v6paint["third_base_pattern_harden"] = _v6kw.get("third_base_pattern_harden", False); _v6paint["third_base_pattern_offset_x"] = _v6kw.get("third_base_pattern_offset_x", 0.5); _v6paint["third_base_pattern_offset_y"] = _v6kw.get("third_base_pattern_offset_y", 0.5)
-                if _z_fb or _v6kw.get("fourth_base_color_source"): _v6paint["fourth_base"] = _z_fb; _v6paint["fourth_base_color_source"] = _v6kw.get("fourth_base_color_source"); _v6paint["fourth_base_color"] = _v6kw.get("fourth_base_color", [1.0, 1.0, 1.0]); _v6paint["fourth_base_strength"] = _v6kw.get("fourth_base_strength", 0.0); _v6paint["fourth_base_spec_strength"] = _v6kw.get("fourth_base_spec_strength", 1.0); _v6paint["fourth_base_blend_mode"] = _v6kw.get("fourth_base_blend_mode", "noise"); _v6paint["fourth_base_noise_scale"] = _v6kw.get("fourth_base_noise_scale", 24); _v6paint["fourth_base_scale"] = _v6kw.get("fourth_base_scale", 1.0); _v6paint["fourth_base_pattern"] = _v6kw.get("fourth_base_pattern"); _v6paint["fourth_base_pattern_scale"] = _v6kw.get("fourth_base_pattern_scale", 1.0); _v6paint["fourth_base_pattern_rotation"] = _v6kw.get("fourth_base_pattern_rotation", 0.0); _v6paint["fourth_base_pattern_opacity"] = _v6kw.get("fourth_base_pattern_opacity", 1.0); _v6paint["fourth_base_pattern_strength"] = _v6kw.get("fourth_base_pattern_strength", 1.0); _v6paint["fourth_base_pattern_invert"] = _v6kw.get("fourth_base_pattern_invert", False); _v6paint["fourth_base_pattern_harden"] = _v6kw.get("fourth_base_pattern_harden", False); _v6paint["fourth_base_pattern_offset_x"] = _v6kw.get("fourth_base_pattern_offset_x", 0.5); _v6paint["fourth_base_pattern_offset_y"] = _v6kw.get("fourth_base_pattern_offset_y", 0.5)
-                if _z_fif or _v6kw.get("fifth_base_color_source"): _v6paint["fifth_base"] = _z_fif; _v6paint["fifth_base_color_source"] = _v6kw.get("fifth_base_color_source"); _v6paint["fifth_base_color"] = _v6kw.get("fifth_base_color", [1.0, 1.0, 1.0]); _v6paint["fifth_base_strength"] = _v6kw.get("fifth_base_strength", 0.0); _v6paint["fifth_base_spec_strength"] = _v6kw.get("fifth_base_spec_strength", 1.0); _v6paint["fifth_base_blend_mode"] = _v6kw.get("fifth_base_blend_mode", "noise"); _v6paint["fifth_base_noise_scale"] = _v6kw.get("fifth_base_noise_scale", 24); _v6paint["fifth_base_scale"] = _v6kw.get("fifth_base_scale", 1.0); _v6paint["fifth_base_pattern"] = _v6kw.get("fifth_base_pattern"); _v6paint["fifth_base_pattern_scale"] = _v6kw.get("fifth_base_pattern_scale", 1.0); _v6paint["fifth_base_pattern_rotation"] = _v6kw.get("fifth_base_pattern_rotation", 0.0); _v6paint["fifth_base_pattern_opacity"] = _v6kw.get("fifth_base_pattern_opacity", 1.0); _v6paint["fifth_base_pattern_strength"] = _v6kw.get("fifth_base_pattern_strength", 1.0); _v6paint["fifth_base_pattern_invert"] = _v6kw.get("fifth_base_pattern_invert", False); _v6paint["fifth_base_pattern_harden"] = _v6kw.get("fifth_base_pattern_harden", False); _v6paint["fifth_base_pattern_offset_x"] = _v6kw.get("fifth_base_pattern_offset_x", 0.5); _v6paint["fifth_base_pattern_offset_y"] = _v6kw.get("fifth_base_pattern_offset_y", 0.5)
+                if _z_sb or _v6kw.get("second_base_color_source"): _v6paint["second_base"] = _z_sb; _v6paint["second_base_color_source"] = _v6kw.get("second_base_color_source"); _v6paint["second_base_color"] = _v6kw.get("second_base_color", [1.0, 1.0, 1.0]); _v6paint["second_base_strength"] = _v6kw.get("second_base_strength", 0.0); _v6paint["second_base_spec_strength"] = _v6kw.get("second_base_spec_strength", 1.0); _v6paint["second_base_blend_mode"] = _v6kw.get("second_base_blend_mode", "noise"); _v6paint["second_base_noise_scale"] = _v6kw.get("second_base_noise_scale", 24); _v6paint["second_base_scale"] = _v6kw.get("second_base_scale", 1.0); _v6paint["second_base_pattern"] = _v6kw.get("second_base_pattern"); _v6paint["second_base_pattern_scale"] = _v6kw.get("second_base_pattern_scale", 1.0); _v6paint["second_base_pattern_rotation"] = _v6kw.get("second_base_pattern_rotation", 0.0); _v6paint["second_base_pattern_opacity"] = _v6kw.get("second_base_pattern_opacity", 1.0); _v6paint["second_base_pattern_strength"] = _v6kw.get("second_base_pattern_strength", 1.0); _v6paint["second_base_pattern_invert"] = _v6kw.get("second_base_pattern_invert", False); _v6paint["second_base_pattern_harden"] = _v6kw.get("second_base_pattern_harden", False); _v6paint["second_base_pattern_offset_x"] = _v6kw.get("second_base_pattern_offset_x", 0.5); _v6paint["second_base_pattern_offset_y"] = _v6kw.get("second_base_pattern_offset_y", 0.5); _v6paint["second_base_hue_shift"] = _v6kw.get("second_base_hue_shift", 0); _v6paint["second_base_saturation"] = _v6kw.get("second_base_saturation", 0); _v6paint["second_base_brightness"] = _v6kw.get("second_base_brightness", 0); _v6paint["second_base_pattern_hue_shift"] = _v6kw.get("second_base_pattern_hue_shift", 0); _v6paint["second_base_pattern_saturation"] = _v6kw.get("second_base_pattern_saturation", 0); _v6paint["second_base_pattern_brightness"] = _v6kw.get("second_base_pattern_brightness", 0)
+                if _z_tb or _v6kw.get("third_base_color_source"): _v6paint["third_base"] = _z_tb; _v6paint["third_base_color_source"] = _v6kw.get("third_base_color_source"); _v6paint["third_base_color"] = _v6kw.get("third_base_color", [1.0, 1.0, 1.0]); _v6paint["third_base_strength"] = _v6kw.get("third_base_strength", 0.0); _v6paint["third_base_spec_strength"] = _v6kw.get("third_base_spec_strength", 1.0); _v6paint["third_base_blend_mode"] = _v6kw.get("third_base_blend_mode", "noise"); _v6paint["third_base_noise_scale"] = _v6kw.get("third_base_noise_scale", 24); _v6paint["third_base_scale"] = _v6kw.get("third_base_scale", 1.0); _v6paint["third_base_pattern"] = _v6kw.get("third_base_pattern"); _v6paint["third_base_pattern_scale"] = _v6kw.get("third_base_pattern_scale", 1.0); _v6paint["third_base_pattern_rotation"] = _v6kw.get("third_base_pattern_rotation", 0.0); _v6paint["third_base_pattern_opacity"] = _v6kw.get("third_base_pattern_opacity", 1.0); _v6paint["third_base_pattern_strength"] = _v6kw.get("third_base_pattern_strength", 1.0); _v6paint["third_base_pattern_invert"] = _v6kw.get("third_base_pattern_invert", False); _v6paint["third_base_pattern_harden"] = _v6kw.get("third_base_pattern_harden", False); _v6paint["third_base_pattern_offset_x"] = _v6kw.get("third_base_pattern_offset_x", 0.5); _v6paint["third_base_pattern_offset_y"] = _v6kw.get("third_base_pattern_offset_y", 0.5); _v6paint["third_base_hue_shift"] = _v6kw.get("third_base_hue_shift", 0); _v6paint["third_base_saturation"] = _v6kw.get("third_base_saturation", 0); _v6paint["third_base_brightness"] = _v6kw.get("third_base_brightness", 0)
+                if _z_fb or _v6kw.get("fourth_base_color_source"): _v6paint["fourth_base"] = _z_fb; _v6paint["fourth_base_color_source"] = _v6kw.get("fourth_base_color_source"); _v6paint["fourth_base_color"] = _v6kw.get("fourth_base_color", [1.0, 1.0, 1.0]); _v6paint["fourth_base_strength"] = _v6kw.get("fourth_base_strength", 0.0); _v6paint["fourth_base_spec_strength"] = _v6kw.get("fourth_base_spec_strength", 1.0); _v6paint["fourth_base_blend_mode"] = _v6kw.get("fourth_base_blend_mode", "noise"); _v6paint["fourth_base_noise_scale"] = _v6kw.get("fourth_base_noise_scale", 24); _v6paint["fourth_base_scale"] = _v6kw.get("fourth_base_scale", 1.0); _v6paint["fourth_base_pattern"] = _v6kw.get("fourth_base_pattern"); _v6paint["fourth_base_pattern_scale"] = _v6kw.get("fourth_base_pattern_scale", 1.0); _v6paint["fourth_base_pattern_rotation"] = _v6kw.get("fourth_base_pattern_rotation", 0.0); _v6paint["fourth_base_pattern_opacity"] = _v6kw.get("fourth_base_pattern_opacity", 1.0); _v6paint["fourth_base_pattern_strength"] = _v6kw.get("fourth_base_pattern_strength", 1.0); _v6paint["fourth_base_pattern_invert"] = _v6kw.get("fourth_base_pattern_invert", False); _v6paint["fourth_base_pattern_harden"] = _v6kw.get("fourth_base_pattern_harden", False); _v6paint["fourth_base_pattern_offset_x"] = _v6kw.get("fourth_base_pattern_offset_x", 0.5); _v6paint["fourth_base_pattern_offset_y"] = _v6kw.get("fourth_base_pattern_offset_y", 0.5); _v6paint["fourth_base_hue_shift"] = _v6kw.get("fourth_base_hue_shift", 0); _v6paint["fourth_base_saturation"] = _v6kw.get("fourth_base_saturation", 0); _v6paint["fourth_base_brightness"] = _v6kw.get("fourth_base_brightness", 0)
+                if _z_fif or _v6kw.get("fifth_base_color_source"): _v6paint["fifth_base"] = _z_fif; _v6paint["fifth_base_color_source"] = _v6kw.get("fifth_base_color_source"); _v6paint["fifth_base_color"] = _v6kw.get("fifth_base_color", [1.0, 1.0, 1.0]); _v6paint["fifth_base_strength"] = _v6kw.get("fifth_base_strength", 0.0); _v6paint["fifth_base_spec_strength"] = _v6kw.get("fifth_base_spec_strength", 1.0); _v6paint["fifth_base_blend_mode"] = _v6kw.get("fifth_base_blend_mode", "noise"); _v6paint["fifth_base_noise_scale"] = _v6kw.get("fifth_base_noise_scale", 24); _v6paint["fifth_base_scale"] = _v6kw.get("fifth_base_scale", 1.0); _v6paint["fifth_base_pattern"] = _v6kw.get("fifth_base_pattern"); _v6paint["fifth_base_pattern_scale"] = _v6kw.get("fifth_base_pattern_scale", 1.0); _v6paint["fifth_base_pattern_rotation"] = _v6kw.get("fifth_base_pattern_rotation", 0.0); _v6paint["fifth_base_pattern_opacity"] = _v6kw.get("fifth_base_pattern_opacity", 1.0); _v6paint["fifth_base_pattern_strength"] = _v6kw.get("fifth_base_pattern_strength", 1.0); _v6paint["fifth_base_pattern_invert"] = _v6kw.get("fifth_base_pattern_invert", False); _v6paint["fifth_base_pattern_harden"] = _v6kw.get("fifth_base_pattern_harden", False); _v6paint["fifth_base_pattern_offset_x"] = _v6kw.get("fifth_base_pattern_offset_x", 0.5); _v6paint["fifth_base_pattern_offset_y"] = _v6kw.get("fifth_base_pattern_offset_y", 0.5); _v6paint["fifth_base_hue_shift"] = _v6kw.get("fifth_base_hue_shift", 0); _v6paint["fifth_base_saturation"] = _v6kw.get("fifth_base_saturation", 0); _v6paint["fifth_base_brightness"] = _v6kw.get("fifth_base_brightness", 0)
                 _v6paint["monolithic_registry"] = _v6kw.get("monolithic_registry")
                 _v6paint["base_offset_x"] = _v6kw.get("base_offset_x", 0.5)
                 _v6paint["base_offset_y"] = _v6kw.get("base_offset_y", 0.5)
@@ -6790,11 +9407,25 @@ def build_helmet_spec(helmet_paint_file, output_dir, zones, iracing_id="23371", 
                 _v6paint["pattern_offset_x"] = _v6kw.get("pattern_offset_x", 0.5)
                 _v6paint["pattern_offset_y"] = _v6kw.get("pattern_offset_y", 0.5)
                 if all_patterns:
-                    zone_spec = compose_finish_stacked(base_id, all_patterns, shape, zone_mask, seed + i * 13, sm, spec_mult=spec_mult, base_scale=zone_base_scale, **_v6kw)
-                    paint = compose_paint_mod_stacked(base_id, all_patterns, paint, shape, zone_mask, seed + i * 13, pm, bb, **_v6paint)
+                    # Parallel: spec in background thread while paint mod runs in foreground
+                    if True:  # was: ThreadPoolExecutor per-zone. Now uses _shared_spec_pool
+                        _spec_ex = _shared_spec_pool
+                        _spec_fut = _spec_ex.submit(compose_finish_stacked, base_id, all_patterns, shape, zone_mask, seed + i * 13, sm, spec_mult=spec_mult, base_scale=zone_base_scale, **_v6kw)
+                        _paint_was_gpu = is_gpu() and hasattr(paint, '__cuda_array_interface__')
+                        if _paint_was_gpu: paint = to_cpu(paint)
+                        paint = compose_paint_mod_stacked(base_id, all_patterns, paint, shape, zone_mask, seed + i * 13, pm, bb, **_v6paint)
+                        if _paint_was_gpu: paint = to_gpu(paint)
+                        zone_spec = _spec_fut.result()
                 else:
-                    zone_spec = compose_finish(base_id, "none", shape, zone_mask, seed + i * 13, sm, spec_mult=spec_mult, base_scale=zone_base_scale, **_v6kw)
-                    paint = compose_paint_mod(base_id, "none", paint, shape, zone_mask, seed + i * 13, pm, bb, **_v6paint)
+                    # Parallel: spec in background thread while paint mod runs in foreground
+                    if True:  # was: ThreadPoolExecutor per-zone. Now uses _shared_spec_pool
+                        _spec_ex = _shared_spec_pool
+                        _spec_fut = _spec_ex.submit(compose_finish, base_id, "none", shape, zone_mask, seed + i * 13, sm, spec_mult=spec_mult, base_scale=zone_base_scale, **_v6kw)
+                        _paint_was_gpu = is_gpu() and hasattr(paint, '__cuda_array_interface__')
+                        if _paint_was_gpu: paint = to_cpu(paint)
+                        paint = compose_paint_mod(base_id, "none", paint, shape, zone_mask, seed + i * 13, pm, bb, **_v6paint)
+                        if _paint_was_gpu: paint = to_gpu(paint)
+                        zone_spec = _spec_fut.result()
             else:
                 # SINGLE PATTERN: original path
                 label = f"{base_id}" + (f" + {pattern_id}" if pattern_id != "none" else "")
@@ -6803,18 +9434,25 @@ def build_helmet_spec(helmet_paint_file, output_dir, zones, iracing_id="23371", 
                 print(f"    [{name}] => {label} ({intensity}){scale_label}{rot_label}")
                 _v6paint = {"base_strength": _v6kw.get("base_strength", 1.0), "base_spec_strength": _v6kw.get("base_spec_strength", 1.0), "base_color_mode": _v6kw.get("base_color_mode", "source"), "base_color": _v6kw.get("base_color", [1.0, 1.0, 1.0]), "base_color_source": _v6kw.get("base_color_source"), "base_color_strength": _v6kw.get("base_color_strength", 1.0), "base_hue_offset": _v6kw.get("base_hue_offset", 0), "base_saturation_adjust": _v6kw.get("base_saturation_adjust", 0), "base_brightness_adjust": _v6kw.get("base_brightness_adjust", 0)}
                 if _z_bb: _v6paint["blend_base"] = _z_bb; _v6paint["blend_dir"] = _z_bd; _v6paint["blend_amount"] = _z_ba
-                if _z_sb or _v6kw.get("second_base_color_source"): _v6paint["second_base"] = _z_sb; _v6paint["second_base_color_source"] = _v6kw.get("second_base_color_source"); _v6paint["second_base_color"] = _v6kw.get("second_base_color", [1.0, 1.0, 1.0]); _v6paint["second_base_strength"] = _v6kw.get("second_base_strength", 0.0); _v6paint["second_base_spec_strength"] = _v6kw.get("second_base_spec_strength", 1.0); _v6paint["second_base_blend_mode"] = _v6kw.get("second_base_blend_mode", "noise"); _v6paint["second_base_noise_scale"] = _v6kw.get("second_base_noise_scale", 24); _v6paint["second_base_scale"] = _v6kw.get("second_base_scale", 1.0); _v6paint["second_base_pattern"] = _v6kw.get("second_base_pattern"); _v6paint["second_base_pattern_scale"] = _v6kw.get("second_base_pattern_scale", 1.0); _v6paint["second_base_pattern_rotation"] = _v6kw.get("second_base_pattern_rotation", 0.0); _v6paint["second_base_pattern_opacity"] = _v6kw.get("second_base_pattern_opacity", 1.0); _v6paint["second_base_pattern_strength"] = _v6kw.get("second_base_pattern_strength", 1.0); _v6paint["second_base_pattern_invert"] = _v6kw.get("second_base_pattern_invert", False); _v6paint["second_base_pattern_harden"] = _v6kw.get("second_base_pattern_harden", False); _v6paint["second_base_pattern_offset_x"] = _v6kw.get("second_base_pattern_offset_x", 0.5); _v6paint["second_base_pattern_offset_y"] = _v6kw.get("second_base_pattern_offset_y", 0.5)
-                if _z_tb or _v6kw.get("third_base_color_source"): _v6paint["third_base"] = _z_tb; _v6paint["third_base_color_source"] = _v6kw.get("third_base_color_source"); _v6paint["third_base_color"] = _v6kw.get("third_base_color", [1.0, 1.0, 1.0]); _v6paint["third_base_strength"] = _v6kw.get("third_base_strength", 0.0); _v6paint["third_base_spec_strength"] = _v6kw.get("third_base_spec_strength", 1.0); _v6paint["third_base_blend_mode"] = _v6kw.get("third_base_blend_mode", "noise"); _v6paint["third_base_noise_scale"] = _v6kw.get("third_base_noise_scale", 24); _v6paint["third_base_scale"] = _v6kw.get("third_base_scale", 1.0); _v6paint["third_base_pattern"] = _v6kw.get("third_base_pattern"); _v6paint["third_base_pattern_scale"] = _v6kw.get("third_base_pattern_scale", 1.0); _v6paint["third_base_pattern_rotation"] = _v6kw.get("third_base_pattern_rotation", 0.0); _v6paint["third_base_pattern_opacity"] = _v6kw.get("third_base_pattern_opacity", 1.0); _v6paint["third_base_pattern_strength"] = _v6kw.get("third_base_pattern_strength", 1.0); _v6paint["third_base_pattern_invert"] = _v6kw.get("third_base_pattern_invert", False); _v6paint["third_base_pattern_harden"] = _v6kw.get("third_base_pattern_harden", False); _v6paint["third_base_pattern_offset_x"] = _v6kw.get("third_base_pattern_offset_x", 0.5); _v6paint["third_base_pattern_offset_y"] = _v6kw.get("third_base_pattern_offset_y", 0.5)
-                if _z_fb or _v6kw.get("fourth_base_color_source"): _v6paint["fourth_base"] = _z_fb; _v6paint["fourth_base_color_source"] = _v6kw.get("fourth_base_color_source"); _v6paint["fourth_base_color"] = _v6kw.get("fourth_base_color", [1.0, 1.0, 1.0]); _v6paint["fourth_base_strength"] = _v6kw.get("fourth_base_strength", 0.0); _v6paint["fourth_base_spec_strength"] = _v6kw.get("fourth_base_spec_strength", 1.0); _v6paint["fourth_base_blend_mode"] = _v6kw.get("fourth_base_blend_mode", "noise"); _v6paint["fourth_base_noise_scale"] = _v6kw.get("fourth_base_noise_scale", 24); _v6paint["fourth_base_scale"] = _v6kw.get("fourth_base_scale", 1.0); _v6paint["fourth_base_pattern"] = _v6kw.get("fourth_base_pattern"); _v6paint["fourth_base_pattern_scale"] = _v6kw.get("fourth_base_pattern_scale", 1.0); _v6paint["fourth_base_pattern_rotation"] = _v6kw.get("fourth_base_pattern_rotation", 0.0); _v6paint["fourth_base_pattern_opacity"] = _v6kw.get("fourth_base_pattern_opacity", 1.0); _v6paint["fourth_base_pattern_strength"] = _v6kw.get("fourth_base_pattern_strength", 1.0); _v6paint["fourth_base_pattern_invert"] = _v6kw.get("fourth_base_pattern_invert", False); _v6paint["fourth_base_pattern_harden"] = _v6kw.get("fourth_base_pattern_harden", False); _v6paint["fourth_base_pattern_offset_x"] = _v6kw.get("fourth_base_pattern_offset_x", 0.5); _v6paint["fourth_base_pattern_offset_y"] = _v6kw.get("fourth_base_pattern_offset_y", 0.5)
-                if _z_fif or _v6kw.get("fifth_base_color_source"): _v6paint["fifth_base"] = _z_fif; _v6paint["fifth_base_color_source"] = _v6kw.get("fifth_base_color_source"); _v6paint["fifth_base_color"] = _v6kw.get("fifth_base_color", [1.0, 1.0, 1.0]); _v6paint["fifth_base_strength"] = _v6kw.get("fifth_base_strength", 0.0); _v6paint["fifth_base_spec_strength"] = _v6kw.get("fifth_base_spec_strength", 1.0); _v6paint["fifth_base_blend_mode"] = _v6kw.get("fifth_base_blend_mode", "noise"); _v6paint["fifth_base_noise_scale"] = _v6kw.get("fifth_base_noise_scale", 24); _v6paint["fifth_base_scale"] = _v6kw.get("fifth_base_scale", 1.0); _v6paint["fifth_base_pattern"] = _v6kw.get("fifth_base_pattern"); _v6paint["fifth_base_pattern_scale"] = _v6kw.get("fifth_base_pattern_scale", 1.0); _v6paint["fifth_base_pattern_rotation"] = _v6kw.get("fifth_base_pattern_rotation", 0.0); _v6paint["fifth_base_pattern_opacity"] = _v6kw.get("fifth_base_pattern_opacity", 1.0); _v6paint["fifth_base_pattern_strength"] = _v6kw.get("fifth_base_pattern_strength", 1.0); _v6paint["fifth_base_pattern_invert"] = _v6kw.get("fifth_base_pattern_invert", False); _v6paint["fifth_base_pattern_harden"] = _v6kw.get("fifth_base_pattern_harden", False); _v6paint["fifth_base_pattern_offset_x"] = _v6kw.get("fifth_base_pattern_offset_x", 0.5); _v6paint["fifth_base_pattern_offset_y"] = _v6kw.get("fifth_base_pattern_offset_y", 0.5)
+                if _z_sb or _v6kw.get("second_base_color_source"): _v6paint["second_base"] = _z_sb; _v6paint["second_base_color_source"] = _v6kw.get("second_base_color_source"); _v6paint["second_base_color"] = _v6kw.get("second_base_color", [1.0, 1.0, 1.0]); _v6paint["second_base_strength"] = _v6kw.get("second_base_strength", 0.0); _v6paint["second_base_spec_strength"] = _v6kw.get("second_base_spec_strength", 1.0); _v6paint["second_base_blend_mode"] = _v6kw.get("second_base_blend_mode", "noise"); _v6paint["second_base_noise_scale"] = _v6kw.get("second_base_noise_scale", 24); _v6paint["second_base_scale"] = _v6kw.get("second_base_scale", 1.0); _v6paint["second_base_pattern"] = _v6kw.get("second_base_pattern"); _v6paint["second_base_pattern_scale"] = _v6kw.get("second_base_pattern_scale", 1.0); _v6paint["second_base_pattern_rotation"] = _v6kw.get("second_base_pattern_rotation", 0.0); _v6paint["second_base_pattern_opacity"] = _v6kw.get("second_base_pattern_opacity", 1.0); _v6paint["second_base_pattern_strength"] = _v6kw.get("second_base_pattern_strength", 1.0); _v6paint["second_base_pattern_invert"] = _v6kw.get("second_base_pattern_invert", False); _v6paint["second_base_pattern_harden"] = _v6kw.get("second_base_pattern_harden", False); _v6paint["second_base_pattern_offset_x"] = _v6kw.get("second_base_pattern_offset_x", 0.5); _v6paint["second_base_pattern_offset_y"] = _v6kw.get("second_base_pattern_offset_y", 0.5); _v6paint["second_base_hue_shift"] = _v6kw.get("second_base_hue_shift", 0); _v6paint["second_base_saturation"] = _v6kw.get("second_base_saturation", 0); _v6paint["second_base_brightness"] = _v6kw.get("second_base_brightness", 0); _v6paint["second_base_pattern_hue_shift"] = _v6kw.get("second_base_pattern_hue_shift", 0); _v6paint["second_base_pattern_saturation"] = _v6kw.get("second_base_pattern_saturation", 0); _v6paint["second_base_pattern_brightness"] = _v6kw.get("second_base_pattern_brightness", 0)
+                if _z_tb or _v6kw.get("third_base_color_source"): _v6paint["third_base"] = _z_tb; _v6paint["third_base_color_source"] = _v6kw.get("third_base_color_source"); _v6paint["third_base_color"] = _v6kw.get("third_base_color", [1.0, 1.0, 1.0]); _v6paint["third_base_strength"] = _v6kw.get("third_base_strength", 0.0); _v6paint["third_base_spec_strength"] = _v6kw.get("third_base_spec_strength", 1.0); _v6paint["third_base_blend_mode"] = _v6kw.get("third_base_blend_mode", "noise"); _v6paint["third_base_noise_scale"] = _v6kw.get("third_base_noise_scale", 24); _v6paint["third_base_scale"] = _v6kw.get("third_base_scale", 1.0); _v6paint["third_base_pattern"] = _v6kw.get("third_base_pattern"); _v6paint["third_base_pattern_scale"] = _v6kw.get("third_base_pattern_scale", 1.0); _v6paint["third_base_pattern_rotation"] = _v6kw.get("third_base_pattern_rotation", 0.0); _v6paint["third_base_pattern_opacity"] = _v6kw.get("third_base_pattern_opacity", 1.0); _v6paint["third_base_pattern_strength"] = _v6kw.get("third_base_pattern_strength", 1.0); _v6paint["third_base_pattern_invert"] = _v6kw.get("third_base_pattern_invert", False); _v6paint["third_base_pattern_harden"] = _v6kw.get("third_base_pattern_harden", False); _v6paint["third_base_pattern_offset_x"] = _v6kw.get("third_base_pattern_offset_x", 0.5); _v6paint["third_base_pattern_offset_y"] = _v6kw.get("third_base_pattern_offset_y", 0.5); _v6paint["third_base_hue_shift"] = _v6kw.get("third_base_hue_shift", 0); _v6paint["third_base_saturation"] = _v6kw.get("third_base_saturation", 0); _v6paint["third_base_brightness"] = _v6kw.get("third_base_brightness", 0)
+                if _z_fb or _v6kw.get("fourth_base_color_source"): _v6paint["fourth_base"] = _z_fb; _v6paint["fourth_base_color_source"] = _v6kw.get("fourth_base_color_source"); _v6paint["fourth_base_color"] = _v6kw.get("fourth_base_color", [1.0, 1.0, 1.0]); _v6paint["fourth_base_strength"] = _v6kw.get("fourth_base_strength", 0.0); _v6paint["fourth_base_spec_strength"] = _v6kw.get("fourth_base_spec_strength", 1.0); _v6paint["fourth_base_blend_mode"] = _v6kw.get("fourth_base_blend_mode", "noise"); _v6paint["fourth_base_noise_scale"] = _v6kw.get("fourth_base_noise_scale", 24); _v6paint["fourth_base_scale"] = _v6kw.get("fourth_base_scale", 1.0); _v6paint["fourth_base_pattern"] = _v6kw.get("fourth_base_pattern"); _v6paint["fourth_base_pattern_scale"] = _v6kw.get("fourth_base_pattern_scale", 1.0); _v6paint["fourth_base_pattern_rotation"] = _v6kw.get("fourth_base_pattern_rotation", 0.0); _v6paint["fourth_base_pattern_opacity"] = _v6kw.get("fourth_base_pattern_opacity", 1.0); _v6paint["fourth_base_pattern_strength"] = _v6kw.get("fourth_base_pattern_strength", 1.0); _v6paint["fourth_base_pattern_invert"] = _v6kw.get("fourth_base_pattern_invert", False); _v6paint["fourth_base_pattern_harden"] = _v6kw.get("fourth_base_pattern_harden", False); _v6paint["fourth_base_pattern_offset_x"] = _v6kw.get("fourth_base_pattern_offset_x", 0.5); _v6paint["fourth_base_pattern_offset_y"] = _v6kw.get("fourth_base_pattern_offset_y", 0.5); _v6paint["fourth_base_hue_shift"] = _v6kw.get("fourth_base_hue_shift", 0); _v6paint["fourth_base_saturation"] = _v6kw.get("fourth_base_saturation", 0); _v6paint["fourth_base_brightness"] = _v6kw.get("fourth_base_brightness", 0)
+                if _z_fif or _v6kw.get("fifth_base_color_source"): _v6paint["fifth_base"] = _z_fif; _v6paint["fifth_base_color_source"] = _v6kw.get("fifth_base_color_source"); _v6paint["fifth_base_color"] = _v6kw.get("fifth_base_color", [1.0, 1.0, 1.0]); _v6paint["fifth_base_strength"] = _v6kw.get("fifth_base_strength", 0.0); _v6paint["fifth_base_spec_strength"] = _v6kw.get("fifth_base_spec_strength", 1.0); _v6paint["fifth_base_blend_mode"] = _v6kw.get("fifth_base_blend_mode", "noise"); _v6paint["fifth_base_noise_scale"] = _v6kw.get("fifth_base_noise_scale", 24); _v6paint["fifth_base_scale"] = _v6kw.get("fifth_base_scale", 1.0); _v6paint["fifth_base_pattern"] = _v6kw.get("fifth_base_pattern"); _v6paint["fifth_base_pattern_scale"] = _v6kw.get("fifth_base_pattern_scale", 1.0); _v6paint["fifth_base_pattern_rotation"] = _v6kw.get("fifth_base_pattern_rotation", 0.0); _v6paint["fifth_base_pattern_opacity"] = _v6kw.get("fifth_base_pattern_opacity", 1.0); _v6paint["fifth_base_pattern_strength"] = _v6kw.get("fifth_base_pattern_strength", 1.0); _v6paint["fifth_base_pattern_invert"] = _v6kw.get("fifth_base_pattern_invert", False); _v6paint["fifth_base_pattern_harden"] = _v6kw.get("fifth_base_pattern_harden", False); _v6paint["fifth_base_pattern_offset_x"] = _v6kw.get("fifth_base_pattern_offset_x", 0.5); _v6paint["fifth_base_pattern_offset_y"] = _v6kw.get("fifth_base_pattern_offset_y", 0.5); _v6paint["fifth_base_hue_shift"] = _v6kw.get("fifth_base_hue_shift", 0); _v6paint["fifth_base_saturation"] = _v6kw.get("fifth_base_saturation", 0); _v6paint["fifth_base_brightness"] = _v6kw.get("fifth_base_brightness", 0)
                 _v6paint["monolithic_registry"] = _v6kw.get("monolithic_registry")
                 _v6paint["base_offset_x"] = _v6kw.get("base_offset_x", 0.5)
                 _v6paint["base_offset_y"] = _v6kw.get("base_offset_y", 0.5)
                 _v6paint["base_rotation"] = _v6kw.get("base_rotation", 0)
                 _v6paint["base_flip_h"] = _v6kw.get("base_flip_h", False)
                 _v6paint["base_flip_v"] = _v6kw.get("base_flip_v", False)
-                zone_spec = compose_finish(base_id, pattern_id, shape, zone_mask, seed + i * 13, sm, scale=zone_scale, spec_mult=spec_mult, rotation=zone_rotation, base_scale=zone_base_scale, **_v6kw)
-                paint = compose_paint_mod(base_id, pattern_id, paint, shape, zone_mask, seed + i * 13, pm, bb, scale=zone_scale, rotation=zone_rotation, **_v6paint)
+                # Parallel: spec in background thread while paint mod runs in foreground
+                if True:  # was: ThreadPoolExecutor per-zone. Now uses _shared_spec_pool
+                    _spec_ex = _shared_spec_pool
+                    _spec_fut = _spec_ex.submit(compose_finish, base_id, pattern_id, shape, zone_mask, seed + i * 13, sm, scale=zone_scale, spec_mult=spec_mult, rotation=zone_rotation, base_scale=zone_base_scale, **_v6kw)
+                    _paint_was_gpu = is_gpu() and hasattr(paint, '__cuda_array_interface__')
+                    if _paint_was_gpu: paint = to_cpu(paint)
+                    paint = compose_paint_mod(base_id, pattern_id, paint, shape, zone_mask, seed + i * 13, pm, bb, scale=zone_scale, rotation=zone_rotation, **_v6paint)
+                    if _paint_was_gpu: paint = to_gpu(paint)
+                    zone_spec = _spec_fut.result()
         elif finish_name and zone.get("finish_colors") and (
             finish_name.startswith("grad_") or finish_name.startswith("gradm_")
             or finish_name.startswith("grad3_") or finish_name.startswith("ghostg_")
@@ -6882,7 +9520,6 @@ def build_helmet_spec(helmet_paint_file, output_dir, zones, iracing_id="23371", 
         elif finish_name and zone.get("finish_colors"):
             # PATH 4: GENERIC FALLBACK - client-defined finish with color data
             zone_rotation = float(zone.get("rotation", 0))
-            print(f"    [DEBUG-ROT] PATH4: finish={finish_name}, zone.rotation={zone.get('rotation')}, parsed={zone_rotation}")
             zone_spec, paint = render_generic_finish(finish_name, zone, paint, shape, zone_mask, seed + i * 13, sm, pm, bb, rotation=zone_rotation)
             if zone_spec is None:
                 continue
@@ -6897,20 +9534,29 @@ def build_helmet_spec(helmet_paint_file, output_dir, zones, iracing_id="23371", 
             continue
 
         claimed = np.clip(claimed + zone_mask, 0, 1)
-        mask3d = zone_mask[:,:,np.newaxis]
-        soft = mask3d > 0.05
-        blended = np.clip(
-            zone_spec.astype(np.float32) * mask3d +
-            combined_spec.astype(np.float32) * (1 - mask3d),
-            0, 255
-        ).astype(np.uint8)
-        combined_spec = np.where(soft, blended, combined_spec)
+        if is_gpu():
+            _zs_g = to_gpu(zone_spec.astype(np.float32))
+            _m3d_g = to_gpu(zone_mask[:,:,np.newaxis])
+            _cs_g = to_gpu(combined_spec)
+            soft = _m3d_g > 0.05
+            blended = xp.clip(_zs_g * _m3d_g + _cs_g * (1 - _m3d_g), 0, 255)
+            combined_spec = to_cpu(xp.where(soft, blended, _cs_g))
+        else:
+            mask3d = zone_mask[:,:,np.newaxis]
+            soft = mask3d > 0.05
+            blended = np.clip(
+                zone_spec.astype(np.float32) * mask3d +
+                combined_spec * (1 - mask3d),
+                0, 255
+            )
+            combined_spec = np.where(soft, blended, combined_spec)
 
-    # Save outputs
+    # Convert to uint8 once at the end before file I/O
+    combined_spec_u8 = np.clip(combined_spec, 0, 255).astype(np.uint8)
     os.makedirs(output_dir, exist_ok=True)
     spec_path = os.path.join(output_dir, f"helmet_spec_{iracing_id}.tga")
-    write_tga_32bit(spec_path, combined_spec)
-    Image.fromarray(combined_spec).save(os.path.join(output_dir, "PREVIEW_helmet_spec.png"))
+    write_tga_32bit(spec_path, combined_spec_u8)
+    Image.fromarray(combined_spec_u8).save(os.path.join(output_dir, "PREVIEW_helmet_spec.png"))
 
     # Also save modified paint if it changed
     helmet_paint = (np.clip(paint, 0, 1) * 255).astype(np.uint8)
@@ -6922,7 +9568,7 @@ def build_helmet_spec(helmet_paint_file, output_dir, zones, iracing_id="23371", 
     print(f"\n  Helmet done in {elapsed:.1f}s!")
     print(f"  Spec:  {spec_path}")
     print(f"  Paint: {paint_path}")
-    return helmet_paint, combined_spec
+    return helmet_paint, combined_spec_u8
 
 
 def build_suit_spec(suit_paint_file, output_dir, zones, iracing_id="23371", seed=51):
@@ -6951,10 +9597,11 @@ def build_suit_spec(suit_paint_file, output_dir, zones, iracing_id="23371", seed
     shape = (h, w)
     paint = paint_rgb.astype(np.float32) / 255.0
 
-    combined_spec = np.zeros((h, w, 4), dtype=np.uint8)
+    combined_spec = np.zeros((h, w, 4), dtype=np.float32)
     combined_spec[:,:,1] = 100
     combined_spec[:,:,3] = 255
     claimed = np.zeros(shape, dtype=np.float32)
+    _shared_spec_pool = ThreadPoolExecutor(max_workers=min(2, _os.cpu_count() or 1))
 
     for i, zone in enumerate(zones):
         name = zone.get("name", f"Zone {i+1}")
@@ -7011,6 +9658,9 @@ def build_suit_spec(suit_paint_file, output_dir, zones, iracing_id="23371", seed
             _v6kw["base_flip_v"] = bool(zone.get("base_flip_v", False))
             if zone.get("spec_pattern_stack"): _v6kw["spec_pattern_stack"] = zone["spec_pattern_stack"]
             if zone.get("overlay_spec_pattern_stack"): _v6kw["overlay_spec_pattern_stack"] = zone["overlay_spec_pattern_stack"]
+            if zone.get("third_overlay_spec_pattern_stack"): _v6kw["third_overlay_spec_pattern_stack"] = zone["third_overlay_spec_pattern_stack"]
+            if zone.get("fourth_overlay_spec_pattern_stack"): _v6kw["fourth_overlay_spec_pattern_stack"] = zone["fourth_overlay_spec_pattern_stack"]
+            if zone.get("fifth_overlay_spec_pattern_stack"): _v6kw["fifth_overlay_spec_pattern_stack"] = zone["fifth_overlay_spec_pattern_stack"]
             if _z_cc is not None: _v6kw["cc_quality"] = _z_cc
             if _z_bb: _v6kw["blend_base"] = _z_bb; _v6kw["blend_dir"] = _z_bd; _v6kw["blend_amount"] = _z_ba
             if _z_pc: _v6kw["paint_color"] = _z_pc
@@ -7049,6 +9699,12 @@ def build_suit_spec(suit_paint_file, output_dir, zones, iracing_id="23371", seed
                 _v6kw["second_base_pattern_offset_x"] = _sb_oxN
                 _v6kw["second_base_pattern_offset_y"] = _sb_oyN
                 _v6kw["second_base_pattern_scale"] = _sb_pscaleN
+            _v6kw["second_base_hue_shift"] = float(zone.get("second_base_hue_shift", 0))
+            _v6kw["second_base_saturation"] = float(zone.get("second_base_saturation", 0))
+            _v6kw["second_base_brightness"] = float(zone.get("second_base_brightness", 0))
+            _v6kw["second_base_pattern_hue_shift"] = float(zone.get("second_base_pattern_hue_shift", 0))
+            _v6kw["second_base_pattern_saturation"] = float(zone.get("second_base_pattern_saturation", 0))
+            _v6kw["second_base_pattern_brightness"] = float(zone.get("second_base_pattern_brightness", 0))
             _v6kw["second_base_color_source"] = zone.get("second_base_color_source")
             _z_tb = zone.get("third_base")
             if _z_tb:
@@ -7084,6 +9740,9 @@ def build_suit_spec(suit_paint_file, output_dir, zones, iracing_id="23371", seed
                 _v6kw["third_base_pattern_offset_x"] = _tb_oxN
                 _v6kw["third_base_pattern_offset_y"] = _tb_oyN
                 _v6kw["third_base_pattern_scale"] = _tb_pscaleN
+            _v6kw["third_base_hue_shift"] = float(zone.get("third_base_hue_shift", 0))
+            _v6kw["third_base_saturation"] = float(zone.get("third_base_saturation", 0))
+            _v6kw["third_base_brightness"] = float(zone.get("third_base_brightness", 0))
             _v6kw["third_base_color_source"] = zone.get("third_base_color_source")
             _z_fb = zone.get("fourth_base")
             if _z_fb:
@@ -7119,6 +9778,9 @@ def build_suit_spec(suit_paint_file, output_dir, zones, iracing_id="23371", seed
                 _v6kw["fourth_base_pattern_offset_x"] = _fb_oxN
                 _v6kw["fourth_base_pattern_offset_y"] = _fb_oyN
                 _v6kw["fourth_base_pattern_scale"] = _fb_pscaleN
+            _v6kw["fourth_base_hue_shift"] = float(zone.get("fourth_base_hue_shift", 0))
+            _v6kw["fourth_base_saturation"] = float(zone.get("fourth_base_saturation", 0))
+            _v6kw["fourth_base_brightness"] = float(zone.get("fourth_base_brightness", 0))
             _v6kw["fourth_base_color_source"] = zone.get("fourth_base_color_source")
             _z_fif = zone.get("fifth_base")
             if _z_fif:
@@ -7154,6 +9816,9 @@ def build_suit_spec(suit_paint_file, output_dir, zones, iracing_id="23371", seed
                 _v6kw["fifth_base_pattern_offset_x"] = _fif_oxN
                 _v6kw["fifth_base_pattern_offset_y"] = _fif_oyN
                 _v6kw["fifth_base_pattern_scale"] = _fif_pscaleN
+            _v6kw["fifth_base_hue_shift"] = float(zone.get("fifth_base_hue_shift", 0))
+            _v6kw["fifth_base_saturation"] = float(zone.get("fifth_base_saturation", 0))
+            _v6kw["fifth_base_brightness"] = float(zone.get("fifth_base_brightness", 0))
             _v6kw["fifth_base_color_source"] = zone.get("fifth_base_color_source")
             _v6kw["monolithic_registry"] = MONOLITHIC_REGISTRY
 
@@ -7181,10 +9846,10 @@ def build_suit_spec(suit_paint_file, output_dir, zones, iracing_id="23371", seed
                 print(f"    [{name}] => {label} ({intensity}) [stacked compositing]")
                 _v6paint = {"base_strength": _v6kw.get("base_strength", 1.0), "base_spec_strength": _v6kw.get("base_spec_strength", 1.0), "base_color_mode": _v6kw.get("base_color_mode", "source"), "base_color": _v6kw.get("base_color", [1.0, 1.0, 1.0]), "base_color_source": _v6kw.get("base_color_source"), "base_color_strength": _v6kw.get("base_color_strength", 1.0), "base_hue_offset": _v6kw.get("base_hue_offset", 0), "base_saturation_adjust": _v6kw.get("base_saturation_adjust", 0), "base_brightness_adjust": _v6kw.get("base_brightness_adjust", 0)}
                 if _z_bb: _v6paint["blend_base"] = _z_bb; _v6paint["blend_dir"] = _z_bd; _v6paint["blend_amount"] = _z_ba
-                if _z_sb or _v6kw.get("second_base_color_source"): _v6paint["second_base"] = _z_sb; _v6paint["second_base_color_source"] = _v6kw.get("second_base_color_source"); _v6paint["second_base_color"] = _v6kw.get("second_base_color", [1.0, 1.0, 1.0]); _v6paint["second_base_strength"] = _v6kw.get("second_base_strength", 0.0); _v6paint["second_base_spec_strength"] = _v6kw.get("second_base_spec_strength", 1.0); _v6paint["second_base_blend_mode"] = _v6kw.get("second_base_blend_mode", "noise"); _v6paint["second_base_noise_scale"] = _v6kw.get("second_base_noise_scale", 24); _v6paint["second_base_scale"] = _v6kw.get("second_base_scale", 1.0); _v6paint["second_base_pattern"] = _v6kw.get("second_base_pattern"); _v6paint["second_base_pattern_scale"] = _v6kw.get("second_base_pattern_scale", 1.0); _v6paint["second_base_pattern_rotation"] = _v6kw.get("second_base_pattern_rotation", 0.0); _v6paint["second_base_pattern_opacity"] = _v6kw.get("second_base_pattern_opacity", 1.0); _v6paint["second_base_pattern_strength"] = _v6kw.get("second_base_pattern_strength", 1.0); _v6paint["second_base_pattern_invert"] = _v6kw.get("second_base_pattern_invert", False); _v6paint["second_base_pattern_harden"] = _v6kw.get("second_base_pattern_harden", False); _v6paint["second_base_pattern_offset_x"] = _v6kw.get("second_base_pattern_offset_x", 0.5); _v6paint["second_base_pattern_offset_y"] = _v6kw.get("second_base_pattern_offset_y", 0.5)
-                if _z_tb or _v6kw.get("third_base_color_source"): _v6paint["third_base"] = _z_tb; _v6paint["third_base_color_source"] = _v6kw.get("third_base_color_source"); _v6paint["third_base_color"] = _v6kw.get("third_base_color", [1.0, 1.0, 1.0]); _v6paint["third_base_strength"] = _v6kw.get("third_base_strength", 0.0); _v6paint["third_base_spec_strength"] = _v6kw.get("third_base_spec_strength", 1.0); _v6paint["third_base_blend_mode"] = _v6kw.get("third_base_blend_mode", "noise"); _v6paint["third_base_noise_scale"] = _v6kw.get("third_base_noise_scale", 24); _v6paint["third_base_scale"] = _v6kw.get("third_base_scale", 1.0); _v6paint["third_base_pattern"] = _v6kw.get("third_base_pattern"); _v6paint["third_base_pattern_scale"] = _v6kw.get("third_base_pattern_scale", 1.0); _v6paint["third_base_pattern_rotation"] = _v6kw.get("third_base_pattern_rotation", 0.0); _v6paint["third_base_pattern_opacity"] = _v6kw.get("third_base_pattern_opacity", 1.0); _v6paint["third_base_pattern_strength"] = _v6kw.get("third_base_pattern_strength", 1.0); _v6paint["third_base_pattern_invert"] = _v6kw.get("third_base_pattern_invert", False); _v6paint["third_base_pattern_harden"] = _v6kw.get("third_base_pattern_harden", False); _v6paint["third_base_pattern_offset_x"] = _v6kw.get("third_base_pattern_offset_x", 0.5); _v6paint["third_base_pattern_offset_y"] = _v6kw.get("third_base_pattern_offset_y", 0.5)
-                if _z_fb or _v6kw.get("fourth_base_color_source"): _v6paint["fourth_base"] = _z_fb; _v6paint["fourth_base_color_source"] = _v6kw.get("fourth_base_color_source"); _v6paint["fourth_base_color"] = _v6kw.get("fourth_base_color", [1.0, 1.0, 1.0]); _v6paint["fourth_base_strength"] = _v6kw.get("fourth_base_strength", 0.0); _v6paint["fourth_base_spec_strength"] = _v6kw.get("fourth_base_spec_strength", 1.0); _v6paint["fourth_base_blend_mode"] = _v6kw.get("fourth_base_blend_mode", "noise"); _v6paint["fourth_base_noise_scale"] = _v6kw.get("fourth_base_noise_scale", 24); _v6paint["fourth_base_scale"] = _v6kw.get("fourth_base_scale", 1.0); _v6paint["fourth_base_pattern"] = _v6kw.get("fourth_base_pattern"); _v6paint["fourth_base_pattern_scale"] = _v6kw.get("fourth_base_pattern_scale", 1.0); _v6paint["fourth_base_pattern_rotation"] = _v6kw.get("fourth_base_pattern_rotation", 0.0); _v6paint["fourth_base_pattern_opacity"] = _v6kw.get("fourth_base_pattern_opacity", 1.0); _v6paint["fourth_base_pattern_strength"] = _v6kw.get("fourth_base_pattern_strength", 1.0); _v6paint["fourth_base_pattern_invert"] = _v6kw.get("fourth_base_pattern_invert", False); _v6paint["fourth_base_pattern_harden"] = _v6kw.get("fourth_base_pattern_harden", False); _v6paint["fourth_base_pattern_offset_x"] = _v6kw.get("fourth_base_pattern_offset_x", 0.5); _v6paint["fourth_base_pattern_offset_y"] = _v6kw.get("fourth_base_pattern_offset_y", 0.5)
-                if _z_fif or _v6kw.get("fifth_base_color_source"): _v6paint["fifth_base"] = _z_fif; _v6paint["fifth_base_color_source"] = _v6kw.get("fifth_base_color_source"); _v6paint["fifth_base_color"] = _v6kw.get("fifth_base_color", [1.0, 1.0, 1.0]); _v6paint["fifth_base_strength"] = _v6kw.get("fifth_base_strength", 0.0); _v6paint["fifth_base_spec_strength"] = _v6kw.get("fifth_base_spec_strength", 1.0); _v6paint["fifth_base_blend_mode"] = _v6kw.get("fifth_base_blend_mode", "noise"); _v6paint["fifth_base_noise_scale"] = _v6kw.get("fifth_base_noise_scale", 24); _v6paint["fifth_base_scale"] = _v6kw.get("fifth_base_scale", 1.0); _v6paint["fifth_base_pattern"] = _v6kw.get("fifth_base_pattern"); _v6paint["fifth_base_pattern_scale"] = _v6kw.get("fifth_base_pattern_scale", 1.0); _v6paint["fifth_base_pattern_rotation"] = _v6kw.get("fifth_base_pattern_rotation", 0.0); _v6paint["fifth_base_pattern_opacity"] = _v6kw.get("fifth_base_pattern_opacity", 1.0); _v6paint["fifth_base_pattern_strength"] = _v6kw.get("fifth_base_pattern_strength", 1.0); _v6paint["fifth_base_pattern_invert"] = _v6kw.get("fifth_base_pattern_invert", False); _v6paint["fifth_base_pattern_harden"] = _v6kw.get("fifth_base_pattern_harden", False); _v6paint["fifth_base_pattern_offset_x"] = _v6kw.get("fifth_base_pattern_offset_x", 0.5); _v6paint["fifth_base_pattern_offset_y"] = _v6kw.get("fifth_base_pattern_offset_y", 0.5)
+                if _z_sb or _v6kw.get("second_base_color_source"): _v6paint["second_base"] = _z_sb; _v6paint["second_base_color_source"] = _v6kw.get("second_base_color_source"); _v6paint["second_base_color"] = _v6kw.get("second_base_color", [1.0, 1.0, 1.0]); _v6paint["second_base_strength"] = _v6kw.get("second_base_strength", 0.0); _v6paint["second_base_spec_strength"] = _v6kw.get("second_base_spec_strength", 1.0); _v6paint["second_base_blend_mode"] = _v6kw.get("second_base_blend_mode", "noise"); _v6paint["second_base_noise_scale"] = _v6kw.get("second_base_noise_scale", 24); _v6paint["second_base_scale"] = _v6kw.get("second_base_scale", 1.0); _v6paint["second_base_pattern"] = _v6kw.get("second_base_pattern"); _v6paint["second_base_pattern_scale"] = _v6kw.get("second_base_pattern_scale", 1.0); _v6paint["second_base_pattern_rotation"] = _v6kw.get("second_base_pattern_rotation", 0.0); _v6paint["second_base_pattern_opacity"] = _v6kw.get("second_base_pattern_opacity", 1.0); _v6paint["second_base_pattern_strength"] = _v6kw.get("second_base_pattern_strength", 1.0); _v6paint["second_base_pattern_invert"] = _v6kw.get("second_base_pattern_invert", False); _v6paint["second_base_pattern_harden"] = _v6kw.get("second_base_pattern_harden", False); _v6paint["second_base_pattern_offset_x"] = _v6kw.get("second_base_pattern_offset_x", 0.5); _v6paint["second_base_pattern_offset_y"] = _v6kw.get("second_base_pattern_offset_y", 0.5); _v6paint["second_base_hue_shift"] = _v6kw.get("second_base_hue_shift", 0); _v6paint["second_base_saturation"] = _v6kw.get("second_base_saturation", 0); _v6paint["second_base_brightness"] = _v6kw.get("second_base_brightness", 0); _v6paint["second_base_pattern_hue_shift"] = _v6kw.get("second_base_pattern_hue_shift", 0); _v6paint["second_base_pattern_saturation"] = _v6kw.get("second_base_pattern_saturation", 0); _v6paint["second_base_pattern_brightness"] = _v6kw.get("second_base_pattern_brightness", 0)
+                if _z_tb or _v6kw.get("third_base_color_source"): _v6paint["third_base"] = _z_tb; _v6paint["third_base_color_source"] = _v6kw.get("third_base_color_source"); _v6paint["third_base_color"] = _v6kw.get("third_base_color", [1.0, 1.0, 1.0]); _v6paint["third_base_strength"] = _v6kw.get("third_base_strength", 0.0); _v6paint["third_base_spec_strength"] = _v6kw.get("third_base_spec_strength", 1.0); _v6paint["third_base_blend_mode"] = _v6kw.get("third_base_blend_mode", "noise"); _v6paint["third_base_noise_scale"] = _v6kw.get("third_base_noise_scale", 24); _v6paint["third_base_scale"] = _v6kw.get("third_base_scale", 1.0); _v6paint["third_base_pattern"] = _v6kw.get("third_base_pattern"); _v6paint["third_base_pattern_scale"] = _v6kw.get("third_base_pattern_scale", 1.0); _v6paint["third_base_pattern_rotation"] = _v6kw.get("third_base_pattern_rotation", 0.0); _v6paint["third_base_pattern_opacity"] = _v6kw.get("third_base_pattern_opacity", 1.0); _v6paint["third_base_pattern_strength"] = _v6kw.get("third_base_pattern_strength", 1.0); _v6paint["third_base_pattern_invert"] = _v6kw.get("third_base_pattern_invert", False); _v6paint["third_base_pattern_harden"] = _v6kw.get("third_base_pattern_harden", False); _v6paint["third_base_pattern_offset_x"] = _v6kw.get("third_base_pattern_offset_x", 0.5); _v6paint["third_base_pattern_offset_y"] = _v6kw.get("third_base_pattern_offset_y", 0.5); _v6paint["third_base_hue_shift"] = _v6kw.get("third_base_hue_shift", 0); _v6paint["third_base_saturation"] = _v6kw.get("third_base_saturation", 0); _v6paint["third_base_brightness"] = _v6kw.get("third_base_brightness", 0)
+                if _z_fb or _v6kw.get("fourth_base_color_source"): _v6paint["fourth_base"] = _z_fb; _v6paint["fourth_base_color_source"] = _v6kw.get("fourth_base_color_source"); _v6paint["fourth_base_color"] = _v6kw.get("fourth_base_color", [1.0, 1.0, 1.0]); _v6paint["fourth_base_strength"] = _v6kw.get("fourth_base_strength", 0.0); _v6paint["fourth_base_spec_strength"] = _v6kw.get("fourth_base_spec_strength", 1.0); _v6paint["fourth_base_blend_mode"] = _v6kw.get("fourth_base_blend_mode", "noise"); _v6paint["fourth_base_noise_scale"] = _v6kw.get("fourth_base_noise_scale", 24); _v6paint["fourth_base_scale"] = _v6kw.get("fourth_base_scale", 1.0); _v6paint["fourth_base_pattern"] = _v6kw.get("fourth_base_pattern"); _v6paint["fourth_base_pattern_scale"] = _v6kw.get("fourth_base_pattern_scale", 1.0); _v6paint["fourth_base_pattern_rotation"] = _v6kw.get("fourth_base_pattern_rotation", 0.0); _v6paint["fourth_base_pattern_opacity"] = _v6kw.get("fourth_base_pattern_opacity", 1.0); _v6paint["fourth_base_pattern_strength"] = _v6kw.get("fourth_base_pattern_strength", 1.0); _v6paint["fourth_base_pattern_invert"] = _v6kw.get("fourth_base_pattern_invert", False); _v6paint["fourth_base_pattern_harden"] = _v6kw.get("fourth_base_pattern_harden", False); _v6paint["fourth_base_pattern_offset_x"] = _v6kw.get("fourth_base_pattern_offset_x", 0.5); _v6paint["fourth_base_pattern_offset_y"] = _v6kw.get("fourth_base_pattern_offset_y", 0.5); _v6paint["fourth_base_hue_shift"] = _v6kw.get("fourth_base_hue_shift", 0); _v6paint["fourth_base_saturation"] = _v6kw.get("fourth_base_saturation", 0); _v6paint["fourth_base_brightness"] = _v6kw.get("fourth_base_brightness", 0)
+                if _z_fif or _v6kw.get("fifth_base_color_source"): _v6paint["fifth_base"] = _z_fif; _v6paint["fifth_base_color_source"] = _v6kw.get("fifth_base_color_source"); _v6paint["fifth_base_color"] = _v6kw.get("fifth_base_color", [1.0, 1.0, 1.0]); _v6paint["fifth_base_strength"] = _v6kw.get("fifth_base_strength", 0.0); _v6paint["fifth_base_spec_strength"] = _v6kw.get("fifth_base_spec_strength", 1.0); _v6paint["fifth_base_blend_mode"] = _v6kw.get("fifth_base_blend_mode", "noise"); _v6paint["fifth_base_noise_scale"] = _v6kw.get("fifth_base_noise_scale", 24); _v6paint["fifth_base_scale"] = _v6kw.get("fifth_base_scale", 1.0); _v6paint["fifth_base_pattern"] = _v6kw.get("fifth_base_pattern"); _v6paint["fifth_base_pattern_scale"] = _v6kw.get("fifth_base_pattern_scale", 1.0); _v6paint["fifth_base_pattern_rotation"] = _v6kw.get("fifth_base_pattern_rotation", 0.0); _v6paint["fifth_base_pattern_opacity"] = _v6kw.get("fifth_base_pattern_opacity", 1.0); _v6paint["fifth_base_pattern_strength"] = _v6kw.get("fifth_base_pattern_strength", 1.0); _v6paint["fifth_base_pattern_invert"] = _v6kw.get("fifth_base_pattern_invert", False); _v6paint["fifth_base_pattern_harden"] = _v6kw.get("fifth_base_pattern_harden", False); _v6paint["fifth_base_pattern_offset_x"] = _v6kw.get("fifth_base_pattern_offset_x", 0.5); _v6paint["fifth_base_pattern_offset_y"] = _v6kw.get("fifth_base_pattern_offset_y", 0.5); _v6paint["fifth_base_hue_shift"] = _v6kw.get("fifth_base_hue_shift", 0); _v6paint["fifth_base_saturation"] = _v6kw.get("fifth_base_saturation", 0); _v6paint["fifth_base_brightness"] = _v6kw.get("fifth_base_brightness", 0)
                 _v6paint["monolithic_registry"] = _v6kw.get("monolithic_registry")
                 _v6paint["base_offset_x"] = _v6kw.get("base_offset_x", 0.5)
                 _v6paint["base_offset_y"] = _v6kw.get("base_offset_y", 0.5)
@@ -7194,11 +9859,25 @@ def build_suit_spec(suit_paint_file, output_dir, zones, iracing_id="23371", seed
                 _v6paint["pattern_offset_x"] = _v6kw.get("pattern_offset_x", 0.5)
                 _v6paint["pattern_offset_y"] = _v6kw.get("pattern_offset_y", 0.5)
                 if all_patterns:
-                    zone_spec = compose_finish_stacked(base_id, all_patterns, shape, zone_mask, seed + i * 13, sm, spec_mult=spec_mult, base_scale=zone_base_scale, **_v6kw)
-                    paint = compose_paint_mod_stacked(base_id, all_patterns, paint, shape, zone_mask, seed + i * 13, pm, bb, **_v6paint)
+                    # Parallel: spec in background thread while paint mod runs in foreground
+                    if True:  # was: ThreadPoolExecutor per-zone. Now uses _shared_spec_pool
+                        _spec_ex = _shared_spec_pool
+                        _spec_fut = _spec_ex.submit(compose_finish_stacked, base_id, all_patterns, shape, zone_mask, seed + i * 13, sm, spec_mult=spec_mult, base_scale=zone_base_scale, **_v6kw)
+                        _paint_was_gpu = is_gpu() and hasattr(paint, '__cuda_array_interface__')
+                        if _paint_was_gpu: paint = to_cpu(paint)
+                        paint = compose_paint_mod_stacked(base_id, all_patterns, paint, shape, zone_mask, seed + i * 13, pm, bb, **_v6paint)
+                        if _paint_was_gpu: paint = to_gpu(paint)
+                        zone_spec = _spec_fut.result()
                 else:
-                    zone_spec = compose_finish(base_id, "none", shape, zone_mask, seed + i * 13, sm, spec_mult=spec_mult, base_scale=zone_base_scale, **_v6kw)
-                    paint = compose_paint_mod(base_id, "none", paint, shape, zone_mask, seed + i * 13, pm, bb, **_v6paint)
+                    # Parallel: spec in background thread while paint mod runs in foreground
+                    if True:  # was: ThreadPoolExecutor per-zone. Now uses _shared_spec_pool
+                        _spec_ex = _shared_spec_pool
+                        _spec_fut = _spec_ex.submit(compose_finish, base_id, "none", shape, zone_mask, seed + i * 13, sm, spec_mult=spec_mult, base_scale=zone_base_scale, **_v6kw)
+                        _paint_was_gpu = is_gpu() and hasattr(paint, '__cuda_array_interface__')
+                        if _paint_was_gpu: paint = to_cpu(paint)
+                        paint = compose_paint_mod(base_id, "none", paint, shape, zone_mask, seed + i * 13, pm, bb, **_v6paint)
+                        if _paint_was_gpu: paint = to_gpu(paint)
+                        zone_spec = _spec_fut.result()
             else:
                 # SINGLE PATTERN: original path
                 label = f"{base_id}" + (f" + {pattern_id}" if pattern_id != "none" else "")
@@ -7207,18 +9886,25 @@ def build_suit_spec(suit_paint_file, output_dir, zones, iracing_id="23371", seed
                 print(f"    [{name}] => {label} ({intensity}){scale_label}{rot_label}")
                 _v6paint = {"base_strength": _v6kw.get("base_strength", 1.0), "base_spec_strength": _v6kw.get("base_spec_strength", 1.0), "base_color_mode": _v6kw.get("base_color_mode", "source"), "base_color": _v6kw.get("base_color", [1.0, 1.0, 1.0]), "base_color_source": _v6kw.get("base_color_source"), "base_color_strength": _v6kw.get("base_color_strength", 1.0), "base_hue_offset": _v6kw.get("base_hue_offset", 0), "base_saturation_adjust": _v6kw.get("base_saturation_adjust", 0), "base_brightness_adjust": _v6kw.get("base_brightness_adjust", 0)}
                 if _z_bb: _v6paint["blend_base"] = _z_bb; _v6paint["blend_dir"] = _z_bd; _v6paint["blend_amount"] = _z_ba
-                if _z_sb or _v6kw.get("second_base_color_source"): _v6paint["second_base"] = _z_sb; _v6paint["second_base_color_source"] = _v6kw.get("second_base_color_source"); _v6paint["second_base_color"] = _v6kw.get("second_base_color", [1.0, 1.0, 1.0]); _v6paint["second_base_strength"] = _v6kw.get("second_base_strength", 0.0); _v6paint["second_base_spec_strength"] = _v6kw.get("second_base_spec_strength", 1.0); _v6paint["second_base_blend_mode"] = _v6kw.get("second_base_blend_mode", "noise"); _v6paint["second_base_noise_scale"] = _v6kw.get("second_base_noise_scale", 24); _v6paint["second_base_scale"] = _v6kw.get("second_base_scale", 1.0); _v6paint["second_base_pattern"] = _v6kw.get("second_base_pattern"); _v6paint["second_base_pattern_scale"] = _v6kw.get("second_base_pattern_scale", 1.0); _v6paint["second_base_pattern_rotation"] = _v6kw.get("second_base_pattern_rotation", 0.0); _v6paint["second_base_pattern_opacity"] = _v6kw.get("second_base_pattern_opacity", 1.0); _v6paint["second_base_pattern_strength"] = _v6kw.get("second_base_pattern_strength", 1.0); _v6paint["second_base_pattern_invert"] = _v6kw.get("second_base_pattern_invert", False); _v6paint["second_base_pattern_harden"] = _v6kw.get("second_base_pattern_harden", False); _v6paint["second_base_pattern_offset_x"] = _v6kw.get("second_base_pattern_offset_x", 0.5); _v6paint["second_base_pattern_offset_y"] = _v6kw.get("second_base_pattern_offset_y", 0.5)
-                if _z_tb or _v6kw.get("third_base_color_source"): _v6paint["third_base"] = _z_tb; _v6paint["third_base_color_source"] = _v6kw.get("third_base_color_source"); _v6paint["third_base_color"] = _v6kw.get("third_base_color", [1.0, 1.0, 1.0]); _v6paint["third_base_strength"] = _v6kw.get("third_base_strength", 0.0); _v6paint["third_base_spec_strength"] = _v6kw.get("third_base_spec_strength", 1.0); _v6paint["third_base_blend_mode"] = _v6kw.get("third_base_blend_mode", "noise"); _v6paint["third_base_noise_scale"] = _v6kw.get("third_base_noise_scale", 24); _v6paint["third_base_scale"] = _v6kw.get("third_base_scale", 1.0); _v6paint["third_base_pattern"] = _v6kw.get("third_base_pattern"); _v6paint["third_base_pattern_scale"] = _v6kw.get("third_base_pattern_scale", 1.0); _v6paint["third_base_pattern_rotation"] = _v6kw.get("third_base_pattern_rotation", 0.0); _v6paint["third_base_pattern_opacity"] = _v6kw.get("third_base_pattern_opacity", 1.0); _v6paint["third_base_pattern_strength"] = _v6kw.get("third_base_pattern_strength", 1.0); _v6paint["third_base_pattern_invert"] = _v6kw.get("third_base_pattern_invert", False); _v6paint["third_base_pattern_harden"] = _v6kw.get("third_base_pattern_harden", False); _v6paint["third_base_pattern_offset_x"] = _v6kw.get("third_base_pattern_offset_x", 0.5); _v6paint["third_base_pattern_offset_y"] = _v6kw.get("third_base_pattern_offset_y", 0.5)
-                if _z_fb or _v6kw.get("fourth_base_color_source"): _v6paint["fourth_base"] = _z_fb; _v6paint["fourth_base_color_source"] = _v6kw.get("fourth_base_color_source"); _v6paint["fourth_base_color"] = _v6kw.get("fourth_base_color", [1.0, 1.0, 1.0]); _v6paint["fourth_base_strength"] = _v6kw.get("fourth_base_strength", 0.0); _v6paint["fourth_base_spec_strength"] = _v6kw.get("fourth_base_spec_strength", 1.0); _v6paint["fourth_base_blend_mode"] = _v6kw.get("fourth_base_blend_mode", "noise"); _v6paint["fourth_base_noise_scale"] = _v6kw.get("fourth_base_noise_scale", 24); _v6paint["fourth_base_scale"] = _v6kw.get("fourth_base_scale", 1.0); _v6paint["fourth_base_pattern"] = _v6kw.get("fourth_base_pattern"); _v6paint["fourth_base_pattern_scale"] = _v6kw.get("fourth_base_pattern_scale", 1.0); _v6paint["fourth_base_pattern_rotation"] = _v6kw.get("fourth_base_pattern_rotation", 0.0); _v6paint["fourth_base_pattern_opacity"] = _v6kw.get("fourth_base_pattern_opacity", 1.0); _v6paint["fourth_base_pattern_strength"] = _v6kw.get("fourth_base_pattern_strength", 1.0); _v6paint["fourth_base_pattern_invert"] = _v6kw.get("fourth_base_pattern_invert", False); _v6paint["fourth_base_pattern_harden"] = _v6kw.get("fourth_base_pattern_harden", False); _v6paint["fourth_base_pattern_offset_x"] = _v6kw.get("fourth_base_pattern_offset_x", 0.5); _v6paint["fourth_base_pattern_offset_y"] = _v6kw.get("fourth_base_pattern_offset_y", 0.5)
-                if _z_fif or _v6kw.get("fifth_base_color_source"): _v6paint["fifth_base"] = _z_fif; _v6paint["fifth_base_color_source"] = _v6kw.get("fifth_base_color_source"); _v6paint["fifth_base_color"] = _v6kw.get("fifth_base_color", [1.0, 1.0, 1.0]); _v6paint["fifth_base_strength"] = _v6kw.get("fifth_base_strength", 0.0); _v6paint["fifth_base_spec_strength"] = _v6kw.get("fifth_base_spec_strength", 1.0); _v6paint["fifth_base_blend_mode"] = _v6kw.get("fifth_base_blend_mode", "noise"); _v6paint["fifth_base_noise_scale"] = _v6kw.get("fifth_base_noise_scale", 24); _v6paint["fifth_base_scale"] = _v6kw.get("fifth_base_scale", 1.0); _v6paint["fifth_base_pattern"] = _v6kw.get("fifth_base_pattern"); _v6paint["fifth_base_pattern_scale"] = _v6kw.get("fifth_base_pattern_scale", 1.0); _v6paint["fifth_base_pattern_rotation"] = _v6kw.get("fifth_base_pattern_rotation", 0.0); _v6paint["fifth_base_pattern_opacity"] = _v6kw.get("fifth_base_pattern_opacity", 1.0); _v6paint["fifth_base_pattern_strength"] = _v6kw.get("fifth_base_pattern_strength", 1.0); _v6paint["fifth_base_pattern_invert"] = _v6kw.get("fifth_base_pattern_invert", False); _v6paint["fifth_base_pattern_harden"] = _v6kw.get("fifth_base_pattern_harden", False); _v6paint["fifth_base_pattern_offset_x"] = _v6kw.get("fifth_base_pattern_offset_x", 0.5); _v6paint["fifth_base_pattern_offset_y"] = _v6kw.get("fifth_base_pattern_offset_y", 0.5)
+                if _z_sb or _v6kw.get("second_base_color_source"): _v6paint["second_base"] = _z_sb; _v6paint["second_base_color_source"] = _v6kw.get("second_base_color_source"); _v6paint["second_base_color"] = _v6kw.get("second_base_color", [1.0, 1.0, 1.0]); _v6paint["second_base_strength"] = _v6kw.get("second_base_strength", 0.0); _v6paint["second_base_spec_strength"] = _v6kw.get("second_base_spec_strength", 1.0); _v6paint["second_base_blend_mode"] = _v6kw.get("second_base_blend_mode", "noise"); _v6paint["second_base_noise_scale"] = _v6kw.get("second_base_noise_scale", 24); _v6paint["second_base_scale"] = _v6kw.get("second_base_scale", 1.0); _v6paint["second_base_pattern"] = _v6kw.get("second_base_pattern"); _v6paint["second_base_pattern_scale"] = _v6kw.get("second_base_pattern_scale", 1.0); _v6paint["second_base_pattern_rotation"] = _v6kw.get("second_base_pattern_rotation", 0.0); _v6paint["second_base_pattern_opacity"] = _v6kw.get("second_base_pattern_opacity", 1.0); _v6paint["second_base_pattern_strength"] = _v6kw.get("second_base_pattern_strength", 1.0); _v6paint["second_base_pattern_invert"] = _v6kw.get("second_base_pattern_invert", False); _v6paint["second_base_pattern_harden"] = _v6kw.get("second_base_pattern_harden", False); _v6paint["second_base_pattern_offset_x"] = _v6kw.get("second_base_pattern_offset_x", 0.5); _v6paint["second_base_pattern_offset_y"] = _v6kw.get("second_base_pattern_offset_y", 0.5); _v6paint["second_base_hue_shift"] = _v6kw.get("second_base_hue_shift", 0); _v6paint["second_base_saturation"] = _v6kw.get("second_base_saturation", 0); _v6paint["second_base_brightness"] = _v6kw.get("second_base_brightness", 0); _v6paint["second_base_pattern_hue_shift"] = _v6kw.get("second_base_pattern_hue_shift", 0); _v6paint["second_base_pattern_saturation"] = _v6kw.get("second_base_pattern_saturation", 0); _v6paint["second_base_pattern_brightness"] = _v6kw.get("second_base_pattern_brightness", 0)
+                if _z_tb or _v6kw.get("third_base_color_source"): _v6paint["third_base"] = _z_tb; _v6paint["third_base_color_source"] = _v6kw.get("third_base_color_source"); _v6paint["third_base_color"] = _v6kw.get("third_base_color", [1.0, 1.0, 1.0]); _v6paint["third_base_strength"] = _v6kw.get("third_base_strength", 0.0); _v6paint["third_base_spec_strength"] = _v6kw.get("third_base_spec_strength", 1.0); _v6paint["third_base_blend_mode"] = _v6kw.get("third_base_blend_mode", "noise"); _v6paint["third_base_noise_scale"] = _v6kw.get("third_base_noise_scale", 24); _v6paint["third_base_scale"] = _v6kw.get("third_base_scale", 1.0); _v6paint["third_base_pattern"] = _v6kw.get("third_base_pattern"); _v6paint["third_base_pattern_scale"] = _v6kw.get("third_base_pattern_scale", 1.0); _v6paint["third_base_pattern_rotation"] = _v6kw.get("third_base_pattern_rotation", 0.0); _v6paint["third_base_pattern_opacity"] = _v6kw.get("third_base_pattern_opacity", 1.0); _v6paint["third_base_pattern_strength"] = _v6kw.get("third_base_pattern_strength", 1.0); _v6paint["third_base_pattern_invert"] = _v6kw.get("third_base_pattern_invert", False); _v6paint["third_base_pattern_harden"] = _v6kw.get("third_base_pattern_harden", False); _v6paint["third_base_pattern_offset_x"] = _v6kw.get("third_base_pattern_offset_x", 0.5); _v6paint["third_base_pattern_offset_y"] = _v6kw.get("third_base_pattern_offset_y", 0.5); _v6paint["third_base_hue_shift"] = _v6kw.get("third_base_hue_shift", 0); _v6paint["third_base_saturation"] = _v6kw.get("third_base_saturation", 0); _v6paint["third_base_brightness"] = _v6kw.get("third_base_brightness", 0)
+                if _z_fb or _v6kw.get("fourth_base_color_source"): _v6paint["fourth_base"] = _z_fb; _v6paint["fourth_base_color_source"] = _v6kw.get("fourth_base_color_source"); _v6paint["fourth_base_color"] = _v6kw.get("fourth_base_color", [1.0, 1.0, 1.0]); _v6paint["fourth_base_strength"] = _v6kw.get("fourth_base_strength", 0.0); _v6paint["fourth_base_spec_strength"] = _v6kw.get("fourth_base_spec_strength", 1.0); _v6paint["fourth_base_blend_mode"] = _v6kw.get("fourth_base_blend_mode", "noise"); _v6paint["fourth_base_noise_scale"] = _v6kw.get("fourth_base_noise_scale", 24); _v6paint["fourth_base_scale"] = _v6kw.get("fourth_base_scale", 1.0); _v6paint["fourth_base_pattern"] = _v6kw.get("fourth_base_pattern"); _v6paint["fourth_base_pattern_scale"] = _v6kw.get("fourth_base_pattern_scale", 1.0); _v6paint["fourth_base_pattern_rotation"] = _v6kw.get("fourth_base_pattern_rotation", 0.0); _v6paint["fourth_base_pattern_opacity"] = _v6kw.get("fourth_base_pattern_opacity", 1.0); _v6paint["fourth_base_pattern_strength"] = _v6kw.get("fourth_base_pattern_strength", 1.0); _v6paint["fourth_base_pattern_invert"] = _v6kw.get("fourth_base_pattern_invert", False); _v6paint["fourth_base_pattern_harden"] = _v6kw.get("fourth_base_pattern_harden", False); _v6paint["fourth_base_pattern_offset_x"] = _v6kw.get("fourth_base_pattern_offset_x", 0.5); _v6paint["fourth_base_pattern_offset_y"] = _v6kw.get("fourth_base_pattern_offset_y", 0.5); _v6paint["fourth_base_hue_shift"] = _v6kw.get("fourth_base_hue_shift", 0); _v6paint["fourth_base_saturation"] = _v6kw.get("fourth_base_saturation", 0); _v6paint["fourth_base_brightness"] = _v6kw.get("fourth_base_brightness", 0)
+                if _z_fif or _v6kw.get("fifth_base_color_source"): _v6paint["fifth_base"] = _z_fif; _v6paint["fifth_base_color_source"] = _v6kw.get("fifth_base_color_source"); _v6paint["fifth_base_color"] = _v6kw.get("fifth_base_color", [1.0, 1.0, 1.0]); _v6paint["fifth_base_strength"] = _v6kw.get("fifth_base_strength", 0.0); _v6paint["fifth_base_spec_strength"] = _v6kw.get("fifth_base_spec_strength", 1.0); _v6paint["fifth_base_blend_mode"] = _v6kw.get("fifth_base_blend_mode", "noise"); _v6paint["fifth_base_noise_scale"] = _v6kw.get("fifth_base_noise_scale", 24); _v6paint["fifth_base_scale"] = _v6kw.get("fifth_base_scale", 1.0); _v6paint["fifth_base_pattern"] = _v6kw.get("fifth_base_pattern"); _v6paint["fifth_base_pattern_scale"] = _v6kw.get("fifth_base_pattern_scale", 1.0); _v6paint["fifth_base_pattern_rotation"] = _v6kw.get("fifth_base_pattern_rotation", 0.0); _v6paint["fifth_base_pattern_opacity"] = _v6kw.get("fifth_base_pattern_opacity", 1.0); _v6paint["fifth_base_pattern_strength"] = _v6kw.get("fifth_base_pattern_strength", 1.0); _v6paint["fifth_base_pattern_invert"] = _v6kw.get("fifth_base_pattern_invert", False); _v6paint["fifth_base_pattern_harden"] = _v6kw.get("fifth_base_pattern_harden", False); _v6paint["fifth_base_pattern_offset_x"] = _v6kw.get("fifth_base_pattern_offset_x", 0.5); _v6paint["fifth_base_pattern_offset_y"] = _v6kw.get("fifth_base_pattern_offset_y", 0.5); _v6paint["fifth_base_hue_shift"] = _v6kw.get("fifth_base_hue_shift", 0); _v6paint["fifth_base_saturation"] = _v6kw.get("fifth_base_saturation", 0); _v6paint["fifth_base_brightness"] = _v6kw.get("fifth_base_brightness", 0)
                 _v6paint["monolithic_registry"] = _v6kw.get("monolithic_registry")
                 _v6paint["base_offset_x"] = _v6kw.get("base_offset_x", 0.5)
                 _v6paint["base_offset_y"] = _v6kw.get("base_offset_y", 0.5)
                 _v6paint["base_rotation"] = _v6kw.get("base_rotation", 0)
                 _v6paint["base_flip_h"] = _v6kw.get("base_flip_h", False)
                 _v6paint["base_flip_v"] = _v6kw.get("base_flip_v", False)
-                zone_spec = compose_finish(base_id, pattern_id, shape, zone_mask, seed + i * 13, sm, scale=zone_scale, spec_mult=spec_mult, rotation=zone_rotation, base_scale=zone_base_scale, **_v6kw)
-                paint = compose_paint_mod(base_id, pattern_id, paint, shape, zone_mask, seed + i * 13, pm, bb, scale=zone_scale, rotation=zone_rotation, **_v6paint)
+                # Parallel: spec in background thread while paint mod runs in foreground
+                if True:  # was: ThreadPoolExecutor per-zone. Now uses _shared_spec_pool
+                    _spec_ex = _shared_spec_pool
+                    _spec_fut = _spec_ex.submit(compose_finish, base_id, pattern_id, shape, zone_mask, seed + i * 13, sm, scale=zone_scale, spec_mult=spec_mult, rotation=zone_rotation, base_scale=zone_base_scale, **_v6kw)
+                    _paint_was_gpu = is_gpu() and hasattr(paint, '__cuda_array_interface__')
+                    if _paint_was_gpu: paint = to_cpu(paint)
+                    paint = compose_paint_mod(base_id, pattern_id, paint, shape, zone_mask, seed + i * 13, pm, bb, scale=zone_scale, rotation=zone_rotation, **_v6paint)
+                    if _paint_was_gpu: paint = to_gpu(paint)
+                    zone_spec = _spec_fut.result()
         elif finish_name and zone.get("finish_colors") and (
             finish_name.startswith("grad_") or finish_name.startswith("gradm_")
             or finish_name.startswith("grad3_") or finish_name.startswith("ghostg_")
@@ -7286,7 +9972,6 @@ def build_suit_spec(suit_paint_file, output_dir, zones, iracing_id="23371", seed
         elif finish_name and zone.get("finish_colors"):
             # PATH 4: GENERIC FALLBACK - client-defined finish with color data
             zone_rotation = float(zone.get("rotation", 0))
-            print(f"    [DEBUG-ROT] PATH4: finish={finish_name}, zone.rotation={zone.get('rotation')}, parsed={zone_rotation}")
             zone_spec, paint = render_generic_finish(finish_name, zone, paint, shape, zone_mask, seed + i * 13, sm, pm, bb, rotation=zone_rotation)
             if zone_spec is None:
                 continue
@@ -7301,19 +9986,29 @@ def build_suit_spec(suit_paint_file, output_dir, zones, iracing_id="23371", seed
             continue
 
         claimed = np.clip(claimed + zone_mask, 0, 1)
-        mask3d = zone_mask[:,:,np.newaxis]
-        soft = mask3d > 0.05
-        blended = np.clip(
-            zone_spec.astype(np.float32) * mask3d +
-            combined_spec.astype(np.float32) * (1 - mask3d),
-            0, 255
-        ).astype(np.uint8)
-        combined_spec = np.where(soft, blended, combined_spec)
+        if is_gpu():
+            _zs_g = to_gpu(zone_spec.astype(np.float32))
+            _m3d_g = to_gpu(zone_mask[:,:,np.newaxis])
+            _cs_g = to_gpu(combined_spec)
+            soft = _m3d_g > 0.05
+            blended = xp.clip(_zs_g * _m3d_g + _cs_g * (1 - _m3d_g), 0, 255)
+            combined_spec = to_cpu(xp.where(soft, blended, _cs_g))
+        else:
+            mask3d = zone_mask[:,:,np.newaxis]
+            soft = mask3d > 0.05
+            blended = np.clip(
+                zone_spec.astype(np.float32) * mask3d +
+                combined_spec * (1 - mask3d),
+                0, 255
+            )
+            combined_spec = np.where(soft, blended, combined_spec)
 
+    # Convert to uint8 once at the end before file I/O
+    combined_spec_u8 = np.clip(combined_spec, 0, 255).astype(np.uint8)
     os.makedirs(output_dir, exist_ok=True)
     spec_path = os.path.join(output_dir, f"suit_spec_{iracing_id}.tga")
-    write_tga_32bit(spec_path, combined_spec)
-    Image.fromarray(combined_spec).save(os.path.join(output_dir, "PREVIEW_suit_spec.png"))
+    write_tga_32bit(spec_path, combined_spec_u8)
+    Image.fromarray(combined_spec_u8).save(os.path.join(output_dir, "PREVIEW_suit_spec.png"))
 
     suit_paint = (np.clip(paint, 0, 1) * 255).astype(np.uint8)
     paint_path = os.path.join(output_dir, f"suit_{iracing_id}.tga")
@@ -7324,13 +10019,13 @@ def build_suit_spec(suit_paint_file, output_dir, zones, iracing_id="23371", seed
     print(f"\n  Suit done in {elapsed:.1f}s!")
     print(f"  Spec:  {spec_path}")
     print(f"  Paint: {paint_path}")
-    return suit_paint, combined_spec
+    return suit_paint, combined_spec_u8
 
 
 def build_matching_set(car_paint_file, output_dir, zones, iracing_id="23371", seed=51,
                        helmet_paint_file=None, suit_paint_file=None, import_spec_map=None, car_prefix="car_num",
                        stamp_image=None, stamp_spec_finish="gloss",
-                       decal_spec_finishes=None, decal_paint_path=None):
+                       decal_spec_finishes=None, decal_paint_path=None, decal_mask_base64=None):
     """Build car + matching helmet + matching suit in one call.
 
     If helmet/suit paint files are provided, applies the SAME zone config
@@ -7351,7 +10046,8 @@ def build_matching_set(car_paint_file, output_dir, zones, iracing_id="23371", se
     car_paint, car_spec, zone_masks = build_multi_zone(
         car_paint_file, output_dir, zones, iracing_id, seed, import_spec_map=import_spec_map, car_prefix=car_prefix,
         stamp_image=stamp_image, stamp_spec_finish=stamp_spec_finish,
-        decal_spec_finishes=decal_spec_finishes, decal_paint_path=decal_paint_path)
+        decal_spec_finishes=decal_spec_finishes, decal_paint_path=decal_paint_path,
+        decal_mask_base64=decal_mask_base64)
     results["car_paint"] = car_paint
     results["car_spec"] = car_spec
 
@@ -7662,7 +10358,7 @@ def full_render_pipeline(car_paint_file, output_dir, zones, iracing_id="23371",
                          wear_level=0, car_folder_name=None, export_zip=True,
                          dual_spec=False, night_boost=0.7, import_spec_map=None,
                          car_prefix="car_num", stamp_image=None, stamp_spec_finish="gloss",
-                         decal_spec_finishes=None, decal_paint_path=None):
+                         decal_spec_finishes=None, decal_paint_path=None, decal_mask_base64=None):
     """The ultimate one-call render pipeline.
 
     1. Builds car spec map + paint modifications
@@ -7687,7 +10383,8 @@ def full_render_pipeline(car_paint_file, output_dir, zones, iracing_id="23371",
         car_paint_file, output_dir, zones, iracing_id, seed,
         helmet_paint_file, suit_paint_file, import_spec_map=import_spec_map,
         car_prefix=car_prefix, stamp_image=stamp_image, stamp_spec_finish=stamp_spec_finish,
-        decal_spec_finishes=decal_spec_finishes, decal_paint_path=decal_paint_path
+        decal_spec_finishes=decal_spec_finishes, decal_paint_path=decal_paint_path,
+        decal_mask_base64=decal_mask_base64
     )
     print(f"  Step 1 (matching set): {time.time()-t_step1:.1f}s")
 

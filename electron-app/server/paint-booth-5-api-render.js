@@ -781,7 +781,8 @@ async function doFleetRender() {
                 offset_x: sp.offsetX || 0.5,
                 offset_y: sp.offsetY || 0.5,
                 scale: sp.scale || 1.0,
-                rotation: sp.rotation || 0
+                rotation: sp.rotation || 0,
+                box_size: sp.boxSize || 100
             }));
         }
         if (z.overlaySpecPatternStack && z.overlaySpecPatternStack.length > 0) {
@@ -795,7 +796,8 @@ async function doFleetRender() {
                 offset_x: sp.offsetX || 0.5,
                 offset_y: sp.offsetY || 0.5,
                 scale: sp.scale || 1.0,
-                rotation: sp.rotation || 0
+                rotation: sp.rotation || 0,
+                box_size: sp.boxSize || 100
             }));
         }
         if (z.thirdOverlaySpecPatternStack && z.thirdOverlaySpecPatternStack.length > 0) {
@@ -809,7 +811,8 @@ async function doFleetRender() {
                 offset_x: sp.offsetX || 0.5,
                 offset_y: sp.offsetY || 0.5,
                 scale: sp.scale || 1.0,
-                rotation: sp.rotation || 0
+                rotation: sp.rotation || 0,
+                box_size: sp.boxSize || 100
             }));
         }
         if (z.fourthOverlaySpecPatternStack && z.fourthOverlaySpecPatternStack.length > 0) {
@@ -823,7 +826,8 @@ async function doFleetRender() {
                 offset_x: sp.offsetX || 0.5,
                 offset_y: sp.offsetY || 0.5,
                 scale: sp.scale || 1.0,
-                rotation: sp.rotation || 0
+                rotation: sp.rotation || 0,
+                box_size: sp.boxSize || 100
             }));
         }
         if (z.fifthOverlaySpecPatternStack && z.fifthOverlaySpecPatternStack.length > 0) {
@@ -837,7 +841,8 @@ async function doFleetRender() {
                 offset_x: sp.offsetX || 0.5,
                 offset_y: sp.offsetY || 0.5,
                 scale: sp.scale || 1.0,
-                rotation: sp.rotation || 0
+                rotation: sp.rotation || 0,
+                box_size: sp.boxSize || 100
             }));
         }
         // v6.0 advanced finish params
@@ -1089,7 +1094,8 @@ async function doSeasonRender() {
                 offset_x: sp.offsetX || 0.5,
                 offset_y: sp.offsetY || 0.5,
                 scale: sp.scale || 1.0,
-                rotation: sp.rotation || 0
+                rotation: sp.rotation || 0,
+                box_size: sp.boxSize || 100
             }));
         }
         if (z.overlaySpecPatternStack && z.overlaySpecPatternStack.length > 0) {
@@ -1103,7 +1109,8 @@ async function doSeasonRender() {
                 offset_x: sp.offsetX || 0.5,
                 offset_y: sp.offsetY || 0.5,
                 scale: sp.scale || 1.0,
-                rotation: sp.rotation || 0
+                rotation: sp.rotation || 0,
+                box_size: sp.boxSize || 100
             }));
         }
         if (z.thirdOverlaySpecPatternStack && z.thirdOverlaySpecPatternStack.length > 0) {
@@ -1117,7 +1124,8 @@ async function doSeasonRender() {
                 offset_x: sp.offsetX || 0.5,
                 offset_y: sp.offsetY || 0.5,
                 scale: sp.scale || 1.0,
-                rotation: sp.rotation || 0
+                rotation: sp.rotation || 0,
+                box_size: sp.boxSize || 100
             }));
         }
         if (z.fourthOverlaySpecPatternStack && z.fourthOverlaySpecPatternStack.length > 0) {
@@ -1131,7 +1139,8 @@ async function doSeasonRender() {
                 offset_x: sp.offsetX || 0.5,
                 offset_y: sp.offsetY || 0.5,
                 scale: sp.scale || 1.0,
-                rotation: sp.rotation || 0
+                rotation: sp.rotation || 0,
+                box_size: sp.boxSize || 100
             }));
         }
         if (z.fifthOverlaySpecPatternStack && z.fifthOverlaySpecPatternStack.length > 0) {
@@ -1145,7 +1154,8 @@ async function doSeasonRender() {
                 offset_x: sp.offsetX || 0.5,
                 offset_y: sp.offsetY || 0.5,
                 scale: sp.scale || 1.0,
-                rotation: sp.rotation || 0
+                rotation: sp.rotation || 0,
+                box_size: sp.boxSize || 100
             }));
         }
         // v6.0 advanced finish params
@@ -1442,7 +1452,8 @@ function buildServerZonesForRender(zones) {
                 offset_x: sp.offsetX || 0.5,
                 offset_y: sp.offsetY || 0.5,
                 scale: sp.scale || 1.0,
-                rotation: sp.rotation || 0
+                rotation: sp.rotation || 0,
+                box_size: sp.boxSize || 100
             }));
         }
         if (z.overlaySpecPatternStack && z.overlaySpecPatternStack.length > 0) {
@@ -1456,7 +1467,8 @@ function buildServerZonesForRender(zones) {
                 offset_x: sp.offsetX || 0.5,
                 offset_y: sp.offsetY || 0.5,
                 scale: sp.scale || 1.0,
-                rotation: sp.rotation || 0
+                rotation: sp.rotation || 0,
+                box_size: sp.boxSize || 100
             }));
         }
         if (z.thirdOverlaySpecPatternStack && z.thirdOverlaySpecPatternStack.length > 0) {
@@ -1470,7 +1482,8 @@ function buildServerZonesForRender(zones) {
                 offset_x: sp.offsetX || 0.5,
                 offset_y: sp.offsetY || 0.5,
                 scale: sp.scale || 1.0,
-                rotation: sp.rotation || 0
+                rotation: sp.rotation || 0,
+                box_size: sp.boxSize || 100
             }));
         }
         if (z.fourthOverlaySpecPatternStack && z.fourthOverlaySpecPatternStack.length > 0) {
@@ -1484,7 +1497,8 @@ function buildServerZonesForRender(zones) {
                 offset_x: sp.offsetX || 0.5,
                 offset_y: sp.offsetY || 0.5,
                 scale: sp.scale || 1.0,
-                rotation: sp.rotation || 0
+                rotation: sp.rotation || 0,
+                box_size: sp.boxSize || 100
             }));
         }
         if (z.fifthOverlaySpecPatternStack && z.fifthOverlaySpecPatternStack.length > 0) {
@@ -1498,7 +1512,8 @@ function buildServerZonesForRender(zones) {
                 offset_x: sp.offsetX || 0.5,
                 offset_y: sp.offsetY || 0.5,
                 scale: sp.scale || 1.0,
-                rotation: sp.rotation || 0
+                rotation: sp.rotation || 0,
+                box_size: sp.boxSize || 100
             }));
         }
         if ((z.ccQuality ?? 100) !== 100) zoneObj.cc_quality = (z.ccQuality ?? 100) / 100;

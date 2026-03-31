@@ -51,20 +51,42 @@ let lastRenderedZoneDetailIndex = -1; // used to preserve scroll when re-renderi
 let categoryCollapsed = {};
 let importedSpecMapPath = null;  // Path to imported spec map TGA (merge mode = "Zone 0")
 
-// ===== EASY MODE =====
-let easyMode = false;
-window.easyMode = false;
-window.toggleEasyMode = function() {
-    easyMode = !easyMode;
-    window.easyMode = easyMode;
-    document.body.classList.toggle('easy-mode', easyMode);
-    const btn = document.getElementById('easy-mode-btn');
-    if (btn) {
-        btn.textContent = easyMode ? '🎯 EASY MODE' : '⚡ ADVANCED';
-        btn.style.color = easyMode ? '#00C8C8' : '#E87A20';
-    }
+// ===== SIMPLE / ADVANCED MODE =====
+let _uiMode = localStorage.getItem('shokker_ui_mode') || 'advanced';
+window._uiMode = _uiMode;
+
+// Apply saved mode on load
+if (_uiMode === 'simple') {
+    document.body.classList.add('simple-mode');
+}
+
+// Update pill toggle visual state
+function _updateModeToggleUI() {
+    const toggle = document.getElementById('ui-mode-toggle');
+    if (!toggle) return;
+    toggle.querySelectorAll('.ui-mode-option').forEach(function(opt) {
+        opt.classList.toggle('active', opt.getAttribute('data-mode') === _uiMode);
+    });
+}
+
+// Restore toggle visual on load
+requestAnimationFrame(_updateModeToggleUI);
+
+window.toggleUIMode = function() {
+    _uiMode = _uiMode === 'advanced' ? 'simple' : 'advanced';
+    window._uiMode = _uiMode;
+    localStorage.setItem('shokker_ui_mode', _uiMode);
+    document.body.classList.toggle('simple-mode', _uiMode === 'simple');
+    // Legacy compat: keep easy-mode in sync
+    document.body.classList.toggle('easy-mode', _uiMode === 'simple');
+    _updateModeToggleUI();
     renderZones();
 };
+
+// Legacy support: toggleEasyMode maps to toggleUIMode
+window.toggleEasyMode = window.toggleUIMode;
+let easyMode = _uiMode === 'simple';
+window.easyMode = easyMode;
 
 // ===== UI SCALE =====
 let _uiScale = parseFloat(localStorage.getItem('shokker_ui_scale') || '1.0');
@@ -572,12 +594,38 @@ function renderZones() {
         html = zones.map((z, i) => `<div class="zone-card zone-card-collapsed${i === selectedZoneIndex ? ' selected' : ''}" onclick="selectZone(${i})" id="zone-card-${i}"><div class="zone-card-header"><span class="zone-number">${i + 1}</span><input class="zone-name-input" type="text" value="${escapeHtml(z.name || 'Zone ' + (i + 1))}" onchange="updateZoneName(${i}, this.value)"></div></div>`).join('');
     }
     container.innerHTML = html;
+    // Render zone quick-view bar
+    renderZoneQuickView();
     // Render the detail panel for selected zone
     renderZoneDetail(selectedZoneIndex);
     // Auto-save after any zone change
     if (typeof autoSave === 'function') autoSave();
     // Update onboarding hints
     if (typeof updateOnboardingHints === 'function') updateOnboardingHints();
+}
+
+/** Render the zone quick-view bar — colored chips for each zone with a base assigned */
+function renderZoneQuickView() {
+    const bar = document.getElementById('zoneQuickViewBar');
+    if (!bar) return;
+    const OVERLAY_COLORS = (typeof ZONE_OVERLAY_COLORS !== 'undefined') ? ZONE_OVERLAY_COLORS : [
+        [255,50,50,200],[50,255,50,200],[50,100,255,200],[255,255,50,200],
+        [255,50,255,200],[50,255,255,200],[255,150,50,200],[150,50,255,200],
+        [255,100,100,200],[100,255,200,200],[200,150,255,200]
+    ];
+    let chips = '';
+    zones.forEach(function(zone, i) {
+        if (!zone.base && !zone.finish) return; // skip unconfigured
+        const c = OVERLAY_COLORS[i % OVERLAY_COLORS.length];
+        const bg = 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',0.7)';
+        const baseName = zone.finish
+            ? ((typeof MONOLITHICS !== 'undefined' ? MONOLITHICS : []).find(function(m){return m.id===zone.finish;}) || {}).name || zone.finish
+            : ((typeof BASES !== 'undefined' ? BASES : []).find(function(b){return b.id===zone.base;}) || {}).name || zone.base;
+        const shortName = baseName.length > 16 ? baseName.substring(0, 14) + '..' : baseName;
+        const sel = i === selectedZoneIndex ? ' selected' : '';
+        chips += '<span class="zone-qv-chip' + sel + '" style="background:' + bg + ';" onclick="selectZone(' + i + ')" title="' + escapeHtml(zone.name + ': ' + baseName) + '">' + (i + 1) + ': ' + escapeHtml(shortName) + '</span>';
+    });
+    bar.innerHTML = chips;
 }
 
 function getColorStatusText(zone) {
@@ -822,16 +870,20 @@ function renderZoneDetail(index) {
         <span class="collapse-arrow section-header-arrow">&#9660;</span>
     </div>
     <div style="border-left:2px solid var(--accent-gold, #FFB300); padding-left:6px; margin-top:4px; background:rgba(255,179,0,0.03);">`;
-    html += `<div class="zone-finish-row">
-        <label style="color:var(--accent-gold, #FFB300); font-weight:700;">Base</label>
-        <div class="swatch-trigger" onclick="event.stopPropagation(); openSwatchPicker(this, 'base', ${i})" title="The base material that defines how light interacts with this zone&#39;s surface">
-            ${zone.finish ? renderSwatchDot(zone.finish, getSwatchColor(zone), getZoneColorHex(zone)) : zone.base ? renderSwatchDot(zone.base, getSwatchColor(zone), getZoneColorHex(zone)) : '<div class="swatch-dot" style="background:#333;border-style:dashed;"></div>'}
-            <span class="swatch-name">${getBaseName(zone)}</span>
-            <span class="swatch-arrow">&#9662;</span>
+    html += `<div style="display:flex; flex-direction:column; gap:6px;">
+        <div class="zone-finish-row" style="flex-wrap:wrap; gap:6px;">
+            <label style="color:var(--accent-gold, #FFB300); font-weight:700; min-width:40px;">Base</label>
+            <div class="swatch-trigger" onclick="event.stopPropagation(); openSwatchPicker(this, 'base', ${i})" title="The base material that defines how light interacts with this zone&#39;s surface" style="flex:1; min-width:0;">
+                ${zone.finish ? renderSwatchDot(zone.finish, getSwatchColor(zone), getZoneColorHex(zone)) : zone.base ? renderSwatchDot(zone.base, getSwatchColor(zone), getZoneColorHex(zone)) : '<div class="swatch-dot" style="background:#333;border-style:dashed;"></div>'}
+                <span class="swatch-name" style="overflow:hidden; text-overflow:ellipsis;">${getBaseName(zone)}</span>
+                <span class="swatch-arrow">&#9662;</span>
+            </div>
+            <span class="lock-toggle${zone.lockBase ? ' locked' : ''}" onclick="event.stopPropagation(); toggleLock(${i},'lockBase')" title="Lock base during randomize">${zone.lockBase ? '&#128274;' : '&#128275;'}</span>
         </div>
-        <span class="lock-toggle${zone.lockBase ? ' locked' : ''}" onclick="event.stopPropagation(); toggleLock(${i},'lockBase')" title="Lock base during randomize">${zone.lockBase ? '&#128274;' : '&#128275;'}</span>
-        <button class="btn btn-sm" onclick="event.stopPropagation(); openFinishBrowser(${i})" title="Opens a full-screen gallery of all finishes with thumbnail previews. Filter by type, search by name, click to apply." style="padding:1px 6px; font-size:9px; margin-left:2px; border-color:var(--accent-gold); color:var(--accent-gold);">🎨 Browse</button>
-        <button class="btn btn-sm" onclick="event.stopPropagation(); openFinishCompare(${i})" title="Compare two finishes side-by-side on your car" style="padding:1px 6px; font-size:9px; border-color:var(--accent-blue); color:var(--accent-blue);">🔍 Compare</button>
+        <div style="display:flex; gap:6px; padding-left:46px;">
+            <button class="btn btn-sm" onclick="event.stopPropagation(); openFinishBrowser(${i})" title="Opens a full-screen gallery of all finishes with thumbnail previews. Filter by type, search by name, click to apply." style="padding:2px 8px; font-size:9px; border-color:var(--accent-gold); color:var(--accent-gold);">🎨 Browse</button>
+            <button class="btn btn-sm" onclick="event.stopPropagation(); openFinishCompare(${i})" title="Compare two finishes side-by-side on your car" style="padding:2px 8px; font-size:9px; border-color:var(--accent-blue); color:var(--accent-blue);">🔍 Compare</button>
+        </div>
     </div>`;
 
     if (zone.base || zone.finish) {
@@ -847,8 +899,8 @@ function renderZoneDetail(index) {
         const _baseSrcSwatch = _baseSrcDisp ? (_baseSrcDisp.swatch || '#888') : '#333';
         html += `<div class="zone-finish-row" style="padding-left:24px; align-items:flex-start; flex-direction:column; gap:6px;">
             <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; width:100%;">
-                <span class="stack-label-mini">Base Color</span>
-                <select class="mini-select" style="min-width:150px;" onchange="setZoneBaseColorMode(${i}, this.value)">
+                <span class="stack-label-mini" style="min-width:70px;">Base Color</span>
+                <select class="mini-select" style="min-width:170px; flex:1; max-width:220px;" onchange="setZoneBaseColorMode(${i}, this.value)">
                     <option value="source" ${_baseColorMode === 'source' ? 'selected' : ''}>Use source paint</option>
                     <option value="solid" ${_baseColorMode === 'solid' ? 'selected' : ''}>Use solid color</option>
                     <option value="special" ${_baseColorMode === 'special' ? 'selected' : ''}>From special</option>
@@ -856,9 +908,12 @@ function renderZoneDetail(index) {
                 ${_baseColorMode === 'solid' ? `<input type="color" id="baseColorPicker${i}" value="${_baseColorHex}" onchange="setZoneBaseColor(${i}, this.value)" title="Pick base tint">` : ''}
                 ${_baseColorMode === 'solid' ? `<input type="text" value="${_baseColorHex}" onchange="setZoneBaseColor(${i}, this.value)" style="width:78px;font-size:10px;">` : ''}
                 ${_baseColorMode === 'solid' ? `<button onclick="(function(){var inp=document.getElementById('baseColorPicker${i}');if(inp)setZoneBaseColor(${i},inp.value);})()" style="background:#E87A20;color:#fff;border:none;padding:3px 8px;border-radius:3px;cursor:pointer;font-weight:bold;font-size:9px;" title="Apply the selected color">✓ Apply</button>` : ''}
-                ${_baseColorMode === 'special' ? `<div class="swatch-trigger" onclick="event.stopPropagation(); openSwatchPicker(this, 'baseColorSource', ${i})" title="Pick special color source" style="display:inline-flex;align-items:center;gap:6px;">
+                ${_baseColorMode === 'special' ? `</div>
+            <div style="display:flex; align-items:center; gap:8px; width:100%; padding-left:0; margin-top:2px;">
+                <span class="stack-label-mini" style="min-width:70px;">Special</span>
+                <div class="swatch-trigger" onclick="event.stopPropagation(); openSwatchPicker(this, 'baseColorSource', ${i})" title="Pick special color source" style="display:inline-flex;align-items:center;gap:6px; flex:1; min-width:0;">
                     ${_baseSrcId ? renderSwatchDot(_baseSrcId, _baseSrcSwatch, _baseColorHex) : '<div class="swatch-dot" style="background:#333;border-style:dashed;"></div>'}
-                    <span class="swatch-name">${_baseSrcName}</span>
+                    <span class="swatch-name" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${_baseSrcName}</span>
                     <span class="swatch-arrow">&#9662;</span>
                 </div>` : ''}
                 ${_baseColorMode === 'special' && _baseSrcId ? `<button class="btn btn-sm" onclick="event.stopPropagation(); setZoneBaseColorSource(${i}, null)" title="Clear source" style="padding:0px 5px;font-size:9px;line-height:1.2;">✕</button>` : ''}
@@ -929,10 +984,11 @@ function renderZoneDetail(index) {
             specPatternsHtml += `<div style="margin-bottom:6px; padding:6px 8px; background:var(--bg-card,#16162a); border:1px solid var(--border,#2a2a4a); border-radius:4px;">
                 <div style="display:flex; align-items:center; gap:6px; margin-bottom:4px;">
                     <span style="font-size:10px; color:#ff4444; font-weight:bold;">${si + 1}.</span>
-                    <span style="font-size:10px; color:var(--text);">${spName}</span>
-                    <span style="font-size:8px; color:var(--text-dim);">${spDef ? spDef.desc : ''}</span>
+                    <img src="/thumbnails/spec_patterns/${sp.pattern}.png" alt="" style="width:32px;height:32px;object-fit:cover;border-radius:3px;border:1px solid var(--border);vertical-align:middle;" onerror="this.src='/api/spec-pattern-preview/${sp.pattern}?v=live';this.onerror=null;">
+                    <button onclick="event.stopPropagation(); toggleSpecPatternPicker(${i}, ${si})" style="background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:4px;padding:2px 8px;font-size:10px;cursor:pointer;flex:1;text-align:left;" title="Click to change spec pattern">${spName} &#9660;</button>
                     <button class="btn btn-sm" onclick="event.stopPropagation(); removeSpecPatternLayer(${i}, ${si})" title="Remove" style="margin-left:auto; padding:0px 5px; font-size:9px; line-height:1.2;">&times;</button>
                 </div>
+                <div id="specPatternPicker_${i}_${si}" style="display:none; max-height:360px; overflow-y:auto; background:#0d0d1a; border:1px solid #ff444466; border-radius:6px; margin-bottom:6px; padding:6px;" data-zone="${i}" data-layer="${si}" data-current="${sp.pattern}"></div>
                 <div style="display:flex; flex-wrap:wrap; gap:6px 10px; align-items:center;">
                     <div class="stack-control-group" style="flex:1; min-width:100px;">
                         <span class="stack-label-mini">Opacity</span>
@@ -967,23 +1023,37 @@ function renderZoneDetail(index) {
                         <label style="display:inline-flex;align-items:center;gap:2px;cursor:pointer;font-size:9px;"><input type="checkbox" ${chCC ? 'checked' : ''} onchange="toggleSpecPatternChannel(${i}, ${si}, 'CC', this.checked)"> CC</label>
                     </div>
                 </div>
-                <div style="margin-top:6px; display:grid; grid-template-columns:42px 1fr 36px; gap:2px 4px; align-items:center;">
+                <div style="margin-top:6px; display:grid; grid-template-columns:42px auto 1fr auto 36px; gap:2px 4px; align-items:center;">
                     <span style="color:#888; font-size:10px;">POS X</span>
-                    <input type="range" min="0" max="100" value="${Math.round((sp.offsetX||0.5)*100)}"
-                           oninput="zones[${i}].specPatternStack[${si}].offsetX=this.value/100; this.nextElementSibling.textContent=this.value+'%'; triggerPreviewRender();" style="width:100%;">
-                    <span style="color:#ccc; font-size:10px;">${Math.round((sp.offsetX||0.5)*100)}%</span>
+                    <button onclick="event.stopPropagation(); stepSpecPatternLayerProp(${i}, ${si}, 'offsetX', -1, 0, 100)" style="padding:0 5px;cursor:pointer;background:none;border:1px solid var(--border);color:var(--text);border-radius:3px;font-size:11px;line-height:1;">−</button>
+                    <input type="range" min="0" max="100" step="5" value="${Math.round((sp.offsetX||0.5)*100)}"
+                           oninput="zones[${i}].specPatternStack[${si}].offsetX=this.value/100; this.parentElement.querySelector('.spValPosX${i}_${si}').textContent=this.value+'%'; triggerPreviewRender();" style="width:100%;">
+                    <button onclick="event.stopPropagation(); stepSpecPatternLayerProp(${i}, ${si}, 'offsetX', 1, 0, 100)" style="padding:0 5px;cursor:pointer;background:none;border:1px solid var(--border);color:var(--text);border-radius:3px;font-size:11px;line-height:1;">+</button>
+                    <span class="spValPosX${i}_${si}" style="color:#ccc; font-size:10px;">${Math.round((sp.offsetX||0.5)*100)}%</span>
                     <span style="color:#888; font-size:10px;">POS Y</span>
-                    <input type="range" min="0" max="100" value="${Math.round((sp.offsetY||0.5)*100)}"
-                           oninput="zones[${i}].specPatternStack[${si}].offsetY=this.value/100; this.nextElementSibling.textContent=this.value+'%'; triggerPreviewRender();" style="width:100%;">
-                    <span style="color:#ccc; font-size:10px;">${Math.round((sp.offsetY||0.5)*100)}%</span>
+                    <button onclick="event.stopPropagation(); stepSpecPatternLayerProp(${i}, ${si}, 'offsetY', -1, 0, 100)" style="padding:0 5px;cursor:pointer;background:none;border:1px solid var(--border);color:var(--text);border-radius:3px;font-size:11px;line-height:1;">−</button>
+                    <input type="range" min="0" max="100" step="5" value="${Math.round((sp.offsetY||0.5)*100)}"
+                           oninput="zones[${i}].specPatternStack[${si}].offsetY=this.value/100; this.parentElement.querySelector('.spValPosY${i}_${si}').textContent=this.value+'%'; triggerPreviewRender();" style="width:100%;">
+                    <button onclick="event.stopPropagation(); stepSpecPatternLayerProp(${i}, ${si}, 'offsetY', 1, 0, 100)" style="padding:0 5px;cursor:pointer;background:none;border:1px solid var(--border);color:var(--text);border-radius:3px;font-size:11px;line-height:1;">+</button>
+                    <span class="spValPosY${i}_${si}" style="color:#ccc; font-size:10px;">${Math.round((sp.offsetY||0.5)*100)}%</span>
                     <span style="color:#ff4444; font-size:10px; font-weight:bold;">SCALE</span>
-                    <input type="range" min="5" max="400" value="${Math.round((sp.scale||1)*100)}"
-                           oninput="zones[${i}].specPatternStack[${si}].scale=this.value/100; this.nextElementSibling.textContent=(this.value/100).toFixed(2)+'x'; triggerPreviewRender();" style="width:100%; accent-color:#ff4444;">
-                    <span style="color:#ff4444; font-size:10px; font-weight:bold;">${(sp.scale||1).toFixed(2)}x</span>
+                    <button onclick="event.stopPropagation(); stepSpecPatternLayerProp(${i}, ${si}, 'scale', -1, 5, 400)" style="padding:0 5px;cursor:pointer;background:none;border:1px solid var(--border);color:var(--text);border-radius:3px;font-size:11px;line-height:1;">−</button>
+                    <input type="range" min="5" max="400" step="5" value="${Math.round((sp.scale||1)*100)}"
+                           oninput="zones[${i}].specPatternStack[${si}].scale=this.value/100; this.parentElement.querySelector('.spValScale${i}_${si}').textContent=(this.value/100).toFixed(2)+'x'; triggerPreviewRender();" style="width:100%; accent-color:#ff4444;">
+                    <button onclick="event.stopPropagation(); stepSpecPatternLayerProp(${i}, ${si}, 'scale', 1, 5, 400)" style="padding:0 5px;cursor:pointer;background:none;border:1px solid var(--border);color:var(--text);border-radius:3px;font-size:11px;line-height:1;">+</button>
+                    <span class="spValScale${i}_${si}" style="color:#ff4444; font-size:10px; font-weight:bold;">${(sp.scale||1).toFixed(2)}x</span>
+                    <span style="color:#00C8C8; font-size:10px; font-weight:bold;">BOX</span>
+                    <button onclick="event.stopPropagation(); stepSpecPatternLayerProp(${i}, ${si}, 'boxSize', -5, 5, 100)" style="padding:0 5px;cursor:pointer;background:none;border:1px solid var(--border);color:var(--text);border-radius:3px;font-size:11px;line-height:1;">−</button>
+                    <input type="range" min="5" max="100" step="5" value="${sp.boxSize||100}"
+                           oninput="zones[${i}].specPatternStack[${si}].boxSize=parseInt(this.value); this.parentElement.querySelector('.spValBox${i}_${si}').textContent=this.value+'%'; triggerPreviewRender();" style="width:100%; accent-color:#00C8C8;">
+                    <button onclick="event.stopPropagation(); stepSpecPatternLayerProp(${i}, ${si}, 'boxSize', 5, 5, 100)" style="padding:0 5px;cursor:pointer;background:none;border:1px solid var(--border);color:var(--text);border-radius:3px;font-size:11px;line-height:1;">+</button>
+                    <span class="spValBox${i}_${si}" style="color:#00C8C8; font-size:10px; font-weight:bold;">${sp.boxSize||100}%</span>
                     <span style="color:#888; font-size:10px;">ROT</span>
-                    <input type="range" min="0" max="359" value="${sp.rotation||0}"
-                           oninput="zones[${i}].specPatternStack[${si}].rotation=parseInt(this.value); this.nextElementSibling.textContent=this.value+'°'; triggerPreviewRender();" style="width:100%;">
-                    <span style="color:#ccc; font-size:10px;">${sp.rotation||0}°</span>
+                    <button onclick="event.stopPropagation(); stepSpecPatternLayerProp(${i}, ${si}, 'rotation', -1, 0, 359)" style="padding:0 5px;cursor:pointer;background:none;border:1px solid var(--border);color:var(--text);border-radius:3px;font-size:11px;line-height:1;">−</button>
+                    <input type="range" min="0" max="359" step="5" value="${sp.rotation||0}"
+                           oninput="zones[${i}].specPatternStack[${si}].rotation=parseInt(this.value); this.parentElement.querySelector('.spValRot${i}_${si}').textContent=this.value+'°'; triggerPreviewRender();" style="width:100%;">
+                    <button onclick="event.stopPropagation(); stepSpecPatternLayerProp(${i}, ${si}, 'rotation', 1, 0, 359)" style="padding:0 5px;cursor:pointer;background:none;border:1px solid var(--border);color:var(--text);border-radius:3px;font-size:11px;line-height:1;">+</button>
+                    <span class="spValRot${i}_${si}" style="color:#ccc; font-size:10px;">${sp.rotation||0}°</span>
                 </div>
                 <div style="margin-top:4px;">
                     <button onclick="activateManualPlacement(${i}, 'spec_pattern_${si}'); showToast('Drag on canvas to position spec pattern','info');"
@@ -996,26 +1066,56 @@ function renderZoneDetail(index) {
         });
 
         if (specStack.length < MAX_SPEC_PATTERN_LAYERS) {
+            const _spg1 = typeof SPEC_PATTERN_GROUPS !== 'undefined' ? SPEC_PATTERN_GROUPS : {};
+            const _spgMap1 = {};
+            Object.entries(_spg1).forEach(([g, ids]) => ids.forEach(id => { _spgMap1[id] = g; }));
+            const _tabBtns1 = ['All', ...Object.keys(_spg1)].map(g =>
+                `<button class="spec-cat-tab${g==='All'?' active':''}" data-cat="${g}" onclick="specPickerCatTab('specPatternGrid${i}',this,'${g.replace(/'/g,'\\\'')}')" title="${g}">${g}</button>`
+            ).join('');
             specPatternsHtml += `<div style="margin-top:4px;">
-                <div id="specPatternGrid${i}" style="display:none; max-height:400px; overflow-y:auto; background:var(--bg-card,#16162a); border:1px solid var(--border,#2a2a4a); border-radius:4px;" class="spec-pattern-grid">`;
+                <div id="specPatternGrid${i}_tabs" class="spec-cat-tab-row" style="display:none;">${_tabBtns1}</div>
+                <div id="specPatternGrid${i}" style="display:none; max-height:370px; overflow-y:auto; background:var(--bg-card,#16162a); border:1px solid var(--border,#2a2a4a); border-radius:4px;" class="spec-pattern-grid spec-pattern-grid-4col">`;
             (typeof SPEC_PATTERNS !== 'undefined' ? SPEC_PATTERNS : []).forEach(sp => {
-                specPatternsHtml += `<div class="spec-pattern-thumb-card"
-                    onclick="if(this._spPopup){this._spPopup.remove();this._spPopup=null;} document.querySelectorAll('.spec-thumb-popup').forEach(p=>p.remove()); var _g=document.getElementById('specPatternGrid${i}'); if(_g){_g.style.display='none';} addSpecPatternLayer(${i}, '${sp.id}');"
-                    title="${sp.desc}"
-                    onmouseenter="(function(el){var img=el.querySelector('img');if(!img)return;var popup=document.createElement('div');popup.className='spec-thumb-popup';popup.innerHTML='<img src=\\''+img.src+'\\' style=\\'width:200px;height:200px;object-fit:contain;\\'>';var rect=el.getBoundingClientRect();popup.style.left=(rect.left+rect.width/2-104)+'px';popup.style.top=(rect.top-216)+'px';document.body.appendChild(popup);el._spPopup=popup;})(this)"
+                const _sg1 = _spgMap1[sp.id] || 'Misc';
+                const _shortName1 = sp.name.length > 12 ? sp.name.slice(0,12)+'…' : sp.name;
+                specPatternsHtml += `<div class="spec-pattern-thumb-card" data-category="${_sg1}"
+                    onclick="if(this._spPopup){this._spPopup.remove();this._spPopup=null;} document.querySelectorAll('.spec-thumb-popup').forEach(p=>p.remove()); var _g=document.getElementById('specPatternGrid${i}'); var _gt=document.getElementById('specPatternGrid${i}_tabs'); if(_g){_g.style.display='none';} if(_gt){_gt.style.display='none';} addSpecPatternLayer(${i}, '${sp.id}');"
+                    title="${sp.name}: ${sp.desc}"
+                    onmouseenter="(function(el){var img=el.querySelector('img');if(!img)return;var popup=document.createElement('div');popup.className='spec-thumb-popup';popup.innerHTML='<img src=\\''+img.src+'\\' style=\\'width:200px;height:100px;object-fit:contain;\\'><div style=\\'text-align:center;font-size:11px;color:#ccc;padding:4px;\\'>${sp.name.replace(/'/g,'&#39;')}</div>';var rect=el.getBoundingClientRect();popup.style.left=Math.min(rect.left+rect.width/2-104, window.innerWidth-260)+'px';popup.style.top=Math.max(rect.top-140,4)+'px';document.body.appendChild(popup);el._spPopup=popup;})(this)"
                     onmouseleave="if(this._spPopup){this._spPopup.remove();this._spPopup=null;}">
-                    <img src="/api/spec-pattern-preview/${sp.id}" alt="${sp.name}" onerror="this.style.display='none'">
-                    <div class="thumb-label">${sp.name}</div>
+                    <img src="/thumbnails/spec_patterns/${sp.id}.png" alt="${sp.name}" loading="lazy" style="width:48px;height:48px;object-fit:cover;" onerror="this.src='/api/spec-pattern-preview/${sp.id}?v=live';this.onerror=null;">
+                    <div class="thumb-label">${_shortName1}</div>
                 </div>`;
             });
             specPatternsHtml += `</div>
-                <button onclick="document.querySelectorAll('.spec-thumb-popup').forEach(p=>p.remove()); const g=document.getElementById('specPatternGrid${i}'); if(g.style.display==='none'||!g.style.display){g.style.display='grid';g.style.gridTemplateColumns='repeat(3,1fr)';g.style.gap='6px';g.style.padding='6px';}else{g.style.display='none';}" class="btn btn-sm" style="width:100%; font-size:10px; padding:4px 6px; border:1px solid #ff444444; color:#ff4444; margin-top:4px;">
+                <button onclick="document.querySelectorAll('.spec-thumb-popup').forEach(p=>p.remove()); const g=document.getElementById('specPatternGrid${i}'); const t=document.getElementById('specPatternGrid${i}_tabs'); const show=!g.style.display||g.style.display==='none'; if(show){g.style.display='grid';g.style.gridTemplateColumns='repeat(4,1fr)';g.style.gap='6px';g.style.padding='6px';if(t)t.style.display='flex';}else{g.style.display='none';if(t)t.style.display='none';}" class="btn btn-sm" style="width:100%; font-size:10px; padding:4px 6px; border:1px solid #ff444444; color:#ff4444; margin-top:4px;">
                     + Add Spec Pattern (click to browse)
                 </button>
             </div>`;
         } else {
             specPatternsHtml += '<div style="font-size:9px; color:var(--text-dim); margin-top:4px;">Maximum 5 spec pattern layers reached.</div>';
         }
+
+        // SPEC PREVIEW panel
+        specPatternsHtml += `<div class="section-collapsible collapsed" id="sectionSpecPreview${i}" style="margin-top:6px;">
+            <div class="section-header" onclick="event.stopPropagation(); this.parentElement.classList.toggle('collapsed')">
+                <span class="section-header-label">SPEC PREVIEW</span>
+                <span class="collapse-arrow section-header-arrow">&#9660;</span>
+            </div>
+            <div class="spec-preview-panel">
+                <div class="spec-preview-tabs">
+                    <button class="spec-preview-tab active" data-base="chrome" onclick="setSpecPreviewBase(${i},this,'chrome')">Chrome</button>
+                    <button class="spec-preview-tab" data-base="matte" onclick="setSpecPreviewBase(${i},this,'matte')">Matte Black</button>
+                    <button class="spec-preview-tab" data-base="brushed" onclick="setSpecPreviewBase(${i},this,'brushed')">Brushed Metal</button>
+                    <button class="spec-preview-tab" data-base="carbon" onclick="setSpecPreviewBase(${i},this,'carbon')">Carbon</button>
+                </div>
+                <canvas id="specPreviewCanvas_${i}" width="256" height="128" class="spec-preview-canvas" style="background:#111;display:block;"></canvas>
+                <div style="margin-top:4px;display:flex;align-items:center;gap:8px;">
+                    <button onclick="event.stopPropagation(); updateSpecPreview(${i})" class="btn btn-sm" style="font-size:10px;padding:2px 10px;border:1px solid #E87A2044;color:#E87A20;">&#8635; Refresh</button>
+                    <span id="specPreviewStatus_${i}" style="font-size:9px;color:var(--text-dim);"></span>
+                </div>
+            </div>
+        </div>`;
 
         specPatternsHtml += `</div></div>
         </div>`;
@@ -1092,12 +1192,16 @@ function renderZoneDetail(index) {
                 <span class="stack-label-mini" style="white-space:nowrap;">Base position</span>
                 <div class="stack-control-group" style="flex: 1; min-width: 90px;">
                     <span class="stack-label-mini">Pos X</span>
-                    <input type="range" min="0" max="100" step="1" value="${Math.round((zone.baseOffsetX ?? 0.5) * 100)}" oninput="setZoneBaseOffsetX(${i}, this.value)" class="stack-slider" title="Pan base left/right">
+                    <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); stepZoneBaseOffset(${i}, 'X', -1)" title="-1%" style="padding:0 4px;font-size:10px;">−</button>
+                    <input type="range" min="0" max="100" step="5" value="${Math.round((zone.baseOffsetX ?? 0.5) * 100)}" oninput="setZoneBaseOffsetX(${i}, this.value)" class="stack-slider" title="Pan base left/right">
+                    <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); stepZoneBaseOffset(${i}, 'X', 1)" title="+1%" style="padding:0 4px;font-size:10px;">+</button>
                     <span class="stack-val" id="detBasePosXVal${i}">${Math.round((zone.baseOffsetX ?? 0.5) * 100)}%</span>
                 </div>
                 <div class="stack-control-group" style="flex: 1; min-width: 90px;">
                     <span class="stack-label-mini">Pos Y</span>
-                    <input type="range" min="0" max="100" step="1" value="${Math.round((zone.baseOffsetY ?? 0.5) * 100)}" oninput="setZoneBaseOffsetY(${i}, this.value)" class="stack-slider" title="Pan base up/down">
+                    <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); stepZoneBaseOffset(${i}, 'Y', -1)" title="-1%" style="padding:0 4px;font-size:10px;">−</button>
+                    <input type="range" min="0" max="100" step="5" value="${Math.round((zone.baseOffsetY ?? 0.5) * 100)}" oninput="setZoneBaseOffsetY(${i}, this.value)" class="stack-slider" title="Pan base up/down">
+                    <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); stepZoneBaseOffset(${i}, 'Y', 1)" title="+1%" style="padding:0 4px;font-size:10px;">+</button>
                     <span class="stack-val" id="detBasePosYVal${i}">${Math.round((zone.baseOffsetY ?? 0.5) * 100)}%</span>
                 </div>
                 <span class="stack-val" id="detBasePosRotVal${i}" style="display:none;">${zone.baseRotation ?? 0}°</span>
@@ -1116,7 +1220,7 @@ function renderZoneDetail(index) {
                     const canPlaceAnything = hasPrimaryPattern || hasSecondBasePattern || hasThirdBasePattern || hasFourthBasePattern || hasFifthBasePattern || hasBaseForPlacement;
                     
                     let pHtml = canPlaceAnything ? `
-                    <div class="stack-control-group" style="margin-bottom:8px; padding:8px 10px; background:rgba(0,0,0,0.3); border:1px dotted var(--border,#2a2a4a); border-radius:4px;">
+                    <div class="stack-control-group advanced-only" style="margin-bottom:8px; padding:8px 10px; background:rgba(0,0,0,0.3); border:1px dotted var(--border,#2a2a4a); border-radius:4px;">
                         <span class="stack-label-mini" style="margin-right:8px;">Place on map</span>
                         <select id="placementLayerSelect${i}" onchange="setPlacementLayer(this.value); updatePlacementBanner();" style="font-size:10px; padding:4px 8px; background:var(--bg-input); color:var(--text); border:1px solid var(--border); border-radius:4px; min-width:140px;" title="Then click and drag on the source map to move this layer">
                             <option value="none" ${placementLayer === 'none' ? 'selected' : ''}>- None -</option>
@@ -1147,7 +1251,7 @@ function renderZoneDetail(index) {
                     </div>`;
 
                     if (hasPrimaryPattern) {
-                        pHtml += `
+                        pHtml += `<div class="pattern-advanced-controls">
                         <div class="stack-control-group"><span class="stack-label-mini">Opacity</span>
                             <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); stepZonePatternOpacity(${i}, -1)" title="-5%" style="padding:0 4px;font-size:10px;">−</button>
                             <input type="range" min="0" max="100" step="5" value="${zone.patternOpacity ?? 100}" oninput="setZonePatternOpacity(${i}, this.value)" class="stack-slider" title="How visible the pattern is — 0% = invisible, 100% = full">
@@ -1179,10 +1283,14 @@ function renderZoneDetail(index) {
                             <div class="whats-this-panel" style="display:none; width:100%;">Concentrates the pattern into just this zone&#39;s area instead of spreading across the full canvas. Great for small zones like car numbers. Manual lets you drag on the preview to position it.</div>
                         </div>
                         <div class="stack-control-group"><span class="stack-label-mini">Position X</span>
-                            <input type="range" min="0" max="100" step="1" value="${Math.round((zone.patternOffsetX ?? 0.5) * 100)}" oninput="setZonePatternOffsetX(${i}, this.value)" class="stack-slider" title="Slide the pattern left/right across the canvas" ${zone.patternPlacement === 'fit' ? 'disabled style="opacity:0.35;pointer-events:none;"' : ''}>
+                            <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); stepZonePatternOffsetX(${i}, -1)" title="-1%" style="padding:0 4px;font-size:10px;">−</button>
+                            <input type="range" min="0" max="100" step="5" value="${Math.round((zone.patternOffsetX ?? 0.5) * 100)}" oninput="setZonePatternOffsetX(${i}, this.value)" class="stack-slider" title="Slide the pattern left/right across the canvas" ${zone.patternPlacement === 'fit' ? 'disabled style="opacity:0.35;pointer-events:none;"' : ''}>
+                            <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); stepZonePatternOffsetX(${i}, 1)" title="+1%" style="padding:0 4px;font-size:10px;">+</button>
                             <span class="stack-val" id="detPatPosXVal${i}" ${zone.patternPlacement === 'fit' ? 'style="opacity:0.35;"' : ''}>${Math.round((zone.patternOffsetX ?? 0.5) * 100)}%</span></div>
                         <div class="stack-control-group"><span class="stack-label-mini">Position Y</span>
-                            <input type="range" min="0" max="100" step="1" value="${Math.round((zone.patternOffsetY ?? 0.5) * 100)}" oninput="setZonePatternOffsetY(${i}, this.value)" class="stack-slider" title="Slide the pattern up/down across the canvas" ${zone.patternPlacement === 'fit' ? 'disabled style="opacity:0.35;pointer-events:none;"' : ''}>
+                            <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); stepZonePatternOffsetY(${i}, -1)" title="-1%" style="padding:0 4px;font-size:10px;">−</button>
+                            <input type="range" min="0" max="100" step="5" value="${Math.round((zone.patternOffsetY ?? 0.5) * 100)}" oninput="setZonePatternOffsetY(${i}, this.value)" class="stack-slider" title="Slide the pattern up/down across the canvas" ${zone.patternPlacement === 'fit' ? 'disabled style="opacity:0.35;pointer-events:none;"' : ''}>
+                            <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); stepZonePatternOffsetY(${i}, 1)" title="+1%" style="padding:0 4px;font-size:10px;">+</button>
                             <span class="stack-val" id="detPatPosYVal${i}" ${zone.patternPlacement === 'fit' ? 'style="opacity:0.35;"' : ''}>${Math.round((zone.patternOffsetY ?? 0.5) * 100)}%</span></div>
                         <div class="stack-control-group" style="flex-wrap:wrap; gap:6px;">
                             <label style="display:flex;align-items:center;gap:4px;cursor:pointer;font-size:10px;" title="Mirror the pattern horizontally"><input type="checkbox" ${(zone.patternFlipH || false) ? 'checked' : ''} onchange="setZonePatternFlipH(${i}, this.checked)"> Flip H</label>
@@ -1192,7 +1300,8 @@ function renderZoneDetail(index) {
                             <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); stepZonePatternSpecMult(${i}, -1)" title="-5%" style="padding:0 4px;font-size:10px;">−</button>
                             <input type="range" min="0" max="100" step="5" value="${Math.round((zone.patternSpecMult ?? 1) * 100)}" oninput="setZonePatternSpecMult(${i}, this.value)" class="stack-slider" title="Pattern punch (spec map), 5% steps">
                             <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); stepZonePatternSpecMult(${i}, 1)" title="+5%" style="padding:0 4px;font-size:10px;">+</button>
-                            <span class="stack-val" id="detPatStrVal${i}">${Math.round((zone.patternSpecMult ?? 1) * 100)}%</span></div>`;
+                            <span class="stack-val" id="detPatStrVal${i}">${Math.round((zone.patternSpecMult ?? 1) * 100)}%</span></div>
+                        </div>`;
                     }
 
                     (zone.patternStack || []).forEach((layer, li) => {
@@ -1271,6 +1380,25 @@ function renderZoneDetail(index) {
 
     // ===== ⚗️ BASE OVERLAY LAYER (Dual Material Blend) - available for ALL base layers and monolithics =====
     if (zone.base || zone.finish) {
+        // Overlay mini-map summary
+        const _ovl2active = !!(zone.secondBase || zone.secondBaseColorSource);
+        const _ovl3active = !!(zone.thirdBase || zone.thirdBaseColorSource);
+        const _ovl4active = !!(zone.fourthBase || zone.fourthBaseColorSource);
+        const _ovl5active = !!(zone.fifthBase || zone.fifthBaseColorSource);
+        html += `<div class="overlay-minimap" id="overlayMinimap${i}">
+            <div class="overlay-minimap-row">
+                <span style="font-size:10px;font-weight:700;color:var(--text-dim);letter-spacing:1px;">OVERLAYS:</span>
+                <span class="overlay-minimap-item">2nd <span class="overlay-minimap-swatch" style="background:#ffffff;"></span> <span style="color:${_ovl2active ? '#33ff66' : '#555'};font-size:9px;">${_ovl2active ? 'Active' : 'Off'}</span></span>
+                <span style="color:#444;">|</span>
+                <span class="overlay-minimap-item">3rd <span class="overlay-minimap-swatch" style="background:#FFD700;"></span> <span style="color:${_ovl3active ? '#33ff66' : '#555'};font-size:9px;">${_ovl3active ? 'Active' : 'Off'}</span></span>
+                <span style="color:#444;">|</span>
+                <span class="overlay-minimap-item">4th <span class="overlay-minimap-swatch" style="background:#AA44FF;"></span> <span style="color:${_ovl4active ? '#33ff66' : '#555'};font-size:9px;">${_ovl4active ? 'Active' : 'Off'}</span></span>
+                <span style="color:#444;">|</span>
+                <span class="overlay-minimap-item">5th <span class="overlay-minimap-swatch" style="background:#00C8C8;"></span> <span style="color:${_ovl5active ? '#33ff66' : '#555'};font-size:9px;">${_ovl5active ? 'Active' : 'Off'}</span></span>
+            </div>
+            <button class="overlay-minimap-btn" onclick="event.stopPropagation(); openFineTuning(${i})">&#9881; Open Fine Tuning &rarr;</button>
+        </div>`;
+
         html += `<div class="section-collapsible" id="sectionOverlays${i}">
         <div class="section-header" onclick="event.stopPropagation(); this.parentElement.classList.toggle('collapsed')">
             <span class="section-header-label">OVERLAYS
@@ -1440,20 +1568,29 @@ function renderZoneDetail(index) {
                     });
 
                     if (ovSpecStack.length < MAX_OVERLAY_SPEC_PATTERN_LAYERS) {
+                        const _spg2 = typeof SPEC_PATTERN_GROUPS !== 'undefined' ? SPEC_PATTERN_GROUPS : {};
+                        const _spgMap2 = {};
+                        Object.entries(_spg2).forEach(([g, ids]) => ids.forEach(id => { _spgMap2[id] = g; }));
+                        const _tabBtns2 = ['All', ...Object.keys(_spg2)].map(g =>
+                            `<button class="spec-cat-tab${g==='All'?' active':''}" data-cat="${g}" onclick="specPickerCatTab('overlaySpecPatternGrid${i}',this,'${g.replace(/'/g,'\\\'')}')" title="${g}">${g}</button>`
+                        ).join('');
                         ovSpHtml += `<div style="margin-top:4px;">
-                            <div id="overlaySpecPatternGrid${i}" style="display:none; max-height:220px; overflow-y:auto; background:var(--bg-card,#16162a); border:1px solid var(--border,#2a2a4a); border-radius:4px;" class="spec-pattern-grid">`;
+                            <div id="overlaySpecPatternGrid${i}_tabs" class="spec-cat-tab-row" style="display:none;">${_tabBtns2}</div>
+                            <div id="overlaySpecPatternGrid${i}" style="display:none; max-height:220px; overflow-y:auto; background:var(--bg-card,#16162a); border:1px solid var(--border,#2a2a4a); border-radius:4px;" class="spec-pattern-grid spec-pattern-grid-4col">`;
                         (typeof SPEC_PATTERNS !== 'undefined' ? SPEC_PATTERNS : []).forEach(sp => {
-                            ovSpHtml += `<div class="spec-pattern-thumb-card"
-                                onclick="if(this._spPopup){this._spPopup.remove();this._spPopup=null;} document.querySelectorAll('.spec-thumb-popup').forEach(p=>p.remove()); var _og=document.getElementById('overlaySpecPatternGrid${i}'); if(_og){_og.style.display='none';} addOverlaySpecPatternLayer(${i}, '${sp.id}');"
-                                title="${sp.desc}"
-                                onmouseenter="(function(el){var img=el.querySelector('img');if(!img)return;var popup=document.createElement('div');popup.className='spec-thumb-popup';popup.innerHTML='<img src=\\''+img.src+'\\' style=\\'width:200px;height:200px;object-fit:contain;\\'>';var rect=el.getBoundingClientRect();popup.style.left=(rect.left+rect.width/2-104)+'px';popup.style.top=(rect.top-216)+'px';document.body.appendChild(popup);el._spPopup=popup;})(this)"
+                            const _sg2 = _spgMap2[sp.id] || 'Misc';
+                            const _shortName2 = sp.name.length > 12 ? sp.name.slice(0,12)+'…' : sp.name;
+                            ovSpHtml += `<div class="spec-pattern-thumb-card" data-category="${_sg2}"
+                                onclick="if(this._spPopup){this._spPopup.remove();this._spPopup=null;} document.querySelectorAll('.spec-thumb-popup').forEach(p=>p.remove()); var _og=document.getElementById('overlaySpecPatternGrid${i}'); var _ogt=document.getElementById('overlaySpecPatternGrid${i}_tabs'); if(_og){_og.style.display='none';} if(_ogt){_ogt.style.display='none';} addOverlaySpecPatternLayer(${i}, '${sp.id}');"
+                                title="${sp.name}: ${sp.desc}"
+                                onmouseenter="(function(el){var img=el.querySelector('img');if(!img)return;var popup=document.createElement('div');popup.className='spec-thumb-popup';popup.innerHTML='<img src=\\''+img.src+'\\' style=\\'width:200px;height:100px;object-fit:contain;\\'><div style=\\'text-align:center;font-size:11px;color:#ccc;padding:4px;\\'>${sp.name.replace(/'/g,'&#39;')}</div>';var rect=el.getBoundingClientRect();popup.style.left=Math.min(rect.left+rect.width/2-104, window.innerWidth-260)+'px';popup.style.top=Math.max(rect.top-140,4)+'px';document.body.appendChild(popup);el._spPopup=popup;})(this)"
                                 onmouseleave="if(this._spPopup){this._spPopup.remove();this._spPopup=null;}">
-                                <img src="/api/spec-pattern-preview/${sp.id}" alt="${sp.name}" onerror="this.style.display='none'">
-                                <div class="thumb-label">${sp.name}</div>
+                                <img src="/thumbnails/spec_patterns/${sp.id}.png" alt="${sp.name}" loading="lazy" style="width:48px;height:48px;object-fit:cover;" onerror="this.src='/api/spec-pattern-preview/${sp.id}?v=live';this.onerror=null;">
+                                <div class="thumb-label">${_shortName2}</div>
                             </div>`;
                         });
                         ovSpHtml += `</div>
-                            <button onclick="document.querySelectorAll('.spec-thumb-popup').forEach(p=>p.remove()); const g=document.getElementById('overlaySpecPatternGrid${i}'); if(g.style.display==='none'||!g.style.display){g.style.display='grid';g.style.gridTemplateColumns='repeat(3,1fr)';g.style.gap='6px';g.style.padding='6px';}else{g.style.display='none';}" class="btn btn-sm" style="width:100%; font-size:10px; padding:4px 6px; border:1px solid #c084fc44; color:#c084fc; margin-top:4px;">
+                            <button onclick="document.querySelectorAll('.spec-thumb-popup').forEach(p=>p.remove()); const g=document.getElementById('overlaySpecPatternGrid${i}'); const t=document.getElementById('overlaySpecPatternGrid${i}_tabs'); const show=!g.style.display||g.style.display==='none'; if(show){g.style.display='grid';g.style.gridTemplateColumns='repeat(4,1fr)';g.style.gap='6px';g.style.padding='6px';if(t)t.style.display='flex';}else{g.style.display='none';if(t)t.style.display='none';}" class="btn btn-sm" style="width:100%; font-size:10px; padding:4px 6px; border:1px solid #c084fc44; color:#c084fc; margin-top:4px;">
                                 + Add Overlay Spec Pattern (click to browse)
                             </button>
                         </div>`;
@@ -1573,10 +1710,14 @@ function renderZoneDetail(index) {
                         </select>
                     </div>
                     <div class="stack-control-group"><span class="stack-label-mini">Position X</span>
-                        <input type="range" min="0" max="100" step="1" value="${Math.round((zone.secondBasePatternOffsetX ?? 0.5) * 100)}" oninput="setZoneSecondBasePatternOffsetX(${i}, this.value)" class="stack-slider" title="Pan overlay pattern left/right">
+                        <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); stepZoneSecondBasePatternOffset(${i}, 'X', -1)" title="-1%" style="padding:0 4px;font-size:10px;">−</button>
+                        <input type="range" min="0" max="100" step="5" value="${Math.round((zone.secondBasePatternOffsetX ?? 0.5) * 100)}" oninput="setZoneSecondBasePatternOffsetX(${i}, this.value)" class="stack-slider" title="Pan overlay pattern left/right">
+                        <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); stepZoneSecondBasePatternOffset(${i}, 'X', 1)" title="+1%" style="padding:0 4px;font-size:10px;">+</button>
                         <span class="stack-val" id="detSBPatPosXVal${i}">${Math.round((zone.secondBasePatternOffsetX ?? 0.5) * 100)}%</span></div>
                     <div class="stack-control-group"><span class="stack-label-mini">Position Y</span>
-                        <input type="range" min="0" max="100" step="1" value="${Math.round((zone.secondBasePatternOffsetY ?? 0.5) * 100)}" oninput="setZoneSecondBasePatternOffsetY(${i}, this.value)" class="stack-slider" title="Pan overlay pattern up/down">
+                        <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); stepZoneSecondBasePatternOffset(${i}, 'Y', -1)" title="-1%" style="padding:0 4px;font-size:10px;">−</button>
+                        <input type="range" min="0" max="100" step="5" value="${Math.round((zone.secondBasePatternOffsetY ?? 0.5) * 100)}" oninput="setZoneSecondBasePatternOffsetY(${i}, this.value)" class="stack-slider" title="Pan overlay pattern up/down">
+                        <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); stepZoneSecondBasePatternOffset(${i}, 'Y', 1)" title="+1%" style="padding:0 4px;font-size:10px;">+</button>
                         <span class="stack-val" id="detSBPatPosYVal${i}">${Math.round((zone.secondBasePatternOffsetY ?? 0.5) * 100)}%</span></div>
                     <div class="stack-control-group" style="margin-top:6px;">
                         <button type="button" class="btn btn-sm" onclick="event.stopPropagation(); alignSecondBaseOverlayWithSelectedPattern(${i})" title="Copy primary pattern position, scale, and rotation so the 2nd overlay lines up exactly (e.g. after you moved/resized the pattern on the map)">
@@ -1761,20 +1902,29 @@ function renderZoneDetail(index) {
                     });
 
                     if (thirdOvSpecStack.length < MAX_OVERLAY_SPEC_PATTERN_LAYERS) {
+                        const _spg3 = typeof SPEC_PATTERN_GROUPS !== 'undefined' ? SPEC_PATTERN_GROUPS : {};
+                        const _spgMap3 = {};
+                        Object.entries(_spg3).forEach(([g, ids]) => ids.forEach(id => { _spgMap3[id] = g; }));
+                        const _tabBtns3 = ['All', ...Object.keys(_spg3)].map(g =>
+                            `<button class="spec-cat-tab${g==='All'?' active':''}" data-cat="${g}" onclick="specPickerCatTab('thirdOverlaySpecPatternGrid${i}',this,'${g.replace(/'/g,'\\\'')}')" title="${g}">${g}</button>`
+                        ).join('');
                         thirdOvSpHtml += `<div style="margin-top:4px;">
-                            <div id="thirdOverlaySpecPatternGrid${i}" style="display:none; max-height:220px; overflow-y:auto; background:var(--bg-card,#16162a); border:1px solid var(--border,#2a2a4a); border-radius:4px;" class="spec-pattern-grid">`;
+                            <div id="thirdOverlaySpecPatternGrid${i}_tabs" class="spec-cat-tab-row" style="display:none;">${_tabBtns3}</div>
+                            <div id="thirdOverlaySpecPatternGrid${i}" style="display:none; max-height:220px; overflow-y:auto; background:var(--bg-card,#16162a); border:1px solid var(--border,#2a2a4a); border-radius:4px;" class="spec-pattern-grid spec-pattern-grid-4col">`;
                         (typeof SPEC_PATTERNS !== 'undefined' ? SPEC_PATTERNS : []).forEach(sp => {
-                            thirdOvSpHtml += `<div class="spec-pattern-thumb-card"
-                                onclick="if(this._spPopup){this._spPopup.remove();this._spPopup=null;} document.querySelectorAll('.spec-thumb-popup').forEach(p=>p.remove()); var _og=document.getElementById('thirdOverlaySpecPatternGrid${i}'); if(_og){_og.style.display='none';} addThirdOverlaySpecPatternLayer(${i}, '${sp.id}');"
-                                title="${sp.desc}"
-                                onmouseenter="(function(el){var img=el.querySelector('img');if(!img)return;var popup=document.createElement('div');popup.className='spec-thumb-popup';popup.innerHTML='<img src=\\''+img.src+'\\' style=\\'width:200px;height:200px;object-fit:contain;\\'>';var rect=el.getBoundingClientRect();popup.style.left=(rect.left+rect.width/2-104)+'px';popup.style.top=(rect.top-216)+'px';document.body.appendChild(popup);el._spPopup=popup;})(this)"
+                            const _sg3 = _spgMap3[sp.id] || 'Misc';
+                            const _shortName3 = sp.name.length > 12 ? sp.name.slice(0,12)+'…' : sp.name;
+                            thirdOvSpHtml += `<div class="spec-pattern-thumb-card" data-category="${_sg3}"
+                                onclick="if(this._spPopup){this._spPopup.remove();this._spPopup=null;} document.querySelectorAll('.spec-thumb-popup').forEach(p=>p.remove()); var _og=document.getElementById('thirdOverlaySpecPatternGrid${i}'); var _ogt=document.getElementById('thirdOverlaySpecPatternGrid${i}_tabs'); if(_og){_og.style.display='none';} if(_ogt){_ogt.style.display='none';} addThirdOverlaySpecPatternLayer(${i}, '${sp.id}');"
+                                title="${sp.name}: ${sp.desc}"
+                                onmouseenter="(function(el){var img=el.querySelector('img');if(!img)return;var popup=document.createElement('div');popup.className='spec-thumb-popup';popup.innerHTML='<img src=\\''+img.src+'\\' style=\\'width:200px;height:100px;object-fit:contain;\\'><div style=\\'text-align:center;font-size:11px;color:#ccc;padding:4px;\\'>${sp.name.replace(/'/g,'&#39;')}</div>';var rect=el.getBoundingClientRect();popup.style.left=Math.min(rect.left+rect.width/2-104, window.innerWidth-260)+'px';popup.style.top=Math.max(rect.top-140,4)+'px';document.body.appendChild(popup);el._spPopup=popup;})(this)"
                                 onmouseleave="if(this._spPopup){this._spPopup.remove();this._spPopup=null;}">
-                                <img src="/api/spec-pattern-preview/${sp.id}" alt="${sp.name}" onerror="this.style.display='none'">
-                                <div class="thumb-label">${sp.name}</div>
+                                <img src="/thumbnails/spec_patterns/${sp.id}.png" alt="${sp.name}" loading="lazy" style="width:48px;height:48px;object-fit:cover;" onerror="this.src='/api/spec-pattern-preview/${sp.id}?v=live';this.onerror=null;">
+                                <div class="thumb-label">${_shortName3}</div>
                             </div>`;
                         });
                         thirdOvSpHtml += `</div>
-                            <button onclick="document.querySelectorAll('.spec-thumb-popup').forEach(p=>p.remove()); const g=document.getElementById('thirdOverlaySpecPatternGrid${i}'); if(g.style.display==='none'||!g.style.display){g.style.display='grid';g.style.gridTemplateColumns='repeat(3,1fr)';g.style.gap='6px';g.style.padding='6px';}else{g.style.display='none';}" class="btn btn-sm" style="width:100%; font-size:10px; padding:4px 6px; border:1px solid #c084fc44; color:#c084fc; margin-top:4px;">
+                            <button onclick="document.querySelectorAll('.spec-thumb-popup').forEach(p=>p.remove()); const g=document.getElementById('thirdOverlaySpecPatternGrid${i}'); const t=document.getElementById('thirdOverlaySpecPatternGrid${i}_tabs'); const show=!g.style.display||g.style.display==='none'; if(show){g.style.display='grid';g.style.gridTemplateColumns='repeat(4,1fr)';g.style.gap='6px';g.style.padding='6px';if(t)t.style.display='flex';}else{g.style.display='none';if(t)t.style.display='none';}" class="btn btn-sm" style="width:100%; font-size:10px; padding:4px 6px; border:1px solid #c084fc44; color:#c084fc; margin-top:4px;">
                                 + Add Overlay Spec Pattern (click to browse)
                             </button>
                         </div>`;
@@ -1868,10 +2018,14 @@ function renderZoneDetail(index) {
                         </select>
                     </div>
                     <div class="stack-control-group"><span class="stack-label-mini">Position X</span>
-                        <input type="range" min="0" max="100" step="1" value="${Math.round((zone.thirdBasePatternOffsetX ?? 0.5) * 100)}" oninput="setZoneThirdBasePatternOffsetX(${i}, this.value)" class="stack-slider" title="Pan overlay pattern left/right">
+                        <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); stepZoneNthBasePatternOffset(${i}, 'third', 'X', -1)" title="-1%" style="padding:0 4px;font-size:10px;">−</button>
+                        <input type="range" min="0" max="100" step="5" value="${Math.round((zone.thirdBasePatternOffsetX ?? 0.5) * 100)}" oninput="setZoneThirdBasePatternOffsetX(${i}, this.value)" class="stack-slider" title="Pan overlay pattern left/right">
+                        <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); stepZoneNthBasePatternOffset(${i}, 'third', 'X', 1)" title="+1%" style="padding:0 4px;font-size:10px;">+</button>
                         <span class="stack-val" id="detTBPatPosXVal${i}">${Math.round((zone.thirdBasePatternOffsetX ?? 0.5) * 100)}%</span></div>
                     <div class="stack-control-group"><span class="stack-label-mini">Position Y</span>
-                        <input type="range" min="0" max="100" step="1" value="${Math.round((zone.thirdBasePatternOffsetY ?? 0.5) * 100)}" oninput="setZoneThirdBasePatternOffsetY(${i}, this.value)" class="stack-slider" title="Pan overlay pattern up/down">
+                        <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); stepZoneNthBasePatternOffset(${i}, 'third', 'Y', -1)" title="-1%" style="padding:0 4px;font-size:10px;">−</button>
+                        <input type="range" min="0" max="100" step="5" value="${Math.round((zone.thirdBasePatternOffsetY ?? 0.5) * 100)}" oninput="setZoneThirdBasePatternOffsetY(${i}, this.value)" class="stack-slider" title="Pan overlay pattern up/down">
+                        <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); stepZoneNthBasePatternOffset(${i}, 'third', 'Y', 1)" title="+1%" style="padding:0 4px;font-size:10px;">+</button>
                         <span class="stack-val" id="detTBPatPosYVal${i}">${Math.round((zone.thirdBasePatternOffsetY ?? 0.5) * 100)}%</span></div>
                     <div class="stack-control-group" style="margin-top:6px;">
                         <button type="button" class="btn btn-sm" onclick="event.stopPropagation(); alignThirdBaseOverlayWithSelectedPattern(${i})" title="Copy primary pattern position, scale, and rotation so the 3rd overlay lines up exactly">
@@ -2021,20 +2175,29 @@ function renderZoneDetail(index) {
                     });
 
                     if (fourthOvSpecStack.length < MAX_OVERLAY_SPEC_PATTERN_LAYERS) {
+                        const _spg4 = typeof SPEC_PATTERN_GROUPS !== 'undefined' ? SPEC_PATTERN_GROUPS : {};
+                        const _spgMap4 = {};
+                        Object.entries(_spg4).forEach(([g, ids]) => ids.forEach(id => { _spgMap4[id] = g; }));
+                        const _tabBtns4 = ['All', ...Object.keys(_spg4)].map(g =>
+                            `<button class="spec-cat-tab${g==='All'?' active':''}" data-cat="${g}" onclick="specPickerCatTab('fourthOverlaySpecPatternGrid${i}',this,'${g.replace(/'/g,'\\\'')}')" title="${g}">${g}</button>`
+                        ).join('');
                         fourthOvSpHtml += `<div style="margin-top:4px;">
-                            <div id="fourthOverlaySpecPatternGrid${i}" style="display:none; max-height:220px; overflow-y:auto; background:var(--bg-card,#16162a); border:1px solid var(--border,#2a2a4a); border-radius:4px;" class="spec-pattern-grid">`;
+                            <div id="fourthOverlaySpecPatternGrid${i}_tabs" class="spec-cat-tab-row" style="display:none;">${_tabBtns4}</div>
+                            <div id="fourthOverlaySpecPatternGrid${i}" style="display:none; max-height:220px; overflow-y:auto; background:var(--bg-card,#16162a); border:1px solid var(--border,#2a2a4a); border-radius:4px;" class="spec-pattern-grid spec-pattern-grid-4col">`;
                         (typeof SPEC_PATTERNS !== 'undefined' ? SPEC_PATTERNS : []).forEach(sp => {
-                            fourthOvSpHtml += `<div class="spec-pattern-thumb-card"
-                                onclick="if(this._spPopup){this._spPopup.remove();this._spPopup=null;} document.querySelectorAll('.spec-thumb-popup').forEach(p=>p.remove()); var _og=document.getElementById('fourthOverlaySpecPatternGrid${i}'); if(_og){_og.style.display='none';} addFourthOverlaySpecPatternLayer(${i}, '${sp.id}');"
-                                title="${sp.desc}"
-                                onmouseenter="(function(el){var img=el.querySelector('img');if(!img)return;var popup=document.createElement('div');popup.className='spec-thumb-popup';popup.innerHTML='<img src=\\''+img.src+'\\' style=\\'width:200px;height:200px;object-fit:contain;\\'>';var rect=el.getBoundingClientRect();popup.style.left=(rect.left+rect.width/2-104)+'px';popup.style.top=(rect.top-216)+'px';document.body.appendChild(popup);el._spPopup=popup;})(this)"
+                            const _sg4 = _spgMap4[sp.id] || 'Misc';
+                            const _shortName4 = sp.name.length > 12 ? sp.name.slice(0,12)+'…' : sp.name;
+                            fourthOvSpHtml += `<div class="spec-pattern-thumb-card" data-category="${_sg4}"
+                                onclick="if(this._spPopup){this._spPopup.remove();this._spPopup=null;} document.querySelectorAll('.spec-thumb-popup').forEach(p=>p.remove()); var _og=document.getElementById('fourthOverlaySpecPatternGrid${i}'); var _ogt=document.getElementById('fourthOverlaySpecPatternGrid${i}_tabs'); if(_og){_og.style.display='none';} if(_ogt){_ogt.style.display='none';} addFourthOverlaySpecPatternLayer(${i}, '${sp.id}');"
+                                title="${sp.name}: ${sp.desc}"
+                                onmouseenter="(function(el){var img=el.querySelector('img');if(!img)return;var popup=document.createElement('div');popup.className='spec-thumb-popup';popup.innerHTML='<img src=\\''+img.src+'\\' style=\\'width:200px;height:100px;object-fit:contain;\\'><div style=\\'text-align:center;font-size:11px;color:#ccc;padding:4px;\\'>${sp.name.replace(/'/g,'&#39;')}</div>';var rect=el.getBoundingClientRect();popup.style.left=Math.min(rect.left+rect.width/2-104, window.innerWidth-260)+'px';popup.style.top=Math.max(rect.top-140,4)+'px';document.body.appendChild(popup);el._spPopup=popup;})(this)"
                                 onmouseleave="if(this._spPopup){this._spPopup.remove();this._spPopup=null;}">
-                                <img src="/api/spec-pattern-preview/${sp.id}" alt="${sp.name}" onerror="this.style.display='none'">
-                                <div class="thumb-label">${sp.name}</div>
+                                <img src="/thumbnails/spec_patterns/${sp.id}.png" alt="${sp.name}" loading="lazy" style="width:48px;height:48px;object-fit:cover;" onerror="this.src='/api/spec-pattern-preview/${sp.id}?v=live';this.onerror=null;">
+                                <div class="thumb-label">${_shortName4}</div>
                             </div>`;
                         });
                         fourthOvSpHtml += `</div>
-                            <button onclick="document.querySelectorAll('.spec-thumb-popup').forEach(p=>p.remove()); const g=document.getElementById('fourthOverlaySpecPatternGrid${i}'); if(g.style.display==='none'||!g.style.display){g.style.display='grid';g.style.gridTemplateColumns='repeat(3,1fr)';g.style.gap='6px';g.style.padding='6px';}else{g.style.display='none';}" class="btn btn-sm" style="width:100%; font-size:10px; padding:4px 6px; border:1px solid #c084fc44; color:#c084fc; margin-top:4px;">
+                            <button onclick="document.querySelectorAll('.spec-thumb-popup').forEach(p=>p.remove()); const g=document.getElementById('fourthOverlaySpecPatternGrid${i}'); const t=document.getElementById('fourthOverlaySpecPatternGrid${i}_tabs'); const show=!g.style.display||g.style.display==='none'; if(show){g.style.display='grid';g.style.gridTemplateColumns='repeat(4,1fr)';g.style.gap='6px';g.style.padding='6px';if(t)t.style.display='flex';}else{g.style.display='none';if(t)t.style.display='none';}" class="btn btn-sm" style="width:100%; font-size:10px; padding:4px 6px; border:1px solid #c084fc44; color:#c084fc; margin-top:4px;">
                                 + Add Overlay Spec Pattern (click to browse)
                             </button>
                         </div>`;
@@ -2118,10 +2281,14 @@ function renderZoneDetail(index) {
                                 </select>
                             </div>
                             <div class="stack-control-group"><span class="stack-label-mini">Position X</span>
-                                <input type="range" min="0" max="100" step="1" value="${Math.round((zone.fourthBasePatternOffsetX ?? 0.5) * 100)}" oninput="setZoneFourthBasePatternOffsetX(${i}, this.value)" class="stack-slider" title="Pan overlay pattern left/right">
+                                <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); stepZoneNthBasePatternOffset(${i}, 'fourth', 'X', -1)" title="-1%" style="padding:0 4px;font-size:10px;">−</button>
+                                <input type="range" min="0" max="100" step="5" value="${Math.round((zone.fourthBasePatternOffsetX ?? 0.5) * 100)}" oninput="setZoneFourthBasePatternOffsetX(${i}, this.value)" class="stack-slider" title="Pan overlay pattern left/right">
+                                <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); stepZoneNthBasePatternOffset(${i}, 'fourth', 'X', 1)" title="+1%" style="padding:0 4px;font-size:10px;">+</button>
                                 <span class="stack-val" id="detFBPatPosXVal${i}">${Math.round((zone.fourthBasePatternOffsetX ?? 0.5) * 100)}%</span></div>
                             <div class="stack-control-group"><span class="stack-label-mini">Position Y</span>
-                                <input type="range" min="0" max="100" step="1" value="${Math.round((zone.fourthBasePatternOffsetY ?? 0.5) * 100)}" oninput="setZoneFourthBasePatternOffsetY(${i}, this.value)" class="stack-slider" title="Pan overlay pattern up/down">
+                                <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); stepZoneNthBasePatternOffset(${i}, 'fourth', 'Y', -1)" title="-1%" style="padding:0 4px;font-size:10px;">−</button>
+                                <input type="range" min="0" max="100" step="5" value="${Math.round((zone.fourthBasePatternOffsetY ?? 0.5) * 100)}" oninput="setZoneFourthBasePatternOffsetY(${i}, this.value)" class="stack-slider" title="Pan overlay pattern up/down">
+                                <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); stepZoneNthBasePatternOffset(${i}, 'fourth', 'Y', 1)" title="+1%" style="padding:0 4px;font-size:10px;">+</button>
                                 <span class="stack-val" id="detFBPatPosYVal${i}">${Math.round((zone.fourthBasePatternOffsetY ?? 0.5) * 100)}%</span></div>
                             <div class="stack-control-group" style="margin-top:6px;">
                                 <button type="button" class="btn btn-sm" onclick="event.stopPropagation(); alignFourthBaseOverlayWithSelectedPattern(${i})" title="Copy primary pattern position, scale, and rotation so the 4th overlay lines up exactly">✓ Align with selected pattern</button>
@@ -2279,7 +2446,7 @@ function renderZoneDetail(index) {
                                 title="${sp.desc}"
                                 onmouseenter="(function(el){var img=el.querySelector('img');if(!img)return;var popup=document.createElement('div');popup.className='spec-thumb-popup';popup.innerHTML='<img src=\\''+img.src+'\\' style=\\'width:200px;height:200px;object-fit:contain;\\'>';var rect=el.getBoundingClientRect();popup.style.left=(rect.left+rect.width/2-104)+'px';popup.style.top=(rect.top-216)+'px';document.body.appendChild(popup);el._spPopup=popup;})(this)"
                                 onmouseleave="if(this._spPopup){this._spPopup.remove();this._spPopup=null;}">
-                                <img src="/api/spec-pattern-preview/${sp.id}" alt="${sp.name}" onerror="this.style.display='none'">
+                                <img src="/thumbnails/spec_patterns/${sp.id}.png" alt="${sp.name}" loading="lazy" onerror="this.src='/api/spec-pattern-preview/${sp.id}?v=live';this.onerror=null;">
                                 <div class="thumb-label">${sp.name}</div>
                             </div>`;
                         });
@@ -2368,10 +2535,14 @@ function renderZoneDetail(index) {
                                 </select>
                             </div>
                             <div class="stack-control-group"><span class="stack-label-mini">Position X</span>
-                                <input type="range" min="0" max="100" step="1" value="${Math.round((zone.fifthBasePatternOffsetX ?? 0.5) * 100)}" oninput="setZoneFifthBasePatternOffsetX(${i}, this.value)" class="stack-slider" title="Pan overlay pattern left/right">
+                                <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); stepZoneNthBasePatternOffset(${i}, 'fifth', 'X', -1)" title="-1%" style="padding:0 4px;font-size:10px;">−</button>
+                                <input type="range" min="0" max="100" step="5" value="${Math.round((zone.fifthBasePatternOffsetX ?? 0.5) * 100)}" oninput="setZoneFifthBasePatternOffsetX(${i}, this.value)" class="stack-slider" title="Pan overlay pattern left/right">
+                                <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); stepZoneNthBasePatternOffset(${i}, 'fifth', 'X', 1)" title="+1%" style="padding:0 4px;font-size:10px;">+</button>
                                 <span class="stack-val" id="detFifPatPosXVal${i}">${Math.round((zone.fifthBasePatternOffsetX ?? 0.5) * 100)}%</span></div>
                             <div class="stack-control-group"><span class="stack-label-mini">Position Y</span>
-                                <input type="range" min="0" max="100" step="1" value="${Math.round((zone.fifthBasePatternOffsetY ?? 0.5) * 100)}" oninput="setZoneFifthBasePatternOffsetY(${i}, this.value)" class="stack-slider" title="Pan overlay pattern up/down">
+                                <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); stepZoneNthBasePatternOffset(${i}, 'fifth', 'Y', -1)" title="-1%" style="padding:0 4px;font-size:10px;">−</button>
+                                <input type="range" min="0" max="100" step="5" value="${Math.round((zone.fifthBasePatternOffsetY ?? 0.5) * 100)}" oninput="setZoneFifthBasePatternOffsetY(${i}, this.value)" class="stack-slider" title="Pan overlay pattern up/down">
+                                <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); stepZoneNthBasePatternOffset(${i}, 'fifth', 'Y', 1)" title="+1%" style="padding:0 4px;font-size:10px;">+</button>
                                 <span class="stack-val" id="detFifPatPosYVal${i}">${Math.round((zone.fifthBasePatternOffsetY ?? 0.5) * 100)}%</span></div>
                             <div class="stack-control-group" style="margin-top:6px;">
                                 <button type="button" class="btn btn-sm" onclick="event.stopPropagation(); alignFifthBaseOverlayWithSelectedPattern(${i})" title="Copy primary pattern position, scale, and rotation so the 5th overlay lines up exactly">✓ Align with selected pattern</button>
@@ -2502,6 +2673,9 @@ function renderZoneDetail(index) {
             requestAnimationFrame(() => { newBody.scrollTop = scrollRestore; });
         }
     }
+
+    // Refresh Fine Tuning panel if open (must happen after DOM is built so cloning works)
+    if (typeof _refreshFineTuningIfOpen === 'function') _refreshFineTuningIfOpen();
 }
 
 function collapseZoneDetail() {
@@ -4322,6 +4496,38 @@ function setZonePatternOffsetY(index, val) {
     triggerPreviewRender();
     if (typeof applyPlacementPatternTransform === 'function') applyPlacementPatternTransform();
 }
+function stepZonePatternOffsetX(index, delta) {
+    const cur = Math.round((zones[index].patternOffsetX ?? 0.5) * 100);
+    setZonePatternOffsetX(index, Math.max(0, Math.min(100, cur + delta)));
+}
+function stepZonePatternOffsetY(index, delta) {
+    const cur = Math.round((zones[index].patternOffsetY ?? 0.5) * 100);
+    setZonePatternOffsetY(index, Math.max(0, Math.min(100, cur + delta)));
+}
+function stepZoneSecondBasePatternOffset(index, axis, delta) {
+    const prop = 'secondBasePatternOffset' + axis;
+    const cur = Math.round((zones[index][prop] ?? 0.5) * 100);
+    const setter = axis === 'X' ? setZoneSecondBasePatternOffsetX : setZoneSecondBasePatternOffsetY;
+    setter(index, Math.max(0, Math.min(100, cur + delta)));
+}
+function stepZoneNthBasePatternOffset(index, nth, axis, delta) {
+    const prop = nth + 'BasePatternOffset' + axis;
+    const cur = Math.round((zones[index][prop] ?? 0.5) * 100);
+    const newVal = Math.max(0, Math.min(100, cur + delta));
+    pushZoneUndo('', true);
+    zones[index][prop] = newVal / 100;
+    renderZones();
+    triggerPreviewRender();
+}
+function stepZoneBaseOffset(index, axis, delta) {
+    const prop = 'baseOffset' + axis;
+    const cur = Math.round((zones[index][prop] ?? 0.5) * 100);
+    const newVal = Math.max(0, Math.min(100, cur + delta));
+    pushZoneUndo('', true);
+    zones[index][prop] = newVal / 100;
+    renderZones();
+    triggerPreviewRender();
+}
 function setZonePatternFlipH(index, val) {
     pushZoneUndo('', true);
     zones[index].patternFlipH = !!val;
@@ -5813,6 +6019,10 @@ function setZoneWear(index, val) {
 }
 
 // ===== SPEC PATTERN STACK CONTROLS =====
+
+// Tab-filter helper for spec overlay picker grids
+// gridId: the id of the grid div (e.g. "specPatternGrid0")
+// group:  group name to show, or "All" to show everything
 function addSpecPatternLayer(zoneIdx, patternId) {
     if (!patternId) return;
     pushZoneUndo('Add spec pattern');
@@ -5830,6 +6040,7 @@ function addSpecPatternLayer(zoneIdx, patternId) {
         offsetY: 0.5,
         scale: 1.0,
         rotation: 0,
+        boxSize: 100,
         placement: 'normal'
     });
     renderZones();
@@ -5850,6 +6061,204 @@ function setSpecPatternLayerProp(zoneIdx, layerIdx, prop, val) {
     triggerPreviewRender();
 }
 
+function stepSpecPatternLayerProp(zoneIdx, layerIdx, prop, delta, minVal, maxVal) {
+    if (!zones[zoneIdx].specPatternStack || !zones[zoneIdx].specPatternStack[layerIdx]) return;
+    const sp = zones[zoneIdx].specPatternStack[layerIdx];
+    let cur;
+    if (prop === 'offsetX' || prop === 'offsetY') {
+        cur = Math.round((sp[prop] ?? 0.5) * 100);
+        const nv = Math.max(minVal, Math.min(maxVal, cur + delta));
+        setSpecPatternLayerProp(zoneIdx, layerIdx, prop, nv / 100);
+    } else if (prop === 'scale') {
+        cur = Math.round((sp[prop] ?? 1) * 100);
+        const nv = Math.max(minVal, Math.min(maxVal, cur + delta));
+        setSpecPatternLayerProp(zoneIdx, layerIdx, prop, nv / 100);
+    } else if (prop === 'rotation') {
+        cur = sp[prop] ?? 0;
+        const nv = Math.max(minVal, Math.min(maxVal, cur + delta));
+        setSpecPatternLayerProp(zoneIdx, layerIdx, prop, nv);
+    } else if (prop === 'boxSize') {
+        cur = sp[prop] ?? 100;
+        const nv = Math.max(minVal, Math.min(maxVal, cur + delta));
+        setSpecPatternLayerProp(zoneIdx, layerIdx, prop, nv);
+    }
+    renderZones();
+}
+
+// Tracks active category per picker: key = "zoneIdx_layerIdx", value = category name
+var _specPickerActiveCat = {};
+
+function specPickerCatTab(gridId, btnEl, catName) {
+    // Toggle category filter for a spec pattern grid (used by both inline pickers and add-grid)
+    var grid = document.getElementById(gridId);
+    if (!grid) return;
+    // Update active tab styling
+    var tabRow = btnEl.parentElement;
+    tabRow.querySelectorAll('.spec-cat-tab').forEach(function(b) { b.classList.remove('active'); });
+    btnEl.classList.add('active');
+    // Filter cards
+    grid.querySelectorAll('.spec-pattern-thumb-card').forEach(function(card) {
+        if (catName === 'All' || card.dataset.category === catName) {
+            card.style.display = '';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+}
+
+/**
+ * Get the URL for a spec pattern thumbnail.
+ * Prefers pre-baked static file; JS onerror on <img> falls back to live API.
+ * @param {string} patternId - The spec pattern ID
+ * @param {string} [type='preview'] - 'preview' for M/R/CC split, 'metal' for metallic sim
+ * @returns {string} URL
+ */
+function getSpecThumbUrl(patternId, type) {
+    var folder = (type === 'metal') ? 'spec_patterns_metal' : 'spec_patterns';
+    return '/thumbnails/' + folder + '/' + patternId + '.png';
+}
+
+function toggleSpecPatternPicker(zoneIdx, layerIdx) {
+    document.querySelectorAll('.spec-thumb-popup').forEach(p => p.remove());
+    const picker = document.getElementById('specPatternPicker_' + zoneIdx + '_' + layerIdx);
+    if (!picker) return;
+    if (picker.dataset.pickerOpen === '1') {
+        picker.dataset.pickerOpen = '0';
+        picker.style.display = 'none';
+        var tabRowOld = document.getElementById('specPickerTabs_' + zoneIdx + '_' + layerIdx);
+        if (tabRowOld) tabRowOld.style.display = 'none';
+        return;
+    }
+    // Close any other open pickers
+    document.querySelectorAll('[id^="specPatternPicker_"]').forEach(function(p) {
+        p.style.display = 'none';
+        p.dataset.pickerOpen = '0';
+    });
+    document.querySelectorAll('[id^="specPickerTabs_"]').forEach(function(t) { t.style.display = 'none'; });
+
+    // Build grid content if not yet built
+    if (!picker.dataset.built) {
+        var currentId = picker.dataset.current || '';
+        var allSp = typeof SPEC_PATTERNS !== 'undefined' ? SPEC_PATTERNS : [];
+        var spGroups = typeof SPEC_PATTERN_GROUPS !== 'undefined' ? SPEC_PATTERN_GROUPS : {};
+        // Build category map
+        var catMap = {};
+        Object.entries(spGroups).forEach(function(e) { e[1].forEach(function(id) { catMap[id] = e[0]; }); });
+
+        // Build tab row (inserted before picker in DOM)
+        var tabRowId = 'specPickerTabs_' + zoneIdx + '_' + layerIdx;
+        var existingTabRow = document.getElementById(tabRowId);
+        if (!existingTabRow) {
+            existingTabRow = document.createElement('div');
+            existingTabRow.id = tabRowId;
+            existingTabRow.className = 'spec-cat-tab-row';
+            existingTabRow.style.display = 'none';
+            picker.parentNode.insertBefore(existingTabRow, picker);
+        }
+        var tabsHtml = ['All', ...Object.keys(spGroups)].map(function(g) {
+            return '<button class="spec-cat-tab' + (g === 'All' ? ' active' : '') + '" data-cat="' + g.replace(/"/g, '&quot;') + '" onclick="(function(btn){var pickerId=\'specPatternPicker_' + zoneIdx + '_' + layerIdx + '\';var grid=document.getElementById(pickerId);if(!grid)return;grid.querySelectorAll(\'.spec-cat-tab-row .spec-cat-tab\').forEach(function(b){b.classList.remove(\'active\')});btn.classList.add(\'active\');var cn=btn.dataset.cat;grid.querySelectorAll(\'.spec-pattern-thumb-card\').forEach(function(c){c.style.display=(cn===\'All\'||c.dataset.category===cn)?\'\':\' none\';}); })(this)" title="' + g.replace(/"/g, '&quot;') + '">' + g + '</button>';
+        }).join('');
+        existingTabRow.innerHTML = tabsHtml;
+
+        // Build cards
+        var html = '';
+        allSp.forEach(function(p) {
+            var isActive = p.id === currentId ? ' sp-thumb-active' : '';
+            var cat = catMap[p.id] || 'Misc';
+            var shortName = p.name.length > 12 ? p.name.slice(0, 12) + '\u2026' : p.name;
+            html += '<div class="spec-pattern-thumb-card' + isActive + '" data-spid="' + p.id + '" data-category="' + cat + '" title="' + p.name + ': ' + (p.desc || '').replace(/"/g, '&quot;') + '" style="cursor:pointer;">';
+            html += '<img src="/thumbnails/spec_patterns/' + p.id + '.png" alt="' + p.name + '" loading="lazy" style="width:48px;height:48px;object-fit:cover;" onerror="this.src=\'/api/spec-pattern-preview/' + p.id + '?v=live\';this.onerror=null;">';
+            html += '<div class="thumb-label">' + shortName + '</div></div>';
+        });
+        picker.innerHTML = html;
+
+        // Restore last active category
+        var savedCat = _specPickerActiveCat[zoneIdx + '_' + layerIdx] || 'All';
+        if (savedCat !== 'All') {
+            picker.querySelectorAll('.spec-pattern-thumb-card').forEach(function(card) {
+                card.style.display = (card.dataset.category === savedCat) ? '' : 'none';
+            });
+            var savedBtn = existingTabRow.querySelector('[data-cat="' + savedCat + '"]');
+            if (savedBtn) {
+                existingTabRow.querySelectorAll('.spec-cat-tab').forEach(function(b) { b.classList.remove('active'); });
+                savedBtn.classList.add('active');
+            }
+        }
+
+        // Attach click and hover handlers via delegation
+        picker.addEventListener('click', function(e) {
+            var card = e.target.closest('.spec-pattern-thumb-card');
+            if (!card) return;
+            document.querySelectorAll('.spec-thumb-popup').forEach(function(p) { p.remove(); });
+            // Save active cat
+            var activeTabBtn = existingTabRow.querySelector('.spec-cat-tab.active');
+            _specPickerActiveCat[zoneIdx + '_' + layerIdx] = activeTabBtn ? activeTabBtn.dataset.cat : 'All';
+            changeSpecPatternType(zoneIdx, layerIdx, card.dataset.spid);
+            picker.style.display = 'none';
+            picker.dataset.pickerOpen = '0';
+            existingTabRow.style.display = 'none';
+        });
+        picker.addEventListener('mouseover', function(e) {
+            var card = e.target.closest('.spec-pattern-thumb-card');
+            if (!card || card._spPopup) return;
+            var img = card.querySelector('img');
+            if (!img) return;
+            var popup = document.createElement('div');
+            popup.className = 'spec-thumb-popup';
+            var pName = card.querySelector('.thumb-label');
+            popup.innerHTML = '<img src="' + img.src + '" style="width:200px;height:100px;object-fit:contain;border-radius:6px;"><div style="text-align:center;font-size:11px;color:#ccc;padding:4px;">' + (pName ? pName.textContent : '') + '</div>';
+            var rect = card.getBoundingClientRect();
+            popup.style.left = Math.min(rect.left + rect.width / 2 - 104, window.innerWidth - 220) + 'px';
+            popup.style.top = Math.max(rect.top - 148, 4) + 'px';
+            document.body.appendChild(popup);
+            card._spPopup = popup;
+        });
+        picker.addEventListener('mouseout', function(e) {
+            var card = e.target.closest('.spec-pattern-thumb-card');
+            if (card && card._spPopup) { card._spPopup.remove(); card._spPopup = null; }
+        });
+        picker.dataset.built = '1';
+    } else {
+        // Already built: restore saved category tab
+        var tabRowExist = document.getElementById('specPickerTabs_' + zoneIdx + '_' + layerIdx);
+        var savedCat2 = _specPickerActiveCat[zoneIdx + '_' + layerIdx] || 'All';
+        if (tabRowExist) {
+            tabRowExist.querySelectorAll('.spec-cat-tab').forEach(function(b) { b.classList.remove('active'); });
+            var savedBtn2 = tabRowExist.querySelector('[data-cat="' + savedCat2 + '"]');
+            if (savedBtn2) savedBtn2.classList.add('active');
+            tabRowExist.style.display = 'flex';
+        }
+        picker.querySelectorAll('.spec-pattern-thumb-card').forEach(function(card) {
+            card.style.display = (savedCat2 === 'All' || card.dataset.category === savedCat2) ? '' : 'none';
+        });
+    }
+
+    // Show the tab row
+    var tabRowFinal = document.getElementById('specPickerTabs_' + zoneIdx + '_' + layerIdx);
+    if (tabRowFinal) tabRowFinal.style.display = 'flex';
+
+    picker.style.display = 'grid';
+    picker.dataset.pickerOpen = '1';
+    picker.style.gridTemplateColumns = 'repeat(4, 1fr)';
+    picker.style.gap = '6px';
+    picker.style.padding = '6px';
+
+    // Scroll active into view
+    var active = picker.querySelector('.sp-thumb-active');
+    if (active) setTimeout(function() { active.scrollIntoView({ block: 'center', behavior: 'smooth' }); }, 50);
+}
+
+function changeSpecPatternType(zoneIdx, layerIdx, newPatternId) {
+    pushZoneUndo('Change spec pattern type');
+    if (!zones[zoneIdx].specPatternStack || !zones[zoneIdx].specPatternStack[layerIdx]) return;
+    const spDef = (typeof SPEC_PATTERNS !== 'undefined' ? SPEC_PATTERNS : []).find(p => p.id === newPatternId);
+    const layer = zones[zoneIdx].specPatternStack[layerIdx];
+    layer.pattern = newPatternId;
+    layer.params = spDef ? JSON.parse(JSON.stringify(spDef.defaults || {})) : {};
+    renderZones();
+    triggerPreviewRender();
+}
+
 function toggleSpecPatternChannel(zoneIdx, layerIdx, ch, checked) {
     pushZoneUndo('', true);
     if (!zones[zoneIdx].specPatternStack || !zones[zoneIdx].specPatternStack[layerIdx]) return;
@@ -5864,6 +6273,69 @@ function toggleSpecPatternChannel(zoneIdx, layerIdx, ch, checked) {
     sp.channels = channels;
     renderZoneDetail(selectedZoneIndex);
     triggerPreviewRender();
+}
+
+// ===== SPEC PREVIEW PANEL =====
+// Tracks base finish per zone preview
+var _specPreviewBase = {};
+// Tracks in-flight AbortControllers per zone (prevents stale fetch stalls)
+var _specPreviewAbort = {};
+
+function setSpecPreviewBase(zoneIdx, btnEl, base) {
+    _specPreviewBase[zoneIdx] = base;
+    var panel = btnEl.closest('.spec-preview-panel');
+    if (panel) panel.querySelectorAll('.spec-preview-tab').forEach(function(b) { b.classList.remove('active'); });
+    btnEl.classList.add('active');
+    updateSpecPreview(zoneIdx);
+}
+
+function updateSpecPreview(zoneIdx) {
+    var canvas = document.getElementById('specPreviewCanvas_' + zoneIdx);
+    var status = document.getElementById('specPreviewStatus_' + zoneIdx);
+    if (!canvas) return;
+    var base = _specPreviewBase[zoneIdx] || 'chrome';
+    var specStack = (zones[zoneIdx] && zones[zoneIdx].specPatternStack) ? zones[zoneIdx].specPatternStack : [];
+
+    // Abort any in-progress fetch for this zone before starting a new one
+    if (_specPreviewAbort[zoneIdx]) {
+        _specPreviewAbort[zoneIdx].abort();
+    }
+    var controller = new AbortController();
+    _specPreviewAbort[zoneIdx] = controller;
+    var timeoutId = setTimeout(function() { controller.abort(); }, 5000);
+
+    if (status) status.textContent = 'Rendering...';
+    fetch('/api/spec-preview-composite', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ zone_spec_stack: specStack, base_finish: base }),
+        signal: controller.signal
+    }).then(function(r) {
+        clearTimeout(timeoutId);
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.blob();
+    }).then(function(blob) {
+        _specPreviewAbort[zoneIdx] = null;
+        var url = URL.createObjectURL(blob);
+        var img = new Image();
+        img.onload = function() {
+            var ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            URL.revokeObjectURL(url);
+            if (status) status.textContent = '';
+        };
+        img.src = url;
+    }).catch(function(err) {
+        clearTimeout(timeoutId);
+        _specPreviewAbort[zoneIdx] = null;
+        if (err.name === 'AbortError') {
+            if (status) status.textContent = 'Timed out';
+        } else {
+            if (status) status.textContent = 'Preview unavailable';
+            console.warn('Spec preview error:', err);
+        }
+    });
 }
 
 // ===== OVERLAY SPEC PATTERN STACK CONTROLS =====
@@ -6206,7 +6678,6 @@ function assignFinishToSelected(finishId) {
     if (selectedZoneIndex >= 0 && selectedZoneIndex < zones.length) {
         pushZoneUndo('Assign finish: ' + finishId);
         const zone = zones[selectedZoneIndex];
-        console.log(`[assignFinish] Zone ${selectedZoneIndex} (${zone.name}): assigning ${finishId}, was base=${zone.base} finish=${zone.finish}`);
         // Check if it's a base, pattern, or monolithic
         const base = BASES.find(b => b.id === finishId);
         const pattern = PATTERNS.find(p => p.id === finishId);
@@ -6216,7 +6687,6 @@ function assignFinishToSelected(finishId) {
             zone.base = finishId;
             zone.finish = null;
             if (!zone.pattern) zone.pattern = 'none';
-            console.log(`[assignFinish] Set base=${zone.base}, finish=${zone.finish}`);
             renderZones();
             triggerPreviewRender();
             showToast(`Base: ${base.name} => ${zone.name}`);
@@ -6241,7 +6711,6 @@ function assignFinishToSelected(finishId) {
             zone.base = null;
             // Keep existing pattern if one is set (pattern can overlay on monolithic)
             // zone.pattern is preserved - user can keep or remove it
-            console.log(`[assignFinish] Set mono finish=${zone.finish}, base=${zone.base}`);
             renderZones();
             triggerPreviewRender();
             const patLabel = (zone.pattern && zone.pattern !== 'none') ? ` (keeping ${PATTERNS.find(p => p.id === zone.pattern)?.name || zone.pattern} overlay)` : '';
@@ -6251,12 +6720,10 @@ function assignFinishToSelected(finishId) {
             zone.finish = finishId;
             zone.base = null;
             zone.pattern = null;
-            console.log(`[assignFinish] Legacy fallback: finish=${zone.finish}`);
             renderZones();
             triggerPreviewRender();
             showToast(`Assigned ${finishId} to ${zone.name}`);
         }
-        console.log(`[assignFinish] AFTER: zone ${selectedZoneIndex} base=${zones[selectedZoneIndex].base} finish=${zones[selectedZoneIndex].finish}`);
     }
 }
 
@@ -7584,5 +8051,181 @@ function encodeRegionMaskRLE(mask, width, height) {
 
 function hasAnyRegionMasks() {
     return zones.some(z => z.regionMask && z.regionMask.some(v => v > 0));
+}
+
+// ===== FINE TUNING PANEL =====
+// State
+window._fineTuningOpen = false;
+window._fineTuningZone = -1;
+window._ftAccordionMode = true;
+
+/**
+ * Open the Fine Tuning panel for a given zone index.
+ * Hides the Finish Library and shows the Fine Tuning panel with overlay controls.
+ */
+function openFineTuning(zoneIndex) {
+    if (zoneIndex < 0 || zoneIndex >= zones.length) return;
+    window._fineTuningOpen = true;
+    window._fineTuningZone = zoneIndex;
+
+    // Hide finish library area, show fine tuning panel
+    const libHeader = document.querySelector('.right-panel > .section-header');
+    const libSearch = document.querySelector('.right-panel > .finish-search-bar');
+    const libPanel = document.getElementById('finishLibrary');
+    const ftPanel = document.getElementById('fineTuningPanel');
+    if (libHeader) libHeader.style.display = 'none';
+    if (libSearch) libSearch.style.display = 'none';
+    if (libPanel) libPanel.style.display = 'none';
+    if (ftPanel) ftPanel.style.display = 'flex';
+
+    // Update title
+    const titleEl = document.getElementById('fineTuningTitle');
+    if (titleEl) titleEl.textContent = 'FINE TUNING \u2014 Zone ' + (zoneIndex + 1);
+
+    // Build content
+    _buildFineTuningContent(zoneIndex);
+}
+
+/**
+ * Close the Fine Tuning panel and restore the Finish Library.
+ */
+function closeFineTuning() {
+    window._fineTuningOpen = false;
+    window._fineTuningZone = -1;
+
+    const libHeader = document.querySelector('.right-panel > .section-header');
+    const libSearch = document.querySelector('.right-panel > .finish-search-bar');
+    const libPanel = document.getElementById('finishLibrary');
+    const ftPanel = document.getElementById('fineTuningPanel');
+    if (libHeader) libHeader.style.display = '';
+    if (libSearch) libSearch.style.display = '';
+    if (libPanel) libPanel.style.display = '';
+    if (ftPanel) ftPanel.style.display = 'none';
+}
+
+/**
+ * Toggle a Fine Tuning section's collapsed state.
+ * If accordion mode is on, collapse all other sections first.
+ */
+function toggleFineTuningSection(n) {
+    const section = document.getElementById('ftSection' + n);
+    if (!section) return;
+    const isCollapsed = section.classList.contains('ft-collapsed');
+
+    if (window._ftAccordionMode && isCollapsed) {
+        // Collapse all others first
+        document.querySelectorAll('#fineTuningBody .ft-section').forEach(function(s) {
+            s.classList.add('ft-collapsed');
+        });
+    }
+
+    if (isCollapsed) {
+        section.classList.remove('ft-collapsed');
+    } else {
+        section.classList.add('ft-collapsed');
+    }
+}
+
+/**
+ * Build the Fine Tuning panel content by extracting overlay section HTML
+ * from the rendered zone detail panel (DOM cloning approach).
+ */
+function _buildFineTuningContent(zoneIndex) {
+    const body = document.getElementById('fineTuningBody');
+    if (!body) return;
+    body.innerHTML = '';
+
+    const zone = zones[zoneIndex];
+    if (!zone) { body.innerHTML = '<div style="padding:16px;color:var(--text-dim);">No zone selected.</div>'; return; }
+    if (!zone.base && !zone.finish) { body.innerHTML = '<div style="padding:16px;color:var(--text-dim);">Select a base finish first to enable overlays.</div>'; return; }
+
+    const i = zoneIndex;
+
+    // Define overlay layer info
+    const layers = [
+        {
+            n: 2, key: 'second', label: '2nd Base',
+            cssClass: 'ft-2nd',
+            hasBase: !!(zone.secondBase || zone.secondBaseColorSource),
+            baseName: (zone.secondBase || zone.secondBaseColorSource) ? ((typeof getOverlayBaseDisplay === 'function' ? (getOverlayBaseDisplay(zone.secondBase || zone.secondBaseColorSource) || {}).name : null) || zone.secondBase || zone.secondBaseColorSource || 'Set') : 'None'
+        },
+        {
+            n: 3, key: 'third', label: '3rd Base',
+            cssClass: 'ft-3rd',
+            hasBase: !!(zone.thirdBase || zone.thirdBaseColorSource),
+            baseName: (zone.thirdBase || zone.thirdBaseColorSource) ? ((typeof getOverlayBaseDisplay === 'function' ? (getOverlayBaseDisplay(zone.thirdBase || zone.thirdBaseColorSource) || {}).name : null) || zone.thirdBase || zone.thirdBaseColorSource || 'Set') : 'None'
+        },
+        {
+            n: 4, key: 'fourth', label: '4th Base',
+            cssClass: 'ft-4th',
+            hasBase: !!(zone.fourthBase || zone.fourthBaseColorSource),
+            baseName: (zone.fourthBase || zone.fourthBaseColorSource) ? ((typeof getOverlayBaseDisplay === 'function' ? (getOverlayBaseDisplay(zone.fourthBase || zone.fourthBaseColorSource) || {}).name : null) || zone.fourthBase || zone.fourthBaseColorSource || 'Set') : 'None'
+        },
+        {
+            n: 5, key: 'fifth', label: '5th Base',
+            cssClass: 'ft-5th',
+            hasBase: !!(zone.fifthBase || zone.fifthBaseColorSource),
+            baseName: (zone.fifthBase || zone.fifthBaseColorSource) ? ((typeof getOverlayBaseDisplay === 'function' ? (getOverlayBaseDisplay(zone.fifthBase || zone.fifthBaseColorSource) || {}).name : null) || zone.fifthBase || zone.fifthBaseColorSource || 'Set') : 'None'
+        }
+    ];
+
+    // Try to clone overlay sections from the rendered zone detail DOM
+    const overlayContainer = document.getElementById('sectionOverlays' + i);
+    // Find all base-overlay-section elements (or the first overlay-section which is 2nd base)
+    let overlaySections = [];
+    if (overlayContainer) {
+        // The structure: first child after header is the pattern-stack-section (2nd base content),
+        // then subsequent .base-overlay-section elements for 3rd, 4th, 5th
+        const allSections = overlayContainer.querySelectorAll('.overlay-section');
+        overlaySections = Array.from(allSections);
+    }
+
+    layers.forEach(function(layer, idx) {
+        const sectionDiv = document.createElement('div');
+        sectionDiv.className = 'ft-section ' + layer.cssClass + (idx > 0 ? ' ft-collapsed' : '');
+        sectionDiv.id = 'ftSection' + layer.n;
+
+        // Header
+        const header = document.createElement('div');
+        header.className = 'ft-section-header';
+        header.onclick = function() { toggleFineTuningSection(layer.n); };
+        header.innerHTML = '<span>' + layer.label + ' <span style="font-size:9px;color:var(--text-dim);">' +
+            layer.baseName + '</span>' +
+            '<span class="ft-status-dot ' + (layer.hasBase ? 'active' : 'inactive') + '"></span></span>' +
+            '<span class="ft-section-arrow">&#9660;</span>';
+        sectionDiv.appendChild(header);
+
+        // Body - clone from DOM if available
+        const bodyDiv = document.createElement('div');
+        bodyDiv.className = 'ft-section-body';
+
+        if (overlaySections[idx]) {
+            // Deep clone the overlay section content
+            const clone = overlaySections[idx].cloneNode(true);
+            // Re-enable all inputs/buttons in clone (cloning preserves state)
+            bodyDiv.appendChild(clone);
+        } else {
+            bodyDiv.innerHTML = '<div style="padding:8px;color:var(--text-dim);font-size:10px;">Overlay controls not available. Open the zone detail panel first.</div>';
+        }
+
+        sectionDiv.appendChild(bodyDiv);
+        body.appendChild(sectionDiv);
+    });
+}
+
+/**
+ * Refresh the Fine Tuning panel if it is currently open.
+ * Called when zones change or a new zone is selected.
+ */
+function _refreshFineTuningIfOpen() {
+    if (!window._fineTuningOpen) return;
+    // If the zone changed, update for the new zone
+    var zi = (typeof selectedZoneIndex !== 'undefined') ? selectedZoneIndex : window._fineTuningZone;
+    if (zi >= 0 && zi < zones.length) {
+        window._fineTuningZone = zi;
+        var titleEl = document.getElementById('fineTuningTitle');
+        if (titleEl) titleEl.textContent = 'FINE TUNING \u2014 Zone ' + (zi + 1);
+        _buildFineTuningContent(zi);
+    }
 }
 

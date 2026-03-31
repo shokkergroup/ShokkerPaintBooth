@@ -323,7 +323,7 @@ def spec_graphene_lattice(shape, seed, sm, base_m, base_r):
     boundary = np.clip(hex_dist * 2.5, 0, 1)
     # Hex boundaries are rougher (grain boundaries)
     M = np.clip(120.0 + (1.0 - boundary) * 40.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(12.0 + boundary * 30.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(12.0 + boundary * 30.0 * sm, 15, 255).astype(np.float32)  # GGX floor
     CC = np.clip(10.0 + boundary * 5.0, 0, 255).astype(np.float32)
     return M, R, CC
 

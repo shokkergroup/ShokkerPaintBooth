@@ -40,7 +40,7 @@ def spec_brushed_aluminum(shape, seed, sm, base_m, base_r):
     grooves = np.sin(x * 0.3 + groove_var * 3.0) * 0.5 + 0.5
     # Brushed: high metallic, anisotropic roughness (higher across grooves)
     M = np.clip(195.0 + grooves * 40.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(18.0 + grooves * 15.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(18.0 + grooves * 15.0 * sm, 15, 255).astype(np.float32)
     CC = np.clip(4.0 + grooves * 4.0, 0, 255).astype(np.float32)
     return M, R, CC
 
@@ -81,7 +81,7 @@ def spec_brushed_titanium(shape, seed, sm, base_m, base_r):
     melt = np.exp(-((track - 0.5)**2) / (2.0 * 0.15**2))
     # Titanium: high metallic, moderate roughness from resolidification
     M = np.clip(190.0 + melt * 40.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(14.0 + melt * 12.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(14.0 + melt * 12.0 * sm, 15, 255).astype(np.float32)
     CC = np.clip(6.0 + melt * 4.0, 0, 255).astype(np.float32)
     return M, R, CC
 
@@ -116,6 +116,6 @@ def spec_brushed_wrap(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
     stretch = multi_scale_noise((h, w), [32, 64, 128], [0.3, 0.4, 0.3], seed + 1221)
     M = np.clip(140.0 + stretch * 40.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(16.0 + stretch * 12.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(16.0 + stretch * 12.0 * sm, 15, 255).astype(np.float32)
     CC = np.clip(6.0 + stretch * 4.0, 0, 255).astype(np.float32)
     return M, R, CC

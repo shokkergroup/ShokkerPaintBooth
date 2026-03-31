@@ -885,3 +885,102 @@ def spec_vintage_chrome(shape, seed, sm, base_m, base_r):
     return (np.clip(M * 255.0, 0, 255).astype(np.float32),
             np.clip(R * 255.0, 0, 255).astype(np.float32),
             np.clip(CC * 255.0, 0, 255).astype(np.float32))
+
+
+# =============================================================================
+# RUGGED - Off-road tactical Cerakote/Line-X coating with impact damage
+# =============================================================================
+
+def paint_rugged_v2(paint, shape, mask, seed, pm, bb):
+    """
+    Off-road tactical coating: thick protective spray with micro-texture from
+    polyurea particles, impact scars from rocks/debris, and UV-faded edges
+    where coating wears thin on high-contact surfaces.
+    """
+    h, w = shape[:2] if len(shape) > 2 else shape
+    base = paint.copy()
+
+    # Polyurea particle texture (thick spray creates granular surface)
+    granular = multi_scale_noise((h, w), [1, 2, 4], [0.4, 0.35, 0.25], seed + 3300)
+    granular = (granular + 1.0) / 2.0  # 0-1
+    micro_bump = multi_scale_noise((h, w), [1, 2], [0.6, 0.4], seed + 3301)
+    micro_bump = np.maximum(0, micro_bump) * 0.15
+
+    # Impact scar clusters (rock chips from off-road use)
+    rng = np.random.RandomState(seed + 3302)
+    scar_map = np.zeros((h, w), dtype=np.float32)
+    n_scars = 150
+    sy = rng.randint(0, h, n_scars)
+    sx = rng.randint(0, w, n_scars)
+    radii = rng.randint(1, 6, n_scars)
+    for i in range(n_scars):
+        r = radii[i]
+        y0, y1 = max(0, sy[i] - r), min(h, sy[i] + r)
+        x0, x1 = max(0, sx[i] - r), min(w, sx[i] + r)
+        depth = rng.rand() * 0.4 + 0.1
+        scar_map[y0:y1, x0:x1] = np.maximum(scar_map[y0:y1, x0:x1], depth)
+
+    # UV fade on exposed edges (top-down gradient simulating sun exposure)
+    y_grad = np.linspace(0, 1, h, dtype=np.float32)[:, np.newaxis]
+    uv_fade = multi_scale_noise((h, w), [32, 64], [0.5, 0.5], seed + 3303)
+    uv_fade = np.clip(y_grad * 0.3 + uv_fade * 0.15, 0, 1)
+
+    # Tactical desaturation toward olive/gray + texture
+    gray = base.mean(axis=2)
+    tac_r = np.clip(gray * 0.55 + 0.15 - micro_bump + uv_fade * 0.08, 0, 1)
+    tac_g = np.clip(gray * 0.52 + 0.14 - micro_bump + uv_fade * 0.06, 0, 1)
+    tac_b = np.clip(gray * 0.48 + 0.12 - micro_bump + uv_fade * 0.04, 0, 1)
+
+    # Scars expose lighter substrate
+    tac_r = np.clip(tac_r + scar_map * 0.15, 0, 1)
+    tac_g = np.clip(tac_g + scar_map * 0.12, 0, 1)
+    tac_b = np.clip(tac_b + scar_map * 0.10, 0, 1)
+
+    effect = np.stack([tac_r, tac_g, tac_b], axis=-1).astype(np.float32)
+    blend = np.clip(pm, 0.0, 1.0)
+    result = np.clip(base * (1.0 - mask[:, :, np.newaxis] * blend) +
+                     effect * (mask[:, :, np.newaxis] * blend), 0, 1)
+    return np.clip(result + bb[:, :, np.newaxis] * 0.15 * pm * mask[:, :, np.newaxis],
+                   0, 1).astype(np.float32)
+
+
+def spec_rugged(shape, seed, sm, base_m, base_r):
+    """
+    Rugged spec: very low metallic (protective coating), high roughness from
+    granular texture, extremely low clearcoat (matte tactical). Impact scars
+    create local roughness spikes and metallic exposure.
+    """
+    h, w = shape if len(shape) == 2 else shape[:2]
+    base_m = base_m / 255.0
+    base_r = base_r / 255.0
+
+    # Granular surface texture
+    granular = multi_scale_noise((h, w), [1, 2, 4], [0.4, 0.35, 0.25], seed + 3300)
+    granular = (granular + 1.0) / 2.0
+
+    # Impact scars (same seed as paint for alignment)
+    rng = np.random.RandomState(seed + 3302)
+    scar_map = np.zeros((h, w), dtype=np.float32)
+    n_scars = 150
+    sy = rng.randint(0, h, n_scars)
+    sx = rng.randint(0, w, n_scars)
+    radii = rng.randint(1, 6, n_scars)
+    for i in range(n_scars):
+        r = radii[i]
+        y0, y1 = max(0, sy[i] - r), min(h, sy[i] + r)
+        x0, x1 = max(0, sx[i] - r), min(w, sx[i] + r)
+        depth = rng.rand() * 0.4 + 0.1
+        scar_map[y0:y1, x0:x1] = np.maximum(scar_map[y0:y1, x0:x1], depth)
+
+    # Very low metallic (coating absorbs), scars expose metal underneath
+    M = np.clip(0.08 + granular * 0.06 + scar_map * 0.35, 0, 1)
+
+    # High roughness from granular texture, higher at scar edges
+    R = np.clip(0.65 + granular * 0.20 * sm + scar_map * 0.10, 0, 1)
+
+    # Very matte (tactical finish, almost no clearcoat)
+    CC = np.clip(0.55 + granular * 0.12, 0, 1)
+
+    return (np.clip(M * 255.0, 0, 255).astype(np.float32),
+            np.clip(R * 255.0, 0, 255).astype(np.float32),
+            np.clip(CC * 255.0, 0, 255).astype(np.float32))

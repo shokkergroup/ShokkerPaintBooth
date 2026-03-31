@@ -236,7 +236,7 @@ def spec_chameleon_v5(shape, mask, seed, sm, field=None,
     R_arr = R_arr + r_noise * 3 * sm
 
     spec[:,:,0] = np.clip(M_arr * mask, 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R_arr * mask, 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R_arr * mask, 15, 255).astype(np.uint8)  # GGX floor: G≥15 prevents whitewash
     spec[:,:,2] = np.clip(CC_arr * mask, 0, 255).astype(np.uint8)
     spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec

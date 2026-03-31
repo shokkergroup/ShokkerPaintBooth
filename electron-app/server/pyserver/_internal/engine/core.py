@@ -1,8 +1,8 @@
 """
-engine/core.py â€” Primitive Functions
+engine/core.py â€" Primitive Functions
 =====================================
 All low-level utilities. Nothing that renders finishes lives here.
-Everything else imports FROM here â€” this module imports nothing from engine/.
+Everything else imports FROM here â€" this module imports nothing from engine/.
 
 CONTENTS:
   - TGA file writers (write_tga_32bit, write_tga_24bit)
@@ -14,15 +14,25 @@ CONTENTS:
   - Intensity presets
 
 FIX GUIDE:
-  - Noise looks wrong â†’ edit multi_scale_noise or perlin_multi_octave
-  - Color matching not finding right pixels â†’ edit build_zone_mask
-  - Color words not parsing â†’ edit COLOR_WORD_MAP or parse_color_description
-  - TGA files corrupted â†’ edit write_tga_32bit / write_tga_24bit
+  - Noise looks wrong â†' edit multi_scale_noise or perlin_multi_octave
+  - Color matching not finding right pixels â†' edit build_zone_mask
+  - Color words not parsing â†' edit COLOR_WORD_MAP or parse_color_description
+  - TGA files corrupted â†' edit write_tga_32bit / write_tga_24bit
 """
 
 import numpy as np
 from PIL import Image, ImageFilter
 import struct
+import cv2
+
+# GPU acceleration (optional) -- lazy import to avoid circular deps
+try:
+    from engine.gpu import xp, to_cpu, to_gpu, is_gpu
+except ImportError:
+    xp = np
+    def to_cpu(a): return a
+    def to_gpu(a): return a
+    def is_gpu(): return False
 
 
 # ================================================================
@@ -95,10 +105,7 @@ def multi_scale_noise(shape, scales, weights, seed=42):
     for scale, weight in zip(scales, weights):
         sh, sw = max(1, int(h) // scale), max(1, int(w) // scale)
         small = rng.randn(sh, sw).astype(np.float32)
-        img = Image.fromarray(((small - small.min()) / (small.max() - small.min() + 1e-8) * 255).clip(0, 255).astype(np.uint8))
-        img = img.resize((int(w), int(h)), Image.BILINEAR)
-        arr = np.array(img).astype(np.float32) / 255.0
-        arr = arr * (small.max() - small.min()) + small.min()
+        arr = cv2.resize(small, (int(w), int(h)), interpolation=cv2.INTER_LINEAR)
         result += arr * weight
     rmin, rmax = float(result.min()), float(result.max())
     if rmax > rmin:
@@ -109,7 +116,7 @@ def multi_scale_noise(shape, scales, weights, seed=42):
 def perlin_multi_octave(shape, octaves=4, persistence=0.5, lacunarity=2.0, seed=42):
     """Multi-octave Perlin noise for organic, spatially coherent textures.
 
-    Unlike random noise, Perlin has spatial coherence â€” nearby pixels are correlated.
+    Unlike random noise, Perlin has spatial coherence â€" nearby pixels are correlated.
     Use for: wood grain, marble veining, organic surface variation.
     """
     h, w = shape
@@ -140,7 +147,7 @@ def perlin_multi_octave(shape, octaves=4, persistence=0.5, lacunarity=2.0, seed=
 
 
 def _generate_perlin_2d(shape, res, seed=None):
-    """Single-octave 2D Perlin noise. Internal â€” use perlin_multi_octave instead."""
+    """Single-octave 2D Perlin noise. Internal â€" use perlin_multi_octave instead."""
     if seed is not None:
         np.random.seed(seed)
     def f(t):
@@ -150,10 +157,13 @@ def _generate_perlin_2d(shape, res, seed=None):
     grid = np.mgrid[0:res[0]:delta[0], 0:res[1]:delta[1]].transpose(1,2,0) % 1
     angles = 2*np.pi*np.random.rand(res[0]+1, res[1]+1)
     gradients = np.dstack((np.cos(angles), np.sin(angles)))
-    g00 = gradients[:-1,:-1].repeat(d[0],0).repeat(d[1],1)
-    g10 = gradients[1:,:-1].repeat(d[0],0).repeat(d[1],1)
-    g01 = gradients[:-1,1:].repeat(d[0],0).repeat(d[1],1)
-    g11 = gradients[1:,1:].repeat(d[0],0).repeat(d[1],1)
+    # Use advanced indexing instead of .repeat() -- zero-copy broadcast, no temp arrays.
+    yi = np.clip(np.arange(shape[0]) // d[0], 0, gradients.shape[0] - 2)
+    xi = np.clip(np.arange(shape[1]) // d[1], 0, gradients.shape[1] - 2)
+    g00 = gradients[yi[:, None], xi[None, :]]
+    g10 = gradients[yi[:, None] + 1, xi[None, :]]
+    g01 = gradients[yi[:, None], xi[None, :] + 1]
+    g11 = gradients[yi[:, None] + 1, xi[None, :] + 1]
     n00 = np.sum(np.dstack((grid[:,:,0], grid[:,:,1]))*g00, 2)
     n10 = np.sum(np.dstack((grid[:,:,0]-1, grid[:,:,1]))*g10, 2)
     n01 = np.sum(np.dstack((grid[:,:,0], grid[:,:,1]-1))*g01, 2)
@@ -172,48 +182,30 @@ generate_perlin_noise_2d = _generate_perlin_2d
 # COLOR CONVERSION
 # ================================================================
 
-def hsv_to_rgb_vec(h, s, v):
-    """Vectorized HSV â†’ RGB conversion (numpy arrays).
+def hsv_to_rgb_vec(h_arr, s_arr, v_arr):
+    """Vectorized HSV -> RGB conversion using cv2.cvtColor (zero Python loops).
     All inputs 0-1. Returns (r, g, b) as float arrays 0-1.
     """
-    c = v * s
-    hp = h * 6.0
-    x = c * (1 - np.abs(hp % 2 - 1))
-    r = np.zeros_like(c); g = np.zeros_like(c); b = np.zeros_like(c)
-    for lo in range(6):
-        m = (hp >= lo) & (hp < lo+1)
-        if lo==0: r[m]=c[m]; g[m]=x[m]
-        elif lo==1: r[m]=x[m]; g[m]=c[m]
-        elif lo==2: g[m]=c[m]; b[m]=x[m]
-        elif lo==3: g[m]=x[m]; b[m]=c[m]
-        elif lo==4: r[m]=x[m]; b[m]=c[m]
-        elif lo==5: r[m]=c[m]; b[m]=x[m]
-    off = v - c
-    return r+off, g+off, b+off
+    h = np.asarray(h_arr, dtype=np.float32)
+    s = np.asarray(s_arr, dtype=np.float32)
+    v = np.asarray(v_arr, dtype=np.float32)
+    orig_shape = h.shape
+    # cv2.cvtColor requires a 3-channel image; flatten to (N,1,3) then restore.
+    hsv = np.stack([h.ravel() * 360.0, s.ravel(), v.ravel()], axis=-1).reshape(-1, 1, 3)
+    rgb = cv2.cvtColor(hsv, cv2.COLOR_HSV2RGB)  # float32 H∈[0,360], S/V∈[0,1]
+    rgb = rgb.reshape(orig_shape + (3,))
+    return rgb[..., 0], rgb[..., 1], rgb[..., 2]
 
 
 def rgb_to_hsv_array(scheme):
-    """Convert RGB float [0,1] array to HSV float [0,1] array.
+    """Convert RGB float [0,1] array to HSV float [0,1] array using cv2.cvtColor.
     Input shape: (h, w, 3). Output shape: (h, w, 3) [H, S, V all 0-1].
+    cv2 returns H in [0,360] for float32 input; we normalise back to [0,1].
     """
-    r, g, b = scheme[:,:,0], scheme[:,:,1], scheme[:,:,2]
-    maxc = np.maximum(np.maximum(r, g), b)
-    minc = np.minimum(np.minimum(r, g), b)
-    delta = maxc - minc
-
-    hue = np.zeros_like(r)
-    mask_r = (maxc == r) & (delta > 0)
-    mask_g = (maxc == g) & (delta > 0)
-    mask_b = (maxc == b) & (delta > 0)
-    hue[mask_r] = (((g[mask_r] - b[mask_r]) / delta[mask_r]) % 6) / 6.0
-    hue[mask_g] = (((b[mask_g] - r[mask_g]) / delta[mask_g]) + 2) / 6.0
-    hue[mask_b] = (((r[mask_b] - g[mask_b]) / delta[mask_b]) + 4) / 6.0
-
-    sat = np.zeros_like(r)
-    sat[maxc > 0] = delta[maxc > 0] / maxc[maxc > 0]
-    val = maxc
-
-    return np.stack([hue, sat, val], axis=-1)
+    rgb = np.asarray(scheme, dtype=np.float32)
+    hsv = cv2.cvtColor(rgb, cv2.COLOR_RGB2HSV)   # H∈[0,360], S/V∈[0,1]
+    hsv[..., 0] /= 360.0                          # normalise H to [0,1]
+    return hsv
 
 
 # ================================================================
@@ -235,7 +227,7 @@ INTENSITY = {
 }
 
 # How much to scale each channel at 100% intensity.
-# Baked in so users never have to think about it â€” 100% = full effect.
+# Baked in so users never have to think about it â€" 100% = full effect.
 _INTENSITY_SCALE = {
     "paint":  1.50,  # paint functions need up to 1.5x for full effect
     "spec":   2.00,  # spec modulation needs 2.0x for visible texture
@@ -244,12 +236,12 @@ _INTENSITY_SCALE = {
 
 
 # ================================================================
-# COLOR ANALYSIS â€” how zones find their pixels
+# COLOR ANALYSIS â€" how zones find their pixels
 # ================================================================
 
 def analyze_paint_colors(scheme):
     """Analyze paint image and return HSV stats for zone matching.
-    Used internally before zone masking â€” logs color breakdown to console.
+    Used internally before zone masking â€" logs color breakdown to console.
     """
     hsv = rgb_to_hsv_array(scheme)
     brightness = scheme[:,:,0]*0.299 + scheme[:,:,1]*0.587 + scheme[:,:,2]*0.114
@@ -270,41 +262,64 @@ def analyze_paint_colors(scheme):
 def build_zone_mask(scheme, stats, selector, blur_radius=3):
     """Build a float32 zone mask [0,1] from a color selector dict.
 
-    Selector types â€” choose the one that matches your zone:
-        {"color_rgb": [R, G, B], "tolerance": 30}   â†’ exact color match with soft falloff
-        {"color_range": {"r": [lo,hi], "g": [lo,hi], "b": [lo,hi]}}  â†’ RGB range box
-        {"hue_range": [lo_deg, hi_deg], "sat_min": 0.2, "val_min": 0.1}  â†’ HSV hue
-        {"brightness": {"min": 0.0, "max": 0.3}}    â†’ lightness range
-        {"saturation": {"min": 0.5, "max": 1.0}}    â†’ saturation range
-        {"all_painted": True}    â†’ everything with color or darkness (not template)
-        {"remainder": True}      â†’ everything not claimed by other zones
+    Selector types -- choose the one that matches your zone:
+        {"color_rgb": [R, G, B], "tolerance": 30}   -> exact color match with soft falloff
+        {"color_range": {"r": [lo,hi], "g": [lo,hi], "b": [lo,hi]}}  -> RGB range box
+        {"hue_range": [lo_deg, hi_deg], "sat_min": 0.2, "val_min": 0.1}  -> HSV hue
+        {"brightness": {"min": 0.0, "max": 0.3}}    -> lightness range
+        {"saturation": {"min": 0.5, "max": 1.0}}    -> saturation range
+        {"all_painted": True}    -> everything with color or darkness (not template)
+        {"remainder": True}      -> everything not claimed by other zones
 
-    Returns float32 (h,w) array, 1.0 = fully in zone, 0.0 = not in zone.
+    Returns float32 (h,w) numpy array, 1.0 = fully in zone, 0.0 = not in zone.
+    GPU-accelerated for color_rgb distance (biggest perf win on 2048x2048 textures).
     """
     h, w = scheme.shape[:2]
-    mask = np.zeros((h, w), dtype=np.float32)
+    _gpu = is_gpu()
 
     if "color_rgb" in selector:
         target = np.array(selector["color_rgb"], dtype=np.float32) / 255.0
         tolerance = selector.get("tolerance", 30) / 255.0
-        dist = np.sqrt(
-            (scheme[:,:,0] - target[0])**2 +
-            (scheme[:,:,1] - target[1])**2 +
-            (scheme[:,:,2] - target[2])**2
-        )
-        mask = np.clip(1.0 - dist / (tolerance * np.sqrt(3)), 0, 1)
+        # GPU: Euclidean distance on full texture -- massive win on 2048x2048
+        if _gpu:
+            _scheme_g = to_gpu(scheme)
+            _t0, _t1, _t2 = float(target[0]), float(target[1]), float(target[2])
+            dist = xp.sqrt(
+                (_scheme_g[:,:,0] - _t0)**2 +
+                (_scheme_g[:,:,1] - _t1)**2 +
+                (_scheme_g[:,:,2] - _t2)**2
+            )
+            mask = xp.clip(1.0 - dist / (tolerance * xp.sqrt(xp.float32(3.0))), 0, 1)
+            mask = to_cpu(mask)
+        else:
+            dist = np.sqrt(
+                (scheme[:,:,0] - target[0])**2 +
+                (scheme[:,:,1] - target[1])**2 +
+                (scheme[:,:,2] - target[2])**2
+            )
+            mask = np.clip(1.0 - dist / (tolerance * np.sqrt(3)), 0, 1)
 
     elif "color_range" in selector:
         cr = selector["color_range"]
         r_lo, r_hi = cr.get("r", [0, 255])
         g_lo, g_hi = cr.get("g", [0, 255])
         b_lo, b_hi = cr.get("b", [0, 255])
-        rgb255 = (scheme * 255).astype(np.float32)
-        mask = (
-            (rgb255[:,:,0] >= r_lo) & (rgb255[:,:,0] <= r_hi) &
-            (rgb255[:,:,1] >= g_lo) & (rgb255[:,:,1] <= g_hi) &
-            (rgb255[:,:,2] >= b_lo) & (rgb255[:,:,2] <= b_hi)
-        ).astype(np.float32)
+        if _gpu:
+            _scheme_g = to_gpu(scheme)
+            rgb255 = (_scheme_g * 255).astype(xp.float32)
+            mask = (
+                (rgb255[:,:,0] >= r_lo) & (rgb255[:,:,0] <= r_hi) &
+                (rgb255[:,:,1] >= g_lo) & (rgb255[:,:,1] <= g_hi) &
+                (rgb255[:,:,2] >= b_lo) & (rgb255[:,:,2] <= b_hi)
+            ).astype(xp.float32)
+            mask = to_cpu(mask)
+        else:
+            rgb255 = (scheme * 255).astype(np.float32)
+            mask = (
+                (rgb255[:,:,0] >= r_lo) & (rgb255[:,:,0] <= r_hi) &
+                (rgb255[:,:,1] >= g_lo) & (rgb255[:,:,1] <= g_hi) &
+                (rgb255[:,:,2] >= b_lo) & (rgb255[:,:,2] <= b_hi)
+            ).astype(np.float32)
 
     elif "hue_range" in selector:
         hue_lo, hue_hi = selector["hue_range"]
@@ -313,7 +328,7 @@ def build_zone_mask(scheme, stats, selector, blur_radius=3):
         val_min = selector.get("val_min", 0.05)
         val_max = selector.get("val_max", 1.0)
         hue_deg = stats["hue"] * 360.0
-        if hue_lo > hue_hi:  # wraps through 0Â° (reds)
+        if hue_lo > hue_hi:  # wraps through 0 degrees (reds)
             hue_match = (hue_deg >= hue_lo) | (hue_deg <= hue_hi)
         else:
             hue_match = (hue_deg >= hue_lo) & (hue_deg <= hue_hi)
@@ -343,11 +358,13 @@ def build_zone_mask(scheme, stats, selector, blur_radius=3):
     elif selector.get("remainder"):
         mask = np.ones((h, w), dtype=np.float32)  # handled post-loop
 
-    # Soft edges via Gaussian blur
+    else:
+        mask = np.zeros((h, w), dtype=np.float32)
+
+    # Soft edges via Gaussian blur (cv2)
     if blur_radius > 0 and np.any(mask > 0):
-        mask_img = Image.fromarray((mask * 255).astype(np.uint8))
-        mask_img = mask_img.filter(ImageFilter.GaussianBlur(radius=blur_radius))
-        mask = np.array(mask_img).astype(np.float32) / 255.0
+        ksize = int(blur_radius * 6 + 1) | 1  # ensure odd kernel size
+        mask = cv2.GaussianBlur(mask, (ksize, ksize), blur_radius)
 
     return mask
 
@@ -394,11 +411,11 @@ def parse_color_description(desc):
     """Parse a natural language color word into a zone selector dict.
 
     Examples:
-        "blue"        â†’ hue_range [200, 260]
-        "dark blue"   â†’ hue_range [200, 260] + val_max 0.4
-        "#FF0000"     â†’ color_rgb [255, 0, 0]
-        "rgb(255,0,0)"â†’ color_rgb [255, 0, 0]
-        "everything"  â†’ all_painted: True
+        "blue"        â†' hue_range [200, 260]
+        "dark blue"   â†' hue_range [200, 260] + val_max 0.4
+        "#FF0000"     â†' color_rgb [255, 0, 0]
+        "rgb(255,0,0)"â†' color_rgb [255, 0, 0]
+        "everything"  â†' all_painted: True
     """
     desc = desc.lower().strip()
 
@@ -446,7 +463,7 @@ def parse_color_description(desc):
 
 
 # ================================================================
-# ZONE COLOR SAMPLING â€” for adaptive color shift / pipeline
+# ZONE COLOR SAMPLING â€" for adaptive color shift / pipeline
 # ================================================================
 
 def _sample_zone_color(paint, mask):
@@ -481,16 +498,14 @@ def _sample_zone_color(paint, mask):
 
 
 # ================================================================
-# ARRAY HELPERS â€” resize, tile, crop, rotate (used by compose)
+# ARRAY HELPERS â€" resize, tile, crop, rotate (used by compose)
 # ================================================================
 
 def _resize_array(arr, target_h, target_w):
-    """Resize a 2D numpy array using PIL for smooth interpolation."""
-    img = Image.fromarray(((arr - arr.min()) / (arr.max() - arr.min() + 1e-8) * 255).clip(0, 255).astype(np.uint8))
-    img = img.resize((target_w, target_h), Image.BILINEAR)
-    result = np.array(img).astype(np.float32) / 255.0
-    result = result * (arr.max() - arr.min()) + arr.min()
-    return result
+    """Resize a 2D float32 array to target dimensions using cv2."""
+    if arr.shape[0] == target_h and arr.shape[1] == target_w:
+        return arr
+    return cv2.resize(arr.astype(np.float32), (target_w, target_h), interpolation=cv2.INTER_LINEAR)
 
 
 def _tile_fractional(arr, factor, target_h, target_w):

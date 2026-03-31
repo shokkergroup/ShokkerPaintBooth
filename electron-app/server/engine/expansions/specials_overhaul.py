@@ -54,9 +54,9 @@ def spec_cursed(shape, mask, seed, sm):
     veins = np.where(np.abs(n1) < 0.07, 1.0, 0.0).astype(np.float32)
     veins_s = gaussian_filter(veins, sigma=max(1, h * 0.003))
     M = np.clip(80 + veins_s * 120 + n2 * 20 * sm, 0, 255)
-    R = np.clip(160 - veins_s * 140 + n2 * 15 * sm, 0, 255)
+    R = np.clip(160 - veins_s * 140 + n2 * 15 * sm, 15, 255)
     spec[:, :, 0] = np.clip(M * mask, 0, 255).astype(np.uint8)
-    spec[:, :, 1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:, :, 1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:, :, 2] = np.clip(veins_s * 12 * mask, 0, 16).astype(np.uint8)
     spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -87,9 +87,9 @@ def spec_eclipse(shape, mask, seed, sm):
     r = np.sqrt((y - cy)**2 + (x - cx)**2) / max(h, w)
     corona = np.clip(1.0 - r * 2.5, 0, 1) ** 1.5
     M = np.clip(corona * 200 + 5, 0, 255)
-    R = np.clip(200 - corona * 195, 0, 255)
+    R = np.clip(200 - corona * 195, 15, 255)
     spec[:, :, 0] = np.clip(M * mask, 0, 255).astype(np.uint8)
-    spec[:, :, 1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:, :, 1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:, :, 2] = np.clip(corona * 14 * mask, 0, 16).astype(np.uint8)
     spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -118,9 +118,9 @@ def spec_nightmare(shape, mask, seed, sm):
     n = _msn(shape, [4, 8, 16], [0.3, 0.4, 0.3], seed + 2200)
     shards = np.floor(n * 4) / 4
     M = np.clip(200 + shards * 40 + n * 15 * sm, 0, 255)
-    R = np.clip(30 + np.abs(shards) * 80 + n * 10 * sm, 0, 255)
+    R = np.clip(30 + np.abs(shards) * 80 + n * 10 * sm, 15, 255)
     spec[:, :, 0] = np.clip(M * mask, 0, 255).astype(np.uint8)
-    spec[:, :, 1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:, :, 1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:, :, 2] = np.clip(10 * mask, 0, 16).astype(np.uint8)
     spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -152,9 +152,9 @@ def spec_possessed(shape, mask, seed, sm):
     n = _msn(shape, [8, 16, 32, 64], [0.2, 0.3, 0.3, 0.2], seed + 2300)
     puls = np.sin(n * np.pi * 6) * 0.5 + 0.5
     M = np.clip(5 + puls * 180 + n * 10 * sm, 0, 255)
-    R = np.clip(220 - puls * 210 + n * 8 * sm, 0, 255)
+    R = np.clip(220 - puls * 210 + n * 8 * sm, 15, 255)
     spec[:, :, 0] = np.clip(M * mask, 0, 255).astype(np.uint8)
-    spec[:, :, 1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:, :, 1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:, :, 2] = np.clip(puls * 8 * mask, 0, 16).astype(np.uint8)
     spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -182,9 +182,9 @@ def spec_reaper(shape, mask, seed, sm):
     diag = (y / h + x / w)
     slash = np.abs(np.sin(diag * np.pi * 8)) ** 3
     M = np.clip(30 + slash * 200 + _msn(shape, [4, 8], [0.5, 0.5], seed + 2400) * 10 * sm, 0, 255)
-    R = np.clip(200 - slash * 195, 0, 255)
+    R = np.clip(200 - slash * 195, 15, 255)
     spec[:, :, 0] = np.clip(M * mask, 0, 255).astype(np.uint8)
-    spec[:, :, 1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:, :, 1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:, :, 2] = np.clip(slash * 14 * mask, 0, 16).astype(np.uint8)
     spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -218,9 +218,9 @@ def spec_voodoo(shape, mask, seed, sm):
         pin_layer[np.ix_(yy, xx)] = 1.0
     pin_s = gaussian_filter(pin_layer, sigma=max(1, h * 0.004))
     M = np.clip(20 + pin_s * 180, 0, 255)
-    R = np.clip(200 - pin_s * 195, 0, 255)
+    R = np.clip(200 - pin_s * 195, 15, 255)
     spec[:, :, 0] = np.clip(M * mask, 0, 255).astype(np.uint8)
-    spec[:, :, 1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:, :, 1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:, :, 2] = np.clip(pin_s * 12 * mask, 0, 16).astype(np.uint8)
     spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -261,9 +261,9 @@ def spec_wraith(shape, mask, seed, sm):
     n = _msn(shape, [8, 16, 32], [0.3, 0.4, 0.3], seed + 2600)
     warp = edge_s + n * 0.15
     M = np.clip(warp * 120 + 10, 0, 255)
-    R = np.clip(210 - warp * 200, 0, 255)
+    R = np.clip(210 - warp * 200, 15, 255)
     spec[:, :, 0] = np.clip(M * mask, 0, 255).astype(np.uint8)
-    spec[:, :, 1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:, :, 1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:, :, 2] = np.clip(warp * 12 * mask, 0, 16).astype(np.uint8)
     spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -301,7 +301,7 @@ def spec_depth_map(shape, mask, seed, sm):
     n = _msn(shape, [8, 16, 32], [0.3, 0.4, 0.3], seed + 3000)
     field = depth + n * 0.15
     M = np.clip(20 + field * 140 + n * 10 * sm, 0, 255)
-    R = np.clip(120 - field * 100 + n * 8 * sm, 0, 255)
+    R = np.clip(120 - field * 100 + n * 8 * sm, 15, 255)
     spec[:, :, 0] = np.clip(M * mask, 0, 255).astype(np.uint8)
     spec[:, :, 1] = np.clip(R * mask + 60 * (1 - mask), 0, 255).astype(np.uint8)
     spec[:, :, 2] = np.clip(field * 14 * mask, 0, 16).astype(np.uint8)
@@ -332,7 +332,7 @@ def spec_double_exposure(shape, mask, seed, sm):
     n2 = _msn(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + 3101)
     blend = n1 * 0.5 + n2 * 0.5
     M = np.clip(80 + blend * 60 + n1 * 15 * sm, 0, 255)
-    R = np.clip(50 + blend * 40 + n2 * 10 * sm, 0, 255)
+    R = np.clip(50 + blend * 40 + n2 * 10 * sm, 15, 255)
     spec[:, :, 0] = np.clip(M * mask, 0, 255).astype(np.uint8)
     spec[:, :, 1] = np.clip(R * mask + 50 * (1 - mask), 0, 255).astype(np.uint8)
     spec[:, :, 2] = np.clip(12 * mask, 0, 16).astype(np.uint8)
@@ -360,7 +360,7 @@ def spec_infrared(shape, mask, seed, sm):
     spec = np.zeros((h, w, 4), dtype=np.uint8)
     n = _msn(shape, [8, 16, 32], [0.3, 0.4, 0.3], seed + 3200)
     M = np.clip(60 + n * 30 * sm, 0, 255)
-    R = np.clip(80 + n * 20 * sm, 0, 255)
+    R = np.clip(80 + n * 20 * sm, 15, 255)
     spec[:, :, 0] = np.clip(M * mask, 0, 255).astype(np.uint8)
     spec[:, :, 1] = np.clip(R * mask + 60 * (1 - mask), 0, 255).astype(np.uint8)
     spec[:, :, 2] = np.clip(10 * mask, 0, 16).astype(np.uint8)
@@ -392,7 +392,7 @@ def spec_polarized(shape, mask, seed, sm):
     theta = np.arctan2(y - cy, x - cx)
     polar = np.abs(np.sin(2 * theta)) ** 2
     M = np.clip(60 + polar * 130 + _msn(shape, [8, 16], [0.5, 0.5], seed + 3300) * 10 * sm, 0, 255)
-    R = np.clip(80 - polar * 65, 0, 255)
+    R = np.clip(80 - polar * 65, 15, 255)
     spec[:, :, 0] = np.clip(M * mask, 0, 255).astype(np.uint8)
     spec[:, :, 1] = np.clip(R * mask + 60 * (1 - mask), 0, 255).astype(np.uint8)
     spec[:, :, 2] = np.clip(polar * 14 * mask, 0, 16).astype(np.uint8)
@@ -427,7 +427,7 @@ def spec_uv_blacklight(shape, mask, seed, sm):
     n = _msn(shape, [4, 8, 16], [0.3, 0.4, 0.3], seed + 3400)
     hot = np.where(n > 0.5, (n - 0.5) * 2, 0).astype(np.float32)
     M = np.clip(100 + hot * 100 + n * 15 * sm, 0, 255)
-    R = np.clip(20 + (1 - hot) * 20, 0, 255)
+    R = np.clip(20 + (1 - hot) * 20, 15, 255)
     spec[:, :, 0] = np.clip(M * mask, 0, 255).astype(np.uint8)
     spec[:, :, 1] = np.clip(R * mask + 40 * (1 - mask), 0, 255).astype(np.uint8)
     spec[:, :, 2] = np.clip(16 * mask, 0, 16).astype(np.uint8)
@@ -462,9 +462,9 @@ def spec_x_ray(shape, mask, seed, sm):
     n = _msn(shape, [4, 8, 16, 32], [0.2, 0.3, 0.3, 0.2], seed + 3500)
     dense = np.clip(n * 0.5 + 0.5, 0, 1) ** 2
     M = np.clip(20 + dense * 180, 0, 255)
-    R = np.clip(160 - dense * 155, 0, 255)
+    R = np.clip(160 - dense * 155, 15, 255)
     spec[:, :, 0] = np.clip(M * mask, 0, 255).astype(np.uint8)
-    spec[:, :, 1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:, :, 1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:, :, 2] = np.clip(dense * 10 * mask, 0, 16).astype(np.uint8)
     spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -501,7 +501,7 @@ def spec_chromatic_aberration_v2(shape, mask, seed, sm):
     r = np.sqrt((y - cy)**2 + (x - cx)**2) / max(h, w)
     fringe = np.clip(r * 2.5, 0, 1)
     M = np.clip(60 + fringe * 60 + _msn(shape, [8, 16], [0.5, 0.5], seed + 4000) * 10 * sm, 0, 255)
-    R = np.clip(40 - fringe * 20, 0, 255)
+    R = np.clip(40 - fringe * 20, 15, 255)
     spec[:, :, 0] = np.clip(M * mask, 0, 255).astype(np.uint8)
     spec[:, :, 1] = np.clip(R * mask + 40 * (1 - mask), 0, 255).astype(np.uint8)
     spec[:, :, 2] = np.clip(14 * mask, 0, 16).astype(np.uint8)
@@ -519,7 +519,7 @@ def spec_halftone_v2(shape, mask, seed, sm):
     dist = np.sqrt(dy**2 + dx**2) / (dot_size * 0.5)
     dot = np.clip(1.0 - dist * 1.5, 0, 1)
     M = np.clip(30 + dot * 80, 0, 255)
-    R = np.clip(120 - dot * 100, 0, 255)
+    R = np.clip(120 - dot * 100, 15, 255)
     spec[:, :, 0] = np.clip(M * mask, 0, 255).astype(np.uint8)
     spec[:, :, 1] = np.clip(R * mask + 80 * (1 - mask), 0, 255).astype(np.uint8)
     spec[:, :, 2] = np.clip(dot * 10 * mask, 0, 16).astype(np.uint8)
@@ -533,7 +533,7 @@ def spec_negative_v2(shape, mask, seed, sm):
     n = _msn(shape, [4, 8, 16, 32], [0.2, 0.3, 0.3, 0.2], seed + 4200)
     inv = 1.0 - (n * 0.5 + 0.5)
     M = np.clip(20 + inv * 180, 0, 255)
-    R = np.clip(180 - inv * 170, 0, 255)
+    R = np.clip(180 - inv * 170, 15, 255)
     spec[:, :, 0] = np.clip(M * mask, 0, 255).astype(np.uint8)
     spec[:, :, 1] = np.clip(R * mask + 80 * (1 - mask), 0, 255).astype(np.uint8)
     spec[:, :, 2] = np.clip(inv * 12 * mask, 0, 16).astype(np.uint8)
@@ -548,7 +548,7 @@ def spec_solarization_v2(shape, mask, seed, sm):
     lum = n * 0.5 + 0.5
     solar = np.where(lum < 0.5, lum * 2, (1 - lum) * 2).astype(np.float32)
     M = np.clip(80 + solar * 140, 0, 255)
-    R = np.clip(20 + (1 - solar) * 20, 0, 255)
+    R = np.clip(20 + (1 - solar) * 20, 15, 255)
     spec[:, :, 0] = np.clip(M * mask, 0, 255).astype(np.uint8)
     spec[:, :, 1] = np.clip(R * mask + 20 * (1 - mask), 0, 255).astype(np.uint8)
     spec[:, :, 2] = np.clip(solar * 14 * mask, 0, 16).astype(np.uint8)
@@ -563,7 +563,7 @@ def spec_embossed_v2(shape, mask, seed, sm):
     shifted = np.roll(np.roll(n, 2, axis=0), 2, axis=1)
     relief = np.clip((n - shifted) * 3.0 + 0.5, 0, 1)
     M = np.clip(60 + relief * 140, 0, 255)
-    R = np.clip(160 - relief * 150, 0, 255)
+    R = np.clip(160 - relief * 150, 15, 255)
     spec[:, :, 0] = np.clip(M * mask, 0, 255).astype(np.uint8)
     spec[:, :, 1] = np.clip(R * mask + 80 * (1 - mask), 0, 255).astype(np.uint8)
     spec[:, :, 2] = np.clip(relief * 12 * mask, 0, 16).astype(np.uint8)
@@ -583,7 +583,7 @@ def spec_cyber_punk(shape, mask, seed, sm):
     grid_x = np.abs(np.sin(np.linspace(0, np.pi * 30, w))).reshape(1, w)
     grid = np.clip(grid_y * grid_x + n * 0.2, 0, 1).astype(np.float32)
     M = np.clip(180 + grid * 60 + n * 10 * sm, 0, 255)
-    R = np.clip(20 - grid * 15, 0, 255)
+    R = np.clip(20 - grid * 15, 15, 255)
     spec[:, :, 0] = np.clip(M * mask, 0, 255).astype(np.uint8)
     spec[:, :, 1] = np.clip(R * mask + 10 * (1 - mask), 0, 255).astype(np.uint8)
     spec[:, :, 2] = np.clip(16 * mask, 0, 16).astype(np.uint8)
@@ -622,7 +622,7 @@ def spec_firefly(shape, mask, seed, sm):
         fl[np.ix_(yy, xx)] = 1.0
     fl_g = gaussian_filter(fl, sigma=max(2, h * 0.012))
     M = np.clip(80 + fl_g * 160, 0, 255)
-    R = np.clip(120 - fl_g * 110, 0, 255)
+    R = np.clip(120 - fl_g * 110, 15, 255)
     spec[:, :, 0] = np.clip(M * mask, 0, 255).astype(np.uint8)
     spec[:, :, 1] = np.clip(R * mask + 80 * (1 - mask), 0, 255).astype(np.uint8)
     spec[:, :, 2] = np.clip(fl_g * 14 * mask, 0, 16).astype(np.uint8)
@@ -659,7 +659,7 @@ def spec_laser_grid(shape, mask, seed, sm):
     grid = np.clip(line_y + line_x, 0, 1)
     grid_s = gaussian_filter(grid, sigma=max(1, h * 0.004))
     M = np.clip(180 + grid_s * 70, 0, 255)
-    R = np.clip(15 - grid_s * 12, 0, 255)
+    R = np.clip(15 - grid_s * 12, 15, 255)
     spec[:, :, 0] = np.clip(M * mask, 0, 255).astype(np.uint8)
     spec[:, :, 1] = np.clip(R * mask + 10 * (1 - mask), 0, 255).astype(np.uint8)
     spec[:, :, 2] = np.clip(14 * mask, 0, 16).astype(np.uint8)
@@ -692,7 +692,7 @@ def spec_led_matrix(shape, mask, seed, sm):
     cx_local = (x % cell) - cell / 2.0
     dot = np.clip(1.0 - np.sqrt(cy_local**2 + cx_local**2) / (cell * 0.35), 0, 1)
     M = np.clip(200 * dot + 20, 0, 255)
-    R = np.clip(10 + (1 - dot) * 20, 0, 255)
+    R = np.clip(10 + (1 - dot) * 20, 15, 255)
     spec[:, :, 0] = np.clip(M * mask, 0, 255).astype(np.uint8)
     spec[:, :, 1] = np.clip(R * mask + 10 * (1 - mask), 0, 255).astype(np.uint8)
     spec[:, :, 2] = np.clip(dot * 16 * mask, 0, 16).astype(np.uint8)
@@ -726,7 +726,7 @@ def spec_neon_vegas(shape, mask, seed, sm):
     y = np.linspace(0, 1, h).reshape(h, 1)
     tubes = np.abs(np.sin(y * np.pi * 12 + n * 2)) ** 4
     M = np.clip(100 + tubes * 140 + n * 15 * sm, 0, 255)
-    R = np.clip(15 + (1 - tubes) * 15, 0, 255)
+    R = np.clip(15 + (1 - tubes) * 15, 15, 255)
     spec[:, :, 0] = np.clip(M * mask, 0, 255).astype(np.uint8)
     spec[:, :, 1] = np.clip(R * mask + 10 * (1 - mask), 0, 255).astype(np.uint8)
     spec[:, :, 2] = np.clip(tubes * 16 * mask, 0, 16).astype(np.uint8)
@@ -762,7 +762,7 @@ def spec_plasma_globe(shape, mask, seed, sm):
     tendrils = np.clip(np.abs(n) - 0.3, 0, 1) * 1.4
     globe = np.clip(1.0 - r * 2.5, 0, 1) * tendrils
     M = np.clip(180 + globe * 70 + n * 10 * sm, 0, 255)
-    R = np.clip(10 + (1 - globe) * 15, 0, 255)
+    R = np.clip(10 + (1 - globe) * 15, 15, 255)
     spec[:, :, 0] = np.clip(M * mask, 0, 255).astype(np.uint8)
     spec[:, :, 1] = np.clip(R * mask + 8 * (1 - mask), 0, 255).astype(np.uint8)
     spec[:, :, 2] = np.clip(globe * 16 * mask, 0, 16).astype(np.uint8)
@@ -799,7 +799,7 @@ def spec_desert_mirage(shape, mask, seed, sm):
     n = _msn(shape, [8, 16, 32], [0.3, 0.4, 0.3], seed + 6000)
     heat = np.sin(y * np.pi * 25 + n * 2) * 0.5 + 0.5
     M = np.clip(80 + heat * 100 + n * 15 * sm, 0, 255)
-    R = np.clip(50 + (1 - heat) * 60 + n * 10 * sm, 0, 255)
+    R = np.clip(50 + (1 - heat) * 60 + n * 10 * sm, 15, 255)
     spec[:, :, 0] = np.clip(M * mask, 0, 255).astype(np.uint8)
     spec[:, :, 1] = np.clip(R * mask + 60 * (1 - mask), 0, 255).astype(np.uint8)
     spec[:, :, 2] = np.clip(heat * 12 * mask, 0, 16).astype(np.uint8)
@@ -829,7 +829,7 @@ def spec_frozen_lake(shape, mask, seed, sm):
     crack = np.where(np.abs(n) < 0.08, 1.0, 0.0).astype(np.float32)
     crack_s = gaussian_filter(crack, sigma=max(1, h * 0.003))
     M = np.clip(40 + crack_s * 60, 0, 255)
-    R = np.clip(12 + crack_s * 8, 0, 255)
+    R = np.clip(12 + crack_s * 8, 15, 255)
     spec[:, :, 0] = np.clip(M * mask, 0, 255).astype(np.uint8)
     spec[:, :, 1] = np.clip(R * mask + 8 * (1 - mask), 0, 255).astype(np.uint8)
     spec[:, :, 2] = np.clip(16 * mask, 0, 16).astype(np.uint8)
@@ -866,9 +866,9 @@ def spec_meteor_shower(shape, mask, seed, sm):
                 meteor[py, px] = max(meteor[py, px], 1.0 - i / length)
     meteor_s = gaussian_filter(meteor, sigma=max(1, h * 0.004))
     M = np.clip(20 + meteor_s * 220, 0, 255)
-    R = np.clip(180 - meteor_s * 175, 0, 255)
+    R = np.clip(180 - meteor_s * 175, 15, 255)
     spec[:, :, 0] = np.clip(M * mask, 0, 255).astype(np.uint8)
-    spec[:, :, 1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:, :, 1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:, :, 2] = np.clip(meteor_s * 12 * mask, 0, 16).astype(np.uint8)
     spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -902,7 +902,7 @@ def spec_ocean_floor(shape, mask, seed, sm):
     n = _msn(shape, [8, 16, 32, 64], [0.2, 0.3, 0.3, 0.2], seed + 6300)
     caustic = np.sin((n + 1) * np.pi * 8) * 0.5 + 0.5
     M = np.clip(30 + caustic * 60 + n * 10 * sm, 0, 255)
-    R = np.clip(80 + caustic * 40 + n * 8 * sm, 0, 255)
+    R = np.clip(80 + caustic * 40 + n * 8 * sm, 15, 255)
     spec[:, :, 0] = np.clip(M * mask, 0, 255).astype(np.uint8)
     spec[:, :, 1] = np.clip(R * mask + 60 * (1 - mask), 0, 255).astype(np.uint8)
     spec[:, :, 2] = np.clip(caustic * 10 * mask, 0, 16).astype(np.uint8)
@@ -935,7 +935,7 @@ def spec_tornado_alley(shape, mask, seed, sm):
     cone = np.clip(1.0 - r * 2.0, 0, 1)
     vortex = spiral * cone
     M = np.clip(30 + vortex * 80 + _msn(shape, [4, 8], [0.5, 0.5], seed + 6400) * 10 * sm, 0, 255)
-    R = np.clip(100 + (1 - vortex) * 80, 0, 255)
+    R = np.clip(100 + (1 - vortex) * 80, 15, 255)
     spec[:, :, 0] = np.clip(M * mask, 0, 255).astype(np.uint8)
     spec[:, :, 1] = np.clip(R * mask + 80 * (1 - mask), 0, 255).astype(np.uint8)
     spec[:, :, 2] = np.clip(vortex * 8 * mask, 0, 16).astype(np.uint8)
@@ -967,7 +967,7 @@ def spec_volcanic_glass(shape, mask, seed, sm):
     n = _msn(shape, [4, 8, 16, 32], [0.2, 0.3, 0.3, 0.2], seed + 6500)
     obsidian = np.clip(n * 0.5 + 0.5, 0, 1) ** 3
     M = np.clip(180 + obsidian * 70, 0, 255)
-    R = np.clip(8 + obsidian * 6, 0, 255)
+    R = np.clip(8 + obsidian * 6, 15, 255)
     spec[:, :, 0] = np.clip(M * mask, 0, 255).astype(np.uint8)
     spec[:, :, 1] = np.clip(R * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
     spec[:, :, 2] = np.clip(obsidian * 16 * mask, 0, 16).astype(np.uint8)

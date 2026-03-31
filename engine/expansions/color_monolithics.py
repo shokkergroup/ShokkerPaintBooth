@@ -158,7 +158,7 @@ def _make_solid_spec(M, R, CC):
         spec = np.zeros((shape[0], shape[1], 4), dtype=np.uint8)
         # Apply material values where mask is active
         spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-        spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+        spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
         spec[:,:,2] = CC
         spec[:,:,3] = 255  # Full authority
         return spec
@@ -231,7 +231,7 @@ def _make_gradient_spec(M=80, R=40, CC=30):  # CC=30: gradients look best with s
     def spec_fn(shape, mask, seed, sm):
         spec = np.zeros((shape[0], shape[1], 4), dtype=np.uint8)
         spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-        spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+        spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
         spec[:,:,2] = CC
         spec[:,:,3] = 255
         return spec
@@ -354,7 +354,7 @@ def _make_multicolor_spec(M=150, R=45, CC=35):  # CC=35: multi-color patterns be
     def spec_fn(shape, mask, seed, sm):
         spec = np.zeros((shape[0], shape[1], 4), dtype=np.uint8)
         spec[:,:,0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-        spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+        spec[:,:,1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
         spec[:,:,2] = CC
         spec[:,:,3] = 255
         return spec

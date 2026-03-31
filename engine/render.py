@@ -300,7 +300,7 @@ def _generic_solid_spec_fn(shape, mask, seed, sm, mat_key):
     M, R, CC = MATS.get(mat_key, (5, 20, 16))
     spec = np.zeros((shape[0], shape[1], 4), dtype=np.uint8)
     spec[:, :, 0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:, :, 1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:, :, 1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)  # GGX floor
     spec[:, :, 2] = CC
     spec[:, :, 3] = 255
     return spec

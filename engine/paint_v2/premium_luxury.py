@@ -58,7 +58,7 @@ def spec_bentley_silver(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
     flake = multi_scale_noise((h, w), [1, 2, 4], [0.4, 0.35, 0.25], seed + 401)
     M = np.clip(180.0 + flake * 60.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(8.0 + flake * 15.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(8.0 + flake * 15.0 * sm, 15, 255).astype(np.float32)
     CC = np.clip(16.0 + flake * 5.0, 0, 255).astype(np.float32)
     return M, R, CC
 
@@ -100,7 +100,7 @@ def spec_bugatti_blue(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
     depth = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.4, 0.3], seed + 410)
     M = np.clip(60.0 + depth * 40.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(6.0 + depth * 10.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(6.0 + depth * 10.0 * sm, 15, 255).astype(np.float32)
     CC = np.clip(16.0 + depth * 6.0, 0, 255).astype(np.float32)
     return M, R, CC
 
@@ -147,7 +147,7 @@ def spec_ferrari_rosso(shape, seed, sm, base_m, base_r):
     pigment = multi_scale_noise((h, w), [16, 32], [0.6, 0.4], seed + 422)
     # Candy coat: moderate metallic from base layer, very low roughness from clearcoat
     M = np.clip(120.0 + pigment * 50.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(4.0 + pigment * 8.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(4.0 + pigment * 8.0 * sm, 15, 255).astype(np.float32)  # GGX floor — MiMo audit catch
     # Thick clearcoat
     CC = np.clip(22.0 + pigment * 8.0, 0, 255).astype(np.float32)
     return M, R, CC
@@ -206,7 +206,7 @@ def spec_koenigsegg_clear(shape, seed, sm, base_m, base_r):
     weave = ((row_p + col_p) % 4 < 2).astype(np.float32)
     # Carbon under clearcoat: low metallic, low roughness (glossy clear)
     M = np.clip(15.0 + weave * 20.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(5.0 + weave * 6.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(5.0 + weave * 6.0 * sm, 15, 255).astype(np.float32)
     CC = np.clip(20.0 + weave * 4.0, 0, 255).astype(np.float32)
     return M, R, CC
 
@@ -258,7 +258,7 @@ def spec_lamborghini_verde(shape, seed, sm, base_m, base_r):
     flake = multi_scale_noise((h, w), [1, 2, 4], [0.3, 0.35, 0.35], seed + 442)
     # Pearl: moderate metallic from mica, very smooth clearcoat
     M = np.clip(100.0 + flake * 80.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(5.0 + normal * 10.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(5.0 + normal * 10.0 * sm, 15, 255).astype(np.float32)
     CC = np.clip(18.0 + normal * 6.0, 0, 255).astype(np.float32)
     return M, R, CC
 
@@ -312,7 +312,7 @@ def spec_maybach_two_tone(shape, seed, sm, base_m, base_r):
     upper_m, lower_m = 10.0, 160.0
     upper_r, lower_r = 4.0, 10.0
     M = np.clip(upper_m * (1.0 - split) + lower_m * split * sm + (1.0 - sm) * 30.0, 0, 255).astype(np.float32)
-    R = np.clip(upper_r * (1.0 - split) + lower_r * split * sm, 0, 255).astype(np.float32)
+    R = np.clip(upper_r * (1.0 - split) + lower_r * split * sm, 15, 255).astype(np.float32)
     CC = np.clip(18.0 + split * 4.0, 0, 255).astype(np.float32)
     return M, R, CC
 
@@ -364,7 +364,7 @@ def spec_mclaren_orange(shape, seed, sm, base_m, base_r):
     uv = multi_scale_noise((h, w), [32, 64, 128], [0.35, 0.35, 0.3], seed + 462)
     # Metallic flake in orange + glossy clearcoat
     M = np.clip(90.0 + flake * 60.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(5.0 + uv * 8.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(5.0 + uv * 8.0 * sm, 15, 255).astype(np.float32)
     CC = np.clip(16.0 + uv * 6.0, 0, 255).astype(np.float32)
     return M, R, CC
 
@@ -446,7 +446,7 @@ def spec_pagani_tricolore(shape, seed, sm, base_m, base_r):
     # Wine zone: low M (dielectric), Gold zone: high M (metallic), Blue zone: medium M
     M = np.clip((30.0 * (1.0 - t1) + 200.0 * t1 * (1.0 - t2) + 80.0 * t2) * sm + 20.0 * (1.0 - sm), 0, 255).astype(np.float32)
     # Low roughness across all zones (premium gloss), slight variation
-    R = np.clip(4.0 + t1 * 5.0 * sm + fine * 3.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(4.0 + t1 * 5.0 * sm + fine * 3.0 * sm, 15, 255).astype(np.float32)  # GGX floor — MiMo audit catch
     # CC: glossy everywhere, slight variation at transitions
     transition_boost = (t1 * (1.0 - t1) + t2 * (1.0 - t2)) * 2.0
     CC = np.clip(16.0 + transition_boost * 8.0 * sm, 16, 255).astype(np.float32)
@@ -502,6 +502,6 @@ def spec_porsche_pts(shape, seed, sm, base_m, base_r):
     # PTS: zero metallic (solid color), extremely low roughness (mirror clearcoat)
     # Only micro-variation from orange peel
     M = np.clip(3.0 + peel * 4.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(3.0 + peel * 5.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(3.0 + peel * 5.0 * sm, 15, 255).astype(np.float32)
     CC = np.clip(20.0 + peel * 3.0, 0, 255).astype(np.float32)
     return M, R, CC

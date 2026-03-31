@@ -37,8 +37,15 @@ FIX GUIDE:
 
 import numpy as np
 import colorsys
+try:
+    import cv2 as _cv2
+except ImportError:
+    _cv2 = None
 
 _engine = None  # Injected by shokker_engine_v2 after import
+
+# LRU-style cache for expensive field/flake generators (max 8 entries)
+_chameleon_cache = {}
 
 
 def integrate_chameleon(engine_module):
@@ -65,11 +72,14 @@ def hsv_to_rgb_vec(h, s, v):
 # ================================================================
 def _chameleon_v5_field(shape, seed, flow_complexity=3):
     """Generate the master panel-orientation field for chameleon v5.
-    
+
     Returns normalized 0-1 field. Different UV regions get different values
     based on simulated 3D surface orientation. This SAME field drives both
     paint color AND spec channel variation for perfect coordination.
     """
+    _cache_key = ('field', shape, seed, flow_complexity)
+    if _cache_key in _chameleon_cache:
+        return _chameleon_cache[_cache_key].copy()
     h, w = shape
     y, x = get_mgrid((h, w))
     yf = y.astype(np.float32)
@@ -111,6 +121,9 @@ def _chameleon_v5_field(shape, seed, flow_complexity=3):
     # Normalize to 0-1
     fmin, fmax = field.min(), field.max()
     field = (field - fmin) / (fmax - fmin + 1e-8)
+    _chameleon_cache[_cache_key] = field.copy()
+    if len(_chameleon_cache) > 8:
+        _chameleon_cache.pop(next(iter(_chameleon_cache)))
     return field
 
 
@@ -118,6 +131,9 @@ def _chameleon_v5_flake(shape, seed, cell_size=5):
     """Generate Voronoi-like micro-flake cells for paint depth.
     Returns per-pixel flake value (0-1) and edge detection mask.
     """
+    _cache_key = ('flake', shape, seed, cell_size)
+    if _cache_key in _chameleon_cache:
+        return _chameleon_cache[_cache_key].copy()
     h, w = shape
     rng = np.random.RandomState(seed + 8100)
     ny = max(1, h // cell_size)
@@ -129,6 +145,9 @@ def _chameleon_v5_flake(shape, seed, cell_size=5):
     # Add fine noise within cells
     fine = rng.rand(h, w).astype(np.float32) * 0.3
     flake = flake * 0.7 + fine
+    _chameleon_cache[_cache_key] = flake.copy()
+    if len(_chameleon_cache) > 8:
+        _chameleon_cache.pop(next(iter(_chameleon_cache)))
     return flake
 
 
@@ -217,7 +236,7 @@ def spec_chameleon_v5(shape, mask, seed, sm, field=None,
     R_arr = R_arr + r_noise * 3 * sm
 
     spec[:,:,0] = np.clip(M_arr * mask, 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R_arr * mask, 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(R_arr * mask, 15, 255).astype(np.uint8)  # GGX floor: G≥15 prevents whitewash
     spec[:,:,2] = np.clip(CC_arr * mask, 0, 255).astype(np.uint8)
     spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -430,6 +449,513 @@ def paint_mystichrome(paint, shape, mask, seed, pm, bb):
     ]
     return paint_chameleon_v5_core(paint, shape, mask, seed, pm, bb, stops,
                                    flake_intensity=0.04, flake_hue_spread=0.06)
+
+
+# ================================================================
+# AURORA & CHROMATIC FLOW — Fine intertwined color bands
+# ================================================================
+# These use higher-frequency flowing fields than chameleon presets.
+# The result is visible color threads/bands woven across the surface
+# rather than broad panel-based color shifts.
+
+def _aurora_flow_field(shape, seed, num_bands=8, flow_stretch=4.0):
+    """Generate a high-frequency flowing field for aurora-style color bands.
+
+    Unlike chameleon's broad panel field, this creates many narrow parallel
+    bands with noise distortion — like northern lights curtains.
+    """
+    h, w = shape
+    y, x = get_mgrid((h, w))
+    yn = y.astype(np.float32) / max(h - 1, 1)
+    xn = x.astype(np.float32) / max(w - 1, 1)
+
+    rng = np.random.RandomState(seed + 9000)
+    base_angle = rng.uniform(0, 2 * np.pi)
+
+    # Project onto flow direction
+    proj = np.cos(base_angle) * yn + np.sin(base_angle) * xn
+
+    # Multi-frequency band structure
+    field = np.zeros((h, w), dtype=np.float32)
+    for i in range(num_bands):
+        freq = (i + 2) * 3.5
+        phase = rng.uniform(0, 2 * np.pi)
+        # Perpendicular noise distortion creates the curtain wobble
+        perp = -np.sin(base_angle) * yn + np.cos(base_angle) * xn
+        # Downsample noise by 4x for speed, then upscale — amplitude is only 0.15
+        _ds = 4
+        _h_ds, _w_ds = max(4, h // _ds), max(4, w // _ds)
+        _noise_small = _msn((_h_ds, _w_ds),
+                            [max(2, int(_w_ds * 0.05)), max(4, int(_w_ds * 0.1))],
+                            [0.6, 0.4], seed + 9100 + i * 37)
+        if _cv2 is not None:
+            noise_warp = _cv2.resize(_noise_small, (w, h),
+                                     interpolation=_cv2.INTER_LINEAR) * 0.15
+        else:
+            # Fallback: numpy repeat upscale (no cv2)
+            noise_warp = np.repeat(np.repeat(_noise_small, _ds, axis=0), _ds, axis=1)[:h, :w] * 0.15
+        warped = proj + noise_warp * perp * flow_stretch
+        band = np.sin(warped * freq * np.pi + phase)
+        weight = 1.0 / (i + 1) ** 0.6
+        field += band * weight
+
+    # Normalize to 0-1
+    fmin, fmax = field.min(), field.max()
+    if fmax - fmin > 1e-6:
+        field = (field - fmin) / (fmax - fmin)
+    return field
+
+
+def paint_aurora_flow_core(paint, shape, mask, seed, pm, bb, color_stops,
+                           num_bands=8, flow_stretch=4.0, band_sharpness=1.0,
+                           flake_intensity=0.03, blend_strength=0.93,
+                           metallic_brighten=0.12):
+    """Aurora flow CORE — fine intertwined color bands flowing across the surface.
+
+    Unlike chameleon which shifts broadly across panels, aurora creates visible
+    color threads that weave across the car. Think northern lights curtains
+    or oil-film rainbow bands but as a paint effect.
+
+    band_sharpness: 1.0 = smooth blending, 2.0+ = sharper band edges
+    flow_stretch: how much the bands stretch along flow direction
+    num_bands: more bands = finer color threads
+    """
+    h, w = shape
+
+    # Generate the flowing band field
+    field = _aurora_flow_field(shape, seed, num_bands, flow_stretch)
+
+    # Apply sharpness (power curve sharpens band edges)
+    if band_sharpness != 1.0:
+        field = np.clip(field, 0, 1) ** band_sharpness
+
+    # Map through color ramp
+    ramp_r, ramp_g, ramp_b = _chameleon_v5_color_ramp(field, color_stops)
+
+    # Fine flake texture for metallic micro-variation
+    flake = _chameleon_v5_flake(shape, seed + 200, cell_size=4)
+    flake_bright = (flake - 0.5) * 2.0 * flake_intensity
+    ramp_r = np.clip(ramp_r + flake_bright, 0, 1)
+    ramp_g = np.clip(ramp_g + flake_bright, 0, 1)
+    ramp_b = np.clip(ramp_b + flake_bright, 0, 1)
+
+    # Metallic brightness compensation
+    ramp_r = np.clip(ramp_r + metallic_brighten, 0, 1)
+    ramp_g = np.clip(ramp_g + metallic_brighten, 0, 1)
+    ramp_b = np.clip(ramp_b + metallic_brighten, 0, 1)
+
+    # Blend with original paint
+    blend = blend_strength * pm
+    mask3 = mask[:, :, np.newaxis]
+    shift_rgb = np.stack([ramp_r, ramp_g, ramp_b], axis=2)
+    paint = paint * (1.0 - blend * mask3) + shift_rgb * blend * mask3
+    paint = np.clip(paint + bb * 1.2 * mask3, 0, 1)
+    return paint
+
+
+# --- Aurora Presets ---
+
+def paint_aurora_borealis(paint, shape, mask, seed, pm, bb):
+    """Northern Lights — Green → teal → cyan → blue → violet flowing curtains"""
+    stops = [
+        (0.00, 120, 0.88, 0.82),   # Green
+        (0.20, 165, 0.85, 0.78),   # Teal
+        (0.40, 185, 0.90, 0.80),   # Cyan
+        (0.60, 210, 0.85, 0.76),   # Blue
+        (0.80, 260, 0.82, 0.72),   # Violet
+        (1.00, 130, 0.85, 0.80),   # Back to green
+    ]
+    return paint_aurora_flow_core(paint, shape, mask, seed, pm, bb, stops,
+                                  num_bands=10, flow_stretch=5.0, band_sharpness=1.2)
+
+def paint_aurora_solar_wind(paint, shape, mask, seed, pm, bb):
+    """Solar Wind — Orange → gold → yellow → lime → cyan → blue electric bands"""
+    stops = [
+        (0.00, 25,  0.92, 0.85),   # Orange
+        (0.20, 42,  0.90, 0.88),   # Gold
+        (0.40, 55,  0.88, 0.90),   # Yellow
+        (0.60, 90,  0.85, 0.82),   # Lime
+        (0.80, 180, 0.88, 0.78),   # Cyan
+        (1.00, 220, 0.82, 0.74),   # Blue
+    ]
+    return paint_aurora_flow_core(paint, shape, mask, seed, pm, bb, stops,
+                                  num_bands=12, flow_stretch=6.0, band_sharpness=1.0)
+
+def paint_aurora_nebula(paint, shape, mask, seed, pm, bb):
+    """Nebula — Deep purple → magenta → pink → rose → coral → amber flowing wisps"""
+    stops = [
+        (0.00, 280, 0.85, 0.65),   # Deep Purple
+        (0.20, 310, 0.88, 0.72),   # Magenta
+        (0.40, 335, 0.82, 0.80),   # Pink
+        (0.60, 350, 0.78, 0.85),   # Rose
+        (0.80, 15,  0.85, 0.82),   # Coral
+        (1.00, 35,  0.80, 0.80),   # Amber
+    ]
+    return paint_aurora_flow_core(paint, shape, mask, seed, pm, bb, stops,
+                                  num_bands=8, flow_stretch=4.0, band_sharpness=1.5)
+
+def paint_aurora_chromatic_surge(paint, shape, mask, seed, pm, bb):
+    """Chromatic Surge — Full rainbow spectrum in tight concentrated bands"""
+    stops = [
+        (0.00, 0,   0.90, 0.82),   # Red
+        (0.14, 30,  0.88, 0.85),   # Orange
+        (0.28, 55,  0.90, 0.88),   # Yellow
+        (0.42, 120, 0.85, 0.80),   # Green
+        (0.57, 185, 0.88, 0.78),   # Cyan
+        (0.71, 230, 0.85, 0.76),   # Blue
+        (0.85, 280, 0.82, 0.74),   # Purple
+        (1.00, 340, 0.88, 0.80),   # Magenta
+    ]
+    return paint_aurora_flow_core(paint, shape, mask, seed, pm, bb, stops,
+                                  num_bands=16, flow_stretch=3.0, band_sharpness=0.8)
+
+def paint_aurora_frozen_flame(paint, shape, mask, seed, pm, bb):
+    """Frozen Flame — Ice blue → white → gold → red concentrated flow"""
+    stops = [
+        (0.00, 200, 0.60, 0.90),   # Ice Blue
+        (0.25, 210, 0.15, 0.95),   # Near-White
+        (0.50, 45,  0.85, 0.88),   # Gold
+        (0.75, 15,  0.90, 0.78),   # Red-Orange
+        (1.00, 200, 0.55, 0.88),   # Back to Ice
+    ]
+    return paint_aurora_flow_core(paint, shape, mask, seed, pm, bb, stops,
+                                  num_bands=14, flow_stretch=5.0, band_sharpness=1.8)
+
+def paint_aurora_deep_ocean(paint, shape, mask, seed, pm, bb):
+    """Deep Ocean — Dark navy → sapphire → teal → aqua → seafoam subtle flowing bands"""
+    stops = [
+        (0.00, 230, 0.85, 0.45),   # Dark Navy
+        (0.25, 218, 0.82, 0.58),   # Sapphire
+        (0.50, 190, 0.80, 0.65),   # Teal
+        (0.75, 170, 0.75, 0.72),   # Aqua
+        (1.00, 155, 0.70, 0.78),   # Seafoam
+    ]
+    return paint_aurora_flow_core(paint, shape, mask, seed, pm, bb, stops,
+                                  num_bands=6, flow_stretch=7.0, band_sharpness=1.0)
+
+def paint_aurora_volcanic(paint, shape, mask, seed, pm, bb):
+    """Volcanic Flow — Black → deep red → orange → gold flowing magma veins"""
+    stops = [
+        (0.00, 0,   0.10, 0.15),   # Near-Black
+        (0.20, 0,   0.85, 0.45),   # Deep Red
+        (0.40, 10,  0.90, 0.65),   # Red
+        (0.60, 25,  0.92, 0.78),   # Orange
+        (0.80, 45,  0.88, 0.85),   # Gold
+        (1.00, 0,   0.08, 0.18),   # Back to Dark
+    ]
+    return paint_aurora_flow_core(paint, shape, mask, seed, pm, bb, stops,
+                                  num_bands=10, flow_stretch=4.0, band_sharpness=2.0)
+
+def paint_aurora_ethereal(paint, shape, mask, seed, pm, bb):
+    """Ethereal — Soft pastel flowing: lavender → mint → peach → sky ultra-fine threads"""
+    stops = [
+        (0.00, 270, 0.40, 0.88),   # Lavender
+        (0.25, 155, 0.35, 0.90),   # Mint
+        (0.50, 20,  0.35, 0.92),   # Peach
+        (0.75, 200, 0.30, 0.90),   # Sky
+        (1.00, 280, 0.38, 0.87),   # Lavender return
+    ]
+    return paint_aurora_flow_core(paint, shape, mask, seed, pm, bb, stops,
+                                  num_bands=20, flow_stretch=3.0, band_sharpness=0.7,
+                                  flake_intensity=0.02)
+
+def paint_aurora_toxic_current(paint, shape, mask, seed, pm, bb):
+    """Toxic Current — Acid green → neon yellow → electric blue concentrated electric bands"""
+    stops = [
+        (0.00, 110, 0.95, 0.85),   # Acid Green
+        (0.25, 80,  0.92, 0.90),   # Neon Yellow-Green
+        (0.50, 60,  0.90, 0.92),   # Neon Yellow
+        (0.75, 200, 0.92, 0.80),   # Electric Blue
+        (1.00, 120, 0.90, 0.82),   # Back to Green
+    ]
+    return paint_aurora_flow_core(paint, shape, mask, seed, pm, bb, stops,
+                                  num_bands=14, flow_stretch=4.5, band_sharpness=1.5)
+
+def paint_aurora_midnight_silk(paint, shape, mask, seed, pm, bb):
+    """Midnight Silk — Very dark with subtle deep blue → purple → teal threads barely visible"""
+    stops = [
+        (0.00, 240, 0.70, 0.30),   # Dark Blue
+        (0.25, 270, 0.65, 0.28),   # Dark Purple
+        (0.50, 300, 0.60, 0.32),   # Dark Magenta
+        (0.75, 200, 0.68, 0.30),   # Dark Teal
+        (1.00, 235, 0.72, 0.28),   # Dark Blue return
+    ]
+    return paint_aurora_flow_core(paint, shape, mask, seed, pm, bb, stops,
+                                  num_bands=8, flow_stretch=6.0, band_sharpness=1.0,
+                                  flake_intensity=0.02, metallic_brighten=0.05)
+
+
+# --- Aurora Presets (Extended — 20 new) ---
+
+def paint_aurora_electric_candy(paint, shape, mask, seed, pm, bb):
+    """Electric Candy — WILD: hot pink → electric blue → neon yellow → lime → magenta sharp bands"""
+    stops = [
+        (0.00, 330, 0.95, 0.82),   # Hot Pink
+        (0.20, 220, 0.96, 0.88),   # Electric Blue
+        (0.40, 60,  0.98, 0.92),   # Neon Yellow
+        (0.60, 100, 0.94, 0.85),   # Lime Green
+        (0.80, 300, 0.96, 0.80),   # Magenta
+        (1.00, 330, 0.95, 0.82),   # Back to Hot Pink
+    ]
+    return paint_aurora_flow_core(paint, shape, mask, seed, pm, bb, stops,
+                                  num_bands=16, flow_stretch=6.5, band_sharpness=2.0,
+                                  flake_intensity=0.07)
+
+def paint_aurora_ocean_phosphor(paint, shape, mask, seed, pm, bb):
+    """Ocean Phosphorescence — deep navy → bioluminescent blue → cyan → teal → seafoam gentle bands"""
+    stops = [
+        (0.00, 235, 0.88, 0.35),   # Deep Navy
+        (0.25, 210, 0.85, 0.55),   # Bioluminescent Blue
+        (0.50, 185, 0.80, 0.68),   # Cyan Glow
+        (0.75, 170, 0.75, 0.60),   # Dark Teal
+        (1.00, 155, 0.68, 0.72),   # Seafoam
+    ]
+    return paint_aurora_flow_core(paint, shape, mask, seed, pm, bb, stops,
+                                  num_bands=7, flow_stretch=5.5, band_sharpness=0.9,
+                                  flake_intensity=0.02)
+
+def paint_aurora_molten_earth(paint, shape, mask, seed, pm, bb):
+    """Molten Earth — burnt sienna → copper → dark red → amber → charcoal warm earthy flow"""
+    stops = [
+        (0.00, 18,  0.78, 0.58),   # Burnt Sienna
+        (0.25, 25,  0.72, 0.65),   # Copper
+        (0.50, 5,   0.82, 0.48),   # Dark Red
+        (0.75, 38,  0.80, 0.72),   # Amber
+        (1.00, 0,   0.08, 0.28),   # Charcoal
+    ]
+    return paint_aurora_flow_core(paint, shape, mask, seed, pm, bb, stops,
+                                  num_bands=9, flow_stretch=4.5, band_sharpness=1.1,
+                                  flake_intensity=0.03)
+
+def paint_aurora_arctic_shimmer(paint, shape, mask, seed, pm, bb):
+    """Arctic Shimmer — ice white → pale blue → silver → frost blue → pale lavender cold delicate"""
+    stops = [
+        (0.00, 200, 0.12, 0.96),   # Ice White
+        (0.25, 208, 0.38, 0.88),   # Pale Blue
+        (0.50, 210, 0.08, 0.92),   # Silver
+        (0.75, 215, 0.45, 0.84),   # Frost Blue
+        (1.00, 265, 0.28, 0.90),   # Pale Lavender
+    ]
+    return paint_aurora_flow_core(paint, shape, mask, seed, pm, bb, stops,
+                                  num_bands=8, flow_stretch=5.0, band_sharpness=0.8,
+                                  flake_intensity=0.02, metallic_brighten=0.15)
+
+def paint_aurora_neon_storm(paint, shape, mask, seed, pm, bb):
+    """Neon Storm — ULTRA WILD: neon green → hot pink → electric purple → bright orange → cyan"""
+    stops = [
+        (0.00, 115, 0.98, 0.90),   # Neon Green
+        (0.20, 330, 0.97, 0.86),   # Hot Pink
+        (0.40, 280, 0.96, 0.82),   # Electric Purple
+        (0.60, 25,  0.98, 0.92),   # Bright Orange
+        (0.80, 185, 0.96, 0.88),   # Cyan
+        (1.00, 115, 0.98, 0.90),   # Back to Neon Green
+    ]
+    return paint_aurora_flow_core(paint, shape, mask, seed, pm, bb, stops,
+                                  num_bands=18, flow_stretch=7.5, band_sharpness=2.5,
+                                  flake_intensity=0.08)
+
+def paint_aurora_twilight_veil(paint, shape, mask, seed, pm, bb):
+    """Twilight Veil — deep purple → rose gold → dusty pink → slate blue → dark magenta elegant"""
+    stops = [
+        (0.00, 275, 0.78, 0.52),   # Deep Purple
+        (0.25, 25,  0.55, 0.72),   # Rose Gold
+        (0.50, 345, 0.48, 0.78),   # Dusty Pink
+        (0.75, 220, 0.45, 0.60),   # Slate Blue
+        (1.00, 305, 0.72, 0.48),   # Dark Magenta
+    ]
+    return paint_aurora_flow_core(paint, shape, mask, seed, pm, bb, stops,
+                                  num_bands=10, flow_stretch=5.0, band_sharpness=1.2,
+                                  flake_intensity=0.03)
+
+def paint_aurora_dragon_fire(paint, shape, mask, seed, pm, bb):
+    """Dragon Fire — WILD: bright orange → deep red → gold → black → surprise electric blue"""
+    stops = [
+        (0.00, 25,  0.96, 0.88),   # Bright Orange
+        (0.20, 5,   0.92, 0.65),   # Deep Red
+        (0.40, 45,  0.90, 0.82),   # Gold
+        (0.60, 0,   0.05, 0.12),   # Near-Black
+        (0.80, 220, 0.95, 0.82),   # Electric Blue (surprise)
+        (1.00, 25,  0.96, 0.88),   # Back to Orange
+    ]
+    return paint_aurora_flow_core(paint, shape, mask, seed, pm, bb, stops,
+                                  num_bands=15, flow_stretch=6.0, band_sharpness=2.2,
+                                  flake_intensity=0.06)
+
+def paint_aurora_crystal_prism(paint, shape, mask, seed, pm, bb):
+    """Crystal Prism — WILD: full rainbow red → orange → yellow → green → blue → violet spectrum"""
+    stops = [
+        (0.00, 0,   0.92, 0.85),   # Red
+        (0.17, 25,  0.90, 0.88),   # Orange
+        (0.33, 58,  0.92, 0.90),   # Yellow
+        (0.50, 118, 0.88, 0.82),   # Green
+        (0.67, 215, 0.90, 0.80),   # Blue
+        (0.83, 270, 0.85, 0.78),   # Violet
+        (1.00, 0,   0.90, 0.84),   # Back to Red
+    ]
+    return paint_aurora_flow_core(paint, shape, mask, seed, pm, bb, stops,
+                                  num_bands=17, flow_stretch=7.0, band_sharpness=2.0,
+                                  flake_intensity=0.06)
+
+def paint_aurora_shadow_silk(paint, shape, mask, seed, pm, bb):
+    """Shadow Silk — very dark: black → dark purple → dark teal → charcoal → midnight blue luxury"""
+    stops = [
+        (0.00, 0,   0.05, 0.10),   # Near-Black
+        (0.25, 275, 0.65, 0.22),   # Dark Purple
+        (0.50, 185, 0.60, 0.24),   # Dark Teal
+        (0.75, 0,   0.05, 0.18),   # Charcoal
+        (1.00, 230, 0.70, 0.20),   # Midnight Blue
+    ]
+    return paint_aurora_flow_core(paint, shape, mask, seed, pm, bb, stops,
+                                  num_bands=9, flow_stretch=6.0, band_sharpness=1.0,
+                                  flake_intensity=0.02, metallic_brighten=0.04)
+
+def paint_aurora_copper_patina(paint, shape, mask, seed, pm, bb):
+    """Copper Patina — copper → verdigris green → brown → teal → oxidized orange aged metal flow"""
+    stops = [
+        (0.00, 22,  0.72, 0.65),   # Copper
+        (0.25, 162, 0.58, 0.52),   # Verdigris Green
+        (0.50, 28,  0.55, 0.40),   # Brown
+        (0.75, 178, 0.62, 0.55),   # Teal
+        (1.00, 18,  0.80, 0.60),   # Oxidized Orange
+    ]
+    return paint_aurora_flow_core(paint, shape, mask, seed, pm, bb, stops,
+                                  num_bands=9, flow_stretch=4.5, band_sharpness=1.1,
+                                  flake_intensity=0.03)
+
+def paint_aurora_poison_ivy(paint, shape, mask, seed, pm, bb):
+    """Poison Ivy — ULTRA WILD: toxic green → black → bright lime → dark emerald → acid yellow"""
+    stops = [
+        (0.00, 112, 0.96, 0.82),   # Toxic Green
+        (0.20, 0,   0.05, 0.10),   # Black
+        (0.40, 90,  0.98, 0.90),   # Bright Lime
+        (0.60, 145, 0.88, 0.42),   # Dark Emerald
+        (0.80, 65,  0.98, 0.92),   # Acid Yellow
+        (1.00, 112, 0.96, 0.82),   # Back to Toxic Green
+    ]
+    return paint_aurora_flow_core(paint, shape, mask, seed, pm, bb, stops,
+                                  num_bands=16, flow_stretch=6.5, band_sharpness=2.3,
+                                  flake_intensity=0.07)
+
+def paint_aurora_champagne_dream(paint, shape, mask, seed, pm, bb):
+    """Champagne Dream — pale gold → cream → blush pink → soft peach → pearl white luxurious"""
+    stops = [
+        (0.00, 45,  0.45, 0.90),   # Pale Gold
+        (0.25, 35,  0.15, 0.96),   # Cream
+        (0.50, 348, 0.35, 0.92),   # Blush Pink
+        (0.75, 22,  0.38, 0.94),   # Soft Peach
+        (1.00, 0,   0.08, 0.97),   # Pearl White
+    ]
+    return paint_aurora_flow_core(paint, shape, mask, seed, pm, bb, stops,
+                                  num_bands=8, flow_stretch=5.0, band_sharpness=0.8,
+                                  flake_intensity=0.02, metallic_brighten=0.14)
+
+def paint_aurora_thunderhead(paint, shape, mask, seed, pm, bb):
+    """Thunderhead — steel grey → dark charcoal → silver flash → slate → gunmetal dramatic storm"""
+    stops = [
+        (0.00, 210, 0.15, 0.62),   # Steel Grey
+        (0.25, 215, 0.10, 0.30),   # Dark Charcoal
+        (0.50, 210, 0.08, 0.80),   # Silver Flash
+        (0.75, 218, 0.18, 0.50),   # Slate
+        (1.00, 215, 0.12, 0.38),   # Gunmetal
+    ]
+    return paint_aurora_flow_core(paint, shape, mask, seed, pm, bb, stops,
+                                  num_bands=10, flow_stretch=5.5, band_sharpness=1.4,
+                                  flake_intensity=0.04)
+
+def paint_aurora_coral_reef(paint, shape, mask, seed, pm, bb):
+    """Coral Reef — coral pink → turquoise → sand gold → seafoam → deep blue tropical underwater"""
+    stops = [
+        (0.00, 10,  0.78, 0.80),   # Coral Pink
+        (0.25, 175, 0.80, 0.72),   # Turquoise
+        (0.50, 42,  0.65, 0.78),   # Sand Gold
+        (0.75, 158, 0.62, 0.76),   # Seafoam
+        (1.00, 225, 0.82, 0.58),   # Deep Blue
+    ]
+    return paint_aurora_flow_core(paint, shape, mask, seed, pm, bb, stops,
+                                  num_bands=10, flow_stretch=5.0, band_sharpness=1.0,
+                                  flake_intensity=0.03)
+
+def paint_aurora_black_rainbow(paint, shape, mask, seed, pm, bb):
+    """Black Rainbow — WILD: dark versions of rainbow — dark red → dark orange → dark yellow → dark green → dark blue"""
+    stops = [
+        (0.00, 0,   0.88, 0.38),   # Dark Red
+        (0.17, 20,  0.85, 0.42),   # Dark Orange
+        (0.33, 55,  0.82, 0.45),   # Dark Yellow
+        (0.50, 118, 0.80, 0.38),   # Dark Green
+        (0.67, 225, 0.85, 0.35),   # Dark Blue
+        (0.83, 270, 0.80, 0.38),   # Dark Purple
+        (1.00, 0,   0.86, 0.38),   # Back to Dark Red
+    ]
+    return paint_aurora_flow_core(paint, shape, mask, seed, pm, bb, stops,
+                                  num_bands=14, flow_stretch=6.0, band_sharpness=2.0,
+                                  flake_intensity=0.05, metallic_brighten=0.06)
+
+def paint_aurora_cherry_blossom(paint, shape, mask, seed, pm, bb):
+    """Cherry Blossom — soft pink → white → pale rose → light green → blush delicate spring"""
+    stops = [
+        (0.00, 345, 0.42, 0.92),   # Soft Pink
+        (0.25, 0,   0.05, 0.98),   # White
+        (0.50, 355, 0.38, 0.90),   # Pale Rose
+        (0.75, 110, 0.30, 0.88),   # Light Green
+        (1.00, 340, 0.35, 0.94),   # Blush
+    ]
+    return paint_aurora_flow_core(paint, shape, mask, seed, pm, bb, stops,
+                                  num_bands=8, flow_stretch=4.5, band_sharpness=0.7,
+                                  flake_intensity=0.02, metallic_brighten=0.12)
+
+def paint_aurora_plasma_reactor(paint, shape, mask, seed, pm, bb):
+    """Plasma Reactor — ULTRA WILD: electric cyan → white-hot → purple → bright blue → magenta"""
+    stops = [
+        (0.00, 185, 0.96, 0.88),   # Electric Cyan
+        (0.20, 195, 0.10, 0.98),   # White-Hot
+        (0.40, 278, 0.95, 0.80),   # Purple
+        (0.60, 218, 0.96, 0.90),   # Bright Blue
+        (0.80, 308, 0.95, 0.85),   # Magenta
+        (1.00, 185, 0.96, 0.88),   # Back to Cyan
+    ]
+    return paint_aurora_flow_core(paint, shape, mask, seed, pm, bb, stops,
+                                  num_bands=18, flow_stretch=7.0, band_sharpness=2.5,
+                                  flake_intensity=0.08)
+
+def paint_aurora_autumn_ember(paint, shape, mask, seed, pm, bb):
+    """Autumn Ember — burnt orange → dark red → gold → maroon → brown fall foliage flow"""
+    stops = [
+        (0.00, 22,  0.88, 0.72),   # Burnt Orange
+        (0.25, 5,   0.85, 0.50),   # Dark Red
+        (0.50, 42,  0.82, 0.78),   # Gold
+        (0.75, 355, 0.78, 0.38),   # Maroon
+        (1.00, 20,  0.65, 0.38),   # Brown
+    ]
+    return paint_aurora_flow_core(paint, shape, mask, seed, pm, bb, stops,
+                                  num_bands=9, flow_stretch=4.5, band_sharpness=1.1,
+                                  flake_intensity=0.03)
+
+def paint_aurora_ice_crystal(paint, shape, mask, seed, pm, bb):
+    """Ice Crystal — very pale blue → white → crystal clear → frost → pale cyan nearly-white ice"""
+    stops = [
+        (0.00, 208, 0.30, 0.94),   # Very Pale Blue
+        (0.25, 200, 0.06, 0.99),   # White
+        (0.50, 195, 0.18, 0.97),   # Crystal Clear
+        (0.75, 205, 0.25, 0.95),   # Frost
+        (1.00, 190, 0.32, 0.93),   # Pale Cyan
+    ]
+    return paint_aurora_flow_core(paint, shape, mask, seed, pm, bb, stops,
+                                  num_bands=8, flow_stretch=5.5, band_sharpness=0.7,
+                                  flake_intensity=0.02, metallic_brighten=0.16)
+
+def paint_aurora_supernova(paint, shape, mask, seed, pm, bb):
+    """Supernova — ULTRA WILD: white-hot → orange → red → deep purple → black stellar explosion"""
+    stops = [
+        (0.00, 55,  0.10, 0.99),   # White-Hot Core
+        (0.20, 35,  0.90, 0.92),   # Orange
+        (0.40, 5,   0.95, 0.72),   # Red
+        (0.60, 275, 0.85, 0.45),   # Deep Purple
+        (0.80, 0,   0.05, 0.08),   # Black
+        (1.00, 55,  0.10, 0.99),   # Back to White-Hot
+    ]
+    return paint_aurora_flow_core(paint, shape, mask, seed, pm, bb, stops,
+                                  num_bands=16, flow_stretch=7.5, band_sharpness=2.2,
+                                  flake_intensity=0.07)
 
 
 # ================================================================

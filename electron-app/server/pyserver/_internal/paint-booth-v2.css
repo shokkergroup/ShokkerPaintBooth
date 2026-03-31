@@ -23,6 +23,27 @@
     --text-bright: #fff;
     --border: #2a2a38;
     --success: #00ff88;
+    /* Additional semantic aliases */
+    --text-primary: #e0e0e0;
+    --surface: #1a1a2a;
+    --border-color: #333;
+    --accent-red: #ff4444;
+    /* ── Priority 4 Design Token System ────────────────────── */
+    --accent-p4: #E87A20;
+    --accent-p4-dim: #b85e10;
+    --bg-primary: #0a0a12;
+    --bg-secondary: #111118;
+    --bg-tertiary: #1a1a24;
+    --bg-panel: #141420;
+    --border-subtle: rgba(255,255,255,0.06);
+    --border-normal: rgba(255,255,255,0.12);
+    --border-accent: rgba(232,122,32,0.4);
+    --text-secondary: #9090a8;
+    --text-muted: #606078;
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 14px;
+    --shadow-panel: 0 4px 24px rgba(0,0,0,0.5);
 }
 
 /* Light theme — applied when body has .theme-light */
@@ -56,22 +77,10 @@ body {
 }
 
 /* ===== SCROLLBAR ===== */
-::-webkit-scrollbar {
-    width: 6px;
-}
-
-::-webkit-scrollbar-track {
-    background: var(--bg-dark);
-}
-
-::-webkit-scrollbar-thumb {
-    background: var(--border);
-    border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: var(--accent);
-}
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-primary, #0a0a12); }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.25); }
 
 /* ===== HEADER ===== */
 .header {
@@ -154,6 +163,7 @@ body {
 .header-field input:focus {
     outline: none;
     border-color: var(--accent-blue);
+    box-shadow: 0 0 0 2px rgba(51, 102, 255, 0.18);
 }
 
 .header-field.field-driver input,
@@ -563,6 +573,7 @@ input[type="range"] {
     background: rgba(255, 51, 102, 0.15);
     border-color: var(--accent);
     color: var(--accent);
+    box-shadow: 0 0 0 1px rgba(255, 51, 102, 0.25), 0 0 8px rgba(255, 51, 102, 0.2);
 }
 
 .vtool-btn.vtool-destructive:hover {
@@ -579,6 +590,7 @@ input[type="range"] {
 }
 
 .right-panel {
+    position: relative;
     width: 260px;
     min-width: 240px;
     max-width: 300px;
@@ -599,6 +611,7 @@ input[type="range"] {
     border-bottom: 1px solid var(--border);
     cursor: pointer;
     user-select: none;
+    transition: background 0.15s;
 }
 
 .section-header:hover {
@@ -610,7 +623,7 @@ input[type="range"] {
     font-weight: 700;
     letter-spacing: 1.5px;
     text-transform: uppercase;
-    color: var(--text-dim);
+    color: #aaa;
 }
 
 .section-header .toggle-icon {
@@ -663,6 +676,7 @@ input[type="range"] {
 .form-row input:focus {
     outline: none;
     border-color: var(--accent-blue);
+    box-shadow: 0 0 0 2px rgba(51, 102, 255, 0.18);
 }
 
 /* File path validation indicators */
@@ -737,17 +751,19 @@ input[type="range"] {
     border-radius: 6px;
     padding: 8px;
     margin-bottom: 6px;
-    transition: border-color 0.2s;
+    transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
     position: relative;
 }
 
 .zone-card:hover {
-    border-color: #3a3a4a;
+    border-color: #4a4a62;
+    background: #131320;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
 }
 
 .zone-card.selected {
     border-color: var(--accent-blue);
-    box-shadow: 0 0 10px rgba(51, 102, 255, 0.15);
+    box-shadow: 0 0 0 1px rgba(51, 102, 255, 0.45), 0 4px 20px rgba(51, 102, 255, 0.22);
 }
 
 .zone-card-header {
@@ -1046,10 +1062,6 @@ input[type="range"] {
     font-size: 8px;
     color: var(--text);
     margin-left: 3px;
-}
-
-.zone-card-expanded {
-    border-left: 3px solid var(--accent-blue);
 }
 
 .zone-card-expanded .zone-summary {
@@ -1372,6 +1384,7 @@ input[type="range"] {
     font-size: 14px;
     padding: 2px 6px;
     border-radius: 4px;
+    transition: color 0.15s, background 0.15s;
 }
 
 .zone-detail-panel .zone-detail-close:hover {
@@ -1451,6 +1464,7 @@ input[type="range"] {
     border-color: var(--accent-blue);
     background: rgba(51, 102, 255, 0.15);
     color: var(--accent-blue);
+    box-shadow: 0 0 0 1px rgba(51, 102, 255, 0.3);
 }
 
 .quick-color-btn.special {
@@ -1481,6 +1495,7 @@ input[type="range"] {
     background: rgba(0, 255, 136, 0.15);
     color: var(--accent-green);
     font-weight: 600;
+    box-shadow: 0 0 0 1px rgba(0, 255, 136, 0.3);
 }
 
 .color-text-row {
@@ -1503,6 +1518,7 @@ input[type="range"] {
 .color-text-input:focus {
     outline: none;
     border-color: var(--accent-blue);
+    box-shadow: 0 0 0 2px rgba(51, 102, 255, 0.18);
 }
 
 .color-text-input::placeholder {
@@ -1548,6 +1564,7 @@ input[type="range"] {
 .hex-code-input:focus {
     outline: none;
     border-color: var(--accent-blue);
+    box-shadow: 0 0 0 2px rgba(51, 102, 255, 0.18);
 }
 
 .hex-code-input::placeholder {
@@ -1690,10 +1707,17 @@ input[type="range"] {
     border-radius: 5px;
     padding: 6px 8px;
     margin-bottom: 5px;
+    transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
 }
 
 .pattern-layer-card:last-of-type {
     margin-bottom: 2px;
+}
+
+.pattern-layer-card:hover {
+    background: rgba(99, 102, 241, 0.07);
+    border-color: rgba(99, 102, 241, 0.35);
+    box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.15), 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .pattern-layer-card-header {
@@ -1830,6 +1854,7 @@ input[type="range"] {
     background: var(--accent-blue);
     border-color: var(--accent-blue);
     color: #fff;
+    box-shadow: 0 0 0 1px rgba(51, 102, 255, 0.5), 0 2px 12px rgba(51, 102, 255, 0.35);
 }
 
 .finish-select,
@@ -1843,12 +1868,14 @@ input[type="range"] {
     font-size: 11px;
     font-family: inherit;
     cursor: pointer;
+    transition: border-color 0.15s, box-shadow 0.15s;
 }
 
 .finish-select:focus,
 .intensity-select:focus {
     outline: none;
     border-color: var(--accent-blue);
+    box-shadow: 0 0 0 2px rgba(51, 102, 255, 0.18);
 }
 
 /* Swatch Picker Trigger */
@@ -1866,10 +1893,12 @@ input[type="range"] {
     cursor: pointer;
     min-width: 0;
     overflow: hidden;
+    transition: border-color 0.15s, box-shadow 0.15s;
 }
 
 .swatch-trigger:hover {
     border-color: var(--accent-blue);
+    box-shadow: 0 0 0 1px rgba(51, 102, 255, 0.2);
 }
 
 .swatch-trigger .swatch-dot {
@@ -1918,6 +1947,7 @@ input[type="range"] {
     max-height: 520px;
     background: var(--bg-card);
     border: 1px solid var(--border);
+    border-top: 2px solid var(--accent-blue);
     border-radius: 6px;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
     flex-direction: column;
@@ -1947,6 +1977,7 @@ input[type="range"] {
 .swatch-popup-search input:focus {
     outline: none;
     border-color: var(--accent-blue);
+    box-shadow: 0 0 0 2px rgba(51, 102, 255, 0.18);
 }
 
 .swatch-popup-grid {
@@ -1989,6 +2020,11 @@ input[type="range"] {
     display: flex;
     align-items: center;
     gap: 4px;
+    transition: background 0.15s, color 0.15s;
+}
+
+.swatch-group-label:hover {
+    background: rgba(99, 102, 241, 0.18);
 }
 
 .swatch-group-label::before {
@@ -2024,17 +2060,19 @@ input[type="range"] {
     border-radius: 4px;
     cursor: pointer;
     border: 2px solid transparent;
-    transition: border-color 0.1s;
+    transition: border-color 0.1s, background 0.1s, box-shadow 0.1s;
 }
 
 .swatch-item:hover {
     border-color: var(--accent-blue);
-    background: rgba(255, 255, 255, 0.04);
+    background: rgba(51, 102, 255, 0.06);
+    box-shadow: 0 0 0 1px rgba(51, 102, 255, 0.15);
 }
 
 .swatch-item.selected {
     border-color: var(--accent);
     background: rgba(99, 102, 241, 0.12);
+    box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.25);
 }
 
 .swatch-item .swatch-square {
@@ -2191,6 +2229,7 @@ input[type="range"] {
 .btn:hover {
     border-color: var(--accent);
     color: var(--accent);
+    box-shadow: 0 0 0 1px rgba(255, 51, 102, 0.2), 0 2px 10px rgba(255, 51, 102, 0.1);
 }
 
 .btn-accent {
@@ -3120,6 +3159,7 @@ input[type="range"] {
 .modal {
     background: var(--bg-card);
     border: 1px solid var(--border);
+    border-top: 2px solid var(--accent-blue);
     border-radius: 12px;
     width: 80%;
     max-width: 900px;
@@ -3151,6 +3191,7 @@ input[type="range"] {
     cursor: pointer;
     padding: 4px 8px;
     border-radius: 4px;
+    transition: color 0.15s, background 0.15s;
 }
 
 .modal-close:hover {
@@ -3258,6 +3299,7 @@ input[type="range"] {
 
 .tmpl-name-dialog input:focus {
     border-color: var(--accent);
+    box-shadow: 0 0 0 2px rgba(255, 51, 102, 0.18);
 }
 
 .tmpl-name-btns {
@@ -3274,6 +3316,7 @@ input[type="range"] {
     color: var(--text);
     font-size: 12px;
     cursor: pointer;
+    transition: opacity 0.15s;
 }
 
 .tmpl-name-btns button.save-btn {
@@ -3534,18 +3577,20 @@ kbd {
     position: fixed;
     bottom: 20px;
     right: 20px;
-    background: var(--bg-card);
-    border: 1px solid var(--accent-green);
-    color: var(--accent-green);
-    padding: 10px 20px;
-    border-radius: 8px;
+    background: var(--bg-panel, #141420);
+    border: 1px solid var(--border-normal, rgba(255,255,255,0.12));
+    border-left: 2px solid #4caf50;
+    color: var(--text-primary, #e0e0e0);
+    padding: 10px 14px;
+    border-radius: var(--radius-md, 8px);
     font-size: 12px;
     font-weight: 600;
     z-index: 2000;
     opacity: 0;
-    transform: translateY(10px);
-    transition: all 0.3s;
+    transform: translateY(20px);
+    transition: opacity 0.25s, transform 0.25s;
     pointer-events: none;
+    box-shadow: var(--shadow-panel, 0 4px 24px rgba(0,0,0,0.5));
 }
 
 .toast.show {
@@ -3554,13 +3599,18 @@ kbd {
 }
 
 .toast.error {
-    border-color: #ff4444;
-    color: #ff4444;
+    border-left-color: #ef5350;
+    color: var(--text-primary, #e0e0e0);
 }
 
 .toast.success {
-    border-color: var(--accent-green, #00ff88);
-    color: var(--accent-green, #00ff88);
+    border-left-color: #4caf50;
+    color: var(--text-primary, #e0e0e0);
+}
+
+.toast.warning {
+    border-left-color: var(--accent-p4, #E87A20);
+    color: var(--text-primary, #e0e0e0);
 }
 
 /* ===== EXTRAS SECTION (Helmet/Suit/Wear/Export) ===== */
@@ -4490,6 +4540,13 @@ kbd {
     border-radius: 4px;
     padding: 4px;
     text-align: center;
+    transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+}
+
+.batch-result-card:hover {
+    border-color: rgba(51, 102, 255, 0.4);
+    background: rgba(51, 102, 255, 0.05);
+    box-shadow: 0 0 0 1px rgba(51, 102, 255, 0.12);
 }
 
 .batch-result-card img {
@@ -4696,6 +4753,7 @@ kbd {
 .history-card:hover {
     border-color: var(--accent-blue);
     transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(51, 102, 255, 0.2);
 }
 
 .history-card.compare-selected {
@@ -4939,7 +4997,71 @@ kbd {
 
 /* ===== DECAL & NUMBER OVERLAY (DISABLED — future feature) ===== */
 
-/* ===== EASY MODE — hide advanced sections ===== */
+/* ===== SIMPLE / ADVANCED MODE PILL TOGGLE ===== */
+.ui-mode-pill {
+    display: inline-flex;
+    align-items: center;
+    background: #1a1a22;
+    border: 1px solid #333;
+    border-radius: 14px;
+    padding: 1px;
+    cursor: pointer;
+    user-select: none;
+    gap: 0;
+}
+.ui-mode-option {
+    padding: 3px 10px;
+    font-size: 10px;
+    font-weight: 600;
+    border-radius: 12px;
+    color: #666;
+    transition: all 0.2s ease;
+    line-height: 1.3;
+    letter-spacing: 0.3px;
+}
+.ui-mode-option.active {
+    background: linear-gradient(135deg, #E87A20, #ff3366);
+    color: #fff;
+    box-shadow: 0 1px 6px rgba(232, 122, 32, 0.3);
+}
+.ui-mode-option:not(.active):hover {
+    color: #aaa;
+}
+
+/* ===== SIMPLE MODE — hide advanced sections ===== */
+body.simple-mode .overlay-section,
+body.simple-mode .spec-patterns-section,
+body.simple-mode .blend-mode-section,
+body.simple-mode .hsb-controls,
+body.simple-mode .base-position-controls,
+body.simple-mode .base-rotate-scale,
+body.simple-mode .pattern-layer-card,
+body.simple-mode .ps-export-section,
+body.simple-mode .overlay-spec-patterns,
+body.simple-mode .spec-blend-section,
+body.simple-mode .zone-target-mode,
+body.simple-mode .base-placement-mode,
+body.simple-mode .advanced-only {
+    display: none !important;
+}
+
+/* Hide "Add Layer" button wrapper in simple mode */
+body.simple-mode .pattern-stack-add-btn-wrap {
+    display: none !important;
+}
+
+/* Hide entire SPEC PATTERNS and OVERLAYS sections in simple mode */
+body.simple-mode [id^="sectionSpecPatterns"],
+body.simple-mode [id^="sectionOverlays"] {
+    display: none !important;
+}
+
+/* Hide pattern advanced controls but keep the pattern picker visible */
+body.simple-mode .pattern-advanced-controls {
+    display: none !important;
+}
+
+/* Legacy easy-mode support (maps to simple-mode) */
 body.easy-mode .overlay-section,
 body.easy-mode .spec-patterns-section,
 body.easy-mode .blend-mode-section,
@@ -4954,12 +5076,635 @@ body.easy-mode .zone-target-mode,
 body.easy-mode .advanced-only {
     display: none !important;
 }
-
-/* Hide "Add Layer" button wrapper in easy mode */
 body.easy-mode .pattern-stack-add-btn-wrap {
     display: none !important;
 }
-
 body.easy-mode .easy-mode-label {
     display: block;
 }
+
+/* ===== ZONE QUICK-VIEW BAR ===== */
+.zone-quickview-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    padding: 4px 8px 6px;
+    min-height: 0;
+}
+.zone-quickview-bar:empty {
+    display: none;
+}
+.zone-qv-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    padding: 2px 7px;
+    border-radius: 10px;
+    font-size: 9px;
+    font-weight: 600;
+    color: #fff;
+    cursor: pointer;
+    border: 1px solid rgba(255,255,255,0.15);
+    white-space: nowrap;
+    max-width: 140px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: opacity 0.15s, box-shadow 0.15s;
+    line-height: 1.4;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.6);
+}
+.zone-qv-chip:hover {
+    opacity: 0.85;
+    box-shadow: 0 0 6px rgba(255,255,255,0.2);
+}
+.zone-qv-chip.selected {
+    border-color: #fff;
+    box-shadow: 0 0 8px rgba(255,255,255,0.3);
+}
+
+/* ===== STICKY ZONE DETAIL HEADER ===== */
+.zone-editor-float .zone-detail-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: linear-gradient(135deg, #111128, #0d0a1a);
+}
+.zone-detail-panel .zone-detail-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: #111118;
+}
+
+/* ===== COLLAPSIBLE SECTION HEADERS (zone detail panel) ===== */
+.section-collapsible.collapsed > *:not(.section-header) {
+    display: none !important;
+}
+.section-collapsible.collapsed .collapse-arrow {
+    transform: rotate(-90deg);
+}
+.collapse-arrow {
+    transition: transform 0.2s ease;
+    display: inline-block;
+}
+/* Override only within section-collapsible to avoid conflict with global .section-header */
+.section-collapsible > .section-header {
+    cursor: pointer;
+    padding: 4px 8px;
+    background: #1a1a1a;
+    border-bottom: 1px solid #333;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    user-select: none;
+    margin: 4px 0 4px 0;
+    border-radius: 3px;
+}
+.section-collapsible > .section-header:hover {
+    background: #222;
+}
+.section-header-label {
+    color: #E87A20;
+    font-weight: bold;
+    font-size: 12px;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.section-header-arrow {
+    color: #666;
+    font-size: 10px;
+}
+
+/* ===== WHAT'S THIS PANELS ===== */
+.whats-this {
+    cursor: help;
+    color: #00C8C8;
+    font-size: 11px;
+    margin-left: 6px;
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    line-height: 14px;
+    text-align: center;
+    border: 1px solid #00C8C8;
+    border-radius: 50%;
+    font-weight: bold;
+    vertical-align: middle;
+    flex-shrink: 0;
+}
+.whats-this:hover {
+    background: rgba(0, 200, 200, 0.15);
+}
+.whats-this-panel {
+    display: none;
+    background: #1a1a2a;
+    border: 1px solid #00C8C8;
+    border-radius: 4px;
+    padding: 8px 10px;
+    margin: 4px 0;
+    color: #ccc;
+    font-size: 11px;
+    line-height: 1.4;
+}
+
+/* Spec Pattern thumbnail grid - 3 per row */
+.spec-pattern-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    padding: 4px;
+}
+
+.spec-pattern-thumb-card {
+    position: relative;
+    cursor: pointer;
+    border: 1px solid #333;
+    border-radius: 4px;
+    overflow: visible;
+    transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+}
+
+.spec-pattern-thumb-card:hover {
+    border-color: #E87A20;
+    background: rgba(232, 122, 32, 0.07);
+    box-shadow: 0 0 0 1px rgba(232, 122, 32, 0.3);
+}
+
+.spec-pattern-thumb-card img,
+.spec-pattern-thumb-card canvas {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 3px;
+}
+
+.spec-pattern-thumb-card .thumb-label {
+    font-size: 8px;
+    color: #aaa;
+    text-align: center;
+    padding: 2px 0;
+    background: rgba(0,0,0,0.7);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.spec-pattern-thumb-card.sp-thumb-active {
+    border-color: #ff4444;
+    box-shadow: 0 0 8px rgba(255,68,68,0.5);
+}
+
+/* ===== FINE TUNING PANEL ===== */
+.fine-tuning-panel {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-dark, #0a0a0a);
+    z-index: 50;
+    overflow: hidden;
+}
+.fine-tuning-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: var(--bg-card, #111118);
+    border-bottom: 1px solid var(--border, #2a2a38);
+    flex-shrink: 0;
+}
+.fine-tuning-back {
+    font-size: 10px !important;
+    padding: 2px 8px !important;
+    background: var(--surface, #1a1a2a) !important;
+    border: 1px solid var(--border, #2a2a38) !important;
+    color: var(--text, #e0e0e0) !important;
+    cursor: pointer;
+    border-radius: 3px;
+}
+.fine-tuning-back:hover {
+    background: var(--bg-hover, #1a1a25) !important;
+    color: var(--text-bright, #fff) !important;
+}
+.fine-tuning-title {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--accent-gold, #ffaa00);
+}
+.fine-tuning-options {
+    padding: 4px 12px;
+    background: var(--bg-card, #111118);
+    border-bottom: 1px solid var(--border, #2a2a38);
+    flex-shrink: 0;
+}
+.fine-tuning-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px;
+}
+/* Fine Tuning overlay sections with color-coded borders */
+.ft-section {
+    border: 2px solid var(--border, #2a2a38);
+    border-left-width: 4px;
+    border-radius: 4px;
+    margin-bottom: 8px;
+    background: var(--bg-card, #111118);
+    overflow: hidden;
+}
+.ft-section.ft-2nd { border-color: #ffffff; }
+.ft-section.ft-3rd { border-color: #FFD700; }
+.ft-section.ft-4th { border-color: #AA44FF; }
+.ft-section.ft-5th { border-color: #00C8C8; }
+.ft-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 10px;
+    cursor: pointer;
+    user-select: none;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text, #e0e0e0);
+}
+.ft-section-header:hover {
+    background: var(--bg-hover, #1a1a25);
+}
+.ft-section.ft-2nd .ft-section-header { color: #ffffff; }
+.ft-section.ft-3rd .ft-section-header { color: #FFD700; }
+.ft-section.ft-4th .ft-section-header { color: #AA44FF; }
+.ft-section.ft-5th .ft-section-header { color: #00C8C8; }
+.ft-section-arrow {
+    font-size: 10px;
+    transition: transform 0.15s;
+}
+.ft-section.ft-collapsed .ft-section-arrow {
+    transform: rotate(-90deg);
+}
+.ft-section-body {
+    padding: 6px 8px;
+    border-top: 1px solid var(--border, #2a2a38);
+}
+.ft-section.ft-collapsed .ft-section-body {
+    display: none;
+}
+.ft-status-dot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    margin-left: 6px;
+}
+.ft-status-dot.active { background: #33ff66; }
+.ft-status-dot.inactive { background: #555; }
+/* Overlay mini-map summary */
+.overlay-minimap {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 6px 8px;
+    background: var(--bg-dark, #0a0a0a);
+    border: 1px solid var(--border, #2a2a38);
+    border-radius: 4px;
+    margin-bottom: 6px;
+}
+.overlay-minimap-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 10px;
+    color: var(--text-dim, #888);
+    flex-wrap: wrap;
+}
+.overlay-minimap-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+}
+.overlay-minimap-swatch {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+    border: 1px solid rgba(255,255,255,0.2);
+}
+.overlay-minimap-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--accent-gold, #ffaa00);
+    background: var(--surface, #1a1a2a);
+    border: 1px solid var(--border, #2a2a38);
+    border-radius: 3px;
+    cursor: pointer;
+    margin-top: 2px;
+}
+.overlay-minimap-btn:hover {
+    background: var(--bg-hover, #1a1a25);
+    color: var(--text-bright, #fff);
+}
+
+/* Spec pattern hover zoom popup */
+.spec-thumb-popup {
+    position: fixed;
+    z-index: 9999;
+    border: 2px solid #E87A20;
+    border-radius: 6px;
+    background: #0a0a0a;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.9);
+    pointer-events: none;
+    padding: 4px;
+}
+
+/* ===== SPEC PATTERN CATEGORY TABS ===== */
+.spec-cat-tab-row {
+    display: flex;
+    flex-wrap: wrap;
+    overflow-x: visible;
+    gap: 4px;
+    padding: 4px 4px 3px;
+    background: #0d0d1a;
+    border: 1px solid var(--border, #2a2a4a);
+    border-bottom: none;
+    border-radius: 4px 4px 0 0;
+    scrollbar-width: thin;
+    scrollbar-color: #333 transparent;
+    white-space: normal;
+}
+
+.spec-cat-tab-row::-webkit-scrollbar {
+    height: 4px;
+}
+.spec-cat-tab-row::-webkit-scrollbar-thumb {
+    background: #333;
+    border-radius: 2px;
+}
+
+.spec-cat-tab {
+    flex-shrink: 0;
+    padding: 3px 10px;
+    font-size: 11px;
+    border: 1px solid #2a2a4a;
+    border-radius: 12px;
+    background: #16162a;
+    color: #888;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: border-color 0.15s, color 0.15s, background 0.15s, box-shadow 0.15s;
+    line-height: 1.4;
+}
+
+.spec-cat-tab:hover {
+    border-color: #E87A20;
+    color: #E87A20;
+    background: #1a1206;
+}
+
+.spec-cat-tab.active {
+    border-color: #E87A20;
+    color: #E87A20;
+    background: #201308;
+    font-weight: 700;
+    box-shadow: 0 0 0 1px rgba(232, 122, 32, 0.35), 0 2px 8px rgba(232, 122, 32, 0.2);
+}
+
+/* ===== SPEC PATTERN GRID 4-COLUMN ===== */
+.spec-pattern-grid-4col {
+    grid-template-columns: repeat(4, 1fr) !important;
+}
+
+/* ===== SPEC PREVIEW PANEL ===== */
+.spec-preview-panel {
+    padding: 6px 8px 8px;
+    background: var(--bg-card, #16162a);
+    border: 1px solid var(--border, #2a2a4a);
+    border-radius: 0 0 4px 4px;
+    margin-top: 0;
+}
+
+.spec-preview-tabs {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 4px;
+    margin-bottom: 6px;
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+.spec-preview-tab {
+    flex-shrink: 0;
+    padding: 3px 10px;
+    font-size: 10px;
+    border: 1px solid #2a2a4a;
+    border-radius: 12px;
+    background: #16162a;
+    color: #888;
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s, background 0.15s, box-shadow 0.15s;
+}
+
+.spec-preview-tab:hover {
+    border-color: #E87A20;
+    color: #E87A20;
+    background: #1a1206;
+}
+
+.spec-preview-tab.active {
+    border-color: #E87A20;
+    color: #E87A20;
+    background: #201308;
+    font-weight: 700;
+    box-shadow: 0 0 0 1px rgba(232, 122, 32, 0.35), 0 2px 8px rgba(232, 122, 32, 0.2);
+}
+
+.spec-preview-canvas {
+    display: block;
+    width: 256px;
+    height: 128px;
+    border: 1px solid var(--border, #2a2a4a);
+    border-radius: 3px;
+    image-rendering: pixelated;
+}
+
+/* ============================================================
+   PRIORITY 4 UI MODERNIZATION PASS
+   Design tokens in :root above. All classes below are ADDITIVE —
+   they do not remove or override any existing functional styles.
+   ============================================================ */
+
+/* ── Button System ───────────────────────────────────────── */
+.btn-primary {
+    background: var(--accent-p4, #E87A20);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-sm, 4px);
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s, opacity 0.15s;
+    font-family: inherit;
+}
+.btn-primary:hover { background: var(--accent-p4-dim, #b85e10); }
+
+.btn-secondary {
+    background: transparent;
+    color: var(--text-secondary, #9090a8);
+    border: 1px solid var(--border-normal, rgba(255,255,255,0.12));
+    border-radius: var(--radius-sm, 4px);
+    padding: 5px 12px;
+    font-size: 11px;
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s;
+    font-family: inherit;
+}
+.btn-secondary:hover {
+    border-color: var(--border-accent, rgba(232,122,32,0.4));
+    color: var(--text-primary, #e0e0e0);
+}
+
+.btn-icon {
+    background: var(--bg-tertiary, #1a1a24);
+    border: 1px solid var(--border-subtle, rgba(255,255,255,0.06));
+    border-radius: var(--radius-sm, 4px);
+    width: 28px;
+    height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.15s;
+    font-family: inherit;
+}
+.btn-icon:hover { background: var(--bg-panel, #141420); }
+
+/* ── Panel Header Typography (section headers) ───────────── */
+/* Applies to both .section-header h3 and .section-collapsible > .section-header .section-header-label */
+.section-header h3 {
+    letter-spacing: 0.12em;
+    color: var(--text-secondary, #9090a8);
+}
+/* Active/open section headers get accent bar + brighter text */
+.section-header.active h3,
+.section-header:not(.collapsed) h3 {
+    color: var(--text-primary, #e0e0e0);
+    border-left: 2px solid var(--accent-p4, #E87A20);
+    padding-left: 6px;
+}
+
+/* ── Zone Selector Tab (zone-qv-chip) Modernization ─────── */
+.zone-qv-chip {
+    transition: opacity 0.15s, box-shadow 0.15s, border-color 0.15s, background 0.15s;
+}
+.zone-qv-chip.selected {
+    background: linear-gradient(135deg, var(--bg-tertiary, #1a1a24), var(--bg-panel, #141420)) !important;
+    border-color: var(--accent-p4, #E87A20) !important;
+    border-left: 2px solid var(--accent-p4, #E87A20) !important;
+    color: #fff !important;
+    box-shadow: 0 0 0 1px rgba(232,122,32,0.3), 0 2px 8px rgba(232,122,32,0.15) !important;
+}
+.zone-qv-chip:hover:not(.selected) {
+    opacity: 1;
+    border-color: rgba(255,255,255,0.3) !important;
+    box-shadow: 0 0 6px rgba(255,255,255,0.15) !important;
+}
+
+/* Zone qv color swatch dot — 8px circle indicator */
+.zone-qv-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.2);
+    flex-shrink: 0;
+    margin-right: 2px;
+}
+
+/* ── Zone Card Selected (tab-style) modernization ─────────── */
+.zone-card.zone-card-expanded {
+    border-left: 3px solid var(--accent-p4, #E87A20);
+    box-shadow: 0 0 0 1px rgba(232,122,32,0.2), var(--shadow-panel, 0 4px 24px rgba(0,0,0,0.5));
+    background: linear-gradient(135deg, var(--bg-tertiary, #1a1a24) 0%, var(--bg-panel, #141420) 100%);
+    transition: border-color 0.15s, background 0.2s, box-shadow 0.2s;
+}
+
+/* ── Finish Browser Modal Polish ─────────────────────────── */
+.finish-browser-overlay.active {
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+}
+.finish-browser-modal {
+    box-shadow: var(--shadow-panel, 0 4px 24px rgba(0,0,0,0.5));
+    background: var(--bg-secondary, #111118);
+    border-radius: var(--radius-lg, 14px);
+}
+/* Finish browser category tabs — pill style matching spec-cat-tab */
+.finish-category-header {
+    border-radius: var(--radius-sm, 4px);
+    transition: background 0.15s;
+}
+.finish-category-header h4 {
+    letter-spacing: 0.12em;
+}
+/* Finish grid cells — hover lift effect */
+.finish-swatch-cell {
+    border-radius: var(--radius-md, 8px);
+    transition: border-color 0.15s, transform 0.15s, box-shadow 0.15s;
+}
+.finish-swatch-cell:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4), 0 0 0 1px rgba(232,122,32,0.35);
+    border-color: var(--accent-p4, #E87A20);
+}
+
+/* Finish popup modal also gets backdrop blur */
+.finish-browser-overlay.active,
+.preset-gallery-overlay.active {
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+}
+
+/* ── Modal Overlays — backdrop blur ─────────────────────── */
+.modal-overlay.active,
+.tmpl-name-overlay.active,
+.file-picker-overlay.active {
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+}
+
+/* ── Finish Popup polish ─────────────────────────────────── */
+.finish-popup {
+    box-shadow: var(--shadow-panel, 0 4px 24px rgba(0,0,0,0.5));
+    border-radius: var(--radius-lg, 14px);
+}
+
+/* ── Zone Editor Float Panel — accent update ─────────────── */
+.zone-editor-float .zone-detail-header {
+    background: rgba(232,122,32,0.1);
+    border-bottom-color: var(--accent-p4, #E87A20);
+}
+
+/* ── Spec-cat tab active state — already exists, reinforce with shadow ─ */
+.spec-cat-tab.active {
+    box-shadow: 0 0 0 1px rgba(232,122,32,0.35), 0 2px 8px rgba(232,122,32,0.2);
+}
+
+/* ── Pattern stack section — accent color to orange ────────── */
+.pattern-stack-section {
+    border-left-color: var(--accent-p4, #E87A20);
+}
+.pattern-stack-header {
+    color: var(--accent-p4, #E87A20);
+}
+
+/* END PRIORITY 4 UI MODERNIZATION PASS */

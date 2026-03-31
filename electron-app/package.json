@@ -1,7 +1,7 @@
 {
-  "name": "shokker-paint-booth-v5",
-  "version": "5.9.2",
-  "description": "Shokker Paint Booth V5 — iRacing Spec Map Tool",
+  "name": "shokker-paint-booth-v6",
+  "version": "6.0.0",
+  "description": "Shokker Paint Booth V6 — iRacing Spec Map Tool",
   "main": "main.js",
   "author": "Shokker Group",
   "license": "UNLICENSED",
@@ -18,21 +18,21 @@
     "electron-builder": "^25.1.8"
   },
   "build": {
-    "appId": "com.shokker.paintbooth.v5",
-    "productName": "Shokker Paint Booth V5",
+    "appId": "com.shokker.paintbooth.v6",
+    "productName": "Shokker Paint Booth V6",
     "directories": {
       "output": "dist"
     },
     "win": {
       "target": "nsis",
       "icon": "icon.ico",
-      "artifactName": "ShokkerPaintBoothV5-${version}-Setup.${ext}"
+      "artifactName": "ShokkerPaintBoothV6-${version}-Setup.${ext}"
     },
     "nsis": {
       "oneClick": true,
       "allowToChangeInstallationDirectory": false,
       "createDesktopShortcut": true,
-      "shortcutName": "Shokker Paint Booth V5"
+      "shortcutName": "Shokker Paint Booth V6"
     },
     "files": [
       "main.js",

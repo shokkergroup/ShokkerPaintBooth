@@ -10,8 +10,12 @@ applies tile/crop/rotate via engine.core helpers.
 import os
 import numpy as np
 
-# Cache for image patterns: (abs_path, shape) -> float32 (H,W) 0-1
-_image_pattern_cache = {}
+# Two-tier image pattern cache:
+#   Tier 1: (abs_path,)                        -> raw float32 (H,W) 0-1 at native resolution
+#   Tier 2: (abs_path, h, w, use_scale, use_rot) -> transformed float32 (H,W) ready for use
+# Tier 1 avoids disk I/O on cache misses for Tier 2 (new scale/rotation of same image).
+_image_pattern_cache_raw = {}   # Tier 1
+_image_pattern_cache = {}       # Tier 2 (keyed by abs_path, h, w, scale, rot)
 
 
 def _resize_image_pattern(arr, target_h, target_w):
@@ -43,7 +47,8 @@ def _load_image_pattern(image_path, shape, scale=1.0, rotation=0.0):
     """Load PNG/JPG pattern from image_path (relative to server root), return (H,W) float32 0-1.
     User images live in assets/patterns/<category>/ - NEVER overwrite these.
     If missing, falls back to assets/patterns/_placeholders/<stem>_placeholder.png.
-    Cached by (abs_path, shape, scale, rotation). Returns None on failure.
+    Two-tier cache: Tier 1 caches raw decoded array (avoids disk I/O); Tier 2 caches
+    transformed result keyed by (abs_path, h, w, scale, rot). Returns None on failure.
     Opaque images with low luminance spread get a contrast boost so Pattern-Reactive
     (and pattern_vivid) show clear diversity, like patterns that have transparency."""
     if not image_path or not isinstance(shape, (tuple, list)) or len(shape) < 2:
@@ -64,29 +69,40 @@ def _load_image_pattern(image_path, shape, scale=1.0, rotation=0.0):
     h, w = int(shape[0]), int(shape[1])
     use_scale = max(0.1, min(10.0, float(scale)))
     use_rot = float(rotation) % 360.0
+    # Tier 2 check — fully-transformed result
     cache_key = (abs_path, h, w, use_scale, use_rot)
     if cache_key in _image_pattern_cache:
         return _image_pattern_cache[cache_key]
     try:
-        from PIL import Image
         from engine.core import _tile_fractional, _crop_center_array, _rotate_single_array
-        img_rgba = Image.open(abs_path).convert("RGBA")
-        rgba = np.array(img_rgba, dtype=np.float32) / 255.0
-        rgb = rgba[:, :, :3]
-        alpha = rgba[:, :, 3]
-        # If the PNG actually uses transparency, treat alpha as the primary mask driver.
-        # This lets upgraded transparent assets behave like clean pattern masks, while
-        # keeping opaque black-background user PNGs working through luminance fallback.
-        lum = (0.299 * rgb[:, :, 0] + 0.587 * rgb[:, :, 1] + 0.114 * rgb[:, :, 2]).astype(np.float32)
-        has_transparency = float(alpha.min()) < 0.999
-        if has_transparency:
-            arr = np.clip(np.maximum(lum, alpha), 0.0, 1.0).astype(np.float32)
+        # Tier 1 check — raw decoded float32 array (avoids disk I/O and PIL decode)
+        raw_key = (abs_path,)
+        if raw_key in _image_pattern_cache_raw:
+            arr, has_transparency = _image_pattern_cache_raw[raw_key]
+            arr = arr.copy()  # Don't mutate cached raw
         else:
-            arr = lum
-        if arr.ndim != 2:
-            return None
+            from PIL import Image
+            img_rgba = Image.open(abs_path).convert("RGBA")
+            rgba = np.array(img_rgba, dtype=np.float32) / 255.0
+            rgb = rgba[:, :, :3]
+            alpha = rgba[:, :, 3]
+            # If the PNG actually uses transparency, treat alpha as the primary mask driver.
+            # This lets upgraded transparent assets behave like clean pattern masks, while
+            # keeping opaque black-background user PNGs working through luminance fallback.
+            lum = (0.299 * rgb[:, :, 0] + 0.587 * rgb[:, :, 1] + 0.114 * rgb[:, :, 2]).astype(np.float32)
+            has_transparency = float(alpha.min()) < 0.999
+            if has_transparency:
+                arr = np.clip(np.maximum(lum, alpha), 0.0, 1.0).astype(np.float32)
+            else:
+                arr = lum
+            if arr.ndim != 2:
+                return None
+            # Store raw decoded array in Tier 1 cache
+            _image_pattern_cache_raw[raw_key] = (arr, has_transparency)
+            arr = arr.copy()  # Work on a copy from here on
+
         ih, iw = arr.shape[0], arr.shape[1]
-        
+
         # STEP 1: Always normalize to canvas size first (the "1.0x" baseline).
         # Small images get tiled to fill; large images get shrunk to fit.
         if ih < h or iw < w:
@@ -132,6 +148,7 @@ def _load_image_pattern(image_path, shape, scale=1.0, rotation=0.0):
             std = float(np.std(arr))
             if std < 0.28:
                 arr = np.clip((arr - 0.5) * 1.8 + 0.5, 0.0, 1.0).astype(np.float32)
+        # Store in Tier 2 cache
         _image_pattern_cache[cache_key] = arr.astype(np.float32)
         return _image_pattern_cache[cache_key]
     except Exception:
@@ -157,43 +174,44 @@ def _load_color_image_pattern(image_path, shape, scale=1.0, rotation=0.0):
         from PIL import Image
         img_rgba = Image.open(abs_path).convert("RGBA")
         rgba = np.array(img_rgba, dtype=np.float32) / 255.0
-        
+
         ih, iw = rgba.shape[0], rgba.shape[1]
-        
-        # At scale=1.0: fit image to (h,w). If smaller: tile to fill; if larger: scale down to fit canvas (e.g. 4K -> 2048x2048).
-        if abs(use_scale - 1.0) <= 0.01:
-            if ih < h or iw < w:
-                n_h = max(1, (h + ih - 1) // ih)
-                n_w = max(1, (w + iw - 1) // iw)
-                rgba = np.tile(rgba, (n_h, n_w, 1))[:h, :w, :]
-            elif ih > h or iw > w:
-                if rgba.shape[0] != h or rgba.shape[1] != w:
-                    import cv2
-                    rgba = cv2.resize(rgba, (w, h), interpolation=cv2.INTER_AREA)
-        else:
-            # Match original grayscale logic:
-            # 1. Expand drawing canvas by 1/scale so we can tile it or crop from it
-            gen_h, gen_w = max(4, int(h / use_scale)), max(4, int(w / use_scale))
-            
+
+        # STEP 1: Always normalize to canvas size first (the "1.0x" baseline).
+        # Small images get tiled to fill; large images get shrunk to fit.
+        if ih < h or iw < w:
+            n_h = max(1, (h + ih - 1) // ih)
+            n_w = max(1, (w + iw - 1) // iw)
+            rgba = np.tile(rgba, (n_h, n_w, 1))[:h, :w, :]
+        elif ih > h or iw > w:
+            import cv2
+            rgba = cv2.resize(rgba, (w, h), interpolation=cv2.INTER_AREA)
+        # rgba is now exactly (h, w, 4) — the "1.0x" view.
+
+        # STEP 2: Apply scale relative to the normalized baseline.
+        # scale < 1.0 = shrink motifs (more repetitions); scale > 1.0 = zoom in (bigger).
+        if abs(use_scale - 1.0) > 0.01:
+            import cv2
             if use_scale < 1.0:
-                # scale < 1.0: tile in expanded canvas
-                n_h = max(1, (gen_h + ih - 1) // ih)
-                n_w = max(1, (gen_w + iw - 1) // iw)
-                rgba = np.tile(rgba, (n_h, n_w, 1))[:gen_h, :gen_w, :]
+                # Shrink the normalized pattern, then tile to fill canvas
+                tile_h = max(4, int(h * use_scale))
+                tile_w = max(4, int(w * use_scale))
+                small = cv2.resize(rgba, (tile_w, tile_h), interpolation=cv2.INTER_AREA)
+                n_h = max(1, (h + tile_h - 1) // tile_h)
+                n_w = max(1, (w + tile_w - 1) // tile_w)
+                rgba = np.tile(small, (n_h, n_w, 1))[:h, :w, :]
             else:
-                # scale > 1.0: crop from center of image array (treating image as repeating pattern first if smaller)
-                if ih < gen_h or iw < gen_w:
-                    n_h = max(1, (gen_h + ih - 1) // ih)
-                    n_w = max(1, (gen_w + iw - 1) // iw)
-                    rgba = np.tile(rgba, (n_h, n_w, 1))
-                curr_h, curr_w = rgba.shape[0], rgba.shape[1]
-                y0, x0 = max(0, (curr_h - gen_h) // 2), max(0, (curr_w - gen_w) // 2)
-                rgba = rgba[y0:y0+gen_h, x0:x0+gen_w, :]
-                
-            # Resize the scaled canvas back down/up to actual render window shape
-            if rgba.shape[0] != h or rgba.shape[1] != w:
-                import cv2
-                rgba = cv2.resize(rgba, (w, h), interpolation=cv2.INTER_AREA if use_scale < 1.0 else cv2.INTER_LINEAR)
+                # Zoom in: crop center of the normalized pattern, then resize back to canvas
+                crop_h = max(4, int(h / use_scale))
+                crop_w = max(4, int(w / use_scale))
+                y0 = max(0, (h - crop_h) // 2)
+                x0 = max(0, (w - crop_w) // 2)
+                rgba = rgba[y0:y0+crop_h, x0:x0+crop_w, :]
+                rgba = cv2.resize(rgba, (w, h), interpolation=cv2.INTER_LINEAR)
+
+        if rgba.shape[0] != h or rgba.shape[1] != w:
+            import cv2
+            rgba = cv2.resize(rgba, (w, h), interpolation=cv2.INTER_LINEAR)
         
         if abs(use_rot) > 0.5:
             from engine.core import _rotate_single_array
@@ -282,7 +300,7 @@ def _generic_solid_spec_fn(shape, mask, seed, sm, mat_key):
     M, R, CC = MATS.get(mat_key, (5, 20, 16))
     spec = np.zeros((shape[0], shape[1], 4), dtype=np.uint8)
     spec[:, :, 0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:, :, 1] = np.clip(R * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
+    spec[:, :, 1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)  # GGX floor
     spec[:, :, 2] = CC
     spec[:, :, 3] = 255
     return spec

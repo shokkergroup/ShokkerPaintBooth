@@ -54,12 +54,10 @@ def paint_ceramic_v2(paint, shape, mask, seed, pm, bb):
 def spec_ceramic(shape, seed, sm, base_m, base_r):
     """Ceramic spec: high gloss, minimal roughness. Returns (M, R, CC)."""
     h, w = shape
-    metal = np.full((h, w), base_m / 255.0, dtype=np.float32)
-    spec  = np.full((h, w), base_r / 255.0, dtype=np.float32)
-    cc    = np.full((h, w), 16.0 / 255.0,   dtype=np.float32)
-    return (np.clip(metal * 255, 0, 255).astype(np.float32),
-            np.clip(spec  * 255, 0, 255).astype(np.float32),
-            np.clip(cc    * 255, 0, 255).astype(np.float32))
+    M  = np.full((h, w), float(base_m), dtype=np.float32)
+    R  = np.full((h, w), float(base_r), dtype=np.float32)
+    CC = np.full((h, w), 16.0,          dtype=np.float32)
+    return (M, R, CC)
 
 
 # ============================================================================
@@ -71,14 +69,25 @@ def paint_chameleon_v2(paint, shape, mask, seed, pm, bb):
     return paint.copy()
 
 def spec_chameleon(shape, seed, sm, base_m, base_r):
-    """Chameleon spec: high gloss, moderate metallic. Returns (M, R, CC)."""
+    """Chameleon spec: DUAL-SHIFT FIX — interference film needs real M/R variation.
+    Multi-layer thin-film interference creates angle-dependent color AND specular shifts.
+    Flat M/R produced zero visible shift. Now: large-scale FBM drives M and R variation
+    so the interference layers catch light at different intensities across the surface."""
     h, w = shape
-    metal = np.full((h, w), base_m / 255.0, dtype=np.float32)
-    spec  = np.full((h, w), base_r / 255.0, dtype=np.float32)
-    cc    = np.full((h, w), 16.0 / 255.0,   dtype=np.float32)
-    return (np.clip(metal * 255, 0, 255).astype(np.float32),
-            np.clip(spec  * 255, 0, 255).astype(np.float32),
-            np.clip(cc    * 255, 0, 255).astype(np.float32))
+    # Large-scale interference pattern — simulates thin-film thickness variation
+    shift_fbm = multi_scale_noise((h, w), [8, 16, 32], [0.45, 0.35, 0.2], seed + 2200)
+    # Secondary high-freq sparkle layer for micro-flake interference
+    sparkle = multi_scale_noise((h, w), [2, 4], [0.6, 0.4], seed + 2201)
+    combined = shift_fbm * 0.7 + sparkle * 0.3
+    # M: interference film is highly metallic with strong spatial variation
+    # Range: base_m +/- 50, giving real visual shift across the surface
+    M  = np.clip(base_m + combined * 100.0 * sm - 50.0, 0, 255).astype(np.float32)
+    # R: low roughness overall but with interference-driven variation
+    # Thin-film creates specular hotspots where layers align
+    R  = np.clip(base_r + (1.0 - combined) * 40.0 * sm - 20.0, 0, 255).astype(np.float32)
+    # CC: glossy with slight variation from film thickness
+    CC = np.clip(16.0 + combined * 20.0 * sm, 16, 255).astype(np.float32)
+    return (M, R, CC)
 
 
 # ============================================================================
@@ -125,12 +134,10 @@ def paint_eggshell_v2(paint, shape, mask, seed, pm, bb):
 def spec_eggshell(shape, seed, sm, base_m, base_r):
     """Eggshell spec: CC=100 low sheen. Returns (M, R, CC)."""
     h, w = shape
-    metal = np.full((h, w), base_m / 255.0, dtype=np.float32)
-    spec  = np.full((h, w), base_r / 255.0, dtype=np.float32)
-    cc    = np.full((h, w), 100.0 / 255.0,  dtype=np.float32)
-    return (np.clip(metal * 255, 0, 255).astype(np.float32),
-            np.clip(spec  * 255, 0, 255).astype(np.float32),
-            np.clip(cc    * 255, 0, 255).astype(np.float32))
+    M  = np.full((h, w), float(base_m), dtype=np.float32)
+    R  = np.full((h, w), float(base_r), dtype=np.float32)
+    CC = np.full((h, w), 100.0,         dtype=np.float32)
+    return (M, R, CC)
 
 
 # ============================================================================
@@ -239,12 +246,10 @@ def paint_gloss_v2(paint, shape, mask, seed, pm, bb):
 def spec_gloss(shape, seed, sm, base_m, base_r):
     """Gloss spec: maximum reflectance, minimum roughness. Returns (M, R, CC)."""
     h, w = shape
-    metal = np.full((h, w), base_m / 255.0, dtype=np.float32)
-    spec  = np.full((h, w), base_r / 255.0, dtype=np.float32)
-    cc    = np.full((h, w), 16.0 / 255.0,   dtype=np.float32)
-    return (np.clip(metal * 255, 0, 255).astype(np.float32),
-            np.clip(spec  * 255, 0, 255).astype(np.float32),
-            np.clip(cc    * 255, 0, 255).astype(np.float32))
+    M  = np.full((h, w), float(base_m), dtype=np.float32)
+    R  = np.full((h, w), float(base_r), dtype=np.float32)
+    CC = np.full((h, w), 16.0,          dtype=np.float32)
+    return (M, R, CC)
 
 
 # ============================================================================
@@ -255,14 +260,12 @@ def paint_iridescent_v2(paint, shape, mask, seed, pm, bb):
     return paint.copy()
 
 def spec_iridescent(shape, seed, sm, base_m, base_r):
-    """Returns (M, R, CC)."""
+    """Iridescent spec: glossy with base M/R. Returns (M, R, CC)."""
     h, w = shape
-    metal = np.full((h, w), base_m / 255.0, dtype=np.float32)
-    spec  = np.full((h, w), base_r / 255.0, dtype=np.float32)
-    cc    = np.full((h, w), 16.0 / 255.0,   dtype=np.float32)
-    return (np.clip(metal * 255, 0, 255).astype(np.float32),
-            np.clip(spec  * 255, 0, 255).astype(np.float32),
-            np.clip(cc    * 255, 0, 255).astype(np.float32))
+    M  = np.full((h, w), float(base_m), dtype=np.float32)
+    R  = np.full((h, w), float(base_r), dtype=np.float32)
+    CC = np.full((h, w), 16.0,          dtype=np.float32)
+    return (M, R, CC)
 
 
 # ============================================================================
@@ -273,14 +276,12 @@ def paint_liquid_obsidian_v2(paint, shape, mask, seed, pm, bb):
     return paint.copy()
 
 def spec_liquid_obsidian(shape, seed, sm, base_m, base_r):
-    """Returns (M, R, CC)."""
+    """Liquid obsidian spec: CC=16 glossy obsidian. Returns (M, R, CC)."""
     h, w = shape
-    metal = np.full((h, w), base_m / 255.0, dtype=np.float32)
-    spec  = np.full((h, w), base_r / 255.0, dtype=np.float32)
-    cc    = np.full((h, w), 16.0 / 255.0,    dtype=np.float32)  # CC=16 glossy obsidian
-    return (np.clip(metal * 255, 0, 255).astype(np.float32),
-            np.clip(spec  * 255, 0, 255).astype(np.float32),
-            np.clip(cc    * 255, 0, 255).astype(np.float32))
+    M  = np.full((h, w), float(base_m), dtype=np.float32)
+    R  = np.full((h, w), float(base_r), dtype=np.float32)
+    CC = np.full((h, w), 16.0,          dtype=np.float32)
+    return (M, R, CC)
 
 
 # ============================================================================
@@ -383,27 +384,23 @@ def paint_noise_scales_v2(paint, shape, mask, seed, pm, bb):
     return paint.copy()
 
 def spec_noise_scales(shape, seed, sm, base_m, base_r):
-    """Returns (M, R, CC)."""
+    """Noise scales spec: CC=16 default gloss. Returns (M, R, CC)."""
     h, w = shape
-    metal = np.full((h, w), base_m / 255.0, dtype=np.float32)
-    spec  = np.full((h, w), base_r / 255.0, dtype=np.float32)
-    cc    = np.full((h, w), 16.0 / 255.0,    dtype=np.float32)  # CC=16 default gloss
-    return (np.clip(metal * 255, 0, 255).astype(np.float32),
-            np.clip(spec  * 255, 0, 255).astype(np.float32),
-            np.clip(cc    * 255, 0, 255).astype(np.float32))
+    M  = np.full((h, w), float(base_m), dtype=np.float32)
+    R  = np.full((h, w), float(base_r), dtype=np.float32)
+    CC = np.full((h, w), 16.0,          dtype=np.float32)
+    return (M, R, CC)
 
 def paint_perlin_v2(paint, shape, mask, seed, pm, bb):
     return paint.copy()
 
 def spec_perlin(shape, seed, sm, base_m, base_r):
-    """Returns (M, R, CC)."""
+    """Perlin spec: CC=16 default gloss. Returns (M, R, CC)."""
     h, w = shape
-    metal = np.full((h, w), base_m / 255.0, dtype=np.float32)
-    spec  = np.full((h, w), base_r / 255.0, dtype=np.float32)
-    cc    = np.full((h, w), 16.0 / 255.0,    dtype=np.float32)  # CC=16 default gloss
-    return (np.clip(metal * 255, 0, 255).astype(np.float32),
-            np.clip(spec  * 255, 0, 255).astype(np.float32),
-            np.clip(cc    * 255, 0, 255).astype(np.float32))
+    M  = np.full((h, w), float(base_m), dtype=np.float32)
+    R  = np.full((h, w), float(base_r), dtype=np.float32)
+    CC = np.full((h, w), 16.0,          dtype=np.float32)
+    return (M, R, CC)
 
 
 # ============================================================================
@@ -457,14 +454,12 @@ def paint_organic_metal_v2(paint, shape, mask, seed, pm, bb):
     return paint.copy()
 
 def spec_organic_metal(shape, seed, sm, base_m, base_r):
-    """Returns (M, R, CC)."""
+    """Organic metal spec: glossy with base M/R. Returns (M, R, CC)."""
     h, w = shape
-    metal = np.full((h, w), base_m / 255.0, dtype=np.float32)
-    spec  = np.full((h, w), base_r / 255.0, dtype=np.float32)
-    cc    = np.full((h, w), 16.0 / 255.0,   dtype=np.float32)
-    return (np.clip(metal * 255, 0, 255).astype(np.float32),
-            np.clip(spec  * 255, 0, 255).astype(np.float32),
-            np.clip(cc    * 255, 0, 255).astype(np.float32))
+    M  = np.full((h, w), float(base_m), dtype=np.float32)
+    R  = np.full((h, w), float(base_r), dtype=np.float32)
+    CC = np.full((h, w), 16.0,          dtype=np.float32)
+    return (M, R, CC)
 
 
 # ============================================================================
@@ -477,14 +472,12 @@ def paint_piano_black_v2(paint, shape, mask, seed, pm, bb):
     return deep * mask[:,:,np.newaxis] + paint * (1 - mask[:,:,np.newaxis])
 
 def spec_piano_black(shape, seed, sm, base_m, base_r):
-    """Returns (M, R, CC)."""
+    """Piano black spec: glossy with base M/R. Returns (M, R, CC)."""
     h, w = shape
-    metal = np.full((h, w), base_m / 255.0, dtype=np.float32)
-    spec  = np.full((h, w), base_r / 255.0, dtype=np.float32)
-    cc    = np.full((h, w), 16.0 / 255.0,   dtype=np.float32)
-    return (np.clip(metal * 255, 0, 255).astype(np.float32),
-            np.clip(spec  * 255, 0, 255).astype(np.float32),
-            np.clip(cc    * 255, 0, 255).astype(np.float32))
+    M  = np.full((h, w), float(base_m), dtype=np.float32)
+    R  = np.full((h, w), float(base_r), dtype=np.float32)
+    CC = np.full((h, w), 16.0,          dtype=np.float32)
+    return (M, R, CC)
 
 
 # ============================================================================
@@ -500,12 +493,10 @@ def paint_primer_v2(paint, shape, mask, seed, pm, bb):
 def spec_primer(shape, seed, sm, base_m, base_r):
     """Primer spec: CC=180 near-maximum degradation = zero sheen. Returns (M, R, CC)."""
     h, w = shape
-    metal = np.full((h, w), base_m / 255.0, dtype=np.float32)
-    spec  = np.full((h, w), base_r / 255.0, dtype=np.float32)
-    cc    = np.full((h, w), 180.0 / 255.0,  dtype=np.float32)
-    return (np.clip(metal * 255, 0, 255).astype(np.float32),
-            np.clip(spec  * 255, 0, 255).astype(np.float32),
-            np.clip(cc    * 255, 0, 255).astype(np.float32))
+    M  = np.full((h, w), float(base_m), dtype=np.float32)
+    R  = np.full((h, w), float(base_r), dtype=np.float32)
+    CC = np.full((h, w), 180.0,         dtype=np.float32)
+    return (M, R, CC)
 
 
 # ============================================================================
@@ -543,14 +534,12 @@ def paint_satin_metal_v2(paint, shape, mask, seed, pm, bb):
     return paint.copy()
 
 def spec_satin_metal(shape, seed, sm, base_m, base_r):
-    """Returns (M, R, CC)."""
+    """Satin metal spec: glossy with base M/R. Returns (M, R, CC)."""
     h, w = shape
-    metal = np.full((h, w), base_m / 255.0, dtype=np.float32)
-    spec  = np.full((h, w), base_r / 255.0, dtype=np.float32)
-    cc    = np.full((h, w), 16.0 / 255.0,   dtype=np.float32)
-    return (np.clip(metal * 255, 0, 255).astype(np.float32),
-            np.clip(spec  * 255, 0, 255).astype(np.float32),
-            np.clip(cc    * 255, 0, 255).astype(np.float32))
+    M  = np.full((h, w), float(base_m), dtype=np.float32)
+    R  = np.full((h, w), float(base_r), dtype=np.float32)
+    CC = np.full((h, w), 16.0,          dtype=np.float32)
+    return (M, R, CC)
 
 
 # ============================================================================
@@ -575,11 +564,11 @@ def spec_scuffed_satin(shape, seed, sm, base_m, base_r):
     Also: scuffing exposes micro-metal highlights — occasional bright spots in R (metallic) channel.
     Previously: R=90/255 flat, CC=90/255 — was actually smoother and nearly same as satin."""
     h, w = shape
-    # FBM noise for scuff texture variation
-    scuff_fbm = multi_scale_noise((h, w), [2, 4, 8], [0.45, 0.35, 0.2], seed + 5903)
+    # FBM noise for scuff texture variation — seed+5902 matches paint_scuffed_satin_v2
+    scuff_fbm = multi_scale_noise((h, w), [2, 4, 8], [0.45, 0.35, 0.2], seed + 5902)
     # R (Metallic): scuffing exposes micro-metal highlights — mostly low but occasional bright spots
     # Base low metallic (0-25) with sparse bright highlights (up to 180+)
-    bright_spots = multi_scale_noise((h, w), [1, 2], [0.7, 0.3], seed + 5904)
+    bright_spots = multi_scale_noise((h, w), [1, 2], [0.7, 0.3], seed + 5903)
     bright_mask  = np.clip((bright_spots - 0.88) / 0.12, 0, 1)  # top 12% become bright spots
     M = np.clip(scuff_fbm * 25.0 * sm + bright_mask * 180.0, 0, 255).astype(np.float32)
     # G (Roughness): 160-200 range — significantly rougher than base satin (R=95)
@@ -601,12 +590,10 @@ def paint_semi_gloss_v2(paint, shape, mask, seed, pm, bb):
 def spec_semi_gloss(shape, seed, sm, base_m, base_r):
     """Semi-gloss spec: CC=40 mild dulling. Returns (M, R, CC)."""
     h, w = shape
-    metal = np.full((h, w), base_m / 255.0, dtype=np.float32)
-    spec  = np.full((h, w), base_r / 255.0, dtype=np.float32)
-    cc    = np.full((h, w), 40.0 / 255.0,   dtype=np.float32)
-    return (np.clip(metal * 255, 0, 255).astype(np.float32),
-            np.clip(spec  * 255, 0, 255).astype(np.float32),
-            np.clip(cc    * 255, 0, 255).astype(np.float32))
+    M  = np.full((h, w), float(base_m), dtype=np.float32)
+    R  = np.full((h, w), float(base_r), dtype=np.float32)
+    CC = np.full((h, w), 40.0,          dtype=np.float32)
+    return (M, R, CC)
 
 
 # ============================================================================
@@ -621,12 +608,10 @@ def paint_silk_v2(paint, shape, mask, seed, pm, bb):
 def spec_silk(shape, seed, sm, base_m, base_r):
     """Silk spec: CC=60 smooth low-reflection sheen. Returns (M, R, CC)."""
     h, w = shape
-    metal = np.full((h, w), base_m / 255.0, dtype=np.float32)
-    spec  = np.full((h, w), base_r / 255.0, dtype=np.float32)
-    cc    = np.full((h, w), 60.0 / 255.0,   dtype=np.float32)
-    return (np.clip(metal * 255, 0, 255).astype(np.float32),
-            np.clip(spec  * 255, 0, 255).astype(np.float32),
-            np.clip(cc    * 255, 0, 255).astype(np.float32))
+    M  = np.full((h, w), float(base_m), dtype=np.float32)
+    R  = np.full((h, w), float(base_r), dtype=np.float32)
+    CC = np.full((h, w), 60.0,          dtype=np.float32)
+    return (M, R, CC)
 
 
 # ============================================================================
@@ -637,14 +622,12 @@ def paint_terrain_chrome_v2(paint, shape, mask, seed, pm, bb):
     return paint.copy()
 
 def spec_terrain_chrome(shape, seed, sm, base_m, base_r):
-    """Returns (M, R, CC)."""
+    """Terrain chrome spec: CC=16 chrome gloss. Returns (M, R, CC)."""
     h, w = shape
-    metal = np.full((h, w), base_m / 255.0, dtype=np.float32)
-    spec  = np.full((h, w), base_r / 255.0, dtype=np.float32)
-    cc    = np.full((h, w), 16.0 / 255.0,    dtype=np.float32)  # CC=16 chrome gloss
-    return (np.clip(metal * 255, 0, 255).astype(np.float32),
-            np.clip(spec  * 255, 0, 255).astype(np.float32),
-            np.clip(cc    * 255, 0, 255).astype(np.float32))
+    M  = np.full((h, w), float(base_m), dtype=np.float32)
+    R  = np.full((h, w), float(base_r), dtype=np.float32)
+    CC = np.full((h, w), 16.0,          dtype=np.float32)
+    return (M, R, CC)
 
 
 # ============================================================================
@@ -669,17 +652,44 @@ def spec_vantablack(shape, seed, sm, base_m, base_r):
 # ============================================================================
 
 def paint_volcanic_v2(paint, shape, mask, seed, pm, bb):
-    return paint.copy()
+    """Volcanic: darken base, warm orange/red in bright zones, cool charcoal
+    in dark zones, ash texture noise overlay."""
+    h, w = shape[:2] if len(shape) > 2 else shape
+    base = paint.copy()
+    gray = base.mean(axis=2)
+    # Darken base significantly
+    darkened = np.clip(base * 0.35, 0, 1)
+    # Ash texture noise
+    ash = multi_scale_noise((h, w), [4, 8, 16], [0.3, 0.4, 0.3], seed + 6600)
+    ash_fine = multi_scale_noise((h, w), [1, 2], [0.6, 0.4], seed + 6601)
+    ash_tex = ash * 0.06 + ash_fine * 0.03
+    # Warm orange/red tint in bright zones, cool charcoal in dark zones
+    bright_mask = np.clip((gray - 0.3) * 2.5, 0, 1)
+    warm_r = 0.55 + ash * 0.12
+    warm_g = 0.18 + ash * 0.06
+    warm_b = 0.05 + ash * 0.03
+    cool_r = 0.12 + ash * 0.04
+    cool_g = 0.12 + ash * 0.03
+    cool_b = 0.14 + ash * 0.03
+    # Blend warm and cool based on original brightness
+    bm3 = bright_mask[:, :, np.newaxis]
+    warm = np.stack([warm_r, warm_g, warm_b], axis=-1)
+    cool = np.stack([cool_r, cool_g, cool_b], axis=-1)
+    volcanic_color = warm * bm3 + cool * (1.0 - bm3)
+    # Mix volcanic color with darkened base + ash texture
+    effect = np.clip(darkened * 0.4 + volcanic_color * 0.6 + ash_tex[:, :, np.newaxis], 0, 1).astype(np.float32)
+    blend = np.clip(pm, 0.0, 1.0)
+    m3 = mask[:, :, np.newaxis]
+    result = np.clip(base * (1.0 - m3 * blend) + effect * (m3 * blend), 0, 1)
+    return np.clip(result + bb[:, :, np.newaxis] * 0.20 * pm * m3, 0, 1).astype(np.float32)
 
 def spec_volcanic(shape, seed, sm, base_m, base_r):
-    """Returns (M, R, CC)."""
+    """Volcanic spec: CC=70 semi-gloss. Returns (M, R, CC)."""
     h, w = shape
-    metal = np.full((h, w), base_m / 255.0, dtype=np.float32)
-    spec  = np.full((h, w), base_r / 255.0, dtype=np.float32)
-    cc    = np.full((h, w), 70.0 / 255.0,   dtype=np.float32)
-    return (np.clip(metal * 255, 0, 255).astype(np.float32),
-            np.clip(spec  * 255, 0, 255).astype(np.float32),
-            np.clip(cc    * 255, 0, 255).astype(np.float32))
+    M  = np.full((h, w), float(base_m), dtype=np.float32)
+    R  = np.full((h, w), float(base_r), dtype=np.float32)
+    CC = np.full((h, w), 70.0,          dtype=np.float32)
+    return (M, R, CC)
 
 
 # ============================================================================
@@ -692,11 +702,9 @@ def paint_wet_look_v2(paint, shape, mask, seed, pm, bb):
     return wet * mask[:,:,np.newaxis] + paint * (1 - mask[:,:,np.newaxis])
 
 def spec_wet_look(shape, seed, sm, base_m, base_r):
-    """Returns (M, R, CC)."""
+    """Wet look spec: CC=16 glossy. Returns (M, R, CC)."""
     h, w = shape
-    metal = np.full((h, w), base_m / 255.0, dtype=np.float32)
-    spec  = np.full((h, w), base_r / 255.0, dtype=np.float32)
-    cc    = np.full((h, w), 16.0 / 255.0,   dtype=np.float32)
-    return (np.clip(metal * 255, 0, 255).astype(np.float32),
-            np.clip(spec  * 255, 0, 255).astype(np.float32),
-            np.clip(cc    * 255, 0, 255).astype(np.float32))
+    M  = np.full((h, w), float(base_m), dtype=np.float32)
+    R  = np.full((h, w), float(base_r), dtype=np.float32)
+    CC = np.full((h, w), 16.0,          dtype=np.float32)
+    return (M, R, CC)

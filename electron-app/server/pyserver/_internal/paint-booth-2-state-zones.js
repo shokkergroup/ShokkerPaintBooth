@@ -513,7 +513,7 @@ function renderZones() {
             const accordionClass = ' zone-card-collapsed' + (isSelected ? ' selected' : '');
             const stackCount = (zone.patternStack || []).filter(l => l.id && l.id !== 'none').length;
             const finishName = zone.finish
-                ? (MONOLITHICS.find(m => m.id === zone.finish)?.name || zone.finish) +
+                ? (MONOLITHICS.find(m => m.id === zone.finish)?.name || BASES.find(b => b.id === zone.finish)?.name || zone.finish) +
                 (zone.pattern && zone.pattern !== 'none' ? ' + ' + (PATTERNS.find(p => p.id === zone.pattern)?.name || zone.pattern) : '')
                 : zone.base
                     ? (BASES.find(b => b.id === zone.base)?.name || zone.base) +
@@ -908,9 +908,12 @@ function renderZoneDetail(index) {
                 ${_baseColorMode === 'solid' ? `<input type="color" id="baseColorPicker${i}" value="${_baseColorHex}" onchange="setZoneBaseColor(${i}, this.value)" title="Pick base tint">` : ''}
                 ${_baseColorMode === 'solid' ? `<input type="text" value="${_baseColorHex}" onchange="setZoneBaseColor(${i}, this.value)" style="width:78px;font-size:10px;">` : ''}
                 ${_baseColorMode === 'solid' ? `<button onclick="(function(){var inp=document.getElementById('baseColorPicker${i}');if(inp)setZoneBaseColor(${i},inp.value);})()" style="background:#E87A20;color:#fff;border:none;padding:3px 8px;border-radius:3px;cursor:pointer;font-weight:bold;font-size:9px;" title="Apply the selected color">✓ Apply</button>` : ''}
-                ${_baseColorMode === 'special' ? `<div class="swatch-trigger" onclick="event.stopPropagation(); openSwatchPicker(this, 'baseColorSource', ${i})" title="Pick special color source" style="display:inline-flex;align-items:center;gap:6px;">
+                ${_baseColorMode === 'special' ? `</div>
+            <div style="display:flex; align-items:center; gap:8px; width:100%; padding-left:0; margin-top:2px;">
+                <span class="stack-label-mini" style="min-width:70px;">Special</span>
+                <div class="swatch-trigger" onclick="event.stopPropagation(); openSwatchPicker(this, 'baseColorSource', ${i})" title="Pick special color source" style="display:inline-flex;align-items:center;gap:6px; flex:1; min-width:0;">
                     ${_baseSrcId ? renderSwatchDot(_baseSrcId, _baseSrcSwatch, _baseColorHex) : '<div class="swatch-dot" style="background:#333;border-style:dashed;"></div>'}
-                    <span class="swatch-name">${_baseSrcName}</span>
+                    <span class="swatch-name" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${_baseSrcName}</span>
                     <span class="swatch-arrow">&#9662;</span>
                 </div>` : ''}
                 ${_baseColorMode === 'special' && _baseSrcId ? `<button class="btn btn-sm" onclick="event.stopPropagation(); setZoneBaseColorSource(${i}, null)" title="Clear source" style="padding:0px 5px;font-size:9px;line-height:1.2;">✕</button>` : ''}
@@ -3796,8 +3799,10 @@ function openSwatchPicker(triggerEl, type, zoneIndex, layerIndex) {
             });
             html += `</div></div>`;
             });
-            // Ungrouped bases (safety net)
-            const ungroupedBases = BASES.filter(b => !baseGroupedIds.has(b.id));
+            // Ungrouped bases (safety net) — exclude bases that moved to SPECIAL_GROUPS
+            const specialIds = new Set();
+            if (typeof SPECIAL_GROUPS !== 'undefined') Object.values(SPECIAL_GROUPS).forEach(ids => { if (Array.isArray(ids)) ids.forEach(id => specialIds.add(id)); });
+            const ungroupedBases = BASES.filter(b => !baseGroupedIds.has(b.id) && !specialIds.has(b.id));
             if (ungroupedBases.length > 0) {
             html += `<div class="swatch-group"><div class="swatch-group-label">Other Bases <span class="swatch-group-count">(${ungroupedBases.length})</span></div><div class="swatch-grid-row">`;
             ungroupedBases.forEach(b => {
@@ -3825,7 +3830,7 @@ function openSwatchPicker(triggerEl, type, zoneIndex, layerIndex) {
                 groups.forEach(groupName => {
                     const ids = SPECIAL_GROUPS[groupName];
                     if (!ids) return;
-                    const groupMonos = ids.map(id => MONOLITHICS.find(m => m.id === id)).filter(Boolean);
+                    const groupMonos = ids.map(id => MONOLITHICS.find(m => m.id === id) || (typeof BASES !== 'undefined' && BASES.find(b => b.id === id))).filter(Boolean);
                     if (groupMonos.length === 0) return;
                     groupMonos.forEach(m => groupedIds.add(m.id));
                     const hasSelected = groupMonos.some(m => 'mono:' + m.id === currentId);
@@ -3992,7 +3997,7 @@ async function runSwatchPreviewOnPaint() {
         zone.pattern = finishId;
     } else {
         zone.finish = finishId;
-        const m = typeof MONOLITHICS !== 'undefined' && MONOLITHICS.find(x => x.id === finishId);
+        const m = (typeof MONOLITHICS !== 'undefined' && MONOLITHICS.find(x => x.id === finishId)) || (typeof BASES !== 'undefined' && BASES.find(x => x.id === finishId));
         if (m && (m.swatch || m.swatch2 || m.swatch3)) zone.finish_colors = { c1: m.swatch, c2: m.swatch2 || null, c3: m.swatch3 || null, ghost: m.ghostPattern || null };
     }
     const wrap = document.getElementById('swatchPreviewOnPaintWrap');

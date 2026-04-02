@@ -35,11 +35,11 @@ def paint_asphalt_grind_v2(paint, shape, mask, seed, pm, bb):
     y, x = get_mgrid((h, w))
     # Directional hash: stretch noise in X direction
     stretch_noise = multi_scale_noise((h, w), [2, 4, 8], [0.3, 0.4, 0.3], seed + 1002)
-    scratch = np.clip((scratch_base - 0.55) * 6.0 * 255.0, 0, 255)  # thresholded scratch lines
+    scratch = np.clip((scratch_base - 0.55) * 6.0, 0, 1)  # thresholded scratch lines
     # Erosion darkening
     erode = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.4, 0.3], seed + 1003)
     gray = base.mean(axis=2)
-    ground = np.clip(gray * 0.3 + 0.25 * 255.0, 0, 255)
+    ground = np.clip(gray * 0.3 + 0.25, 0, 1)
     ground_eroded = ground - erode * 0.06 - scratch * 0.08
     effect = np.clip(np.stack([ground_eroded]*3, axis=-1), 0, 1).astype(np.float32)
     blend = np.clip(pm, 0.0, 1.0)
@@ -51,7 +51,7 @@ def spec_asphalt_grind(shape, seed, sm, base_m, base_r):
     scratch = multi_scale_noise((h, w), [1, 2, 4], [0.3, 0.35, 0.35], seed + 1001)
     erode = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.4, 0.3], seed + 1003)
     M = np.clip(30.0 + scratch * 20.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(200.0 + erode * 25.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(200.0 + erode * 25.0 * sm, 15, 255).astype(np.float32)
     # CC 16=full, 255=dull. Rough asphalt = dead flat, no clearcoat
     CC = np.clip(180.0 + erode * 35.0, 16, 255).astype(np.float32)
     return M, R, CC
@@ -76,10 +76,10 @@ def paint_bullseye_chrome_rh(paint, shape, mask, seed, pm, bb):
         kr = r * 0.15  # spatial frequency
         airy = (np.sin(kr) / kr) ** 2
         ring_accum += airy
-    ring_accum = np.clip(ring_accum / n_centers * 255.0, 0, 255)
+    ring_accum = np.clip(ring_accum / n_centers, 0, 1)
     # Chrome base + ring modulation
     gray = base.mean(axis=2)
-    chrome = np.clip(gray * 0.2 + 0.65 * 255.0, 0, 255)
+    chrome = np.clip(gray * 0.2 + 0.65, 0, 1)
     effect = np.clip(np.stack([chrome * (0.85 + ring_accum * 0.15)]*3, axis=-1), 0, 1).astype(np.float32)
     blend = np.clip(pm, 0.0, 1.0)
     result = np.clip(base * (1.0 - mask[:,:,np.newaxis] * blend) + effect * (mask[:,:,np.newaxis] * blend), 0, 1)
@@ -136,16 +136,16 @@ def paint_dirt_track_satin_v2(paint, shape, mask, seed, pm, bb):
     rng = np.random.RandomState(seed + 1030)
     # Satin base (warm earth tone)
     gray = base.mean(axis=2)
-    satin = np.clip(gray * 0.25 + 0.38 * 255.0, 0, 255)
+    satin = np.clip(gray * 0.25 + 0.38, 0, 1)
     # Embedded grit particles (sparse, sharp)
     grit = rng.rand(h, w).astype(np.float32)
     grit_mask = (grit > 0.95).astype(np.float32) * 0.08
     # Dirt splatter (larger blotchy deposits)
     splat = multi_scale_noise((h, w), [8, 16, 32], [0.3, 0.4, 0.3], seed + 1031)
-    dirt = np.clip((splat - 0.5) * 3.0 * 255.0, 0, 255) * 0.06
-    effect_r = np.clip(satin + 0.04 - grit_mask - dirt * 255.0, 0, 255)
-    effect_g = np.clip(satin + 0.02 - grit_mask - dirt * 255.0, 0, 255)
-    effect_b = np.clip(satin - 0.03 - grit_mask - dirt * 255.0, 0, 255)
+    dirt = np.clip((splat - 0.5) * 3.0, 0, 1) * 0.06
+    effect_r = np.clip(satin + 0.04 - grit_mask - dirt, 0, 1)
+    effect_g = np.clip(satin + 0.02 - grit_mask - dirt, 0, 1)
+    effect_b = np.clip(satin - 0.03 - grit_mask - dirt, 0, 1)
     effect = np.stack([effect_r, effect_g, effect_b], axis=-1).astype(np.float32)
     blend = np.clip(pm, 0.0, 1.0)
     result = np.clip(base * (1.0 - mask[:,:,np.newaxis] * blend) + effect * (mask[:,:,np.newaxis] * blend), 0, 1)
@@ -157,7 +157,7 @@ def spec_dirt_track_satin(shape, seed, sm, base_m, base_r):
     rng = np.random.RandomState(seed + 1030)
     grit = (rng.rand(h, w) > 0.95).astype(np.float32)
     M = np.clip(20.0 + splat * 15.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(100.0 + grit * 25.0 + splat * 20.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(100.0 + grit * 25.0 + splat * 20.0 * sm, 15, 255).astype(np.float32)
     # Satin = degraded clearcoat, not full gloss
     CC = np.clip(35.0 + splat * 25.0, 16, 255).astype(np.float32)
     return M, R, CC
@@ -202,12 +202,12 @@ def paint_endurance_ceramic_v2(paint, shape, mask, seed, pm, bb):
     gy = np.gradient(craze, axis=0)
     gx = np.gradient(craze, axis=1)
     crack = np.sqrt(gy**2 + gx**2)
-    crack = np.clip(crack / (crack.max() + 1e-8) * 3.0 * 255.0, 0, 255)
+    crack = np.clip(crack / (crack.max() + 1e-8) * 3.0, 0, 1)
     # Ceramic base: off-white/cream with heat discoloration
     heat = multi_scale_noise((h, w), [32, 64], [0.5, 0.5], seed + 1052)
-    ceram_r = np.clip(0.72 + heat * 0.06 - crack * 0.10 * 255.0, 0, 255)
-    ceram_g = np.clip(0.68 + heat * 0.04 - crack * 0.10 * 255.0, 0, 255)
-    ceram_b = np.clip(0.60 - heat * 0.04 - crack * 0.10 * 255.0, 0, 255)
+    ceram_r = np.clip(0.72 + heat * 0.06 - crack * 0.10, 0, 1)
+    ceram_g = np.clip(0.68 + heat * 0.04 - crack * 0.10, 0, 1)
+    ceram_b = np.clip(0.60 - heat * 0.04 - crack * 0.10, 0, 1)
     effect = np.stack([ceram_r, ceram_g, ceram_b], axis=-1).astype(np.float32)
     blend = np.clip(pm, 0.0, 1.0)
     result = np.clip(base * (1.0 - mask[:,:,np.newaxis] * blend) + effect * (mask[:,:,np.newaxis] * blend), 0, 1)
@@ -217,9 +217,9 @@ def spec_endurance_ceramic(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
     craze = multi_scale_noise((h, w), [4, 8, 16], [0.3, 0.35, 0.35], seed + 1051)
     crack = np.sqrt(np.gradient(craze, axis=0)**2 + np.gradient(craze, axis=1)**2)
-    crack = np.clip(crack / (crack.max() + 1e-8) * 3.0 * 255.0, 0, 255)
+    crack = np.clip(crack / (crack.max() + 1e-8) * 3.0, 0, 1)
     M = np.clip(15.0 + crack * 10.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(80.0 + crack * 80.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(80.0 + crack * 80.0 * sm, 15, 255).astype(np.float32)
     # Charred ceramic: degraded clearcoat over cracks
     CC = np.clip(40.0 + crack * 0.15, 16, 255).astype(np.float32)
     return M, R, CC
@@ -233,14 +233,14 @@ def paint_heat_shield_v2(paint, shape, mask, seed, pm, bb):
     y, x = get_mgrid((h, w))
     # Temperature gradient (hotter at bottom/center from exhaust proximity)
     y_norm = y / max(h - 1, 1)
-    temp_base = np.clip(1.0 - y_norm * 255.0, 0, 255)  # hot at top
+    temp_base = np.clip(1.0 - y_norm, 0, 1)  # hot at top
     temp_var = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.4, 0.3], seed + 1061)
-    temp = np.clip(temp_base * 0.7 + temp_var * 0.3 * 255.0, 0, 255)
+    temp = np.clip(temp_base * 0.7 + temp_var * 0.3, 0, 1)
     # Heat tint colors (titanium heat coloring): straw->gold->purple->blue
     # Parametric RGB based on temperature
-    heat_r = np.clip(0.3 + temp * 0.5 - (temp - 0.6)**2 * 2.0 * 255.0, 0, 255)
-    heat_g = np.clip(0.25 + temp * 0.3 - temp**2 * 0.4 * 255.0, 0, 255)
-    heat_b = np.clip(0.4 - temp * 0.3 + (temp - 0.7)**2 * 1.5 * 255.0, 0, 255)
+    heat_r = np.clip(0.3 + temp * 0.5 - (temp - 0.6)**2 * 2.0, 0, 1)
+    heat_g = np.clip(0.25 + temp * 0.3 - temp**2 * 0.4, 0, 1)
+    heat_b = np.clip(0.4 - temp * 0.3 + (temp - 0.7)**2 * 1.5, 0, 1)
     effect = np.stack([heat_r, heat_g, heat_b], axis=-1).astype(np.float32)
     blend = np.clip(pm, 0.0, 1.0)
     result = np.clip(base * (1.0 - mask[:,:,np.newaxis] * blend) + effect * (mask[:,:,np.newaxis] * blend), 0, 1)
@@ -268,11 +268,11 @@ def paint_pace_car_pearl_v2(paint, shape, mask, seed, pm, bb):
     optical_path = 1.0 + path_var * 0.5
     pearl_shift = mica * 0.06 * optical_path
     gray = base.mean(axis=2)
-    pearl_base = np.clip(gray * 0.3 + 0.50 * 255.0, 0, 255)
+    pearl_base = np.clip(gray * 0.3 + 0.50, 0, 1)
     effect = np.stack([
-        np.clip(pearl_base + pearl_shift + 0.02 * 255.0, 0, 255),
-        np.clip(pearl_base + pearl_shift * 0.7 * 255.0, 0, 255),
-        np.clip(pearl_base + pearl_shift * 1.3 + 0.01 * 255.0, 0, 255)
+        np.clip(pearl_base + pearl_shift + 0.02, 0, 1),
+        np.clip(pearl_base + pearl_shift * 0.7, 0, 1),
+        np.clip(pearl_base + pearl_shift * 1.3 + 0.01, 0, 1)
     ], axis=-1).astype(np.float32)
     blend = np.clip(pm, 0.0, 1.0)
     result = np.clip(base * (1.0 - mask[:,:,np.newaxis] * blend) + effect * (mask[:,:,np.newaxis] * blend), 0, 1)
@@ -295,11 +295,11 @@ def paint_pit_lane_matte_v2(paint, shape, mask, seed, pm, bb):
     rng = np.random.RandomState(seed + 1080)
     # Industrial matte dark surface
     gray = base.mean(axis=2)
-    matte_base = np.clip(gray * 0.2 + 0.22 * 255.0, 0, 255)
+    matte_base = np.clip(gray * 0.2 + 0.22, 0, 1)
     # Rubber transfer marks (tire scuffs from pit stops)
     # Elongated smears in random directions
     rubber_noise = multi_scale_noise((h, w), [4, 8, 16], [0.3, 0.35, 0.35], seed + 1081)
-    rubber_marks = np.clip((rubber_noise - 0.6) * 4.0 * 255.0, 0, 255) * 0.08
+    rubber_marks = np.clip((rubber_noise - 0.6) * 4.0, 0, 1) * 0.08
     # Scuff darkening from rubber
     effect = np.clip(np.stack([matte_base - rubber_marks]*3, axis=-1), 0, 1).astype(np.float32)
     blend = np.clip(pm, 0.0, 1.0)
@@ -309,9 +309,9 @@ def paint_pit_lane_matte_v2(paint, shape, mask, seed, pm, bb):
 def spec_pit_lane_matte(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
     rubber = multi_scale_noise((h, w), [4, 8, 16], [0.3, 0.35, 0.35], seed + 1081)
-    marks = np.clip((rubber - 0.6) * 4.0 * 255.0, 0, 255)
+    marks = np.clip((rubber - 0.6) * 4.0, 0, 1)
     M = np.clip(8.0 + rubber * 10.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(120.0 + marks * 0.25 * sm, 15, 255).astype(np.float32)
+    R = np.clip(120.0 + marks * 60.0 * sm, 15, 255).astype(np.float32)
     CC = np.clip(140.0 + rubber * 30.0, 16, 255).astype(np.float32)
     return M, R, CC
 
@@ -367,10 +367,10 @@ def paint_rally_mud_v2(paint, shape, mask, seed, pm, bb):
     mud_b = 0.18 + dried * 0.03
     # Blend mud over base paint
     gray = base.mean(axis=2)
-    base_col = np.clip(gray * 0.3 + 0.35 * 255.0, 0, 255)
-    effect_r = np.clip(base_col * (1.0 - splat_map) + mud_r * splat_map * 255.0, 0, 255)
-    effect_g = np.clip(base_col * (1.0 - splat_map) + mud_g * splat_map * 255.0, 0, 255)
-    effect_b = np.clip(base_col * (1.0 - splat_map) + mud_b * splat_map * 255.0, 0, 255)
+    base_col = np.clip(gray * 0.3 + 0.35, 0, 1)
+    effect_r = np.clip(base_col * (1.0 - splat_map) + mud_r * splat_map, 0, 1)
+    effect_g = np.clip(base_col * (1.0 - splat_map) + mud_g * splat_map, 0, 1)
+    effect_b = np.clip(base_col * (1.0 - splat_map) + mud_b * splat_map, 0, 1)
     effect = np.stack([effect_r, effect_g, effect_b], axis=-1).astype(np.float32)
     blend = np.clip(pm, 0.0, 1.0)
     result = np.clip(base * (1.0 - mask[:,:,np.newaxis] * blend) + effect * (mask[:,:,np.newaxis] * blend), 0, 1)
@@ -396,18 +396,18 @@ def paint_rat_rod_primer_v2(paint, shape, mask, seed, pm, bb):
     spray1 = multi_scale_noise((h, w), [8, 16, 32], [0.3, 0.4, 0.3], seed + 1111)
     spray2 = multi_scale_noise((h, w), [16, 32, 64], [0.35, 0.35, 0.3], seed + 1112)
     # Uneven coverage: some areas thicker, some bare
-    coverage = np.clip(spray1 * 0.7 + spray2 * 0.3 * 255.0, 0, 255)
+    coverage = np.clip(spray1 * 0.7 + spray2 * 0.3, 0, 1)
     # Primer gray with slight warm cast
     primer_r = 0.38 + coverage * 0.06
     primer_g = 0.36 + coverage * 0.04
     primer_b = 0.34 + coverage * 0.03
     # Drip runs where too much primer applied
     drip = multi_scale_noise((h, w), [64, 128], [0.5, 0.5], seed + 1113)
-    drip_marks = np.clip((drip - 0.7) * 4.0 * 255.0, 0, 255) * 0.04
+    drip_marks = np.clip((drip - 0.7) * 4.0, 0, 1) * 0.04
     effect = np.stack([
-        np.clip(primer_r + drip_marks * 255.0, 0, 255),
-        np.clip(primer_g + drip_marks * 0.8 * 255.0, 0, 255),
-        np.clip(primer_b + drip_marks * 0.6 * 255.0, 0, 255)
+        np.clip(primer_r + drip_marks, 0, 1),
+        np.clip(primer_g + drip_marks * 0.8, 0, 1),
+        np.clip(primer_b + drip_marks * 0.6, 0, 1)
     ], axis=-1).astype(np.float32)
     blend = np.clip(pm, 0.0, 1.0)
     result = np.clip(base * (1.0 - mask[:,:,np.newaxis] * blend) + effect * (mask[:,:,np.newaxis] * blend), 0, 1)
@@ -435,13 +435,13 @@ def paint_stock_car_enamel_v2(paint, shape, mask, seed, pm, bb):
     peel_height = peel * 0.025  # subtle surface undulation
     # Thick enamel: good coverage, moderate gloss
     gray = base.mean(axis=2)
-    enamel = np.clip(gray * 0.4 + 0.40 * 255.0, 0, 255)
+    enamel = np.clip(gray * 0.4 + 0.40, 0, 1)
     # Convection slightly modifies color concentration
     color_shift = convection * 0.02
     effect = np.stack([
-        np.clip(enamel + peel_height + color_shift * 255.0, 0, 255),
-        np.clip(enamel + peel_height + color_shift * 0.8 * 255.0, 0, 255),
-        np.clip(enamel + peel_height + color_shift * 0.5 * 255.0, 0, 255)
+        np.clip(enamel + peel_height + color_shift, 0, 1),
+        np.clip(enamel + peel_height + color_shift * 0.8, 0, 1),
+        np.clip(enamel + peel_height + color_shift * 0.5, 0, 1)
     ], axis=-1).astype(np.float32)
     blend = np.clip(pm, 0.0, 1.0)
     result = np.clip(base * (1.0 - mask[:,:,np.newaxis] * blend) + effect * (mask[:,:,np.newaxis] * blend), 0, 1)
@@ -475,11 +475,11 @@ def paint_victory_lane_v2(paint, shape, mask, seed, pm, bb):
     sparkle_b = sparkle_mask * rng.rand(h, w).astype(np.float32) * 0.15
     # Celebratory gloss base
     gray = base.mean(axis=2)
-    gloss_base = np.clip(gray * 0.3 + 0.50 * 255.0, 0, 255)
+    gloss_base = np.clip(gray * 0.3 + 0.50, 0, 1)
     effect = np.stack([
-        np.clip(gloss_base + sparkle_r * 255.0, 0, 255),
-        np.clip(gloss_base + sparkle_g * 255.0, 0, 255),
-        np.clip(gloss_base + sparkle_b * 255.0, 0, 255)
+        np.clip(gloss_base + sparkle_r, 0, 1),
+        np.clip(gloss_base + sparkle_g, 0, 1),
+        np.clip(gloss_base + sparkle_b, 0, 1)
     ], axis=-1).astype(np.float32)
     blend = np.clip(pm, 0.0, 1.0)
     result = np.clip(base * (1.0 - mask[:,:,np.newaxis] * blend) + effect * (mask[:,:,np.newaxis] * blend), 0, 1)

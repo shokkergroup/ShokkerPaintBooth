@@ -3430,7 +3430,7 @@ def spec_patina_verdigris(shape, seed, sm, octaves=5, persistence=0.55, **kwargs
 
 
 def spec_oxidized_pitting(shape, seed, sm, num_pits=400, pit_radius=4.0, **kwargs):
-    """Gaussian pit depressions from oxidation: dark metallic centers with bright metallic rings at pit edge."""
+    """Oxidation pits via cKDTree nearest-neighbor (fast). Was brute-force loop over 400 pits."""
     h, w = shape
     if sm < 0.001:
         return _flat(shape)
@@ -3447,14 +3447,17 @@ def spec_oxidized_pitting(shape, seed, sm, num_pits=400, pit_radius=4.0, **kwarg
     pit_indices = rng.choice(h * w, size=num_pits, replace=False, p=flat_prob)
     pit_y = (pit_indices // w).astype(np.float32)
     pit_x = (pit_indices % w).astype(np.float32)
-    result = np.zeros(shape, dtype=np.float32)
-    for i in range(num_pits):
-        dy = yy - pit_y[i]
-        dx = xx - pit_x[i]
-        dist = np.sqrt(dy * dy + dx * dx)
-        pit_depth = np.exp(-(dist / max(pit_radius * 0.4, 1.0)) ** 2)
-        pit_ring = np.exp(-((dist - pit_radius) / max(pit_radius * 0.3, 1.0)) ** 2) * 0.6
-        result += pit_ring - pit_depth * 0.8
+    # cKDTree: find nearest K pits per pixel
+    pts = np.column_stack([pit_y, pit_x])
+    tree = cKDTree(pts)
+    grid = np.column_stack([yy.ravel(), xx.ravel()])
+    k = min(4, len(pts))
+    dists, _ = tree.query(grid, k=k, workers=-1)
+    dists = dists.reshape(h, w, k) if k > 1 else dists.reshape(h, w, 1)
+    # Pit depth (dark center) + ring (bright edge) from nearest K pits
+    pit_depth = np.exp(-(dists / max(pit_radius * 0.4, 1.0)) ** 2)
+    pit_ring = np.exp(-((dists - pit_radius) / max(pit_radius * 0.3, 1.0)) ** 2) * 0.6
+    result = np.sum(pit_ring - pit_depth * 0.8, axis=2)
     return _sm_scale(_normalize(result), sm).astype(np.float32)
 
 
@@ -3667,14 +3670,14 @@ def spec_sandblast_strip(shape, seed, sm, blob_octaves=4, blob_freq=2.5, **kwarg
 
 
 def spec_micro_chips(shape, seed, sm, chip_radius=3.5, base_density=0.0015, **kwargs):
-    """3-octave noise clusters paint chips on leading-surface zones: random point-process chip field."""
+    """Paint chips via cKDTree nearest-neighbor (fast). Was brute-force loop over 6K+ chips."""
     h, w = shape
     if sm < 0.001:
         return _flat(shape)
     rng = np.random.RandomState(seed)
-    yy = np.arange(h, dtype=np.float32) / h
-    xx = np.arange(w, dtype=np.float32) / w
-    Y, X = np.meshgrid(yy, xx, indexing='ij')
+    yy_n = np.arange(h, dtype=np.float32) / h
+    xx_n = np.arange(w, dtype=np.float32) / w
+    Y, X = np.meshgrid(yy_n, xx_n, indexing='ij')
     density_field = np.zeros(shape, dtype=np.float32)
     amp, freq = 1.0, 2.0
     for _ in range(3):
@@ -3691,13 +3694,19 @@ def spec_micro_chips(shape, seed, sm, chip_radius=3.5, base_density=0.0015, **kw
     chip_indices = rng.choice(h * w, size=max(num_chips, 1), replace=False, p=flat_prob)
     chip_y = (chip_indices // w).astype(np.float32)
     chip_x = (chip_indices % w).astype(np.float32)
-    result = np.zeros(shape, dtype=np.float32)
-    yg, xg = np.mgrid[0:h, 0:w].astype(np.float32)
-    for i in range(len(chip_y)):
-        dy = yg - chip_y[i]
-        dx = xg - chip_x[i]
-        dist = np.sqrt(dy * dy + dx * dx)
-        result += np.exp(-(dist / max(chip_radius, 0.5)) ** 2)
+    # cKDTree: find nearest K chips per pixel in one vectorized query
+    pts = np.column_stack([chip_y, chip_x])
+    tree = cKDTree(pts)
+    yg, xg = np.mgrid[0:h, 0:w]
+    grid = np.column_stack([yg.ravel().astype(np.float32), xg.ravel().astype(np.float32)])
+    k = min(6, len(pts))  # each pixel only affected by nearest few chips
+    dists, _ = tree.query(grid, k=k, workers=-1)
+    if k == 1:
+        dists = dists.reshape(h, w, 1)
+    else:
+        dists = dists.reshape(h, w, k)
+    # Sum Gaussian contributions from nearest K chips only
+    result = np.sum(np.exp(-(dists / max(chip_radius, 0.5)) ** 2), axis=2)
     result = np.clip(result, 0.0, 1.0)
     return _sm_scale(_normalize(result), sm).astype(np.float32)
 
@@ -3826,35 +3835,36 @@ def spec_carbon_3k_fine(shape, seed, sm, tow_width=4.5, **kwargs):
 
 
 def spec_carbon_forged(shape, seed, sm, num_strands=800, strand_len_frac=0.25, **kwargs):
-    """Forged carbon fiber (random short-fiber SMC). Random overlapping fiber strand segments
-    at random angles. Metallic value = proximity to nearest random-angle fiber segment.
-    NOT a regular weave — distinct marbled short-fiber pattern."""
+    """Forged carbon fiber via local bounding-box rasterization (fast).
+    Was brute-force loop computing distance on full 4M grid per strand."""
     h, w = shape
     if sm < 0.001:
         return _flat(shape)
     rng = np.random.RandomState(seed)
-    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
     result = np.zeros(shape, dtype=np.float32)
     strand_len = min(h, w) * strand_len_frac
-    # Random short fiber segments: each has start point, angle, length
     sy = rng.uniform(0, h, size=num_strands).astype(np.float32)
     sx = rng.uniform(0, w, size=num_strands).astype(np.float32)
     angles = rng.uniform(0, np.pi, size=num_strands).astype(np.float32)
     lengths = rng.uniform(strand_len * 0.3, strand_len, size=num_strands).astype(np.float32)
     widths = rng.uniform(0.8, 2.5, size=num_strands).astype(np.float32)
-    # Accumulate strand contributions using distance-to-segment functions
     for i in range(num_strands):
-        dx_s = np.cos(angles[i])
-        dy_s = np.sin(angles[i])
-        rx = xx - sx[i]
-        ry = yy - sy[i]
-        # Projection along strand axis
+        dx_s, dy_s = np.cos(angles[i]), np.sin(angles[i])
+        # Bounding box of strand + falloff margin
+        ey, ex = sy[i] + dy_s * lengths[i], sx[i] + dx_s * lengths[i]
+        margin = widths[i] * 4
+        y0 = max(0, int(min(sy[i], ey) - margin))
+        y1 = min(h, int(max(sy[i], ey) + margin) + 1)
+        x0 = max(0, int(min(sx[i], ex) - margin))
+        x1 = min(w, int(max(sx[i], ex) + margin) + 1)
+        if y1 <= y0 or x1 <= x0:
+            continue
+        ly, lx = np.mgrid[y0:y1, x0:x1].astype(np.float32)
+        rx, ry = lx - sx[i], ly - sy[i]
         t = np.clip(rx * dx_s + ry * dy_s, 0.0, lengths[i])
-        # Perpendicular distance to strand
-        perp = np.abs(-rx * dy_s + ry * dx_s)
-        dist_to_strand = np.sqrt((rx - t * dx_s) ** 2 + (ry - t * dy_s) ** 2)
-        contribution = np.exp(-(dist_to_strand / max(widths[i], 0.5)) ** 2)
-        result = np.maximum(result, contribution)
+        dist = np.sqrt((rx - t * dx_s) ** 2 + (ry - t * dy_s) ** 2)
+        contrib = np.exp(-(dist / max(widths[i], 0.5)) ** 2)
+        result[y0:y1, x0:x1] = np.maximum(result[y0:y1, x0:x1], contrib)
     return _sm_scale(_normalize(result), sm).astype(np.float32)
 
 
@@ -3949,42 +3959,42 @@ def spec_kevlar_weave(shape, seed, sm, tow_width=7.0, **kwargs):
 
 
 def spec_fiberglass_chopped(shape, seed, sm, num_strands=600, **kwargs):
-    """Chopped strand fiberglass mat. Random short glass fiber strands at all angles, non-woven.
-    Glass fibers are highly specular at near-perpendicular angles — R varies 60–240 based on
-    orientation. Distinct from forged carbon: uses orientation-weighted specular rather than
-    proximity-max, and uses a different strand distribution algorithm (Poisson-style clusters)."""
+    """Chopped fiberglass via local bounding-box rasterization (fast).
+    Was brute-force loop computing distance on full 4M grid per strand."""
     h, w = shape
     if sm < 0.001:
         return _flat(shape)
     rng = np.random.RandomState(seed)
-    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
     result = np.zeros(shape, dtype=np.float32)
-    # Fiberglass: strands tend to cluster in local mats — simulate with Poisson cluster centers
     num_clusters = max(num_strands // 8, 8)
     cluster_y = rng.uniform(0, h, size=num_clusters).astype(np.float32)
     cluster_x = rng.uniform(0, w, size=num_clusters).astype(np.float32)
     cluster_radius = min(h, w) * 0.18
-    # Generate strands, each near a random cluster center
     for i in range(num_strands):
         c = rng.randint(0, num_clusters)
-        # Strand start near cluster center
         sy_s = float(np.clip(cluster_y[c] + rng.normal(0, cluster_radius * 0.4), 0, h - 1))
         sx_s = float(np.clip(cluster_x[c] + rng.normal(0, cluster_radius * 0.4), 0, w - 1))
         angle = rng.uniform(0, np.pi)
         strand_len = rng.uniform(min(h, w) * 0.04, min(h, w) * 0.18)
-        # Glass specular depends on fiber orientation vs. assumed light direction (horizontal)
-        # Fibers near 0° (horizontal) are less specular; near 90° (vertical) are most specular
-        orientation_spec = np.sin(angle) ** 2   # 0=horizontal(low spec), 1=vertical(high spec)
-        spec_peak = 0.25 + orientation_spec * 0.75   # maps to 0.25–1.0 metallic
-        dx_s = np.cos(angle)
-        dy_s = np.sin(angle)
-        rx = xx - sx_s
-        ry = yy - sy_s
-        t = np.clip(rx * dx_s + ry * dy_s, 0.0, strand_len)
-        dist_to_strand = np.sqrt((rx - t * dx_s) ** 2 + (ry - t * dy_s) ** 2)
+        orientation_spec = np.sin(angle) ** 2
+        spec_peak = 0.25 + orientation_spec * 0.75
+        dx_s, dy_s = np.cos(angle), np.sin(angle)
         strand_width = rng.uniform(0.6, 1.8)
-        contribution = spec_peak * np.exp(-(dist_to_strand / max(strand_width, 0.4)) ** 2)
-        result = np.maximum(result, contribution)
+        # Local bounding box only
+        ey, ex = sy_s + dy_s * strand_len, sx_s + dx_s * strand_len
+        margin = strand_width * 4
+        y0 = max(0, int(min(sy_s, ey) - margin))
+        y1 = min(h, int(max(sy_s, ey) + margin) + 1)
+        x0 = max(0, int(min(sx_s, ex) - margin))
+        x1 = min(w, int(max(sx_s, ex) + margin) + 1)
+        if y1 <= y0 or x1 <= x0:
+            continue
+        ly, lx = np.mgrid[y0:y1, x0:x1].astype(np.float32)
+        rx, ry = lx - sx_s, ly - sy_s
+        t = np.clip(rx * dx_s + ry * dy_s, 0.0, strand_len)
+        dist = np.sqrt((rx - t * dx_s) ** 2 + (ry - t * dy_s) ** 2)
+        contrib = spec_peak * np.exp(-(dist / max(strand_width, 0.4)) ** 2)
+        result[y0:y1, x0:x1] = np.maximum(result[y0:y1, x0:x1], contrib)
     return _sm_scale(_normalize(result), sm).astype(np.float32)
 
 
@@ -4804,14 +4814,18 @@ def spec_cast_surface(shape, seed, sm, bump_scale=0.15, grain_scale=0.05, **kwar
     raw = low_blur * bump_scale + high_freq * grain_scale
     # Moderate metallic: 140-200 range → normalized output 0.55-0.78 (cast iron base)
     result = raw * 0.5 + 0.62  # bias toward moderate metallic
-    # Random casting porosity: sparse dark spots (gas pockets in cast)
+    # Random casting porosity via cKDTree (was brute-force loop over ~819 pores)
     num_pores = int(h * w * 0.0002)
-    py = rng.randint(0, h, num_pores)
-    px = rng.randint(0, w, num_pores)
-    pore_map = np.zeros(shape, dtype=np.float32)
-    for i in range(num_pores):
-        pr = rng.uniform(1.5, 4.5)
-        pore_map += np.exp(-((Y - py[i]) ** 2 + (X - px[i]) ** 2) / (2 * pr ** 2)) * 0.3
+    p_y = rng.randint(0, h, num_pores).astype(np.float32)
+    p_x = rng.randint(0, w, num_pores).astype(np.float32)
+    pts = np.column_stack([p_y, p_x])
+    tree = cKDTree(pts)
+    grid = np.column_stack([Y.ravel(), X.ravel()])
+    k = min(3, len(pts))
+    dists, _ = tree.query(grid, k=k, workers=-1)
+    dists = dists.reshape(h, w, k) if k > 1 else dists.reshape(h, w, 1)
+    avg_pr = 3.0  # average pore radius
+    pore_map = np.sum(np.exp(-(dists ** 2) / (2 * avg_pr ** 2)) * 0.3, axis=2)
     result = result - np.clip(pore_map, 0.0, 0.3)
     return _sm_scale(_normalize(result), sm).astype(np.float32)
 

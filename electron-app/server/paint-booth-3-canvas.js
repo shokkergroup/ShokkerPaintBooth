@@ -187,7 +187,7 @@ import os
 # Add the ShokkerEngine folder to Python path so we can import the engine
 ENGINE_PATHS = [
     os.path.dirname(os.path.abspath(__file__)),
-    r"E:/Claude Code Assistant/12-iRacing Misc/Shokker iRacing/ShokkerEngine",
+    os.path.join(os.path.dirname(os.path.abspath(__file__)), "engine"),
 ]
 for p in ENGINE_PATHS:
     if p not in sys.path:
@@ -230,7 +230,7 @@ except ImportError:
     print("  Make sure the file is in one of these locations:")
     for p in ENGINE_PATHS:
         print(f"    - {p}")
-    print("\\n  You can get it from: E:/Claude Code Assistant/12-iRacing Misc/Shokker iRacing/ShokkerEngine/")
+    print("\\n  Make sure the engine/ folder is in the same directory as this script.")
     sys.exit(1)
 
 if __name__ == '__main__':

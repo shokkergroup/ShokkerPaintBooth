@@ -312,7 +312,7 @@ def save_config(cfg):
 def build_check():
     """Diagnostic endpoint - returns server status and configuration."""
     # Read actual version from electron-app/package.json if available
-    _pkg_version = "5.9.2"
+    _pkg_version = "6.0.0"
     try:
         import json as _json
         for _pkg_path in [
@@ -2060,7 +2060,7 @@ def preview_render_endpoint():
     # If the previous render is still finishing after 2 s, reject this
     # request with 429 so the UI can retry rather than pile up renders.
     _preview_abort.set()
-    acquired = _preview_render_lock.acquire(timeout=5.0)
+    acquired = _preview_render_lock.acquire(timeout=2.0)
     if not acquired:
         return jsonify({"error": "Preview busy — previous render still finishing"}), 429
     _preview_abort.clear()
@@ -2107,7 +2107,9 @@ def preview_render_endpoint():
                 import shokker_engine_v2 as _eng
                 if hasattr(_eng.build_multi_zone, '_zone_cache'):
                     _eng.build_multi_zone._zone_cache.clear()
-                    logger.info(f"[preview-cache] Invalidated zone cache (paint file changed)")
+                    from engine.compose import clear_pattern_cache
+                    clear_pattern_cache()
+                    logger.info(f"[preview-cache] Invalidated zone + pattern cache (paint file changed)")
             except Exception:
                 pass
         if changed_zone >= 0 or zone_hashes:
@@ -2338,10 +2340,6 @@ def preview_render_endpoint():
                     parts.append(f"stack[{li}]={layer.get('id','?')}@scale={layer.get('scale',1.0)}")
             logger.info("  ".join(parts))
 
-        # Early abort: if a newer request already signaled abort, skip the render
-        if _preview_abort.is_set():
-            return jsonify({"error": "Preview superseded by newer request"}), 429
-
         # Run the preview render
         paint_rgb, spec_rgba, elapsed_ms = engine.preview_render(
             actual_paint_file, server_zones, seed=seed, preview_scale=preview_scale,
@@ -2350,10 +2348,6 @@ def preview_render_endpoint():
             decal_paint_path=decal_paint_path_preview,
             decal_mask_base64=decal_mask_base64 or None,
         )
-
-        # Post-render abort: if a newer request arrived during render, discard result
-        if _preview_abort.is_set():
-            return jsonify({"error": "Preview superseded during render"}), 429
 
         # Convert paint to base64 PNG (main preview)
         paint_b64 = numpy_to_base64_png(paint_rgb)

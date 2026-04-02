@@ -14,6 +14,34 @@ Uses LAZY import for BASE_REGISTRY/PATTERN_REGISTRY to avoid circular import.
 
 import numpy as np
 import time as _time
+from functools import lru_cache
+
+# Pattern texture cache — avoids regenerating identical patterns across preview re-renders.
+# Key: (pattern_id, h, w, seed, scale, rotation). Stores (pattern_val, tex_dict).
+# Max 32 entries (~50MB at 2048x2048 with 4 arrays each). Cleared on paint file change.
+_pattern_tex_cache = {}
+_PATTERN_CACHE_MAX = 32
+_pattern_cache_enabled = True
+
+
+def _get_cached_tex(tex_fn, pattern_id, shape, mask, seed, sm, scale=1.0, rotation=0):
+    """Call tex_fn with caching. Returns tex dict."""
+    if not _pattern_cache_enabled:
+        return tex_fn(shape, mask, seed, sm)
+    key = (pattern_id, shape[0], shape[1], seed, round(float(scale), 4), round(float(rotation), 2))
+    if key in _pattern_tex_cache:
+        return _pattern_tex_cache[key]
+    tex = tex_fn(shape, mask, seed, sm)
+    if len(_pattern_tex_cache) >= _PATTERN_CACHE_MAX:
+        # Evict oldest entry
+        _pattern_tex_cache.pop(next(iter(_pattern_tex_cache)))
+    _pattern_tex_cache[key] = tex
+    return tex
+
+
+def clear_pattern_cache():
+    """Clear the pattern texture cache (call when paint file or resolution changes)."""
+    _pattern_tex_cache.clear()
 
 
 def _ggx_safe_R(R_arr, M_arr, lib=None):
@@ -112,7 +140,16 @@ def _get_pattern_mask(pattern_id, shape, mask, seed, sm, scale=1.0, rotation=0.0
         h, w = shape[0], shape[1]
         # tex_fn needs CPU mask
         _mask_cpu = to_cpu(mask) if is_gpu() else mask
-        tex = tex_fn(shape, _mask_cpu, seed, sm)
+        # Cache tex_fn output by function identity + shape + seed
+        _cache_key = (id(tex_fn), h, w, seed)
+        if _pattern_cache_enabled and _cache_key in _pattern_tex_cache:
+            tex = _pattern_tex_cache[_cache_key]
+        else:
+            tex = tex_fn(shape, _mask_cpu, seed, sm)
+            if _pattern_cache_enabled:
+                if len(_pattern_tex_cache) >= _PATTERN_CACHE_MAX:
+                    _pattern_tex_cache.pop(next(iter(_pattern_tex_cache)))
+                _pattern_tex_cache[_cache_key] = tex
         if isinstance(tex, dict):
             pv = tex.get("pattern_val")
         else:
@@ -417,8 +454,9 @@ def compose_finish(base_id, pattern_id, shape, mask, seed, sm, scale=1.0, spec_m
     from engine.registry import BASE_REGISTRY, PATTERN_REGISTRY
     if pattern_sm is None:
         pattern_sm = sm
-    _pat_int = max(0.0, min(1.0, float(pattern_intensity)))
-    pattern_sm_eff = pattern_sm * _pat_int  # linear 0-100%: 5%=hint, 100%=full (matches paint)
+    _pat_int_raw = max(0.0, min(1.0, float(pattern_intensity)))
+    _pat_int = _pat_int_raw ** 0.5 if _pat_int_raw > 0 else 0.0  # perceptual curve matches paint
+    pattern_sm_eff = pattern_sm * _pat_int  # sqrt curve: 5%→22%, 50%→71%, 100%→100%
     # NOTE: base_strength is a paint slider, handled in compose_paint_mod — not used in spec compositing.
     _sm_base = sm * max(0.0, min(2.0, float(base_spec_strength)))
     base = BASE_REGISTRY[base_id]
@@ -1136,8 +1174,9 @@ def compose_finish_stacked(base_id, all_patterns, shape, mask, seed, sm, spec_mu
     from engine.registry import BASE_REGISTRY, PATTERN_REGISTRY
     if pattern_sm is None:
         pattern_sm = sm
-    _pat_int = max(0.0, min(1.0, float(pattern_intensity)))
-    pattern_sm_eff = pattern_sm * _pat_int  # linear 0-100%: 5%=hint, 100%=full
+    _pat_int_raw = max(0.0, min(1.0, float(pattern_intensity)))
+    _pat_int = _pat_int_raw ** 0.5 if _pat_int_raw > 0 else 0.0  # perceptual curve
+    pattern_sm_eff = pattern_sm * _pat_int  # sqrt curve: 5%→22%, 50%→71%, 100%→100%
     # NOTE: base_strength is a paint slider, handled in compose_paint_mod_stacked — not used in spec compositing.
     _sm_base = sm * max(0.0, min(2.0, float(base_spec_strength)))
     base = BASE_REGISTRY[base_id]
@@ -2034,8 +2073,10 @@ def compose_paint_mod(base_id, pattern_id, paint, shape, mask, seed, pm, bb, sca
         grad_3d = grad[:, :, np.newaxis]
         paint = paint * (1.0 - grad_3d) + paint_blend * grad_3d
 
-    # pattern_intensity 0–1: 5% = hint, 100% = full (linear so slider matches expectation)
-    _pi = max(0.0, min(1.0, float(pattern_intensity)))
+    # pattern_intensity 0–1: perceptual curve so low values still show pattern
+    # sqrt curve: 5%→22%, 25%→50%, 50%→71%, 100%→100% (prevents disappearing below 50%)
+    _pi_raw = max(0.0, min(1.0, float(pattern_intensity)))
+    _pi = _pi_raw ** 0.5 if _pi_raw > 0 else 0.0
     if has_pattern:
         pattern = PATTERN_REGISTRY[pattern_id]
         pat_paint_fn = pattern.get("paint_fn", paint_none)

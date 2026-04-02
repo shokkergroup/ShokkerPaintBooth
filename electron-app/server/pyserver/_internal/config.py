@@ -58,9 +58,9 @@ class _Config:
     # ─── FEATURE FLAGS (rollback: set False to restore previous behavior) ───
     ENABLE_THIRD_BASE_OVERLAY: bool = True   # 3rd Base Overlay layer + per-layer pattern
     # ─── BUILD ─────────────────────────────────────────────────
-    VERSION: str = "5.0.0"
-    BUILD_TAG: str = "V5-1"
-    APP_NAME: str = "Shokker Paint Booth V5"
+    VERSION: str = "6.0.0"
+    BUILD_TAG: str = "V6-1"
+    APP_NAME: str = "Shokker Paint Booth V6"
 
     def __init__(self):
         self._apply_env_overrides()

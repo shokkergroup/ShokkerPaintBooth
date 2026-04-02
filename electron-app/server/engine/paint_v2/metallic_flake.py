@@ -123,10 +123,17 @@ def paint_electric_ice_v2(paint, shape, mask, seed, pm, bb):
 def spec_electric_ice(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
     n1 = multi_scale_noise((h, w), [8, 16, 32], [0.3, 0.4, 0.3], seed + 921)
+    n2 = multi_scale_noise((h, w), [4, 8], [0.5, 0.5], seed + 922)
+    n3 = multi_scale_noise((h, w), [2, 4], [0.5, 0.5], seed + 923)
+    ice_base = multi_scale_noise((h, w), [16, 32], [0.5, 0.5], seed + 924)
+    # Primary ridge from Lichtenberg branching
     ridge = np.clip((np.abs(np.gradient(n1, axis=0)) + np.abs(np.gradient(n1, axis=1))) * 8.0, 0, 1)
-    M = np.clip(120.0 + ridge * 60.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(5.0 + ridge * 10.0 * sm, 15, 255).astype(np.float32)
-    CC = np.clip(16.0 + ridge * 5.0, 0, 255).astype(np.float32)
+    # Fine branch contribution
+    fine_branch = np.clip((np.abs(np.gradient(n2, axis=0)) + np.abs(np.gradient(n2, axis=1))) * 12.0, 0, 1) * 0.5
+    lightning = np.clip(ridge + fine_branch, 0, 1)
+    M = np.clip(120.0 + lightning * 60.0 * sm + ice_base * 8.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(5.0 + lightning * 10.0 * sm + ice_base * 3.0 * sm, 15, 255).astype(np.float32)
+    CC = np.clip(16.0 + lightning * 5.0 + ice_base * 2.0, 0, 255).astype(np.float32)
     return M, R, CC
 
 # ==================================================================
@@ -258,8 +265,11 @@ def paint_plasma_metal_v2(paint, shape, mask, seed, pm, bb):
 def spec_plasma_metal(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
     ion = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.4, 0.3], seed + 961)
+    tex = multi_scale_noise((h, w), [2, 4], [0.5, 0.5], seed + 962)
+    # Texture roughness inversely proportional to surface energy (matching paint)
+    texture_var = tex * (1.0 - np.clip(ion, 0, 1))
     M = np.clip(150.0 + ion * 55.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(8.0 + (1.0 - ion) * 18.0 * sm, 15, 255).astype(np.float32)
+    R = np.clip(8.0 + (1.0 - ion) * 18.0 * sm + texture_var * 12.0 * sm, 15, 255).astype(np.float32)
     CC = np.clip(14.0 + ion * 6.0, 0, 255).astype(np.float32)
     return M, R, CC
 

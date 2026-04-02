@@ -51,6 +51,7 @@ def spec_chrome_wrap(shape, seed, sm, base_m, base_r):
     # CC 16 = full clearcoat; mirror chrome vinyl = full gloss
     cc = np.full((h, w), 16.0, dtype=np.float32)
     
+    # metallic is ALREADY 0.85-1.0 (i.e. 0-1 range) — scale to 0-255
     return (np.clip(metallic * 255.0, 0, 255).astype(np.float32),
             np.clip(roughness * 255.0, 0, 255).astype(np.float32),
             cc)
@@ -192,8 +193,8 @@ def spec_gloss_wrap(shape, seed, sm, base_m, base_r):
     
     peel = multi_scale_noise((h, w), [1, 2, 4], [0.5, 0.3, 0.2], seed + 2511)
     metallic = np.clip(3.0 + peel * 5.0 * sm, 0, 255).astype(np.float32)
-    roughness = np.clip(6.0 + peel * 6.0 * sm, 0, 255).astype(np.float32)
-    cc = np.clip(16.0 + peel * 4.0, 0, 255).astype(np.float32)
+    roughness = np.clip(6.0 + peel * 6.0 * sm, 15, 255).astype(np.float32)  # GGX floor
+    cc = np.clip(16.0 + peel * 4.0, 16, 255).astype(np.float32)
     
     return (metallic, roughness, cc)
 
@@ -279,15 +280,15 @@ def spec_matte_wrap(shape, seed, sm, base_m, base_r):
     
     # Matte: zero metallicity
     metallic = np.zeros((h, w), dtype=np.float32)
-    
+
     # High roughness for matte diffusion
     rough_base = multi_scale_noise((h, w), [2, 4, 8], [0.35, 0.35, 0.3], seed + 2519)
-    roughness = 0.65 + 0.2 * rough_base
-    
+    roughness = np.clip(166.0 + rough_base * 51.0 * sm, 15, 255).astype(np.float32)
+
     # Dead flat = max dull clearcoat (CC 255); 0-15 invalid per spec map ref
     clearcoat = np.full((h, w), 255.0, dtype=np.float32)
-    
-    return (metallic, np.clip(roughness * 255.0, 0, 255).astype(np.float32), clearcoat)
+
+    return (metallic, roughness, clearcoat)
 
 
 # =============================================================================
@@ -331,9 +332,9 @@ def spec_satin_wrap(shape, seed, sm, base_m, base_r):
     
     grain = multi_scale_noise((h, w), [1, 2, 4, 8], [0.3, 0.25, 0.25, 0.2], seed + 2524)
     metallic = np.clip(3.0 + grain * 5.0 * sm, 0, 255).astype(np.float32)
-    roughness = np.clip(35.0 + grain * 20.0 * sm, 0, 255).astype(np.float32)
+    roughness = np.clip(35.0 + grain * 20.0 * sm, 15, 255).astype(np.float32)  # GGX floor
     cc = np.clip(60.0 + grain * 6.0, 16, 255).astype(np.float32)
-    
+
     return (metallic, roughness, cc)
 
 
@@ -377,18 +378,17 @@ def spec_stealth_wrap(shape, seed, sm, base_m, base_r):
     h, w = shape
     
     # Almost no metallic (absorptive)
-    metallic = 0.05 + 0.1 * multi_scale_noise((h, w), [1, 2], [0.6, 0.4], seed + 2527)
-    
+    absorb = multi_scale_noise((h, w), [1, 2], [0.6, 0.4], seed + 2527)
+    metallic = np.clip(13.0 + absorb * 25.0 * sm, 0, 255).astype(np.float32)
+
     # Very high roughness for absorptive scattering
     rough_noise = multi_scale_noise((h, w), [2, 4, 8], [0.35, 0.35, 0.3], seed + 2528)
-    roughness = 0.75 + 0.2 * rough_noise
-    
-    # Minimal clearcoat for stealth
-    clearcoat = np.full((h, w), np.clip(0.1 + 0.05 * base_m, 0, 1), dtype=np.float32)
-    
-    return (np.clip(metallic * 255.0, 0, 255).astype(np.float32),
-            np.clip(roughness * 255.0, 0, 255).astype(np.float32),
-            np.clip(clearcoat * 255.0, 16, 255).astype(np.float32))
+    roughness = np.clip(191.0 + rough_noise * 51.0 * sm, 15, 255).astype(np.float32)
+
+    # Minimal clearcoat for stealth — base_m is ALREADY 0-255, no *255 needed
+    clearcoat = np.clip(120.0 + base_m * 0.1 + absorb * 15.0, 16, 255).astype(np.float32)
+
+    return (metallic, roughness, clearcoat)
 
 
 # =============================================================================
@@ -420,14 +420,13 @@ def spec_textured_wrap(shape, seed, sm, base_m, base_r):
     """
     h, w = shape
     
-    metallic = 0.15 + 0.15 * multi_scale_noise((h, w), [2, 4], [0.6, 0.4], seed + 2530)
+    tex = multi_scale_noise((h, w), [2, 4], [0.6, 0.4], seed + 2530)
     weave_rough = multi_scale_noise((h, w), [3, 6, 12], [0.4, 0.35, 0.25], seed + 2531)
-    roughness = 0.3 + 0.2 * weave_rough
-    cc = np.clip(40.0 + weave_rough * 8.0, 16, 255)
-    
-    return (np.clip(metallic * 255.0, 0, 255).astype(np.float32),
-            np.clip(roughness * 255.0, 0, 255).astype(np.float32),
-            cc.astype(np.float32))
+    metallic = np.clip(38.0 + tex * 38.0 * sm, 0, 255).astype(np.float32)
+    roughness = np.clip(77.0 + weave_rough * 51.0 * sm, 15, 255).astype(np.float32)
+    cc = np.clip(40.0 + weave_rough * 8.0, 16, 255).astype(np.float32)
+
+    return (metallic, roughness, cc)
 
 
 # =============================================================================
@@ -480,7 +479,7 @@ def spec_brushed_wrap(shape, seed, sm, base_m, base_r):
     depth = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.4, 0.3], seed + 2541)
 
     M = np.clip(120.0 + row * 40.0 * sm + depth * 20.0, 0, 255).astype(np.float32)
-    R = np.clip(18.0 + row * 25.0 * sm + depth * 10.0, 0, 255).astype(np.float32)
+    R = np.clip(18.0 + row * 25.0 * sm + depth * 10.0, 15, 255).astype(np.float32)  # GGX floor
     CC = np.clip(35.0 + depth * 6.0, 16, 255).astype(np.float32)
-    
+
     return (M, R, CC)

@@ -206,7 +206,8 @@ def spec_blue_chrome(shape, seed, sm, base_m, base_r):
     """Blue chrome spec: spatially varied via FBM — still near-mirror but not flat.
     M: 220-255 (very metallic), R: 2-8 (near-mirror), CC: 14-18."""
     h, w = shape[:2] if len(shape) > 2 else shape
-    noise = multi_scale_noise((h, w), [8, 16], [0.6, 0.4], seed + 73)
+    # MARRIED to paint_blue_chrome_v2: seed+71 [8,16] and seed+72 [4,8]
+    noise = multi_scale_noise((h, w), [8, 16], [0.6, 0.4], seed + 71)
     M  = np.clip(220.0 + noise * 35.0, 0, 255).astype(np.float32)
     R  = np.clip(2.0   + noise *  6.0, 0, 255).astype(np.float32)
     CC = np.clip(14.0  + noise *  4.0, 0,  16).astype(np.float32)
@@ -288,7 +289,8 @@ def spec_satin_chrome(shape, seed, sm, base_m, base_r):
     scatter light perpendicular to brush direction (anisotropic roughness variation).
     """
     h, w = shape[:2] if len(shape) > 2 else shape
-    rng = np.random.RandomState(seed + 285)
+    # MARRIED to paint_satin_chrome_v2: seed+40 (same groove RNG)
+    rng = np.random.RandomState(seed + 40)
     # Horizontal brush lines: per-row low-freq base + fine per-pixel scatter
     brush_row = rng.randn(h, 1).astype(np.float32)          # direction: constant across row
     brush_px  = rng.randn(h, w).astype(np.float32) * 0.3    # micro-texture within lines

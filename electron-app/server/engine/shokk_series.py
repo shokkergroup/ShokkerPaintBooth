@@ -222,7 +222,7 @@ def paint_shokk_flux(paint, shape, mask, seed, pm, bb):
 
 def spec_shokk_phase(shape, seed, sm, base_m, base_r):
     labels, _ = _voronoi_cells(shape, 120, seed + 200)
-    rng = np.random.RandomState(seed + 201)
+    rng = np.random.RandomState(seed + 203)
     cell_M = rng.uniform(0, 220, size=120).astype(np.float32)
     M = cell_M[labels]
     R = np.full(shape, 5.0, dtype=np.float32)
@@ -254,13 +254,14 @@ def paint_shokk_phase(paint, shape, mask, seed, pm, bb):
 def spec_shokk_dual(shape, seed, sm, base_m, base_r):
     h, w = shape
     yy, xx = get_mgrid(shape)
-    # Two-axis noise for independent horizontal/vertical shift
+    # Two-axis noise for independent horizontal/vertical shift (matches paint)
     h_noise = multi_scale_noise(shape, [8, 16, 32], [0.3, 0.4, 0.3], seed + 300)
     v_noise = multi_scale_noise(shape, [8, 16, 32], [0.3, 0.4, 0.3], seed + 301)
-    # Horizontal axis shift parameter
-    h_param = np.clip(xx / w + h_noise * 0.3, 0, 1)
-    # Vertical axis shift parameter
-    v_param = np.clip(yy / h + v_noise * 0.3, 0, 1)
+    fine = multi_scale_noise(shape, [2, 4], [0.6, 0.4], seed + 302)
+    # Horizontal axis shift parameter (with fine detail matching paint)
+    h_param = np.clip(xx / w * 0.6 + h_noise * 0.3 + fine * 0.1, 0, 1)
+    # Vertical axis shift parameter (with fine detail matching paint)
+    v_param = np.clip(yy / h * 0.6 + v_noise * 0.3 + fine * 0.1, 0, 1)
     # Combined two-axis creates complex M/R pattern
     M = np.clip(40.0 + h_param * 160.0 * sm + v_param * 60.0 * sm, 0, 255).astype(np.float32)
     R = np.clip(8.0 + (1.0 - h_param) * 40.0 * sm + v_param * 20.0 * sm, 15, 255).astype(np.float32)
@@ -300,19 +301,19 @@ def paint_shokk_dual(paint, shape, mask, seed, pm, bb):
 
 def spec_shokk_spectrum(shape, seed, sm, base_m, base_r):
     h, w = shape
-    # Multi-scale noise for organic groove variation
-    n1 = multi_scale_noise(shape, [4, 8, 16], [0.3, 0.4, 0.3], seed + 400)
-    n2 = multi_scale_noise(shape, [2, 4], [0.6, 0.4], seed + 401)
+    # Noise-warped spectral coordinate (aligned to paint seeds 500/501)
+    n_warp = multi_scale_noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + 500)
+    n_fine = multi_scale_noise(shape, [2, 4], [0.6, 0.4], seed + 501)
     # Iridescent micro-flake metallic field - very high M with flake sparkle
-    flake = multi_scale_noise(shape, [1, 2], [0.5, 0.5], seed + 402)
+    flake = multi_scale_noise(shape, [1, 2], [0.5, 0.5], seed + 501)
     flake_spots = np.clip((flake - 0.4) * 3.0, 0, 1)  # sparse bright flakes
-    M = np.full(shape, 230.0, dtype=np.float32) + n1 * 15 * sm + flake_spots * 25 * sm
+    M = np.full(shape, 230.0, dtype=np.float32) + n_warp * 15 * sm + flake_spots * 25 * sm
     # Groove-driven R that follows body curves via noise warp
     yy, xx = get_mgrid(shape)
-    groove_phase = yy * 0.12 + n1 * 4.0  # noise-warped grooves follow body
-    R = 6.0 + np.abs(np.sin(groove_phase)) * 35.0 * sm + n2 * 8 * sm
+    groove_phase = yy * 0.12 + n_warp * 4.0  # noise-warped grooves follow body
+    R = 6.0 + np.abs(np.sin(groove_phase)) * 35.0 * sm + n_fine * 8 * sm
     # CC with spectral interference thickness
-    CC = 16.0 + np.abs(np.sin(groove_phase * 0.7 + n2 * 2.0)) * 30 * sm
+    CC = 16.0 + np.abs(np.sin(groove_phase * 0.7 + n_fine * 2.0)) * 30 * sm
     return np.clip(M, 0, 255).astype(np.float32), np.clip(R, 15, 255).astype(np.float32), np.clip(CC, 16, 255).astype(np.float32)
 
 def paint_shokk_spectrum(paint, shape, mask, seed, pm, bb):

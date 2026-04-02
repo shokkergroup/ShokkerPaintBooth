@@ -43,24 +43,14 @@ def paint_candy_cobalt_v2(paint, shape, mask, seed, pm, bb):
 
 
 def spec_candy_cobalt(shape, seed, sm, base_m, base_r):
-    """
-    Cobalt spinel optical properties: high brilliance with deep saturation.
-    """
+    """Cobalt spinel optical properties. MARRIED to paint seed+1401."""
     h, w = shape
-
-    # Crystalline structure dominates specularity — seeds derived from seed param
-    crystal = multi_scale_noise((h, w), [2, 4, 8],
-                               [0.5, 0.3, 0.2], seed + 1410)
-    M = np.clip(base_m * (0.7 + crystal * 0.3) * 255.0, 0, 255).astype(np.float32)
-
-    # Roughness reduced by crystal alignment — seeds derived from seed param
-    rough_mod = multi_scale_noise((h, w), [1, 3, 6],
-                                 [0.4, 0.3, 0.3], seed + 1411)
-    R = np.clip(base_r * (0.5 + rough_mod * 0.2) * 255.0, 15, 255).astype(np.float32)  # GGX floor
-
-    # CC: max gloss clearcoat (B=16 = max gloss in iRacing), slight crystal variation
-    CC = np.clip(16.0 + crystal * 8.0, 16, 30).astype(np.float32)
-
+    # MARRIED to paint_candy_cobalt_v2: seed+1401 [1,2,4,8]
+    crystal = multi_scale_noise((h, w), [1, 2, 4, 8], [0.4, 0.3, 0.2, 0.1], seed + 1401)
+    # base_m is 0-255 — compute directly in 0-255 range (was double-scaling via *255)
+    M = np.clip(base_m * 0.7 + crystal * 40.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(base_r * 0.5 + crystal * 10.0 * sm, 15, 255).astype(np.float32)
+    CC = np.clip(16.0 + crystal * 8.0 * sm, 16, 30).astype(np.float32)
     return M, R, CC
 
 
@@ -100,25 +90,17 @@ def paint_cobalt_metal_v2(paint, shape, mask, seed, pm, bb):
 
 
 def spec_cobalt_metal(shape, seed, sm, base_m, base_r):
-    """
-    Ferromagnetic surface: moderate specularity with domain-aligned roughness.
-    """
+    """Ferromagnetic surface. MARRIED to paint seed+1402 [2,4,8,16]."""
     h, w = shape[:2] if len(shape) > 2 else shape
-
-    # Domain pattern affects specularity
-    y, x = get_mgrid((h, w))
-    domain = np.sin((x + y * 0.5) / 20.0) * 0.5 + 0.5
-    M = np.clip(base_m * (0.75 + domain * 0.25), 0, 1).astype(np.float32)
-    
-    # Roughness follows grain boundaries
-    grain = multi_scale_noise((h, w), [2, 4, 8], 
-                             [0.4, 0.35, 0.25], 1412)
-    R = np.clip(base_r * (0.6 + grain * 0.25), 0, 1).astype(np.float32)
-    
-    # BUG-EXOTIC-SPEC-001 FIX: CC in 0-255 range (16=max gloss). Polished cobalt grain shimmer.
+    # MARRIED to paint_cobalt_metal_v2: seed+1402 [2,4,8,16]
+    grain = multi_scale_noise((h, w), [2, 4, 8, 16], [0.35, 0.3, 0.2, 0.15], seed + 1402)
+    facets = np.floor(grain * 6.0) / 6.0
+    facet_glow = np.exp(-np.abs(grain - facets - 1.0 / 12.0) * 25.0)
+    # base_m is 0-255 — compute directly (was double-scaling via clip(0,1) then *255)
+    M = np.clip(base_m * 0.75 + facet_glow * 50.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(base_r * 0.6 + grain * 15.0 * sm, 15, 255).astype(np.float32)
     CC = np.clip(16.0 + grain * 8.0 * sm, 16, 30).astype(np.float32)
-
-    return (np.clip(M * 255.0, 0, 255).astype(np.float32), np.clip(R * 255.0, 15, 255).astype(np.float32), np.clip(CC, 0, 255).astype(np.float32))
+    return M, R, CC
 
 
 # ============================================================================
@@ -166,24 +148,15 @@ def paint_liquid_titanium_v2(paint, shape, mask, seed, pm, bb):
 
 
 def spec_liquid_titanium(shape, seed, sm, base_m, base_r):
-    """
-    Liquid surface: very high specularity with meniscus-driven roughness variation.
-    """
+    """Liquid surface. MARRIED to paint seed+1450/1451/1403."""
     h, w = shape[:2] if len(shape) > 2 else shape
-
-    # High base specularity for liquid surface
-    y, x = get_mgrid((h, w))
-    meniscus = multi_scale_noise((h, w), [3, 8], 
-                                [0.6, 0.4], 1413)
-    M = np.clip(base_m * (0.95 + meniscus * 0.05), 0.85, 1.0).astype(np.float32)
-    
-    # Very low roughness with meniscus variation
-    R = np.clip(base_r * (0.25 + meniscus * 0.15), 0, 1).astype(np.float32)
-    
-    # BUG-EXOTIC-SPEC-001 FIX: CC in 0-255 range. Near-perfect liquid mirror surface.
+    # MARRIED to paint_liquid_titanium_v2: use flow topology seed+1403 [3,8,16]
+    meniscus = multi_scale_noise((h, w), [3, 8, 16], [0.5, 0.3, 0.2], seed + 1403)
+    # base_m is 0-255 — direct computation (was double-scaling)
+    M = np.clip(base_m * 0.95 + meniscus * 12.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(base_r * 0.25 + meniscus * 8.0 * sm, 15, 255).astype(np.float32)
     CC = np.clip(16.0 + meniscus * 4.0 * sm, 16, 22).astype(np.float32)
-
-    return (np.clip(M * 255.0, 0, 255).astype(np.float32), np.clip(R * 255.0, 15, 255).astype(np.float32), np.clip(CC, 0, 255).astype(np.float32))
+    return M, R, CC
 
 
 # ============================================================================
@@ -229,37 +202,18 @@ def paint_mercury_v2(paint, shape, mask, seed, pm, bb):
 
 
 def spec_mercury(shape, seed, sm, base_m, base_r):
-    """
-    Mercury optical properties: Benard-Marangoni convection cell modulation.
-    Surface-tension-driven Marangoni instability creates irregular convective
-    cells on liquid mercury. Cell interiors are mirror-flat (low R, high M);
-    cell boundaries where cooler mercury wells up are marginally rougher.
-    Structurally distinct from spec_liquid_titanium warped-sine swirl field.
-    WARN-EXOTIC-002 FIX: replaced sin(x)*cos(y) periodic grid with
-    multi-scale noise cellular structure.
-    """
+    """Mercury Marangoni cells. MARRIED to paint seed+1452/1404."""
     h, w = shape[:2] if len(shape) > 2 else shape
-
-    # Marangoni cell field: multi-scale noise at medium spatial frequency
-    # produces irregular, roughly-hexagonal cellular texture
-    cell = multi_scale_noise((h, w), [16, 32, 8], [0.5, 0.35, 0.15], seed + 1414)
-
-    # Edge mask: peaks at intermediate cell values (cell boundaries), zero at extremes
-    edge = 1.0 - np.abs(cell * 2.0 - 1.0)   # 0 at extremes, 1 at mid (boundaries)
-    edge = np.minimum(edge * 1.6, 1.0)        # sharpen boundary band
-
-    # M: extremely high (liquid mercury is near-perfect mirror); small dip at boundaries
-    M = np.clip(base_m * (1.0 - edge * 0.07 * sm), 0.85, 1.0).astype(np.float32)
-
-    # R: near-zero (liquid mirror surface); marginal rise at Marangoni cell boundaries
-    R = np.clip(base_r * (0.10 + edge * 0.20 * sm), 0.0, 0.28).astype(np.float32)
-
-    # CC: maximum gloss -- liquid mercury has no surface defects
+    # MARRIED: use paint's pool_noise seed+1452 and ripple seed+1404
+    cell = multi_scale_noise((h, w), [16, 32, 8], [0.5, 0.35, 0.15], seed + 1452)
+    edge = np.minimum((1.0 - np.abs(cell * 2.0 - 1.0)) * 1.6, 1.0)
+    # base_m is 0-255 — direct computation (was double-scaling)
+    # Mercury M is near-max, slight dip at cell boundaries
+    M = np.clip(base_m - edge * 18.0 * sm, 0, 255).astype(np.float32)
+    # R: very low (liquid mirror), slight rise at boundaries
+    R = np.clip(15.0 + edge * 20.0 * sm, 15, 255).astype(np.float32)
     CC = np.full((h, w), 16.0, dtype=np.float32)
-
-    return (np.clip(M * 255.0, 0, 255).astype(np.float32),
-            np.clip(R * 255.0, 15, 255).astype(np.float32),
-            np.clip(CC, 0, 255).astype(np.float32))
+    return M, R, CC
 
 
 # ============================================================================
@@ -337,25 +291,15 @@ def paint_platinum_v2(paint, shape, mask, seed, pm, bb):
 
 
 def spec_platinum(shape, seed, sm, base_m, base_r):
-    """
-    Platinum specs: highest noble metal specularity with controlled roughness.
-    """
+    """Platinum noble metal. MARRIED to paint seed+1406 [1,3,6,12]."""
     h, w = shape[:2] if len(shape) > 2 else shape
-
-    # Ultra-high specularity with d-band nodes
-    d_band = multi_scale_noise((h, w), [3, 6], 
-                              [0.5, 0.5], 1416)
-    M = np.clip(base_m * (0.95 + d_band * 0.05), 0.88, 1.0).astype(np.float32)
-    
-    # Low roughness befitting noble metal polish
-    y, x = get_mgrid((h, w))
-    polish = np.clip(np.cos(x / 25.0) * np.cos(y / 25.0) * 0.5 + 0.5, 0, 1)
-    R = np.clip(base_r * (0.35 + polish * 0.2), 0, 1).astype(np.float32)
-    
-    # BUG-EXOTIC-SPEC-001 FIX: CC in 0-255 range. High-polish platinum, d-band node variation.
+    # MARRIED to paint_platinum_v2: seed+1406 [1,3,6,12]
+    d_band = multi_scale_noise((h, w), [1, 3, 6, 12], [0.3, 0.25, 0.25, 0.2], seed + 1406)
+    # base_m is 0-255 — direct computation (was double-scaling)
+    M = np.clip(base_m * 0.95 + d_band * 12.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(base_r * 0.35 + d_band * 8.0 * sm, 15, 255).astype(np.float32)
     CC = np.clip(16.0 + d_band * 6.0 * sm, 16, 24).astype(np.float32)
-
-    return (np.clip(M * 255.0, 0, 255).astype(np.float32), np.clip(R * 255.0, 15, 255).astype(np.float32), np.clip(CC, 0, 255).astype(np.float32))
+    return M, R, CC
 
 
 # ============================================================================
@@ -394,25 +338,17 @@ def paint_surgical_steel_v2(paint, shape, mask, seed, pm, bb):
 
 
 def spec_surgical_steel(shape, seed, sm, base_m, base_r):
-    """
-    Surgical steel specs: moderate specularity with oxide film roughness.
-    """
+    """Surgical steel austenite. MARRIED to paint seed+1407/1417."""
     h, w = shape[:2] if len(shape) > 2 else shape
-
-    # Moderate specularity with grain variation
-    grains = multi_scale_noise((h, w), [4, 8], 
-                              [0.5, 0.5], 1418)
-    M = np.clip(base_m * (0.7 + grains * 0.2), 0, 1).astype(np.float32)
-    
-    # Characteristic matte-polished roughness
-    oxide = multi_scale_noise((h, w), [2, 5], 
-                             [0.6, 0.4], 1419)
-    R = np.clip(base_r * (0.55 + oxide * 0.25), 0, 1).astype(np.float32)
-    
-    # BUG-EXOTIC-SPEC-001 FIX: CC in 0-255 range. Polished steel with slight oxide variation.
+    # MARRIED to paint_surgical_steel_v2: seed+1407 [4,8,16,32], seed+1417 [2,5,10]
+    grains = multi_scale_noise((h, w), [4, 8, 16, 32], [0.35, 0.3, 0.2, 0.15], seed + 1407)
+    oxide = multi_scale_noise((h, w), [2, 5, 10], [0.4, 0.35, 0.25], seed + 1417)
+    surface = np.clip(grains * 0.6 + oxide * 0.4, 0, 1)
+    # base_m is 0-255 — direct computation (was double-scaling)
+    M = np.clip(base_m * 0.7 + surface * 30.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(base_r * 0.55 + oxide * 20.0 * sm, 15, 255).astype(np.float32)
     CC = np.clip(16.0 + oxide * 20.0 * sm, 16, 45).astype(np.float32)
-
-    return (np.clip(M * 255.0, 0, 255).astype(np.float32), np.clip(R * 255.0, 15, 255).astype(np.float32), np.clip(CC, 0, 255).astype(np.float32))
+    return M, R, CC
 
 
 # ============================================================================
@@ -453,27 +389,17 @@ def paint_titanium_raw_v2(paint, shape, mask, seed, pm, bb):
 
 
 def spec_titanium_raw(shape, seed, sm, base_m, base_r):
-    """
-    Raw titanium specs: phase-dependent specularity variation.
-    """
+    """Raw titanium alpha-beta phase. MARRIED to paint seed+1408/1420."""
     h, w = shape[:2] if len(shape) > 2 else shape
-
-    # Specularity varies by phase
-    alpha = multi_scale_noise((h, w), [6, 12], 
-                             [0.5, 0.5], 1421)
-    beta = multi_scale_noise((h, w), [8, 16], 
-                            [0.5, 0.5], 1422)
-    M = np.clip(base_m * (0.65 + alpha * 0.15 + beta * 0.15), 0, 1).astype(np.float32)
-    
-    # High roughness from unpolished grain boundaries
-    y, x = get_mgrid((h, w))
-    phase_boundary = np.sin(x / 20.0 + y / 20.0) * 0.5 + 0.5
-    R = np.clip(base_r * (0.68 + phase_boundary * 0.25), 0, 1).astype(np.float32)
-    
-    # BUG-EXOTIC-SPEC-001 FIX: CC in 0-255 range. Raw titanium thermal interference color.
-    CC = np.clip(30.0 + phase_boundary * 40.0 * sm, 30, 80).astype(np.float32)
-
-    return (np.clip(M * 255.0, 0, 255).astype(np.float32), np.clip(R * 255.0, 15, 255).astype(np.float32), np.clip(CC, 0, 255).astype(np.float32))
+    # MARRIED to paint_titanium_raw_v2: seed+1408 [6,12,24], seed+1420 [8,16,32]
+    alpha = multi_scale_noise((h, w), [6, 12, 24], [0.4, 0.35, 0.25], seed + 1408)
+    beta = multi_scale_noise((h, w), [8, 16, 32], [0.4, 0.35, 0.25], seed + 1420)
+    grain = np.clip(alpha * 0.5 + beta * 0.3, 0, 1)
+    # base_m is 0-255 — direct computation (was double-scaling)
+    M = np.clip(base_m * 0.65 + grain * 40.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(base_r * 0.68 + grain * 25.0 * sm, 15, 255).astype(np.float32)
+    CC = np.clip(30.0 + grain * 40.0 * sm, 30, 80).astype(np.float32)
+    return M, R, CC
 
 
 # ============================================================================
@@ -510,22 +436,14 @@ def paint_tungsten_v2(paint, shape, mask, seed, pm, bb):
 
 
 def spec_tungsten(shape, seed, sm, base_m, base_r):
-    """
-    Tungsten specs: moderate specularity with dense grain roughness.
-    """
+    """Tungsten refractory metal. MARRIED to paint seed+1409/1423."""
     h, w = shape[:2] if len(shape) > 2 else shape
-
-    # Moderate specularity for refractory metal
-    grain = multi_scale_noise((h, w), [8, 16], 
-                             [0.6, 0.4], 1424)
-    M = np.clip(base_m * (0.68 + grain * 0.18), 0, 1).astype(np.float32)
-    
-    # High roughness from dense grain boundaries
-    fine_grain = multi_scale_noise((h, w), [1, 4], 
-                                  [0.5, 0.5], 1425)
-    R = np.clip(base_r * (0.62 + fine_grain * 0.28), 0, 1).astype(np.float32)
-    
-    # BUG-EXOTIC-SPEC-001 FIX: CC in 0-255 range. Refractory metal satin — polished but not mirror.
+    # MARRIED to paint_tungsten_v2: seed+1409 [1,2,4], seed+1423 [8,16,32]
+    grain_fine = multi_scale_noise((h, w), [1, 2, 4], [0.4, 0.35, 0.25], seed + 1409)
+    grain_coarse = multi_scale_noise((h, w), [8, 16, 32], [0.35, 0.35, 0.3], seed + 1423)
+    grain = np.clip(grain_fine * 0.5 + grain_coarse * 0.5, 0, 1)
+    # base_m is 0-255 — direct computation (was double-scaling)
+    M = np.clip(base_m * 0.68 + grain * 30.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(base_r * 0.62 + grain * 25.0 * sm, 15, 255).astype(np.float32)
     CC = np.clip(50.0 + grain * 30.0 * sm, 50, 90).astype(np.float32)
-
-    return (np.clip(M * 255.0, 0, 255).astype(np.float32), np.clip(R * 255.0, 15, 255).astype(np.float32), np.clip(CC, 0, 255).astype(np.float32))
+    return M, R, CC

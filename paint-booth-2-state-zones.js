@@ -513,7 +513,7 @@ function renderZones() {
             const accordionClass = ' zone-card-collapsed' + (isSelected ? ' selected' : '');
             const stackCount = (zone.patternStack || []).filter(l => l.id && l.id !== 'none').length;
             const finishName = zone.finish
-                ? (MONOLITHICS.find(m => m.id === zone.finish)?.name || zone.finish) +
+                ? (MONOLITHICS.find(m => m.id === zone.finish)?.name || BASES.find(b => b.id === zone.finish)?.name || zone.finish) +
                 (zone.pattern && zone.pattern !== 'none' ? ' + ' + (PATTERNS.find(p => p.id === zone.pattern)?.name || zone.pattern) : '')
                 : zone.base
                     ? (BASES.find(b => b.id === zone.base)?.name || zone.base) +
@@ -3799,8 +3799,10 @@ function openSwatchPicker(triggerEl, type, zoneIndex, layerIndex) {
             });
             html += `</div></div>`;
             });
-            // Ungrouped bases (safety net)
-            const ungroupedBases = BASES.filter(b => !baseGroupedIds.has(b.id));
+            // Ungrouped bases (safety net) — exclude bases that moved to SPECIAL_GROUPS
+            const specialIds = new Set();
+            if (typeof SPECIAL_GROUPS !== 'undefined') Object.values(SPECIAL_GROUPS).forEach(ids => { if (Array.isArray(ids)) ids.forEach(id => specialIds.add(id)); });
+            const ungroupedBases = BASES.filter(b => !baseGroupedIds.has(b.id) && !specialIds.has(b.id));
             if (ungroupedBases.length > 0) {
             html += `<div class="swatch-group"><div class="swatch-group-label">Other Bases <span class="swatch-group-count">(${ungroupedBases.length})</span></div><div class="swatch-grid-row">`;
             ungroupedBases.forEach(b => {
@@ -3828,7 +3830,7 @@ function openSwatchPicker(triggerEl, type, zoneIndex, layerIndex) {
                 groups.forEach(groupName => {
                     const ids = SPECIAL_GROUPS[groupName];
                     if (!ids) return;
-                    const groupMonos = ids.map(id => MONOLITHICS.find(m => m.id === id)).filter(Boolean);
+                    const groupMonos = ids.map(id => MONOLITHICS.find(m => m.id === id) || (typeof BASES !== 'undefined' && BASES.find(b => b.id === id))).filter(Boolean);
                     if (groupMonos.length === 0) return;
                     groupMonos.forEach(m => groupedIds.add(m.id));
                     const hasSelected = groupMonos.some(m => 'mono:' + m.id === currentId);
@@ -3995,7 +3997,7 @@ async function runSwatchPreviewOnPaint() {
         zone.pattern = finishId;
     } else {
         zone.finish = finishId;
-        const m = typeof MONOLITHICS !== 'undefined' && MONOLITHICS.find(x => x.id === finishId);
+        const m = (typeof MONOLITHICS !== 'undefined' && MONOLITHICS.find(x => x.id === finishId)) || (typeof BASES !== 'undefined' && BASES.find(x => x.id === finishId));
         if (m && (m.swatch || m.swatch2 || m.swatch3)) zone.finish_colors = { c1: m.swatch, c2: m.swatch2 || null, c3: m.swatch3 || null, ghost: m.ghostPattern || null };
     }
     const wrap = document.getElementById('swatchPreviewOnPaintWrap');

@@ -64,9 +64,9 @@ def spec_bioluminescent(shape, seed, sm, base_m, base_r):
     h, w = shape
     turb = multi_scale_noise((h, w), [1, 2, 4], [0.6, 0.3, 0.1], seed + 2001)
     
-    M = np.clip(0.85 + turb * 0.15 * 255.0, 0, 255)
-    R = np.clip(0.15 - turb * 0.1 * 255.0, 15, 255)
-    CC = np.clip(0.7 + turb * 0.25 * 255.0, 16, 255)
+    M = np.clip(217.0 + turb * 38.0 * sm, 0, 255)
+    R = np.clip(3.0 + turb * 8.0 * sm, 15, 255)
+    CC = np.clip(16.0 + turb * 10.0, 16, 255)
     
     return M.astype(np.float32), R.astype(np.float32), CC.astype(np.float32)
 
@@ -177,9 +177,9 @@ def spec_holographic_base(shape, seed, sm, base_m, base_r):
     h, w = shape
     grain = multi_scale_noise((h, w), [1, 2, 4, 8], [0.3, 0.25, 0.25, 0.2], seed + 2004)
     
-    M = np.clip(0.75 + grain * 0.2 * 255.0, 0, 255)
-    R = np.clip(0.1 + grain * 0.08 * 255.0, 15, 255)
-    CC = np.clip(0.95 - grain * 0.1 * 255.0, 16, 255)
+    M = np.clip(191.0 + grain * 51.0 * sm, 0, 255)
+    R = np.clip(3.0 + grain * 12.0 * sm, 15, 255)
+    CC = np.clip(16.0 + (1.0 - grain) * 8.0, 16, 255)
     
     return M.astype(np.float32), R.astype(np.float32), CC.astype(np.float32)
 
@@ -233,9 +233,10 @@ def spec_neutron_star(shape, seed, sm, base_m, base_r):
     friction = multi_scale_noise((h, w), [4, 8], [0.7, 0.3], seed + 2006)
 
     # Degenerate electron gas: near-perfect metallic reflection modulated by surface friction
-    M = np.clip(base_m * (0.95 + friction * 0.05) * 255.0, 0, 255)
+    # base_m is ALREADY 0-255 — do NOT multiply by 255 again
+    M = np.clip(base_m * (0.95 + friction * 0.05), 0, 255)
     # Very rough broken neutron star surface — GGX floor 15
-    R = np.clip(base_r * (0.70 + friction * 0.30) * 255.0, 15, 255)
+    R = np.clip(base_r * (0.70 + friction * 0.30), 15, 255)
     CC = np.full((h, w), 16.0)  # No clearcoat — radiation environment
 
     return M.astype(np.float32), R.astype(np.float32), CC.astype(np.float32)
@@ -378,8 +379,8 @@ def spec_quantum_black(shape, seed, sm, base_m, base_r):
     h, w = shape
     fluct = multi_scale_noise((h, w), [2, 4], [0.6, 0.4], seed + 2010)
     
-    M = np.clip(0.05 + fluct * 0.05 * 255.0, 0, 255)
-    R = np.clip(0.75 + fluct * 0.25 * 255.0, 15, 255)
+    M = np.clip(5.0 + fluct * 8.0 * sm, 0, 255)
+    R = np.clip(191.0 + fluct * 50.0 * sm, 15, 255)
     CC = np.full((h, w), 240.0)  # CC=240 dead flat quantum black
 
     return M.astype(np.float32), R.astype(np.float32), CC.astype(np.float32)
@@ -436,9 +437,9 @@ def spec_solar_panel(shape, seed, sm, base_m, base_r):
     h, w = shape
     texture = multi_scale_noise((h, w), [4, 8, 16], [0.4, 0.3, 0.3], seed + 2013)
     
-    M = np.clip(0.45 + texture * 0.15 * 255.0, 0, 255)
-    R = np.clip(0.2 + texture * 0.1 * 255.0, 15, 255)
-    CC = np.clip(0.85 + texture * 0.1 * 255.0, 16, 255)
+    M = np.clip(115.0 + texture * 38.0 * sm, 0, 255)
+    R = np.clip(5.0 + texture * 20.0 * sm, 15, 255)
+    CC = np.clip(16.0 + texture * 8.0, 16, 255)
     
     return M.astype(np.float32), R.astype(np.float32), CC.astype(np.float32)
 
@@ -493,9 +494,9 @@ def spec_superconductor(shape, seed, sm, base_m, base_r):
     h, w = shape
     lattice = multi_scale_noise((h, w), [2, 4], [0.7, 0.3], seed + 2015)
     
-    M = np.clip(0.9 + lattice * 0.1 * 255.0, 0, 255)
-    R = np.clip(0.05 + lattice * 0.05 * 255.0, 15, 255)
-    CC = np.clip(0.6 + lattice * 0.2 * 255.0, 16, 255)
+    M = np.clip(230.0 + lattice * 25.0 * sm, 0, 255)
+    R = np.clip(3.0 + lattice * 10.0 * sm, 15, 255)
+    CC = np.clip(16.0 + lattice * 15.0, 16, 255)
     
     return M.astype(np.float32), R.astype(np.float32), CC.astype(np.float32)
 
@@ -551,8 +552,8 @@ def spec_singularity(shape, seed, sm, base_m, base_r):
     h, w = shape
     chaos = multi_scale_noise((h, w), [1, 2, 4, 8], [0.3, 0.3, 0.2, 0.2], seed + 2017)
     
-    M = np.clip(0.08 + chaos * 0.07 * 255.0, 0, 255)
-    R = np.clip(0.85 + chaos * 0.15 * 255.0, 15, 255)
+    M = np.clip(8.0 + chaos * 15.0 * sm, 0, 255)
+    R = np.clip(217.0 + chaos * 38.0 * sm, 15, 255)
     CC = np.full((h, w), 220.0)  # CC=220 dead flat singularity
 
     return M.astype(np.float32), R.astype(np.float32), CC.astype(np.float32)
@@ -609,9 +610,9 @@ def spec_liquid_obsidian(shape, seed, sm, base_m, base_r):
     h, w = shape
     sheen = multi_scale_noise((h, w), [4, 8], [0.6, 0.4], seed + 2019)
     
-    M = np.clip(0.7 + sheen * 0.2 * 255.0, 0, 255)
-    R = np.clip(0.15 + sheen * 0.1 * 255.0, 15, 255)
-    CC = np.clip(0.9 + sheen * 0.1 * 255.0, 16, 255)
+    M = np.clip(179.0 + sheen * 51.0 * sm, 0, 255)
+    R = np.clip(3.0 + sheen * 15.0 * sm, 15, 255)
+    CC = np.clip(16.0 + sheen * 8.0, 16, 255)
     
     return M.astype(np.float32), R.astype(np.float32), CC.astype(np.float32)
 
@@ -671,9 +672,9 @@ def spec_prismatic(shape, seed, sm, base_m, base_r):
     h, w = shape
     clarity = multi_scale_noise((h, w), [2, 4], [0.7, 0.3], seed + 2021)
     
-    M = np.clip(0.8 + clarity * 0.15 * 255.0, 0, 255)
-    R = np.clip(0.08 + clarity * 0.07 * 255.0, 15, 255)
-    CC = np.clip(0.95 - clarity * 0.05 * 255.0, 16, 255)
+    M = np.clip(204.0 + clarity * 38.0 * sm, 0, 255)
+    R = np.clip(3.0 + clarity * 12.0 * sm, 15, 255)
+    CC = np.clip(16.0 + (1.0 - clarity) * 6.0, 16, 255)
     
     return M.astype(np.float32), R.astype(np.float32), CC.astype(np.float32)
 
@@ -1120,7 +1121,8 @@ def spec_p_non_euclidean(shape, seed, sm, base_m, base_r):
     M = np.where(face > 0.5, 220.0 + edge_noise * 25.0, 30.0 + edge_noise * 40.0).astype(np.float32)
     M = np.clip(M, 0, 255).astype(np.float32)
     R = np.where(face > 0.5, 4.0 + edge_noise * 12.0, 175.0 + edge_noise * 45.0).astype(np.float32)
-    R = np.clip(R, 2, 255).astype(np.float32)
+    # GGX floor: R >= 15 for non-chrome (M<240). Chrome faces (M>=240) can go lower.
+    R = np.where(M >= 240.0, np.clip(R, 0, 255), np.clip(R, 15, 255)).astype(np.float32)
     CC = np.where(face > 0.5, 16.0, 110.0 + edge_noise * 40.0).astype(np.float32)
     return M, R, _cc_clamp(CC)
 

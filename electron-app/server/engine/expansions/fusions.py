@@ -247,12 +247,13 @@ def _make_gradient_fusion(mat_a, mat_b, grad_fn, seed_offset=0, warp=False, pain
         for c in range(3):
             result[:,:,c] = np.clip(paint[:,:,c] + bright_a * mask - dark_b * mask, 0, 1)
 
-        if paint_warm:
-            warm = grad * 0.14 * pm
-            result[:,:,0] = np.clip(result[:,:,0] + warm * mask, 0, 1)
-            cool = (1 - grad) * 0.10 * pm
-            result[:,:,2] = np.clip(result[:,:,2] + cool * mask, 0, 1)
-            result[:,:,1] = np.clip(result[:,:,1] + np.minimum(warm, cool) * 0.3 * mask, 0, 1)
+        # UPGRADED: warm/cool tints always active (was conditional on paint_warm)
+        _warmth = 0.14 if paint_warm else 0.08  # stronger when flagged, but always present
+        warm = grad * _warmth * pm
+        result[:,:,0] = np.clip(result[:,:,0] + warm * mask, 0, 1)
+        cool = (1 - grad) * (_warmth * 0.7) * pm
+        result[:,:,2] = np.clip(result[:,:,2] + cool * mask, 0, 1)
+        result[:,:,1] = np.clip(result[:,:,1] + np.minimum(warm, cool) * 0.3 * mask, 0, 1)
 
         # Chrome seam shimmer in transition zone — visible sparkle where materials meet
         transition = np.exp(-((grad - 0.5) ** 2) / (2 * 0.06 ** 2))
@@ -693,17 +694,23 @@ def _make_aniso_fusion(base_m, base_g, base_cc, grain_fn_name, seed_offset=0):
     def paint_fn(paint, shape, mask, seed, pm, bb):
         grain, micro = _aniso_grain_field(shape, grain_fn_name, seed, seed_offset)
 
-        bright = grain * 0.18 * pm
-        dark = (1 - grain) * 0.09 * pm
+        # UPGRADED: color zones driven by grain direction (was brightness-only)
+        # High-grain zones: warm metallic push (amber/gold tint)
+        # Low-grain zones: cool shadow push (blue-steel tint)
         result = paint.copy()
-        for c in range(3):
-            result[:,:,c] = np.clip(paint[:,:,c] + bright * mask - dark * mask, 0, 1)
+        m3 = mask[:,:,np.newaxis]
+        warm = grain * 0.18 * pm
+        cool = (1 - grain) * 0.12 * pm
+        result[:,:,0] = np.clip(paint[:,:,0] + warm * mask * 1.1 - cool * mask * 0.5, 0, 1)  # R: warm boost
+        result[:,:,1] = np.clip(paint[:,:,1] + warm * mask * 0.6 - cool * mask * 0.3, 0, 1)  # G: moderate
+        result[:,:,2] = np.clip(paint[:,:,2] - warm * mask * 0.2 + cool * mask * 0.6, 0, 1)  # B: cool boost
 
-        micro_shift = (micro - 0.5) * 0.05 * pm
-        for c in range(3):
-            result[:,:,c] = np.clip(result[:,:,c] + micro_shift * mask, 0, 1)
+        micro_shift = (micro - 0.5) * 0.06 * pm
+        result[:,:,0] = np.clip(result[:,:,0] + micro_shift * mask * 0.8, 0, 1)
+        result[:,:,1] = np.clip(result[:,:,1] + micro_shift * mask, 0, 1)
+        result[:,:,2] = np.clip(result[:,:,2] + micro_shift * mask * 1.2, 0, 1)
 
-        result = np.clip(result + bb * 0.4 * mask[:,:,np.newaxis], 0, 1)
+        result = np.clip(result + bb * 0.4 * m3, 0, 1)
         return result
     return spec_fn, paint_fn
 

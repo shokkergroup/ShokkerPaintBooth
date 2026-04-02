@@ -10,6 +10,7 @@ Each function implements specific optical phenomena:
 """
 
 import numpy as np
+from scipy.spatial import cKDTree
 from engine.core import multi_scale_noise, get_mgrid
 
 
@@ -41,10 +42,11 @@ def spec_candy(shape, seed, sm, base_m, base_r):
     G channel clamped to minimum 15 (iRacing GGX requires non-zero roughness for candy).
     """
     h, w = shape[:2] if len(shape) > 2 else shape
-    M = base_m * 0.6 + multi_scale_noise((h, w), [2, 4], [0.6, 0.4], seed + 1600) * 0.2
-    R = base_r * 0.4 + multi_scale_noise((h, w), [1, 2], [0.7, 0.3], seed + 1601) * 0.15
-    noise_cc = multi_scale_noise((h, w), [2, 4], [0.6, 0.4], seed + 1602)
-    CC = np.clip(16.0 + noise_cc * 6.0, 16, 26).astype(np.float32)
+    # MARRIED to paint_candy_v2: same seed+1600, same scales [1,2,4]
+    noise = multi_scale_noise((h, w), [1, 2, 4], [0.5, 0.3, 0.2], seed + 1600)
+    M = base_m * 0.65 + noise * 0.2
+    R = base_r * 0.4 + noise * 0.15
+    CC = np.clip(16.0 + noise * 8.0 * sm, 16, 32).astype(np.float32)
     return (np.clip(M * 255.0, 0, 255).astype(np.float32),
             np.clip(R * 255.0, 15, 255).astype(np.float32),
             CC)
@@ -82,10 +84,12 @@ def spec_candy_burgundy(shape, seed, sm, base_m, base_r):
     G channel clamped to minimum 15 (iRacing GGX requires non-zero roughness for candy).
     """
     h, w = shape[:2] if len(shape) > 2 else shape
-    M = base_m * 0.5 + multi_scale_noise((h, w), [3, 6], [0.5, 0.5], seed + 1604) * 0.15
-    R = base_r * 0.3 + multi_scale_noise((h, w), [2, 4], [0.6, 0.4], seed + 1605) * 0.12
-    noise_cc = multi_scale_noise((h, w), [3, 6], [0.5, 0.5], seed + 1606)
-    CC = np.clip(16.0 + noise_cc * 6.0, 16, 26).astype(np.float32)
+    # MARRIED to paint_candy_burgundy_v2: seed+1602 [4,8], seed+1603 [1,2]
+    noise_coarse = multi_scale_noise((h, w), [4, 8], [0.5, 0.5], seed + 1602)
+    noise_fine = multi_scale_noise((h, w), [1, 2], [0.6, 0.4], seed + 1603)
+    M = base_m * 0.65 + (noise_coarse * 0.12 + noise_fine * 0.06)
+    R = base_r * 0.35 + noise_fine * 0.12
+    CC = np.clip(16.0 + noise_coarse * 8.0 * sm, 16, 30).astype(np.float32)
     return (np.clip(M * 255.0, 0, 255).astype(np.float32),
             np.clip(R * 255.0, 15, 255).astype(np.float32),
             CC)
@@ -166,10 +170,12 @@ def spec_candy_emerald(shape, seed, sm, base_m, base_r):
     G channel clamped to minimum 15 (iRacing GGX requires non-zero roughness for candy).
     """
     h, w = shape[:2] if len(shape) > 2 else shape
-    noise_m = multi_scale_noise((h, w), [2, 4, 8], [0.4, 0.3, 0.3], seed + 1610)
-    M = base_m * 0.55 + noise_m * 0.18
-    R = base_r * 0.45 + multi_scale_noise((h, w), [1, 2], [0.7, 0.3], seed + 1611) * 0.14
-    CC = np.clip(16.0 + noise_m * 6.0 * sm, 16, 28).astype(np.float32)
+    # MARRIED to paint_candy_emerald_v2: seed+1608 [2,4], seed+1609 [1,3,6]
+    noise_primary = multi_scale_noise((h, w), [2, 4], [0.6, 0.4], seed + 1608)
+    noise_secondary = multi_scale_noise((h, w), [1, 3, 6], [0.4, 0.3, 0.3], seed + 1609)
+    M = base_m * 0.6 + (noise_primary * 0.14 + noise_secondary * 0.06)
+    R = base_r * 0.45 + noise_secondary * 0.14
+    CC = np.clip(16.0 + noise_primary * 8.0 * sm, 16, 30).astype(np.float32)
     return (np.clip(M * 255.0, 0, 255).astype(np.float32),
             np.clip(R * 255.0, 15, 255).astype(np.float32),
             CC)
@@ -262,17 +268,17 @@ def spec_jelly_pearl(shape, seed, sm, base_m, base_r):
     Moderate metallic from mica particles, low roughness for gloss, good clearcoat.
     """
     h, w = shape
-    # Pearl particle field
-    particle_noise = multi_scale_noise((h, w), [4, 8, 16], [0.3, 0.4, 0.3], seed + 1615)
-    particles = np.clip((particle_noise - 0.3) * 2.5, 0, 1)
-    # Angle-shift noise for metallic variation
-    angle = multi_scale_noise((h, w), [16, 32], [0.5, 0.5], seed + 1616)
-    # M: pearl mica particles are metallic, background is moderate
+    # MARRIED to paint_jelly_pearl_v2: seed+1614 [4,8,16], seed+1615 [16,32]
+    particle_noise = multi_scale_noise((h, w), [4, 8, 16], [0.3, 0.4, 0.3], seed + 1614)
+    particles = np.clip((particle_noise - 0.3) * 2.0, 0, 1)
+    angle = multi_scale_noise((h, w), [16, 32], [0.5, 0.5], seed + 1615)
+    # M: pearl zones = high metallic (mica shimmer), non-pearl = moderate
     M = np.clip(80.0 + particles * 140.0 * sm + angle * 30.0 * sm, 0, 255).astype(np.float32)
-    # R: glossy with pearl micro-texture
-    R = np.clip(6.0 + (1.0 - particles) * 15.0 * sm + angle * 5.0 * sm, 15, 255).astype(np.float32)
-    # CC: good clearcoat, slight variation
-    CC = np.clip(16.0 + (1.0 - particles) * 10.0 * sm, 16, 255).astype(np.float32)
+    # R: pearl zones = glossy (LOW R), non-pearl = slightly rougher
+    # particles HIGH → R low (glossy pearl shimmer). particles LOW → R higher (matte jelly)
+    R = np.clip(15.0 + (1.0 - particles) * 20.0 * sm + angle * 5.0 * sm, 15, 255).astype(np.float32)
+    # CC: pearl zones = pearlescent (HIGHER CC), non-pearl = less
+    CC = np.clip(16.0 + particles * 14.0 * sm + (1.0 - particles) * 4.0 * sm, 16, 255).astype(np.float32)
     return M, R, CC
 
 def paint_moonstone_v2(paint, shape, mask, seed, pm, bb):
@@ -308,11 +314,14 @@ def spec_moonstone(shape, seed, sm, base_m, base_r):
     """
     h, w = shape
     grid = get_mgrid((h, w))
-    shimmer = 0.5 + 0.4 * np.sin((grid[0] + grid[1]) * 3 + seed)
+    # MARRIED to paint_moonstone_v2: same grid shimmer + Gaussian envelope
+    cy = 0.35 + (seed % 31) / 100.0
+    cx = 0.35 + (seed % 29) / 100.0
+    shimmer = 0.5 + 0.4 * np.sin((grid[0] + grid[1]) * 3 + seed) * np.exp(-((grid[0] - cy)**2 + (grid[1] - cx)**2) * 3)
+    noise = multi_scale_noise((h, w), [1, 2, 4], [0.5, 0.3, 0.2], seed + 1617)
     M = base_m * 0.7 + shimmer * 0.3
-    noise_cc = multi_scale_noise((h, w), [1, 2], [0.7, 0.3], seed + 1618)
-    R = base_r * 0.5 + noise_cc * 0.2
-    CC = np.clip(16.0 + noise_cc * 6.0 * sm, 16, 28).astype(np.float32)
+    R = base_r * 0.5 + noise * 0.15
+    CC = np.clip(16.0 + shimmer * 8.0 * sm + noise * 4.0 * sm, 16, 32).astype(np.float32)
     return (np.clip(M * 255.0, 0, 255).astype(np.float32),
             np.clip(R * 255.0, 15, 255).astype(np.float32),
             CC)
@@ -329,7 +338,6 @@ def paint_opal_v2(paint, shape, mask, seed, pm, bb):
     base = paint.copy()
 
     # Generate hexagonal/fish-scale pattern using Voronoi-like cells
-    from scipy.spatial import cKDTree
     rng = np.random.RandomState(seed + 1619)
     n_scales = 200  # number of scale centers
     # Hexagonal-ish grid with jitter for organic look
@@ -419,13 +427,11 @@ def spec_opal(shape, seed, sm, base_m, base_r):
     Uses the SAME Voronoi cell structure as paint_opal_v2 (cKDTree, seed+1619)
     so spec edges align perfectly with paint edges.
     """
-    from scipy.spatial import cKDTree
     h, w = shape
     rng = np.random.RandomState(seed + 1619)
     n_scales = 200
     grid_n = int(np.sqrt(n_scales))
-    cy_pts = []
-    cx_pts = []
+    cy_pts, cx_pts = [], []
     for gy in range(grid_n + 2):
         for gx in range(grid_n + 2):
             base_y = (gy + 0.5) / (grid_n + 1) * h
@@ -442,26 +448,22 @@ def spec_opal(shape, seed, sm, base_m, base_r):
     max_d = np.percentile(dists, 95) + 1e-8
     dist_norm = np.clip(dists / max_d, 0, 1)
 
-    # Edge/interior masks — same logic as paint_opal_v2
-    # dist_norm LOW near cell edges (close to boundaries), HIGH at cell centers
-    edge_mask = np.clip(1.0 - dist_norm * 3.0, 0, 1)   # 1 at edges, 0 at centers
-    interior_mask = np.clip(dist_norm * 2.5, 0, 1)       # 1 at centers, 0 at edges
+    edge_mask = np.clip(1.0 - dist_norm * 3.0, 0, 1)    # 1 at edges, 0 at centers
+    interior_mask = np.clip(dist_norm * 2.5, 0, 1)        # 1 at centers, 0 at edges
 
-    # Per-scale clearcoat variation (pearl shimmer per cell)
+    # Per-scale clearcoat variation — MARRIED to paint via same rng sequence
     n_pts = len(cy_pts)
-    rng2 = np.random.RandomState(seed + 1622)
-    cc_per_scale = rng2.uniform(0.0, 1.0, size=n_pts).astype(np.float32)
-    cc_map = cc_per_scale[labels]
+    angle_noise = multi_scale_noise((h, w), [8, 16, 32], [0.3, 0.4, 0.3], seed + 1620)
+    cc_map = np.clip(angle_noise * 0.5 + 0.5, 0, 1).astype(np.float32)
 
     # M: edges highly metallic (pearl shimmer), interior moderate
     M = np.clip(80.0 + edge_mask * 170.0 * sm, 0, 255).astype(np.float32)
 
-    # R: smooth glossy interior, slightly rougher at edges (texture)
-    # GGX floor: R >= 15 always (non-chrome, M < 240)
-    R = np.clip(20.0 + interior_mask * 35.0 * sm + (1.0 - edge_mask) * 10.0 * sm, 15, 255).astype(np.float32)
+    # R: GLOSSY INTERIORS (low R), rougher edges (higher R) — FIX: was inverted
+    R = np.clip(15.0 + edge_mask * 35.0 * sm, 15, 255).astype(np.float32)
 
-    # CC: pearlescent variation, slightly higher at edges
-    CC = np.clip(16.0 + edge_mask * 18.0 * sm + cc_map * 12.0 * sm, 16, 255).astype(np.float32)
+    # CC: pearlescent at edges, moderate variation via angle noise
+    CC = np.clip(16.0 + edge_mask * 18.0 * sm + cc_map * 10.0 * sm, 16, 255).astype(np.float32)
 
     return M, R, CC
 
@@ -491,10 +493,11 @@ def spec_smoked(shape, seed, sm, base_m, base_r):
     Smoked spec — muted highlight with smoke veil darkening.
     """
     h, w = shape
-    M = base_m * 0.4 + multi_scale_noise((h, w), [2, 4], [0.6, 0.4], seed + 1622) * 0.12
-    noise_cc = multi_scale_noise((h, w), [1, 2], [0.7, 0.3], seed + 1623)
-    R = base_r * 0.3 + noise_cc * 0.1
-    CC = np.clip(16.0 + noise_cc * 10.0 * sm, 16, 34).astype(np.float32)
+    # MARRIED to paint_smoked_v2: seed+1621, scales [2,4,8]
+    noise = multi_scale_noise((h, w), [2, 4, 8], [0.4, 0.3, 0.3], seed + 1621)
+    M = base_m * 0.5 + noise * 0.12
+    R = base_r * 0.35 + noise * 0.1
+    CC = np.clip(16.0 + noise * 10.0 * sm, 16, 34).astype(np.float32)
     return (np.clip(M * 255.0, 0, 255).astype(np.float32),
             np.clip(R * 255.0, 15, 255).astype(np.float32),
             CC)
@@ -526,10 +529,11 @@ def paint_spectraflame_v2(paint, shape, mask, seed, pm, bb):
     cos_shift = np.cos(hue_shift * np.pi * 2.0)
     sin_shift = np.sin(hue_shift * np.pi * 2.0)
 
-    # Hue rotation matrix (simplified)
-    r_out = base[:,:,0] * (0.667 + 0.333 * cos_shift) + base[:,:,1] * (0.333 - 0.333 * cos_shift - 0.577 * sin_shift) + base[:,:,2] * (0.333 - 0.333 * cos_shift + 0.577 * sin_shift)
-    g_out = base[:,:,0] * (0.333 - 0.333 * cos_shift + 0.577 * sin_shift) + base[:,:,1] * (0.667 + 0.333 * cos_shift) + base[:,:,2] * (0.333 - 0.333 * cos_shift - 0.577 * sin_shift)
-    b_out = base[:,:,0] * (0.333 - 0.333 * cos_shift - 0.577 * sin_shift) + base[:,:,1] * (0.333 - 0.333 * cos_shift + 0.577 * sin_shift) + base[:,:,2] * (0.667 + 0.333 * cos_shift)
+    # Rodrigues hue rotation around (1,1,1) luminance axis — corrected coefficients
+    c, s = cos_shift, sin_shift
+    r_out = base[:,:,0] * (0.333 + 0.667 * c) + base[:,:,1] * (0.333 - 0.333 * c - 0.577 * s) + base[:,:,2] * (0.333 - 0.333 * c + 0.577 * s)
+    g_out = base[:,:,0] * (0.333 - 0.333 * c + 0.577 * s) + base[:,:,1] * (0.333 + 0.667 * c) + base[:,:,2] * (0.333 - 0.333 * c - 0.577 * s)
+    b_out = base[:,:,0] * (0.333 - 0.333 * c - 0.577 * s) + base[:,:,1] * (0.333 - 0.333 * c + 0.577 * s) + base[:,:,2] * (0.333 + 0.667 * c)
 
     # Polycarbonate clear crystal shimmer (slight brightening at high-angle zones)
     crystal_shimmer = np.clip((topo - 0.3) * 2.0, 0, 1) * 0.08
@@ -551,15 +555,15 @@ def spec_spectraflame(shape, seed, sm, base_m, base_r):
     interference-like variation. Clear optical polymer surface.
     """
     h, w = shape
-    # Optical interference topology
-    topo = multi_scale_noise((h, w), [8, 16, 32], [0.3, 0.4, 0.3], seed + 1627)
-    fine = multi_scale_noise((h, w), [2, 4], [0.6, 0.4], seed + 1628)
-    # M: moderate metallic with interference variation (polycarbonate is partially reflective)
+    # MARRIED to paint_spectraflame_v2: seed+1624 [8,16,32], seed+1625 [2,4,8]
+    topo = multi_scale_noise((h, w), [8, 16, 32], [0.3, 0.4, 0.3], seed + 1624)
+    fine = multi_scale_noise((h, w), [2, 4, 8], [0.4, 0.35, 0.25], seed + 1625)
+    # M: moderate metallic with interference variation
     M = np.clip(100.0 + topo * 80.0 * sm + fine * 25.0 * sm, 0, 255).astype(np.float32)
-    # R: very low roughness (glassy smooth polymer), slight variation
-    R = np.clip(3.0 + fine * 6.0 * sm + topo * 4.0 * sm, 15, 255).astype(np.float32)
-    # CC: excellent clearcoat (optical grade polymer), minimal variation
-    CC = np.clip(16.0 + (1.0 - topo) * 8.0 * sm, 16, 255).astype(np.float32)
+    # R: glassy smooth with ACTUAL variation above GGX floor (was 3-13, all clamped to 15)
+    R = np.clip(16.0 + fine * 12.0 * sm + topo * 8.0 * sm, 15, 255).astype(np.float32)
+    # CC: optical grade polymer, variation follows topology
+    CC = np.clip(16.0 + topo * 10.0 * sm + fine * 4.0 * sm, 16, 255).astype(np.float32)
     return M, R, CC
 
 
@@ -589,11 +593,11 @@ def spec_tinted_clear(shape, seed, sm, base_m, base_r):
     Tinted clear spec — uniform transparent highlight.
     """
     h, w = shape
-    noise_m = multi_scale_noise((h, w), [1, 2], [0.7, 0.3], seed + 1630)
-    M = base_m * 0.7 + noise_m * 0.15
-    noise_r = multi_scale_noise((h, w), [2, 4], [0.6, 0.4], seed + 1631)
-    R = base_r * 0.6 + noise_r * 0.12
-    CC = np.clip(16.0 + noise_r * 5.0 * sm, 16, 26).astype(np.float32)
+    # MARRIED to paint_tinted_clear_v2: seed+1629, scales [1,2,4]
+    noise = multi_scale_noise((h, w), [1, 2, 4], [0.5, 0.3, 0.2], seed + 1629)
+    M = base_m * 0.85 + noise * 0.1
+    R = base_r * 0.6 + noise * 0.1
+    CC = np.clip(16.0 + noise * 6.0 * sm, 16, 28).astype(np.float32)
     return (np.clip(M * 255.0, 0, 255).astype(np.float32),
             np.clip(R * 255.0, 15, 255).astype(np.float32),
             CC)
@@ -672,10 +676,10 @@ def spec_tri_coat_pearl(shape, seed, sm, base_m, base_r):
     creating visible color-shift regions. Each coat is distinguishable.
     """
     h, w = shape[:2] if len(shape) > 2 else shape
-    # Three banded/zoned layers with distinct characteristics
-    layer1 = multi_scale_noise((h, w), [8, 16, 32], [0.3, 0.4, 0.3], seed + 1639)
-    layer2 = multi_scale_noise((h, w), [8, 16, 32], [0.3, 0.4, 0.3], seed + 1640)
-    layer3 = multi_scale_noise((h, w), [8, 16, 32], [0.3, 0.4, 0.3], seed + 1641)
+    # MARRIED to paint_tri_coat_pearl_v2: same seeds AND scales
+    layer1 = multi_scale_noise((h, w), [2, 4], [0.6, 0.4], seed + 1636)
+    layer2 = multi_scale_noise((h, w), [3, 6], [0.5, 0.5], seed + 1637)
+    layer3 = multi_scale_noise((h, w), [1, 2, 4], [0.5, 0.3, 0.2], seed + 1638)
 
     # Create three DOMINANT zones (each layer claims territory)
     l1 = np.clip(layer1 * 0.5 + 0.5, 0, 1)

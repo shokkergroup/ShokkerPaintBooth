@@ -6,6 +6,7 @@ import numpy as np
 from engine.core import multi_scale_noise, get_mgrid
 
 def paint_armor_plate_v2(paint, shape, mask, seed, pm, bb):
+    """Rolled homogeneous armor plate with directional rolling marks and hardness variation."""
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     # Rolled homogeneous armor: directional rolling marks + hardness variation
@@ -28,6 +29,7 @@ def spec_armor_plate(shape, seed, sm, base_m, base_r):
     return M, R, CC
 
 def paint_battleship_gray_v2(paint, shape, mask, seed, pm, bb):
+    """Haze gray anti-corrosion naval coating with salt spray pitting."""
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     # Haze gray anti-corrosion coating with salt spray pitting
@@ -42,7 +44,7 @@ def paint_battleship_gray_v2(paint, shape, mask, seed, pm, bb):
     ], axis=-1).astype(np.float32)
     blend = np.clip(pm, 0.0, 1.0)
     result = np.clip(base * (1.0 - mask[:,:,np.newaxis] * blend) + effect * (mask[:,:,np.newaxis] * blend), 0, 1)
-    return np.clip(result + bb[:,:,np.newaxis] * 0.25 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
+    return np.clip(result + bb[:,:,np.newaxis] * 0.12 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
 
 def spec_battleship_gray(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
@@ -53,6 +55,7 @@ def spec_battleship_gray(shape, seed, sm, base_m, base_r):
     return M, R, CC
 
 def paint_cerakote_v2(paint, shape, mask, seed, pm, bb):
+    """Cerakote ceramic-polymer hybrid with micro-ceramic particle distribution."""
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     # Ceramic-polymer hybrid: ultra-thin spray with micro-ceramic particles
@@ -64,7 +67,7 @@ def paint_cerakote_v2(paint, shape, mask, seed, pm, bb):
     effect = np.clip(np.stack([cera + ceramic_tex + spray_pattern * 0.01]*3, axis=-1), 0, 1).astype(np.float32)
     blend = np.clip(pm, 0.0, 1.0)
     result = np.clip(base * (1.0 - mask[:,:,np.newaxis] * blend) + effect * (mask[:,:,np.newaxis] * blend), 0, 1)
-    return np.clip(result + bb[:,:,np.newaxis] * 0.22 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
+    return np.clip(result + bb[:,:,np.newaxis] * 0.10 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
 
 def spec_cerakote(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
@@ -75,6 +78,7 @@ def spec_cerakote(shape, seed, sm, base_m, base_r):
     return M, R, CC
 
 def paint_cerakote_gloss_v2(paint, shape, mask, seed, pm, bb):
+    """Gloss Cerakote with polished ceramic surface and smooth finish."""
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     # Gloss Cerakote: same ceramic particle but polished surface
@@ -85,7 +89,7 @@ def paint_cerakote_gloss_v2(paint, shape, mask, seed, pm, bb):
     effect = np.clip(np.stack([cera + ceramic * 0.015 + polish * 0.02]*3, axis=-1), 0, 1).astype(np.float32)
     blend = np.clip(pm, 0.0, 1.0)
     result = np.clip(base * (1.0 - mask[:,:,np.newaxis] * blend) + effect * (mask[:,:,np.newaxis] * blend), 0, 1)
-    return np.clip(result + bb[:,:,np.newaxis] * 0.30 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
+    return np.clip(result + bb[:,:,np.newaxis] * 0.15 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
 
 def spec_cerakote_gloss(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
@@ -96,6 +100,7 @@ def spec_cerakote_gloss(shape, seed, sm, base_m, base_r):
     return M, R, CC
 
 def paint_duracoat_v2(paint, shape, mask, seed, pm, bb):
+    """DuraCoat air-dry epoxy with self-leveling properties and drip marks."""
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     # DuraCoat: air-dry epoxy with self-leveling properties
@@ -107,7 +112,7 @@ def paint_duracoat_v2(paint, shape, mask, seed, pm, bb):
     effect = np.clip(np.stack([dura + level * 0.015 + drip_marks]*3, axis=-1), 0, 1).astype(np.float32)
     blend = np.clip(pm, 0.0, 1.0)
     result = np.clip(base * (1.0 - mask[:,:,np.newaxis] * blend) + effect * (mask[:,:,np.newaxis] * blend), 0, 1)
-    return np.clip(result + bb[:,:,np.newaxis] * 0.24 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
+    return np.clip(result + bb[:,:,np.newaxis] * 0.10 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
 
 def spec_duracoat(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
@@ -118,6 +123,7 @@ def spec_duracoat(shape, seed, sm, base_m, base_r):
     return M, R, CC
 
 def paint_gunship_gray_v2(paint, shape, mask, seed, pm, bb):
+    """Low-vis gunship gray with IR-suppressive pigment modulation."""
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     # Low-vis gunship gray with IR-suppressive pigment
@@ -132,7 +138,7 @@ def paint_gunship_gray_v2(paint, shape, mask, seed, pm, bb):
     ], axis=-1).astype(np.float32)
     blend = np.clip(pm, 0.0, 1.0)
     result = np.clip(base * (1.0 - mask[:,:,np.newaxis] * blend) + effect * (mask[:,:,np.newaxis] * blend), 0, 1)
-    return np.clip(result + bb[:,:,np.newaxis] * 0.22 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
+    return np.clip(result + bb[:,:,np.newaxis] * 0.08 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
 
 def spec_gunship_gray(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
@@ -143,6 +149,7 @@ def spec_gunship_gray(shape, seed, sm, base_m, base_r):
     return M, R, CC
 
 def paint_mil_spec_od_v2(paint, shape, mask, seed, pm, bb):
+    """MIL-DTL-53072 olive drab with chromium oxide green pigment and UV fade."""
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     # MIL-DTL-53072 olive drab: chromium oxide green pigment
@@ -154,7 +161,7 @@ def paint_mil_spec_od_v2(paint, shape, mask, seed, pm, bb):
     effect = np.stack([np.clip(od_r, 0, 1), np.clip(od_g, 0, 1), np.clip(od_b, 0, 1)], axis=-1).astype(np.float32)
     blend = np.clip(pm, 0.0, 1.0)
     result = np.clip(base * (1.0 - mask[:,:,np.newaxis] * blend) + effect * (mask[:,:,np.newaxis] * blend), 0, 1)
-    return np.clip(result + bb[:,:,np.newaxis] * 0.22 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
+    return np.clip(result + bb[:,:,np.newaxis] * 0.08 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
 
 def spec_mil_spec_od(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
@@ -165,6 +172,7 @@ def spec_mil_spec_od(shape, seed, sm, base_m, base_r):
     return M, R, CC
 
 def paint_mil_spec_tan_v2(paint, shape, mask, seed, pm, bb):
+    """Coyote tan (FDE) iron oxide pigment with sand-matching IR signature."""
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     # Coyote tan (FDE): iron oxide pigment with sand-matching IR signature
@@ -176,7 +184,7 @@ def paint_mil_spec_tan_v2(paint, shape, mask, seed, pm, bb):
     effect = np.stack([np.clip(tan_r, 0, 1), np.clip(tan_g, 0, 1), np.clip(tan_b, 0, 1)], axis=-1).astype(np.float32)
     blend = np.clip(pm, 0.0, 1.0)
     result = np.clip(base * (1.0 - mask[:,:,np.newaxis] * blend) + effect * (mask[:,:,np.newaxis] * blend), 0, 1)
-    return np.clip(result + bb[:,:,np.newaxis] * 0.22 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
+    return np.clip(result + bb[:,:,np.newaxis] * 0.08 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
 
 def spec_mil_spec_tan(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
@@ -187,6 +195,7 @@ def spec_mil_spec_tan(shape, seed, sm, base_m, base_r):
     return M, R, CC
 
 def paint_powder_coat_v2(paint, shape, mask, seed, pm, bb):
+    """Electrostatic powder coat with particle flow and oven cure orange peel."""
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     # Electrostatic powder: particles melt + flow during oven cure
@@ -198,7 +207,7 @@ def paint_powder_coat_v2(paint, shape, mask, seed, pm, bb):
     effect = np.clip(np.stack([pc_base + orange_peel + cure_var * 0.01]*3, axis=-1), 0, 1).astype(np.float32)
     blend = np.clip(pm, 0.0, 1.0)
     result = np.clip(base * (1.0 - mask[:,:,np.newaxis] * blend) + effect * (mask[:,:,np.newaxis] * blend), 0, 1)
-    return np.clip(result + bb[:,:,np.newaxis] * 0.28 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
+    return np.clip(result + bb[:,:,np.newaxis] * 0.15 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
 
 def spec_powder_coat(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
@@ -209,6 +218,7 @@ def spec_powder_coat(shape, seed, sm, base_m, base_r):
     return M, R, CC
 
 def paint_rugged_tactical_v2(paint, shape, mask, seed, pm, bb):
+    """Rubberized tactical coating with thick textured impact-absorbing surface."""
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     # Rubberized tactical coating: thick, textured, impact-absorbing
@@ -220,7 +230,7 @@ def paint_rugged_tactical_v2(paint, shape, mask, seed, pm, bb):
     effect = np.clip(np.stack([rugged + tex]*3, axis=-1), 0, 1).astype(np.float32)
     blend = np.clip(pm, 0.0, 1.0)
     result = np.clip(base * (1.0 - mask[:,:,np.newaxis] * blend) + effect * (mask[:,:,np.newaxis] * blend), 0, 1)
-    return np.clip(result + bb[:,:,np.newaxis] * 0.18 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
+    return np.clip(result + bb[:,:,np.newaxis] * 0.06 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
 
 def spec_rugged_tactical(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
@@ -231,6 +241,7 @@ def spec_rugged_tactical(shape, seed, sm, base_m, base_r):
     return M, R, CC
 
 def paint_sub_black_v2(paint, shape, mask, seed, pm, bb):
+    """Anechoic tile-like sonar-absorbing rubber tile coating with seam detail."""
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     # Anechoic tile-like coating: sonar-absorbing rubber tiles
@@ -252,7 +263,7 @@ def paint_sub_black_v2(paint, shape, mask, seed, pm, bb):
     effect = np.clip(np.stack([dark - seam]*3, axis=-1), 0, 1).astype(np.float32)
     blend = np.clip(pm, 0.0, 1.0)
     result = np.clip(base * (1.0 - mask[:,:,np.newaxis] * blend) + effect * (mask[:,:,np.newaxis] * blend), 0, 1)
-    return np.clip(result + bb[:,:,np.newaxis] * 0.15 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
+    return np.clip(result + bb[:,:,np.newaxis] * 0.06 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
 
 def spec_sub_black(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
@@ -264,6 +275,7 @@ def spec_sub_black(shape, seed, sm, base_m, base_r):
     return M, R, CC
 
 def paint_submarine_black_v2(paint, shape, mask, seed, pm, bb):
+    """Deep-dive pressure hull anti-fouling coating with bio-growth patina."""
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     # Deep-dive pressure hull coating: anti-fouling + corrosion resistant
@@ -278,7 +290,7 @@ def paint_submarine_black_v2(paint, shape, mask, seed, pm, bb):
     ], axis=-1).astype(np.float32)
     blend = np.clip(pm, 0.0, 1.0)
     result = np.clip(base * (1.0 - mask[:,:,np.newaxis] * blend) + effect * (mask[:,:,np.newaxis] * blend), 0, 1)
-    return np.clip(result + bb[:,:,np.newaxis] * 0.15 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
+    return np.clip(result + bb[:,:,np.newaxis] * 0.06 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
 
 def spec_submarine_black(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape

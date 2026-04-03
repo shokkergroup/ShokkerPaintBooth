@@ -252,6 +252,8 @@ def spec_red_chrome(shape, seed, sm, base_m, base_r):
     anod = multi_scale_noise((h, w), [8, 16, 32], [0.3, 0.4, 0.3], seed + 30)
     M = np.clip(240.0 + anod * 15.0 * sm, 0, 255).astype(np.float32)
     R = np.clip(5.0 + anod * 12.0 * sm, 0, 255).astype(np.float32)
+    # GGX floor: R>=15 for non-chrome pixels (M<240). Pure chrome (M>=240) may keep R<15.
+    R = np.where(M >= 240.0, R, np.maximum(R, 15.0)).astype(np.float32)
     CC = np.full((h, w), 16.0, dtype=np.float32)  # CC=16 max clearcoat red chrome
     return M, R, CC
 

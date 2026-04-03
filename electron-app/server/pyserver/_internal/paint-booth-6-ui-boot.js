@@ -2700,7 +2700,17 @@
                 <kbd style="color:var(--text-bright);">V</kbd><span style="color:var(--text-dim);">Toggle split view (live preview)</span>
                 <kbd style="color:var(--text-bright);">H</kbd><span style="color:var(--text-dim);">History gallery</span>
                 <kbd style="color:var(--text-bright);">T</kbd><span style="color:var(--text-dim);">Template library</span>
+                <kbd style="color:var(--text-bright);">E</kbd><span style="color:var(--text-dim);">Toggle zone editor panel</span>
                 <kbd style="color:var(--text-bright);">?</kbd><span style="color:var(--text-dim);">Show this legend (also Ctrl+/)</span>
+                <span style="color:var(--accent);font-weight:700;margin-top:8px;">TOOLS</span><span></span>
+                <kbd style="color:var(--text-bright);">P</kbd><span style="color:var(--text-dim);">Eyedropper / Color pick</span>
+                <kbd style="color:var(--text-bright);">W</kbd><span style="color:var(--text-dim);">Magic wand select</span>
+                <kbd style="color:var(--text-bright);">A</kbd><span style="color:var(--text-dim);">Select all</span>
+                <kbd style="color:var(--text-bright);">B</kbd><span style="color:var(--text-dim);">Brush</span>
+                <kbd style="color:var(--text-bright);">O</kbd><span style="color:var(--text-dim);">Rectangle select</span>
+                <kbd style="color:var(--text-bright);">L</kbd><span style="color:var(--text-dim);">Lasso select</span>
+                <kbd style="color:var(--text-bright);">X</kbd><span style="color:var(--text-dim);">Erase selection</span>
+                <kbd style="color:var(--text-bright);">Alt+Arrows</kbd><span style="color:var(--text-dim);">Nudge selection (Shift = 5px)</span>
             </div>
             <div style="margin-top:16px;text-align:center;"><button class="btn btn-sm" onclick="this.closest('#shortcutLegendOverlay').style.display='none'" style="padding:4px 20px;">Close</button></div>
         </div>`;

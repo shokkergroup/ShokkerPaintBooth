@@ -10,7 +10,7 @@ Adds MISSING and REWRITES WEAK entries across:
 Called by shokker_engine_v2.py AFTER the 24k expansion loads.
 """
 import numpy as np
-from scipy.ndimage import gaussian_filter
+from scipy.ndimage import gaussian_filter, zoom as _scipy_zoom
 
 
 # ---------------------------------------------------------------------------
@@ -23,9 +23,8 @@ def _msn(shape, scales, weights, seed):
     out = np.zeros((h, w), dtype=np.float32)
     for s, wt in zip(scales, weights):
         coarse = rng.randn(max(2, h // s), max(2, w // s)).astype(np.float32)
-        from scipy.ndimage import zoom
         try:
-            up = zoom(coarse, (h / coarse.shape[0], w / coarse.shape[1]), order=1)
+            up = _scipy_zoom(coarse, (h / coarse.shape[0], w / coarse.shape[1]), order=1)
             up = up[:h, :w]
         except Exception:
             up = np.zeros((h, w), dtype=np.float32)

@@ -2313,24 +2313,47 @@ def diamond_dust(shape, seed, sm, density=0.003):
 # 52. METALLIC SAND — fine 2px block-quantized metallic particles
 # ============================================================================
 
-def metallic_sand(shape, seed, sm, block_size=2):
+def metallic_sand(shape, seed, sm, block_size=2, flow_angle=0.18):
     """
-    Sand-like metallic particles: 2px block-quantized grid, each block gets
-    an independent random brightness — slightly larger than diamond_dust.
+    Metallic sand particles with directional flow alignment. Each particle is an
+    elongated rectangle (2:1 aspect) rotated along a flow direction field, creating
+    anisotropic sheen like metallic sand oriented by coating spray. The flow direction
+    has gentle spatial variation from a low-freq noise field. Distinct from micro_sparkle
+    (isotropic square blocks) and diamond_dust (per-pixel scatter).
     """
     h, w = shape
     if sm < 0.001:
         return _flat(shape)
     rng = np.random.default_rng(seed)
-    bs = max(1, block_size)
-    ny, nx = max(1, (h + bs - 1) // bs), max(1, (w + bs - 1) // bs)
-    blocks = rng.random((ny, nx)).astype(np.float32)
-    # Expand blocks to full image
+    rng2 = np.random.RandomState(seed + 55)
+    bs = max(2, block_size)
+    # Flow direction field: gentle spatial variation
+    yy = np.arange(h, dtype=np.float32) / h
+    xx = np.arange(w, dtype=np.float32) / w
+    base_angle = rng2.uniform(0, np.pi)
+    flow_field = base_angle + (np.sin(yy[:, np.newaxis] * 3.5 * np.pi + rng2.uniform(0, np.pi * 2)) *
+                               np.cos(xx[np.newaxis, :] * 2.8 * np.pi + rng2.uniform(0, np.pi * 2))) * flow_angle
+    # Anisotropic particle grid: elongated 2:1 in flow direction
+    # Use rotated coordinate sampling for each particle cell
+    ny, nx = max(2, (h + bs - 1) // bs), max(2, (w + bs - 1) // bs)
+    particle_vals = rng.random((ny, nx)).astype(np.float32)
+    # Assign each pixel to its particle cell
     yi = np.clip(np.arange(h) // bs, 0, ny - 1)
     xi = np.clip(np.arange(w) // bs, 0, nx - 1)
-    result = blocks[yi[:, np.newaxis], xi[np.newaxis, :]]
-    # Add per-pixel micro-variation
-    result += rng.uniform(-0.08, 0.08, size=(h, w)).astype(np.float32)
+    base = particle_vals[yi[:, np.newaxis], xi[np.newaxis, :]]
+    # Elongation: within each cell, brightness varies along flow direction
+    # (bright at particle center-line, darker at particle edges perpendicular to flow)
+    y_in_cell = (np.arange(h, dtype=np.float32) % bs) / bs - 0.5
+    x_in_cell = (np.arange(w, dtype=np.float32) % bs) / bs - 0.5
+    # Project cell-local position onto perpendicular-to-flow direction
+    cos_f = np.cos(flow_field)
+    sin_f = np.sin(flow_field)
+    perp_dist = np.abs(y_in_cell[:, np.newaxis] * cos_f - x_in_cell[np.newaxis, :] * sin_f)
+    # Particle profile: Gaussian falloff perpendicular to flow (elongated highlight)
+    particle_profile = np.exp(-(perp_dist ** 2) / 0.08).astype(np.float32)
+    result = base * (0.5 + 0.5 * particle_profile)
+    # Per-pixel micro-variation (sand grain noise)
+    result += rng.uniform(-0.05, 0.05, size=(h, w)).astype(np.float32)
     return _sm_scale(_normalize(result), sm).astype(np.float32)
 
 
@@ -2403,20 +2426,46 @@ def crystal_shimmer(shape, seed, sm, cell_size=10, edge_width=0.25):
 
 def stardust_fine(shape, seed, sm, density=0.012):
     """
-    Smaller and denser than diamond_dust — like looking at a star-filled night sky.
-    Per-pixel random with very low threshold, sub-pixel blur for soft glow.
+    Dense star-field sparkle with FBM density clustering and variable star magnitude.
+    Stars cluster in nebula-like regions (FBM density map), each star has a random
+    brightness class (dim/medium/bright), and bright stars get a larger cross-shaped
+    diffraction spike. Distinct from diamond_dust (uniform sparse scatter + blur).
     """
     h, w = shape
     if sm < 0.001:
         return _flat(shape)
     rng = np.random.default_rng(seed)
+    rng2 = np.random.RandomState(seed + 77)
+    # FBM density map: stars cluster in nebula-like regions
+    yy = np.arange(h, dtype=np.float32) / h
+    xx = np.arange(w, dtype=np.float32) / w
+    density_field = np.zeros(shape, dtype=np.float32)
+    amp = 1.0
+    for freq_s in [2.0, 4.5, 9.0]:
+        ph = rng2.uniform(0, 2 * np.pi, 2)
+        density_field += amp * (np.sin(yy[:, np.newaxis] * freq_s * np.pi * 2 + ph[0]) *
+                                np.cos(xx[np.newaxis, :] * freq_s * np.pi * 2 + ph[1]) * 0.5 + 0.5)
+        amp *= 0.5
+    density_field = _normalize(density_field)
+    # Per-pixel star placement weighted by density field
     raw = rng.random((h, w)).astype(np.float32)
-    threshold = 1.0 - density
-    # Variable intensity per star
-    intensity = rng.uniform(0.3, 1.0, (h, w)).astype(np.float32)
-    sparkle = np.where(raw > threshold, intensity, 0.04).astype(np.float32)
-    sparkle = _gauss(sparkle, sigma=0.3)
-    return _sm_scale(_normalize(sparkle), sm).astype(np.float32)
+    eff_threshold = 1.0 - density * (0.3 + density_field * 1.4)
+    is_star = raw > eff_threshold
+    # Magnitude classes: dim (0.2-0.4), medium (0.5-0.7), bright (0.8-1.0)
+    magnitude = rng.uniform(0.0, 1.0, (h, w)).astype(np.float32)
+    star_bright = np.where(magnitude > 0.7, rng.uniform(0.8, 1.0, (h, w)),
+                  np.where(magnitude > 0.3, rng.uniform(0.45, 0.7, (h, w)),
+                           rng.uniform(0.15, 0.4, (h, w)))).astype(np.float32)
+    canvas = np.where(is_star, star_bright, 0.03).astype(np.float32)
+    # Bright stars get a small cross-shaped diffraction spike (4-pixel arms)
+    bright_mask = (is_star & (magnitude > 0.7)).astype(np.float32)
+    spike = np.zeros(shape, dtype=np.float32)
+    for dy, dx in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
+        spike += np.roll(bright_mask, dy, axis=0) * np.roll(np.ones_like(bright_mask), dx, axis=1) * 0.35
+    canvas = np.maximum(canvas, spike * 0.4)
+    # Soft nebula background glow from density field
+    canvas += density_field * 0.06
+    return _sm_scale(_normalize(canvas), sm).astype(np.float32)
 
 
 # ============================================================================

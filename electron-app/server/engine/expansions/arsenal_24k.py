@@ -10,6 +10,7 @@ Factory functions generate parametric variants to avoid code explosion.
 """
 
 import numpy as np
+from scipy.ndimage import gaussian_filter, uniform_filter
 from engine.spec_paint import (
     paint_tricolore_shift,
     paint_carbon_weave,
@@ -111,7 +112,7 @@ def spec_industrial_tactical(shape, mask, seed, sm):
 def paint_matte_wrap_v2(paint, shape, mask, seed, pm, bb):
     if pm == 0.0:
         return paint
-    from scipy.ndimage import gaussian_filter
+
     smoothed = gaussian_filter(paint, sigma=[2, 2, 0])
     blend = pm * mask[:,:,np.newaxis]
     paint = paint * (1.0 - blend * 0.8) + smoothed * blend * 0.8
@@ -1133,7 +1134,7 @@ def _base_spec_fiberglass(shape, seed, sm, base_M, base_R):
             fy = int(y0 + np.sin(angle) * t) % h
             fiber_map[fy, fx] = min(fiber_map[fy, fx] + 0.15, 1.0)
     # Smooth slightly to simulate resin filling
-    from scipy.ndimage import uniform_filter
+
     fiber_map = uniform_filter(fiber_map, size=3)
     M_arr = np.full(shape, base_M, dtype=np.float32) + fiber_map * 20 * sm
     R_arr = np.full(shape, base_R, dtype=np.float32) + fiber_map * 30 * sm
@@ -7117,7 +7118,7 @@ def spec_volcanic_glass(shape, mask, seed, sm):
     spec = np.zeros((h, w, 4), dtype=np.uint8)
     noise = _multi_scale_noise(shape, [4, 8, 16, 32], [0.2, 0.3, 0.3, 0.2], seed + 1410)
     veins = np.where(np.abs(noise) < 0.05, 1.0, 0.0).astype(np.float32)
-    from scipy.ndimage import gaussian_filter
+
     veins_s = gaussian_filter(veins, sigma=max(1, h * 0.003))
     M = 30 + veins_s * 80 + noise * 10 * sm
     R = 5 + veins_s * 20 + noise * 5 * sm
@@ -7204,7 +7205,7 @@ def paint_volcanic_glass(paint, shape, mask, seed, pm, bb):
     h, w = shape
     noise = _multi_scale_noise(shape, [4, 8, 16, 32], [0.2, 0.3, 0.3, 0.2], seed + 1410)
     veins = np.where(np.abs(noise) < 0.05, 1.0, 0.0).astype(np.float32)
-    from scipy.ndimage import gaussian_filter
+
     veins_glow = gaussian_filter(veins, sigma=max(2, h * 0.008))
     paint = np.clip(paint - 0.10 * pm * mask[:,:,np.newaxis], 0, 1)
     paint[:,:,0] = np.clip(paint[:,:,0] + veins_glow * 0.15 * pm * mask, 0, 1)
@@ -7270,7 +7271,7 @@ def spec_voodoo(shape, mask, seed, sm):
     spec = np.zeros((h, w, 4), dtype=np.uint8)
     noise = _multi_scale_noise(shape, [4, 8, 16], [0.3, 0.4, 0.3], seed + 1050)
     marks = np.where(np.abs(noise) < 0.06, 1.0, 0.0).astype(np.float32)
-    from scipy.ndimage import gaussian_filter
+
     marks_s = gaussian_filter(marks, sigma=max(1, h * 0.003))
     M = 25 + marks_s * 80 + noise * 8 * sm
     R = 160 - marks_s * 120 + noise * 15 * sm
@@ -7331,7 +7332,7 @@ def spec_cursed(shape, mask, seed, sm):
     spec = np.zeros((h, w, 4), dtype=np.uint8)
     noise = _multi_scale_noise(shape, [4, 8, 16, 32], [0.2, 0.3, 0.3, 0.2], seed + 1090)
     veins = np.where(np.abs(noise) < 0.05, 1.0, 0.0).astype(np.float32)
-    from scipy.ndimage import gaussian_filter
+
     veins_s = gaussian_filter(veins, sigma=max(1, h * 0.003))
     M = 20 + veins_s * 100 + noise * 8 * sm
     R = 170 - veins_s * 140 + noise * 12 * sm
@@ -7377,7 +7378,7 @@ def paint_voodoo(paint, shape, mask, seed, pm, bb):
     h, w = shape
     noise = _multi_scale_noise(shape, [4, 8, 16], [0.3, 0.4, 0.3], seed + 1050)
     marks = np.where(np.abs(noise) < 0.06, 1.0, 0.0).astype(np.float32)
-    from scipy.ndimage import gaussian_filter
+
     marks_s = gaussian_filter(marks, sigma=max(1, h * 0.003))
     marks_glow = gaussian_filter(marks, sigma=max(2, h * 0.010))
     paint = np.clip(paint - 0.10 * pm * mask[:,:,np.newaxis], 0, 1)
@@ -7434,7 +7435,7 @@ def paint_cursed(paint, shape, mask, seed, pm, bb):
     h, w = shape
     noise = _multi_scale_noise(shape, [4, 8, 16, 32], [0.2, 0.3, 0.3, 0.2], seed + 1090)
     veins = np.where(np.abs(noise) < 0.05, 1.0, 0.0).astype(np.float32)
-    from scipy.ndimage import gaussian_filter
+
     veins_s = gaussian_filter(veins, sigma=max(1, h * 0.003))
     veins_glow = gaussian_filter(veins, sigma=max(2, h * 0.010))
     paint = np.clip(paint - 0.12 * pm * mask[:,:,np.newaxis], 0, 1)
@@ -7691,7 +7692,7 @@ def spec_etched_metal(shape, mask, seed, sm):
     spec = np.zeros((h, w, 4), dtype=np.uint8)
     noise = _multi_scale_noise(shape, [4, 8, 16], [0.3, 0.4, 0.3], seed + 1230)
     etch = np.where(np.abs(noise) < 0.1, 1.0, 0.0).astype(np.float32)
-    from scipy.ndimage import gaussian_filter
+
     etch_soft = gaussian_filter(etch, sigma=max(1, h * 0.002))
     M = 160 + etch_soft * 30 + noise * 12 * sm
     R = 30 + (1 - etch_soft) * 40 + noise * 10 * sm
@@ -7823,7 +7824,7 @@ def paint_etched_metal(paint, shape, mask, seed, pm, bb):
     h, w = shape
     noise = _multi_scale_noise(shape, [4, 8, 16], [0.3, 0.4, 0.3], seed + 1230)
     etch = np.where(np.abs(noise) < 0.1, 1.0, 0.0).astype(np.float32)
-    from scipy.ndimage import gaussian_filter
+
     etch_soft = gaussian_filter(etch, sigma=max(1, h * 0.002))
     paint = np.clip(paint - etch_soft[:,:,np.newaxis] * 0.08 * pm * mask[:,:,np.newaxis], 0, 1)
     paint = np.clip(paint + (1 - etch_soft[:,:,np.newaxis]) * 0.03 * pm * mask[:,:,np.newaxis], 0, 1)
@@ -8780,7 +8781,7 @@ def spec_lightning_strike(shape, mask, seed, sm):
     spec = np.zeros((h, w, 4), dtype=np.uint8)
     noise = _multi_scale_noise(shape, [4, 8, 16], [0.3, 0.4, 0.3], seed + 1590)
     bolt = np.where(np.abs(noise) < 0.04, 1.0, 0.0).astype(np.float32)
-    from scipy.ndimage import gaussian_filter
+
     bolt_s = gaussian_filter(bolt, sigma=max(1, h * 0.003))
     M = 30 + bolt_s * 200 + noise * 8 * sm
     R = 80 - bolt_s * 70 + noise * 10 * sm
@@ -8796,7 +8797,7 @@ def spec_magma_flow(shape, mask, seed, sm):
     spec = np.zeros((h, w, 4), dtype=np.uint8)
     noise = _multi_scale_noise(shape, [4, 8, 16, 32], [0.2, 0.3, 0.3, 0.2], seed + 1600)
     lava = np.where(np.abs(noise) < 0.06, 1.0, 0.0).astype(np.float32)
-    from scipy.ndimage import gaussian_filter
+
     lava_s = gaussian_filter(lava, sigma=max(1, h * 0.003))
     M = 40 + lava_s * 140 + noise * 10 * sm
     R = 140 - lava_s * 130 + noise * 15 * sm
@@ -8966,7 +8967,7 @@ def paint_lightning_strike(paint, shape, mask, seed, pm, bb):
     h, w = shape
     noise = _multi_scale_noise(shape, [4, 8, 16], [0.3, 0.4, 0.3], seed + 1590)
     bolt = np.where(np.abs(noise) < 0.04, 1.0, 0.0).astype(np.float32)
-    from scipy.ndimage import gaussian_filter
+
     bolt_glow = gaussian_filter(bolt, sigma=max(2, h * 0.008))
     paint = np.clip(paint - 0.06 * pm * mask[:,:,np.newaxis], 0, 1)
     paint[:,:,0] = np.clip(paint[:,:,0] + bolt_glow * 0.15 * pm * mask, 0, 1)
@@ -8980,7 +8981,7 @@ def paint_magma_flow(paint, shape, mask, seed, pm, bb):
     h, w = shape
     noise = _multi_scale_noise(shape, [4, 8, 16, 32], [0.2, 0.3, 0.3, 0.2], seed + 1601)
     lava = np.where(np.abs(noise) < 0.06, 1.0, 0.0).astype(np.float32)
-    from scipy.ndimage import gaussian_filter
+
     lava_glow = gaussian_filter(lava, sigma=max(2, h * 0.008))
     paint = np.clip(paint - 0.08 * pm * mask[:,:,np.newaxis], 0, 1)
     paint[:,:,0] = np.clip(paint[:,:,0] + lava_glow * 0.25 * pm * mask, 0, 1)
@@ -9094,7 +9095,7 @@ def spec_dark_ritual(shape, mask, seed, sm):
     noise = _multi_scale_noise(shape, [8, 16, 32], [0.3, 0.4, 0.3], seed + 930)
     rune_field = _multi_scale_noise(shape, [4, 8, 16], [0.3, 0.4, 0.3], seed + 931)
     runes = np.where(np.abs(rune_field) < 0.08, 1.0, 0.0).astype(np.float32)
-    from scipy.ndimage import gaussian_filter
+
     runes_soft = gaussian_filter(runes, sigma=max(1, h * 0.003))
     M = 10 + runes_soft * 120 + noise * 8 * sm
     R = 200 - runes_soft * 180 + noise * 10 * sm
@@ -9124,7 +9125,7 @@ def spec_demon_forge(shape, mask, seed, sm):
     spec = np.zeros((h, w, 4), dtype=np.uint8)
     noise = _multi_scale_noise(shape, [4, 8, 16, 32], [0.2, 0.3, 0.3, 0.2], seed + 950)
     crack = np.where(np.abs(noise) < 0.06, 1.0, 0.0).astype(np.float32)
-    from scipy.ndimage import gaussian_filter
+
     crack_soft = gaussian_filter(crack, sigma=max(1, h * 0.003))
     M = 30 + crack_soft * 200 + noise * 10 * sm
     R = 180 - crack_soft * 170 + noise * 15 * sm
@@ -9180,7 +9181,7 @@ def spec_hellhound(shape, mask, seed, sm):
     spec = np.zeros((h, w, 4), dtype=np.uint8)
     noise = _multi_scale_noise(shape, [4, 8, 16], [0.3, 0.4, 0.3], seed + 990)
     ember = np.where(np.abs(noise) < 0.07, 1.0, 0.0).astype(np.float32)
-    from scipy.ndimage import gaussian_filter
+
     ember_soft = gaussian_filter(ember, sigma=max(1, h * 0.003))
     M = 50 + ember_soft * 160 + noise * 15 * sm
     R = 140 - ember_soft * 120 + noise * 20 * sm
@@ -9327,7 +9328,7 @@ def paint_dark_ritual(paint, shape, mask, seed, pm, bb):
     h, w = shape
     rune_field = _multi_scale_noise(shape, [4, 8, 16], [0.3, 0.4, 0.3], seed + 931)
     runes = np.where(np.abs(rune_field) < 0.08, 1.0, 0.0).astype(np.float32)
-    from scipy.ndimage import gaussian_filter
+
     runes_soft = gaussian_filter(runes, sigma=max(1, h * 0.004))
     rune_glow = gaussian_filter(runes, sigma=max(2, h * 0.012))
     # BOOSTED: much deeper background darkness - ritual chamber
@@ -9363,7 +9364,7 @@ def paint_demon_forge(paint, shape, mask, seed, pm, bb):
     h, w = shape
     noise = _multi_scale_noise(shape, [4, 8, 16, 32], [0.2, 0.3, 0.3, 0.2], seed + 950)
     crack = np.where(np.abs(noise) < 0.06, 1.0, 0.0).astype(np.float32)
-    from scipy.ndimage import gaussian_filter
+
     crack_soft = gaussian_filter(crack, sigma=max(1, h * 0.003))
     crack_glow = gaussian_filter(crack, sigma=max(2, h * 0.010))
     # BOOSTED: much darker surrounding areas - forge darkness
@@ -9434,7 +9435,7 @@ def paint_hellhound(paint, shape, mask, seed, pm, bb):
     h, w = shape
     noise = _multi_scale_noise(shape, [4, 8, 16], [0.3, 0.4, 0.3], seed + 990)
     ember = np.where(np.abs(noise) < 0.07, 1.0, 0.0).astype(np.float32)
-    from scipy.ndimage import gaussian_filter
+
     ember_soft = gaussian_filter(ember, sigma=max(1, h * 0.003))
     ember_glow = gaussian_filter(ember, sigma=max(2, h * 0.010))
     # BOOSTED: deep char blackening
@@ -10061,7 +10062,7 @@ def spec_dark_fairy(shape, mask, seed, sm):
     spec = np.zeros((h, w, 4), dtype=np.uint8)
     noise = _multi_scale_noise(shape, [4, 8, 16, 32], [0.2, 0.3, 0.3, 0.2], seed + 1820)
     magic = np.where(np.abs(noise) < 0.06, 1.0, 0.0).astype(np.float32)
-    from scipy.ndimage import gaussian_filter
+
     magic_s = gaussian_filter(magic, sigma=max(1, h * 0.004))
     M = 30 + magic_s * 60 + noise * 8 * sm
     R = 70 + (1 - magic_s) * 40 + noise * 12 * sm
@@ -10267,7 +10268,7 @@ def paint_dark_fairy(paint, shape, mask, seed, pm, bb):
     h, w = shape
     noise = _multi_scale_noise(shape, [4, 8, 16, 32], [0.2, 0.3, 0.3, 0.2], seed + 1821)
     magic = np.where(np.abs(noise) < 0.06, 1.0, 0.0).astype(np.float32)
-    from scipy.ndimage import gaussian_filter
+
     magic_glow = gaussian_filter(magic, sigma=max(2, h * 0.008))
     paint = np.clip(paint - 0.06 * pm * mask[:,:,np.newaxis], 0, 1)
     paint[:,:,0] = np.clip(paint[:,:,0] + magic_glow * 0.10 * pm * mask, 0, 1)

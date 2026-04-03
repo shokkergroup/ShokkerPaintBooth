@@ -1856,13 +1856,15 @@ async function doRender() {
     const btn = document.getElementById('btnRender');
     const bar = document.getElementById('renderProgress');
     const barInner = document.getElementById('renderProgressBar');
+    const barText = document.getElementById('renderProgressText');
     const zoneCount = serverZones.length;
     btn.textContent = `RENDERING ${zoneCount} ZONE${zoneCount > 1 ? 'S' : ''}...`;
     showToast('Rendering... This may take 30–60 seconds for complex finishes.', false);
     btn.style.opacity = '0.5';
     btn.style.pointerEvents = 'none';
     bar.classList.add('active');
-    barInner.style.width = '10%';
+    barInner.style.width = '5%';
+    if (barText) barText.textContent = 'Preparing render...';
     startRenderTimer();
     // After 3 seconds, enable TERMINATE mode on the button
     const _terminateTimeout = setTimeout(() => {
@@ -1876,18 +1878,33 @@ async function doRender() {
             btn.style.pointerEvents = 'none';
         };
     }, 3000);
-    // Simulate progress stepping (visual feedback while server works)
-    let _progStep = 10;
-    const _progInterval = setInterval(() => {
-        _progStep = Math.min(_progStep + Math.random() * 8, 85);
-        barInner.style.width = _progStep + '%';
-    }, 400);
+    // Poll /api/render-status every 500ms for real per-zone progress
+    const _progressPoll = setInterval(async () => {
+        try {
+            const resp = await fetch(ShokkerAPI.baseUrl + '/api/render-status');
+            if (resp.ok) {
+                const status = await resp.json();
+                if (status.active && status.total_zones > 0) {
+                    const pct = Math.max(5, Math.min(95, status.percent));
+                    barInner.style.width = pct + '%';
+                    if (barText) {
+                        barText.textContent = `Rendering zone ${status.current_zone} of ${status.total_zones}` +
+                            (status.zone_name ? ` — ${status.zone_name}` : '') + '...';
+                    }
+                } else if (status.stage === 'preparing') {
+                    barInner.style.width = '5%';
+                    if (barText) barText.textContent = 'Preparing render...';
+                }
+            }
+        } catch (_) { /* ignore polling errors */ }
+    }, 500);
 
     try {
         const result = await ShokkerAPI.render(paintFile, serverZones, iracingId, 51, liveLink, extras);
-        clearInterval(_progInterval);
+        clearInterval(_progressPoll);
         stopRenderTimer();
         barInner.style.width = '100%';
+        if (barText) barText.textContent = 'Complete!';
 
         if (result.success) {
             let msg = `Rendered ${result.zone_count} zones in ${result.elapsed_seconds}s`;
@@ -1924,7 +1941,7 @@ async function doRender() {
             RenderNotify.onRenderComplete(false, 0, 0);
         }
     } catch (e) {
-        clearInterval(_progInterval);
+        clearInterval(_progressPoll);
         stopRenderTimer();
         if (e.name === 'AbortError') {
             showToast('Render cancelled.', false);
@@ -1936,6 +1953,7 @@ async function doRender() {
         RenderNotify.onRenderComplete(false, 0, 0);
     } finally {
         clearTimeout(_terminateTimeout);
+        clearInterval(_progressPoll);
         ShokkerAPI._renderAbort = null;
         setTimeout(() => {
             btn.textContent = 'RENDER';
@@ -1945,6 +1963,7 @@ async function doRender() {
             btn.onclick = function () { safeDoRender(); };
             bar.classList.remove('active');
             barInner.style.width = '0%';
+            if (barText) barText.textContent = '';
         }, 1500);
     }
 }

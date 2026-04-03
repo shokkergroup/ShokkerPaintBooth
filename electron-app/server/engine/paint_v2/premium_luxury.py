@@ -26,6 +26,7 @@ from engine.core import multi_scale_noise, get_mgrid
 # ==================================================================
 
 def paint_bentley_silver_v2(paint, shape, mask, seed, pm, bb):
+    """Bentley signature silver with directional metallic flake orientation sparkle."""
     h, w = shape[:2] if len(shape) > 2 else shape
     rng = np.random.RandomState(seed + 400)
     base = paint.copy()
@@ -52,7 +53,7 @@ def paint_bentley_silver_v2(paint, shape, mask, seed, pm, bb):
 
     blend = np.clip(pm, 0.0, 1.0)
     result = np.clip(base * (1.0 - mask[:,:,np.newaxis] * blend) + effect * (mask[:,:,np.newaxis] * blend), 0, 1)
-    return np.clip(result + bb[:,:,np.newaxis] * 0.45 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
+    return np.clip(result + bb[:,:,np.newaxis] * 0.28 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
 
 def spec_bentley_silver(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
@@ -69,6 +70,7 @@ def spec_bentley_silver(shape, seed, sm, base_m, base_r):
 # ==================================================================
 
 def paint_bugatti_blue_v2(paint, shape, mask, seed, pm, bb):
+    """Bugatti deep blue multi-coat with 5-layer color-shifting interference depth."""
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
 
@@ -94,7 +96,7 @@ def paint_bugatti_blue_v2(paint, shape, mask, seed, pm, bb):
 
     blend = np.clip(pm, 0.0, 1.0)
     result = np.clip(base * (1.0 - mask[:,:,np.newaxis] * blend) + effect * (mask[:,:,np.newaxis] * blend), 0, 1)
-    return np.clip(result + bb[:,:,np.newaxis] * 0.35 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
+    return np.clip(result + bb[:,:,np.newaxis] * 0.22 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
 
 def spec_bugatti_blue(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
@@ -112,6 +114,7 @@ def spec_bugatti_blue(shape, seed, sm, base_m, base_r):
 # ==================================================================
 
 def paint_ferrari_rosso_v2(paint, shape, mask, seed, pm, bb):
+    """Ferrari Rosso triple-layer candy: Beer-Lambert absorption through translucent pigment."""
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     rng = np.random.RandomState(seed + 420)
@@ -140,7 +143,7 @@ def paint_ferrari_rosso_v2(paint, shape, mask, seed, pm, bb):
 
     blend = np.clip(pm, 0.0, 1.0)
     result = np.clip(base * (1.0 - mask[:,:,np.newaxis] * blend) + effect * (mask[:,:,np.newaxis] * blend), 0, 1)
-    return np.clip(result + bb[:,:,np.newaxis] * 0.40 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
+    return np.clip(result + bb[:,:,np.newaxis] * 0.22 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
 
 def spec_ferrari_rosso(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
@@ -161,6 +164,7 @@ def spec_ferrari_rosso(shape, seed, sm, base_m, base_r):
 # ==================================================================
 
 def paint_koenigsegg_clear_v2(paint, shape, mask, seed, pm, bb):
+    """Koenigsegg naked carbon under amber-tinted clearcoat via Beer-Lambert tinting."""
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     y, x = get_mgrid((h, w))
@@ -195,7 +199,7 @@ def paint_koenigsegg_clear_v2(paint, shape, mask, seed, pm, bb):
 
     blend = np.clip(pm, 0.0, 1.0)
     result = np.clip(base * (1.0 - mask[:,:,np.newaxis] * blend) + effect * (mask[:,:,np.newaxis] * blend), 0, 1)
-    return np.clip(result + bb[:,:,np.newaxis] * 0.30 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
+    return np.clip(result + bb[:,:,np.newaxis] * 0.15 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
 
 def spec_koenigsegg_clear(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
@@ -219,6 +223,7 @@ def spec_koenigsegg_clear(shape, seed, sm, base_m, base_r):
 # ==================================================================
 
 def paint_lamborghini_verde_v2(paint, shape, mask, seed, pm, bb):
+    """Lamborghini Verde pearlescent flip: thin-film OPD interference green-to-gold shift."""
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     y, x = get_mgrid((h, w))
@@ -250,7 +255,7 @@ def paint_lamborghini_verde_v2(paint, shape, mask, seed, pm, bb):
 
     blend = np.clip(pm, 0.0, 1.0)
     result = np.clip(base * (1.0 - mask[:,:,np.newaxis] * blend) + effect * (mask[:,:,np.newaxis] * blend), 0, 1)
-    return np.clip(result + bb[:,:,np.newaxis] * 0.38 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
+    return np.clip(result + bb[:,:,np.newaxis] * 0.22 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
 
 def spec_lamborghini_verde(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
@@ -270,6 +275,7 @@ def spec_lamborghini_verde(shape, seed, sm, base_m, base_r):
 # ==================================================================
 
 def paint_maybach_two_tone_v2(paint, shape, mask, seed, pm, bb):
+    """Maybach two-tone horizontal split with sigmoid coachline blend zone."""
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     y, x = get_mgrid((h, w))
@@ -301,7 +307,7 @@ def paint_maybach_two_tone_v2(paint, shape, mask, seed, pm, bb):
 
     blend_pm = np.clip(pm, 0.0, 1.0)
     result = np.clip(base * (1.0 - mask[:,:,np.newaxis] * blend_pm) + effect * (mask[:,:,np.newaxis] * blend_pm), 0, 1)
-    return np.clip(result + bb[:,:,np.newaxis] * 0.35 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
+    return np.clip(result + bb[:,:,np.newaxis] * 0.25 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
 
 def spec_maybach_two_tone(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
@@ -325,6 +331,7 @@ def spec_maybach_two_tone(shape, seed, sm, base_m, base_r):
 # ==================================================================
 
 def paint_mclaren_orange_v2(paint, shape, mask, seed, pm, bb):
+    """McLaren Papaya Spark fluorescent pigment with UV re-emission glow simulation."""
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
 
@@ -356,7 +363,7 @@ def paint_mclaren_orange_v2(paint, shape, mask, seed, pm, bb):
 
     blend = np.clip(pm, 0.0, 1.0)
     result = np.clip(base * (1.0 - mask[:,:,np.newaxis] * blend) + effect * (mask[:,:,np.newaxis] * blend), 0, 1)
-    return np.clip(result + bb[:,:,np.newaxis] * 0.42 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
+    return np.clip(result + bb[:,:,np.newaxis] * 0.25 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
 
 def spec_mclaren_orange(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
@@ -376,6 +383,7 @@ def spec_mclaren_orange(shape, seed, sm, base_m, base_r):
 # ==================================================================
 
 def paint_pagani_tricolore_v2(paint, shape, mask, seed, pm, bb):
+    """Pagani tricolore three-zone vertical fade with smoothstep Hermite transitions."""
     if pm == 0.0:
         return paint
     h, w = shape[:2] if len(shape) > 2 else shape
@@ -426,7 +434,7 @@ def paint_pagani_tricolore_v2(paint, shape, mask, seed, pm, bb):
 
     blend_pm = np.clip(pm, 0.0, 1.0)
     result = np.clip(base * (1.0 - mask[:,:,np.newaxis] * blend_pm) + effect * (mask[:,:,np.newaxis] * blend_pm), 0, 1)
-    return np.clip(result + bb[:,:,np.newaxis] * 0.30 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
+    return np.clip(result + bb[:,:,np.newaxis] * 0.22 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
 
 def spec_pagani_tricolore(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
@@ -461,6 +469,7 @@ def spec_pagani_tricolore(shape, seed, sm, base_m, base_r):
 # ==================================================================
 
 def paint_porsche_pts_v2(paint, shape, mask, seed, pm, bb):
+    """Porsche Paint-to-Sample ultra-flat precision color with micro orange-peel texture."""
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
 
@@ -494,7 +503,7 @@ def paint_porsche_pts_v2(paint, shape, mask, seed, pm, bb):
 
     blend = np.clip(pm, 0.0, 1.0)
     result = np.clip(base * (1.0 - mask[:,:,np.newaxis] * blend) + effect * (mask[:,:,np.newaxis] * blend), 0, 1)
-    return np.clip(result + bb[:,:,np.newaxis] * 0.30 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
+    return np.clip(result + bb[:,:,np.newaxis] * 0.10 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
 
 def spec_porsche_pts(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape

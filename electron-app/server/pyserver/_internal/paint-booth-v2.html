@@ -12,6 +12,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shokker Paint Booth</title>
     <link rel="icon" href="data:," />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="paint-booth-v2.css">
     <script src="fusion-swatches.js"></script>
     <script src="swatch-upgrades.js"></script>
@@ -1177,6 +1180,11 @@
                 <div class="render-float" id="renderFloat">
                     <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
                         <button class="btn-render" id="btnRender" onclick="safeDoRender()">RENDER</button>
+                        <button onclick="showShortcutLegend()" title="Keyboard shortcuts (?)"
+                            style="background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.15); color:var(--text-dim); font-size:11px; padding:4px 10px; border-radius:4px; cursor:pointer; display:flex; align-items:center; gap:4px; white-space:nowrap; transition:all 0.15s;"
+                            onmouseover="this.style.background='rgba(255,255,255,0.12)';this.style.color='var(--text-bright)'"
+                            onmouseout="this.style.background='rgba(255,255,255,0.06)';this.style.color='var(--text-dim)'"
+                            >&#9000; Shortcuts</button>
                     </div>
                     <div class="render-progress" id="renderProgress">
                         <div class="render-progress-bar" id="renderProgressBar"></div>

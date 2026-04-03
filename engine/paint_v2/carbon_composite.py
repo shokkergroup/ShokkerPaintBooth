@@ -24,6 +24,7 @@ from engine.core import multi_scale_noise, get_mgrid
 # ==================================================================
 
 def paint_carbon_base_v2(paint, shape, mask, seed, pm, bb):
+    """Carbon fiber 2x2 twill weave via modular arithmetic with anisotropic shading."""
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     y, x = get_mgrid((h, w))
@@ -74,6 +75,7 @@ def spec_carbon_base(shape, seed, sm, base_m, base_r):
 # ==================================================================
 
 def paint_carbon_ceramic_v2(paint, shape, mask, seed, pm, bb):
+    """Carbon ceramic matrix composite: carbon twill under ceramic glaze overlay."""
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     y, x = get_mgrid((h, w))
@@ -118,6 +120,7 @@ def spec_carbon_ceramic(shape, seed, sm, base_m, base_r):
 # ==================================================================
 
 def paint_aramid_weave_v2(paint, shape, mask, seed, pm, bb):
+    """Aramid plain 1/1 weave with off-white/cream fiber coloring."""
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     y, x = get_mgrid((h, w))
@@ -142,7 +145,7 @@ def paint_aramid_weave_v2(paint, shape, mask, seed, pm, bb):
 
     blend = np.clip(pm, 0.0, 1.0)
     result = np.clip(base * (1.0 - mask[:,:,np.newaxis] * blend) + effect * (mask[:,:,np.newaxis] * blend), 0, 1)
-    return np.clip(result + bb[:,:,np.newaxis] * 0.2 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
+    return np.clip(result + bb[:,:,np.newaxis] * 0.10 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
 
 
 def spec_aramid_weave(shape, seed, sm, base_m, base_r):
@@ -164,6 +167,7 @@ def spec_aramid_weave(shape, seed, sm, base_m, base_r):
 # ==================================================================
 
 def paint_fiberglass_cloth_v2(paint, shape, mask, seed, pm, bb):
+    """Fiberglass chopped strand mat with random fiber orientation scatter."""
     h, w = shape[:2] if len(shape) > 2 else shape
     rng = np.random.RandomState(seed + 330)
     base = paint.copy()
@@ -199,7 +203,7 @@ def paint_fiberglass_cloth_v2(paint, shape, mask, seed, pm, bb):
 
     blend = np.clip(pm, 0.0, 1.0)
     result = np.clip(base * (1.0 - mask[:,:,np.newaxis] * blend) + effect * (mask[:,:,np.newaxis] * blend), 0, 1)
-    return np.clip(result + bb[:,:,np.newaxis] * 0.25 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
+    return np.clip(result + bb[:,:,np.newaxis] * 0.10 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
 
 
 def spec_fiberglass_cloth(shape, seed, sm, base_m, base_r):
@@ -220,6 +224,7 @@ def spec_fiberglass_cloth(shape, seed, sm, base_m, base_r):
 # ==================================================================
 
 def paint_forged_composite_v2(paint, shape, mask, seed, pm, bb):
+    """Forged composite marbled short-fiber compression with domain-warped swirl pattern."""
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     # Domain warping for marble/swirl pattern
@@ -266,6 +271,7 @@ def spec_forged_composite(shape, seed, sm, base_m, base_r):
 # ==================================================================
 
 def paint_graphene_lattice_v2(paint, shape, mask, seed, pm, bb):
+    """Graphene hexagonal honeycomb lattice with per-cell shading variation."""
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     y, x = get_mgrid((h, w))
@@ -306,7 +312,7 @@ def paint_graphene_lattice_v2(paint, shape, mask, seed, pm, bb):
 
     blend = np.clip(pm, 0.0, 1.0)
     result = np.clip(base * (1.0 - mask[:,:,np.newaxis] * blend) + effect * (mask[:,:,np.newaxis] * blend), 0, 1)
-    return np.clip(result + bb[:,:,np.newaxis] * 0.1 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
+    return np.clip(result + bb[:,:,np.newaxis] * 0.18 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
 
 
 def spec_graphene_lattice(shape, seed, sm, base_m, base_r):
@@ -335,6 +341,7 @@ def spec_graphene_lattice(shape, seed, sm, base_m, base_r):
 # ==================================================================
 
 def paint_hybrid_weave_v2(paint, shape, mask, seed, pm, bb):
+    """Hybrid carbon+kevlar interlocked twill weave with two-tone tow coloring."""
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     y, x = get_mgrid((h, w))
@@ -392,6 +399,7 @@ def spec_hybrid_weave(shape, seed, sm, base_m, base_r):
 # Golden yellow color, dielectric, distinctive weave rhythm.
 # ==================================================================
 def paint_kevlar_golden_v2(paint, shape, mask, seed, pm, bb):
+    """Kevlar basket weave with golden yellow fiber color and tow border detail."""
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     y, x = get_mgrid((h, w))
@@ -423,7 +431,7 @@ def paint_kevlar_golden_v2(paint, shape, mask, seed, pm, bb):
 
     blend = np.clip(pm, 0.0, 1.0)
     result = np.clip(base * (1.0 - mask[:,:,np.newaxis] * blend) + effect * (mask[:,:,np.newaxis] * blend), 0, 1)
-    return np.clip(result + bb[:,:,np.newaxis] * 0.2 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
+    return np.clip(result + bb[:,:,np.newaxis] * 0.10 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
 
 
 def spec_kevlar_golden(shape, seed, sm, base_m, base_r):

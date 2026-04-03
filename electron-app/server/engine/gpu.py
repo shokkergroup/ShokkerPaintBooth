@@ -109,20 +109,101 @@ def _detect():
 # Run detection at import
 _detect()
 
-# GPU compute is detected but currently disabled for rendering due to
-# CPU↔GPU boundary issues with external paint_fn/texture_fn functions.
-# The GPU info is still reported in the UI. When GPU compute kernels are
-# ready (all texture functions ported to CuPy), set _GPU_COMPUTE_ENABLED = True.
+# GPU compute toggle. When True AND CuPy is available, compose.py uses GPU arrays.
+# Can be toggled at runtime via enable_gpu_compute() / disable_gpu_compute().
 _GPU_COMPUTE_ENABLED = False
 
-if _GPU_COMPUTE_ENABLED and GPU_BACKEND in ('cuda', 'rocm') and _cupy is not None:
+# Auto-enable if CuPy was detected at startup
+if GPU_BACKEND in ('cuda', 'rocm') and _cupy is not None:
+    _GPU_COMPUTE_ENABLED = True
+    print(f"[GPU] Auto-enabled GPU compute ({GPU_BACKEND}: {GPU_NAME})")
+
+if _GPU_COMPUTE_ENABLED and _cupy is not None:
     xp = _cupy
 else:
     xp = np
 
+
+def enable_gpu_compute():
+    """Enable GPU acceleration at runtime. Returns True if successful."""
+    global _GPU_COMPUTE_ENABLED, xp, _cupy
+    if _cupy is not None:
+        _GPU_COMPUTE_ENABLED = True
+        xp = _cupy
+        print(f"[GPU] Compute enabled ({GPU_BACKEND}: {GPU_NAME})")
+        return True
+    # Try importing CuPy (may have been pip-installed since startup)
+    try:
+        import cupy
+        _cupy = cupy
+        _GPU_COMPUTE_ENABLED = True
+        xp = cupy
+        print(f"[GPU] CuPy loaded and compute enabled")
+        return True
+    except ImportError:
+        print("[GPU] CuPy not available — GPU compute remains disabled")
+        return False
+
+
+def disable_gpu_compute():
+    """Disable GPU acceleration, fall back to CPU numpy."""
+    global _GPU_COMPUTE_ENABLED, xp
+    _GPU_COMPUTE_ENABLED = False
+    xp = np
+    print("[GPU] Compute disabled — using CPU (numpy)")
+
+
+def install_cupy_async(callback=None):
+    """Download and install CuPy via pip in background thread.
+    Calls callback(success: bool, message: str) when done.
+    ~90MB download for cupy-cuda12x."""
+    import threading
+
+    def _worker():
+        import subprocess
+        python_exe = sys.executable
+        try:
+            print("[GPU] Installing CuPy (cupy-cuda12x)... ~90MB download")
+            result = subprocess.run(
+                [python_exe, '-m', 'pip', 'install', 'cupy-cuda12x', '--quiet'],
+                capture_output=True, text=True, timeout=300
+            )
+            if result.returncode == 0:
+                success = enable_gpu_compute()
+                msg = "GPU acceleration installed and enabled!" if success else "CuPy installed but GPU init failed"
+                print(f"[GPU] {msg}")
+                if callback:
+                    callback(success, msg)
+            else:
+                # Try CUDA 11 fallback
+                result2 = subprocess.run(
+                    [python_exe, '-m', 'pip', 'install', 'cupy-cuda11x', '--quiet'],
+                    capture_output=True, text=True, timeout=300
+                )
+                if result2.returncode == 0:
+                    success = enable_gpu_compute()
+                    msg = "GPU acceleration installed (CUDA 11) and enabled!" if success else "CuPy installed but GPU init failed"
+                    if callback:
+                        callback(success, msg)
+                else:
+                    msg = f"CuPy installation failed. Your GPU may not support CUDA.\n{result.stderr[:200]}"
+                    print(f"[GPU] {msg}")
+                    if callback:
+                        callback(False, msg)
+        except Exception as e:
+            msg = f"CuPy installation error: {e}"
+            print(f"[GPU] {msg}")
+            if callback:
+                callback(False, msg)
+
+    thread = threading.Thread(target=_worker, daemon=True)
+    thread.start()
+    return thread
+
+
 def to_gpu(arr):
-    """Transfer numpy array to GPU. No-op if on CPU backend."""
-    if _cupy is not None and isinstance(arr, np.ndarray):
+    """Transfer numpy array to GPU. No-op if GPU compute is off."""
+    if _GPU_COMPUTE_ENABLED and _cupy is not None and isinstance(arr, np.ndarray):
         return _cupy.asarray(arr)
     return arr
 
@@ -145,5 +226,5 @@ def gpu_info():
     }
 
 def is_gpu():
-    """True if GPU acceleration is active."""
-    return GPU_BACKEND != 'cpu'
+    """True if GPU compute is active (CuPy available AND enabled)."""
+    return _GPU_COMPUTE_ENABLED and _cupy is not None

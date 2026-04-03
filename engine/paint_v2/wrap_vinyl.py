@@ -33,9 +33,9 @@ def paint_chrome_wrap_v2(paint, shape, mask, seed, pm, bb):
     
     # Lighter blend so base stays smoother
     blend = pm * 0.35 * np.clip(np.abs(flow_x), 0.2, 1.0)[:,:,np.newaxis]
-    result = np.clip(paint * (1.0 - mask[:,:,np.newaxis] * blend) + 
+    result = np.clip(paint * (1.0 - mask[:,:,np.newaxis] * blend) +
                      chrome_effect * (mask[:,:,np.newaxis] * blend), 0, 1)
-    return result.astype(np.float32)
+    return np.clip(result + bb[:,:,np.newaxis] * 0.45 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
 
 
 def spec_chrome_wrap(shape, seed, sm, base_m, base_r):
@@ -120,7 +120,7 @@ def paint_color_flip_v2(paint, shape, mask, seed, pm, bb):
     blend = pm * 0.82
     result = np.clip(paint * (1.0 - mask[:,:,np.newaxis] * blend) +
                      flip_effect * (mask[:,:,np.newaxis] * blend), 0, 1)
-    return result.astype(np.float32)
+    return np.clip(result + bb[:,:,np.newaxis] * 0.30 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
 
 
 def spec_color_flip(shape, seed, sm, base_m, base_r):
@@ -179,9 +179,9 @@ def paint_gloss_wrap_v2(paint, shape, mask, seed, pm, bb):
     gloss_effect = np.stack([gloss_effect, gloss_effect, gloss_effect], axis=-1)
     
     blend = pm * np.clip(fresnel_pow + 0.2, 0, 1)[:,:,np.newaxis]
-    result = np.clip(paint * (1.0 - mask[:,:,np.newaxis] * blend) + 
+    result = np.clip(paint * (1.0 - mask[:,:,np.newaxis] * blend) +
                      gloss_effect * (mask[:,:,np.newaxis] * blend), 0, 1)
-    return result.astype(np.float32)
+    return np.clip(result + bb[:,:,np.newaxis] * 0.15 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
 
 
 def spec_gloss_wrap(shape, seed, sm, base_m, base_r):
@@ -221,7 +221,8 @@ def paint_liquid_wrap_v2(paint, shape, mask, seed, pm, bb):
     grain_effect = 1.0 + (rubber_grain - 0.5) * 0.03 * pm
     result = np.clip(desaturated * stretch_darken[:,:,np.newaxis] * grain_effect[:,:,np.newaxis], 0, 1)
     blend = pm * mask[:,:,np.newaxis]
-    return np.clip(paint * (1.0 - blend) + result * blend, 0, 1).astype(np.float32)
+    out = np.clip(paint * (1.0 - blend) + result * blend, 0, 1)
+    return np.clip(out + bb[:,:,np.newaxis] * 0.08 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
 
 
 def spec_liquid_wrap(shape, seed, sm, base_m, base_r):
@@ -267,9 +268,9 @@ def paint_matte_wrap_v2(paint, shape, mask, seed, pm, bb):
     matte_effect = matte_effect * texture_mask
     
     blend = pm * 0.8
-    result = np.clip(paint * (1.0 - mask[:,:,np.newaxis] * blend) + 
+    result = np.clip(paint * (1.0 - mask[:,:,np.newaxis] * blend) +
                      matte_effect * (mask[:,:,np.newaxis] * blend), 0, 1)
-    return result.astype(np.float32)
+    return np.clip(result + bb[:,:,np.newaxis] * 0.05 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
 
 
 def spec_matte_wrap(shape, seed, sm, base_m, base_r):
@@ -318,9 +319,9 @@ def paint_satin_wrap_v2(paint, shape, mask, seed, pm, bb):
     satin_effect = np.stack([satin_sheen, satin_sheen, satin_sheen], axis=-1)
     
     blend = pm * (0.7 + 0.2 * texture_amp[:,:,np.newaxis])
-    result = np.clip(paint * (1.0 - mask[:,:,np.newaxis] * blend) + 
+    result = np.clip(paint * (1.0 - mask[:,:,np.newaxis] * blend) +
                      satin_effect * (mask[:,:,np.newaxis] * blend), 0, 1)
-    return result.astype(np.float32)
+    return np.clip(result + bb[:,:,np.newaxis] * 0.10 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
 
 
 def spec_satin_wrap(shape, seed, sm, base_m, base_r):
@@ -366,9 +367,9 @@ def paint_stealth_wrap_v2(paint, shape, mask, seed, pm, bb):
     stealth_effect = stealth_effect * (0.95 + 0.05 * roughness_noise[:,:,np.newaxis])
     
     blend = pm * (0.9 + 0.1 * rcs_pattern[:,:,np.newaxis])
-    result = np.clip(paint * (1.0 - mask[:,:,np.newaxis] * blend) + 
+    result = np.clip(paint * (1.0 - mask[:,:,np.newaxis] * blend) +
                      stealth_effect * (mask[:,:,np.newaxis] * blend), 0, 1)
-    return result.astype(np.float32)
+    return np.clip(result + bb[:,:,np.newaxis] * 0.06 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
 
 
 def spec_stealth_wrap(shape, seed, sm, base_m, base_r):
@@ -411,7 +412,8 @@ def paint_textured_wrap_v2(paint, shape, mask, seed, pm, bb):
     textured = np.clip(paint * bump_mod, 0, 1)
     blend = pm * (0.80 + 0.20 * texture[:, :, np.newaxis])
     result = paint * (1.0 - mask[:, :, np.newaxis] * blend) + textured * (mask[:, :, np.newaxis] * blend)
-    return np.clip(result, 0, 1).astype(np.float32)
+    result = np.clip(result, 0, 1)
+    return np.clip(result + bb[:,:,np.newaxis] * 0.12 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
 
 
 def spec_textured_wrap(shape, seed, sm, base_m, base_r):
@@ -462,7 +464,7 @@ def paint_brushed_wrap_v2(paint, shape, mask, seed, pm, bb):
     result = np.clip(
         base * (1.0 - mask[:, :, np.newaxis] * blend) +
         effect * (mask[:, :, np.newaxis] * blend), 0, 1)
-    return result.astype(np.float32)
+    return np.clip(result + bb[:,:,np.newaxis] * 0.20 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
 
 
 def spec_brushed_wrap(shape, seed, sm, base_m, base_r):

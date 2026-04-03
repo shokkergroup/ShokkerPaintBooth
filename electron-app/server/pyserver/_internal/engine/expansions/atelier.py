@@ -17,6 +17,7 @@ get_mgrid(shape).
 """
 
 import numpy as np
+from scipy.spatial import cKDTree
 
 _engine = None
 
@@ -316,18 +317,15 @@ def _spec_micro_flake_burst(shape, mask, seed, sm):
     rng = np.random.RandomState(seed + 1000)
     y, x = e.get_mgrid(shape)
 
-    # --- Large flake pattern via pseudo-Voronoi (30 points) ---
+    # --- Large flake pattern via Voronoi (30 points, cKDTree) ---
     n_pts = 30
     pts_y = rng.rand(n_pts) * h
     pts_x = rng.rand(n_pts) * w
-    d_min = np.full((h, w), 1e9, dtype=np.float32)
-    d_second = np.full((h, w), 1e9, dtype=np.float32)
-    for i in range(n_pts):
-        d = np.sqrt((y - pts_y[i]) ** 2 + (x - pts_x[i]) ** 2)
-        update_second = d < d_second
-        d_second = np.where(update_second, np.minimum(d, d_second), d_second)
-        swap = d_min > d_second
-        d_min, d_second = np.where(swap, d_second, d_min), np.where(swap, d_min, d_second)
+    pts = np.column_stack([pts_y, pts_x])
+    tree = cKDTree(pts)
+    coords = np.column_stack([y.ravel(), x.ravel()]).astype(np.float32)
+    dists, _ = tree.query(coords, k=1)
+    d_min = dists.reshape(h, w).astype(np.float32)
     max_d = np.percentile(d_min, 99) + 1e-6
     d_min_n = np.clip(d_min / max_d, 0, 1)
     flake_mask = np.clip(1.0 - d_min_n * 3.0, 0, 1)
@@ -490,18 +488,16 @@ def _spec_ceramic_glaze(shape, mask, seed, sm):
     pool = np.clip((pool_raw + warp * 0.8 + 1) * 0.5, 0, 1)
     pool_depth = np.clip(pool * 1.5 - 0.25, 0, 1)
 
-    # Worley-like crazing via pseudo-Voronoi
+    # Worley-like crazing via Voronoi (cKDTree)
     n_pts = 60
     pts_y = rng.rand(n_pts) * h
     pts_x = rng.rand(n_pts) * w
-    d_min = np.full((h, w), 1e9, dtype=np.float32)
-    d_second = np.full((h, w), 1e9, dtype=np.float32)
-    for i in range(n_pts):
-        d = np.sqrt((y - pts_y[i]) ** 2 + (x - pts_x[i]) ** 2)
-        update = d < d_second
-        d_second = np.where(update, np.minimum(d, d_second), d_second)
-        swap = d_min > d_second
-        d_min, d_second = np.where(swap, d_second, d_min), np.where(swap, d_min, d_second)
+    pts = np.column_stack([pts_y, pts_x])
+    tree = cKDTree(pts)
+    coords = np.column_stack([y.ravel(), x.ravel()]).astype(np.float32)
+    dists, _ = tree.query(coords, k=2)
+    d_min = dists[:, 0].reshape(h, w).astype(np.float32)
+    d_second = dists[:, 1].reshape(h, w).astype(np.float32)
     f2_f1 = d_second - d_min
     max_f = np.percentile(f2_f1, 95) + 1e-6
     crack_raw = 1.0 - np.clip(f2_f1 / max_f * 3, 0, 1)
@@ -568,15 +564,14 @@ def _spec_gold_leaf_micro(shape, mask, seed, sm):
     pts_x = rng.rand(n_pts) * w
     patch_m_offset = rng.uniform(-15, 5, n_pts).astype(np.float32)
 
-    d_min = np.full((h, w), 1e9, dtype=np.float32)
-    d_second = np.full((h, w), 1e9, dtype=np.float32)
-    nearest_id = np.zeros((h, w), dtype=np.int32)
-    for i in range(n_pts):
-        d = np.sqrt((y - pts_y[i]) ** 2 + (x - pts_x[i]) ** 2)
-        closer = d < d_min
-        d_second = np.where(closer, d_min, np.where(d < d_second, d, d_second))
-        nearest_id = np.where(closer, i, nearest_id)
-        d_min = np.where(closer, d, d_min)
+    # Voronoi via cKDTree (k=2 for F1, F2 distances + nearest cell ID)
+    pts = np.column_stack([pts_y, pts_x])
+    tree = cKDTree(pts)
+    coords = np.column_stack([y.ravel(), x.ravel()]).astype(np.float32)
+    dists, ids = tree.query(coords, k=2)
+    d_min = dists[:, 0].reshape(h, w).astype(np.float32)
+    d_second = dists[:, 1].reshape(h, w).astype(np.float32)
+    nearest_id = ids[:, 0].reshape(h, w)
     f2_f1 = d_second - d_min
     max_f = np.percentile(f2_f1, 95) + 1e-6
     crack_border = np.clip((1.0 - np.clip(f2_f1 / max_f * 4, 0, 1)) * 2, 0, 1)

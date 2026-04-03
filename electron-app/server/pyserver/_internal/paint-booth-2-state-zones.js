@@ -3526,7 +3526,9 @@ let swatchPopupState = { open: false, type: null, zoneIndex: -1, layerIndex: -1 
 function getOverlayBaseDisplay(id) {
     if (!id) return null;
     if (typeof id === 'string' && id.startsWith('mono:')) {
-        const m = typeof MONOLITHICS !== 'undefined' && MONOLITHICS.find(m => m.id === id.slice(5));
+        const _mid = id.slice(5);
+        const m = (typeof MONOLITHICS !== 'undefined' && MONOLITHICS.find(m => m.id === _mid)) ||
+                  (typeof BASES !== 'undefined' && BASES.find(b => b.id === _mid));
         return m ? { name: m.name, swatch: m.swatch || '#888' } : { name: id, swatch: '#888' };
     }
     const b = typeof BASES !== 'undefined' && BASES.find(b => b.id === id);
@@ -3537,7 +3539,12 @@ function getOverlayBaseDisplay(id) {
 // Use server-authoritative FINISH_TYPE_BY_ID when available so thumbnails always use correct path.
 function getFinishType(id) {
     if (!id || id === 'none') return null;
-    if (typeof id === 'string' && id.startsWith('mono:')) return 'monolithic';
+    if (typeof id === 'string' && id.startsWith('mono:')) {
+        // Migrated base finishes (COLORSHOXX, MORTAL SHOKK, etc.) show as mono: but are actually bases
+        const _rawId = id.slice(5);
+        if (typeof BASES !== 'undefined' && BASES.find(b => b.id === _rawId)) return 'base';
+        return 'monolithic';
+    }
     if (typeof FINISH_TYPE_BY_ID !== 'undefined' && FINISH_TYPE_BY_ID[id]) return FINISH_TYPE_BY_ID[id];
     if (typeof BASES !== 'undefined' && BASES.find(b => b.id === id)) return 'base';
     if (typeof PATTERNS !== 'undefined' && PATTERNS.find(p => p.id === id)) return 'pattern';
@@ -4200,10 +4207,18 @@ function promptLinkZone(index) {
 function setZoneBase(index, value) {
     pushZoneUndo('Set base: ' + (value || 'none'));
     if (value && value.startsWith('mono:')) {
-        // Monolithic finish selected - keep existing patterns & overlays
         const monoId = value.replace('mono:', '');
-        zones[index].finish = monoId;
-        zones[index].base = null;
+        // Check if this "mono:" ID is actually a base-registered finish (migrated from Bases to Specials)
+        const isBase = typeof BASES !== 'undefined' && BASES.find(b => b.id === monoId);
+        if (isBase) {
+            // Migrated base finish — set as base so compositing pipeline handles it
+            zones[index].base = monoId;
+            zones[index].finish = null;
+        } else {
+            // True monolithic — set as finish
+            zones[index].finish = monoId;
+            zones[index].base = null;
+        }
         // Don't clear pattern/patternStack - user may want patterns on top of specials
         if (!zones[index].pattern) zones[index].pattern = 'none';
     } else {

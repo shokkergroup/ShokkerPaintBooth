@@ -16,6 +16,7 @@ Integration: integrate_fusions(engine_module) merges into engine
 import numpy as np
 from PIL import Image, ImageFilter
 from scipy.spatial import cKDTree
+from scipy.ndimage import map_coordinates as _mc
 import os
 import importlib.util
 
@@ -86,11 +87,18 @@ def _hsv_to_rgb(h, s, v):
     return r, g, b
 
 def _spec_out(shape, mask, M, G, B):
-    """Standard spec output helper."""
+    """Standard spec output helper.
+    Enforces GGX roughness floor: R (G channel) >= 15 for non-chrome pixels (M < 240).
+    Chrome pixels (M >= 240) are allowed R < 15 for mirror-finish seams."""
     h, w = shape
+    M_clipped = np.clip(M, 0, 255)
+    G_clipped = np.clip(G, 0, 255)
+    # GGX roughness floor: non-chrome pixels must have R >= 15
+    non_chrome = M_clipped < 240
+    G_clipped = np.where(non_chrome, np.maximum(G_clipped, 15), G_clipped)
     spec = np.zeros((h, w, 4), dtype=np.uint8)
-    spec[:,:,0] = np.clip(M * mask, 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(G * mask, 0, 255).astype(np.uint8)
+    spec[:,:,0] = np.clip(M_clipped * mask, 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(G_clipped * mask, 0, 255).astype(np.uint8)
     spec[:,:,2] = np.clip(B * mask, 0, 255).astype(np.uint8)
     spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
@@ -1977,7 +1985,7 @@ def _spec_exotic_anti_metal(shape, mask, seed, sm):
     h, w = shape
     n0 = _noise(shape, [8, 16, 32, 64], [0.2, 0.3, 0.3, 0.2], seed + 7760)
     # BUG-FUSIONS-001 FIX: warp fields now applied via map_coordinates (were computed but never used)
-    from scipy.ndimage import map_coordinates as _mc
+
     yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
     warp1y = _noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + 7761) * h * np.float32(0.09)
     warp1x = _noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + 7762) * w * np.float32(0.09)
@@ -2009,7 +2017,7 @@ def _paint_exotic_anti_metal(paint, shape, mask, seed, pm, bb):
     Zone B (t_sharp->0): metallic zone — paint preserved.
     Boundary (t_sharp~0.5): narrow photonic emission band — warm interference glow."""
     h, w = shape
-    from scipy.ndimage import map_coordinates as _mc
+
     yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
     # Mirror spec function warp hierarchy exactly (same seeds)
     n0 = _noise(shape, [8, 16, 32, 64], [0.2, 0.3, 0.3, 0.2], seed + 7760)
@@ -3378,17 +3386,23 @@ paint_fractal_matte_chrome = _paint_fractal_matte_chrome
 
 # 6. FRACTAL WARM COLD - Reaction-diffusion Gray-Scott Turing patterns
 def _gray_scott_field(shape, seed, iterations=5):
-    """Simplified Gray-Scott reaction-diffusion creating Turing patterns."""
+    """Simplified Gray-Scott reaction-diffusion creating Turing patterns.
+    Simulation runs at min 128x128 to ensure convergence at small preview sizes."""
     h, w = shape
+    # Ensure minimum simulation resolution for Turing pattern convergence
+    min_sim = 128
+    sim_h, sim_w = max(h, min_sim), max(w, min_sim)
+    need_resize = (sim_h != h or sim_w != w)
     rng = np.random.RandomState(seed)
-    U = np.ones((h, w), dtype=np.float32)
-    V = np.zeros((h, w), dtype=np.float32)
+    sim_shape = (sim_h, sim_w)
+    U = np.ones(sim_shape, dtype=np.float32)
+    V = np.zeros(sim_shape, dtype=np.float32)
     n_seeds = rng.randint(8, 20)
     for _ in range(n_seeds):
-        sy, sx = rng.randint(0, h), rng.randint(0, w)
-        sh, sw = rng.randint(h // 20, h // 8), rng.randint(w // 20, w // 8)
+        sy, sx = rng.randint(0, sim_h), rng.randint(0, sim_w)
+        sh, sw = rng.randint(sim_h // 20, sim_h // 8), rng.randint(sim_w // 20, sim_w // 8)
         V[sy:sy+sh, sx:sx+sw] = 1.0
-    seed_noise = _noise(shape, [8, 16, 32], [0.3, 0.4, 0.3], seed + 10)
+    seed_noise = _noise(sim_shape, [8, 16, 32], [0.3, 0.4, 0.3], seed + 10)
     V += np.clip(seed_noise * 0.5 + 0.3, 0, 0.5)
     Du, Dv = 0.16, 0.08
     f_rate = 0.035 + rng.uniform(-0.005, 0.010)
@@ -3402,6 +3416,9 @@ def _gray_scott_field(shape, seed, iterations=5):
             V += Dv * Lv + uvv - (f_rate + k_rate) * V
             U = np.clip(U, 0, 1)
             V = np.clip(V, 0, 1)
+    if need_resize:
+        U = np.array(Image.fromarray((U * 255).astype(np.uint8)).resize((w, h), Image.BILINEAR)).astype(np.float32) / 255.0
+        V = np.array(Image.fromarray((V * 255).astype(np.uint8)).resize((w, h), Image.BILINEAR)).astype(np.float32) / 255.0
     return U, V
 
 def _spec_fractal_warm_cold(shape, mask, seed, sm):

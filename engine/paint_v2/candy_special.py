@@ -16,40 +16,46 @@ from engine.core import multi_scale_noise, get_mgrid
 
 def paint_candy_v2(paint, shape, mask, seed, pm, bb):
     """
-    Generic candy coat — Beer-Lambert single-pass absorption.
-    Simple colored transparency over base with depth-dependent darkening.
+    Generic candy coat — Beer-Lambert per-channel absorption.
+    FIX: was hardcoded red → now tints toward base paint's dominant hue.
+    Added micro-sparkle for candy depth.
     """
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
-    
-    # Generate subtle base variation
+
+    # Generate variation — married to spec
     noise = multi_scale_noise((h, w), [1, 2, 4], [0.5, 0.3, 0.2], seed + 1600)
-    
-    # Candy absorption: color intensity modulated by noise
-    candy_color = np.array([0.8, 0.1, 0.1])  # Red candy base
-    absorption = 0.7 + noise * 0.2  # Depth variation
-    effect = base * (1.0 - absorption[:,:,np.newaxis]) + candy_color[np.newaxis, np.newaxis, :] * absorption[:,:,np.newaxis]
-    
+
+    # Per-channel absorption: candy deepens the EXISTING base color instead of forcing red
+    # Higher absorption on channels that are already lower → saturates the dominant hue
+    avg = base[:, :, :3].mean(axis=2, keepdims=True).clip(0.1, 1.0)
+    channel_strength = 1.0 - (base[:, :, :3] / avg)  # channels below avg get more absorption
+    absorption = np.clip(0.6 + noise[:, :, np.newaxis] * 0.25 + channel_strength * 0.15, 0.3, 0.95)
+
+    effect = base.copy()
+    effect[:, :, :3] = np.clip(base[:, :, :3] * (1.0 - absorption * 0.5) +
+                                base[:, :, :3] * absorption * 0.5 * 1.3, 0, 1)  # candy deepens + saturates
+
+    # Micro-sparkle: 0.3% of pixels get bright candy highlights
+    rng = np.random.RandomState(seed + 1600)
+    sparkle_mask = (rng.random((h, w)) > 0.997).astype(np.float32)
+    sparkle = sparkle_mask * 0.25 * pm
+    effect[:, :, :3] = np.clip(effect[:, :, :3] + sparkle[:, :, np.newaxis], 0, 1)
+
     blend = np.clip(pm, 0.0, 1.0)
-    mask_3d = mask[:,:,np.newaxis]
+    mask_3d = mask[:, :, np.newaxis]
     result = np.clip(base * (1.0 - mask_3d * blend) + effect * (mask_3d * blend), 0, 1)
-    return np.clip(result + bb[:,:,np.newaxis] * 0.15 * pm * mask_3d, 0, 1).astype(np.float32)
+    return np.clip(result + bb[:, :, np.newaxis] * 0.20 * pm * mask_3d, 0, 1).astype(np.float32)
 
 
 def spec_candy(shape, seed, sm, base_m, base_r):
-    """
-    Generic candy spec — weak highlight with slight roughness from pigment settling.
-    G channel clamped to minimum 15 (iRacing GGX requires non-zero roughness for candy).
-    """
+    """Generic candy spec. MARRIED to paint seed+1600. FIX: removed *255 double-scaling."""
     h, w = shape[:2] if len(shape) > 2 else shape
-    # MARRIED to paint_candy_v2: same seed+1600, same scales [1,2,4]
     noise = multi_scale_noise((h, w), [1, 2, 4], [0.5, 0.3, 0.2], seed + 1600)
-    M = base_m * 0.65 + noise * 0.2
-    R = base_r * 0.4 + noise * 0.15
+    M = np.clip(base_m * 0.65 + noise * 30.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(base_r * 0.4 + noise * 12.0 * sm, 15, 255).astype(np.float32)
     CC = np.clip(16.0 + noise * 8.0 * sm, 16, 32).astype(np.float32)
-    return (np.clip(M * 255.0, 0, 255).astype(np.float32),
-            np.clip(R * 255.0, 15, 255).astype(np.float32),
-            CC)
+    return M, R, CC
 
 
 def paint_candy_burgundy_v2(paint, shape, mask, seed, pm, bb):
@@ -311,6 +317,7 @@ def paint_moonstone_v2(paint, shape, mask, seed, pm, bb):
 def spec_moonstone(shape, seed, sm, base_m, base_r):
     """
     Moonstone spec — traveling adularescence with directional glow.
+    FLAT-FIX: base_m/base_r are 0-255 scale, not 0-1. Fixed math.
     """
     h, w = shape
     grid = get_mgrid((h, w))
@@ -319,12 +326,11 @@ def spec_moonstone(shape, seed, sm, base_m, base_r):
     cx = 0.35 + (seed % 29) / 100.0
     shimmer = 0.5 + 0.4 * np.sin((grid[0] + grid[1]) * 3 + seed) * np.exp(-((grid[0] - cy)**2 + (grid[1] - cx)**2) * 3)
     noise = multi_scale_noise((h, w), [1, 2, 4], [0.5, 0.3, 0.2], seed + 1617)
-    M = base_m * 0.7 + shimmer * 0.3
-    R = base_r * 0.5 + noise * 0.15
-    CC = np.clip(16.0 + shimmer * 8.0 * sm + noise * 4.0 * sm, 16, 32).astype(np.float32)
-    return (np.clip(M * 255.0, 0, 255).astype(np.float32),
-            np.clip(R * 255.0, 15, 255).astype(np.float32),
-            CC)
+    # base_m, base_r are in 0-255 range — work in that range directly
+    M = np.clip(base_m + (shimmer - 0.5) * 40.0 * sm + noise * 20.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(base_r + (noise - 0.5) * 25.0 * sm + shimmer * 10.0 * sm, 15, 255).astype(np.float32)
+    CC = np.clip(16.0 + shimmer * 12.0 * sm + noise * 6.0 * sm, 0, 255).astype(np.float32)
+    return (M, R, CC)
 
 
 def paint_opal_v2(paint, shape, mask, seed, pm, bb):
@@ -403,20 +409,26 @@ def paint_opal_v2(paint, shape, mask, seed, pm, bb):
     g_ch = colors_lut[seg, 1] * (1 - frac) + colors_lut[np.minimum(seg + 1, 3), 1] * frac
     b_ch = colors_lut[seg, 2] * (1 - frac) + colors_lut[np.minimum(seg + 1, 3), 2] * frac
 
-    # Pearl shimmer at scale edges
-    edge_shimmer = edge_glow * 0.3
+    # Pearl shimmer at scale edges — boosted from 0.3 to 0.5 for visible sparkle
+    edge_shimmer = edge_glow * 0.5
     r_ch = np.clip(r_ch + edge_shimmer * 0.8, 0, 1)
     g_ch = np.clip(g_ch + edge_shimmer * 0.7, 0, 1)
     b_ch = np.clip(b_ch + edge_shimmer * 0.9, 0, 1)
 
+    # Per-scale brightness: gold brighter, teal darker (adds dimension)
+    scale_bright = np.clip(1.0 - shifted_t * 0.3, 0.7, 1.0)
+    r_ch = np.clip(r_ch * scale_bright, 0, 1)
+    g_ch = np.clip(g_ch * scale_bright, 0, 1)
+    b_ch = np.clip(b_ch * scale_bright, 0, 1)
+
     effect = np.stack([r_ch, g_ch, b_ch], axis=2)
-    # Blend with base - scales overlay on base color
-    effect = base * 0.35 + effect * 0.65
+    # FIX: stronger scale overlay (was 0.35/0.65 → 0.15/0.85) so dragon scales dominate
+    effect = base * 0.15 + effect * 0.85
 
     blend = np.clip(pm, 0.0, 1.0)
     mask_3d = mask[:,:,np.newaxis]
     result = np.clip(base * (1.0 - mask_3d * blend) + effect * (mask_3d * blend), 0, 1)
-    return np.clip(result + bb[:,:,np.newaxis] * 0.25 * pm * mask_3d, 0, 1).astype(np.float32)
+    return np.clip(result + bb[:,:,np.newaxis] * 0.35 * pm * mask_3d, 0, 1).astype(np.float32)
 
 
 def spec_opal(shape, seed, sm, base_m, base_r):
@@ -521,7 +533,7 @@ def paint_spectraflame_v2(paint, shape, mask, seed, pm, bb):
     lum = base[:,:,0] * 0.299 + base[:,:,1] * 0.587 + base[:,:,2] * 0.114
 
     # Hue shift amount driven by noise topology (simulates angle-dependent refraction)
-    hue_shift = topo * 0.4 + fine * 0.15  # 0-0.55 range shift
+    hue_shift = topo * 0.55 + fine * 0.20  # 0-0.75 range shift (was 0-0.55, too subtle)
 
     # Apply hue rotation to the base paint color
     # Convert RGB to approximate hue, shift it, convert back
@@ -535,8 +547,8 @@ def paint_spectraflame_v2(paint, shape, mask, seed, pm, bb):
     g_out = base[:,:,0] * (0.333 - 0.333 * c + 0.577 * s) + base[:,:,1] * (0.333 + 0.667 * c) + base[:,:,2] * (0.333 - 0.333 * c - 0.577 * s)
     b_out = base[:,:,0] * (0.333 - 0.333 * c - 0.577 * s) + base[:,:,1] * (0.333 - 0.333 * c + 0.577 * s) + base[:,:,2] * (0.333 + 0.667 * c)
 
-    # Polycarbonate clear crystal shimmer (slight brightening at high-angle zones)
-    crystal_shimmer = np.clip((topo - 0.3) * 2.0, 0, 1) * 0.08
+    # Polycarbonate clear crystal shimmer — boosted from 0.08 to 0.14 for visible sparkle
+    crystal_shimmer = np.clip((topo - 0.3) * 2.0, 0, 1) * 0.14
     r_out = np.clip(r_out + crystal_shimmer, 0, 1)
     g_out = np.clip(g_out + crystal_shimmer * 0.8, 0, 1)
     b_out = np.clip(b_out + crystal_shimmer * 1.1, 0, 1)
@@ -644,30 +656,44 @@ def spec_tinted_lacquer(shape, seed, sm, base_m, base_r):
 
 def paint_tri_coat_pearl_v2(paint, shape, mask, seed, pm, bb):
     """
-    Three-layer pearl with additive color mixing.
-    Stacked color layers create complex iridescent effect.
+    Three-layer pearl with ZONE-WEIGHTED color mixing.
+    Each zone has a dominant coat color — not flat averaging.
+    FIX: was /3.0 equal blend → now zone-weighted like spec's w1/w2/w3.
     """
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
-    
-    # Three independent pearl layers
+
+    # Three independent pearl layers — same seeds as spec for marriage
     layer1 = multi_scale_noise((h, w), [2, 4], [0.6, 0.4], seed + 1636)
     layer2 = multi_scale_noise((h, w), [3, 6], [0.5, 0.5], seed + 1637)
     layer3 = multi_scale_noise((h, w), [1, 2, 4], [0.5, 0.3, 0.2], seed + 1638)
-    
-    # Three color components mix additively
-    color1 = np.array([0.95, 0.4, 0.3])  # Red pearl
-    color2 = np.array([0.3, 0.7, 0.95])  # Blue pearl
-    color3 = np.array([0.4, 0.95, 0.5])  # Green pearl
-    
-    effect = (layer1[:,:,np.newaxis] * color1 + layer2[:,:,np.newaxis] * color2 + layer3[:,:,np.newaxis] * color3) / 3.0
+
+    # Normalize to 0-1 range for zone weighting
+    l1 = np.clip(layer1 * 0.5 + 0.5, 0.01, 1.0)
+    l2 = np.clip(layer2 * 0.5 + 0.5, 0.01, 1.0)
+    l3 = np.clip(layer3 * 0.5 + 0.5, 0.01, 1.0)
+
+    # Zone weights — whichever layer is strongest DOMINATES (matches spec's w1/w2/w3)
+    total = l1 + l2 + l3 + 1e-8
+    w1 = (l1 / total)[:, :, np.newaxis]
+    w2 = (l2 / total)[:, :, np.newaxis]
+    w3 = (l3 / total)[:, :, np.newaxis]
+
+    color1 = np.array([0.95, 0.4, 0.3])   # Red pearl (coat 1)
+    color2 = np.array([0.3, 0.7, 0.95])   # Blue pearl (coat 2)
+    color3 = np.array([0.4, 0.95, 0.5])   # Green pearl (coat 3)
+
+    # Zone-weighted mix: dominant coat shows its color clearly
+    effect = w1 * color1 + w2 * color2 + w3 * color3
     effect = np.clip(effect, 0, 1)
-    effect = base * 0.5 + effect * 0.5
-    
+
+    # Stronger overlay — 0.35 base + 0.65 tri-coat (was 0.5/0.5)
+    effect = base * 0.35 + effect * 0.65
+
     blend = np.clip(pm, 0.0, 1.0)
-    mask_3d = mask[:,:,np.newaxis]
+    mask_3d = mask[:, :, np.newaxis]
     result = np.clip(base * (1.0 - mask_3d * blend) + effect * (mask_3d * blend), 0, 1)
-    return np.clip(result + bb[:,:,np.newaxis] * 0.3 * pm * mask_3d, 0, 1).astype(np.float32)
+    return np.clip(result + bb[:, :, np.newaxis] * 0.3 * pm * mask_3d, 0, 1).astype(np.float32)
 
 
 def spec_tri_coat_pearl(shape, seed, sm, base_m, base_r):

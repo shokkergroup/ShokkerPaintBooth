@@ -7,6 +7,7 @@ unrelated legacy textures). Key categories: Flames, Decades, Music, Astro/Zodiac
 
 from collections import OrderedDict
 import numpy as np
+from scipy.spatial import cKDTree
 
 
 def _engine():
@@ -1712,7 +1713,7 @@ def _paint_reactive_iridescent_flake(paint, shape, mask, seed, pm, bb):
     if pm == 0.0:
         return paint[:, :, :3].astype(np.float32)
     h, w = shape[:2] if len(shape) > 2 else shape
-    p = paint[:, :, :3].astype(np.float32).copy()
+    p = paint[:, :, :3].astype(np.float32)
     rng = np.random.RandomState(seed)
     # Compute flake pattern for paint modulation
     pv = _reactive_iridescent_flake((h, w), seed=seed)
@@ -1740,7 +1741,7 @@ def _paint_reactive_pearl_shift(paint, shape, mask, seed, pm, bb):
     if pm == 0.0:
         return paint[:, :, :3].astype(np.float32)
     h, w = shape[:2] if len(shape) > 2 else shape
-    p = paint[:, :, :3].astype(np.float32).copy()
+    p = paint[:, :, :3].astype(np.float32)
     pv = _reactive_pearl_shift((h, w), seed=seed)
     # Pearl shift: warm tones in bright areas, cool tones in dark areas
     warm = pv * pm  # 0-1 range scaled by blend strength
@@ -1760,7 +1761,7 @@ def _paint_reactive_candy_depth(paint, shape, mask, seed, pm, bb):
     if pm == 0.0:
         return paint[:, :, :3].astype(np.float32)
     h, w = shape[:2] if len(shape) > 2 else shape
-    p = paint[:, :, :3].astype(np.float32).copy()
+    p = paint[:, :, :3].astype(np.float32)
     pv = _reactive_candy_depth((h, w), seed=seed)
     # Candy effect: saturate and darken proportionally to depth
     lum = (p[:, :, 0] + p[:, :, 1] + p[:, :, 2]) / 3.0
@@ -1780,7 +1781,7 @@ def _paint_reactive_chrome_veil(paint, shape, mask, seed, pm, bb):
     if pm == 0.0:
         return paint[:, :, :3].astype(np.float32)
     h, w = shape[:2] if len(shape) > 2 else shape
-    p = paint[:, :, :3].astype(np.float32).copy()
+    p = paint[:, :, :3].astype(np.float32)
     pv = _reactive_chrome_veil((h, w), seed=seed)
     # Chrome: blend toward pure white in reflective areas, desaturate everywhere
     chrome_white = pv * pm * 80.0
@@ -1800,7 +1801,7 @@ def _paint_reactive_spectra_ripple(paint, shape, mask, seed, pm, bb):
     if pm == 0.0:
         return paint[:, :, :3].astype(np.float32)
     h, w = shape[:2] if len(shape) > 2 else shape
-    p = paint[:, :, :3].astype(np.float32).copy()
+    p = paint[:, :, :3].astype(np.float32)
     pv = _reactive_spectra_ripple((h, w), seed=seed)
     # Map pattern value to spectral hue (rainbow mapping along fringe position)
     # R peaks at pv~0.0 and 1.0, G peaks at pv~0.33, B peaks at pv~0.67
@@ -1820,7 +1821,7 @@ def _paint_reactive_micro_weave(paint, shape, mask, seed, pm, bb):
     if pm == 0.0:
         return paint[:, :, :3].astype(np.float32)
     h, w = shape[:2] if len(shape) > 2 else shape
-    p = paint[:, :, :3].astype(np.float32).copy()
+    p = paint[:, :, :3].astype(np.float32)
     pv = _reactive_micro_weave((h, w), seed=seed)
     # Thread valleys darken, crossings brighten
     valley_dark = (1.0 - pv) * pm * 0.35
@@ -1843,7 +1844,7 @@ def _paint_reactive_depth_cell(paint, shape, mask, seed, pm, bb):
     if pm == 0.0:
         return paint[:, :, :3].astype(np.float32)
     h, w = shape[:2] if len(shape) > 2 else shape
-    p = paint[:, :, :3].astype(np.float32).copy()
+    p = paint[:, :, :3].astype(np.float32)
     pv = _reactive_depth_cell((h, w), seed=seed)
     # Cell centers: warm inner glow (slight orange/amber tint)
     glow = np.power(pv, 1.5) * pm
@@ -1862,7 +1863,7 @@ def _paint_reactive_shimmer_mist(paint, shape, mask, seed, pm, bb):
     if pm == 0.0:
         return paint[:, :, :3].astype(np.float32)
     h, w = shape[:2] if len(shape) > 2 else shape
-    p = paint[:, :, :3].astype(np.float32).copy()
+    p = paint[:, :, :3].astype(np.float32)
     pv = _reactive_shimmer_mist((h, w), seed=seed)
     # Sparkle points (high pv): white-hot highlight
     sparkle_mask = np.power(np.clip(pv - 0.5, 0, 1) * 2.0, 2.0)
@@ -1882,7 +1883,7 @@ def _paint_reactive_oil_slick(paint, shape, mask, seed, pm, bb):
     if pm == 0.0:
         return paint[:, :, :3].astype(np.float32)
     h, w = shape[:2] if len(shape) > 2 else shape
-    p = paint[:, :, :3].astype(np.float32).copy()
+    p = paint[:, :, :3].astype(np.float32)
     pv = _reactive_oil_slick((h, w), seed=seed)
     # Thin-film interference rainbow: cycle through R->Y->G->C->B->M->R
     phase = pv * np.pi * 2.0
@@ -1905,7 +1906,7 @@ def _paint_reactive_wave_moire(paint, shape, mask, seed, pm, bb):
     if pm == 0.0:
         return paint[:, :, :3].astype(np.float32)
     h, w = shape[:2] if len(shape) > 2 else shape
-    p = paint[:, :, :3].astype(np.float32).copy()
+    p = paint[:, :, :3].astype(np.float32)
     pv = _reactive_wave_moire((h, w), seed=seed)
     # Warm/cool alternation mapped to moire pattern
     warm_zone = pv * pm
@@ -1926,24 +1927,26 @@ def _paint_reactive_wave_moire(paint, shape, mask, seed, pm, bb):
 # ─────────────────────────────────────────────────────────
 
 def _shimmer_quantum_shard(shape, seed=0):
-    """VORONOI FACETS: random cell centers, per-cell random brightness, dark edges."""
+    """VORONOI FACETS: random cell centers, per-cell random brightness, dark edges.
+    Uses scipy cKDTree for O(n log n) nearest-neighbor queries instead of brute-force loop."""
     h, w = shape
     rng = np.random.default_rng(seed)
     n_pts = 42 + rng.integers(0, 14)
     pts_y = (rng.random(n_pts).astype(np.float32) * 2.0 - 1.0)
     pts_x = (rng.random(n_pts).astype(np.float32) * 2.0 - 1.0)
     cell_bright = rng.uniform(0.25, 1.0, size=n_pts).astype(np.float32)
-    yy = np.linspace(-1, 1, h, dtype=np.float32)[:, None]
-    xx = np.linspace(-1, 1, w, dtype=np.float32)[None, :]
-    d_min = np.full((h, w), np.inf, dtype=np.float32)
-    d_second = np.full((h, w), np.inf, dtype=np.float32)
-    nearest_id = np.zeros((h, w), dtype=np.int32)
-    for i in range(n_pts):
-        d = np.sqrt((yy - pts_y[i])**2 + (xx - pts_x[i])**2)
-        update = d < d_min
-        d_second = np.where(update, d_min, np.minimum(d_second, d))
-        nearest_id = np.where(update, i, nearest_id)
-        d_min = np.where(update, d, d_min)
+    # Build KD-tree for fast nearest-neighbor lookup
+    pts = np.column_stack([pts_y, pts_x])
+    tree = cKDTree(pts)
+    yy = np.linspace(-1, 1, h, dtype=np.float32)
+    xx = np.linspace(-1, 1, w, dtype=np.float32)
+    grid_y, grid_x = np.meshgrid(yy, xx, indexing='ij')
+    coords = np.column_stack([grid_y.ravel(), grid_x.ravel()])
+    # Query 2 nearest neighbors for d_min and d_second
+    dists, ids = tree.query(coords, k=2)
+    d_min = dists[:, 0].reshape(h, w).astype(np.float32)
+    d_second = dists[:, 1].reshape(h, w).astype(np.float32)
+    nearest_id = ids[:, 0].reshape(h, w)
     edge = np.clip((d_second - d_min) * 12.0, 0.0, 1.0)
     out = (1.0 - edge) * cell_bright[nearest_id]
     out = (out - out.min()) / (out.max() - out.min() + 1e-8)
@@ -2105,7 +2108,7 @@ def _paint_micro_shimmer(paint, shape, mask, seed, pm, bb, variant):
     if pm == 0.0:
         return paint[:, :, :3].astype(np.float32)
     h, w = shape[:2] if len(shape) > 2 else shape
-    p = paint[:, :, :3].astype(np.float32).copy()
+    p = paint[:, :, :3].astype(np.float32)
     pv = _get_micro_shimmer_field(variant, (h, w), seed)
     cx = (pv - 0.5) * pm
     if variant == "shimmer_quantum_shard":

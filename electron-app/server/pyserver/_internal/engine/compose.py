@@ -12,8 +12,10 @@ Full implementation (extracted from shokker_engine_v2 monolith).
 Uses LAZY import for BASE_REGISTRY/PATTERN_REGISTRY to avoid circular import.
 """
 
+import math
 import numpy as np
 import time as _time
+import cv2
 from functools import lru_cache
 
 # Pattern texture cache — avoids regenerating identical patterns across preview re-renders.
@@ -25,13 +27,21 @@ _pattern_cache_enabled = True
 
 
 def _get_cached_tex(tex_fn, pattern_id, shape, mask, seed, sm, scale=1.0, rotation=0):
-    """Call tex_fn with caching. Returns tex dict."""
+    """Call tex_fn with caching. Returns tex dict or None on failure."""
     if not _pattern_cache_enabled:
-        return tex_fn(shape, mask, seed, sm)
+        try:
+            return tex_fn(shape, mask, seed, sm)
+        except Exception as _e:
+            print(f"[compose] WARNING: tex_fn failed for pattern '{pattern_id}': {_e}")
+            return None
     key = (pattern_id, shape[0], shape[1], seed, round(float(scale), 4), round(float(rotation), 2))
     if key in _pattern_tex_cache:
         return _pattern_tex_cache[key]
-    tex = tex_fn(shape, mask, seed, sm)
+    try:
+        tex = tex_fn(shape, mask, seed, sm)
+    except Exception as _e:
+        print(f"[compose] WARNING: tex_fn failed for pattern '{pattern_id}': {_e}")
+        return None
     if len(_pattern_tex_cache) >= _PATTERN_CACHE_MAX:
         # Evict oldest entry
         _pattern_tex_cache.pop(next(iter(_pattern_tex_cache)))
@@ -94,7 +104,6 @@ def _scale_down_spec_pattern(sp_fn, sp_scale, canvas_shape, seed_val, sm_val, sp
     Returns:
         float32 array at canvas_shape[:2] dimensions with scaled-down pattern.
     """
-    import math
     h, w = canvas_shape[0], canvas_shape[1]
     inv_scale = 1.0 / sp_scale
     # Generate at higher resolution — cap at 8x to avoid memory issues
@@ -110,7 +119,6 @@ def _scale_down_spec_pattern(sp_fn, sp_scale, canvas_shape, seed_val, sm_val, sp
         return big_arr
     # Downsample to canvas size using smooth interpolation (INTER_AREA for downscale)
     if big_arr.shape[0] != h or big_arr.shape[1] != w:
-        import cv2
         big_arr = cv2.resize(big_arr.astype(np.float32), (w, h),
                              interpolation=cv2.INTER_AREA)
     return big_arr.astype(np.float32)
@@ -317,14 +325,29 @@ def _apply_base_color_override(paint, shape, hard_mask, seed, base_color_mode, b
     if mode in ("special", "from_special", "mono"):
         if isinstance(base_color_source, str):
             # --- Mono (special) source: "mono:finish_id" ---
-            if base_color_source.startswith("mono:") and monolithic_registry is not None:
+            if base_color_source.startswith("mono:"):
                 mono_id = base_color_source[5:]
-                if mono_id in monolithic_registry:
+                _found = False
+                if monolithic_registry is not None and mono_id in monolithic_registry:
                     mono_paint_fn = monolithic_registry[mono_id][1]
                     _src_raw = mono_paint_fn(_mono_overlay_seed_paint(paint), actual_shape, hard_mask, seed + 4242, 1.0, 0.0)
                     if _src_raw is not None:
                         _src_np = _src_raw.get() if hasattr(_src_raw, 'get') else np.asarray(_src_raw)
                         src = _boost_overlay_mono_color(np.clip(_src_np[:, :, :3], 0.0, 1.0))
+                    _found = True
+                if not _found:
+                    # REVERSE FALLBACK: mono: ID is a base-registered finish (migrated to Specials)
+                    try:
+                        from engine.registry import BASE_REGISTRY as _BR
+                        if mono_id in _BR:
+                            _base_paint_fn = _BR[mono_id].get("paint_fn", paint_none)
+                            if _base_paint_fn is not paint_none:
+                                _src_raw = _base_paint_fn(paint.copy(), actual_shape, hard_mask, seed + 4242, 1.0, 0.0)
+                                if _src_raw is not None:
+                                    _src_np = np.asarray(_src_raw)
+                                    src = _boost_overlay_mono_color(np.clip(_src_np[:, :, :3], 0.0, 1.0))
+                    except ImportError:
+                        pass
             # --- Base finish source: raw ID or "base:finish_id" ---
             elif not base_color_source.startswith("mono:"):
                 try:
@@ -773,88 +796,93 @@ def compose_finish(base_id, pattern_id, shape, mask, seed, sm, scale=1.0, spec_m
         elif tex_fn is not None:
             # tex_fn needs CPU mask
             _mask_cpu_tex = to_cpu(mask) if _gpu_active else mask
-            tex = tex_fn(shape, _mask_cpu_tex, seed, sm)
-            pv = tex["pattern_val"]
-            R_range = tex["R_range"]
-            M_range = tex["M_range"]
-
-            if scale != 1.0 and scale > 0:
-                pv, tex = _scale_pattern_output(pv, tex, scale, shape)
-
-            rot_angle = float(rotation) % 360
-            if rot_angle != 0:
-                tex["pattern_val"] = pv
-                tex = _rotate_pattern_tex(tex, rot_angle, shape)
+            try:
+                tex = tex_fn(shape, _mask_cpu_tex, seed, sm)
+            except Exception as _tex_err:
+                print(f"[compose] WARNING: tex_fn failed for pattern '{pattern_id}': {_tex_err}")
+                tex = None
+            if tex is not None:
                 pv = tex["pattern_val"]
-            pv = np.asarray(pv, dtype=np.float32).copy()
-            _apply_pattern_offset(pv, shape, pattern_offset_x, pattern_offset_y)
-            if pattern_flip_h:
-                pv = np.fliplr(pv)
-            if pattern_flip_v:
-                pv = np.flipud(pv)
+                R_range = tex["R_range"]
+                M_range = tex["M_range"]
 
-            M_pv = tex.get("M_pattern", pv)
-            R_pv = tex.get("R_pattern", pv)
-            CC_pv = tex.get("CC_pattern", None)
+                if scale != 1.0 and scale > 0:
+                    pv, tex = _scale_pattern_output(pv, tex, scale, shape)
 
-            # NOTE: M_pv/R_pv/CC_pv scaling was ALREADY handled by _scale_pattern_output above.
-            if False and scale != 1.0 and scale > 0:  # DISABLED — was causing double-scale bug
-                if M_pv is not pv:
-                    if scale < 1.0:
-                        M_pv = _tile_fractional(M_pv, 1.0 / scale, shape[0], shape[1])
-                    else:
-                        M_pv = _crop_center_array(M_pv, scale, shape[0], shape[1])
-                if R_pv is not pv:
-                    if scale < 1.0:
-                        R_pv = _tile_fractional(R_pv, 1.0 / scale, shape[0], shape[1])
-                    else:
-                        R_pv = _crop_center_array(R_pv, scale, shape[0], shape[1])
-                if CC_pv is not None:
-                    if scale < 1.0:
-                        CC_pv = _tile_fractional(CC_pv, 1.0 / scale, shape[0], shape[1])
-                    else:
-                        CC_pv = _crop_center_array(CC_pv, scale, shape[0], shape[1])
+                rot_angle = float(rotation) % 360
+                if rot_angle != 0:
+                    tex["pattern_val"] = pv
+                    tex = _rotate_pattern_tex(tex, rot_angle, shape)
+                    pv = tex["pattern_val"]
+                pv = np.asarray(pv, dtype=np.float32).copy()
+                _apply_pattern_offset(pv, shape, pattern_offset_x, pattern_offset_y)
+                if pattern_flip_h:
+                    pv = np.fliplr(pv)
+                if pattern_flip_v:
+                    pv = np.flipud(pv)
 
-            if rot_angle != 0:
-                if M_pv is not pv:
-                    M_pv = _rotate_single_array(M_pv, rot_angle, shape)
-                if R_pv is not pv:
-                    R_pv = _rotate_single_array(R_pv, rot_angle, shape)
-                if CC_pv is not None:
-                    CC_pv = _rotate_single_array(CC_pv, rot_angle, shape)
+                M_pv = tex.get("M_pattern", pv)
+                R_pv = tex.get("R_pattern", pv)
+                CC_pv = tex.get("CC_pattern", None)
 
-            # Transfer pattern arrays to GPU for blending
-            if _gpu_active:
-                M_pv = to_gpu(M_pv)
-                R_pv = to_gpu(R_pv)
-                if CC_pv is not None:
-                    CC_pv = to_gpu(CC_pv)
+                # NOTE: M_pv/R_pv/CC_pv scaling was ALREADY handled by _scale_pattern_output above.
+                if False and scale != 1.0 and scale > 0:  # DISABLED — was causing double-scale bug
+                    if M_pv is not pv:
+                        if scale < 1.0:
+                            M_pv = _tile_fractional(M_pv, 1.0 / scale, shape[0], shape[1])
+                        else:
+                            M_pv = _crop_center_array(M_pv, scale, shape[0], shape[1])
+                    if R_pv is not pv:
+                        if scale < 1.0:
+                            R_pv = _tile_fractional(R_pv, 1.0 / scale, shape[0], shape[1])
+                        else:
+                            R_pv = _crop_center_array(R_pv, scale, shape[0], shape[1])
+                    if CC_pv is not None:
+                        if scale < 1.0:
+                            CC_pv = _tile_fractional(CC_pv, 1.0 / scale, shape[0], shape[1])
+                        else:
+                            CC_pv = _crop_center_array(CC_pv, scale, shape[0], shape[1])
 
-            _pat_scale = pattern_sm_eff * spec_mult * max(0.0, min(1.0, float(pattern_opacity)))
-            M_arr = M_arr + M_pv * M_range * _pat_scale
-            R_arr = R_arr + R_pv * R_range * _pat_scale
+                if rot_angle != 0:
+                    if M_pv is not pv:
+                        M_pv = _rotate_single_array(M_pv, rot_angle, shape)
+                    if R_pv is not pv:
+                        R_pv = _rotate_single_array(R_pv, rot_angle, shape)
+                    if CC_pv is not None:
+                        CC_pv = _rotate_single_array(CC_pv, rot_angle, shape)
 
-            CC_range = tex.get("CC_range", 0)
-            if CC_pv is not None and CC_range != 0:
-                if CC_arr is not None:
-                    CC_arr = CC_arr + CC_pv * CC_range * _pat_scale
-                elif base_CC > 0:
-                    CC_arr = xp.full(shape, float(base_CC), dtype=xp.float32) + CC_pv * CC_range * _pat_scale
+                # Transfer pattern arrays to GPU for blending
+                if _gpu_active:
+                    M_pv = to_gpu(M_pv)
+                    R_pv = to_gpu(R_pv)
+                    if CC_pv is not None:
+                        CC_pv = to_gpu(CC_pv)
 
-            if "R_extra" in tex:
-                _r_extra = to_gpu(tex["R_extra"]) if _gpu_active else tex["R_extra"]
-                R_arr = R_arr + _r_extra * _pat_scale
-            if "M_extra" in tex:
-                _m_extra = to_gpu(tex["M_extra"]) if _gpu_active else tex["M_extra"]
-                M_arr = M_arr + _m_extra * _pat_scale
+                _pat_scale = pattern_sm_eff * spec_mult * max(0.0, min(1.0, float(pattern_opacity)))
+                M_arr = M_arr + M_pv * M_range * _pat_scale
+                R_arr = R_arr + R_pv * R_range * _pat_scale
 
-            pat_CC = tex.get("CC")
-            if pat_CC is None:
-                pass
-            elif isinstance(pat_CC, np.ndarray):
-                final_CC = to_gpu(pat_CC) if _gpu_active else pat_CC
-            else:
-                final_CC = int(pat_CC)
+                CC_range = tex.get("CC_range", 0)
+                if CC_pv is not None and CC_range != 0:
+                    if CC_arr is not None:
+                        CC_arr = CC_arr + CC_pv * CC_range * _pat_scale
+                    elif base_CC > 0:
+                        CC_arr = xp.full(shape, float(base_CC), dtype=xp.float32) + CC_pv * CC_range * _pat_scale
+
+                if "R_extra" in tex:
+                    _r_extra = to_gpu(tex["R_extra"]) if _gpu_active else tex["R_extra"]
+                    R_arr = R_arr + _r_extra * _pat_scale
+                if "M_extra" in tex:
+                    _m_extra = to_gpu(tex["M_extra"]) if _gpu_active else tex["M_extra"]
+                    M_arr = M_arr + _m_extra * _pat_scale
+
+                pat_CC = tex.get("CC")
+                if pat_CC is None:
+                    pass
+                elif isinstance(pat_CC, np.ndarray):
+                    final_CC = to_gpu(pat_CC) if _gpu_active else pat_CC
+                else:
+                    final_CC = int(pat_CC)
 
     # GPU-accelerate final spec assembly (mask blending + clipping)
     # M_arr/R_arr/mask are already on GPU when _gpu_active
@@ -895,12 +923,15 @@ def compose_finish(base_id, pattern_id, shape, mask, seed, sm, scale=1.0, spec_m
             _sb_seed = seed + 999
             _sb_seed_off = abs(hash(second_base)) % 10000
             spec_secondary = np.zeros((shape[0], shape[1], 4), dtype=np.uint8)
-            if str(second_base).startswith("mono:") and monolithic_registry is not None:
-                _mono_id = second_base[5:]
-                if _mono_id in monolithic_registry:
-                    _sb_spec_fn = monolithic_registry[_mono_id][0]
+            # Strip mono: prefix if the ID is actually a base (migrated finishes)
+            if str(second_base).startswith("mono:"):
+                _sb_stripped = second_base[5:]
+                if monolithic_registry is not None and _sb_stripped in monolithic_registry:
+                    _sb_spec_fn = monolithic_registry[_sb_stripped][0]
                     spec_secondary = _sb_spec_fn(shape, mask, _sb_seed + _sb_seed_off, sm)
-            elif second_base in BASE_REGISTRY:
+                elif _sb_stripped in BASE_REGISTRY:
+                    second_base = _sb_stripped  # fallback: treat as base
+            if second_base in BASE_REGISTRY:
                 _sb_def = BASE_REGISTRY[second_base]
                 _sb_M = float(_sb_def["M"])
                 _sb_R = float(_sb_def["R"])
@@ -956,12 +987,14 @@ def compose_finish(base_id, pattern_id, shape, mask, seed, sm, scale=1.0, spec_m
             _tb_seed = seed + 1999
             _tb_seed_off = abs(hash(third_base)) % 10000
             spec_tertiary = np.zeros((shape[0], shape[1], 4), dtype=np.uint8)
-            if str(third_base).startswith("mono:") and monolithic_registry is not None:
-                _mono_id = third_base[5:]
-                if _mono_id in monolithic_registry:
-                    _tb_spec_fn = monolithic_registry[_mono_id][0]
+            if str(third_base).startswith("mono:"):
+                _tb_stripped = third_base[5:]
+                if monolithic_registry is not None and _tb_stripped in monolithic_registry:
+                    _tb_spec_fn = monolithic_registry[_tb_stripped][0]
                     spec_tertiary = _tb_spec_fn(shape, mask, _tb_seed + _tb_seed_off, sm)
-            elif third_base in BASE_REGISTRY:
+                elif _tb_stripped in BASE_REGISTRY:
+                    third_base = _tb_stripped
+            if third_base in BASE_REGISTRY:
                 _tb_def = BASE_REGISTRY[third_base]
                 _tb_M = float(_tb_def["M"])
                 _tb_R = float(_tb_def["R"])
@@ -1452,7 +1485,11 @@ def compose_finish_stacked(base_id, all_patterns, shape, mask, seed, sm, spec_mu
         if tex_fn is None:
             continue
         layer_seed = seed + layer_idx * 7
-        tex = tex_fn(shape, _mask_cpu_stk, layer_seed, sm)
+        try:
+            tex = tex_fn(shape, _mask_cpu_stk, layer_seed, sm)
+        except Exception as _tex_err_stk:
+            print(f"[compose] WARNING: tex_fn failed for pattern '{pat_id}': {_tex_err_stk}")
+            continue
         pv = tex["pattern_val"]
         R_range = tex["R_range"]
         M_range = tex["M_range"]
@@ -1559,12 +1596,15 @@ def compose_finish_stacked(base_id, all_patterns, shape, mask, seed, sm, spec_mu
             _sb_seed = seed + 999
             _sb_seed_off = abs(hash(second_base)) % 10000
             spec_secondary = np.zeros((shape[0], shape[1], 4), dtype=np.uint8)
-            if str(second_base).startswith("mono:") and monolithic_registry is not None:
-                _mono_id = second_base[5:]
-                if _mono_id in monolithic_registry:
-                    _sb_spec_fn = monolithic_registry[_mono_id][0]
+            # Strip mono: prefix if the ID is actually a base (migrated finishes)
+            if str(second_base).startswith("mono:"):
+                _sb_stripped = second_base[5:]
+                if monolithic_registry is not None and _sb_stripped in monolithic_registry:
+                    _sb_spec_fn = monolithic_registry[_sb_stripped][0]
                     spec_secondary = _sb_spec_fn(shape, mask, _sb_seed + _sb_seed_off, sm)
-            elif second_base in BASE_REGISTRY:
+                elif _sb_stripped in BASE_REGISTRY:
+                    second_base = _sb_stripped  # fallback: treat as base
+            if second_base in BASE_REGISTRY:
                 _sb_def = BASE_REGISTRY[second_base]
                 _sb_M = float(_sb_def["M"])
                 _sb_R = float(_sb_def["R"])
@@ -1619,12 +1659,14 @@ def compose_finish_stacked(base_id, all_patterns, shape, mask, seed, sm, spec_mu
             _tb_seed = seed + 1999
             _tb_seed_off = abs(hash(third_base)) % 10000
             spec_tertiary = np.zeros((shape[0], shape[1], 4), dtype=np.uint8)
-            if str(third_base).startswith("mono:") and monolithic_registry is not None:
-                _mono_id = third_base[5:]
-                if _mono_id in monolithic_registry:
-                    _tb_spec_fn = monolithic_registry[_mono_id][0]
+            if str(third_base).startswith("mono:"):
+                _tb_stripped = third_base[5:]
+                if monolithic_registry is not None and _tb_stripped in monolithic_registry:
+                    _tb_spec_fn = monolithic_registry[_tb_stripped][0]
                     spec_tertiary = _tb_spec_fn(shape, mask, _tb_seed + _tb_seed_off, sm)
-            elif third_base in BASE_REGISTRY:
+                elif _tb_stripped in BASE_REGISTRY:
+                    third_base = _tb_stripped
+            if third_base in BASE_REGISTRY:
                 _tb_def = BASE_REGISTRY[third_base]
                 _tb_M = float(_tb_def["M"])
                 _tb_R = float(_tb_def["R"])
@@ -1679,12 +1721,14 @@ def compose_finish_stacked(base_id, all_patterns, shape, mask, seed, sm, spec_mu
             _fb_seed = seed + 2999
             _fb_seed_off = abs(hash(fourth_base)) % 10000
             spec_fourth = np.zeros((shape[0], shape[1], 4), dtype=np.uint8)
-            if str(fourth_base).startswith("mono:") and monolithic_registry is not None:
-                _mono_id = fourth_base[5:]
-                if _mono_id in monolithic_registry:
-                    _fb_spec_fn = monolithic_registry[_mono_id][0]
+            if str(fourth_base).startswith("mono:"):
+                _fb_stripped = fourth_base[5:]
+                if monolithic_registry is not None and _fb_stripped in monolithic_registry:
+                    _fb_spec_fn = monolithic_registry[_fb_stripped][0]
                     spec_fourth = _fb_spec_fn(shape, mask, _fb_seed + _fb_seed_off, sm)
-            elif fourth_base in BASE_REGISTRY:
+                elif _fb_stripped in BASE_REGISTRY:
+                    fourth_base = _fb_stripped
+            if fourth_base in BASE_REGISTRY:
                 _fb_def = BASE_REGISTRY[fourth_base]
                 _fb_M = float(_fb_def["M"])
                 _fb_R = float(_fb_def["R"])
@@ -1736,12 +1780,14 @@ def compose_finish_stacked(base_id, all_patterns, shape, mask, seed, sm, spec_mu
             _fif_seed = seed + 3999
             _fif_seed_off = abs(hash(fifth_base)) % 10000
             spec_fifth = np.zeros((shape[0], shape[1], 4), dtype=np.uint8)
-            if str(fifth_base).startswith("mono:") and monolithic_registry is not None:
-                _mono_id = fifth_base[5:]
-                if _mono_id in monolithic_registry:
-                    _fif_spec_fn = monolithic_registry[_mono_id][0]
+            if str(fifth_base).startswith("mono:"):
+                _fif_stripped = fifth_base[5:]
+                if monolithic_registry is not None and _fif_stripped in monolithic_registry:
+                    _fif_spec_fn = monolithic_registry[_fif_stripped][0]
                     spec_fifth = _fif_spec_fn(shape, mask, _fif_seed + _fif_seed_off, sm)
-            elif fifth_base in BASE_REGISTRY:
+                elif _fif_stripped in BASE_REGISTRY:
+                    fifth_base = _fif_stripped
+            if fifth_base in BASE_REGISTRY:
                 _fif_def = BASE_REGISTRY[fifth_base]
                 _fif_M = float(_fif_def["M"])
                 _fif_R = float(_fif_def["R"])
@@ -1972,11 +2018,14 @@ def compose_paint_mod(base_id, pattern_id, paint, shape, mask, seed, pm, bb, sca
     _BASE_PAINT_BOOST = 1.0 * max(0.0, min(2.0, float(base_strength)))
     if base_paint_fn is not paint_none:
         # External paint_fn expects CPU (numpy) arrays — paint is already CPU here
-        if has_pattern:
-            _paint_result = base_paint_fn(paint, shape, hard_mask, seed, pm * _BASE_PAINT_BOOST * 0.7, bb * _BASE_PAINT_BOOST * 0.7)
-        else:
-            _paint_result = base_paint_fn(paint, shape, hard_mask, seed, pm * _BASE_PAINT_BOOST, bb * _BASE_PAINT_BOOST)
-        paint = np.asarray(_paint_result) if not isinstance(_paint_result, np.ndarray) else _paint_result
+        try:
+            if has_pattern:
+                _paint_result = base_paint_fn(paint, shape, hard_mask, seed, pm * _BASE_PAINT_BOOST * 0.7, bb * _BASE_PAINT_BOOST * 0.7)
+            else:
+                _paint_result = base_paint_fn(paint, shape, hard_mask, seed, pm * _BASE_PAINT_BOOST, bb * _BASE_PAINT_BOOST)
+            paint = np.asarray(_paint_result) if not isinstance(_paint_result, np.ndarray) else _paint_result
+        except Exception as _bp_err:
+            print(f"[compose] WARNING: base_paint_fn failed for base '{base_id}': {_bp_err}")
 
     # Record what the base paint_fn produced so we can blend it against the
     # base color override using base_strength as a mix weight.
@@ -2110,11 +2159,15 @@ def compose_paint_mod(base_id, pattern_id, paint, shape, mask, seed, pm, bb, sca
             # External pat_paint_fn expects CPU arrays — paint is already CPU here
             paint_before_pattern = paint.copy()
             _PAT_PAINT_BOOST = 1.8
-            if base_paint_fn is not paint_none:
-                _pat_result = pat_paint_fn(paint, shape, hard_mask, seed, pm * _PAT_PAINT_BOOST * 0.7 * spec_mult, bb * _PAT_PAINT_BOOST * 0.7 * spec_mult)
-            else:
-                _pat_result = pat_paint_fn(paint, shape, hard_mask, seed, pm * _PAT_PAINT_BOOST * spec_mult, bb * _PAT_PAINT_BOOST * spec_mult)
-            paint = np.asarray(_pat_result) if not isinstance(_pat_result, np.ndarray) else _pat_result
+            try:
+                if base_paint_fn is not paint_none:
+                    _pat_result = pat_paint_fn(paint, shape, hard_mask, seed, pm * _PAT_PAINT_BOOST * 0.7 * spec_mult, bb * _PAT_PAINT_BOOST * 0.7 * spec_mult)
+                else:
+                    _pat_result = pat_paint_fn(paint, shape, hard_mask, seed, pm * _PAT_PAINT_BOOST * spec_mult, bb * _PAT_PAINT_BOOST * spec_mult)
+                paint = np.asarray(_pat_result) if not isinstance(_pat_result, np.ndarray) else _pat_result
+            except Exception as _pp_err:
+                print(f"[compose] WARNING: pat_paint_fn failed for pattern '{pattern_id}': {_pp_err}")
+                paint = paint_before_pattern
             if tex_fn is not None:
                 try:
                     # tex_fn expects CPU mask — mask is already CPU here
@@ -2155,9 +2208,14 @@ def compose_paint_mod(base_id, pattern_id, paint, shape, mask, seed, pm, bb, sca
             # canvas than the shape parameter which can still carry the original file resolution).
             _sb_shape = (paint.shape[0], paint.shape[1])
             _sb_mask3d = hard_mask[:, :, np.newaxis]
-            if (_sb_color_src and monolithic_registry is not None and _sb_color_src[5:] in monolithic_registry):
+            if (_sb_color_src and _sb_color_src.startswith("mono:") and (
+                    (monolithic_registry is not None and _sb_color_src[5:] in monolithic_registry) or
+                    _sb_color_src[5:] in BASE_REGISTRY)):
                 _mono_id = _sb_color_src[5:]
-                _mono_paint_fn = monolithic_registry[_mono_id][1]
+                if monolithic_registry is not None and _mono_id in monolithic_registry:
+                    _mono_paint_fn = monolithic_registry[_mono_id][1]
+                else:
+                    _mono_paint_fn = BASE_REGISTRY[_mono_id].get("paint_fn", paint_none)
                 print(f"    [PAINT OVERLAY 2nd] Using mono paint_fn for '{_mono_id}', fn={_mono_paint_fn}")
                 # Mono paint_fn MODIFIES existing colors (chameleon shifts hues, etc.)
                 # Pass the actual paint so the effect has real colors to transform.
@@ -2249,9 +2307,14 @@ def compose_paint_mod(base_id, pattern_id, paint, shape, mask, seed, pm, bb, sca
             _paint_overlay_tb_cpu = paint.copy()
             _tb_shape = (paint.shape[0], paint.shape[1])
             _tb_mask3d = hard_mask[:, :, np.newaxis]
-            if (_tb_color_src and monolithic_registry is not None and _tb_color_src[5:] in monolithic_registry):
+            if (_tb_color_src and _tb_color_src.startswith("mono:") and (
+                    (monolithic_registry is not None and _tb_color_src[5:] in monolithic_registry) or
+                    _tb_color_src[5:] in BASE_REGISTRY)):
                 _mono_id = _tb_color_src[5:]
-                _mono_paint_fn = monolithic_registry[_mono_id][1]
+                if monolithic_registry is not None and _mono_id in monolithic_registry:
+                    _mono_paint_fn = monolithic_registry[_mono_id][1]
+                else:
+                    _mono_paint_fn = BASE_REGISTRY[_mono_id].get("paint_fn", paint_none)
                 _color_paint = _mono_paint_fn(_mono_overlay_seed_paint(paint), _tb_shape, hard_mask, seed + 9999, 1.0, 0.0)
                 if _color_paint is not None:
                     _color_paint = _color_paint.get() if hasattr(_color_paint, 'get') else np.asarray(_color_paint)
@@ -2315,9 +2378,14 @@ def compose_paint_mod(base_id, pattern_id, paint, shape, mask, seed, pm, bb, sca
             _paint_overlay_fb_cpu = paint.copy()
             _fb_shape = (paint.shape[0], paint.shape[1])
             _fb_mask3d = hard_mask[:, :, np.newaxis]
-            if (_fb_color_src and monolithic_registry is not None and _fb_color_src[5:] in monolithic_registry):
+            if (_fb_color_src and _fb_color_src.startswith("mono:") and (
+                    (monolithic_registry is not None and _fb_color_src[5:] in monolithic_registry) or
+                    _fb_color_src[5:] in BASE_REGISTRY)):
                 _mono_id = _fb_color_src[5:]
-                _mono_paint_fn = monolithic_registry[_mono_id][1]
+                if monolithic_registry is not None and _mono_id in monolithic_registry:
+                    _mono_paint_fn = monolithic_registry[_mono_id][1]
+                else:
+                    _mono_paint_fn = BASE_REGISTRY[_mono_id].get("paint_fn", paint_none)
                 _color_paint = _mono_paint_fn(_mono_overlay_seed_paint(paint), _fb_shape, hard_mask, seed + 11111, 1.0, 0.0)
                 if _color_paint is not None:
                     _color_paint = _color_paint.get() if hasattr(_color_paint, 'get') else np.asarray(_color_paint)
@@ -2379,9 +2447,14 @@ def compose_paint_mod(base_id, pattern_id, paint, shape, mask, seed, pm, bb, sca
             _paint_overlay_fif_cpu = paint.copy()
             _fif_shape = (paint.shape[0], paint.shape[1])
             _fif_mask3d = hard_mask[:, :, np.newaxis]
-            if (_fif_color_src and monolithic_registry is not None and _fif_color_src[5:] in monolithic_registry):
+            if (_fif_color_src and _fif_color_src.startswith("mono:") and (
+                    (monolithic_registry is not None and _fif_color_src[5:] in monolithic_registry) or
+                    _fif_color_src[5:] in BASE_REGISTRY)):
                 _mono_id = _fif_color_src[5:]
-                _mono_paint_fn = monolithic_registry[_mono_id][1]
+                if monolithic_registry is not None and _mono_id in monolithic_registry:
+                    _mono_paint_fn = monolithic_registry[_mono_id][1]
+                else:
+                    _mono_paint_fn = BASE_REGISTRY[_mono_id].get("paint_fn", paint_none)
                 _color_paint = _mono_paint_fn(_mono_overlay_seed_paint(paint), _fif_shape, hard_mask, seed + 13333, 1.0, 0.0)
                 if _color_paint is not None:
                     _color_paint = _color_paint.get() if hasattr(_color_paint, 'get') else np.asarray(_color_paint)
@@ -2520,14 +2593,16 @@ def compose_paint_mod_stacked(base_id, all_patterns, paint, shape, mask, seed, p
 
     _BASE_PAINT_BOOST = 1.0 * max(0.0, min(2.0, float(base_strength)))
     if base_paint_fn is not paint_none:
-        # External paint_fn expects CPU (numpy) arrays — convert, call, restore to GPU
         # External paint_fn expects CPU (numpy) arrays — paint is already CPU here
-        if has_any_pattern and active_paint_fns > 0:
-            atten = 0.6 / max(1, active_paint_fns)
-            _paint_result_stk = base_paint_fn(paint, shape, hard_mask, seed, pm * _BASE_PAINT_BOOST * atten, bb * _BASE_PAINT_BOOST * atten)
-        else:
-            _paint_result_stk = base_paint_fn(paint, shape, hard_mask, seed, pm * _BASE_PAINT_BOOST, bb * _BASE_PAINT_BOOST)
-        paint = np.asarray(_paint_result_stk) if not isinstance(_paint_result_stk, np.ndarray) else _paint_result_stk
+        try:
+            if has_any_pattern and active_paint_fns > 0:
+                atten = 0.6 / max(1, active_paint_fns)
+                _paint_result_stk = base_paint_fn(paint, shape, hard_mask, seed, pm * _BASE_PAINT_BOOST * atten, bb * _BASE_PAINT_BOOST * atten)
+            else:
+                _paint_result_stk = base_paint_fn(paint, shape, hard_mask, seed, pm * _BASE_PAINT_BOOST, bb * _BASE_PAINT_BOOST)
+            paint = np.asarray(_paint_result_stk) if not isinstance(_paint_result_stk, np.ndarray) else _paint_result_stk
+        except Exception as _bp_err_stk:
+            print(f"[compose] WARNING: base_paint_fn failed for base '{base_id}': {_bp_err_stk}")
 
     # Record base material output before color override (same fix as compose_paint_mod)
     # Only copy when the lerp will actually be used (avoids ~32MB memcpy on most renders).
@@ -2660,8 +2735,12 @@ def compose_paint_mod_stacked(base_id, all_patterns, paint, shape, mask, seed, p
             layer_seed = seed + layer_idx * 7
             # External paint_fn expects CPU arrays — paint is already CPU here
             paint_before_layer = paint.copy()
-            _layer_result = pat_paint_fn(paint, shape, hard_mask, layer_seed, pm * atten * spec_mult * _PAT_PAINT_BOOST, bb * atten * spec_mult * _PAT_PAINT_BOOST)
-            paint = np.asarray(_layer_result) if not isinstance(_layer_result, np.ndarray) else _layer_result
+            try:
+                _layer_result = pat_paint_fn(paint, shape, hard_mask, layer_seed, pm * atten * spec_mult * _PAT_PAINT_BOOST, bb * atten * spec_mult * _PAT_PAINT_BOOST)
+                paint = np.asarray(_layer_result) if not isinstance(_layer_result, np.ndarray) else _layer_result
+            except Exception as _pp_err_stk:
+                print(f"[compose] WARNING: pat_paint_fn failed for pattern '{pat_id}': {_pp_err_stk}")
+                paint = paint_before_layer
             if tex_fn is not None:
                 try:
                     # tex_fn expects CPU mask — mask is already CPU here
@@ -2703,9 +2782,14 @@ def compose_paint_mod_stacked(base_id, all_patterns, paint, shape, mask, seed, p
             _paint_overlay_st_cpu = paint.copy()
             _sb_shape = (paint.shape[0], paint.shape[1])
             _sb_mask3d = hard_mask[:, :, np.newaxis]
-            if (_sb_color_src and monolithic_registry is not None and _sb_color_src[5:] in monolithic_registry):
+            if (_sb_color_src and _sb_color_src.startswith("mono:") and (
+                    (monolithic_registry is not None and _sb_color_src[5:] in monolithic_registry) or
+                    _sb_color_src[5:] in BASE_REGISTRY)):
                 _mono_id = _sb_color_src[5:]
-                _mono_paint_fn = monolithic_registry[_mono_id][1]
+                if monolithic_registry is not None and _mono_id in monolithic_registry:
+                    _mono_paint_fn = monolithic_registry[_mono_id][1]
+                else:
+                    _mono_paint_fn = BASE_REGISTRY[_mono_id].get("paint_fn", paint_none)
                 _color_paint = _mono_paint_fn(_mono_overlay_seed_paint(paint), _sb_shape, hard_mask, seed + 7777, 1.0, 0.0)
                 if _color_paint is not None:
                     _color_paint = _color_paint.get() if hasattr(_color_paint, 'get') else np.asarray(_color_paint)
@@ -2770,9 +2854,14 @@ def compose_paint_mod_stacked(base_id, all_patterns, paint, shape, mask, seed, p
             _paint_overlay_tb_st_cpu = paint.copy()
             _tb_shape = (paint.shape[0], paint.shape[1])
             _tb_mask3d = hard_mask[:, :, np.newaxis]
-            if (_tb_color_src and monolithic_registry is not None and _tb_color_src[5:] in monolithic_registry):
+            if (_tb_color_src and _tb_color_src.startswith("mono:") and (
+                    (monolithic_registry is not None and _tb_color_src[5:] in monolithic_registry) or
+                    _tb_color_src[5:] in BASE_REGISTRY)):
                 _mono_id = _tb_color_src[5:]
-                _mono_paint_fn = monolithic_registry[_mono_id][1]
+                if monolithic_registry is not None and _mono_id in monolithic_registry:
+                    _mono_paint_fn = monolithic_registry[_mono_id][1]
+                else:
+                    _mono_paint_fn = BASE_REGISTRY[_mono_id].get("paint_fn", paint_none)
                 _color_paint = _mono_paint_fn(_mono_overlay_seed_paint(paint), _tb_shape, hard_mask, seed + 9999, 1.0, 0.0)
                 if _color_paint is not None:
                     _color_paint = _color_paint.get() if hasattr(_color_paint, 'get') else np.asarray(_color_paint)
@@ -2833,9 +2922,14 @@ def compose_paint_mod_stacked(base_id, all_patterns, paint, shape, mask, seed, p
             _paint_overlay_fb_st_cpu = paint.copy()
             _fb_shape = (paint.shape[0], paint.shape[1])
             _fb_mask3d = hard_mask[:, :, np.newaxis]
-            if (_fb_color_src and monolithic_registry is not None and _fb_color_src[5:] in monolithic_registry):
+            if (_fb_color_src and _fb_color_src.startswith("mono:") and (
+                    (monolithic_registry is not None and _fb_color_src[5:] in monolithic_registry) or
+                    _fb_color_src[5:] in BASE_REGISTRY)):
                 _mono_id = _fb_color_src[5:]
-                _mono_paint_fn = monolithic_registry[_mono_id][1]
+                if monolithic_registry is not None and _mono_id in monolithic_registry:
+                    _mono_paint_fn = monolithic_registry[_mono_id][1]
+                else:
+                    _mono_paint_fn = BASE_REGISTRY[_mono_id].get("paint_fn", paint_none)
                 _color_paint = _mono_paint_fn(_mono_overlay_seed_paint(paint), _fb_shape, hard_mask, seed + 11111, 1.0, 0.0)
                 if _color_paint is not None:
                     _color_paint = _color_paint.get() if hasattr(_color_paint, 'get') else np.asarray(_color_paint)
@@ -2896,9 +2990,14 @@ def compose_paint_mod_stacked(base_id, all_patterns, paint, shape, mask, seed, p
             _paint_overlay_fif_st_cpu = paint.copy()
             _fif_shape = (paint.shape[0], paint.shape[1])
             _fif_mask3d = hard_mask[:, :, np.newaxis]
-            if (_fif_color_src and monolithic_registry is not None and _fif_color_src[5:] in monolithic_registry):
+            if (_fif_color_src and _fif_color_src.startswith("mono:") and (
+                    (monolithic_registry is not None and _fif_color_src[5:] in monolithic_registry) or
+                    _fif_color_src[5:] in BASE_REGISTRY)):
                 _mono_id = _fif_color_src[5:]
-                _mono_paint_fn = monolithic_registry[_mono_id][1]
+                if monolithic_registry is not None and _mono_id in monolithic_registry:
+                    _mono_paint_fn = monolithic_registry[_mono_id][1]
+                else:
+                    _mono_paint_fn = BASE_REGISTRY[_mono_id].get("paint_fn", paint_none)
                 _color_paint = _mono_paint_fn(_mono_overlay_seed_paint(paint), _fif_shape, hard_mask, seed + 13333, 1.0, 0.0)
                 if _color_paint is not None:
                     _color_paint = _color_paint.get() if hasattr(_color_paint, 'get') else np.asarray(_color_paint)

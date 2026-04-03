@@ -20,6 +20,7 @@ FIX GUIDE:
   - TGA files corrupted â†' edit write_tga_32bit / write_tga_24bit
 """
 
+import math
 import numpy as np
 from PIL import Image, ImageFilter
 import struct
@@ -510,7 +511,6 @@ def _resize_array(arr, target_h, target_w):
 
 def _tile_fractional(arr, factor, target_h, target_w):
     """Tile a 2D array by a fractional factor and resize to target dims."""
-    import math
     h, w = arr.shape[:2]
     reps = min(10, max(2, int(math.ceil(factor))))
     tiled = np.tile(arr, (reps, reps))

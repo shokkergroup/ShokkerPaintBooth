@@ -26,6 +26,7 @@ from engine.core import multi_scale_noise, get_mgrid
 # ==================================================================
 
 def paint_ambulance_white_v2(paint, shape, mask, seed, pm, bb):
+    """Ambulance high-vis white with microprismatic retro-reflective glass bead simulation."""
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     rng = np.random.RandomState(seed + 600)
@@ -48,7 +49,7 @@ def paint_ambulance_white_v2(paint, shape, mask, seed, pm, bb):
 
     blend = np.clip(pm, 0.0, 1.0)
     result = np.clip(base * (1.0 - mask[:,:,np.newaxis] * blend) + effect * (mask[:,:,np.newaxis] * blend), 0, 1)
-    return np.clip(result + bb[:,:,np.newaxis] * 0.30 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
+    return np.clip(result + bb[:,:,np.newaxis] * 0.18 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
 
 def spec_ambulance_white(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
@@ -70,6 +71,7 @@ def spec_ambulance_white(shape, seed, sm, base_m, base_r):
 # ==================================================================
 
 def paint_dealer_pearl_v2(paint, shape, mask, seed, pm, bb):
+    """Dealer tri-coat pearl: basecoat + mica flake interference + deep clearcoat."""
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
 
@@ -97,7 +99,7 @@ def paint_dealer_pearl_v2(paint, shape, mask, seed, pm, bb):
 
     blend = np.clip(pm, 0.0, 1.0)
     result = np.clip(base * (1.0 - mask[:,:,np.newaxis] * blend) + effect * (mask[:,:,np.newaxis] * blend), 0, 1)
-    return np.clip(result + bb[:,:,np.newaxis] * 0.38 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
+    return np.clip(result + bb[:,:,np.newaxis] * 0.22 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
 
 def spec_dealer_pearl(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
@@ -116,6 +118,7 @@ def spec_dealer_pearl(shape, seed, sm, base_m, base_r):
 # ==================================================================
 
 def paint_factory_basecoat_v2(paint, shape, mask, seed, pm, bb):
+    """Factory electrostatic bell-cup spray deposition with radial overlap bands."""
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     y, x = get_mgrid((h, w))
@@ -141,7 +144,7 @@ def paint_factory_basecoat_v2(paint, shape, mask, seed, pm, bb):
 
     blend = np.clip(pm, 0.0, 1.0)
     result = np.clip(base * (1.0 - mask[:,:,np.newaxis] * blend) + effect * (mask[:,:,np.newaxis] * blend), 0, 1)
-    return np.clip(result + bb[:,:,np.newaxis] * 0.32 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
+    return np.clip(result + bb[:,:,np.newaxis] * 0.25 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
 
 def spec_factory_basecoat(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
@@ -162,6 +165,7 @@ def spec_factory_basecoat(shape, seed, sm, base_m, base_r):
 # ==================================================================
 
 def paint_fire_engine_v2(paint, shape, mask, seed, pm, bb):
+    """Fire engine red: high-chroma cadmium pigment with forward scattering model."""
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
 
@@ -185,7 +189,7 @@ def paint_fire_engine_v2(paint, shape, mask, seed, pm, bb):
 
     blend = np.clip(pm, 0.0, 1.0)
     result = np.clip(base * (1.0 - mask[:,:,np.newaxis] * blend) + effect * (mask[:,:,np.newaxis] * blend), 0, 1)
-    return np.clip(result + bb[:,:,np.newaxis] * 0.42 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
+    return np.clip(result + bb[:,:,np.newaxis] * 0.15 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
 
 def spec_fire_engine(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
@@ -204,6 +208,7 @@ def spec_fire_engine(shape, seed, sm, base_m, base_r):
 # ==================================================================
 
 def paint_fleet_white_v2(paint, shape, mask, seed, pm, bb):
+    """Fleet white crosslinked polyurethane with cure-temperature sheen variation."""
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
 
@@ -222,7 +227,7 @@ def paint_fleet_white_v2(paint, shape, mask, seed, pm, bb):
 
     blend = np.clip(pm, 0.0, 1.0)
     result = np.clip(base * (1.0 - mask[:,:,np.newaxis] * blend) + effect * (mask[:,:,np.newaxis] * blend), 0, 1)
-    return np.clip(result + bb[:,:,np.newaxis] * 0.25 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
+    return np.clip(result + bb[:,:,np.newaxis] * 0.12 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
 
 def spec_fleet_white(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
@@ -241,6 +246,7 @@ def spec_fleet_white(shape, seed, sm, base_m, base_r):
 # ==================================================================
 
 def paint_police_black_v2(paint, shape, mask, seed, pm, bb):
+    """Police interceptor carbon black nanoparticle absorption with stealth gloss."""
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
 
@@ -262,7 +268,7 @@ def paint_police_black_v2(paint, shape, mask, seed, pm, bb):
 
     blend = np.clip(pm, 0.0, 1.0)
     result = np.clip(base * (1.0 - mask[:,:,np.newaxis] * blend) + effect * (mask[:,:,np.newaxis] * blend), 0, 1)
-    return np.clip(result + bb[:,:,np.newaxis] * 0.20 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
+    return np.clip(result + bb[:,:,np.newaxis] * 0.12 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
 
 def spec_police_black(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
@@ -281,6 +287,7 @@ def spec_police_black(shape, seed, sm, base_m, base_r):
 # ==================================================================
 
 def paint_school_bus_v2(paint, shape, mask, seed, pm, bb):
+    """School bus chrome yellow pigment with HALS UV stabilizer matte haze."""
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
 
@@ -302,7 +309,7 @@ def paint_school_bus_v2(paint, shape, mask, seed, pm, bb):
 
     blend = np.clip(pm, 0.0, 1.0)
     result = np.clip(base * (1.0 - mask[:,:,np.newaxis] * blend) + effect * (mask[:,:,np.newaxis] * blend), 0, 1)
-    return np.clip(result + bb[:,:,np.newaxis] * 0.35 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
+    return np.clip(result + bb[:,:,np.newaxis] * 0.12 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
 
 def spec_school_bus(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
@@ -321,6 +328,7 @@ def spec_school_bus(shape, seed, sm, base_m, base_r):
 # ==================================================================
 
 def paint_showroom_clear_v2(paint, shape, mask, seed, pm, bb):
+    """Showroom multi-layer clearcoat Fresnel reflection stack with wet-look depth."""
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
 
@@ -346,7 +354,7 @@ def paint_showroom_clear_v2(paint, shape, mask, seed, pm, bb):
 
     blend = np.clip(pm, 0.0, 1.0)
     result = np.clip(base * (1.0 - mask[:,:,np.newaxis] * blend) + effect * (mask[:,:,np.newaxis] * blend), 0, 1)
-    return np.clip(result + bb[:,:,np.newaxis] * 0.40 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
+    return np.clip(result + bb[:,:,np.newaxis] * 0.25 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
 
 def spec_showroom_clear(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
@@ -365,6 +373,7 @@ def spec_showroom_clear(shape, seed, sm, base_m, base_r):
 # ==================================================================
 
 def paint_taxi_yellow_v2(paint, shape, mask, seed, pm, bb):
+    """Taxi yellow with UV photodegradation yellowing, chalking, and wear zones."""
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     y, x = get_mgrid((h, w))
@@ -392,7 +401,7 @@ def paint_taxi_yellow_v2(paint, shape, mask, seed, pm, bb):
 
     blend = np.clip(pm, 0.0, 1.0)
     result = np.clip(base * (1.0 - mask[:,:,np.newaxis] * blend) + effect * (mask[:,:,np.newaxis] * blend), 0, 1)
-    return np.clip(result + bb[:,:,np.newaxis] * 0.30 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
+    return np.clip(result + bb[:,:,np.newaxis] * 0.10 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
 
 def spec_taxi_yellow(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape

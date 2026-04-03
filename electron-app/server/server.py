@@ -2338,13 +2338,14 @@ def preview_render_endpoint():
                     parts.append(f"stack[{li}]={layer.get('id','?')}@scale={layer.get('scale',1.0)}")
             logger.info("  ".join(parts))
 
-        # Run the preview render
+        # Run the preview render (pass abort_event so build_multi_zone can bail between zones)
         paint_rgb, spec_rgba, elapsed_ms = engine.preview_render(
             actual_paint_file, server_zones, seed=seed, preview_scale=preview_scale,
             import_spec_map=import_spec_map,
             decal_spec_finishes=decal_spec_finishes if decal_spec_finishes else None,
             decal_paint_path=decal_paint_path_preview,
             decal_mask_base64=decal_mask_base64 or None,
+            abort_event=_preview_abort,
         )
 
         # Convert paint to base64 PNG (main preview)

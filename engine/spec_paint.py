@@ -4,8 +4,12 @@ Extracted from shokker_engine_v2 for easier editing.
 """
 import numpy as np
 from PIL import Image, ImageFilter
-from engine.core import multi_scale_noise, get_mgrid, hsv_to_rgb_vec
+from scipy.spatial import cKDTree
+from engine.core import multi_scale_noise, get_mgrid, hsv_to_rgb_vec, rgb_to_hsv_array
 from engine.utils import perlin_multi_octave, generate_perlin_noise_2d
+
+# Alias for legacy carbon/ceramic/glass sections that use _noise shorthand
+_noise = multi_scale_noise
 
 
 def clamp_cc(cc_array):
@@ -139,7 +143,7 @@ def spec_pearl_base(shape, seed, sm, base_m, base_r):
     platelet_flash = multi_scale_noise(sh, [60, 120], [0.6, 0.4], seed + 99)
     m_combined = m_wave * 0.70 + platelet_flash * 0.30
     M_arr = np.clip(80.0 + m_combined * 120.0 * sm, 0, 255).astype(np.float32)
-    R_arr = np.clip(30.0 + r_wave * 60.0 * sm, 0, 255).astype(np.float32)
+    R_arr = np.clip(30.0 + r_wave * 60.0 * sm, 15, 255).astype(np.float32)  # GGX floor: R>=15
     CC_arr = np.clip(18.0 + cc_wave * 22.0, 16, 255).astype(np.float32)
     return M_arr, R_arr, CC_arr
 
@@ -191,7 +195,7 @@ def spec_metal_flake(shape, mask, seed, sm):
     mf = multi_scale_noise(shape, [4, 8, 16, 32], [0.1, 0.2, 0.35, 0.35], seed+100)  # Visible flake
     rf = multi_scale_noise(shape, [4, 8, 16], [0.3, 0.4, 0.3], seed+200)
     spec[:,:,0] = np.clip(240 * mask + 5 * (1-mask) + mf * 50 * sm * mask, 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(12 * mask + 100 * (1-mask) + rf * 40 * sm * mask, 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip(15 * mask + 100 * (1-mask) + rf * 40 * sm * mask, 15, 255).astype(np.uint8)
     spec[:,:,2] = 16; spec[:,:,3] = 255
     return spec
 
@@ -212,7 +216,7 @@ def spec_holographic_flake(shape, mask, seed, sm):
     sparkle = rng.random((h, w)).astype(np.float32)
     bright_flakes = (sparkle > (1.0 - 0.03 * sm)).astype(np.float32)
     spec[:,:,0] = np.clip(245 * mask + 5 * (1-mask) + bright_flakes * 10 * mask, 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip((5 + holo * 40 * sm) * mask + 100 * (1-mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip((15 + holo * 30 * sm) * mask + 100 * (1-mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = 16; spec[:,:,3] = 255
     return spec
 
@@ -609,7 +613,7 @@ def spec_hologram(shape, mask, seed, sm):
     scanline = np.broadcast_to(scanline, (h, w))
     spec[:,:,0] = np.clip(220 * mask + 5 * (1-mask), 0, 255).astype(np.uint8)
     # Roughness alternates: 5 on bright lines, 80 on dark lines = visible line pattern
-    spec[:,:,1] = np.clip((5 * scanline + 80 * (1 - scanline)) * mask + 100 * (1-mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.clip((15 * scanline + 80 * (1 - scanline)) * mask + 100 * (1-mask), 15, 255).astype(np.uint8)
     spec[:,:,2] = 16; spec[:,:,3] = 255
     return spec
 
@@ -1208,21 +1212,18 @@ def paint_ice_cracks(paint, shape, mask, seed, pm, bb):
     num_points = 200
     points_y = rng.randint(0, h, num_points)
     points_x = rng.randint(0, w, num_points)
-    # Compute distance to nearest two points for each pixel (downsampled for speed)
+    # cKDTree for fast nearest-two-neighbor query (downsampled for speed)
     ds = 4  # downsample factor
     sh, sw = h // ds, w // ds
     yg, xg = np.mgrid[0:sh, 0:sw]
-    yg = yg * ds
-    xg = xg * ds
-    dist1 = np.full((sh, sw), 1e9)
-    dist2 = np.full((sh, sw), 1e9)
-    for py, px in zip(points_y, points_x):
-        d = np.sqrt((yg - py)**2 + (xg - px)**2).astype(np.float32)
-        update2 = d < dist2
-        update1 = d < dist1
-        dist2 = np.where(update2, np.minimum(d, dist2), dist2)
-        dist2 = np.where(update1, dist1, dist2)
-        dist1 = np.where(update1, d, dist1)
+    yg = (yg * ds).astype(np.float32)
+    xg = (xg * ds).astype(np.float32)
+    pts = np.column_stack([points_y.astype(np.float32), points_x.astype(np.float32)])
+    tree = cKDTree(pts)
+    query_pts = np.column_stack([yg.ravel(), xg.ravel()])
+    dists, _ = tree.query(query_pts, k=2)
+    dist1 = dists[:, 0].reshape(sh, sw)
+    dist2 = dists[:, 1].reshape(sh, sw)
     # Crack = where dist1 ~ dist2 (boundary between cells)
     crack_raw = np.clip(1.0 - (dist2 - dist1) / 8.0, 0, 1)
     # Upsample back to full resolution
@@ -1673,19 +1674,18 @@ def paint_mosaic_tint(paint, shape, mask, seed, pm, bb):
     cy = rng.randint(0, h, num_cells).astype(np.float32)
     tints = rng.randn(num_cells, 3).astype(np.float32) * 0.06 * pm
     y, x = get_mgrid((h, w))
-    # Find nearest cell center for each pixel (downsampled for speed)
+    # cKDTree for fast nearest-cell query (downsampled for speed)
     ds = 4
     sh, sw = h // ds, w // ds
-    yg = np.arange(sh).reshape(-1, 1) * ds
-    xg = np.arange(sw).reshape(1, -1) * ds
-    nearest = np.zeros((sh, sw), dtype=np.int32)
-    min_dist = np.full((sh, sw), 1e9, dtype=np.float32)
-    for i in range(num_cells):
-        dist = (yg - cy[i])**2 + (xg - cx[i])**2
-        closer = dist < min_dist
-        nearest[closer] = i
-        min_dist[closer] = dist[closer]
-    nearest_img = Image.fromarray(nearest.astype(np.uint8))
+    yg = np.arange(sh, dtype=np.float32).reshape(-1, 1) * ds
+    xg = np.arange(sw, dtype=np.float32).reshape(1, -1) * ds
+    pts = np.column_stack([cy, cx])
+    tree = cKDTree(pts)
+    query_pts = np.column_stack([np.broadcast_to(yg, (sh, sw)).ravel(),
+                                  np.broadcast_to(xg, (sh, sw)).ravel()])
+    _, nearest_flat = tree.query(query_pts, k=1)
+    nearest = nearest_flat.reshape(sh, sw).astype(np.uint8)
+    nearest_img = Image.fromarray(nearest)
     nearest_full = np.array(nearest_img.resize((w, h), Image.NEAREST))
     for c in range(3):
         shift = tints[nearest_full, c]
@@ -2019,17 +2019,19 @@ def paint_desert_worn(paint, shape, mask, seed, pm, bb):
 # ================================================================
 
 def paint_wet_gloss(paint, shape, mask, seed, pm, bb):
-    """Wet look - deepens color toward black, adds slight reflection brightening."""
+    """Wet look - deepens color toward black, adds slight reflection brightening.
+    FIX: bb reflection was 0.01 (invisible). Raised to 0.08 for visible wet sheen."""
     darken = 0.08 * pm
-    paint = np.clip(paint * (1 - darken * mask[:,:,np.newaxis]) + bb * 0.01 * mask[:,:,np.newaxis], 0, 1)
+    paint = np.clip(paint * (1 - darken * mask[:,:,np.newaxis]) + bb * 0.08 * pm * mask[:,:,np.newaxis], 0, 1)
     return paint
 
 def paint_silk_sheen(paint, shape, mask, seed, pm, bb):
-    """Silk finish - very subtle directional brightening like light on silk fabric."""
+    """Silk finish - directional brightening like light on silk fabric.
+    FIX: amplitude was 0.02 (invisible). Raised to 0.08 for visible silk bands."""
     np.random.seed(seed + 900)
     h, w = shape
     y_grad = np.linspace(0, 1, h).reshape(h, 1).astype(np.float32)
-    silk = np.sin(y_grad * np.pi * 3) * 0.02 * pm
+    silk = np.sin(y_grad * np.pi * 3) * 0.08 * pm
     paint = np.clip(paint + silk[:,:,np.newaxis] * mask[:,:,np.newaxis], 0, 1)
     return paint
 
@@ -2328,14 +2330,15 @@ def paint_mercury_pool(paint, shape, mask, seed, pm, bb):
     for c in range(3):
         paint[:,:,c] = np.clip(paint[:,:,c] * (1 - desat * mask) + mean_c * desat * mask, 0, 1)
     caustic = multi_scale_noise(shape, [4, 8, 16], [0.3, 0.4, 0.3], seed + 5571)
-    bright = np.clip(caustic, 0, 1) * 0.03 * pm
+    bright = np.clip(caustic, 0, 1) * 0.10 * pm  # FIX: was 0.03 (invisible caustics)
     paint = np.clip(paint + bright[:,:,np.newaxis] * mask[:,:,np.newaxis], 0, 1)
     return paint
 
 
 def paint_electric_blue_tint(paint, shape, mask, seed, pm, bb):
-    """Electric blue tint - icy blue metallic color push."""
-    shift = 0.03 * pm
+    """Electric blue tint - icy blue metallic color push.
+    FIX: shift was 0.03 (1.5% blue, invisible). Raised to 0.12 for visible icy tint."""
+    shift = 0.12 * pm
     paint[:,:,0] = np.clip(paint[:,:,0] - shift * 0.3 * mask, 0, 1)
     paint[:,:,1] = np.clip(paint[:,:,1] + shift * 0.2 * mask, 0, 1)
     paint[:,:,2] = np.clip(paint[:,:,2] + shift * 0.5 * mask, 0, 1)
@@ -2987,7 +2990,7 @@ def spec_cc_carbon_ceramic(shape, seed, sm, base_m, base_r):
     noise = _noise(shape, [4, 8, 16], [0.5, 0.3, 0.2], seed + 310)
     # Porous, metallic-flake embedded raw rotor material
     M_arr = np.full(shape, 120.0, dtype=np.float32) + noise * 60.0 * sm
-    R_arr = np.full(shape, 25.0, dtype=np.float32) + noise * 150.0 * sm
+    R_arr = np.clip(np.full(shape, 25.0, dtype=np.float32) + noise * 150.0 * sm, 15, 255)  # GGX floor: R>=15
     CC_arr = np.full(shape, 0.0, dtype=np.float32) # No clearcoat on rotors
     return M_arr, R_arr, CC_arr
 
@@ -3109,7 +3112,7 @@ def spec_exotic_metal(shape, seed, sm, base_m, base_r):
     flow = np.sin(x * 0.15 + np.sin(y * 0.08) * 3.0) * 0.5 + 0.5
     grain = multi_scale_noise(shape, [2, 4], [0.5, 0.5], seed)
     M = np.clip(180 + flow * 75.0, 0, 255).astype(np.float32)
-    R = np.clip(5 + grain * 25.0, 0, 255).astype(np.float32)
+    R = np.clip(15 + grain * 25.0, 15, 255).astype(np.float32)
     return M, R, np.full(shape, 16.0, dtype=np.float32)  # CC=16 max clearcoat for exotic metals
 
 def paint_tungsten_heavy(paint, shape, mask, seed, pm, bb):
@@ -3407,7 +3410,7 @@ def spec_bioluminescent(shape, seed, sm, base_m, base_r):
 
     M = np.full(shape, 0.0, dtype=np.float32)
     n = multi_scale_noise(shape, [8, 16], [0.5, 0.5], seed + 502)
-    R = np.clip(10.0 + n * 20.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(15.0 + n * 20.0 * sm, 15, 255).astype(np.float32)
     return M, R, np.full(shape, 16.0, dtype=np.float32)
 
 def paint_dark_matter(paint, shape, mask, seed, pm, bb):
@@ -3614,7 +3617,7 @@ def spec_holographic_base(shape, seed, sm, base_m, base_r):
     grain = np.clip(grain, 0, 1)
     
     M = np.clip(200.0 + grain * 55.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(6.0 + grain * 15.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(15.0 + grain * 10.0 * sm, 15, 255).astype(np.float32)
     return M, R, np.full((h, w), 16.0, dtype=np.float32)
 
 
@@ -3700,7 +3703,7 @@ def spec_armor_plate_v2(shape, seed, sm, base_m, base_r):
     
     # Exposed steel is highly metallic, oxidized/recessed areas are rough and less metallic
     M = np.clip(60.0 + marks * 140.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(160.0 - marks * 80.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(160.0 - marks * 80.0 * sm, 15, 255).astype(np.float32)  # GGX floor: R>=15
     return M, R, np.full((h, w), 130.0, dtype=np.float32)  # CC=130 worn military plate
 
 def paint_battleship_gray_v2(paint, shape, mask, seed, pm, bb):
@@ -3737,7 +3740,7 @@ def spec_battleship_gray_v2(shape, seed, sm, base_m, base_r):
     
     # Sea-weathered paint - dull with slight directional variance
     M = np.full((h, w), 20.0, dtype=np.float32)
-    R = np.clip(140.0 + streaks * 30.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(140.0 + streaks * 30.0 * sm, 15, 255).astype(np.float32)  # GGX floor: R>=15
     CC = np.full((h, w), 120.0, dtype=np.float32)  # CC=120 weathered dull (was 10=near-chrome)
     return M, R, CC
 
@@ -3772,7 +3775,7 @@ def spec_gunship_gray_v2(shape, seed, sm, base_m, base_r):
     
     # RAM coating is highly porous/rough and barely metallic
     M = np.full((h, w), 5.0, dtype=np.float32)
-    R = np.clip(200.0 + ram_grit * 50.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(200.0 + ram_grit * 50.0 * sm, 15, 255).astype(np.float32)  # GGX floor: R>=15
     return M, R, np.full((h, w), 190.0, dtype=np.float32)  # CC=190 near-flat RAM
 
 def paint_mil_spec_od_v3(paint, shape, mask, seed, pm, bb):
@@ -4089,7 +4092,7 @@ def spec_chromaflair_base(shape, seed, sm, base_m, base_r):
     flake2      = multi_scale_noise(sh, [2, 4],     [0.6, 0.4],         seed + 301)
     flake_combined = flake_field * 0.65 + flake2 * 0.35
     M_arr  = np.clip(180.0 + flake_combined * 60.0 * sm, 0, 255).astype(np.float32)
-    R_arr  = np.clip(  8.0 + flake_combined * 12.0 * sm, 0, 255).astype(np.float32)
+    R_arr  = np.clip(  8.0 + flake_combined * 12.0 * sm, 15, 255).astype(np.float32)  # GGX floor: R>=15
     CC_arr = np.clip( 16.0 + flake_combined *  6.0,      16, 255).astype(np.float32)
     return M_arr, R_arr, CC_arr
 
@@ -4834,7 +4837,13 @@ def spec_hypershift_spectral_base(shape, seed, sm, base_m, base_r):
     shift_coarse = multi_scale_noise(sh, [32, 64, 128], [0.4, 0.35, 0.25], seed + 780)
     # Fine anchor-lock noise (medium scale — anchor boundary sharpening)
     shift_fine   = multi_scale_noise(sh, [8,  16],       [0.6,  0.4],       seed + 781)
-    combined = np.clip(shift_coarse * 0.7 + shift_fine * 0.3, 0, 1)
+    raw = shift_coarse * 0.7 + shift_fine * 0.3
+    # FIX: Normalize to full [0,1] instead of np.clip — clip crushed negative half to 0
+    r_min, r_max = float(raw.min()), float(raw.max())
+    if r_max - r_min > 1e-6:
+        combined = (raw - r_min) / (r_max - r_min)
+    else:
+        combined = np.full_like(raw, 0.5)
     # M: 200-240 (high metallic — the spectral pigment carrier)
     M_arr = np.clip(200.0 + combined * 40.0 * sm, 0, 255).astype(np.float32)
     # R: 20-50 (low-moderate roughness — spectral pigment needs some blur for color reading)
@@ -4845,19 +4854,30 @@ def spec_hypershift_spectral_base(shape, seed, sm, base_m, base_r):
 
 
 def paint_hypershift_spectral(paint, shape, mask, seed, pm, bb):
-    """Hypershift Spectral paint: 6-anchor full-spectrum hue rotation with steep transitions.
-    Anchors: Red→Orange→Yellow-Green→Blue→Purple→Red (360°).
-    Steeper than chameleon — anchor colors are more saturated, transitions are sharper."""
+    """Hypershift Spectral paint: 6-anchor FULL 360° spectral hue rotation.
+    FIX: Previous version used np.clip(combined, 0, 1) which crushed the entire
+    negative half of the noise field to 0, collapsing ~50% of the surface onto
+    the first anchor (Red). Now properly normalizes the combined noise to [0, 1]
+    so ALL 6 anchors get equal representation = true full-spectrum sweep.
+    Anchors: Red(0°)→Orange(29°)→Yellow-Green(86°)→Blue(230°)→Purple(281°)→Red(360°)."""
     h, w = shape
     shift_coarse = multi_scale_noise((h, w), [32, 64, 128], [0.4, 0.35, 0.25], seed + 780)
     shift_fine   = multi_scale_noise((h, w), [8, 16],        [0.6, 0.4],        seed + 781)
-    combined = np.clip(shift_coarse * 0.7 + shift_fine * 0.3, 0, 1)
+    raw = shift_coarse * 0.7 + shift_fine * 0.3
+    # ── FIX: Normalize to full [0, 1] instead of clipping (was: np.clip(raw, 0, 1)) ──
+    # np.clip crushed all negative noise values to 0, meaning ~half the surface sat
+    # at the first anchor. Proper normalization ensures full spectral sweep.
+    r_min, r_max = float(raw.min()), float(raw.max())
+    if r_max - r_min > 1e-6:
+        combined = (raw - r_min) / (r_max - r_min)
+    else:
+        combined = np.full_like(raw, 0.5)
 
     # Steepened anchor transitions (sharper than linear hue rotation)
     # Apply gamma to steepen mid-transitions (amplify anchor saturation)
     steep = np.clip(np.power(combined, 0.65), 0, 1)  # gamma<1 steepens transitions
 
-    # 6 HSV anchor stops (H in 0-1)
+    # 6 HSV anchor stops (H in 0-1) — full 360° sweep
     # Red(0.00), Orange(0.08), Yellow-Green(0.24), Blue(0.64), Purple(0.78), Red(1.00)
     stops_h = np.array([0.00, 0.08, 0.24, 0.64, 0.78, 1.00], dtype=np.float32)
     stops_s = np.array([1.00, 1.00, 0.95, 1.00, 0.95, 1.00], dtype=np.float32)
@@ -5127,11 +5147,12 @@ def spec_frost_crystal(shape, mask, seed, sm):
     cell_x = (rng.rand(n_cells) * w).astype(np.float32)
     cell_y = (rng.rand(n_cells) * h).astype(np.float32)
     yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
-    # Compute min distance to nearest cell center
-    min_dist = np.full((h, w), np.inf, dtype=np.float32)
-    for i in range(n_cells):
-        dist = np.sqrt((xx - cell_x[i])**2 + (yy - cell_y[i])**2)
-        min_dist = np.minimum(min_dist, dist)
+    # cKDTree for fast nearest-cell distance
+    pts = np.column_stack([cell_y, cell_x])
+    tree = cKDTree(pts)
+    query_pts = np.column_stack([yy.ravel(), xx.ravel()])
+    min_dist_flat, _ = tree.query(query_pts, k=1)
+    min_dist = min_dist_flat.reshape(h, w).astype(np.float32)
     # Normalize distance to [0, 1] (1 = cell interior, 0 = cell boundary)
     max_d = float(min_dist.max()) + 1e-6
     norm_dist = np.clip(min_dist / max_d, 0, 1)
@@ -5140,8 +5161,8 @@ def spec_frost_crystal(shape, mask, seed, sm):
     interior = np.clip((norm_dist - 0.3) / 0.7, 0, 1)
     # R (metallic): boundary gets slight metallic for sparkle
     spec[:, :, 0] = np.clip((boundary * 80 * sm) * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    # G (roughness): boundary=5-15, interior=120-160
-    r_val = boundary * 8 * sm + interior * 130
+    # G (roughness): boundary=15-20, interior=120-160
+    r_val = boundary * 18 * sm + interior * 130
     spec[:, :, 1] = np.clip(r_val * mask + 100 * (1 - mask), 0, 255).astype(np.uint8)
     # B (clearcoat): boundary=16 (max gloss sparkle), interior=60-80 (frosted)
     cc_val = boundary * 16 + interior * 65
@@ -5160,10 +5181,12 @@ def paint_frost_crystal(paint, shape, mask, seed, pm, bb):
     cell_x = (rng.rand(n_cells) * w).astype(np.float32)
     cell_y = (rng.rand(n_cells) * h).astype(np.float32)
     yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
-    min_dist = np.full((h, w), np.inf, dtype=np.float32)
-    for i in range(n_cells):
-        dist = np.sqrt((xx - cell_x[i])**2 + (yy - cell_y[i])**2)
-        min_dist = np.minimum(min_dist, dist)
+    # cKDTree for fast nearest-cell distance
+    pts = np.column_stack([cell_y, cell_x])
+    tree = cKDTree(pts)
+    query_pts = np.column_stack([yy.ravel(), xx.ravel()])
+    min_dist_flat, _ = tree.query(query_pts, k=1)
+    min_dist = min_dist_flat.reshape(h, w).astype(np.float32)
     max_d = float(min_dist.max()) + 1e-6
     norm_dist = np.clip(min_dist / max_d, 0, 1)
     # Frost interior: slight blue-white tint (ice color: R=0.82, G=0.90, B=0.97)

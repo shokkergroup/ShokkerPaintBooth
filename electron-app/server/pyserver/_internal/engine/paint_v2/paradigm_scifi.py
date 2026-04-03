@@ -1170,6 +1170,8 @@ def spec_p_programmable(shape, seed, sm, base_m, base_r):
     M = (final_mask * 255.0).astype(np.float32)
     # R: mirror zones = 0 (perfect smooth), void zones = 255 (maximum rough)
     R = ((1.0 - final_mask) * 255.0).astype(np.float32)
+    # GGX floor: R>=15 for non-chrome pixels (M<240). Pure chrome (M>=240) may keep R<15.
+    R = np.where(M >= 240.0, R, np.maximum(R, 15.0)).astype(np.float32)
     # CC: mirror zones = glossy clear, void zones = dead flat
     CC = np.where(final_mask > 0.5, 16.0, 200.0).astype(np.float32)
     return M, R, _cc_clamp(CC)
@@ -1226,6 +1228,8 @@ def spec_quantum_foam(shape, seed, sm, base_m, base_r):
     rng = np.random.RandomState(seed + 4000)
     M = rng.randint(0, 256, size=(h, w), dtype=np.int32).astype(np.float32)
     R = rng.randint(0, 256, size=(h, w), dtype=np.int32).astype(np.float32)
+    # GGX floor: R>=15 for non-chrome pixels (M<240). Pure chrome (M>=240) may keep R<15.
+    R = np.where(M >= 240.0, R, np.maximum(R, 15.0)).astype(np.float32)
     # CC: 16 = max clearcoat, 17-255 = duller. No 0-15.
     CC = rng.randint(16, 256, size=(h, w), dtype=np.int32).astype(np.float32)
     return M, R, _cc_clamp(CC)
@@ -1237,6 +1241,8 @@ def spec_infinite_finish(shape, seed, sm, base_m, base_r):
     rng = np.random.RandomState(seed + 4001)
     M = rng.randint(0, 256, size=(h, w), dtype=np.int32).astype(np.float32)
     R = rng.randint(0, 256, size=(h, w), dtype=np.int32).astype(np.float32)
+    # GGX floor: R>=15 for non-chrome pixels (M<240). Pure chrome (M>=240) may keep R<15.
+    R = np.where(M >= 240.0, R, np.maximum(R, 15.0)).astype(np.float32)
     CC = rng.randint(16, 256, size=(h, w), dtype=np.int32).astype(np.float32)
     return M, R, _cc_clamp(CC)
 

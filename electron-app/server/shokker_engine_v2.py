@@ -7180,62 +7180,76 @@ try:
 except Exception as _pz_err:
     print(f"[V5] Prizm load error: {_pz_err}")
 
-# --- 24K ARSENAL EXPANSION ---
-# Import and merge the 100/100/105 expansion entries into our registries
-try:
-    import sys as _sys
-    import shokker_24k_expansion as _exp24k
-    # Get a reference to THIS module so expansion can resolve string paint_fn refs
+# --- LAZY-LOAD EXPANSION MODULES ---
+# Expansion modules (24K, Pattern Expansion, Color Monolithics, Paradigm, Fusions,
+# Atelier) are deferred until the first render request to speed up server startup.
+# _ensure_expansions_loaded() is called once at the top of build_multi_zone.
+import sys as _sys
+
+_expansions_loaded = False
+
+def _ensure_expansions_loaded():
+    """Load all expansion modules on first call. Subsequent calls are no-ops."""
+    global _expansions_loaded
+    if _expansions_loaded:
+        return
+    _expansions_loaded = True
+    _t0 = time.time()
     _this_module = _sys.modules[__name__]
-    _exp24k.integrate_expansion(_this_module)
-except ImportError:
-    print("[24K Arsenal] Expansion module not found - running with base 55/55/50 finishes")
-except Exception as e:
-    print(f"[24K Arsenal] Expansion load error: {e}")
 
-# --- PATTERN EXPANSION (Decades, Flames, Music, Astro v2, Hero, Reactive) ---
-# NEW_PATTERNS includes astro v2 (12 physics-based cosmic) and other expansion IDs
-try:
-    from engine.pattern_expansion import NEW_PATTERNS
-    PATTERN_REGISTRY.update(NEW_PATTERNS)
-except Exception as _e:
-    pass
+    # --- 24K ARSENAL EXPANSION ---
+    try:
+        import shokker_24k_expansion as _exp24k
+        _exp24k.integrate_expansion(_this_module)
+    except ImportError:
+        print("[24K Arsenal] Expansion module not found - running with base 55/55/50 finishes")
+    except Exception as e:
+        print(f"[24K Arsenal] Expansion load error: {e}")
 
-# --- COLOR MONOLITHICS EXPANSION (260+ color-changing finishes) ---
-try:
-    import shokker_color_monolithics as _clr_mono
-    _clr_mono.integrate_color_monolithics(_sys.modules[__name__])
-except ImportError:
-    print("[Color Monolithics] Module not found - running without color finishes")
-except Exception as e:
-    print(f"[Color Monolithics] Load error: {e}")
+    # --- PATTERN EXPANSION (Decades, Flames, Music, Astro v2, Hero, Reactive) ---
+    try:
+        from engine.pattern_expansion import NEW_PATTERNS
+        PATTERN_REGISTRY.update(NEW_PATTERNS)
+    except Exception as _e:
+        pass
 
-# --- PARADIGM EXPANSION (Exotic Materials - PBR physics exploits) ---
-try:
-    import shokker_paradigm_expansion as _paradigm
-    _paradigm.integrate_paradigm(_sys.modules[__name__])
-except ImportError:
-    print("[PARADIGM] Module not found - running without paradigm materials")
-except Exception as e:
-    print(f"[PARADIGM] Load error: {e}")
+    # --- COLOR MONOLITHICS EXPANSION (260+ color-changing finishes) ---
+    try:
+        import shokker_color_monolithics as _clr_mono
+        _clr_mono.integrate_color_monolithics(_this_module)
+    except ImportError:
+        print("[Color Monolithics] Module not found - running without color finishes")
+    except Exception as e:
+        print(f"[Color Monolithics] Load error: {e}")
 
-# --- FUSIONS EXPANSION (150 Paradigm Shift Hybrid Materials) ---
-try:
-    import shokker_fusions_expansion as _fusions
-    _fusions.integrate_fusions(_sys.modules[__name__])
-except ImportError:
-    print("[FUSIONS] Module not found - running without paradigm shift fusions")
-except Exception as e:
-    print(f"[FUSIONS] Load error: {e}")
+    # --- PARADIGM EXPANSION (Exotic Materials - PBR physics exploits) ---
+    try:
+        import shokker_paradigm_expansion as _paradigm
+        _paradigm.integrate_paradigm(_this_module)
+    except ImportError:
+        print("[PARADIGM] Module not found - running without paradigm materials")
+    except Exception as e:
+        print(f"[PARADIGM] Load error: {e}")
 
-# --- ATELIER EXPANSION (Ultra-Detail / Pro Grade finishes) ---
-try:
-    import shokker_atelier_expansion as _atelier
-    _atelier.integrate_atelier(_sys.modules[__name__])
-except ImportError:
-    print("[Atelier] Module not found - running without ultra-detail finishes")
-except Exception as e:
-    print(f"[Atelier] Load error: {e}")
+    # --- FUSIONS EXPANSION (150 Paradigm Shift Hybrid Materials) ---
+    try:
+        import shokker_fusions_expansion as _fusions
+        _fusions.integrate_fusions(_this_module)
+    except ImportError:
+        print("[FUSIONS] Module not found - running without paradigm shift fusions")
+    except Exception as e:
+        print(f"[FUSIONS] Load error: {e}")
+
+    # --- ATELIER EXPANSION (Ultra-Detail / Pro Grade finishes) ---
+    try:
+        import shokker_atelier_expansion as _atelier
+        _atelier.integrate_atelier(_this_module)
+    except ImportError:
+        print("[Atelier] Module not found - running without ultra-detail finishes")
+    except Exception as e:
+        print(f"[Atelier] Load error: {e}")
+
+    print(f"  [Lazy-Load] All expansion modules loaded in {time.time()-_t0:.2f}s")
 
 
 # ================================================================
@@ -7492,7 +7506,34 @@ def overlay_pattern_paint(paint, pattern_id, shape, mask, seed, pm, bb, scale=1.
 # MULTI-ZONE BUILD - THE CORE (FIXED!)
 # ================================================================
 
-def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51, save_debug_images=False, import_spec_map=None, car_prefix="car_num", stamp_image=None, stamp_spec_finish="gloss", preview_mode=False, decal_spec_finishes=None, decal_paint_path=None, decal_mask_base64=None):
+
+def _suggest_similar_ids(requested_id, registry, max_suggestions=5):
+    """Return a list of registry keys that are similar to the requested ID.
+    Uses simple substring and prefix matching for fast, dependency-free suggestions."""
+    if not requested_id or not registry:
+        return []
+    req = str(requested_id).lower().strip()
+    scored = []
+    for key in registry:
+        k = str(key).lower()
+        # Exact substring match scores highest
+        if req in k or k in req:
+            scored.append((0, key))
+        # Shared prefix
+        elif k[:3] == req[:3]:
+            scored.append((1, key))
+        # Any word overlap
+        else:
+            req_parts = set(req.replace("_", " ").replace("-", " ").split())
+            key_parts = set(k.replace("_", " ").replace("-", " ").split())
+            overlap = req_parts & key_parts
+            if overlap:
+                scored.append((2, key))
+    scored.sort(key=lambda x: x[0])
+    return [s[1] for s in scored[:max_suggestions]]
+
+
+def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51, save_debug_images=False, import_spec_map=None, car_prefix="car_num", stamp_image=None, stamp_spec_finish="gloss", preview_mode=False, decal_spec_finishes=None, decal_paint_path=None, decal_mask_base64=None, abort_event=None, progress_callback=None):
     """
     Apply different finishes to different color-detected zones.
 
@@ -7548,6 +7589,9 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
         },
     ]
     """
+    # Ensure expansion modules are loaded on first render (lazy-load for fast startup)
+    _ensure_expansions_loaded()
+
     print("=" * 60)
     print("  SHOKKER ENGINE v3.0 PRO - Base + Pattern Compositing")
     print(f"  Zones: {len(zones)}")
@@ -7816,8 +7860,23 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
     # max_workers=2: one for current zone's spec, one for next zone's spec (pipelining).
     _shared_spec_pool = ThreadPoolExecutor(max_workers=min(2, _os.cpu_count() or 1))
     for i, zone in enumerate(zones):
+        # Preview abort: if a newer request arrived, return partial render immediately
+        if preview_mode and abort_event is not None and abort_event.is_set():
+            print(f"  [ABORT] Preview aborted after {i}/{len(zones)} zones ({time.time()-start_time:.2f}s)")
+            paint_rgb = (np.clip(paint, 0, 1) * 255).astype(np.uint8)
+            if paint_rgb.shape[2] == 4:
+                paint_rgb = paint_rgb[:, :, :3]
+            combined_spec_u8 = np.clip(combined_spec, 0, 255).astype(np.uint8)
+            return (paint_rgb, combined_spec_u8)
+
         t_zone = time.time()
         name = zone["name"]
+        # Report progress via callback (if provided)
+        if progress_callback:
+            try:
+                progress_callback(i + 1, len(zones), name)
+            except Exception:
+                pass
         intensity = zone.get("intensity", "100")
         # Use effective mask so this zone does not overwrite earlier zones (same-color overlap)
         zone_mask_raw = zone_masks[i]
@@ -7889,7 +7948,7 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
                                 0, 255
                             )
                             combined_spec = np.where(strong, zone_spec.astype(np.float32), np.where(soft, blended, combined_spec))
-                    print(f"      [{name}] zone time (cached): {time.time()-t_zone:.2f}s")
+                    print(f"    [Zone {i+1}] \"{name}\" rendered in {time.time()-t_zone:.2f}s (cached)")
                     continue
             except Exception as _ce:
                 _zone_cache_key = None  # Cache lookup failed — fall through to normal render
@@ -7925,6 +7984,14 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
         base_id = zone.get("base")
         pattern_id = zone.get("pattern", "none")
         finish_name = zone.get("finish")
+
+        # REVERSE FALLBACK: finish from Specials picker that's actually a BASE_REGISTRY entry
+        # (COLORSHOXX, MORTAL SHOKK, PARADIGM, Shokk Series, Angle SHOKK, Extreme & Experimental)
+        if finish_name and finish_name not in MONOLITHIC_REGISTRY and finish_name in BASE_REGISTRY:
+            print(f"    [{name}] specials→base fallback: '{finish_name}' is a base, not a monolithic")
+            base_id = finish_name
+            finish_name = None
+
         _engine_rot_debug(f"BUILD_MULTI_ZONE [{name}]: base_id={base_id}, finish_name={finish_name}, "
                           f"rotation={zone.get('rotation')}, finish_colors={zone.get('finish_colors') is not None}, "
                           f"in_MONO_REG={finish_name in MONOLITHIC_REGISTRY if finish_name else 'N/A'}, "
@@ -7937,14 +8004,18 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
                 finish_name = base_id
                 base_id = None  # Fall through to monolithic path below
             elif base_id not in BASE_REGISTRY:
-                print(f"    WARNING: Unknown base '{base_id}', skipping")
+                _similar_bases = _suggest_similar_ids(base_id, BASE_REGISTRY)
+                _hint = f"  Did you mean: {', '.join(_similar_bases)}" if _similar_bases else f"  Available bases: {', '.join(list(BASE_REGISTRY.keys())[:10])}..."
+                print(f"    WARNING: Unknown base '{base_id}' in zone '{name}', skipping zone.\n      {_hint}")
                 continue
 
         if base_id:
             _engine_rot_debug(f"  [{name}] -> PATH 1 (compositing): base={base_id}")
             # PATH 1: v3.0 COMPOSITING - base + pattern (or pattern stack)
             if pattern_id != "none" and pattern_id not in PATTERN_REGISTRY:
-                print(f"    WARNING: Unknown pattern '{pattern_id}', using 'none'")
+                _similar_pats = _suggest_similar_ids(pattern_id, PATTERN_REGISTRY)
+                _hint_p = f"  Did you mean: {', '.join(_similar_pats)}" if _similar_pats else ""
+                print(f"    WARNING: Unknown pattern '{pattern_id}' in zone '{name}', falling back to 'none'.{_hint_p}")
                 pattern_id = "none"
             zone_scale = float(zone.get("scale", 1.0))
             zone_rotation = float(zone.get("rotation", 0))
@@ -8310,28 +8381,34 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
 
             _mono_base_strength = max(0.0, min(2.0, float(zone.get("base_strength", 1.0))))
             # --- BASE SCALE for monolithics: generate at smaller dims, tile to fill ---
-            if mono_base_scale != 1.0 and mono_base_scale > 0:
-                MAX_MONO_DIM = 4096
-                tile_h = min(MAX_MONO_DIM, max(4, int(shape[0] / mono_base_scale)))
-                tile_w = min(MAX_MONO_DIM, max(4, int(shape[1] / mono_base_scale)))
-                tile_shape = (tile_h, tile_w)
-                # Use FULL mask for tile generation - monolithic covers entire tile.
-                # Original zone_mask handles final clipping. This prevents existing
-                # car art (numbers, sponsors, decals) from leaking into tiled output.
-                tile_mask = np.ones((tile_h, tile_w), dtype=np.float32)
-                # Generate spec at tile size (full coverage)
-                tile_spec = spec_fn(tile_shape, tile_mask, seed + i * 13, sm * _mono_base_strength)
-                # Tile spec to fill original shape
-                reps_h = int(np.ceil(shape[0] / tile_h))
-                reps_w = int(np.ceil(shape[1] / tile_w))
-                zone_spec = np.tile(tile_spec, (reps_h, reps_w, 1))[:shape[0], :shape[1], :]
-                # For paint: run paint_fn on ORIGINAL paint at full resolution.
-                # Scaling only affects the spec map (material properties), NOT the paint.
-                # Previous approach created a blank canvas which destroyed the car livery.
-                paint = paint_fn(paint, shape, zone_mask, seed + i * 13, pm * _mono_base_strength, bb * _mono_base_strength)
-            else:
-                zone_spec = spec_fn(shape, zone_mask, seed + i * 13, sm * _mono_base_strength)
-                paint = paint_fn(paint, shape, zone_mask, seed + i * 13, pm * _mono_base_strength, bb * _mono_base_strength)
+            try:
+                if mono_base_scale != 1.0 and mono_base_scale > 0:
+                    MAX_MONO_DIM = 4096
+                    tile_h = min(MAX_MONO_DIM, max(4, int(shape[0] / mono_base_scale)))
+                    tile_w = min(MAX_MONO_DIM, max(4, int(shape[1] / mono_base_scale)))
+                    tile_shape = (tile_h, tile_w)
+                    # Use FULL mask for tile generation - monolithic covers entire tile.
+                    # Original zone_mask handles final clipping. This prevents existing
+                    # car art (numbers, sponsors, decals) from leaking into tiled output.
+                    tile_mask = np.ones((tile_h, tile_w), dtype=np.float32)
+                    # Generate spec at tile size (full coverage)
+                    tile_spec = spec_fn(tile_shape, tile_mask, seed + i * 13, sm * _mono_base_strength)
+                    # Tile spec to fill original shape
+                    reps_h = int(np.ceil(shape[0] / tile_h))
+                    reps_w = int(np.ceil(shape[1] / tile_w))
+                    zone_spec = np.tile(tile_spec, (reps_h, reps_w, 1))[:shape[0], :shape[1], :]
+                    # For paint: run paint_fn on ORIGINAL paint at full resolution.
+                    # Scaling only affects the spec map (material properties), NOT the paint.
+                    # Previous approach created a blank canvas which destroyed the car livery.
+                    paint = paint_fn(paint, shape, zone_mask, seed + i * 13, pm * _mono_base_strength, bb * _mono_base_strength)
+                else:
+                    zone_spec = spec_fn(shape, zone_mask, seed + i * 13, sm * _mono_base_strength)
+                    paint = paint_fn(paint, shape, zone_mask, seed + i * 13, pm * _mono_base_strength, bb * _mono_base_strength)
+            except Exception as _mono_err:
+                print(f"    WARNING: Monolithic finish '{finish_name}' failed in zone '{name}': {_mono_err}")
+                # Fall back to default spec (flat, non-crashing)
+                zone_spec = np.zeros((shape[0], shape[1], 4), dtype=np.float32)
+                zone_spec[:,:,0] = 5; zone_spec[:,:,1] = 100; zone_spec[:,:,2] = 16; zone_spec[:,:,3] = 255
 
             # Apply HSB adjustments to monolithic paint (same as base+pattern path)
             _mono_hue = float(zone.get("base_hue_offset", 0))
@@ -8381,12 +8458,22 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
                     _msp_rotation = float(_msp.get("rotation", 0))
                     _msp_range = float(_msp.get("range", 40.0))
                     _msp_params = _msp.get("params", {})
-                    _msp_arr = _msp_fn(shape, seed + 5000 + hash(_msp_name) % 10000, sm, **_msp_params)
-                    if abs(_msp_scale - 1.0) > 0.01:
-                        if _msp_scale < 1.0:
-                            _msp_arr = _tile_fractional(_msp_arr, 1.0 / _msp_scale, shape[0], shape[1])
-                        else:
-                            _msp_arr = _crop_center_array(_msp_arr, _msp_scale, shape[0], shape[1])
+                    _msp_seed = seed + 5000 + hash(_msp_name) % 10000
+                    if abs(_msp_scale - 1.0) > 0.01 and _msp_scale < 1.0:
+                        # Generate at larger resolution for smooth downscale (no tile seams)
+                        _inv = min(1.0 / _msp_scale, 8.0)
+                        _gen_h = min(16384, max(shape[0], int(np.ceil(shape[0] * _inv))))
+                        _gen_w = min(16384, max(shape[1], int(np.ceil(shape[1] * _inv))))
+                        _msp_arr_big = _msp_fn((_gen_h, _gen_w), _msp_seed, sm, **_msp_params)
+                        from PIL import Image as _PILImg
+                        _msp_arr = np.array(_PILImg.fromarray(
+                            (np.clip(_msp_arr_big, 0, 1) * 255).astype(np.uint8)
+                        ).resize((shape[1], shape[0]), _PILImg.LANCZOS)).astype(np.float32) / 255.0
+                    elif abs(_msp_scale - 1.0) > 0.01 and _msp_scale > 1.0:
+                        _msp_arr = _msp_fn(shape, _msp_seed, sm, **_msp_params)
+                        _msp_arr = _crop_center_array(_msp_arr, _msp_scale, shape[0], shape[1])
+                    else:
+                        _msp_arr = _msp_fn(shape, _msp_seed, sm, **_msp_params)
                     if abs(_msp_rotation) > 0.5:
                         _msp_arr = _rotate_single_array(_msp_arr, _msp_rotation, shape)
                     _msp_delta = (_msp_arr - 0.5) * 2.0
@@ -8569,8 +8656,13 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
             # PATH 3: LEGACY - backward compat with original FINISH_REGISTRY
             spec_fn, paint_fn = FINISH_REGISTRY[finish_name]
             print(f"    [{name}] => {finish_name} ({intensity}) [legacy]")
-            zone_spec = spec_fn(shape, zone_mask, seed + i * 13, sm)
-            paint = paint_fn(paint, shape, zone_mask, seed + i * 13, pm, bb)
+            try:
+                zone_spec = spec_fn(shape, zone_mask, seed + i * 13, sm)
+                paint = paint_fn(paint, shape, zone_mask, seed + i * 13, pm, bb)
+            except Exception as _legacy_err:
+                print(f"    WARNING: Legacy finish '{finish_name}' failed in zone '{name}': {_legacy_err}")
+                zone_spec = np.zeros((shape[0], shape[1], 4), dtype=np.float32)
+                zone_spec[:,:,0] = 5; zone_spec[:,:,1] = 100; zone_spec[:,:,2] = 16; zone_spec[:,:,3] = 255
 
         elif finish_name and zone.get("finish_colors"):
             # PATH 4: GENERIC FALLBACK - client-defined finish with color data
@@ -8589,7 +8681,9 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
         else:
             label = finish_name or base_id or "???"
             _engine_rot_debug(f"  [{name}] -> NO PATH MATCHED! finish={finish_name}, base={base_id}, has_fc={zone.get('finish_colors') is not None}")
-            print(f"    WARNING: Unknown finish/base '{label}', skipping")
+            _similar_finish = _suggest_similar_ids(label, FINISH_REGISTRY) + _suggest_similar_ids(label, MONOLITHIC_REGISTRY) + _suggest_similar_ids(label, BASE_REGISTRY)
+            _hint_f = f"\n      Did you mean: {', '.join(dict.fromkeys(_similar_finish).keys())}" if _similar_finish else ""
+            print(f"    WARNING: Unknown finish/base '{label}' in zone '{name}', skipping.{_hint_f}")
             continue
 
         # ---- Store zone result in cache (preview_mode only) ----
@@ -8638,7 +8732,8 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
                 )
                 combined_spec = np.where(strong, zone_spec.astype(np.float32), np.where(soft, blended, combined_spec))
 
-        print(f"      [{name}] zone time: {time.time()-t_zone:.2f}s")
+        _zone_elapsed = time.time() - t_zone
+        print(f"    [Zone {i+1}] \"{name}\" rendered in {_zone_elapsed:.2f}s")
 
     # ---- Per-zone wear: BATCHED (single apply_wear call for ALL zones) ----
     # Instead of N separate apply_wear calls (each 5-8s), compute once at max level
@@ -8906,7 +9001,8 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
 # ================================================================
 
 def preview_render(paint_file, zones, seed=51, preview_scale=0.25, import_spec_map=None,
-                   decal_spec_finishes=None, decal_paint_path=None, decal_mask_base64=None):
+                   decal_spec_finishes=None, decal_paint_path=None, decal_mask_base64=None,
+                   abort_event=None):
     """Live preview: runs the FULL render pipeline at reduced resolution.
 
     Uses build_multi_zone with preview_mode=True so the preview matches
@@ -8987,6 +9083,7 @@ def preview_render(paint_file, zones, seed=51, preview_scale=0.25, import_spec_m
             decal_spec_finishes=decal_spec_finishes,
             decal_paint_path=preview_decal_path,
             decal_mask_base64=decal_mask_base64,
+            abort_event=abort_event,
         )
         paint_rgb, combined_spec = result
     except Exception as e:
@@ -9167,6 +9264,10 @@ def build_helmet_spec(helmet_paint_file, output_dir, zones, iracing_id="23371", 
         base_id = zone.get("base")
         pattern_id = zone.get("pattern", "none")
         finish_name = zone.get("finish")
+        # REVERSE FALLBACK: specials→base for migrated finishes
+        if finish_name and finish_name not in MONOLITHIC_REGISTRY and finish_name in BASE_REGISTRY:
+            base_id = finish_name
+            finish_name = None
 
         if base_id:
             if base_id not in BASE_REGISTRY:
@@ -9619,6 +9720,10 @@ def build_suit_spec(suit_paint_file, output_dir, zones, iracing_id="23371", seed
         base_id = zone.get("base")
         pattern_id = zone.get("pattern", "none")
         finish_name = zone.get("finish")
+        # REVERSE FALLBACK: specials→base for migrated finishes
+        if finish_name and finish_name not in MONOLITHIC_REGISTRY and finish_name in BASE_REGISTRY:
+            base_id = finish_name
+            finish_name = None
 
         if base_id:
             if base_id not in BASE_REGISTRY:
@@ -10025,7 +10130,8 @@ def build_suit_spec(suit_paint_file, output_dir, zones, iracing_id="23371", seed
 def build_matching_set(car_paint_file, output_dir, zones, iracing_id="23371", seed=51,
                        helmet_paint_file=None, suit_paint_file=None, import_spec_map=None, car_prefix="car_num",
                        stamp_image=None, stamp_spec_finish="gloss",
-                       decal_spec_finishes=None, decal_paint_path=None, decal_mask_base64=None):
+                       decal_spec_finishes=None, decal_paint_path=None, decal_mask_base64=None,
+                       progress_callback=None):
     """Build car + matching helmet + matching suit in one call.
 
     If helmet/suit paint files are provided, applies the SAME zone config
@@ -10047,7 +10153,7 @@ def build_matching_set(car_paint_file, output_dir, zones, iracing_id="23371", se
         car_paint_file, output_dir, zones, iracing_id, seed, import_spec_map=import_spec_map, car_prefix=car_prefix,
         stamp_image=stamp_image, stamp_spec_finish=stamp_spec_finish,
         decal_spec_finishes=decal_spec_finishes, decal_paint_path=decal_paint_path,
-        decal_mask_base64=decal_mask_base64)
+        decal_mask_base64=decal_mask_base64, progress_callback=progress_callback)
     results["car_paint"] = car_paint
     results["car_spec"] = car_spec
 
@@ -10358,7 +10464,8 @@ def full_render_pipeline(car_paint_file, output_dir, zones, iracing_id="23371",
                          wear_level=0, car_folder_name=None, export_zip=True,
                          dual_spec=False, night_boost=0.7, import_spec_map=None,
                          car_prefix="car_num", stamp_image=None, stamp_spec_finish="gloss",
-                         decal_spec_finishes=None, decal_paint_path=None, decal_mask_base64=None):
+                         decal_spec_finishes=None, decal_paint_path=None, decal_mask_base64=None,
+                         progress_callback=None):
     """The ultimate one-call render pipeline.
 
     1. Builds car spec map + paint modifications
@@ -10384,7 +10491,8 @@ def full_render_pipeline(car_paint_file, output_dir, zones, iracing_id="23371",
         helmet_paint_file, suit_paint_file, import_spec_map=import_spec_map,
         car_prefix=car_prefix, stamp_image=stamp_image, stamp_spec_finish=stamp_spec_finish,
         decal_spec_finishes=decal_spec_finishes, decal_paint_path=decal_paint_path,
-        decal_mask_base64=decal_mask_base64
+        decal_mask_base64=decal_mask_base64,
+        progress_callback=progress_callback
     )
     print(f"  Step 1 (matching set): {time.time()-t_step1:.1f}s")
 

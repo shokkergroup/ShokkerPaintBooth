@@ -196,10 +196,12 @@ def _perlin_upscale(shape, seed, octaves=5, persistence=0.55, lacunarity=2.2):
 def spec_shokk_flux(shape, seed, sm, base_m, base_r):
     noise = _perlin_upscale(shape, seed + 100)
     thickness = (noise - noise.min()) / (noise.max() - noise.min() + 1e-8)
-    M = np.full(shape, 220.0, dtype=np.float32) + thickness * 25 * sm
-    R = np.full(shape, 4.0, dtype=np.float32) + thickness * 6 * sm
-    CC = 16.0 + thickness * 42 * sm
-    return np.clip(M, 0, 255), np.clip(R, 15, 255), np.clip(CC, 0, 255).astype(np.float32)
+    # FLAT-FIX: boosted M and R multipliers for visible variation
+    detail = multi_scale_noise(shape, [4, 8], [0.5, 0.5], seed + 101)
+    M = np.clip(220.0 + thickness * 35 * sm + detail * 12.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(15.0 + thickness * 12 * sm + detail * 8.0 * sm, 15, 255).astype(np.float32)
+    CC = np.clip(16.0 + thickness * 42 * sm, 0, 255).astype(np.float32)
+    return M, R, CC
 
 def paint_shokk_flux(paint, shape, mask, seed, pm, bb):
     noise = _perlin_upscale(shape, seed + 100)
@@ -301,11 +303,11 @@ def paint_shokk_dual(paint, shape, mask, seed, pm, bb):
 
 def spec_shokk_spectrum(shape, seed, sm, base_m, base_r):
     h, w = shape
-    # Noise-warped spectral coordinate (aligned to paint seeds 500/501)
-    n_warp = multi_scale_noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + 500)
-    n_fine = multi_scale_noise(shape, [2, 4], [0.6, 0.4], seed + 501)
+    # Noise-warped spectral coordinate (aligned to paint seeds 403/404/405)
+    n_warp = multi_scale_noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + 403)
+    n_fine = multi_scale_noise(shape, [2, 4], [0.6, 0.4], seed + 404)
     # Iridescent micro-flake metallic field - very high M with flake sparkle
-    flake = multi_scale_noise(shape, [1, 2], [0.5, 0.5], seed + 501)
+    flake = multi_scale_noise(shape, [1, 2], [0.5, 0.5], seed + 405)
     flake_spots = np.clip((flake - 0.4) * 3.0, 0, 1)  # sparse bright flakes
     M = np.full(shape, 230.0, dtype=np.float32) + n_warp * 15 * sm + flake_spots * 25 * sm
     # Groove-driven R that follows body curves via noise warp
@@ -453,13 +455,20 @@ def paint_shokk_catalyst(paint, shape, mask, seed, pm, bb):
 # ══════════════════════════════════════════════════════════════════════════════
 
 def spec_shokk_mirage(shape, seed, sm, base_m, base_r):
-    M = np.full(shape, 235.0, dtype=np.float32)
-    n = _perlin_upscale(shape, seed + 800, octaves=4, persistence=0.5, lacunarity=2.0)
-    R = 2.0 + (n * 0.5 + 0.5) * 8.0
-    wave = np.sin(n * 6.0) * 0.5 + 0.5
-    R = R + wave * 3 * sm
-    CC = np.full(shape, 16.0, dtype=np.float32)  # CC=16 max clearcoat
-    return np.clip(M, 0, 255), np.clip(R, 15, 255).astype(np.float32), CC
+    # Use paint's warp fields (seed+801, seed+802) for spatially correlated spec
+    warp_x = _perlin_upscale(shape, seed + 801, octaves=3, persistence=0.6, lacunarity=2.0)
+    warp_y = _perlin_upscale(shape, seed + 802, octaves=3, persistence=0.6, lacunarity=2.0)
+    warp_mag = np.sqrt(warp_x**2 + warp_y**2)
+    warp_mag = (warp_mag - warp_mag.min()) / (warp_mag.max() - warp_mag.min() + 1e-8)
+    # FLAT-FIX: M varies with warp magnitude + noise instead of being constant
+    noise = multi_scale_noise(shape, [4, 8, 16], [0.3, 0.4, 0.3], seed + 803)
+    M = np.clip(235.0 - warp_mag * 20.0 * sm + noise * 15.0 * sm, 0, 255).astype(np.float32)
+    # R tracks warp intensity: high warp = more distortion = higher roughness
+    R = 15.0 + warp_mag * 18.0 * sm + noise * 8.0 * sm
+    wave = np.sin(warp_mag * 6.0) * 0.5 + 0.5
+    R = R + wave * 5 * sm
+    CC = np.full(shape, 16.0, dtype=np.float32)
+    return M, np.clip(R, 15, 255).astype(np.float32), CC
 
 def paint_shokk_mirage(paint, shape, mask, seed, pm, bb):
     h, w = shape
@@ -524,11 +533,12 @@ def spec_shokk_reactor(shape, seed, sm, base_m, base_r):
         r = np.sqrt((yy - cores_y[i])**2 + (xx - cores_x[i])**2) + 1e-8
         glow += np.clip(1.0 / (1.0 + r * 0.015), 0, 1)
     glow = np.clip(glow, 0, 1)
-    M = np.where(glow > 0.5, 0.0, 240.0).astype(np.float32)
-    # R: glow_cores=55 (diffuse glow), metallic_shell=6 (smooth)
-    R = np.where(glow > 0.5, 55.0, 6.0).astype(np.float32)
-    # CC: keep at 40 for glow, 16 for shell — clamp minimum to 16
-    CC = np.where(glow > 0.5, 40.0, 16.0).astype(np.float32)
+    # FLAT-FIX: use smooth glow field instead of hard binary threshold
+    # Smooth transition creates continuous M/R variation across glow gradient
+    noise = multi_scale_noise(shape, [4, 8, 16], [0.3, 0.4, 0.3], seed + 1001)
+    M = np.clip(240.0 - glow * 240.0 + noise * 25.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(6.0 + glow * 49.0 + noise * 15.0 * sm, 15, 255).astype(np.float32)
+    CC = np.clip(16.0 + glow * 24.0 + noise * 8.0 * sm, 0, 255).astype(np.float32)
     return M, R, CC
 
 def paint_shokk_reactor(paint, shape, mask, seed, pm, bb):
@@ -589,10 +599,15 @@ def spec_shokk_wraith(shape, seed, sm, base_m, base_r):
     return np.clip(M, 0, 255).astype(np.float32), np.clip(R, 15, 255), CC
 
 def paint_shokk_wraith(paint, shape, mask, seed, pm, bb):
-    n = multi_scale_noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + 1202)
-    subtle_shift = n * pm * 0.04
-    for c in range(3):
-        paint[:,:,c] = np.clip(paint[:,:,c] + subtle_shift * mask, 0, 1)
+    # Use the same dither field as spec (seed+1200) for spatial coherence
+    dither = _dither_fast(shape, seed + 1200)
+    # Dither-correlated subtle hue shift: M=255 pixels warm, M=0 pixels cool
+    r_noise = multi_scale_noise(shape, [2, 4], [0.5, 0.5], seed + 1201)
+    warm_shift = dither * 0.03 * pm          # warm tint on metallic pixels
+    cool_shift = (1.0 - dither) * 0.03 * pm  # cool tint on dielectric pixels
+    paint[:,:,0] = np.clip(paint[:,:,0] + (warm_shift - cool_shift * 0.5) * mask, 0, 1)
+    paint[:,:,1] = np.clip(paint[:,:,1] + r_noise * 0.01 * pm * mask, 0, 1)
+    paint[:,:,2] = np.clip(paint[:,:,2] + (cool_shift - warm_shift * 0.5) * mask, 0, 1)
     return paint
 
 
@@ -611,12 +626,13 @@ def spec_shokk_tesseract(shape, seed, sm, base_m, base_r):
     z2 = np.cos(xn * 2 - angle) * np.sin(yn * 2 - angle)
     face_id = ((z1 * 3 + z2 * 5 + 4) * 2).astype(np.int32) % 6
     M_per_face = np.array([240, 100, 200, 60, 180, 120], dtype=np.float32)
-    R_per_face = np.array([3, 40, 10, 50, 8, 35], dtype=np.float32)
+    # R floor: faces with M<240 need R>=15; face0 M=240 can have low R
+    R_per_face = np.array([3, 40, 18, 50, 16, 35], dtype=np.float32)
     M = M_per_face[face_id]
     R = R_per_face[face_id]
     overlap = (np.abs(z1 - z2) < 0.15).astype(np.float32)
     CC = overlap * 60.0
-    return np.clip(M, 0, 255), np.clip(R, 15, 255), np.clip(CC, 0, 255).astype(np.float32)
+    return np.clip(M, 0, 255), np.clip(R, 15, 255).astype(np.float32), np.clip(CC, 0, 255).astype(np.float32)
 
 def paint_shokk_tesseract(paint, shape, mask, seed, pm, bb):
     h, w = shape
@@ -656,9 +672,12 @@ def spec_shokk_fusion(shape, seed, sm, base_m, base_r):
     torus_t = np.clip(1.0 - torus_r / (r_minor * 2), 0, 1)
     M = 80 + torus_t * 170
     # R: hot_core(torus_t=1) R=5, cool_edge(torus_t=0) R=70
+    # Allow R<15 only where M>=240 (very hot core); enforce floor elsewhere
     R = 70.0 - torus_t * 65.0
+    R = np.where(M < 240, np.maximum(R, 15.0), R)
     CC = np.full(shape, 16.0, dtype=np.float32)
-    return np.clip(M, 0, 255).astype(np.float32), np.clip(R, 15, 255).astype(np.float32), CC
+    # GGX fix: final clip must respect the chrome-conditional floor (was clip(R,5,255) overriding 15)
+    return np.clip(M, 0, 255).astype(np.float32), np.clip(R, 0, 255).astype(np.float32), CC
 
 def paint_shokk_fusion(paint, shape, mask, seed, pm, bb):
     h, w = shape
@@ -687,10 +706,12 @@ def spec_shokk_rift(shape, seed, sm, base_m, base_r):
     edges = _voronoi_edges(labels, thickness=3)
     side = (labels % 2).astype(np.float32)
     M = np.where(edges > 0.5, 255.0, np.where(side > 0.5, 230.0, 60.0)).astype(np.float32)
-    # R: crack_edges=3 (mirror bright), warm_side=45, cool_side=25
+    # R: crack_edges=3 (M=255 so R<15 OK), warm_side=45, cool_side=25
     R = np.where(edges > 0.5, 3.0, np.where(side > 0.5, 45.0, 25.0)).astype(np.float32)
+    # GGX floor: R>=15 for non-chrome pixels (M<240). Pure chrome (M>=240) may keep R<15.
+    R = np.where(M >= 240.0, R, np.maximum(R, 15.0)).astype(np.float32)
     CC = np.full(shape, 16.0, dtype=np.float32)
-    return M, R, CC
+    return np.clip(M, 0, 255), np.clip(R, 0, 255), CC
 
 def paint_shokk_rift(paint, shape, mask, seed, pm, bb):
     labels, dist = _voronoi_cells(shape, 60, seed + 1500)
@@ -717,15 +738,15 @@ def spec_shokk_vortex(shape, seed, sm, base_m, base_r):
     r = np.sqrt((yy - cy)**2 + (xx - cx)**2) + 1e-8
     max_r = np.sqrt(cy**2 + cx**2)
     r_norm = np.clip(r / max_r, 0, 1)
-    M = np.full(shape, 225.0, dtype=np.float32)
-    R = 20.0 - r_norm * 18.0
     theta = np.arctan2(yy - cy, xx - cx)
     spiral1 = (theta / (2 * np.pi) + np.log(r + 1) * 0.08) % 1.0
     spiral2 = (theta / (2 * np.pi) + np.log(r + 1) * 0.12) % 1.0
-    CC = 16 + spiral2 * 40
-    n = multi_scale_noise(shape, [8, 16], [0.5, 0.5], seed + 1600)
-    M = M + n * 8 * sm
-    return np.clip(M, 0, 255), np.clip(R, 15, 255).astype(np.float32), np.clip(CC, 0, 255).astype(np.float32)
+    # FLAT-FIX: M varies with spiral and radial distance, not constant
+    n = multi_scale_noise(shape, [4, 8, 16], [0.3, 0.4, 0.3], seed + 1600)
+    M = np.clip(225.0 - spiral1 * 30.0 * sm + n * 18.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(20.0 - r_norm * 18.0 + n * 10.0 * sm, 15, 255).astype(np.float32)
+    CC = np.clip(16 + spiral2 * 40, 0, 255).astype(np.float32)
+    return M, R, CC
 
 def paint_shokk_vortex(paint, shape, mask, seed, pm, bb):
     h, w = shape

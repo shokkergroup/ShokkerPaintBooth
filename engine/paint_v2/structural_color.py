@@ -117,17 +117,17 @@ def paint_colorshoxx_solar(paint, shape, mask, seed, pm, bb):
     Gold zones flash like liquid metal. Copper zones glow warmly."""
     return _cx_paint_2color(paint, shape, mask, seed, pm,
         np.array([0.88, 0.72, 0.12], dtype=np.float32),   # richer 24k gold
-        np.array([0.62, 0.18, 0.05], dtype=np.float32),    # deeper copper-red
+        np.array([0.52, 0.08, 0.12], dtype=np.float32),    # deep burgundy-copper — pushed away from gold hue
         9004)
 
 
 def spec_colorshoxx_solar(shape, seed, sm, base_m, base_r):
     """Solar Flare spec — MARRIED via identical _cx_fine_field seed.
     Gold zones: M=245, R=15 (liquid chrome gold flash).
-    Copper zones: M=90, R=65 (warm matte glow).
-    ΔM=155 — molten gold erupts over warm copper."""
+    Burgundy zones: M=55, R=110 (deep matte glow).
+    ΔM=190 — molten gold erupts over dark burgundy-copper."""
     return _cx_spec_2color(shape, seed, sm, 9004,
-        m_hi=245, m_lo=90, r_hi=15, r_lo=65, cc_hi=16, cc_lo=40)
+        m_hi=245, m_lo=55, r_hi=15, r_lo=110, cc_hi=16, cc_lo=70)
 
 
 # ============================================================
@@ -159,13 +159,30 @@ def spec_colorshoxx_phantom(shape, seed, sm, base_m, base_r):
 # ================================================================
 
 def _cx_fine_field(shape, seed):
-    """FINE detail field — visible texture at car scale. Scales 4/8/16 for tight structure."""
+    """FINE detail field with SHARP zone boundaries — NOT smooth blobs.
+    Domain-warped noise creates organic but DEFINED zones with visible edges.
+    Multiple frequency layers create structure at multiple scales."""
     h, w = shape
-    n1 = multi_scale_noise((h, w), [4, 8, 16], [0.4, 0.35, 0.25], seed)
-    n2 = multi_scale_noise((h, w), [2, 4], [0.6, 0.4], seed + 50)
-    n3 = multi_scale_noise((h, w), [32, 64], [0.5, 0.5], seed + 80)
-    field = np.clip(n1 * 0.5 + n2 * 0.2 + n3 * 0.3, -1, 1)
-    return ((field + 1.0) * 0.5).astype(np.float32)
+    # Domain warp: warp coordinates with one noise field, sample another at warped positions
+    warp_x = multi_scale_noise((h, w), [16, 32], [0.5, 0.5], seed + 10)
+    warp_y = multi_scale_noise((h, w), [16, 32], [0.5, 0.5], seed + 20)
+    yy = np.arange(h, dtype=np.float32).reshape(h, 1) * np.ones((1, w), dtype=np.float32)
+    xx = np.arange(w, dtype=np.float32).reshape(1, w) * np.ones((h, 1), dtype=np.float32)
+    # Warp coordinates — this creates stretching/folding that makes zones ORGANIC not blobby
+    wy = np.clip((yy + warp_y * h * 0.08).astype(np.int32), 0, h - 1)
+    wx = np.clip((xx + warp_x * w * 0.08).astype(np.int32), 0, w - 1)
+    # Sample a structured noise at warped positions
+    base_noise = multi_scale_noise((h, w), [4, 8, 16], [0.4, 0.35, 0.25], seed)
+    warped = base_noise[wy, wx]
+    # Add fine detail for micro-texture within zones
+    fine = multi_scale_noise((h, w), [2, 4], [0.6, 0.4], seed + 50)
+    # Combine: warped structure (70%) + fine detail (20%) + slight large-scale bias (10%)
+    large = multi_scale_noise((h, w), [64, 128], [0.5, 0.5], seed + 80)
+    field = np.clip(warped * 0.70 + fine * 0.20 + large * 0.10, -1, 1)
+    # SHARPEN: push values toward 0 and 1 (not smooth middle)
+    normalized = (field + 1.0) * 0.5
+    sharpened = np.clip((normalized - 0.5) * 1.8 + 0.5, 0, 1)
+    return sharpened.astype(np.float32)
 
 def _cx_ultra_micro(shape, seed):
     """Ultra-fine per-flake — scale 1-2px for individual metallic particle shimmer."""
@@ -227,13 +244,13 @@ def spec_cx_chrome_void(shape, seed, sm, base_m, base_r):
     return _cx_spec_2color(shape, seed, sm, 9010, m_hi=245, m_lo=0, r_hi=15, r_lo=220, cc_hi=16, cc_lo=200)
 
 def paint_cx_blood_mercury(paint, shape, mask, seed, pm, bb):
-    """Blood Mercury — liquid chrome silver ↔ deep arterial crimson."""
+    """Blood Mercury — warm liquid mercury chrome ↔ deep arterial crimson."""
     return _cx_paint_2color(paint, shape, mask, seed, pm,
-        np.array([0.82, 0.84, 0.88], dtype=np.float32),
+        np.array([0.88, 0.86, 0.82], dtype=np.float32),   # warm mercury — gold-tinted chrome, distinct from Chrome Void
         np.array([0.55, 0.02, 0.04], dtype=np.float32), 9011)
 
 def spec_cx_blood_mercury(shape, seed, sm, base_m, base_r):
-    return _cx_spec_2color(shape, seed, sm, 9011, m_hi=245, m_lo=60, r_hi=15, r_lo=80, cc_hi=16, cc_lo=45)
+    return _cx_spec_2color(shape, seed, sm, 9011, m_hi=245, m_lo=12, r_hi=15, r_lo=165, cc_hi=16, cc_lo=140)
 
 def paint_cx_neon_abyss(paint, shape, mask, seed, pm, bb):
     """Neon Abyss — electric hot pink ↔ abyssal black-green."""
@@ -290,19 +307,20 @@ def spec_cx_toxic_chrome(shape, seed, sm, base_m, base_r):
     return _cx_spec_2color(shape, seed, sm, 9017, m_hi=242, m_lo=8, r_hi=15, r_lo=200, cc_hi=16, cc_lo=190)
 
 def paint_cx_midnight_chrome(paint, shape, mask, seed, pm, bb):
-    """Midnight Chrome — dark blue chrome mirror ↔ pure flat black void."""
+    """Midnight Chrome — vivid blue chrome mirror ↔ pure flat black void."""
     return _cx_paint_2color(paint, shape, mask, seed, pm,
-        np.array([0.15, 0.20, 0.65], dtype=np.float32),
+        np.array([0.22, 0.35, 0.88], dtype=np.float32),   # brighter vivid blue — visible at non-specular angles
         np.array([0.01, 0.01, 0.02], dtype=np.float32), 9018)
 
 def spec_cx_midnight_chrome(shape, seed, sm, base_m, base_r):
     return _cx_spec_2color(shape, seed, sm, 9018, m_hi=248, m_lo=0, r_hi=15, r_lo=248, cc_hi=16, cc_lo=240)
 
 def paint_cx_white_lightning(paint, shape, mask, seed, pm, bb):
-    """White Lightning — blinding white chrome ↔ charcoal matte."""
+    """White Lightning — warm white-gold chrome ↔ cool blue-charcoal matte."""
     return _cx_paint_2color(paint, shape, mask, seed, pm,
-        np.array([0.95, 0.95, 0.98], dtype=np.float32),
-        np.array([0.10, 0.10, 0.12], dtype=np.float32), 9019)
+        np.array([0.98, 0.94, 0.82], dtype=np.float32),   # warm white-gold — distinct from Chrome Void's cool chrome
+        np.array([0.08, 0.10, 0.18], dtype=np.float32),   # cool blue-charcoal — distinct from Chrome Void's pure black
+        9019)
 
 def spec_cx_white_lightning(shape, seed, sm, base_m, base_r):
     return _cx_spec_2color(shape, seed, sm, 9019, m_hi=250, m_lo=10, r_hi=15, r_lo=200, cc_hi=16, cc_lo=180)
@@ -348,10 +366,10 @@ def spec_cx_aurora_borealis(shape, seed, sm, base_m, base_r):
         m_vals=(235, 140, 60), r_vals=(15, 40, 100), cc_vals=(16, 28, 55))
 
 def paint_cx_dragon_scale(paint, shape, mask, seed, pm, bb):
-    """Dragon Scale — chrome gold + ember orange + charcoal black."""
+    """Dragon Scale — chrome gold + ember red + charcoal black."""
     return _cx_paint_3color(paint, shape, mask, seed, pm,
         np.array([0.90, 0.78, 0.22], dtype=np.float32),
-        np.array([0.88, 0.35, 0.05], dtype=np.float32),
+        np.array([0.92, 0.20, 0.02], dtype=np.float32),   # pushed redder — more ember, bigger hue gap from gold
         np.array([0.06, 0.05, 0.04], dtype=np.float32), 9021)
 
 def spec_cx_dragon_scale(shape, seed, sm, base_m, base_r):
@@ -384,7 +402,7 @@ def paint_cx_ocean_trench(paint, shape, mask, seed, pm, bb):
     """Ocean Trench — bioluminescent teal + deep navy + abyssal black."""
     return _cx_paint_3color(paint, shape, mask, seed, pm,
         np.array([0.10, 0.85, 0.70], dtype=np.float32),
-        np.array([0.04, 0.12, 0.45], dtype=np.float32),
+        np.array([0.06, 0.18, 0.58], dtype=np.float32),   # brighter navy — more visible separation from abyss
         np.array([0.01, 0.02, 0.05], dtype=np.float32), 9024)
 
 def spec_cx_ocean_trench(shape, seed, sm, base_m, base_r):
@@ -442,7 +460,7 @@ def paint_cx_prism_shatter(paint, shape, mask, seed, pm, bb):
 
 def spec_cx_prism_shatter(shape, seed, sm, base_m, base_r):
     return _cx_spec_4color(shape, seed, sm, 9026,
-        m_vals=(240, 220, 160, 80), r_vals=(15, 18, 35, 70), cc_vals=(16, 18, 25, 45))
+        m_vals=(248, 170, 85, 18), r_vals=(15, 35, 80, 160), cc_vals=(16, 22, 50, 130))
 
 def paint_cx_acid_rain(paint, shape, mask, seed, pm, bb):
     """Acid Rain — toxic yellow chrome + sick green + bruise purple + ash gray matte."""
@@ -466,16 +484,16 @@ def paint_cx_royal_spectrum(paint, shape, mask, seed, pm, bb):
 
 def spec_cx_royal_spectrum(shape, seed, sm, base_m, base_r):
     return _cx_spec_4color(shape, seed, sm, 9028,
-        m_vals=(248, 180, 200, 150), r_vals=(15, 30, 22, 40), cc_vals=(16, 22, 18, 28))
+        m_vals=(250, 165, 55, 12), r_vals=(15, 40, 110, 200), cc_vals=(16, 25, 70, 170))
 
 def paint_cx_apocalypse(paint, shape, mask, seed, pm, bb):
     """Apocalypse — scorching white chrome + blood red + rust orange + dead black. End times."""
     return _cx_paint_4color(paint, shape, mask, seed, pm,
         np.array([0.98, 0.95, 0.88], dtype=np.float32),
-        np.array([0.65, 0.03, 0.05], dtype=np.float32),
-        np.array([0.75, 0.35, 0.08], dtype=np.float32),
+        np.array([0.58, 0.02, 0.10], dtype=np.float32),   # cooler blood red — more distinct from rust
+        np.array([0.82, 0.42, 0.05], dtype=np.float32),   # brighter rust orange — more distinct from blood
         np.array([0.02, 0.02, 0.02], dtype=np.float32), 9029)
 
 def spec_cx_apocalypse(shape, seed, sm, base_m, base_r):
     return _cx_spec_4color(shape, seed, sm, 9029,
-        m_vals=(252, 100, 140, 0), r_vals=(15, 60, 35, 252), cc_vals=(16, 40, 25, 252))
+        m_vals=(252, 160, 65, 0), r_vals=(15, 30, 90, 252), cc_vals=(16, 22, 65, 252))

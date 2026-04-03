@@ -47,6 +47,7 @@ def spec_ceramic_matte(shape, seed, sm, base_m, base_r):
 # ==================================================================
 
 def paint_crystal_clear_v2(paint, shape, mask, seed, pm, bb):
+    """Crystal clear glass with Snell's law refraction distortion and caustic highlights."""
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
 
@@ -79,7 +80,7 @@ def paint_crystal_clear_v2(paint, shape, mask, seed, pm, bb):
 
     blend = np.clip(pm, 0.0, 1.0)
     result = np.clip(base * (1.0 - mask[:,:,np.newaxis] * blend) + effect * (mask[:,:,np.newaxis] * blend), 0, 1)
-    return np.clip(result + bb[:,:,np.newaxis] * 0.5 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
+    return np.clip(result + bb[:,:,np.newaxis] * 0.30 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
 
 
 def spec_crystal_clear(shape, seed, sm, base_m, base_r):
@@ -125,6 +126,7 @@ def spec_enamel_coating(shape, seed, sm, base_m, base_r):
 # ==================================================================
 
 def paint_obsidian_glass_v2(paint, shape, mask, seed, pm, bb):
+    """Obsidian volcanic glass with Fresnel edge reflections and conchoidal fracture detail."""
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
 
@@ -156,7 +158,7 @@ def paint_obsidian_glass_v2(paint, shape, mask, seed, pm, bb):
 
     blend = np.clip(pm, 0.0, 1.0)
     result = np.clip(base * (1.0 - mask[:,:,np.newaxis] * blend) + effect * (mask[:,:,np.newaxis] * blend), 0, 1)
-    return np.clip(result + bb[:,:,np.newaxis] * 0.08 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
+    return np.clip(result + bb[:,:,np.newaxis] * 0.15 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
 
 
 def spec_obsidian_glass(shape, seed, sm, base_m, base_r):
@@ -177,6 +179,7 @@ def spec_obsidian_glass(shape, seed, sm, base_m, base_r):
 # ==================================================================
 
 def paint_porcelain_depth_v2(paint, shape, mask, seed, pm, bb):
+    """Porcelain with subsurface scattering via progressive blur-chain diffusion."""
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     from PIL import Image as _Img, ImageFilter as _Filt
@@ -214,7 +217,7 @@ def paint_porcelain_depth_v2(paint, shape, mask, seed, pm, bb):
     effect = surface_gloss.astype(np.float32)
     blend = np.clip(pm, 0.0, 1.0)
     result = np.clip(base * (1.0 - mask[:,:,np.newaxis] * blend) + effect * (mask[:,:,np.newaxis] * blend), 0, 1)
-    return np.clip(result + bb[:,:,np.newaxis] * 0.3 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
+    return np.clip(result + bb[:,:,np.newaxis] * 0.25 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
 
 
 def spec_porcelain_depth(shape, seed, sm, base_m, base_r):
@@ -235,6 +238,7 @@ def spec_porcelain_depth(shape, seed, sm, base_m, base_r):
 # see in car windshields with polarized sunglasses.
 # ==================================================================
 def paint_tempered_glass_v2(paint, shape, mask, seed, pm, bb):
+    """Tempered glass with stress birefringence interference fringes from quenching jets."""
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     y, x = get_mgrid((h, w))
@@ -288,7 +292,7 @@ def paint_tempered_glass_v2(paint, shape, mask, seed, pm, bb):
 
     blend = np.clip(pm, 0.0, 1.0)
     result = np.clip(base * (1.0 - mask[:,:,np.newaxis] * blend) + effect * (mask[:,:,np.newaxis] * blend), 0, 1)
-    return np.clip(result + bb[:,:,np.newaxis] * 0.4 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
+    return np.clip(result + bb[:,:,np.newaxis] * 0.25 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
 
 
 def spec_tempered_glass(shape, seed, sm, base_m, base_r):

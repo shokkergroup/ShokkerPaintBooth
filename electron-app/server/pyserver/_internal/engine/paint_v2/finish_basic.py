@@ -19,7 +19,7 @@ where all values are in 0-255 float32 range.
 """
 
 import numpy as np
-from engine.core import multi_scale_noise, get_mgrid
+from engine.core import multi_scale_noise, get_mgrid, hsv_to_rgb_vec
 
 
 # ============================================================================
@@ -65,8 +65,60 @@ def spec_ceramic(shape, seed, sm, base_m, base_r):
 # ============================================================================
 
 def paint_chameleon_v2(paint, shape, mask, seed, pm, bb):
-    """Chameleon: pass-through, colour shift handled by spec."""
-    return paint.copy()
+    """Chameleon: DRAMATIC dual-shift interference color rotation.
+    Uses SAME noise seeds (2200, 2201) as spec_chameleon so paint and spec are married.
+    Creates 3+ distinct color zones visible across the car surface via large-scale FBM
+    driving a full hue rotation. Viewing-angle color shift is OBVIOUS, not subtle."""
+    h, w = shape
+    out = paint.copy()
+    # ── Same noise fields as spec_chameleon (seed+2200, seed+2201) for marriage ──
+    shift_fbm = multi_scale_noise((h, w), [8, 16, 32], [0.45, 0.35, 0.2], seed + 2200)
+    sparkle   = multi_scale_noise((h, w), [2, 4], [0.6, 0.4], seed + 2201)
+    combined  = shift_fbm * 0.7 + sparkle * 0.3
+    # Normalize to 0-1 range for hue mapping
+    c_min, c_max = combined.min(), combined.max()
+    if c_max - c_min > 1e-6:
+        norm = (combined - c_min) / (c_max - c_min)
+    else:
+        norm = np.full_like(combined, 0.5)
+    # ── 5-stop chameleon hue anchors for 3+ distinct color zones ──
+    # Teal(0.48) → Purple(0.78) → Red/Magenta(0.95) → Gold(0.12) → Green(0.35) → Teal(0.48)
+    stops_h = np.array([0.48, 0.78, 0.95, 0.12, 0.35, 0.48], dtype=np.float32)
+    stops_s = np.array([0.90, 0.85, 0.92, 0.88, 0.85, 0.90], dtype=np.float32)
+    stops_v = np.array([0.80, 0.72, 0.78, 0.85, 0.76, 0.80], dtype=np.float32)
+    n_stops = len(stops_h)
+    # Steepen transitions for distinct zones (gamma < 1)
+    steep = np.clip(np.power(norm, 0.55), 0, 1)
+    t = steep * (n_stops - 1)
+    idx = np.clip(t.astype(np.int32), 0, n_stops - 2)
+    frac = t - idx.astype(np.float32)
+    out_h = np.zeros((h, w), dtype=np.float32)
+    out_s = np.zeros((h, w), dtype=np.float32)
+    out_v = np.zeros((h, w), dtype=np.float32)
+    for i in range(n_stops - 1):
+        seg = (idx == i)
+        f = frac[seg]
+        # Handle hue wraparound for segments that cross 0/1 boundary
+        h0, h1 = stops_h[i], stops_h[i + 1]
+        if abs(h1 - h0) > 0.5:
+            # Wrap: go the short way around
+            if h0 > h1:
+                out_h[seg] = (h0 + (h1 + 1.0 - h0) * f) % 1.0
+            else:
+                out_h[seg] = (h0 - (h0 + 1.0 - h1) * f) % 1.0
+        else:
+            out_h[seg] = h0 * (1 - f) + h1 * f
+        out_s[seg] = stops_s[i] * (1 - f) + stops_s[i + 1] * f
+        out_v[seg] = stops_v[i] * (1 - f) + stops_v[i + 1] * f
+    # Convert chameleon color field to RGB
+    ch_r, ch_g, ch_b = hsv_to_rgb_vec(out_h, out_s, out_v)
+    # ── Strong blend — paint modifier drives visibility, boosted for drama ──
+    # Use pm * 0.85 for high-visibility chameleon effect (was pass-through before)
+    blend = np.clip(pm * 0.85, 0.0, 1.0) * mask
+    out[:, :, 0] = np.clip(out[:, :, 0] * (1 - blend) + ch_r * blend, 0, 1)
+    out[:, :, 1] = np.clip(out[:, :, 1] * (1 - blend) + ch_g * blend, 0, 1)
+    out[:, :, 2] = np.clip(out[:, :, 2] * (1 - blend) + ch_b * blend, 0, 1)
+    return out
 
 def spec_chameleon(shape, seed, sm, base_m, base_r):
     """Chameleon spec: DUAL-SHIFT FIX — interference film needs real M/R variation.

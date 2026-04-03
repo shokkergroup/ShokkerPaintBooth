@@ -312,7 +312,7 @@ def save_config(cfg):
 def build_check():
     """Diagnostic endpoint - returns server status and configuration."""
     # Read actual version from electron-app/package.json if available
-    _pkg_version = "6.0.0"
+    _pkg_version = "5.9.2"
     try:
         import json as _json
         for _pkg_path in [
@@ -2107,9 +2107,7 @@ def preview_render_endpoint():
                 import shokker_engine_v2 as _eng
                 if hasattr(_eng.build_multi_zone, '_zone_cache'):
                     _eng.build_multi_zone._zone_cache.clear()
-                    from engine.compose import clear_pattern_cache
-                    clear_pattern_cache()
-                    logger.info(f"[preview-cache] Invalidated zone + pattern cache (paint file changed)")
+                    logger.info(f"[preview-cache] Invalidated zone cache (paint file changed)")
             except Exception:
                 pass
         if changed_zone >= 0 or zone_hashes:
@@ -2340,13 +2338,14 @@ def preview_render_endpoint():
                     parts.append(f"stack[{li}]={layer.get('id','?')}@scale={layer.get('scale',1.0)}")
             logger.info("  ".join(parts))
 
-        # Run the preview render
+        # Run the preview render (pass abort_event so build_multi_zone can bail between zones)
         paint_rgb, spec_rgba, elapsed_ms = engine.preview_render(
             actual_paint_file, server_zones, seed=seed, preview_scale=preview_scale,
             import_spec_map=import_spec_map,
             decal_spec_finishes=decal_spec_finishes if decal_spec_finishes else None,
             decal_paint_path=decal_paint_path_preview,
             decal_mask_base64=decal_mask_base64 or None,
+            abort_event=_preview_abort,
         )
 
         # Convert paint to base64 PNG (main preview)

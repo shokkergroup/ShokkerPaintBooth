@@ -27,6 +27,7 @@ from engine.core import multi_scale_noise, get_mgrid
 # ASPHALT GRIND - Erosion hash noise with directional scratches
 # ==================================================================
 def paint_asphalt_grind_v2(paint, shape, mask, seed, pm, bb):
+    """Asphalt grind: erosion hash noise with directional scratch channels."""
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     rng = np.random.RandomState(seed + 1000)
@@ -44,7 +45,7 @@ def paint_asphalt_grind_v2(paint, shape, mask, seed, pm, bb):
     effect = np.clip(np.stack([ground_eroded]*3, axis=-1), 0, 1).astype(np.float32)
     blend = np.clip(pm, 0.0, 1.0)
     result = np.clip(base * (1.0 - mask[:,:,np.newaxis] * blend) + effect * (mask[:,:,np.newaxis] * blend), 0, 1)
-    return np.clip(result + bb[:,:,np.newaxis] * 0.25 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
+    return np.clip(result + bb[:,:,np.newaxis] * 0.08 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
 
 def spec_asphalt_grind(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
@@ -61,6 +62,7 @@ def spec_asphalt_grind(shape, seed, sm, base_m, base_r):
 # BULLSEYE CHROME RH - Concentric ring Airy diffraction
 # ==================================================================
 def paint_bullseye_chrome_rh(paint, shape, mask, seed, pm, bb):
+    """Bullseye chrome with concentric Airy diffraction ring pattern."""
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     y, x = get_mgrid((h, w))
@@ -97,6 +99,7 @@ def spec_bullseye_chrome_rh(shape, seed, sm, base_m, base_r):
 # CHECKERED CHROME RH - XOR flag modular arithmetic + Fresnel
 # ==================================================================
 def paint_checkered_chrome_rh(paint, shape, mask, seed, pm, bb):
+    """Checkered flag via XOR modular arithmetic with chrome Fresnel on white squares."""
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     y, x = get_mgrid((h, w))
@@ -131,6 +134,7 @@ def spec_checkered_chrome_rh(shape, seed, sm, base_m, base_r):
 # DIRT TRACK SATIN - Particle deposition splatter + embedded grit
 # ==================================================================
 def paint_dirt_track_satin_v2(paint, shape, mask, seed, pm, bb):
+    """Dirt track satin with particle deposition splatter and embedded grit."""
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     rng = np.random.RandomState(seed + 1030)
@@ -149,7 +153,7 @@ def paint_dirt_track_satin_v2(paint, shape, mask, seed, pm, bb):
     effect = np.stack([effect_r, effect_g, effect_b], axis=-1).astype(np.float32)
     blend = np.clip(pm, 0.0, 1.0)
     result = np.clip(base * (1.0 - mask[:,:,np.newaxis] * blend) + effect * (mask[:,:,np.newaxis] * blend), 0, 1)
-    return np.clip(result + bb[:,:,np.newaxis] * 0.28 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
+    return np.clip(result + bb[:,:,np.newaxis] * 0.10 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
 
 def spec_dirt_track_satin(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
@@ -166,6 +170,7 @@ def spec_dirt_track_satin(shape, seed, sm, base_m, base_r):
 # DRAG STRIP GLOSS - Deep pour resin meniscus reflection
 # ==================================================================
 def paint_drag_strip_gloss_v2(paint, shape, mask, seed, pm, bb):
+    """Drag strip deep pour resin with meniscus reflection and Fresnel highlights."""
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     # Self-leveling resin: meniscus creates depth gradient at edges
@@ -180,7 +185,7 @@ def paint_drag_strip_gloss_v2(paint, shape, mask, seed, pm, bb):
     effect = np.clip(effect + fresnel_r * fresnel_boost[:,:,np.newaxis] * 0.12, 0, 1).astype(np.float32)
     blend = np.clip(pm, 0.0, 1.0)
     result = np.clip(base * (1.0 - mask[:,:,np.newaxis] * blend) + effect * (mask[:,:,np.newaxis] * blend), 0, 1)
-    return np.clip(result + bb[:,:,np.newaxis] * 0.44 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
+    return np.clip(result + bb[:,:,np.newaxis] * 0.22 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
 
 def spec_drag_strip_gloss(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
@@ -194,6 +199,7 @@ def spec_drag_strip_gloss(shape, seed, sm, base_m, base_r):
 # ENDURANCE CERAMIC - Thermal fatigue micro-craze via Voronoi
 # ==================================================================
 def paint_endurance_ceramic_v2(paint, shape, mask, seed, pm, bb):
+    """Endurance ceramic with thermal fatigue micro-craze network and heat discoloration."""
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     # Craze network from thermal cycling: Voronoi-like crack pattern
@@ -211,7 +217,7 @@ def paint_endurance_ceramic_v2(paint, shape, mask, seed, pm, bb):
     effect = np.stack([ceram_r, ceram_g, ceram_b], axis=-1).astype(np.float32)
     blend = np.clip(pm, 0.0, 1.0)
     result = np.clip(base * (1.0 - mask[:,:,np.newaxis] * blend) + effect * (mask[:,:,np.newaxis] * blend), 0, 1)
-    return np.clip(result + bb[:,:,np.newaxis] * 0.30 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
+    return np.clip(result + bb[:,:,np.newaxis] * 0.10 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
 
 def spec_endurance_ceramic(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
@@ -228,6 +234,7 @@ def spec_endurance_ceramic(shape, seed, sm, base_m, base_r):
 # HEAT SHIELD - Stefan-Boltzmann thermal gradient emission
 # ==================================================================
 def paint_heat_shield_v2(paint, shape, mask, seed, pm, bb):
+    """Heat shield titanium thermal gradient with Stefan-Boltzmann heat tint coloring."""
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     y, x = get_mgrid((h, w))
@@ -259,6 +266,7 @@ def spec_heat_shield(shape, seed, sm, base_m, base_r):
 # PACE CAR PEARL - Multi-bounce tri-coat optical path
 # ==================================================================
 def paint_pace_car_pearl_v2(paint, shape, mask, seed, pm, bb):
+    """Pace car pearl tri-coat with multi-bounce optical path saturation depth."""
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     # Tri-coat: base -> pearl mid -> clear. Longer optical path = more color
@@ -276,7 +284,7 @@ def paint_pace_car_pearl_v2(paint, shape, mask, seed, pm, bb):
     ], axis=-1).astype(np.float32)
     blend = np.clip(pm, 0.0, 1.0)
     result = np.clip(base * (1.0 - mask[:,:,np.newaxis] * blend) + effect * (mask[:,:,np.newaxis] * blend), 0, 1)
-    return np.clip(result + bb[:,:,np.newaxis] * 0.40 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
+    return np.clip(result + bb[:,:,np.newaxis] * 0.22 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
 
 def spec_pace_car_pearl(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
@@ -290,6 +298,7 @@ def spec_pace_car_pearl(shape, seed, sm, base_m, base_r):
 # PIT LANE MATTE - Rubber transfer contact mechanics
 # ==================================================================
 def paint_pit_lane_matte_v2(paint, shape, mask, seed, pm, bb):
+    """Pit lane industrial matte with rubber transfer contact scuff marks."""
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     rng = np.random.RandomState(seed + 1080)
@@ -304,7 +313,7 @@ def paint_pit_lane_matte_v2(paint, shape, mask, seed, pm, bb):
     effect = np.clip(np.stack([matte_base - rubber_marks]*3, axis=-1), 0, 1).astype(np.float32)
     blend = np.clip(pm, 0.0, 1.0)
     result = np.clip(base * (1.0 - mask[:,:,np.newaxis] * blend) + effect * (mask[:,:,np.newaxis] * blend), 0, 1)
-    return np.clip(result + bb[:,:,np.newaxis] * 0.20 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
+    return np.clip(result + bb[:,:,np.newaxis] * 0.08 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
 
 def spec_pit_lane_matte(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
@@ -319,6 +328,7 @@ def spec_pit_lane_matte(shape, seed, sm, base_m, base_r):
 # RACE DAY GLOSS - Wet-look TIR coating
 # ==================================================================
 def paint_race_day_gloss_v2(paint, shape, mask, seed, pm, bb):
+    """Race day ultra-deep wet-look gloss with saturation boost from total internal reflection."""
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     # Ultra-deep gloss: multi-polish creates near-perfect surface
@@ -331,7 +341,7 @@ def paint_race_day_gloss_v2(paint, shape, mask, seed, pm, bb):
     effect = np.clip(saturated * depth_enhance[:,:,np.newaxis], 0, 1).astype(np.float32)
     blend = np.clip(pm, 0.0, 1.0)
     result = np.clip(base * (1.0 - mask[:,:,np.newaxis] * blend) + effect * (mask[:,:,np.newaxis] * blend), 0, 1)
-    return np.clip(result + bb[:,:,np.newaxis] * 0.45 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
+    return np.clip(result + bb[:,:,np.newaxis] * 0.20 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
 
 def spec_race_day_gloss(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
@@ -345,6 +355,7 @@ def spec_race_day_gloss(shape, seed, sm, base_m, base_r):
 # RALLY MUD - Stochastic ballistic splatter simulation
 # ==================================================================
 def paint_rally_mud_v2(paint, shape, mask, seed, pm, bb):
+    """Rally mud stochastic ballistic splatter with dried texture and opacity variation."""
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     rng = np.random.RandomState(seed + 1100)
@@ -374,7 +385,7 @@ def paint_rally_mud_v2(paint, shape, mask, seed, pm, bb):
     effect = np.stack([effect_r, effect_g, effect_b], axis=-1).astype(np.float32)
     blend = np.clip(pm, 0.0, 1.0)
     result = np.clip(base * (1.0 - mask[:,:,np.newaxis] * blend) + effect * (mask[:,:,np.newaxis] * blend), 0, 1)
-    return np.clip(result + bb[:,:,np.newaxis] * 0.22 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
+    return np.clip(result + bb[:,:,np.newaxis] * 0.08 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
 
 def spec_rally_mud(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
@@ -389,6 +400,7 @@ def spec_rally_mud(shape, seed, sm, base_m, base_r):
 # RAT ROD PRIMER - Hand-spray Poisson disc distribution
 # ==================================================================
 def paint_rat_rod_primer_v2(paint, shape, mask, seed, pm, bb):
+    """Rat rod hand-sprayed primer with uneven coverage and drip runs."""
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     # Hand-sprayed primer: uneven coverage, visible spray overlap
@@ -411,7 +423,7 @@ def paint_rat_rod_primer_v2(paint, shape, mask, seed, pm, bb):
     ], axis=-1).astype(np.float32)
     blend = np.clip(pm, 0.0, 1.0)
     result = np.clip(base * (1.0 - mask[:,:,np.newaxis] * blend) + effect * (mask[:,:,np.newaxis] * blend), 0, 1)
-    return np.clip(result + bb[:,:,np.newaxis] * 0.22 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
+    return np.clip(result + bb[:,:,np.newaxis] * 0.08 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
 
 def spec_rat_rod_primer(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
@@ -425,6 +437,7 @@ def spec_rat_rod_primer(shape, seed, sm, base_m, base_r):
 # STOCK CAR ENAMEL - Orange peel rheology viscosity flow
 # ==================================================================
 def paint_stock_car_enamel_v2(paint, shape, mask, seed, pm, bb):
+    """Stock car enamel with orange peel rheology from Rayleigh-Benard convection."""
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     # Enamel viscosity creates orange peel texture during cure
@@ -445,7 +458,7 @@ def paint_stock_car_enamel_v2(paint, shape, mask, seed, pm, bb):
     ], axis=-1).astype(np.float32)
     blend = np.clip(pm, 0.0, 1.0)
     result = np.clip(base * (1.0 - mask[:,:,np.newaxis] * blend) + effect * (mask[:,:,np.newaxis] * blend), 0, 1)
-    return np.clip(result + bb[:,:,np.newaxis] * 0.34 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
+    return np.clip(result + bb[:,:,np.newaxis] * 0.15 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
 
 def spec_stock_car_enamel(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
@@ -459,6 +472,7 @@ def spec_stock_car_enamel(shape, seed, sm, base_m, base_r):
 # VICTORY LANE - Confetti sparkle Poisson point process
 # ==================================================================
 def paint_victory_lane_v2(paint, shape, mask, seed, pm, bb):
+    """Victory lane celebratory gloss with confetti sparkle via Poisson point process."""
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     rng = np.random.RandomState(seed + 1130)
@@ -483,7 +497,7 @@ def paint_victory_lane_v2(paint, shape, mask, seed, pm, bb):
     ], axis=-1).astype(np.float32)
     blend = np.clip(pm, 0.0, 1.0)
     result = np.clip(base * (1.0 - mask[:,:,np.newaxis] * blend) + effect * (mask[:,:,np.newaxis] * blend), 0, 1)
-    return np.clip(result + bb[:,:,np.newaxis] * 0.42 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
+    return np.clip(result + bb[:,:,np.newaxis] * 0.25 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
 
 def spec_victory_lane(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape

@@ -8,19 +8,48 @@ Image-based patterns: _load_image_pattern loads grayscale PNG, caches by (path, 
 applies tile/crop/rotate via engine.core helpers.
 """
 import os
+import cv2
 import numpy as np
+from collections import OrderedDict
+from PIL import Image
 
-# Two-tier image pattern cache:
+# Two-tier image pattern cache (LRU, bounded):
 #   Tier 1: (abs_path,)                        -> raw float32 (H,W) 0-1 at native resolution
 #   Tier 2: (abs_path, h, w, use_scale, use_rot) -> transformed float32 (H,W) ready for use
 # Tier 1 avoids disk I/O on cache misses for Tier 2 (new scale/rotation of same image).
-_image_pattern_cache_raw = {}   # Tier 1
-_image_pattern_cache = {}       # Tier 2 (keyed by abs_path, h, w, scale, rot)
+# Both tiers use OrderedDict for LRU eviction.
+_IMAGE_CACHE_MAX_TIER2 = 32
+_IMAGE_CACHE_MAX_TIER1 = 16
+_image_pattern_cache_raw = OrderedDict()   # Tier 1
+_image_pattern_cache = OrderedDict()       # Tier 2 (keyed by abs_path, h, w, scale, rot)
+
+
+def clear_image_pattern_cache():
+    """Clear both tiers of the image pattern cache.
+    Call when resolution changes or assets are updated."""
+    _image_pattern_cache.clear()
+    _image_pattern_cache_raw.clear()
+
+
+def _lru_get(cache, key):
+    """LRU cache lookup: move key to end (most-recent) and return value, or None."""
+    if key in cache:
+        cache.move_to_end(key)
+        return cache[key]
+    return None
+
+
+def _lru_put(cache, key, value, max_size):
+    """LRU cache insert: add/update key, evict oldest if over max_size."""
+    if key in cache:
+        cache.move_to_end(key)
+    cache[key] = value
+    while len(cache) > max_size:
+        cache.popitem(last=False)
 
 
 def _resize_image_pattern(arr, target_h, target_w):
     """Resize pattern array to target size using LANCZOS for better car-render quality."""
-    from PIL import Image
     if arr.shape[0] == target_h and arr.shape[1] == target_w:
         return arr
     mn, mx = float(arr.min()), float(arr.max())
@@ -69,19 +98,20 @@ def _load_image_pattern(image_path, shape, scale=1.0, rotation=0.0):
     h, w = int(shape[0]), int(shape[1])
     use_scale = max(0.1, min(10.0, float(scale)))
     use_rot = float(rotation) % 360.0
-    # Tier 2 check — fully-transformed result
+    # Tier 2 check — fully-transformed result (LRU)
     cache_key = (abs_path, h, w, use_scale, use_rot)
-    if cache_key in _image_pattern_cache:
-        return _image_pattern_cache[cache_key]
+    cached_t2 = _lru_get(_image_pattern_cache, cache_key)
+    if cached_t2 is not None:
+        return cached_t2
     try:
         from engine.core import _tile_fractional, _crop_center_array, _rotate_single_array
-        # Tier 1 check — raw decoded float32 array (avoids disk I/O and PIL decode)
+        # Tier 1 check — raw decoded float32 array (avoids disk I/O and PIL decode) (LRU)
         raw_key = (abs_path,)
-        if raw_key in _image_pattern_cache_raw:
-            arr, has_transparency = _image_pattern_cache_raw[raw_key]
+        cached_t1 = _lru_get(_image_pattern_cache_raw, raw_key)
+        if cached_t1 is not None:
+            arr, has_transparency = cached_t1
             arr = arr.copy()  # Don't mutate cached raw
         else:
-            from PIL import Image
             img_rgba = Image.open(abs_path).convert("RGBA")
             rgba = np.array(img_rgba, dtype=np.float32) / 255.0
             rgb = rgba[:, :, :3]
@@ -97,8 +127,8 @@ def _load_image_pattern(image_path, shape, scale=1.0, rotation=0.0):
                 arr = lum
             if arr.ndim != 2:
                 return None
-            # Store raw decoded array in Tier 1 cache
-            _image_pattern_cache_raw[raw_key] = (arr, has_transparency)
+            # Store raw decoded array in Tier 1 cache (LRU)
+            _lru_put(_image_pattern_cache_raw, raw_key, (arr, has_transparency), _IMAGE_CACHE_MAX_TIER1)
             arr = arr.copy()  # Work on a copy from here on
 
         ih, iw = arr.shape[0], arr.shape[1]
@@ -148,9 +178,10 @@ def _load_image_pattern(image_path, shape, scale=1.0, rotation=0.0):
             std = float(np.std(arr))
             if std < 0.28:
                 arr = np.clip((arr - 0.5) * 1.8 + 0.5, 0.0, 1.0).astype(np.float32)
-        # Store in Tier 2 cache
-        _image_pattern_cache[cache_key] = arr.astype(np.float32)
-        return _image_pattern_cache[cache_key]
+        # Store in Tier 2 cache (LRU)
+        result = arr.astype(np.float32)
+        _lru_put(_image_pattern_cache, cache_key, result, _IMAGE_CACHE_MAX_TIER2)
+        return result
     except Exception:
         return None
 
@@ -167,11 +198,11 @@ def _load_color_image_pattern(image_path, shape, scale=1.0, rotation=0.0):
     use_scale = max(0.1, min(10.0, float(scale)))
     use_rot = float(rotation) % 360.0
     cache_key = (abs_path, h, w, use_scale, use_rot, "color")
-    if cache_key in _image_pattern_cache:
-        return _image_pattern_cache[cache_key]
+    cached_color = _lru_get(_image_pattern_cache, cache_key)
+    if cached_color is not None:
+        return cached_color
         
     try:
-        from PIL import Image
         img_rgba = Image.open(abs_path).convert("RGBA")
         rgba = np.array(img_rgba, dtype=np.float32) / 255.0
 
@@ -184,14 +215,12 @@ def _load_color_image_pattern(image_path, shape, scale=1.0, rotation=0.0):
             n_w = max(1, (w + iw - 1) // iw)
             rgba = np.tile(rgba, (n_h, n_w, 1))[:h, :w, :]
         elif ih > h or iw > w:
-            import cv2
             rgba = cv2.resize(rgba, (w, h), interpolation=cv2.INTER_AREA)
         # rgba is now exactly (h, w, 4) — the "1.0x" view.
 
         # STEP 2: Apply scale relative to the normalized baseline.
         # scale < 1.0 = shrink motifs (more repetitions); scale > 1.0 = zoom in (bigger).
         if abs(use_scale - 1.0) > 0.01:
-            import cv2
             if use_scale < 1.0:
                 # Shrink the normalized pattern, then tile to fill canvas
                 tile_h = max(4, int(h * use_scale))
@@ -210,7 +239,6 @@ def _load_color_image_pattern(image_path, shape, scale=1.0, rotation=0.0):
                 rgba = cv2.resize(rgba, (w, h), interpolation=cv2.INTER_LINEAR)
 
         if rgba.shape[0] != h or rgba.shape[1] != w:
-            import cv2
             rgba = cv2.resize(rgba, (w, h), interpolation=cv2.INTER_LINEAR)
         
         if abs(use_rot) > 0.5:
@@ -231,8 +259,8 @@ def _load_color_image_pattern(image_path, shape, scale=1.0, rotation=0.0):
             dark_key = np.clip((lum - 0.08) / 0.35, 0.0, 1.0).astype(np.float32)
             rgba[:, :, 3] = np.clip(alpha * dark_key, 0.0, 1.0)
             
-        _image_pattern_cache[cache_key] = rgba
-        return _image_pattern_cache[cache_key]
+        _lru_put(_image_pattern_cache, cache_key, rgba, _IMAGE_CACHE_MAX_TIER2)
+        return rgba
     except Exception as e:
         print(f"Error loading color image pattern: {e}")
         return None
@@ -528,4 +556,4 @@ def render_generic_finish(finish_name, zone, paint, shape, zone_mask, seed, sm, 
     return zone_spec, paint
 
 
-__all__ = ["render_generic_finish"]
+__all__ = ["render_generic_finish", "clear_image_pattern_cache"]

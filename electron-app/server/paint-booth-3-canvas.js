@@ -3660,8 +3660,12 @@ if __name__ == '__main__':
             return muteKey + JSON.stringify(hashData);
         }
 
-        // Tiered preview: fast low-res first, then full-quality after idle
+        // Tiered preview: 3-stage progressive rendering for smoother feedback
+        // Stage 1: 0.125 scale (256x256) — instant, shows basic layout
+        // Stage 2: 0.25 scale (512x512) — after 1s idle, decent detail
+        // Stage 3: 0.5 scale (1024x1024) — after 3s idle, full quality
         let _previewEnhanceTimer = null;
+        let _previewStage2Timer = null;
         let _lastPreviewScale = 0.5;
 
         function triggerPreviewRender() {
@@ -3685,16 +3689,33 @@ if __name__ == '__main__':
             // Mark as stale
             updatePreviewStatus('stale', 'Changed');
 
-            // Cancel any pending enhance
+            // Cancel any pending stage 2 and stage 3 enhances
+            if (_previewStage2Timer) { clearTimeout(_previewStage2Timer); _previewStage2Timer = null; }
             if (_previewEnhanceTimer) { clearTimeout(_previewEnhanceTimer); _previewEnhanceTimer = null; }
 
-            // Debounce: fast low-res preview after 400ms
+            // Debounce: Stage 1 — ultra-fast tiny preview after 300ms
             if (previewDebounceTimer) clearTimeout(previewDebounceTimer);
             previewDebounceTimer = setTimeout(() => {
-                _lastPreviewScale = 0.25;
-                doPreviewRender(hash, 0.25);
+                _lastPreviewScale = 0.125;
+                doPreviewRender(hash, 0.125);
 
-                // Schedule medium-quality enhance after 3s of no further changes
+                // Stage 2 — medium preview after 1s of no further changes
+                let _stage2Retries = 0;
+                _previewStage2Timer = setTimeout(function _tryStage2() {
+                    if (previewIsRendering) {
+                        _stage2Retries++;
+                        if (_stage2Retries > 5) return;
+                        _previewStage2Timer = setTimeout(_tryStage2, 500);
+                        return;
+                    }
+                    const currentHash = getZoneConfigHash();
+                    if (currentHash === lastPreviewZoneHash && _lastPreviewScale < 0.25) {
+                        _lastPreviewScale = 0.25;
+                        doPreviewRender(currentHash, 0.25);
+                    }
+                }, 1000);
+
+                // Stage 3 — full quality after 3s of no further changes
                 // Cap at 0.5 scale (1024x1024) — full 1.0 is reserved for final render
                 let _enhanceRetries = 0;
                 _previewEnhanceTimer = setTimeout(function _tryEnhance() {
@@ -3710,7 +3731,7 @@ if __name__ == '__main__':
                         doPreviewRender(currentHash, 0.5);
                     }
                 }, 3000);
-            }, 400);
+            }, 300);
         }
 
         async function doPreviewRender(zoneHash, previewScale) {

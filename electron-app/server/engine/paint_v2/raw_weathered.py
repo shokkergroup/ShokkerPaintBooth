@@ -8,10 +8,12 @@ Base IDs: anodized, battle_patina, burnt_headers, galvanized, heat_treated,
 
 import numpy as np
 from engine.core import multi_scale_noise, get_mgrid
+from engine.paint_v2 import ensure_bb_2d
 
 
 # ANODIZED ALUMINUM - Electrochemical oxide layer thickness variation
 def paint_anodized_v2(paint, shape, mask, seed, pm, bb):
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     
@@ -61,6 +63,7 @@ def spec_anodized(shape, seed, sm, base_m, base_r):
 
 # BATTLE PATINA - Multi-oxide corrosion with impact crater damage
 def paint_battle_patina_v2(paint, shape, mask, seed, pm, bb):
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     
@@ -111,6 +114,7 @@ def spec_battle_patina(shape, seed, sm, base_m, base_r):
 
 # BURNT HEADERS - Exhaust manifold heat cycling with tempering colors
 def paint_burnt_headers_v2(paint, shape, mask, seed, pm, bb):
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     
@@ -169,6 +173,7 @@ def spec_burnt_headers(shape, seed, sm, base_m, base_r):
 
 # GALVANIZED - Zinc spangle crystallization dendritic pattern
 def paint_galvanized_v2(paint, shape, mask, seed, pm, bb):
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     
@@ -217,6 +222,7 @@ def spec_galvanized(shape, seed, sm, base_m, base_r):
 
 # HEAT TREATED - Steel tempering color gradient (straw->blue->purple)
 def paint_heat_treated_v2(paint, shape, mask, seed, pm, bb):
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     
@@ -293,6 +299,7 @@ def spec_heat_treated(shape, seed, sm, base_m, base_r):
 
 # PATINA BRONZE - Verdigris copper carbonate formation model
 def paint_patina_bronze_v2(paint, shape, mask, seed, pm, bb):
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     
@@ -342,6 +349,7 @@ def spec_patina_bronze(shape, seed, sm, base_m, base_r):
 
 # PATINA COAT - General oxidation with moisture-driven patina zones
 def paint_patina_coat_v2(paint, shape, mask, seed, pm, bb):
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     
@@ -392,6 +400,7 @@ def spec_patina_coat(shape, seed, sm, base_m, base_r):
 
 # RAW ALUMINUM - Mill-finish aluminum with rolling marks and oxide bloom
 def paint_raw_aluminum_v2(paint, shape, mask, seed, pm, bb):
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     
@@ -443,6 +452,7 @@ def spec_raw_aluminum(shape, seed, sm, base_m, base_r):
 
 # SANDBLASTED - Abrasive particle impact crater distribution model
 def paint_sandblasted_v2(paint, shape, mask, seed, pm, bb):
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     

@@ -19,6 +19,7 @@ Techniques (all different):
 """
 import numpy as np
 from engine.core import multi_scale_noise, get_mgrid
+from engine.paint_v2 import ensure_bb_2d
 
 # ==================================================================
 # CHROME — Fresnel reflection + environment distortion
@@ -28,6 +29,7 @@ from engine.core import multi_scale_noise, get_mgrid
 # ==================================================================
 
 def paint_chrome_mirror(paint, shape, mask, seed, pm, bb):
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     rng = np.random.RandomState(seed + 100)
     base = paint.copy()
@@ -74,7 +76,7 @@ def spec_chrome_mirror(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
     disp = multi_scale_noise((h, w), [32, 64, 128], [0.3, 0.4, 0.3], seed + 1)
     M = np.clip(245.0 + disp * 10.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(2.0 + disp * 8.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(2.0 + disp * 8.0 * sm, 15, 255)
     CC = np.full((h, w), 16.0, dtype=np.float32)  # CC=16 max clearcoat chrome
     return M, R, CC
 
@@ -87,6 +89,7 @@ def spec_chrome_mirror(shape, seed, sm, base_m, base_r):
 # ==================================================================
 
 def paint_black_chrome_v2(paint, shape, mask, seed, pm, bb):
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
 
@@ -121,7 +124,7 @@ def spec_black_chrome(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
     micro = multi_scale_noise((h, w), [2, 4, 8], [0.3, 0.4, 0.3], seed + 10)
     M = np.clip(248.0 + micro * 7.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(3.0 + micro * 6.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(3.0 + micro * 6.0 * sm, 15, 255)
     CC = np.full((h, w), 16.0, dtype=np.float32)  # CC=16 max clearcoat black chrome
     return M, R, CC
 
@@ -151,6 +154,7 @@ def paint_blue_chrome_v2(paint, shape, mask, seed, pm, bb):
     """Blue chrome: real thin-film interference simulation.
     Per-pixel FBM film thickness → hue LUT (blue→purple→gold→green-blue)
     blended 50/50 with chrome base. Creates iridescent oil-slick-on-chrome look."""
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
 
@@ -209,7 +213,7 @@ def spec_blue_chrome(shape, seed, sm, base_m, base_r):
     # MARRIED to paint_blue_chrome_v2: seed+71 [8,16] and seed+72 [4,8]
     noise = multi_scale_noise((h, w), [8, 16], [0.6, 0.4], seed + 71)
     M  = np.clip(220.0 + noise * 35.0, 0, 255).astype(np.float32)
-    R  = np.clip(2.0   + noise *  6.0, 0, 255).astype(np.float32)
+    R  = np.clip(2.0   + noise *  6.0, 15, 255)
     CC = np.clip(14.0  + noise *  4.0, 0,  16).astype(np.float32)
     return M, R, CC
 
@@ -221,6 +225,7 @@ def spec_blue_chrome(shape, seed, sm, base_m, base_r):
 # ==================================================================
 
 def paint_red_chrome_v2(paint, shape, mask, seed, pm, bb):
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
 
@@ -251,9 +256,7 @@ def spec_red_chrome(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
     anod = multi_scale_noise((h, w), [8, 16, 32], [0.3, 0.4, 0.3], seed + 30)
     M = np.clip(240.0 + anod * 15.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(5.0 + anod * 12.0 * sm, 0, 255).astype(np.float32)
-    # GGX floor: R>=15 for non-chrome pixels (M<240). Pure chrome (M>=240) may keep R<15.
-    R = np.where(M >= 240.0, R, np.maximum(R, 15.0)).astype(np.float32)
+    R = np.clip(15.0 + anod * 12.0 * sm, 15, 255).astype(np.float32)
     CC = np.full((h, w), 16.0, dtype=np.float32)  # CC=16 max clearcoat red chrome
     return M, R, CC
 
@@ -267,6 +270,7 @@ def spec_red_chrome(shape, seed, sm, base_m, base_r):
 
 def paint_satin_chrome_v2(paint, shape, mask, seed, pm, bb):
     """Satin chrome: silky directional sheen, subtle groove (not heavy stripes)."""
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     rng = np.random.RandomState(seed + 40)
     base = paint.copy()
@@ -313,6 +317,7 @@ def spec_satin_chrome(shape, seed, sm, base_m, base_r):
 # ==================================================================
 
 def paint_antique_chrome_v2(paint, shape, mask, seed, pm, bb):
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     rng = np.random.RandomState(seed + 50)
     base = paint.copy()
@@ -371,7 +376,7 @@ def spec_antique_chrome(shape, seed, sm, base_m, base_r):
     )).astype(np.float32) / 255.0
     # Corroded spots: less metallic, much rougher
     M = np.clip(220.0 - patina * 120.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(18.0 + patina * 160.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(18.0 + patina * 160.0 * sm, 15, 255)
     CC = np.full((h, w), 16.0, dtype=np.float32)  # CC=16 max clearcoat antique chrome
     return M, R, CC
 
@@ -383,6 +388,7 @@ def spec_antique_chrome(shape, seed, sm, base_m, base_r):
 # from the rotational polishing process.
 # ==================================================================
 def paint_bullseye_chrome_v2(paint, shape, mask, seed, pm, bb):
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     rng = np.random.RandomState(seed + 60)
     base = paint.copy()
@@ -430,7 +436,7 @@ def spec_bullseye_chrome(shape, seed, sm, base_m, base_r):
         rings = np.clip(rings + ring * np.exp(-dist / (max(h,w)*0.5)), 0, 1)
     rings = np.clip(rings / max((3 + seed % 3) * 0.4, 1), 0, 1)
     M = np.clip(250.0 + rings * 5.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(3.0 + rings * 15.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(3.0 + rings * 15.0 * sm, 15, 255)
     CC = np.full((h, w), 16.0, dtype=np.float32)  # CC=16 max clearcoat bullseye chrome
     return M, R, CC
 
@@ -441,6 +447,7 @@ def spec_bullseye_chrome(shape, seed, sm, base_m, base_r):
 # arithmetic. Chrome squares alternate with dark matte squares.
 # ==================================================================
 def paint_checkered_chrome_v2(paint, shape, mask, seed, pm, bb):
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     y, x = get_mgrid((h, w))
@@ -484,7 +491,7 @@ def spec_checkered_chrome(shape, seed, sm, base_m, base_r):
     cell = max(h // 16, 4)
     checker = (((y // cell).astype(int) + (x // cell).astype(int)) % 2).astype(np.float32)
     M = np.clip(checker * 250.0 + (1.0 - checker) * 30.0, 0, 255).astype(np.float32)
-    R = np.clip(checker * 3.0 + (1.0 - checker) * 180.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(checker * 3.0 + (1.0 - checker) * 180.0 * sm, 15, 255)
     CC = np.full((h, w), 16.0, dtype=np.float32)  # CC=16 max clearcoat checkered chrome
     return M, R, CC
 
@@ -497,6 +504,7 @@ def spec_checkered_chrome(shape, seed, sm, base_m, base_r):
 # ==================================================================
 
 def paint_dark_chrome_v2(paint, shape, mask, seed, pm, bb):
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     # PVD thickness variation
@@ -531,7 +539,7 @@ def spec_dark_chrome(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
     pvd = multi_scale_noise((h, w), [8, 16, 32], [0.3, 0.4, 0.3], seed + 80)
     M = np.clip(230.0 + pvd * 20.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(8.0 + pvd * 15.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(8.0 + pvd * 15.0 * sm, 15, 255)
     CC = np.full((h, w), 16.0, dtype=np.float32)  # CC=16 max clearcoat dark chrome
     return M, R, CC
 
@@ -544,6 +552,7 @@ def spec_dark_chrome(shape, seed, sm, base_m, base_r):
 # ==================================================================
 
 def paint_vintage_chrome_v2(paint, shape, mask, seed, pm, bb):
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     rng = np.random.RandomState(seed + 90)
     base = paint.copy()
@@ -592,6 +601,6 @@ def spec_vintage_chrome(shape, seed, sm, base_m, base_r):
     rng = np.random.RandomState(seed + 90)
     pits = rng.rand(h, w).astype(np.float32)
     M = np.clip(235.0 + age * 15.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(12.0 + pits * 20.0 * sm + age * 10.0, 0, 255).astype(np.float32)
+    R = np.clip(12.0 + pits * 20.0 * sm + age * 10.0, 15, 255)
     CC = np.full((h, w), 16.0, dtype=np.float32)  # CC=16 max clearcoat vintage chrome
     return M, R, CC

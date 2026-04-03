@@ -16,12 +16,14 @@ Techniques (all different):
 """
 import numpy as np
 from engine.core import multi_scale_noise, get_mgrid
+from engine.paint_v2 import ensure_bb_2d
 
 
 # ==================================================================
 # COPPER METALLIC - Drude model free-electron plasma reflection
 # ==================================================================
 def paint_copper_metallic_v2(paint, shape, mask, seed, pm, bb):
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     # Drude: reflectance depends on plasma frequency vs light frequency
@@ -56,6 +58,7 @@ def spec_copper_metallic(shape, seed, sm, base_m, base_r):
 # DIAMOND COAT - Snell's law total internal reflection sparkle
 # ==================================================================
 def paint_diamond_coat_v2(paint, shape, mask, seed, pm, bb):
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     # Diamond n=2.42, critical angle for TIR = arcsin(1/2.42) = 24.4deg
@@ -93,6 +96,7 @@ def spec_diamond_coat(shape, seed, sm, base_m, base_r):
 # ELECTRIC ICE - Lichtenberg figure dielectric breakdown pattern
 # ==================================================================
 def paint_electric_ice_v2(paint, shape, mask, seed, pm, bb):
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     # Lichtenberg: fractal branching from dielectric breakdown
@@ -140,6 +144,7 @@ def spec_electric_ice(shape, seed, sm, base_m, base_r):
 # GUNMETAL METALLIC - Beckmann micro-facet BRDF distribution
 # ==================================================================
 def paint_gunmetal_metallic_v2(paint, shape, mask, seed, pm, bb):
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     # Beckmann distribution: D(h) = exp(-tan^2(theta)/m^2) / (pi*m^2*cos^4(theta))
@@ -172,6 +177,7 @@ def spec_gunmetal_metallic(shape, seed, sm, base_m, base_r):
 # STANDARD METALLIC - Kubelka-Munk two-flux scattering
 # ==================================================================
 def paint_standard_metallic_v2(paint, shape, mask, seed, pm, bb):
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     # Kubelka-Munk: two opposing light fluxes (forward + backward)
@@ -204,6 +210,7 @@ def spec_standard_metallic(shape, seed, sm, base_m, base_r):
 # PEARL CLASSIC - Nacre aragonite layered interference
 # ==================================================================
 def paint_pearl_classic_v2(paint, shape, mask, seed, pm, bb):
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     # Nacre: alternating aragonite/protein layers create iridescence
@@ -237,6 +244,7 @@ def spec_pearl_classic(shape, seed, sm, base_m, base_r):
 # PLASMA METAL - Ion bombardment surface energy modification
 # ==================================================================
 def paint_plasma_metal_v2(paint, shape, mask, seed, pm, bb):
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     # Plasma treatment: ion bombardment creates localized surface energy zones
@@ -277,6 +285,7 @@ def spec_plasma_metal(shape, seed, sm, base_m, base_r):
 # ROSE GOLD METALLIC - Au-Cu alloy d-band electronic color
 # ==================================================================
 def paint_rose_gold_metallic_v2(paint, shape, mask, seed, pm, bb):
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     # Au-Cu alloy: d-band transitions absorb blue/green, reflect red/yellow
@@ -311,6 +320,7 @@ def spec_rose_gold_metallic(shape, seed, sm, base_m, base_r):
 # SATIN GOLD - Anisotropic Ward BRDF tangent-direction sheen
 # ==================================================================
 def paint_satin_gold_v2(paint, shape, mask, seed, pm, bb):
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     y, x = get_mgrid((h, w))

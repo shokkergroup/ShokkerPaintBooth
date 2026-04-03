@@ -45,6 +45,7 @@ TABLE OF CONTENTS - Use these line numbers to jump to sections:
     /api/shokk/* (library-path, list, save, open, delete, preview)
 
   SECTION 10: EXPORT & UTILITIES (L3250-L3480)
+    /export-psd-layers (Photoshop layer ZIP export #21)
     /api/export-spec-channels, /api/blank-canvas, log_message
 ================================================================
 """
@@ -87,6 +88,27 @@ _preview_abort = threading.Event()
 # changes or the preview scale changes.
 # ----------------------------------------------------------------
 _preview_cache_paint_key = None  # "<paint_file_path>|<mtime>|<scale>"
+
+# ----------------------------------------------------------------
+# Spec delta cache (#12): stores the last spec map (uint8 ndarray)
+# returned by /preview-render so subsequent previews can send a
+# compressed delta instead of the full base64 PNG.
+# ----------------------------------------------------------------
+_prev_spec_cache = None  # numpy uint8 array or None
+
+# ----------------------------------------------------------------
+# Render statistics — accumulated during the server session.
+# Exposed via GET /api/render-stats for the UI dashboard.
+# ----------------------------------------------------------------
+_render_stats = {
+    "total_renders": 0,
+    "total_render_time": 0.0,
+    "zone_times": {},       # zone_name -> [list of elapsed times]
+    "cache_hits": 0,
+    "cache_misses": 0,
+    "session_start": None,  # set on first render
+}
+_render_stats_lock = threading.Lock()
 
 # --- Fix OSError [Errno 22] on print() when stdout/stderr pipes break (Electron) ---
 class _SafeStream:
@@ -2108,6 +2130,9 @@ def preview_render_endpoint():
                 if hasattr(_eng.build_multi_zone, '_zone_cache'):
                     _eng.build_multi_zone._zone_cache.clear()
                     logger.info(f"[preview-cache] Invalidated zone cache (paint file changed)")
+                # Also clear spec delta cache so first render after change sends full PNG
+                global _prev_spec_cache
+                _prev_spec_cache = None
             except Exception:
                 pass
         if changed_zone >= 0 or zone_hashes:
@@ -2381,6 +2406,28 @@ def preview_render_endpoint():
             except Exception:
                 pass
 
+        # ---- Spec delta encoding (#12) ----
+        # If we have a cached previous spec and shapes match, compute a
+        # compressed delta.  Send it instead of the full PNG when smaller.
+        global _prev_spec_cache
+        spec_delta_b64 = None
+        if spec_normalized is not None and _prev_spec_cache is not None:
+            try:
+                if _prev_spec_cache.shape == spec_normalized.shape:
+                    from engine.compose import compress_spec_delta
+                    delta_bytes = compress_spec_delta(spec_normalized, _prev_spec_cache)
+                    # Only use delta if it is smaller than the full PNG
+                    spec_png_bytes = base64.b64decode(spec_b64.split(",", 1)[-1]) if spec_b64 and spec_b64.startswith("data:") else b""
+                    if len(delta_bytes) < len(spec_png_bytes) * 0.9:
+                        spec_delta_b64 = base64.b64encode(delta_bytes).decode("ascii")
+                        logger.info(f"[preview-delta] delta={len(delta_bytes)}B vs png={len(spec_png_bytes)}B  ({len(delta_bytes)/max(1,len(spec_png_bytes))*100:.0f}%)")
+            except Exception as _de:
+                logger.debug(f"Spec delta encoding skipped: {_de}")
+
+        # Update the cached spec for next delta computation
+        if spec_normalized is not None:
+            _prev_spec_cache = spec_normalized.copy()
+
         payload = {
             "success": True,
             "elapsed_ms": round(elapsed_ms, 1),
@@ -2388,6 +2435,8 @@ def preview_render_endpoint():
             "spec_preview": spec_b64,
             "resolution": [paint_rgb.shape[1], paint_rgb.shape[0]],
         }
+        if spec_delta_b64:
+            payload["spec_delta"] = spec_delta_b64
         if spec_warning:
             payload["spec_warning"] = spec_warning
         return jsonify(payload)
@@ -2675,6 +2724,18 @@ def render():
 
         elapsed = time.time() - start
         logger.info(f"Job {job_id}: completed in {elapsed:.1f}s")
+
+        # ── Track render statistics ──
+        with _render_stats_lock:
+            if _render_stats["session_start"] is None:
+                _render_stats["session_start"] = time.time()
+            _render_stats["total_renders"] += 1
+            _render_stats["total_render_time"] += elapsed
+            for z in zones:
+                zname = z.get("name", "unnamed")
+                if zname not in _render_stats["zone_times"]:
+                    _render_stats["zone_times"][zname] = []
+                _render_stats["zone_times"][zname].append(elapsed / max(1, len(zones)))
 
         # ── PERSIST latest render outputs so SHOKK save always has access ──
         # These survive auto-purge (they live in OUTPUT_FOLDER root, not job_*)
@@ -4579,6 +4640,222 @@ def api_shokk_rename():
         return jsonify({"error": str(e)}), 500
 
 
+# ================================================================
+# PHOTOSHOP LAYER EXPORT (#21)
+# ================================================================
+@app.route('/export-psd-layers', methods=['POST'])
+def export_psd_layers():
+    """Export per-zone spec + paint images as a ZIP for Photoshop layer import.
+
+    JSON body: same as /render (paint_file, zones, seed, etc.)
+    plus optional: output_name (default: "shokker_layers")
+
+    Returns a ZIP containing:
+      per_zone_1_spec.png, per_zone_1_paint.png, ...
+      combined_spec.png, combined_paint.png
+      layers.json (zone metadata: names, blend modes, order)
+    """
+    import zipfile
+    import tempfile
+    import numpy as np
+    from PIL import Image as PILImage
+
+    try:
+        data = request.get_json() or {}
+        paint_file = data.get("paint_file")
+        paint_image_base64 = data.get("paint_image_base64")
+        if not paint_file and not paint_image_base64:
+            return jsonify({"error": "Missing 'paint_file' or 'paint_image_base64'"}), 400
+        if paint_file and not paint_image_base64 and not os.path.exists(paint_file):
+            return jsonify({"error": f"Paint file not found: {paint_file}"}), 404
+
+        zones = data.get("zones", [])
+        if not zones:
+            return jsonify({"error": "No zones provided"}), 400
+
+        seed = int(data.get("seed", 51))
+        output_name = (data.get("output_name") or "shokker_layers").strip()
+        output_name = "".join(c if c.isalnum() or c in "._- " else "_" for c in output_name).strip() or "shokker_layers"
+
+        # Create a temp job directory for the render
+        job_id = f"{int(time.time())}_layers"
+        job_dir = os.path.join(OUTPUT_FOLDER, f"job_{job_id}")
+        os.makedirs(job_dir, exist_ok=True)
+
+        # Decode base64 paint if provided
+        if paint_image_base64:
+            try:
+                raw = paint_image_base64
+                if raw.startswith("data:"):
+                    raw = raw.split(",", 1)[-1]
+                buf = base64.b64decode(raw)
+                decal_paint_path = os.path.join(job_dir, "paint_with_decals.png")
+                with open(decal_paint_path, "wb") as f:
+                    f.write(buf)
+                paint_file = decal_paint_path
+            except Exception as e:
+                return jsonify({"error": f"Invalid paint_image_base64: {e}"}), 400
+
+        # Apply recolor if provided
+        actual_paint_file = paint_file
+        recolor_rules = data.get("recolor_rules", [])
+        if recolor_rules:
+            try:
+                actual_paint_file = apply_paint_recolor(paint_file, recolor_rules, job_dir)
+            except Exception:
+                actual_paint_file = paint_file
+
+        # Decode region_mask RLE for each zone (same as /render)
+        for z in zones:
+            if z.get("region_mask") and isinstance(z["region_mask"], (dict, str)):
+                try:
+                    rle = z["region_mask"]
+                    if isinstance(rle, str):
+                        rle = json.loads(rle)
+                    rw, rh = rle.get("width", 0), rle.get("height", 0)
+                    runs = rle.get("runs", [])
+                    flat = np.zeros(rw * rh, dtype=np.float32)
+                    pos = 0
+                    for run_val, run_len in runs:
+                        flat[pos:pos + run_len] = 1.0 if run_val else 0.0
+                        pos += run_len
+                    z["region_mask"] = flat.reshape((rh, rw))
+                except Exception:
+                    z.pop("region_mask", None)
+
+        # Build server_zones (simplified zone conversion)
+        server_zones = []
+        for z in zones:
+            zone_obj = {
+                "name": z.get("name", "Zone"),
+                "color": z.get("color", "everything"),
+                "intensity": z.get("intensity", "100"),
+            }
+            if z.get("base"):
+                zone_obj["base"] = z["base"]
+                zone_obj["pattern"] = z.get("pattern", "none")
+                if z.get("scale"): zone_obj["scale"] = float(z["scale"])
+                if z.get("rotation"): zone_obj["rotation"] = float(z["rotation"])
+                if z.get("pattern_opacity"): zone_obj["pattern_opacity"] = float(z["pattern_opacity"])
+                if z.get("pattern_stack"): zone_obj["pattern_stack"] = z["pattern_stack"]
+            elif z.get("finish"):
+                zone_obj["finish"] = z["finish"]
+                if z.get("finish_colors"): zone_obj["finish_colors"] = z["finish_colors"]
+                if z.get("pattern") and z["pattern"] != "none":
+                    zone_obj["pattern"] = z["pattern"]
+                if z.get("scale"): zone_obj["scale"] = float(z["scale"])
+                if z.get("pattern_opacity"): zone_obj["pattern_opacity"] = float(z["pattern_opacity"])
+            if z.get("region_mask") is not None and isinstance(z["region_mask"], np.ndarray):
+                zone_obj["region_mask"] = z["region_mask"]
+            if z.get("pattern_spec_mult") is not None:
+                zone_obj["pattern_spec_mult"] = float(z["pattern_spec_mult"])
+            if z.get("custom_intensity"): zone_obj["custom_intensity"] = z["custom_intensity"]
+            if z.get("wear_level"): zone_obj["wear_level"] = z["wear_level"]
+            # v6 params
+            if z.get("paint_color"): zone_obj["paint_color"] = z["paint_color"]
+            if z.get("blend_base"):
+                zone_obj["blend_base"] = z["blend_base"]
+                zone_obj["blend_dir"] = z.get("blend_dir", "horizontal")
+                zone_obj["blend_amount"] = float(z.get("blend_amount", 0.5))
+            server_zones.append(zone_obj)
+
+        import_spec_map = data.get("import_spec_map")
+        if import_spec_map and not os.path.exists(import_spec_map):
+            import_spec_map = None
+
+        # Run the engine with export_layers=True
+        import shokker_engine_v2 as _eng
+        result = _eng.build_multi_zone(
+            actual_paint_file, job_dir, server_zones,
+            seed=seed, export_layers=True,
+            import_spec_map=import_spec_map,
+        )
+
+        # Unpack result: (paint_rgb, combined_spec_u8, zone_masks, zone_layers)
+        if len(result) == 4:
+            paint_rgb, combined_spec_u8, zone_masks, zone_layers = result
+        else:
+            # Fallback if export_layers somehow returned 3-tuple
+            paint_rgb, combined_spec_u8, zone_masks = result[:3]
+            zone_layers = []
+
+        # Build the ZIP
+        zip_buf = io.BytesIO()
+        with zipfile.ZipFile(zip_buf, "w", zipfile.ZIP_DEFLATED) as zf:
+            # Per-zone images
+            layers_meta = []
+            for layer in zone_layers:
+                idx = layer["zone_index"] + 1
+                zname = layer["zone_name"]
+                safe_name = "".join(c if c.isalnum() or c in "_- " else "_" for c in zname).strip() or f"zone_{idx}"
+
+                # Spec PNG
+                spec_arr = layer["spec"]
+                spec_img = PILImage.fromarray(spec_arr)
+                spec_buf = io.BytesIO()
+                spec_img.save(spec_buf, format="PNG")
+                zf.writestr(f"per_zone_{idx}_spec.png", spec_buf.getvalue())
+
+                # Paint PNG
+                paint_arr = layer["paint"]
+                paint_img = PILImage.fromarray(paint_arr)
+                paint_buf = io.BytesIO()
+                paint_img.save(paint_buf, format="PNG")
+                zf.writestr(f"per_zone_{idx}_paint.png", paint_buf.getvalue())
+
+                layers_meta.append({
+                    "index": idx,
+                    "name": zname,
+                    "safe_name": safe_name,
+                    "spec_file": f"per_zone_{idx}_spec.png",
+                    "paint_file": f"per_zone_{idx}_paint.png",
+                    "blend_mode": "normal",
+                })
+
+            # Combined images
+            combined_paint_img = PILImage.fromarray(paint_rgb)
+            cp_buf = io.BytesIO()
+            combined_paint_img.save(cp_buf, format="PNG")
+            zf.writestr("combined_paint.png", cp_buf.getvalue())
+
+            combined_spec_img = PILImage.fromarray(combined_spec_u8)
+            cs_buf = io.BytesIO()
+            combined_spec_img.save(cs_buf, format="PNG")
+            zf.writestr("combined_spec.png", cs_buf.getvalue())
+
+            # Layers manifest
+            manifest = {
+                "version": 1,
+                "layers": layers_meta,
+                "combined_paint": "combined_paint.png",
+                "combined_spec": "combined_spec.png",
+                "resolution": [int(paint_rgb.shape[1]), int(paint_rgb.shape[0])],
+                "seed": seed,
+            }
+            zf.writestr("layers.json", json.dumps(manifest, indent=2))
+
+        zip_buf.seek(0)
+        zip_bytes = zip_buf.getvalue()
+
+        # Also save to disk for later retrieval
+        zip_path = os.path.join(job_dir, f"{output_name}.zip")
+        with open(zip_path, "wb") as f:
+            f.write(zip_bytes)
+
+        logger.info(f"PSD layer export: {len(zone_layers)} zones, ZIP={len(zip_bytes)} bytes -> {zip_path}")
+
+        return send_file(
+            io.BytesIO(zip_bytes),
+            mimetype="application/zip",
+            as_attachment=True,
+            download_name=f"{output_name}.zip",
+        )
+
+    except Exception as e:
+        logger.error(f"PSD layer export failed: {e}\n{traceback.format_exc()}")
+        return jsonify({"error": str(e)}), 500
+
+
 @app.route('/api/export-spec-channels', methods=['POST'])
 def api_export_spec_channels():
     """
@@ -4781,6 +5058,41 @@ def auto_cleanup_old_jobs(max_age_hours=24):
                 pass
     if cleaned:
         logger.info(f"Auto-cleanup: removed {cleaned} job dirs older than {max_age_hours}h")
+
+
+# ================================================================
+# RENDER STATISTICS ENDPOINT
+# ================================================================
+
+@app.route('/api/render-stats', methods=['GET'])
+def api_render_stats():
+    """Return render statistics for the current session."""
+    with _render_stats_lock:
+        total = _render_stats["total_renders"]
+        total_time = _render_stats["total_render_time"]
+        avg_time = total_time / total if total > 0 else 0.0
+        zone_avgs = {}
+        for zname, times in _render_stats["zone_times"].items():
+            zone_avgs[zname] = round(sum(times) / len(times), 2) if times else 0.0
+        hits = _render_stats["cache_hits"]
+        misses = _render_stats["cache_misses"]
+        cache_total = hits + misses
+        cache_rate = round(hits / cache_total * 100, 1) if cache_total > 0 else 0.0
+        uptime = 0.0
+        if _render_stats["session_start"]:
+            uptime = round(time.time() - _render_stats["session_start"], 1)
+
+    return jsonify({
+        "total_renders": total,
+        "average_render_time": round(avg_time, 2),
+        "total_render_time": round(total_time, 2),
+        "per_zone_avg_times": zone_avgs,
+        "cache_hit_rate": cache_rate,
+        "cache_hits": hits,
+        "cache_misses": misses,
+        "gpu": gpu_info(),
+        "session_uptime_seconds": uptime,
+    })
 
 
 if __name__ == '__main__':

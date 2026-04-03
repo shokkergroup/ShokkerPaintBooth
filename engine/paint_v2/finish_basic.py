@@ -20,6 +20,7 @@ where all values are in 0-255 float32 range.
 
 import numpy as np
 from engine.core import multi_scale_noise, get_mgrid, hsv_to_rgb_vec
+from engine.paint_v2 import ensure_bb_2d
 
 
 # ============================================================================
@@ -28,6 +29,7 @@ from engine.core import multi_scale_noise, get_mgrid, hsv_to_rgb_vec
 
 def paint_blackout_v2(paint, shape, mask, seed, pm, bb):
     """Near-zero reflectance total black absorption."""
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     darkness = np.ones((h, w), dtype=np.float32) * 0.02
     effect = np.stack([darkness, darkness, darkness], axis=2)
@@ -136,7 +138,7 @@ def spec_chameleon(shape, seed, sm, base_m, base_r):
     M  = np.clip(base_m + combined * 100.0 * sm - 50.0, 0, 255).astype(np.float32)
     # R: low roughness overall but with interference-driven variation
     # Thin-film creates specular hotspots where layers align
-    R  = np.clip(base_r + (1.0 - combined) * 40.0 * sm - 20.0, 0, 255).astype(np.float32)
+    R  = np.clip(base_r + (1.0 - combined) * 40.0 * sm - 20.0, 15, 255)
     # CC: glossy with slight variation from film thickness
     CC = np.clip(16.0 + combined * 20.0 * sm, 16, 255).astype(np.float32)
     return (M, R, CC)
@@ -167,7 +169,7 @@ def spec_clear_matte(shape, seed, sm, base_m, base_r):
     # M: near-zero metallic — fine-scale dust particle flicker only (0-15 range)
     M  = np.clip(dust_noise * 15.0 * sm, 0, 255).astype(np.float32)
     # R: uniform G=200-220, very low amplitude (±5 noise) — engineered consistency
-    R  = np.clip(210.0 + precision_fbm * 10.0 * sm - 5.0, 0, 255).astype(np.float32)
+    R  = np.clip(210.0 + precision_fbm * 10.0 * sm - 5.0, 15, 255)
     # CC: 180-200 — matte clearcoat has slight sheen, not dead flat
     CC = np.clip(190.0 + precision_fbm * 10.0 - 5.0, 160, 255).astype(np.float32)
     return (M, R, CC)
@@ -250,7 +252,7 @@ def spec_frozen(shape, seed, sm, base_m, base_r):
     # M: base metallic with crystalline sparkle variation (high spec variation)
     M  = np.clip(base_m + crystal * 40.0 * sm - 20.0, 0, 255).astype(np.float32)
     # R: crystalline roughness — variation at crystal boundaries creates sharp specular edges
-    R  = np.clip(base_r + (1.0 - crystal) * 35.0 * sm, 0, 255).astype(np.float32)
+    R  = np.clip(base_r + (1.0 - crystal) * 35.0 * sm, 15, 255)
     # CC: slight variation following crystal edges
     CC = np.clip(16.0 + crystal * 20.0 * sm, 16, 255).astype(np.float32)
     return (M, R, CC)
@@ -279,7 +281,7 @@ def spec_frozen_matte(shape, seed, sm, base_m, base_r):
     # M: low metallic — frosted matte suppresses metallic highlights (0-30 range)
     M  = np.clip(base_m * 0.12 + frost_fbm * 10.0 * sm, 0, 255).astype(np.float32)
     # R: uniform high micro-roughness 200-230 — frosted surface is uniformly rough
-    R  = np.clip(200.0 + frost_fbm * 30.0 * sm, 0, 255).astype(np.float32)
+    R  = np.clip(200.0 + frost_fbm * 30.0 * sm, 15, 255)
     # CC: high/flat CC (CC=160-200) — frosted = no clearcoat sparkle
     CC = np.clip(160.0 + frost_fbm * 40.0, 16, 255).astype(np.float32)
     return (M, R, CC)
@@ -366,7 +368,7 @@ def spec_living_matte(shape, seed, sm, base_m, base_r):
     # M: near-zero metallic — slight random organic variation (0-20 range)
     M  = np.clip(organic_fbm * 20.0 * sm, 0, 255).astype(np.float32)
     # R: patchy roughness G=210-255 — high amplitude, noticeably irregular
-    R  = np.clip(232.0 + organic_fbm * 45.0 * sm - 22.0, 0, 255).astype(np.float32)
+    R  = np.clip(232.0 + organic_fbm * 45.0 * sm - 22.0, 15, 255)
     # CC: patchy coverage variation (175-230) — organic matte has uneven protective quality
     CC = np.clip(202.0 + patch_fbm * 55.0 - 27.0, 160, 255).astype(np.float32)
     return (M, R, CC)
@@ -397,7 +399,7 @@ def spec_matte(shape, seed, sm, base_m, base_r):
     # M: near-zero with micro-variation (0-30 range)
     M  = np.clip(rough_fbm * 30.0 * sm, 0, 255).astype(np.float32)
     # R: matte roughness 220-255 spatially varied
-    R  = np.clip(220.0 + rough_fbm * 35.0 * sm, 0, 255).astype(np.float32)
+    R  = np.clip(220.0 + rough_fbm * 35.0 * sm, 15, 255)
     # CC: near-flat (200-230) with slight noise variation
     cc_noise = multi_scale_noise((h, w), [4, 8, 16], [0.4, 0.35, 0.25], seed + 4101)
     CC = np.clip(200.0 + cc_noise * 30.0, 160, 255).astype(np.float32)
@@ -571,7 +573,7 @@ def spec_satin(shape, seed, sm, base_m, base_r):
     # M: near-zero with micro-variation for subtle satin sheen (range 0-18)
     M  = np.clip(sheen_fbm * 18.0 * sm, 0, 255).astype(np.float32)
     # R: satin roughness 80-140 with spatial noise
-    R  = np.clip(80.0 + sheen_fbm * 60.0 * sm, 0, 255).astype(np.float32)
+    R  = np.clip(80.0 + sheen_fbm * 60.0 * sm, 15, 255)
     # CC: satin clearcoat 40-90 with slight noise (moderately glossy)
     cc_noise = multi_scale_noise((h, w), [4, 8], [0.5, 0.5], seed + 3802)
     CC = np.clip(40.0 + cc_noise * 50.0, 16, 255).astype(np.float32)
@@ -706,6 +708,7 @@ def spec_vantablack(shape, seed, sm, base_m, base_r):
 def paint_volcanic_v2(paint, shape, mask, seed, pm, bb):
     """Volcanic: darken base, warm orange/red in bright zones, cool charcoal
     in dark zones, ash texture noise overlay."""
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     gray = base.mean(axis=2)

@@ -7533,7 +7533,7 @@ def _suggest_similar_ids(requested_id, registry, max_suggestions=5):
     return [s[1] for s in scored[:max_suggestions]]
 
 
-def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51, save_debug_images=False, import_spec_map=None, car_prefix="car_num", stamp_image=None, stamp_spec_finish="gloss", preview_mode=False, decal_spec_finishes=None, decal_paint_path=None, decal_mask_base64=None, abort_event=None, progress_callback=None):
+def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51, save_debug_images=False, import_spec_map=None, car_prefix="car_num", stamp_image=None, stamp_spec_finish="gloss", preview_mode=False, decal_spec_finishes=None, decal_paint_path=None, decal_mask_base64=None, abort_event=None, progress_callback=None, generate_normal_map=False, export_layers=False):
     """
     Apply different finishes to different color-detected zones.
 
@@ -7673,6 +7673,9 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
     print(f"\n  Building zone masks...")
     zone_masks = []
     claimed = np.zeros((h, w), dtype=np.float32)  # Track what's been claimed
+
+    # Per-zone layer collection for export_layers mode (#21)
+    _export_zone_layers = [] if export_layers else None
 
     # First pass: build masks for non-remainder zones
     for i, zone in enumerate(zones):
@@ -8702,6 +8705,27 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
             except Exception as _cse:
                 pass  # Cache store failure is non-fatal
 
+        # ---- Export layers: capture per-zone spec + paint before compositing (#21) ----
+        if _export_zone_layers is not None:
+            try:
+                # Capture zone spec (masked to zone area only)
+                _ez_mask3d = zone_mask[:, :, np.newaxis]
+                _ez_spec = (zone_spec.astype(np.float32) * (_ez_mask3d > 0.05).astype(np.float32)).astype(np.uint8)
+                # Capture zone paint (current paint state, masked)
+                _ez_paint = (np.clip(paint, 0, 1) * 255).astype(np.uint8)
+                if _ez_paint.shape[2] == 4:
+                    _ez_paint = _ez_paint[:, :, :3]
+                _ez_paint_masked = (_ez_paint.astype(np.float32) * (_ez_mask3d[:, :, :3] > 0.05 if _ez_mask3d.shape[2] == 1 else _ez_mask3d > 0.05).astype(np.float32)).astype(np.uint8)
+                _export_zone_layers.append({
+                    "zone_index": i,
+                    "zone_name": name,
+                    "spec": _ez_spec.copy(),
+                    "paint": _ez_paint_masked.copy(),
+                    "mask": zone_mask.copy(),
+                })
+            except Exception as _exl_err:
+                print(f"    [export_layers] WARNING: capture failed for zone {i+1}: {_exl_err}")
+
         # Apply zone spec with hard ownership: where mask is strong, fully replace
         # Vectorized across all 4 channels at once for speed
         # GPU-accelerated when CuPy is available
@@ -8939,6 +8963,8 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
 
     # ---- PREVIEW MODE: return arrays directly, skip all file I/O ----
     if preview_mode:
+        if export_layers and _export_zone_layers:
+            return (paint_rgb, combined_spec_u8, _export_zone_layers)
         return (paint_rgb, combined_spec_u8)
 
     # Save outputs - car_prefix is "car_num" (custom numbers) or "car" (no custom numbers)
@@ -8948,6 +8974,28 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
 
     write_tga_24bit(paint_path, paint_rgb)
     write_tga_32bit(spec_path, combined_spec_u8)
+
+    # ---- OPTIONAL: Normal map generation from metallic channel ----
+    if generate_normal_map:
+        try:
+            import cv2 as _cv2
+            t_normal = time.time()
+            # Use M channel (R = index 0 = Metallic) as height map
+            height_map = combined_spec_u8[:, :, 0].astype(np.float32) / 255.0
+            # Compute Sobel gradients in X and Y directions
+            dx = _cv2.Sobel(height_map, _cv2.CV_32F, 1, 0, ksize=3)
+            dy = _cv2.Sobel(height_map, _cv2.CV_32F, 0, 1, ksize=3)
+            # Convert to tangent-space normal map: R = 0.5 + dx*0.5, G = 0.5 + dy*0.5, B = 1.0
+            normal_r = np.clip(0.5 + dx * 0.5, 0.0, 1.0)
+            normal_g = np.clip(0.5 + dy * 0.5, 0.0, 1.0)
+            normal_b = np.ones_like(height_map)
+            normal_map = np.stack([normal_r, normal_g, normal_b], axis=-1)
+            normal_map_u8 = (normal_map * 255).astype(np.uint8)
+            normal_path = os.path.join(output_dir, f"{car_prefix}_{iracing_id}_normal.tga")
+            write_tga_24bit(normal_path, normal_map_u8)
+            print(f"  Normal map saved: {normal_path} ({time.time()-t_normal:.2f}s)")
+        except Exception as e:
+            print(f"  Normal map generation failed: {e}")
 
     # Save previews
     Image.fromarray(paint_rgb).save(os.path.join(output_dir, "PREVIEW_paint.png"))
@@ -8993,6 +9041,8 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
         print(f"  Zone previews saved for debugging")
     print(f"{'=' * 60}")
 
+    if export_layers and _export_zone_layers:
+        return paint_rgb, combined_spec_u8, zone_masks, _export_zone_layers
     return paint_rgb, combined_spec_u8, zone_masks
 
 

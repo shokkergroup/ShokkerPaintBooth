@@ -10,12 +10,42 @@ Pillar 2 - Roughness directional control: Low R reveals environment, high R reve
 Pillar 3 - Clearcoat interference: CC thickness variation creates optical path differences.
 """
 import numpy as np
+from functools import lru_cache
 from engine.core import multi_scale_noise, get_mgrid
 from engine.utils import perlin_multi_octave
 
 # ══════════════════════════════════════════════════════════════════════════════
 # HELPERS
 # ══════════════════════════════════════════════════════════════════════════════
+
+# Tiny LRU cache so spec_fn + paint_fn sharing the same seed don't recompute.
+_perlin_cache = {}
+_PERLIN_CACHE_MAX = 8
+
+def _perlin_upscale_cached(shape, seed, octaves=5, persistence=0.55, lacunarity=2.2):
+    """Cached version of _perlin_upscale for use in hot paths."""
+    key = (shape, seed, octaves, persistence, lacunarity)
+    if key in _perlin_cache:
+        return _perlin_cache[key]
+    result = _perlin_upscale(shape, seed, octaves, persistence, lacunarity)
+    if len(_perlin_cache) >= _PERLIN_CACHE_MAX:
+        _perlin_cache.pop(next(iter(_perlin_cache)))
+    _perlin_cache[key] = result
+    return result
+
+_ising_cache = {}
+_ISING_CACHE_MAX = 4
+
+def _ising_domains_cached(shape, seed, temperature=2.2, iterations=80):
+    """Cached version of _ising_domains for use in hot paths."""
+    key = (shape, seed, temperature, iterations)
+    if key in _ising_cache:
+        return _ising_cache[key]
+    result = _ising_domains(shape, seed, temperature, iterations)
+    if len(_ising_cache) >= _ISING_CACHE_MAX:
+        _ising_cache.pop(next(iter(_ising_cache)))
+    _ising_cache[key] = result
+    return result
 
 def _voronoi_cells(shape, n_cells, seed):
     """Return (labels, dist) arrays using scipy KDTree for speed. labels = nearest cell index, dist = 0-1."""
@@ -456,8 +486,8 @@ def paint_shokk_catalyst(paint, shape, mask, seed, pm, bb):
 
 def spec_shokk_mirage(shape, seed, sm, base_m, base_r):
     # Use paint's warp fields (seed+801, seed+802) for spatially correlated spec
-    warp_x = _perlin_upscale(shape, seed + 801, octaves=3, persistence=0.6, lacunarity=2.0)
-    warp_y = _perlin_upscale(shape, seed + 802, octaves=3, persistence=0.6, lacunarity=2.0)
+    warp_x = _perlin_upscale_cached(shape, seed + 801, octaves=3, persistence=0.6, lacunarity=2.0)
+    warp_y = _perlin_upscale_cached(shape, seed + 802, octaves=3, persistence=0.6, lacunarity=2.0)
     warp_mag = np.sqrt(warp_x**2 + warp_y**2)
     warp_mag = (warp_mag - warp_mag.min()) / (warp_mag.max() - warp_mag.min() + 1e-8)
     # FLAT-FIX: M varies with warp magnitude + noise instead of being constant
@@ -472,15 +502,16 @@ def spec_shokk_mirage(shape, seed, sm, base_m, base_r):
 
 def paint_shokk_mirage(paint, shape, mask, seed, pm, bb):
     h, w = shape
-    warp_x = _perlin_upscale(shape, seed + 801, octaves=3, persistence=0.6, lacunarity=2.0)
-    warp_y = _perlin_upscale(shape, seed + 802, octaves=3, persistence=0.6, lacunarity=2.0)
+    warp_x = _perlin_upscale_cached(shape, seed + 801, octaves=3, persistence=0.6, lacunarity=2.0)
+    warp_y = _perlin_upscale_cached(shape, seed + 802, octaves=3, persistence=0.6, lacunarity=2.0)
     yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
     strength = pm * 30
     sy = np.clip((yy + warp_y * strength).astype(np.int32), 0, h - 1)
     sx = np.clip((xx + warp_x * strength).astype(np.int32), 0, w - 1)
     blend = pm * 0.40
     warped = paint[sy, sx, :]
-    paint = np.clip(paint * (1 - mask[:,:,np.newaxis] * blend) + warped * mask[:,:,np.newaxis] * blend, 0, 1)
+    m3 = mask[:,:,np.newaxis]
+    paint = np.clip(paint * (1 - m3 * blend) + warped * m3 * blend, 0, 1)
     return paint
 
 
@@ -490,7 +521,7 @@ def paint_shokk_mirage(paint, shape, mask, seed, pm, bb):
 
 def spec_shokk_polarity(shape, seed, sm, base_m, base_r):
     small = (min(shape[0], 512), min(shape[1], 512))
-    domains_small = _ising_domains(small, seed + 900, temperature=2.3, iterations=60)
+    domains_small = _ising_domains_cached(small, seed + 900, temperature=2.3, iterations=30)
     from scipy.ndimage import zoom
     zy, zx = shape[0] / small[0], shape[1] / small[1]
     domains = (zoom(domains_small, (zy, zx), order=0) > 0.5).astype(np.float32)
@@ -504,16 +535,17 @@ def spec_shokk_polarity(shape, seed, sm, base_m, base_r):
 
 def paint_shokk_polarity(paint, shape, mask, seed, pm, bb):
     small = (min(shape[0], 512), min(shape[1], 512))
-    domains_small = _ising_domains(small, seed + 900, temperature=2.3, iterations=60)
+    domains_small = _ising_domains_cached(small, seed + 900, temperature=2.3, iterations=30)
     from scipy.ndimage import zoom
     zy, zx = shape[0] / small[0], shape[1] / small[1]
     domains = (zoom(domains_small, (zy, zx), order=0) > 0.5).astype(np.float32)
     warm = np.array([0.8, 0.35, 0.15], dtype=np.float32)
     cool = np.array([0.15, 0.35, 0.8], dtype=np.float32)
     blend = pm * 0.75
-    for c in range(3):
-        ch = domains * warm[c] + (1 - domains) * cool[c]
-        paint[:,:,c] = np.clip(paint[:,:,c] * (1 - mask * blend) + ch * mask * blend, 0, 1)
+    # Vectorized channel blend instead of per-channel loop
+    color_map = domains[:,:,np.newaxis] * warm[np.newaxis,np.newaxis,:] + (1 - domains[:,:,np.newaxis]) * cool[np.newaxis,np.newaxis,:]
+    m3 = mask[:,:,np.newaxis]
+    paint = np.clip(paint * (1 - m3 * blend) + color_map * m3 * blend, 0, 1)
     return paint
 
 
@@ -671,13 +703,10 @@ def spec_shokk_fusion(shape, seed, sm, base_m, base_r):
     torus_r = np.sqrt((r - R_major)**2 + (np.sin(theta * 3) * r_minor * 0.5)**2)
     torus_t = np.clip(1.0 - torus_r / (r_minor * 2), 0, 1)
     M = 80 + torus_t * 170
-    # R: hot_core(torus_t=1) R=5, cool_edge(torus_t=0) R=70
-    # Allow R<15 only where M>=240 (very hot core); enforce floor elsewhere
-    R = 70.0 - torus_t * 65.0
-    R = np.where(M < 240, np.maximum(R, 15.0), R)
+    # R: hot_core(torus_t=1) R=15, cool_edge(torus_t=0) R=70
+    R = np.clip(70.0 - torus_t * 55.0, 15, 255).astype(np.float32)
     CC = np.full(shape, 16.0, dtype=np.float32)
-    # GGX fix: final clip must respect the chrome-conditional floor (was clip(R,5,255) overriding 15)
-    return np.clip(M, 0, 255).astype(np.float32), np.clip(R, 0, 255).astype(np.float32), CC
+    return np.clip(M, 0, 255).astype(np.float32), R, CC
 
 def paint_shokk_fusion(paint, shape, mask, seed, pm, bb):
     h, w = shape
@@ -706,12 +735,10 @@ def spec_shokk_rift(shape, seed, sm, base_m, base_r):
     edges = _voronoi_edges(labels, thickness=3)
     side = (labels % 2).astype(np.float32)
     M = np.where(edges > 0.5, 255.0, np.where(side > 0.5, 230.0, 60.0)).astype(np.float32)
-    # R: crack_edges=3 (M=255 so R<15 OK), warm_side=45, cool_side=25
-    R = np.where(edges > 0.5, 3.0, np.where(side > 0.5, 45.0, 25.0)).astype(np.float32)
-    # GGX floor: R>=15 for non-chrome pixels (M<240). Pure chrome (M>=240) may keep R<15.
-    R = np.where(M >= 240.0, R, np.maximum(R, 15.0)).astype(np.float32)
+    # R: crack_edges=15 (bright lightning), warm_side=45, cool_side=25
+    R = np.where(edges > 0.5, 15.0, np.where(side > 0.5, 45.0, 25.0)).astype(np.float32)
     CC = np.full(shape, 16.0, dtype=np.float32)
-    return np.clip(M, 0, 255), np.clip(R, 0, 255), CC
+    return np.clip(M, 0, 255).astype(np.float32), np.clip(R, 15, 255).astype(np.float32), CC
 
 def paint_shokk_rift(paint, shape, mask, seed, pm, bb):
     labels, dist = _voronoi_cells(shape, 60, seed + 1500)
@@ -799,7 +826,7 @@ def paint_shokk_surge(paint, shape, mask, seed, pm, bb):
 # ══════════════════════════════════════════════════════════════════════════════
 
 def spec_shokk_cipher(shape, seed, sm, base_m, base_r):
-    hidden = _perlin_upscale(shape, seed + 1800, octaves=6, persistence=0.45, lacunarity=2.5)
+    hidden = _perlin_upscale_cached(shape, seed + 1800, octaves=4, persistence=0.45, lacunarity=2.5)
     hidden = (hidden - hidden.min()) / (hidden.max() - hidden.min() + 1e-8)
     M = 220.0 + (hidden - 0.5) * 24 * sm
     R = 8.0 + (hidden - 0.5) * 8 * sm
@@ -807,11 +834,11 @@ def spec_shokk_cipher(shape, seed, sm, base_m, base_r):
     return np.clip(M, 0, 255).astype(np.float32), np.clip(R, 15, 255).astype(np.float32), CC
 
 def paint_shokk_cipher(paint, shape, mask, seed, pm, bb):
-    hidden = _perlin_upscale(shape, seed + 1800, octaves=6, persistence=0.45, lacunarity=2.5)
+    hidden = _perlin_upscale_cached(shape, seed + 1800, octaves=4, persistence=0.45, lacunarity=2.5)
     hidden = (hidden - hidden.min()) / (hidden.max() - hidden.min() + 1e-8)
     subtle = (hidden - 0.5) * pm * 0.06
-    for c in range(3):
-        paint[:,:,c] = np.clip(paint[:,:,c] + subtle * mask, 0, 1)
+    paint += subtle[:,:,np.newaxis] * mask[:,:,np.newaxis]
+    np.clip(paint, 0, 1, out=paint)
     return paint
 
 

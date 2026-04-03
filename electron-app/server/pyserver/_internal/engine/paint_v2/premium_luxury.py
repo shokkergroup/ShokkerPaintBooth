@@ -16,6 +16,7 @@ Techniques (all different):
 """
 import numpy as np
 from engine.core import multi_scale_noise, get_mgrid
+from engine.paint_v2 import ensure_bb_2d
 
 
 # ==================================================================
@@ -27,6 +28,7 @@ from engine.core import multi_scale_noise, get_mgrid
 
 def paint_bentley_silver_v2(paint, shape, mask, seed, pm, bb):
     """Bentley signature silver with directional metallic flake orientation sparkle."""
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     rng = np.random.RandomState(seed + 400)
     base = paint.copy()
@@ -71,6 +73,7 @@ def spec_bentley_silver(shape, seed, sm, base_m, base_r):
 
 def paint_bugatti_blue_v2(paint, shape, mask, seed, pm, bb):
     """Bugatti deep blue multi-coat with 5-layer color-shifting interference depth."""
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
 
@@ -115,6 +118,7 @@ def spec_bugatti_blue(shape, seed, sm, base_m, base_r):
 
 def paint_ferrari_rosso_v2(paint, shape, mask, seed, pm, bb):
     """Ferrari Rosso triple-layer candy: Beer-Lambert absorption through translucent pigment."""
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     rng = np.random.RandomState(seed + 420)
@@ -165,6 +169,7 @@ def spec_ferrari_rosso(shape, seed, sm, base_m, base_r):
 
 def paint_koenigsegg_clear_v2(paint, shape, mask, seed, pm, bb):
     """Koenigsegg naked carbon under amber-tinted clearcoat via Beer-Lambert tinting."""
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     y, x = get_mgrid((h, w))
@@ -224,6 +229,7 @@ def spec_koenigsegg_clear(shape, seed, sm, base_m, base_r):
 
 def paint_lamborghini_verde_v2(paint, shape, mask, seed, pm, bb):
     """Lamborghini Verde pearlescent flip: thin-film OPD interference green-to-gold shift."""
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     y, x = get_mgrid((h, w))
@@ -276,6 +282,7 @@ def spec_lamborghini_verde(shape, seed, sm, base_m, base_r):
 
 def paint_maybach_two_tone_v2(paint, shape, mask, seed, pm, bb):
     """Maybach two-tone horizontal split with sigmoid coachline blend zone."""
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     y, x = get_mgrid((h, w))
@@ -332,6 +339,7 @@ def spec_maybach_two_tone(shape, seed, sm, base_m, base_r):
 
 def paint_mclaren_orange_v2(paint, shape, mask, seed, pm, bb):
     """McLaren Papaya Spark fluorescent pigment with UV re-emission glow simulation."""
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
 
@@ -384,6 +392,7 @@ def spec_mclaren_orange(shape, seed, sm, base_m, base_r):
 
 def paint_pagani_tricolore_v2(paint, shape, mask, seed, pm, bb):
     """Pagani tricolore three-zone vertical fade with smoothstep Hermite transitions."""
+    bb = ensure_bb_2d(bb, shape)
     if pm == 0.0:
         return paint
     h, w = shape[:2] if len(shape) > 2 else shape
@@ -470,6 +479,7 @@ def spec_pagani_tricolore(shape, seed, sm, base_m, base_r):
 
 def paint_porsche_pts_v2(paint, shape, mask, seed, pm, bb):
     """Porsche Paint-to-Sample ultra-flat precision color with micro orange-peel texture."""
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
 

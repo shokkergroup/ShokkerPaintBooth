@@ -6,6 +6,7 @@ Implements 9 unique metallic finishes using real physics models and procedural t
 
 import numpy as np
 from engine.core import multi_scale_noise, get_mgrid
+from engine.paint_v2 import ensure_bb_2d
 
 
 # ============================================================================
@@ -19,6 +20,7 @@ def paint_candy_cobalt_v2(paint, shape, mask, seed, pm, bb):
     gives characteristic deepening at high absorption depths.
     WARN-CANDY-002 FIX: replaced linear channel scale with Beer-Lambert exp(-alpha*depth).
     """
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
 
@@ -66,6 +68,7 @@ def paint_cobalt_metal_v2(paint, shape, mask, seed, pm, bb):
     grain orientation regions with bright centres and dark boundaries between them.
     LAZY-EXOTIC-001 FIX: quantized floor(grain*6)/6 crystalline facets replace sinusoid.
     """
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
 
@@ -116,6 +119,7 @@ def paint_liquid_titanium_v2(paint, shape, mask, seed, pm, bb):
     cells, not periodic fringe patterns.
     LAZY-EXOTIC-001 FIX: domain-warp flow replaces plain sin(y/15)+cos(x/15).
     """
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
 
@@ -172,6 +176,7 @@ def paint_mercury_v2(paint, shape, mask, seed, pm, bb):
     follows a Gaussian brightness envelope around its centre-line.
     LAZY-EXOTIC-001 FIX: exp() meniscus pools replace plain cos(x/12)+sin(y/12).
     """
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
 
@@ -225,6 +230,7 @@ def paint_p_mercury_v2(paint, shape, mask, seed, pm, bb):
     Paradigm mercury: darker, more alien variant with absorption in highlights.
     Exotic material with non-standard optical behavior and inky darkness.
     """
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     
@@ -266,6 +272,7 @@ def paint_platinum_v2(paint, shape, mask, seed, pm, bb):
     Platinum: noble metal with d-band electron response and superior UV reflectance.
     Highly polished appearance with subtle wavelength-dependent variations.
     """
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     
@@ -311,6 +318,7 @@ def paint_surgical_steel_v2(paint, shape, mask, seed, pm, bb):
     Austenitic stainless steel: passive oxide film creates matte-polished finish.
     Grain structure visible beneath protective oxide layer.
     """
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     
@@ -360,6 +368,7 @@ def paint_titanium_raw_v2(paint, shape, mask, seed, pm, bb):
     Raw titanium: alpha-beta phase grain boundaries create distinctive texture.
     Unpolished surface with visible phase separation and crystallographic anisotropy.
     """
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     
@@ -411,6 +420,7 @@ def paint_tungsten_v2(paint, shape, mask, seed, pm, bb):
     Tungsten: highest density refractory metal with characteristic grain structure.
     Dense, tight grain boundaries with deep gray appearance and metallic sheen.
     """
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     

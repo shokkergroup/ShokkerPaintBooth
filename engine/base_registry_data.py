@@ -58,6 +58,48 @@ from engine.paint_v2.mortal_shokkbat import (
     paint_ms_war_hammer, spec_ms_war_hammer,
 )
 
+# NEON UNDERGROUND — blacklight reactive neon-glow married paint+spec finishes
+from engine.paint_v2.neon_underground import (
+    paint_neon_pink_blaze, spec_neon_pink_blaze,
+    paint_neon_toxic_green, spec_neon_toxic_green,
+    paint_neon_electric_blue, spec_neon_electric_blue,
+    paint_neon_blacklight, spec_neon_blacklight,
+    paint_neon_orange_hazard, spec_neon_orange_hazard,
+    paint_neon_red_alert, spec_neon_red_alert,
+    paint_neon_cyber_yellow, spec_neon_cyber_yellow,
+    paint_neon_ice_white, spec_neon_ice_white,
+    paint_neon_dual_glow, spec_neon_dual_glow,
+    paint_neon_rainbow_tube, spec_neon_rainbow_tube,
+)
+
+# ANIME INSPIRED — anime/manga-style married paint+spec finishes
+from engine.paint_v2.anime_style import (
+    paint_anime_cel_shade_chrome, spec_anime_cel_shade_chrome,
+    paint_anime_speed_lines, spec_anime_speed_lines,
+    paint_anime_sparkle_burst, spec_anime_sparkle_burst,
+    paint_anime_gradient_hair, spec_anime_gradient_hair,
+    paint_anime_mecha_plate, spec_anime_mecha_plate,
+    paint_anime_sakura_scatter, spec_anime_sakura_scatter,
+    paint_anime_energy_aura, spec_anime_energy_aura,
+    paint_anime_comic_halftone, spec_anime_comic_halftone,
+    paint_anime_neon_outline, spec_anime_neon_outline,
+    paint_anime_crystal_facet, spec_anime_crystal_facet,
+)
+
+# IRIDESCENT INSECTS — insect-inspired structural-color married paint+spec finishes
+from engine.paint_v2.iridescent_insects import (
+    paint_beetle_jewel, spec_beetle_jewel,
+    paint_beetle_rainbow, spec_beetle_rainbow,
+    paint_butterfly_morpho, spec_butterfly_morpho,
+    paint_butterfly_monarch, spec_butterfly_monarch,
+    paint_dragonfly_wing, spec_dragonfly_wing,
+    paint_scarab_gold, spec_scarab_gold,
+    paint_moth_luna, spec_moth_luna,
+    paint_beetle_stag, spec_beetle_stag,
+    paint_wasp_warning, spec_wasp_warning,
+    paint_firefly_glow, spec_firefly_glow,
+)
+
 from engine.spec_paint import (
     # ── Research Session 6: 9 new base finishes ──
     spec_alubeam_base,
@@ -822,6 +864,54 @@ BASE_REGISTRY = {
     "ms_shape_shift":    { "base_spec_fn": spec_ms_shape_shift, "M": 160, "R": 45, "CC": 30, "paint_fn": paint_ms_shape_shift, "desc": "Shape Shift — morphing 3-color zones: mystic green + amber + deep purple."},
     "ms_titan_bronze":   { "base_spec_fn": spec_ms_titan_bronze, "M": 135, "R": 85, "CC": 65, "paint_fn": paint_ms_titan_bronze, "desc": "Titan Bronze — massive bronze metallic + dark brutal texture."},
     "ms_war_hammer":     { "base_spec_fn": spec_ms_war_hammer, "M": 105, "R": 95, "CC": 70, "paint_fn": paint_ms_war_hammer, "desc": "War Hammer — dark armor plate + blood red accent veins."},
+
+    # ══════════════════════════════════════════════════════════════════════
+    # ★ NEON UNDERGROUND — blacklight reactive neon-glow finishes (2026-04-03)
+    # Seeds 9200-9209.  High M (240+), low R (15-20), CC=16.
+    # ══════════════════════════════════════════════════════════════════════
+
+    "neon_pink_blaze":    { "base_spec_fn": spec_neon_pink_blaze, "M": 242, "R": 16, "CC": 16, "paint_fn": paint_neon_pink_blaze, "desc": "Neon Pink Blaze — hot pink neon with concentric pulsing glow zones."},
+    "neon_toxic_green":   { "base_spec_fn": spec_neon_toxic_green, "M": 245, "R": 15, "CC": 16, "paint_fn": paint_neon_toxic_green, "desc": "Neon Toxic Green — radioactive green with Geiger-counter scatter particles."},
+    "neon_electric_blue": { "base_spec_fn": spec_neon_electric_blue, "M": 240, "R": 17, "CC": 16, "paint_fn": paint_neon_electric_blue, "desc": "Neon Electric Blue — deep UV blue with plasma discharge veins."},
+    "neon_blacklight":    { "base_spec_fn": spec_neon_blacklight, "M": 244, "R": 18, "CC": 16, "paint_fn": paint_neon_blacklight, "desc": "Neon Blacklight — UV-reactive purple that glows in dark zones."},
+    "neon_orange_hazard": { "base_spec_fn": spec_neon_orange_hazard, "M": 240, "R": 15, "CC": 16, "paint_fn": paint_neon_orange_hazard, "desc": "Neon Orange Hazard — construction orange with diagonal warning stripe pattern."},
+    "neon_red_alert":     { "base_spec_fn": spec_neon_red_alert, "M": 243, "R": 15, "CC": 16, "paint_fn": paint_neon_red_alert, "desc": "Neon Red Alert — emergency red with siren-like concentric rings."},
+    "neon_cyber_yellow":  { "base_spec_fn": spec_neon_cyber_yellow, "M": 240, "R": 16, "CC": 16, "paint_fn": paint_neon_cyber_yellow, "desc": "Neon Cyber Yellow — cyberpunk yellow with circuit trace PCB pattern."},
+    "neon_ice_white":     { "base_spec_fn": spec_neon_ice_white, "M": 248, "R": 15, "CC": 16, "paint_fn": paint_neon_ice_white, "desc": "Neon Ice White — cold white neon with frost crystallization dendrites."},
+    "neon_dual_glow":     { "base_spec_fn": spec_neon_dual_glow, "M": 242, "R": 16, "CC": 16, "paint_fn": paint_neon_dual_glow, "desc": "Neon Dual Glow — two-color neon (pink+blue) split by warped spatial field."},
+    "neon_rainbow_tube":  { "base_spec_fn": spec_neon_rainbow_tube, "M": 245, "R": 15, "CC": 16, "paint_fn": paint_neon_rainbow_tube, "desc": "Neon Rainbow Tube — full spectrum neon tube with horizontal banding."},
+
+    # ══════════════════════════════════════════════════════════════════════
+    # ★ ANIME INSPIRED — anime/manga-style finishes (Pack #7)
+    # Seeds 9300-9309.  Married paint+spec, cel shading, speed lines, sparkle.
+    # ══════════════════════════════════════════════════════════════════════
+
+    "anime_cel_shade_chrome": { "base_spec_fn": spec_anime_cel_shade_chrome, "M": 200, "R": 30, "CC": 20, "paint_fn": paint_anime_cel_shade_chrome, "desc": "Anime Cel Shade Chrome — flat cel-shaded bands with sharp metallic highlight steps."},
+    "anime_speed_lines":      { "base_spec_fn": spec_anime_speed_lines, "M": 180, "R": 40, "CC": 30, "paint_fn": paint_anime_speed_lines, "desc": "Anime Speed Lines — radial motion lines from focal point. White streaks on dark."},
+    "anime_sparkle_burst":    { "base_spec_fn": spec_anime_sparkle_burst, "M": 220, "R": 20, "CC": 25, "paint_fn": paint_anime_sparkle_burst, "desc": "Anime Sparkle Burst — 4-pointed starburst sparkle clusters on midnight base."},
+    "anime_gradient_hair":    { "base_spec_fn": spec_anime_gradient_hair, "M": 140, "R": 35, "CC": 20, "paint_fn": paint_anime_gradient_hair, "desc": "Anime Gradient Hair — vivid magenta-pink top fading to deep indigo bottom."},
+    "anime_mecha_plate":      { "base_spec_fn": spec_anime_mecha_plate, "M": 190, "R": 40, "CC": 22, "paint_fn": paint_anime_mecha_plate, "desc": "Anime Mecha Plate — hard geometric panel grid with metallic zones and dark seams."},
+    "anime_sakura_scatter":   { "base_spec_fn": spec_anime_sakura_scatter, "M": 100, "R": 45, "CC": 20, "paint_fn": paint_anime_sakura_scatter, "desc": "Anime Sakura Scatter — cherry blossom petal scatter on soft pink background."},
+    "anime_energy_aura":      { "base_spec_fn": spec_anime_energy_aura, "M": 210, "R": 25, "CC": 22, "paint_fn": paint_anime_energy_aura, "desc": "Anime Energy Aura — radial power glow field with energy rays and bright core."},
+    "anime_comic_halftone":   { "base_spec_fn": spec_anime_comic_halftone, "M": 50, "R": 90, "CC": 45, "paint_fn": paint_anime_comic_halftone, "desc": "Anime Comic Halftone — Ben-Day dot pattern with size variation on paper base."},
+    "anime_neon_outline":     { "base_spec_fn": spec_anime_neon_outline, "M": 200, "R": 30, "CC": 25, "paint_fn": paint_anime_neon_outline, "desc": "Anime Neon Outline — dark base with bright cyan-magenta neon edge highlights."},
+    "anime_crystal_facet":    { "base_spec_fn": spec_anime_crystal_facet, "M": 210, "R": 25, "CC": 20, "paint_fn": paint_anime_crystal_facet, "desc": "Anime Crystal Facet — large angular Voronoi crystalline facets with jewel colors."},
+
+    # ══════════════════════════════════════════════════════════════════════
+    # ★ IRIDESCENT INSECTS — insect-inspired structural-color finishes (Pack #9)
+    # Seeds 9400-9409.  Married paint+spec, thin-film iridescence, wing patterns.
+    # ══════════════════════════════════════════════════════════════════════
+
+    "beetle_jewel":       { "base_spec_fn": spec_beetle_jewel, "M": 200, "R": 25, "CC": 18, "paint_fn": paint_beetle_jewel, "desc": "Beetle Jewel — Chrysina green-gold iridescent shell with organic flow zones."},
+    "beetle_rainbow":     { "base_spec_fn": spec_beetle_rainbow, "M": 220, "R": 20, "CC": 18, "paint_fn": paint_beetle_rainbow, "desc": "Beetle Rainbow — Chrysochroa full-spectrum wing case via thin-film interference."},
+    "butterfly_morpho":   { "base_spec_fn": spec_butterfly_morpho, "M": 230, "R": 20, "CC": 16, "paint_fn": paint_butterfly_morpho, "desc": "Butterfly Morpho — brilliant Morpho blue structural color with angle-dependent flash."},
+    "butterfly_monarch":  { "base_spec_fn": spec_butterfly_monarch, "M": 55, "R": 80, "CC": 30, "paint_fn": paint_butterfly_monarch, "desc": "Butterfly Monarch — orange-black monarch wing pattern with Voronoi vein network."},
+    "dragonfly_wing":     { "base_spec_fn": spec_dragonfly_wing, "M": 130, "R": 20, "CC": 18, "paint_fn": paint_dragonfly_wing, "desc": "Dragonfly Wing — transparent wing membrane with rainbow interference and dark veins."},
+    "scarab_gold":        { "base_spec_fn": spec_scarab_gold, "M": 210, "R": 25, "CC": 18, "paint_fn": paint_scarab_gold, "desc": "Scarab Gold — Egyptian scarab golden-green iridescent shift with shell texture."},
+    "moth_luna":          { "base_spec_fn": spec_moth_luna, "M": 40, "R": 120, "CC": 70, "paint_fn": paint_moth_luna, "desc": "Moth Luna — pale green Luna moth with concentric eye-spot patterns. Soft matte."},
+    "beetle_stag":        { "base_spec_fn": spec_beetle_stag, "M": 170, "R": 30, "CC": 20, "paint_fn": paint_beetle_stag, "desc": "Beetle Stag — dark metallic stag beetle armor plates with chitin shine."},
+    "wasp_warning":       { "base_spec_fn": spec_wasp_warning, "M": 80, "R": 50, "CC": 30, "paint_fn": paint_wasp_warning, "desc": "Wasp Warning — yellow-black aposematic banding with metallic shimmer."},
+    "firefly_glow":       { "base_spec_fn": spec_firefly_glow, "M": 160, "R": 40, "CC": 30, "paint_fn": paint_firefly_glow, "desc": "Firefly Glow — dark exoskeleton with bioluminescent yellow-green lantern zones."},
 }
 
 # ── SHOKK SERIES v2 - 20 color-shift PBR bases ──────────────────────────────

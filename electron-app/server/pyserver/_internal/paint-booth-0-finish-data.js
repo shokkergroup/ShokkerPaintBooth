@@ -299,7 +299,18 @@ const BASES = [
     { id: "ms_ghost_vapor", name: "MS Ghost Vapor", desc: "Gray smoke wisps + chrome peek-through. Now you see it.", swatch: "#99AABB" },
     { id: "ms_shape_shift", name: "MS Shape Shift", desc: "Morphing 3-color zones: mystic green + amber + deep purple. Never the same.", swatch: "#88AA33" },
     { id: "ms_titan_bronze", name: "MS Titan Bronze", desc: "Massive bronze metallic + dark brutal texture. Four arms of fury.", swatch: "#AA7722" },
-    { id: "ms_war_hammer", name: "MS War Hammer", desc: "Dark armor plate + blood red accent veins. Conqueror finish.", swatch: "#881111" }
+    { id: "ms_war_hammer", name: "MS War Hammer", desc: "Dark armor plate + blood red accent veins. Conqueror finish.", swatch: "#881111" },
+    // ★ NEON UNDERGROUND — Blacklight reactive neon-glow finishes
+    { id: "neon_pink_blaze", name: "NU Pink Blaze", desc: "Hot pink neon with concentric pulsing glow zones. Blacklight reactive.", swatch: "#FF1493" },
+    { id: "neon_toxic_green", name: "NU Toxic Green", desc: "Radioactive green with Geiger-counter scatter particles. Hazmat glow.", swatch: "#39FF14" },
+    { id: "neon_electric_blue", name: "NU Electric Blue", desc: "Deep UV blue with plasma discharge veins. Lightning in a tube.", swatch: "#0033FF" },
+    { id: "neon_blacklight", name: "NU Blacklight", desc: "UV-reactive purple that glows in dark zones. Inverse brightness.", swatch: "#8B00FF" },
+    { id: "neon_orange_hazard", name: "NU Orange Hazard", desc: "Construction orange with diagonal warning stripe pattern. High-vis neon.", swatch: "#FF6600" },
+    { id: "neon_red_alert", name: "NU Red Alert", desc: "Emergency red with siren-like concentric rings. Full alarm.", swatch: "#FF0022" },
+    { id: "neon_cyber_yellow", name: "NU Cyber Yellow", desc: "Cyberpunk yellow with circuit trace PCB pattern. Digital glow.", swatch: "#FFEE00" },
+    { id: "neon_ice_white", name: "NU Ice White", desc: "Cold white neon with frost crystallization dendrites. Sub-zero glow.", swatch: "#E8F0FF" },
+    { id: "neon_dual_glow", name: "NU Dual Glow", desc: "Two-color neon (pink+blue) split by warped spatial field. Dual spectrum.", swatch: "#CC44DD" },
+    { id: "neon_rainbow_tube", name: "NU Rainbow Tube", desc: "Full spectrum neon tube with horizontal banding. All wavelengths.", swatch: "#FF4488" }
 ];
 
 // =============================================================================
@@ -645,6 +656,7 @@ const _SPECIALS_SHOKKER = {
     "Shokk Series": ["burnt_headers", "electric_ice", "mercury", "plasma_metal", "shokk_blood", "shokk_pulse", "shokk_static", "shokk_venom", "shokk_void", "volcanic", "shokk_flux", "shokk_phase", "shokk_dual", "shokk_spectrum", "shokk_aurora", "shokk_helix", "shokk_catalyst", "shokk_mirage", "shokk_polarity", "shokk_reactor", "shokk_prism", "shokk_wraith", "shokk_tesseract_v2", "shokk_fusion_base", "shokk_rift", "shokk_vortex", "shokk_surge", "shokk_cipher", "shokk_inferno", "shokk_apex"],
     "Angle SHOKK": ["dark_matter", "holographic_base", "prismatic", "neutron_star", "nebula", "chameleon", "color_flip_wrap", "pagani_tricolore", "shokk_flux", "shokk_spectrum", "shokk_aurora", "shokk_prism", "singularity", "plasma_core"],
     "Extreme & Experimental": ["bioluminescent", "dark_matter", "holographic_base", "neutron_star", "plasma_core", "quantum_black", "solar_panel", "superconductor", "singularity", "prismatic", "liquid_obsidian", "vantablack"],
+    "★ NEON UNDERGROUND": ["neon_pink_blaze", "neon_toxic_green", "neon_electric_blue", "neon_blacklight", "neon_orange_hazard", "neon_red_alert", "neon_cyber_yellow", "neon_ice_white", "neon_dual_glow", "neon_rainbow_tube"],
 };
 
 const _SPECIALS_COLOR_SCIENCE = {
@@ -724,7 +736,7 @@ const _SPECIALS_EFFECTS_VISION = {
 // Section order and group → section map
 const SPECIALS_SECTION_ORDER = ["SHOKKER", "Color Science", "Material World", "Fusion Lab", "Racing Heritage", "Atmosphere", "Signal", "Multi-Spectrum", "Effects & Vision"];
 const SPECIALS_SECTIONS = {
-    "SHOKKER": ["PARADIGM", "★ COLORSHOXX", "★ MORTAL SHOKK", "Shokk Series", "Angle SHOKK", "Extreme & Experimental"],
+    "SHOKKER": ["PARADIGM", "★ COLORSHOXX", "★ MORTAL SHOKK", "★ NEON UNDERGROUND", "Shokk Series", "Angle SHOKK", "Extreme & Experimental"],
     "Color Science": ["Chameleon", "Aurora & Chromatic Flow", "Chromatic Flake", "Prizm", "Color-Shift Adaptive", "Color-Shift Presets", "Color-Shift Duos", "Color Clash", "Gradient Directional", "Gradient Vortex", "Gradient Extended"],
     "Material World": ["Atelier — Ultra Detail", "Metals & Forged", "Glass & Surface", "Leather & Texture", "Standalone Effects", "Brushed & Machined", "Clearcoat Effects", "Ornamental", "Carbon & Weave", "Natural & Organic", "Surface Treatment", "Geometric & Structural", "Optical & Light", "Particles & Textures", "Patterns & Effects"],
     "Fusion Lab": ["Ghost Geometry", "Depth Illusion", "Material Gradients", "Directional Grain", "Reactive Panels", "Sparkle Systems", "Multi-Scale Texture", "Weather & Age", "Exotic Physics", "Tri-Zone Materials", "Metallic Halos", "Light Waves", "Fractal Chaos", "Spectral Reactive", "Panel Quilting", "Surface Accent"],

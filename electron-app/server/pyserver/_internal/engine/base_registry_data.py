@@ -58,6 +58,20 @@ from engine.paint_v2.mortal_shokkbat import (
     paint_ms_war_hammer, spec_ms_war_hammer,
 )
 
+# NEON UNDERGROUND — blacklight reactive neon-glow married paint+spec finishes
+from engine.paint_v2.neon_underground import (
+    paint_neon_pink_blaze, spec_neon_pink_blaze,
+    paint_neon_toxic_green, spec_neon_toxic_green,
+    paint_neon_electric_blue, spec_neon_electric_blue,
+    paint_neon_blacklight, spec_neon_blacklight,
+    paint_neon_orange_hazard, spec_neon_orange_hazard,
+    paint_neon_red_alert, spec_neon_red_alert,
+    paint_neon_cyber_yellow, spec_neon_cyber_yellow,
+    paint_neon_ice_white, spec_neon_ice_white,
+    paint_neon_dual_glow, spec_neon_dual_glow,
+    paint_neon_rainbow_tube, spec_neon_rainbow_tube,
+)
+
 from engine.spec_paint import (
     # ── Research Session 6: 9 new base finishes ──
     spec_alubeam_base,
@@ -822,6 +836,22 @@ BASE_REGISTRY = {
     "ms_shape_shift":    { "base_spec_fn": spec_ms_shape_shift, "M": 160, "R": 45, "CC": 30, "paint_fn": paint_ms_shape_shift, "desc": "Shape Shift — morphing 3-color zones: mystic green + amber + deep purple."},
     "ms_titan_bronze":   { "base_spec_fn": spec_ms_titan_bronze, "M": 135, "R": 85, "CC": 65, "paint_fn": paint_ms_titan_bronze, "desc": "Titan Bronze — massive bronze metallic + dark brutal texture."},
     "ms_war_hammer":     { "base_spec_fn": spec_ms_war_hammer, "M": 105, "R": 95, "CC": 70, "paint_fn": paint_ms_war_hammer, "desc": "War Hammer — dark armor plate + blood red accent veins."},
+
+    # ══════════════════════════════════════════════════════════════════════
+    # ★ NEON UNDERGROUND — blacklight reactive neon-glow finishes (2026-04-03)
+    # Seeds 9200-9209.  High M (240+), low R (15-20), CC=16.
+    # ══════════════════════════════════════════════════════════════════════
+
+    "neon_pink_blaze":    { "base_spec_fn": spec_neon_pink_blaze, "M": 242, "R": 16, "CC": 16, "paint_fn": paint_neon_pink_blaze, "desc": "Neon Pink Blaze — hot pink neon with concentric pulsing glow zones."},
+    "neon_toxic_green":   { "base_spec_fn": spec_neon_toxic_green, "M": 245, "R": 15, "CC": 16, "paint_fn": paint_neon_toxic_green, "desc": "Neon Toxic Green — radioactive green with Geiger-counter scatter particles."},
+    "neon_electric_blue": { "base_spec_fn": spec_neon_electric_blue, "M": 240, "R": 17, "CC": 16, "paint_fn": paint_neon_electric_blue, "desc": "Neon Electric Blue — deep UV blue with plasma discharge veins."},
+    "neon_blacklight":    { "base_spec_fn": spec_neon_blacklight, "M": 244, "R": 18, "CC": 16, "paint_fn": paint_neon_blacklight, "desc": "Neon Blacklight — UV-reactive purple that glows in dark zones."},
+    "neon_orange_hazard": { "base_spec_fn": spec_neon_orange_hazard, "M": 240, "R": 15, "CC": 16, "paint_fn": paint_neon_orange_hazard, "desc": "Neon Orange Hazard — construction orange with diagonal warning stripe pattern."},
+    "neon_red_alert":     { "base_spec_fn": spec_neon_red_alert, "M": 243, "R": 15, "CC": 16, "paint_fn": paint_neon_red_alert, "desc": "Neon Red Alert — emergency red with siren-like concentric rings."},
+    "neon_cyber_yellow":  { "base_spec_fn": spec_neon_cyber_yellow, "M": 240, "R": 16, "CC": 16, "paint_fn": paint_neon_cyber_yellow, "desc": "Neon Cyber Yellow — cyberpunk yellow with circuit trace PCB pattern."},
+    "neon_ice_white":     { "base_spec_fn": spec_neon_ice_white, "M": 248, "R": 15, "CC": 16, "paint_fn": paint_neon_ice_white, "desc": "Neon Ice White — cold white neon with frost crystallization dendrites."},
+    "neon_dual_glow":     { "base_spec_fn": spec_neon_dual_glow, "M": 242, "R": 16, "CC": 16, "paint_fn": paint_neon_dual_glow, "desc": "Neon Dual Glow — two-color neon (pink+blue) split by warped spatial field."},
+    "neon_rainbow_tube":  { "base_spec_fn": spec_neon_rainbow_tube, "M": 245, "R": 15, "CC": 16, "paint_fn": paint_neon_rainbow_tube, "desc": "Neon Rainbow Tube — full spectrum neon tube with horizontal banding."},
 }
 
 # ── SHOKK SERIES v2 - 20 color-shift PBR bases ──────────────────────────────

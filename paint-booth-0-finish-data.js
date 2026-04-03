@@ -26,6 +26,16 @@ const BASES = [
     { id: "acid_rain", name: "Acid Rain", desc: "Chemical rain etched paint damage", swatch: "#778866" },
     { id: "ambulance_white", name: "Ambulance White", desc: "High-visibility emergency white reflective", swatch: "#ffffff", colorSafe: true },
     { id: "anodized", name: "Anodized", desc: "Gritty matte anodized aluminum", swatch: "#7788aa", colorSafe: true },
+    { id: "anime_cel_shade_chrome", name: "Anime Cel Shade Chrome", desc: "Flat cel-shaded bands with sharp metallic highlight steps", swatch: "#5566aa" },
+    { id: "anime_comic_halftone", name: "Anime Comic Halftone", desc: "Ben-Day dot pattern with size variation on paper base", swatch: "#cc2255" },
+    { id: "anime_crystal_facet", name: "Anime Crystal Facet", desc: "Large angular crystalline facets with jewel tones per face", swatch: "#8844cc" },
+    { id: "anime_energy_aura", name: "Anime Energy Aura", desc: "Radial power glow field with energy rays and bright core", swatch: "#44aaff" },
+    { id: "anime_gradient_hair", name: "Anime Gradient Hair", desc: "Vivid magenta-pink top fading to deep indigo bottom", swatch: "#cc22aa" },
+    { id: "anime_mecha_plate", name: "Anime Mecha Plate", desc: "Hard geometric panel lines with alternating metallic zones", swatch: "#445577" },
+    { id: "anime_neon_outline", name: "Anime Neon Outline", desc: "Dark base with bright cyan-magenta neon edge highlights", swatch: "#22ddcc" },
+    { id: "anime_sakura_scatter", name: "Anime Sakura Scatter", desc: "Cherry blossom petal scatter on soft pink background", swatch: "#ee8899" },
+    { id: "anime_sparkle_burst", name: "Anime Sparkle Burst", desc: "Concentrated 4-pointed starburst sparkle clusters on dark", swatch: "#ffeecc" },
+    { id: "anime_speed_lines", name: "Anime Speed Lines", desc: "Directional motion lines radiating from focal point", swatch: "#ddddee" },
     { id: "antique_chrome", name: "Antique Chrome", desc: "Slightly aged imperfect chrome", swatch: "#e8e8ee" },
     { id: "aramid", name: "Aramid", desc: "Woven aramid fiber natural gold-tan", swatch: "#aa9944" },
     { id: "armor_plate", name: "Armor Plate", desc: "Heavy rolled steel armor plating", swatch: "#778877" },
@@ -33,6 +43,9 @@ const BASES = [
     { id: "barn_find", name: "Barn Find", desc: "Decades-old stored car faded paint", swatch: "#887766" },
     { id: "battleship_gray", name: "Battleship Gray", desc: "Naval warship haze gray coating", swatch: "#888899" },
     { id: "bentley_silver", name: "Bentley Silver", desc: "Rolls-Royce/Bentley ultra-fine silver", swatch: "#ccccdd", colorSafe: true },
+    { id: "beetle_jewel", name: "Beetle Jewel", desc: "Chrysina green-gold iridescent beetle shell", swatch: "#55aa22" },
+    { id: "beetle_rainbow", name: "Beetle Rainbow", desc: "Chrysochroa full-spectrum wing case thin-film", swatch: "#7744cc" },
+    { id: "beetle_stag", name: "Beetle Stag", desc: "Dark metallic stag beetle armor plates with chitin shine", swatch: "#221108" },
     { id: "bioluminescent", name: "Bioluminescent", desc: "Deep sea organism soft glow finish", swatch: "#22aa88" },
     { id: "black_chrome", name: "Black Chrome", desc: "Near-black highly reflective chrome", swatch: "#334455" },
     { id: "blackout", name: "Blackout", desc: "Stealth murdered-out ultra dark", swatch: "#111111" },
@@ -42,6 +55,8 @@ const BASES = [
     { id: "brushed_wrap", name: "Brushed Wrap", desc: "Brushed metal vinyl wrap film", swatch: "#99aaaa", colorSafe: true },
     { id: "bugatti_blue", name: "Bugatti Blue", desc: "Bugatti Bleu de France deep two-tone", swatch: "#2244aa", colorSafe: true },
     { id: "burnt_headers", name: "Burnt Headers", desc: "Exhaust header heat-treated gold-blue oxide", swatch: "#665533" },
+    { id: "butterfly_monarch", name: "Butterfly Monarch", desc: "Orange-black monarch wing pattern with vein network", swatch: "#ee7700" },
+    { id: "butterfly_morpho", name: "Butterfly Morpho", desc: "Morpho blue structural color with angle-dependent flash", swatch: "#2255ee" },
     { id: "candy", name: "Candy", desc: "Deep wet candy transparent glass", swatch: "#cc2244", colorSafe: true },
     { id: "candy_apple", name: "Satan's Apple", desc: "Deep blood-red candy gloss with extreme shadow crush — very dark, very wet", swatch: "#5E0000" },
     { id: "candy_burgundy", name: "Coagulated Blood", desc: "Ultra-dark burgundy with thick uneven texture — rough organic surface feel", swatch: "#440000" },
@@ -72,6 +87,7 @@ const BASES = [
     { id: "destroyed_coat", name: "Destroyed Coat", desc: "Completely destroyed clearcoat - maximum degradation, pure chalk-rough", swatch: "#555544", colorSafe: true },
     { id: "diamond_coat", name: "Diamond Coat", desc: "Diamond dust ultra-fine sparkle coat", swatch: "#ccddee", colorSafe: true },
     { id: "drag_strip_gloss", name: "Drag Strip Gloss", desc: "Ultra-polished quarter-mile show finish", swatch: "#dd4444" },
+    { id: "dragonfly_wing", name: "Dragonfly Wing", desc: "Transparent wing membrane with rainbow interference", swatch: "#aaddee" },
     { id: "duracoat", name: "Duracoat", desc: "Tactical epoxy durable coating", swatch: "#556644" },
     { id: "eggshell", name: "Eggshell", desc: "Soft low-sheen like eggshell wall paint", swatch: "#ddddcc", colorSafe: true },
     { id: "electric_ice", name: "Electric Ice", desc: "Icy electric blue metallic cold neon shimmer", swatch: "#88ccee" },
@@ -79,6 +95,7 @@ const BASES = [
     { id: "endurance_ceramic", name: "Apollo Shield Char", desc: "Scorched ceramic heat shield — charred brown-black with rough ablative texture", swatch: "#2F2016" },
     { id: "factory_basecoat", name: "Factory Basecoat", desc: "Standard OEM factory metallic basecoat", swatch: "#99aabc", colorSafe: true },
     { id: "ferrari_rosso", name: "Magma Core", desc: "Surface cooling magma with deep incandescent red subsurface scattering", swatch: "#880000", colorSafe: true },
+    { id: "firefly_glow", name: "Firefly Glow", desc: "Dark exoskeleton with bioluminescent yellow-green lantern zones", swatch: "#88cc22" },
     { id: "fiberglass", name: "Fiberglass", desc: "Raw fiberglass gelcoat semi-gloss", swatch: "#aaddee" },
     { id: "fire_engine", name: "Fire Engine", desc: "Deep wet fire apparatus red gloss", swatch: "#cc2222" },
     { id: "flat_black", name: "Flat Black", desc: "Dead flat zero-sheen - no reflection at all", swatch: "#0a0a0a", colorSafe: true },
@@ -142,6 +159,7 @@ const BASES = [
     { id: "mil_spec_tan", name: "Martian Regolith Dust", desc: "Extremely rusty, iron-rich, harsh and gritty red dirt directly from the surface of Mars", swatch: "#AE684F" },
     { id: "mirror_gold", name: "Mirror Gold", desc: "Pure mirror gold chrome", swatch: "#ddaa33" },
     { id: "moonstone", name: "Moonstone", desc: "Soft translucent milky shimmer", swatch: "#ccccdd" },
+    { id: "moth_luna", name: "Moth Luna", desc: "Pale green Luna moth with eye-spot pattern", swatch: "#99cc88" },
     { id: "neutron_star", name: "Accretion Ring", desc: "Void black sink with a sharp micro-spec ring — light grazing the edge explodes into color. Procedural.", swatch: "#0A0A0A" },
     { id: "obsidian", name: "Obsidian", desc: "Volcanic glass deep black mirror sheen", swatch: "#0a0a12" },
     { id: "opal", name: "Dragon's Pearl Scale", desc: "Massive multi-colored shifting pearl mimicking the biological armored plate of a dragon", swatch: "#E6E6FA" },
@@ -172,6 +190,7 @@ const BASES = [
     { id: "rugged", name: "Rugged", desc: "Rugged off-road tactical rough coating", swatch: "#665544" },
     { id: "salt_corroded", name: "Salt Corroded", desc: "Coastal salt air corroded metal", swatch: "#aabbaa" },
     { id: "sandblasted", name: "Sandblasted", desc: "Raw sandblasted metal rough texture", swatch: "#999999" },
+    { id: "scarab_gold", name: "Scarab Gold", desc: "Egyptian scarab golden-green iridescent shift", swatch: "#aacc22" },
     { id: "satin", name: "Satin", desc: "Soft satin partial clearcoat", swatch: "#9999a0", colorSafe: true },
     { id: "satin_chrome", name: "Satin Chrome", desc: "BMW silky satin chrome", swatch: "#bbcccc" },
     { id: "satin_gold", name: "Satin Gold", desc: "Satin gold metallic warm sheen", swatch: "#c9a227" },
@@ -229,6 +248,7 @@ const BASES = [
     { id: "victory_lane", name: "Victory Lane", desc: "Champagne-soaked celebration metallic sparkle", swatch: "#ddbb44", colorSafe: true },
     { id: "vintage_chrome", name: "Vintage Chrome", desc: "1950s chrome with cloudy oxidation spots", swatch: "#aabbcc" },
     { id: "volcanic", name: "Volcanic", desc: "Volcanic ash dark gritty desaturated matte", swatch: "#cc4422" },
+    { id: "wasp_warning", name: "Wasp Warning", desc: "Yellow-black aposematic banding with metallic shimmer", swatch: "#eecc11" },
     { id: "wet_look", name: "Wet Look", desc: "Deep wet clearcoat show shine", swatch: "#337755", colorSafe: true },
     { id: "singularity", name: "Event Horizon", desc: "Near-black base with vivid color bleeding at edges — procedural micro-spec gradient, no hand work", swatch: "#000000" },
     { id: "liquid_obsidian", name: "Liquid Obsidian", desc: "Flowing glass-metal phase boundary - metallic oscillates 0-255 while roughness stays near-zero", swatch: "#080818" },
@@ -299,7 +319,18 @@ const BASES = [
     { id: "ms_ghost_vapor", name: "MS Ghost Vapor", desc: "Gray smoke wisps + chrome peek-through. Now you see it.", swatch: "#99AABB" },
     { id: "ms_shape_shift", name: "MS Shape Shift", desc: "Morphing 3-color zones: mystic green + amber + deep purple. Never the same.", swatch: "#88AA33" },
     { id: "ms_titan_bronze", name: "MS Titan Bronze", desc: "Massive bronze metallic + dark brutal texture. Four arms of fury.", swatch: "#AA7722" },
-    { id: "ms_war_hammer", name: "MS War Hammer", desc: "Dark armor plate + blood red accent veins. Conqueror finish.", swatch: "#881111" }
+    { id: "ms_war_hammer", name: "MS War Hammer", desc: "Dark armor plate + blood red accent veins. Conqueror finish.", swatch: "#881111" },
+    // ★ NEON UNDERGROUND — Blacklight reactive neon-glow finishes
+    { id: "neon_pink_blaze", name: "NU Pink Blaze", desc: "Hot pink neon with concentric pulsing glow zones. Blacklight reactive.", swatch: "#FF1493" },
+    { id: "neon_toxic_green", name: "NU Toxic Green", desc: "Radioactive green with Geiger-counter scatter particles. Hazmat glow.", swatch: "#39FF14" },
+    { id: "neon_electric_blue", name: "NU Electric Blue", desc: "Deep UV blue with plasma discharge veins. Lightning in a tube.", swatch: "#0033FF" },
+    { id: "neon_blacklight", name: "NU Blacklight", desc: "UV-reactive purple that glows in dark zones. Inverse brightness.", swatch: "#8B00FF" },
+    { id: "neon_orange_hazard", name: "NU Orange Hazard", desc: "Construction orange with diagonal warning stripe pattern. High-vis neon.", swatch: "#FF6600" },
+    { id: "neon_red_alert", name: "NU Red Alert", desc: "Emergency red with siren-like concentric rings. Full alarm.", swatch: "#FF0022" },
+    { id: "neon_cyber_yellow", name: "NU Cyber Yellow", desc: "Cyberpunk yellow with circuit trace PCB pattern. Digital glow.", swatch: "#FFEE00" },
+    { id: "neon_ice_white", name: "NU Ice White", desc: "Cold white neon with frost crystallization dendrites. Sub-zero glow.", swatch: "#E8F0FF" },
+    { id: "neon_dual_glow", name: "NU Dual Glow", desc: "Two-color neon (pink+blue) split by warped spatial field. Dual spectrum.", swatch: "#CC44DD" },
+    { id: "neon_rainbow_tube", name: "NU Rainbow Tube", desc: "Full spectrum neon tube with horizontal banding. All wavelengths.", swatch: "#FF4488" }
 ];
 
 // =============================================================================
@@ -645,6 +676,7 @@ const _SPECIALS_SHOKKER = {
     "Shokk Series": ["burnt_headers", "electric_ice", "mercury", "plasma_metal", "shokk_blood", "shokk_pulse", "shokk_static", "shokk_venom", "shokk_void", "volcanic", "shokk_flux", "shokk_phase", "shokk_dual", "shokk_spectrum", "shokk_aurora", "shokk_helix", "shokk_catalyst", "shokk_mirage", "shokk_polarity", "shokk_reactor", "shokk_prism", "shokk_wraith", "shokk_tesseract_v2", "shokk_fusion_base", "shokk_rift", "shokk_vortex", "shokk_surge", "shokk_cipher", "shokk_inferno", "shokk_apex"],
     "Angle SHOKK": ["dark_matter", "holographic_base", "prismatic", "neutron_star", "nebula", "chameleon", "color_flip_wrap", "pagani_tricolore", "shokk_flux", "shokk_spectrum", "shokk_aurora", "shokk_prism", "singularity", "plasma_core"],
     "Extreme & Experimental": ["bioluminescent", "dark_matter", "holographic_base", "neutron_star", "plasma_core", "quantum_black", "solar_panel", "superconductor", "singularity", "prismatic", "liquid_obsidian", "vantablack"],
+    "★ NEON UNDERGROUND": ["neon_pink_blaze", "neon_toxic_green", "neon_electric_blue", "neon_blacklight", "neon_orange_hazard", "neon_red_alert", "neon_cyber_yellow", "neon_ice_white", "neon_dual_glow", "neon_rainbow_tube"],
 };
 
 const _SPECIALS_COLOR_SCIENCE = {
@@ -717,6 +749,14 @@ const _SPECIALS_MULTI_SPECTRUM = {
     "Multi Splatter": ["mc_blood_splat", "mc_ink_splat", "mc_neon_splat", "mc_paint_splat"],
 };
 
+const _SPECIALS_ANIME_INSPIRED = {
+    "★ ANIME INSPIRED": ["anime_cel_shade_chrome", "anime_speed_lines", "anime_sparkle_burst", "anime_gradient_hair", "anime_mecha_plate", "anime_sakura_scatter", "anime_energy_aura", "anime_comic_halftone", "anime_neon_outline", "anime_crystal_facet"],
+};
+
+const _SPECIALS_IRIDESCENT_INSECTS = {
+    "★ IRIDESCENT INSECTS": ["beetle_jewel", "beetle_rainbow", "butterfly_morpho", "butterfly_monarch", "dragonfly_wing", "scarab_gold", "moth_luna", "beetle_stag", "wasp_warning", "firefly_glow"],
+};
+
 const _SPECIALS_EFFECTS_VISION = {
     "Effects & Vision": ["acid_trip", "antimatter", "astral", "aurora", "banshee", "black_diamond", "blood_oath", "bone", "catacombs", "cel_shade", "chromatic_aberration", "crt_scanline", "crystal_cave", "cursed", "daguerreotype", "dark_fairy", "dark_ritual", "datamosh", "death_metal", "demon_forge", "double_exposure", "dragon_breath", "dreamscape", "eclipse", "embossed", "enchanted", "ethereal", "film_burn", "fish_eye", "fourth_dimension", "galaxy", "gargoyle", "glitch", "glitch_reality", "graveyard", "grid_walk", "halftone", "hallucination", "haunted", "heat_haze", "hellhound", "holographic_wrap", "infrared", "iron_maiden", "kaleidoscope", "levitation", "lich_king", "long_exposure", "mirage", "multiverse", "nebula_core", "necrotic", "negative", "nightmare", "parallax", "phantom", "phantom_zone", "polarized", "portal", "possessed", "psychedelic", "reaper", "refraction", "rust", "sepia", "shadow_realm", "silk_road", "solarization", "spectral", "tesseract", "thermochromic", "tin_type", "uv_blacklight", "vinyl_record", "void_walker", "voodoo", "wraith", "x_ray"],
 };
@@ -724,7 +764,7 @@ const _SPECIALS_EFFECTS_VISION = {
 // Section order and group → section map
 const SPECIALS_SECTION_ORDER = ["SHOKKER", "Color Science", "Material World", "Fusion Lab", "Racing Heritage", "Atmosphere", "Signal", "Multi-Spectrum", "Effects & Vision"];
 const SPECIALS_SECTIONS = {
-    "SHOKKER": ["PARADIGM", "★ COLORSHOXX", "★ MORTAL SHOKK", "Shokk Series", "Angle SHOKK", "Extreme & Experimental"],
+    "SHOKKER": ["PARADIGM", "★ COLORSHOXX", "★ MORTAL SHOKK", "★ NEON UNDERGROUND", "★ ANIME INSPIRED", "★ IRIDESCENT INSECTS", "Shokk Series", "Angle SHOKK", "Extreme & Experimental"],
     "Color Science": ["Chameleon", "Aurora & Chromatic Flow", "Chromatic Flake", "Prizm", "Color-Shift Adaptive", "Color-Shift Presets", "Color-Shift Duos", "Color Clash", "Gradient Directional", "Gradient Vortex", "Gradient Extended"],
     "Material World": ["Atelier — Ultra Detail", "Metals & Forged", "Glass & Surface", "Leather & Texture", "Standalone Effects", "Brushed & Machined", "Clearcoat Effects", "Ornamental", "Carbon & Weave", "Natural & Organic", "Surface Treatment", "Geometric & Structural", "Optical & Light", "Particles & Textures", "Patterns & Effects"],
     "Fusion Lab": ["Ghost Geometry", "Depth Illusion", "Material Gradients", "Directional Grain", "Reactive Panels", "Sparkle Systems", "Multi-Scale Texture", "Weather & Age", "Exotic Physics", "Tri-Zone Materials", "Metallic Halos", "Light Waves", "Fractal Chaos", "Spectral Reactive", "Panel Quilting", "Surface Accent"],
@@ -738,6 +778,8 @@ const SPECIALS_SECTIONS = {
 // Merged flat object (all reimagined groups — only backend-registered IDs)
 const SPECIAL_GROUPS = Object.assign({},
     _SPECIALS_SHOKKER,
+    _SPECIALS_ANIME_INSPIRED,
+    _SPECIALS_IRIDESCENT_INSECTS,
     _SPECIALS_COLOR_SCIENCE,
     _SPECIALS_MATERIAL_WORLD,
     _SPECIALS_FUSION_LAB,

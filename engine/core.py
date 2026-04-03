@@ -180,6 +180,151 @@ generate_perlin_noise_2d = _generate_perlin_2d
 
 
 # ================================================================
+# SIMPLEX-STYLE NOISE (permutation-table based, smoother than zoom)
+# ================================================================
+
+# Pre-computed permutation table (Ken Perlin's classic shuffled 0-255, doubled)
+_SIMPLEX_PERM = np.array([
+    151,160,137,91,90,15,131,13,201,95,96,53,194,233,7,225,
+    140,36,103,30,69,142,8,99,37,240,21,10,23,190,6,148,
+    247,120,234,75,0,26,197,62,94,252,219,203,117,35,11,32,
+    57,177,33,88,237,149,56,87,174,20,125,136,171,168,68,175,
+    74,165,71,134,139,48,27,166,77,146,158,231,83,111,229,122,
+    60,211,133,230,220,105,92,41,55,46,245,40,244,102,143,54,
+    65,25,63,161,1,216,80,73,209,76,132,187,208,89,18,169,
+    200,196,135,130,116,188,159,86,164,100,109,198,173,186,3,64,
+    52,217,226,250,124,123,5,202,38,147,118,126,255,82,85,212,
+    207,206,59,227,47,16,58,17,182,189,28,42,223,183,170,213,
+    119,248,152,2,44,154,163,70,221,153,101,155,167,43,172,9,
+    129,22,39,253,19,98,108,110,79,113,224,232,178,185,112,104,
+    218,246,97,228,251,34,242,193,238,210,144,12,191,179,162,241,
+    81,51,145,235,249,14,239,107,49,192,214,31,181,199,106,157,
+    184,84,204,176,115,121,50,45,127,4,150,254,138,236,205,93,
+    222,114,67,29,24,72,243,141,128,195,78,66,215,61,156,180,
+], dtype=np.int32)
+_SIMPLEX_PERM = np.concatenate([_SIMPLEX_PERM, _SIMPLEX_PERM])  # double for overflow-free indexing
+
+# Gradient vectors for 2D simplex (12 directions)
+_SIMPLEX_GRAD2 = np.array([
+    [1,1],[-1,1],[1,-1],[-1,-1],
+    [1,0],[-1,0],[0,1],[0,-1],
+    [1,1],[-1,1],[1,-1],[-1,-1],
+], dtype=np.float32)
+
+
+def simplex_noise_2d(shape, scale=64.0, seed=42):
+    """Generate smooth 2D noise using a permutation-table gradient approach.
+
+    Significantly smoother than random+zoom at low scales (< 16).
+    Uses a seeded permutation table for reproducibility.
+
+    Args:
+        shape: (height, width) tuple
+        scale: Feature size in pixels (higher = larger features)
+        seed: Random seed for reproducibility
+
+    Returns:
+        float32 array (h, w) normalized to [-1, 1]
+    """
+    h, w = shape
+    # Build seeded permutation table
+    rng = np.random.RandomState(seed)
+    perm = _SIMPLEX_PERM.copy()
+    # Shuffle the first 256 entries with seed, then mirror
+    base_perm = perm[:256].copy()
+    rng.shuffle(base_perm)
+    perm[:256] = base_perm
+    perm[256:] = base_perm
+
+    # Skew factors for 2D simplex
+    F2 = 0.5 * (np.sqrt(3.0) - 1.0)
+    G2 = (3.0 - np.sqrt(3.0)) / 6.0
+
+    # Create coordinate grids
+    yy, xx = np.mgrid[0:h, 0:w]
+    xin = xx.astype(np.float64) / max(1.0, scale)
+    yin = yy.astype(np.float64) / max(1.0, scale)
+
+    # Skew input space to determine simplex cell
+    s = (xin + yin) * F2
+    i = np.floor(xin + s).astype(np.int32)
+    j = np.floor(yin + s).astype(np.int32)
+    t = (i + j).astype(np.float64) * G2
+
+    # Unskew cell origin back to (x,y) space
+    X0 = i - t
+    Y0 = j - t
+    x0 = xin - X0
+    y0 = yin - Y0
+
+    # Determine which simplex we're in (upper or lower triangle)
+    i1 = np.where(x0 > y0, 1, 0)
+    j1 = np.where(x0 > y0, 0, 1)
+
+    x1 = x0 - i1 + G2
+    y1 = y0 - j1 + G2
+    x2 = x0 - 1.0 + 2.0 * G2
+    y2 = y0 - 1.0 + 2.0 * G2
+
+    # Hash coordinates to gradient indices
+    ii = i & 255
+    jj = j & 255
+
+    gi0 = perm[ii + perm[jj] % 256] % 12
+    gi1 = perm[(ii + i1) & 255 + perm[((jj + j1) & 255)] % 256] % 12
+    gi2 = perm[(ii + 1) & 255 + perm[((jj + 1) & 255)] % 256] % 12
+
+    # Contribution from each corner
+    def _contrib(gidx, dx, dy):
+        t_val = 0.5 - dx * dx - dy * dy
+        mask = t_val > 0
+        t_val = np.where(mask, t_val, 0.0)
+        t_val *= t_val  # t^2
+        t_val *= t_val  # t^4
+        # Dot product with gradient
+        grad = _SIMPLEX_GRAD2[gidx % 12]
+        dot = grad[..., 0] * dx + grad[..., 1] * dy
+        return np.where(mask, t_val * dot, 0.0)
+
+    n0 = _contrib(gi0, x0, y0)
+    n1 = _contrib(gi1, x1, y1)
+    n2 = _contrib(gi2, x2, y2)
+
+    # Scale to [-1, 1]
+    result = (70.0 * (n0 + n1 + n2)).astype(np.float32)
+    rmin, rmax = float(result.min()), float(result.max())
+    if rmax > rmin:
+        result = (result - rmin) / (rmax - rmin) * 2.0 - 1.0
+    return result
+
+
+def multi_scale_simplex(shape, scales, weights, seed=42):
+    """Multi-scale noise using simplex_noise_2d instead of random+zoom.
+
+    Drop-in alternative to multi_scale_noise for smoother organic results,
+    especially at low scales (< 16). Existing code is not affected.
+
+    Args:
+        shape: (height, width) tuple
+        scales: list of scale values (feature sizes in pixels)
+        weights: list of weights for each scale layer
+        seed: Random seed for reproducibility
+
+    Returns:
+        float32 array (h, w) normalized to [-1, 1]
+    """
+    h, w = shape
+    result = np.zeros((h, w), dtype=np.float32)
+    for idx, (scale, weight) in enumerate(zip(scales, weights)):
+        layer = simplex_noise_2d(shape, scale=float(max(1, scale)), seed=seed + idx * 37)
+        result += layer * weight
+    rmin, rmax = float(result.min()), float(result.max())
+    if rmax > rmin:
+        result = (result - rmin) / (rmax - rmin) * 2.0 - 1.0
+    return result
+
+
+# ================================================================
 # COLOR CONVERSION
 # ================================================================
 

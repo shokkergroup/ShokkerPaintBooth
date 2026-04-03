@@ -9,12 +9,14 @@ Techniques:
 """
 import numpy as np
 from engine.core import multi_scale_noise, get_mgrid
+from engine.paint_v2 import ensure_bb_2d
 
 
 # ==================================================================
 # BRUSHED ALUMINUM - Anisotropic micro-groove lathe turning
 # ==================================================================
 def paint_brushed_aluminum_v2(paint, shape, mask, seed, pm, bb):
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     y, x = get_mgrid((h, w))
@@ -48,6 +50,7 @@ def spec_brushed_aluminum(shape, seed, sm, base_m, base_r):
 # BRUSHED TITANIUM - Electron beam surface remelting
 # ==================================================================
 def paint_brushed_titanium_v2(paint, shape, mask, seed, pm, bb):
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     y, x = get_mgrid((h, w))
@@ -89,6 +92,7 @@ def spec_brushed_titanium(shape, seed, sm, base_m, base_r):
 # BRUSHED WRAP - Vinyl embossed groove with stretch distortion
 # ==================================================================
 def paint_brushed_wrap_v2(paint, shape, mask, seed, pm, bb):
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     y, x = get_mgrid((h, w))

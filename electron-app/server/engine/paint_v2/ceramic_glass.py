@@ -15,6 +15,7 @@ Techniques (all different):
 """
 import numpy as np
 from engine.core import multi_scale_noise, get_mgrid
+from engine.paint_v2 import ensure_bb_2d
 
 # ==================================================================
 # CERAMIC MATTE - Flat matte ceramic (no micro-facet noise in base)
@@ -22,6 +23,7 @@ from engine.core import multi_scale_noise, get_mgrid
 
 def paint_ceramic_matte_v2(paint, shape, mask, seed, pm, bb):
     """Ceramic matte: solid flat look, no facet or Oren-Nayar noise."""
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     gray = base.mean(axis=2, keepdims=True)
@@ -48,6 +50,7 @@ def spec_ceramic_matte(shape, seed, sm, base_m, base_r):
 
 def paint_crystal_clear_v2(paint, shape, mask, seed, pm, bb):
     """Crystal clear glass with Snell's law refraction distortion and caustic highlights."""
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
 
@@ -99,6 +102,7 @@ def spec_crystal_clear(shape, seed, sm, base_m, base_r):
 
 def paint_enamel_coating_v2(paint, shape, mask, seed, pm, bb):
     """Enamel: solid deep gloss, no texture or glaze variation in base."""
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     gray = base.mean(axis=2, keepdims=True)
@@ -127,6 +131,7 @@ def spec_enamel_coating(shape, seed, sm, base_m, base_r):
 
 def paint_obsidian_glass_v2(paint, shape, mask, seed, pm, bb):
     """Obsidian volcanic glass with Fresnel edge reflections and conchoidal fracture detail."""
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
 
@@ -180,6 +185,7 @@ def spec_obsidian_glass(shape, seed, sm, base_m, base_r):
 
 def paint_porcelain_depth_v2(paint, shape, mask, seed, pm, bb):
     """Porcelain with subsurface scattering via progressive blur-chain diffusion."""
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     from PIL import Image as _Img, ImageFilter as _Filt
@@ -239,6 +245,7 @@ def spec_porcelain_depth(shape, seed, sm, base_m, base_r):
 # ==================================================================
 def paint_tempered_glass_v2(paint, shape, mask, seed, pm, bb):
     """Tempered glass with stress birefringence interference fringes from quenching jets."""
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     y, x = get_mgrid((h, w))

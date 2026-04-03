@@ -211,6 +211,27 @@ def _apply_pattern_offset(pv, shape, offset_x, offset_y):
         pass
 
 
+def _dither_channel(arr, rng=None):
+    """Apply fast noise dithering to a float array before uint8 conversion.
+    Adds uniform random noise in [-0.5, 0.5] to break 8-bit banding artifacts.
+    Vectorized numpy — no per-pixel loops. Returns clipped uint8 array.
+    If rng is None, uses a default RandomState for reproducibility."""
+    if rng is None:
+        rng = np.random.RandomState(42)
+    noise = rng.uniform(-0.5, 0.5, arr.shape).astype(np.float32)
+    return np.clip(arr + noise, 0, 255).astype(np.uint8)
+
+
+def _antialias_pattern(pv, sigma=0.5):
+    """Apply a slight Gaussian blur to a pattern array to smooth jagged edges.
+    Reduces moire artifacts in iRacing's renderer. Uses cv2 for speed.
+    sigma=0.5 is subtle — enough to smooth 1px stairstepping without losing detail."""
+    if pv is None or pv.size == 0:
+        return pv
+    # cv2.GaussianBlur needs odd kernel size; ksize=0 lets OpenCV pick from sigma
+    return cv2.GaussianBlur(pv.astype(np.float32), (0, 0), sigmaX=sigma, sigmaY=sigma)
+
+
 def _apply_spec_pattern_box_size(sp_arr, canvas_shape, box_size_pct, offset_x, offset_y):
     """Mask a spec pattern array to only affect a box region of the canvas.
     box_size_pct: integer 5-100 (percentage of canvas each dimension).
@@ -302,6 +323,85 @@ def _apply_hsb_adjustments(paint, mask, hue_offset_deg, saturation_adjust, brigh
         return paint
 
 
+def generate_custom_gradient(shape, gradient_config):
+    """Generate a custom multi-stop gradient image.
+
+    Args:
+        shape: (H, W) tuple for the output size.
+        gradient_config: dict with keys:
+            stops: list of {"pos": 0.0-1.0, "color": [R,G,B]} (0-1 float each)
+            direction: "horizontal"|"vertical"|"diagonal_down"|"diagonal_up"|"radial"|"angular"
+            angle: optional rotation in degrees (for linear directions)
+    Returns:
+        (H, W, 3) float32 array with values 0-1.
+    """
+    H, W = shape[:2]
+    stops = gradient_config.get("stops", [{"pos": 0.0, "color": [0, 0, 0]}, {"pos": 1.0, "color": [1, 1, 1]}])
+    direction = str(gradient_config.get("direction", "horizontal")).strip().lower()
+    angle_deg = float(gradient_config.get("angle", 0))
+
+    # Sort stops by position and clamp
+    stops = sorted(stops, key=lambda s: float(s.get("pos", 0)))
+    positions = np.array([max(0.0, min(1.0, float(s["pos"]))) for s in stops], dtype=np.float32)
+    colors = np.array([[float(c) for c in s["color"][:3]] for s in stops], dtype=np.float32)
+
+    # Ensure at least 2 stops
+    if len(positions) < 2:
+        if len(positions) == 1:
+            positions = np.array([0.0, 1.0], dtype=np.float32)
+            colors = np.vstack([colors, colors])
+        else:
+            return np.zeros((H, W, 3), dtype=np.float32)
+
+    # Build the parametric coordinate t (0-1) for each pixel
+    if direction == "vertical":
+        t = np.linspace(0, 1, H, dtype=np.float32)[:, np.newaxis].repeat(W, axis=1)
+    elif direction == "diagonal_down":
+        yy = np.linspace(0, 1, H, dtype=np.float32)[:, np.newaxis]
+        xx = np.linspace(0, 1, W, dtype=np.float32)[np.newaxis, :]
+        t = np.clip((xx + yy) * 0.5, 0, 1).astype(np.float32)
+    elif direction == "diagonal_up":
+        yy = np.linspace(1, 0, H, dtype=np.float32)[:, np.newaxis]
+        xx = np.linspace(0, 1, W, dtype=np.float32)[np.newaxis, :]
+        t = np.clip((xx + yy) * 0.5, 0, 1).astype(np.float32)
+    elif direction == "radial":
+        cy, cx = H / 2.0, W / 2.0
+        yy = np.arange(H, dtype=np.float32)[:, np.newaxis] - cy
+        xx = np.arange(W, dtype=np.float32)[np.newaxis, :] - cx
+        dist = np.sqrt(xx * xx + yy * yy)
+        max_dist = np.sqrt(cy * cy + cx * cx)
+        t = np.clip(dist / max(max_dist, 1e-6), 0, 1).astype(np.float32)
+    elif direction == "angular":
+        cy, cx = H / 2.0, W / 2.0
+        yy = np.arange(H, dtype=np.float32)[:, np.newaxis] - cy
+        xx = np.arange(W, dtype=np.float32)[np.newaxis, :] - cx
+        ang = np.arctan2(-yy, xx)  # 0 at right, CCW positive
+        t = ((ang + np.pi) / (2.0 * np.pi)).astype(np.float32)
+        t = np.clip(t, 0, 1)
+    else:  # horizontal (default)
+        t = np.linspace(0, 1, W, dtype=np.float32)[np.newaxis, :].repeat(H, axis=0)
+
+    # Apply optional angle rotation for linear directions
+    if angle_deg != 0 and direction not in ("radial", "angular"):
+        rad = math.radians(angle_deg)
+        cos_a, sin_a = math.cos(rad), math.sin(rad)
+        cy, cx = H / 2.0, W / 2.0
+        yy = np.arange(H, dtype=np.float32)[:, np.newaxis] - cy
+        xx = np.arange(W, dtype=np.float32)[np.newaxis, :] - cx
+        rotated = xx * cos_a + yy * sin_a
+        rmin, rmax = float(rotated.min()), float(rotated.max())
+        span = max(rmax - rmin, 1e-6)
+        t = np.clip((rotated - rmin) / span, 0, 1).astype(np.float32)
+
+    # Interpolate each RGB channel using np.interp (vectorized)
+    out = np.empty((H, W, 3), dtype=np.float32)
+    t_flat = t.ravel()
+    for ch in range(3):
+        out[:, :, ch] = np.interp(t_flat, positions, colors[:, ch]).reshape(H, W)
+
+    return np.clip(out, 0.0, 1.0)
+
+
 def _apply_base_color_override(paint, shape, hard_mask, seed, base_color_mode, base_color, base_color_source, base_color_strength, monolithic_registry):
     """Apply base color override to paint. Always operates on CPU (numpy) arrays.
     CuPy inputs are converted at the top. Returns a numpy array."""
@@ -377,6 +477,16 @@ def _apply_base_color_override(paint, shape, hard_mask, seed, base_color_mode, b
         gray = base_rgb.mean(axis=2, keepdims=True)
         tint_rgb = np.array([cr, cg, cb], dtype=np.float32)[np.newaxis, np.newaxis, :]
         src = np.clip(gray * 0.25 + tint_rgb * 0.75, 0.0, 1.0)
+    elif mode == "gradient":
+        # base_color is repurposed as gradient_config dict
+        if isinstance(base_color, dict) and base_color.get("stops"):
+            try:
+                grad = generate_custom_gradient(actual_shape, base_color)
+                base_rgb = np.clip(paint[:, :, :3], 0.0, 1.0)
+                gray = base_rgb.mean(axis=2, keepdims=True)
+                src = np.clip(gray * 0.25 + grad * 0.75, 0.0, 1.0)
+            except Exception as _ge:
+                print(f"[compose] WARNING: gradient generation failed: {_ge}")
 
     if src is None:
         return paint
@@ -466,10 +576,13 @@ def compose_finish(base_id, pattern_id, shape, mask, seed, sm, scale=1.0, spec_m
                    pattern_intensity=1.0,
                    base_spec_blend_mode="normal",
                    monolithic_registry=None,
+                   dither=True,
                    **kwargs):
     """Compose a base material + pattern texture into a final spec map.
     base_spec_blend_mode: how pattern spec contributions blend with base spec
         (normal/multiply/screen/overlay/hardlight/softlight).
+    dither: when True (default), apply noise dithering before uint8 conversion to
+        reduce 8-bit banding artifacts in gradients.
     When second_base/third_base/fourth_base/fifth_base start with "mono:", they are
     looked up in monolithic_registry (spec_fn, paint_fn) and the spec_fn is used as the overlay."""
     _t_compose = _time.time()
@@ -821,9 +934,20 @@ def compose_finish(base_id, pattern_id, shape, mask, seed, sm, scale=1.0, spec_m
                 if pattern_flip_v:
                     pv = np.flipud(pv)
 
+                # Anti-alias pattern to reduce moire in iRacing renderer (#26)
+                pv = _antialias_pattern(pv, sigma=0.5)
+
                 M_pv = tex.get("M_pattern", pv)
                 R_pv = tex.get("R_pattern", pv)
                 CC_pv = tex.get("CC_pattern", None)
+
+                # Anti-alias separate M/R/CC channels if they differ from pv
+                if M_pv is not pv and M_pv is not None:
+                    M_pv = _antialias_pattern(M_pv, sigma=0.5)
+                if R_pv is not pv and R_pv is not None:
+                    R_pv = _antialias_pattern(R_pv, sigma=0.5)
+                if CC_pv is not None and CC_pv is not pv:
+                    CC_pv = _antialias_pattern(CC_pv, sigma=0.5)
 
                 # NOTE: M_pv/R_pv/CC_pv scaling was ALREADY handled by _scale_pattern_output above.
                 if False and scale != 1.0 and scale > 0:  # DISABLED — was causing double-scale bug
@@ -888,16 +1012,23 @@ def compose_finish(base_id, pattern_id, shape, mask, seed, sm, scale=1.0, spec_m
     # M_arr/R_arr/mask are already on GPU when _gpu_active
     # CONDITIONAL GGX FLOOR: R >= 15 for non-chrome (M < 240), R >= 0 for chrome (M >= 240)
     # This is the FINAL safety net — catches any upstream spec function that missed the floor.
+    _dither_rng = np.random.RandomState(seed if seed else 42) if dither else None
     if _gpu_active:
         M_final = M_arr * mask + 5.0 * (1 - mask)
         R_final = R_arr * mask + 100.0 * (1 - mask)
-        spec[:,:,0] = to_cpu(xp.clip(M_final, 0, 255).astype(xp.uint8))
-        # Conditional GGX floor via helper
-        spec[:,:,1] = to_cpu(_ggx_safe_R(R_final, M_final, lib=xp).astype(xp.uint8))
+        _M_cpu = to_cpu(xp.clip(M_final, 0, 255).astype(xp.float32))
+        _R_cpu = to_cpu(_ggx_safe_R(R_final, M_final, lib=xp).astype(xp.float32))
+        if dither:
+            spec[:,:,0] = _dither_channel(_M_cpu, _dither_rng)
+            spec[:,:,1] = _dither_channel(_R_cpu, _dither_rng)
+        else:
+            spec[:,:,0] = _M_cpu.astype(np.uint8)
+            spec[:,:,1] = _R_cpu.astype(np.uint8)
         _is_cc_arr = hasattr(final_CC, 'shape')  # works for both numpy and cupy arrays
         if _is_cc_arr:
             final_CC = to_gpu(final_CC)  # ensure on GPU
-            spec[:,:,2] = to_cpu(xp.clip(final_CC * mask, 0, 255).astype(xp.uint8))
+            _CC_cpu = to_cpu(xp.clip(final_CC * mask, 0, 255).astype(xp.float32))
+            spec[:,:,2] = _dither_channel(_CC_cpu, _dither_rng) if dither else _CC_cpu.astype(np.uint8)
         else:
             _mask_cpu_cc = to_cpu(mask)
             spec[:,:,2] = np.where(_mask_cpu_cc > 0.5, final_CC, 0).astype(np.uint8)
@@ -905,11 +1036,17 @@ def compose_finish(base_id, pattern_id, shape, mask, seed, sm, scale=1.0, spec_m
     else:
         M_final = M_arr * mask + 5.0 * (1 - mask)
         R_final = R_arr * mask + 100.0 * (1 - mask)
-        spec[:,:,0] = np.clip(M_final, 0, 255).astype(np.uint8)
-        # Conditional GGX floor via helper
-        spec[:,:,1] = _ggx_safe_R(R_final, M_final).astype(np.uint8)
+        _M_f = np.clip(M_final, 0, 255).astype(np.float32)
+        _R_f = _ggx_safe_R(R_final, M_final).astype(np.float32)
+        if dither:
+            spec[:,:,0] = _dither_channel(_M_f, _dither_rng)
+            spec[:,:,1] = _dither_channel(_R_f, _dither_rng)
+        else:
+            spec[:,:,0] = _M_f.astype(np.uint8)
+            spec[:,:,1] = _R_f.astype(np.uint8)
         if isinstance(final_CC, np.ndarray):
-            spec[:,:,2] = np.clip(final_CC * mask, 0, 255).astype(np.uint8)
+            _CC_f = np.clip(final_CC * mask, 0, 255).astype(np.float32)
+            spec[:,:,2] = _dither_channel(_CC_f, _dither_rng) if dither else _CC_f.astype(np.uint8)
         else:
             spec[:,:,2] = np.where(mask > 0.5, final_CC, 0).astype(np.uint8)
         spec[:,:,3] = 255
@@ -1199,9 +1336,12 @@ def compose_finish_stacked(base_id, all_patterns, shape, mask, seed, sm, spec_mu
                            pattern_flip_h=False, pattern_flip_v=False,
                            pattern_intensity=1.0,
                            base_spec_blend_mode="normal",
+                           dither=True,
                            **kwargs):
     """Compose a base material + MULTIPLE stacked patterns into a final spec map.
-    base_spec_blend_mode: master override for how pattern spec contributions blend with base spec."""
+    base_spec_blend_mode: master override for how pattern spec contributions blend with base spec.
+    dither: when True (default), apply noise dithering before uint8 conversion to
+        reduce 8-bit banding artifacts in gradients."""
     monolithic_registry = kwargs.pop("monolithic_registry", None)
     _gpu_active = is_gpu()
     from engine.registry import BASE_REGISTRY, PATTERN_REGISTRY
@@ -1500,9 +1640,18 @@ def compose_finish_stacked(base_id, all_patterns, shape, mask, seed, sm, spec_mu
             tex["pattern_val"] = pv
             tex = _rotate_pattern_tex(tex, layer_rotation, shape)
             pv = tex["pattern_val"]
+        # Anti-alias pattern to reduce moire in iRacing renderer (#26)
+        pv = _antialias_pattern(pv, sigma=0.5)
         M_pv = tex.get("M_pattern", pv)
         R_pv = tex.get("R_pattern", pv)
         CC_pv = tex.get("CC_pattern", None)
+        # Anti-alias separate M/R/CC channels if they differ from pv
+        if M_pv is not pv and M_pv is not None:
+            M_pv = _antialias_pattern(M_pv, sigma=0.5)
+        if R_pv is not pv and R_pv is not None:
+            R_pv = _antialias_pattern(R_pv, sigma=0.5)
+        if CC_pv is not None and CC_pv is not pv:
+            CC_pv = _antialias_pattern(CC_pv, sigma=0.5)
         if scale != 1.0 and scale > 0:
             if M_pv is not pv:
                 if scale < 1.0:
@@ -1566,15 +1715,23 @@ def compose_finish_stacked(base_id, all_patterns, shape, mask, seed, sm, spec_mu
                 final_CC = final_CC * (1.0 - opacity) + float(pat_CC) * opacity
 
     # GPU-accelerate final spec assembly — M_arr/R_arr/mask already on GPU when _gpu_active
+    _dither_rng = np.random.RandomState(seed if seed else 42) if dither else None
     if _gpu_active:
         M_final = M_arr * mask + 5.0 * (1 - mask)
         R_final = R_arr * mask + 100.0 * (1 - mask)
-        spec[:,:,0] = to_cpu(xp.clip(M_final, 0, 255).astype(xp.uint8))
-        spec[:,:,1] = to_cpu(_ggx_safe_R(R_final, M_final, lib=xp).astype(xp.uint8))
+        _M_cpu = to_cpu(xp.clip(M_final, 0, 255).astype(xp.float32))
+        _R_cpu = to_cpu(_ggx_safe_R(R_final, M_final, lib=xp).astype(xp.float32))
+        if dither:
+            spec[:,:,0] = _dither_channel(_M_cpu, _dither_rng)
+            spec[:,:,1] = _dither_channel(_R_cpu, _dither_rng)
+        else:
+            spec[:,:,0] = _M_cpu.astype(np.uint8)
+            spec[:,:,1] = _R_cpu.astype(np.uint8)
         _is_cc_arr = hasattr(final_CC, 'shape')
         if _is_cc_arr:
             final_CC = to_gpu(final_CC)
-            spec[:,:,2] = to_cpu(xp.clip(final_CC * mask, 0, 255).astype(xp.uint8))
+            _CC_cpu = to_cpu(xp.clip(final_CC * mask, 0, 255).astype(xp.float32))
+            spec[:,:,2] = _dither_channel(_CC_cpu, _dither_rng) if dither else _CC_cpu.astype(np.uint8)
         else:
             _mask_cpu_cc = to_cpu(mask)
             spec[:,:,2] = np.clip(final_CC * _mask_cpu_cc, 0, 255).astype(np.uint8)
@@ -1582,9 +1739,16 @@ def compose_finish_stacked(base_id, all_patterns, shape, mask, seed, sm, spec_mu
     else:
         M_final = M_arr * mask + 5.0 * (1 - mask)
         R_final = R_arr * mask + 100.0 * (1 - mask)
-        spec[:,:,0] = np.clip(M_final, 0, 255).astype(np.uint8)
-        spec[:,:,1] = _ggx_safe_R(R_final, M_final).astype(np.uint8)
-        spec[:,:,2] = np.clip(final_CC * mask, 0, 255).astype(np.uint8)
+        _M_f = np.clip(M_final, 0, 255).astype(np.float32)
+        _R_f = _ggx_safe_R(R_final, M_final).astype(np.float32)
+        if dither:
+            spec[:,:,0] = _dither_channel(_M_f, _dither_rng)
+            spec[:,:,1] = _dither_channel(_R_f, _dither_rng)
+        else:
+            spec[:,:,0] = _M_f.astype(np.uint8)
+            spec[:,:,1] = _R_f.astype(np.uint8)
+        _CC_f = np.clip(final_CC * mask, 0, 255).astype(np.float32)
+        spec[:,:,2] = _dither_channel(_CC_f, _dither_rng) if dither else _CC_f.astype(np.uint8)
         spec[:,:,3] = 255
 
     # Transfer mask back to CPU for overlay functions
@@ -3053,6 +3217,115 @@ def compose_paint_mod_stacked(base_id, all_patterns, paint, shape, mask, seed, p
     return paint
 
 
+# ================================================================
+# SPEC MAP DELTA COMPRESSION (#12)
+# ================================================================
+# Encodes the difference between two spec maps using RLE, enabling
+# incremental preview updates that send only changed pixels instead
+# of a full base64 PNG.  Typical preview tweaks change < 10% of
+# pixels, so the delta + RLE payload is dramatically smaller.
+
+import zlib as _zlib
+import struct as _struct
+
+
+def compress_spec_delta(spec_new, spec_old):
+    """Compute and RLE-encode the delta between two spec maps.
+
+    Both inputs should be uint8 numpy arrays of identical shape
+    (H, W, C) where C is typically 4 (RGBA spec channels).
+
+    Returns a bytes object containing:
+        [4B height][4B width][4B channels][zlib-compressed RLE payload]
+
+    The RLE payload encodes (delta_value, run_length) pairs per
+    flattened byte so that long runs of zero-delta (unchanged pixels)
+    collapse to a single pair.
+    """
+    spec_new = np.asarray(spec_new, dtype=np.uint8)
+    spec_old = np.asarray(spec_old, dtype=np.uint8)
+    if spec_new.shape != spec_old.shape:
+        raise ValueError(
+            f"Shape mismatch: new {spec_new.shape} vs old {spec_old.shape}"
+        )
+
+    # Delta as signed int16 then clamp to [-128, 127] stored as uint8
+    # (offset by 128 so 0 delta == 128 in storage, enabling unsigned RLE)
+    delta = spec_new.astype(np.int16) - spec_old.astype(np.int16)
+    delta_u8 = np.clip(delta + 128, 0, 255).astype(np.uint8)
+
+    flat = delta_u8.ravel()
+
+    # RLE encode: list of (value, run_length) with max run 65535
+    rle_parts = []
+    n = len(flat)
+    if n == 0:
+        rle_payload = b""
+    else:
+        i = 0
+        while i < n:
+            val = int(flat[i])
+            run = 1
+            while i + run < n and flat[i + run] == val and run < 65535:
+                run += 1
+            # Pack: 1 byte value + 2 byte run (little-endian unsigned short)
+            rle_parts.append(_struct.pack("<BH", val, run))
+            i += run
+        rle_payload = b"".join(rle_parts)
+
+    h, w = spec_new.shape[:2]
+    c = spec_new.shape[2] if spec_new.ndim == 3 else 1
+    header = _struct.pack("<III", h, w, c)
+    compressed = _zlib.compress(rle_payload, level=1)  # fast compression
+    return header + compressed
+
+
+def decompress_spec_delta(compressed, spec_old):
+    """Reconstruct a spec map from a compressed delta and the previous map.
+
+    compressed is the bytes object returned by compress_spec_delta.
+    spec_old must be the same array that was used as *spec_old* when
+    the delta was created.
+
+    Returns a uint8 numpy array with the same shape as *spec_old*.
+    """
+    spec_old = np.asarray(spec_old, dtype=np.uint8)
+    if len(compressed) < 12:
+        raise ValueError("Compressed payload too short (missing header)")
+
+    h, w, c = _struct.unpack_from("<III", compressed, 0)
+    expected_size = h * w * c
+    rle_payload = _zlib.decompress(compressed[12:])
+
+    # Decode RLE
+    flat = np.empty(expected_size, dtype=np.uint8)
+    pos = 0
+    offset = 0
+    payload_len = len(rle_payload)
+    while offset + 2 < payload_len:
+        val, run = _struct.unpack_from("<BH", rle_payload, offset)
+        offset += 3
+        end = min(pos + run, expected_size)
+        flat[pos:end] = val
+        pos = end
+        if pos >= expected_size:
+            break
+
+    # Any remaining bytes default to 128 (zero delta)
+    if pos < expected_size:
+        flat[pos:] = 128
+
+    if c > 1:
+        delta_u8 = flat.reshape((h, w, c))
+    else:
+        delta_u8 = flat.reshape((h, w))
+
+    # Reverse offset: storage 128 == 0 delta
+    delta = delta_u8.astype(np.int16) - 128
+    result = np.clip(spec_old.astype(np.int16) + delta, 0, 255).astype(np.uint8)
+    return result
+
+
 __all__ = [
     "compose_finish",
     "compose_finish_stacked",
@@ -3060,4 +3333,6 @@ __all__ = [
     "compose_paint_mod_stacked",
     "_get_pattern_mask",
     "_apply_spec_blend_mode",
+    "compress_spec_delta",
+    "decompress_spec_delta",
 ]

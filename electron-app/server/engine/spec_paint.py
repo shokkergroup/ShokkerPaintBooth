@@ -163,7 +163,7 @@ def spec_pearlescent_white_base(shape, seed, sm, base_m, base_r):
     # M = 120 + base_metal*60 + pearl_mid*40 (range ~120-220)
     M_arr = np.clip(120.0 + base_metal * 60.0 * sm + pearl_mid * 40.0 * sm, 0, 255).astype(np.float32)
     # R = 15 + pearl_mid*40 (range 15-55)
-    R_arr = np.clip(15.0 + pearl_mid * 40.0 * sm, 0, 255).astype(np.float32)
+    R_arr = np.clip(15.0 + pearl_mid * 40.0 * sm, 15, 255).astype(np.float32)
     # CC = 16 + clear_top*8 (range 16-24, very glossy)
     CC_arr = np.clip(16.0 + clear_top * 8.0, 16, 255).astype(np.float32)
     return M_arr, R_arr, CC_arr
@@ -3167,7 +3167,7 @@ def spec_industrial_tactical(shape, seed, sm, base_m, base_r):
 
     grit = multi_scale_noise(shape, [8, 16, 32], [0.5, 0.3, 0.2], seed)
     M = np.clip(5 + grit * 40.0, 0, 255).astype(np.float32)
-    R = np.clip(170 + grit * 85.0, 0, 255).astype(np.float32)
+    R = np.clip(170 + grit * 85.0, 15, 255)
     return M, R, np.full(shape, 180.0, dtype=np.float32)  # CC=180 dead flat military/tactical
 
 def paint_matte_wrap_v2(paint, shape, mask, seed, pm, bb):
@@ -3183,7 +3183,7 @@ def spec_satin_wrap(shape, seed, sm, base_m, base_r):
 
     ripple = multi_scale_noise(shape, [32, 64], [0.5, 0.5], seed)
     M = np.clip(10 + ripple * 5.0, 0, 255).astype(np.float32)
-    R = np.clip(120 + ripple * 20.0, 0, 255).astype(np.float32)
+    R = np.clip(120 + ripple * 20.0, 15, 255)
     return M, R, np.full(shape, 60.0, dtype=np.float32)  # CC=60 satin wrap coating
 
 def paint_sun_fade_v2(paint, shape, mask, seed, pm, bb):
@@ -3341,7 +3341,7 @@ def spec_liquid_titanium(shape, seed, sm, base_m, base_r):
     combined = np.clip(swirl * 0.7 + depth * 0.3, 0, 1)
     
     M = np.clip(base_m - (1.0 - combined) * 50.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(base_r + (1.0 - combined) * 20.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(base_r + (1.0 - combined) * 20.0 * sm, 15, 255)
     return M, R, np.full((h, w), 16.0, dtype=np.float32)  # CC=16 max clearcoat
 
 def spec_cobalt_metal(shape, seed, sm, base_m, base_r):
@@ -3357,7 +3357,7 @@ def spec_cobalt_metal(shape, seed, sm, base_m, base_r):
     grain = multi_scale_noise((h, w), [1, 2], [0.5, 0.5], seed + 103)
     
     M = np.clip(base_m + crystal * 50.0 * sm - grain * 15.0, 0, 255).astype(np.float32)
-    R = np.clip(base_r + crystal * 35.0 * sm + grain * 25.0, 0, 255).astype(np.float32)
+    R = np.clip(base_r + crystal * 35.0 * sm + grain * 25.0, 15, 255)
     return M, R, np.full((h, w), 16.0, dtype=np.float32)  # CC=16 max clearcoat
 
 def spec_tungsten_metal(shape, seed, sm, base_m, base_r):
@@ -3374,7 +3374,7 @@ def spec_tungsten_metal(shape, seed, sm, base_m, base_r):
     overall = np.clip(grain + pitting, 0, 1)
     
     M = np.clip(base_m - pitting * 80.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(base_r + overall * 60.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(base_r + overall * 60.0 * sm, 15, 255)
     return M, R, np.full((h, w), 16.0, dtype=np.float32)  # CC=16 max clearcoat
 
 def spec_platinum_metal(shape, seed, sm, base_m, base_r):
@@ -3386,7 +3386,7 @@ def spec_platinum_metal(shape, seed, sm, base_m, base_r):
     cloud = multi_scale_noise((h, w), [32, 64, 128], [0.4, 0.4, 0.2], seed + 301)
     
     M = np.clip(base_m - cloud * 25.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(base_r + cloud * 8.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(base_r + cloud * 8.0 * sm, 15, 255)
     CC = np.full((h, w), 16.0, dtype=np.float32)  # Registry says CC=16
     return M, R, CC
 
@@ -3482,7 +3482,7 @@ def spec_black_hole_accretion(shape, seed, sm, base_m, base_r):
     # M: void=base_m(0 dielectric), ring=255 full chrome
     M = np.clip(float(base_m) * (1.0 - ring_s) + 255.0 * ring_s, 0, 255).astype(np.float32)
     # R: void=base_r(255 ultra-rough), ring=2 mirror
-    R = np.clip(float(base_r) * (1.0 - ring_s) + 2.0 * ring_s, 0, 255).astype(np.float32)
+    R = np.clip(float(base_r) * (1.0 - ring_s) + 2.0 * ring_s, 15, 255)
     # CC: void=255 dead dull, ring=16 max gloss
     CC = np.clip(255.0 * (1.0 - ring_s) + 16.0 * ring_s, 16, 255).astype(np.float32)
     return M, R, CC
@@ -3537,7 +3537,7 @@ def spec_absolute_zero(shape, seed, sm, base_m, base_r):
     n2 = multi_scale_noise(shape, [2, 4], [0.5, 0.5], seed + 902)
     frost = np.clip(np.abs(np.sin(n1 * 20.0) + np.cos(n2 * 20.0)), 0, 1)
     M = np.clip(base_m + frost * 100.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(base_r - frost * 80.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(base_r - frost * 80.0 * sm, 15, 255)
     return M, R, np.full(shape, 40.0, dtype=np.float32)
 
 
@@ -3662,7 +3662,7 @@ def spec_plasma_core(shape, seed, sm, base_m, base_r):
     
     # The veins themselves are intensely metallic and zero roughness. The outer void area is rougher.
     M = np.clip(base_m + hot_veins * 50.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(base_r + (1.0 - hot_veins) * 20.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(base_r + (1.0 - hot_veins) * 20.0 * sm, 15, 255)
     return M, R, np.full((h, w), 30.0, dtype=np.float32)  # CC=30 semi-gloss plasma (was 0=mirror)
 
 
@@ -3809,7 +3809,7 @@ def spec_mil_spec_od_v3(shape, seed, sm, base_m, base_r):
     
     # Flat durable military paint, dirt adds roughness
     M = np.full((h, w), 2.0, dtype=np.float32)
-    R = np.clip(180.0 + field_grime * 60.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(180.0 + field_grime * 60.0 * sm, 15, 255)
     return M, R, np.full((h, w), 195.0, dtype=np.float32)  # CC=195 dead flat military
 
 def paint_mil_spec_tan_v2(paint, shape, mask, seed, pm, bb):
@@ -3840,7 +3840,7 @@ def spec_mil_spec_tan_v2(shape, seed, sm, base_m, base_r):
     dust = multi_scale_noise((h, w), [4, 8], [0.6, 0.4], seed + 200)
     
     M = np.full((h, w), 0.0, dtype=np.float32)
-    R = np.clip(200.0 + dust * 55.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(200.0 + dust * 55.0 * sm, 15, 255)
     return M, R, np.full((h, w), 200.0, dtype=np.float32)  # CC=200 dead flat desert
 
 
@@ -3888,7 +3888,7 @@ def spec_submarine_black_v2(shape, seed, sm, base_m, base_r):
     M = np.full((h, w), 0.0, dtype=np.float32)
     M = np.clip(M + grid * 15.0 * sm, 0, 255) # slight met on the seams
     
-    R = np.clip(235.0 + rubber_grain * 20.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(235.0 + rubber_grain * 20.0 * sm, 15, 255)
     return M, R, np.full((h, w), 210.0, dtype=np.float32)  # CC=210 anechoic rubber, dead flat
 
 
@@ -3921,7 +3921,7 @@ def spec_blackout_v2(shape, seed, sm, base_m, base_r):
     
     # Highly dielectric, very rough, but varying slightly from wrap stretching
     M = np.full((h, w), 5.0, dtype=np.float32)
-    R = np.clip(210.0 + streaks * 20.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(210.0 + streaks * 20.0 * sm, 15, 255)
     return M, R, np.full((h, w), 200.0, dtype=np.float32)  # CC=200 murdered-out dead flat
 
 
@@ -3951,7 +3951,7 @@ def spec_cerakote_v2(shape, seed, sm, base_m, base_r):
     
     # Cured ceramic is mostly dielectric but very hard/uniform
     M = np.full((h, w), 30.0, dtype=np.float32)
-    R = np.clip(160.0 + grit * 40.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(160.0 + grit * 40.0 * sm, 15, 255)
     return M, R, np.full((h, w), 170.0, dtype=np.float32)  # CC=170 flat ceramic coating
 
 
@@ -3980,7 +3980,7 @@ def spec_duracoat_v2(shape, seed, sm, base_m, base_r):
     
     # Less rough than Cerakote, highly uneven due to air-dry pooling
     M = np.full((h, w), 20.0, dtype=np.float32)
-    R = np.clip(130.0 + ripples * 60.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(130.0 + ripples * 60.0 * sm, 15, 255)
     return M, R, np.full((h, w), 150.0, dtype=np.float32)  # CC=150 tactical epoxy
 
 
@@ -4017,7 +4017,7 @@ def spec_martian_regolith(shape, seed, sm, base_m, base_r):
     glass_shards = multi_scale_noise((h, w), [1], [1.0], seed + 304)
     
     # Almost entirely rough dirt
-    R = np.clip(220.0 + clumps * 35.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(220.0 + clumps * 35.0 * sm, 15, 255)
     
     # Occasional bright crystalline spec hit in the dirt
     M = np.where(glass_shards > 0.98, 200.0, 0.0).astype(np.float32) * sm
@@ -4038,7 +4038,7 @@ def spec_powder_coat_v2(shape, seed, sm, base_m, base_r):
     peel = multi_scale_noise((h, w), [8, 16], [0.6, 0.4], seed + 305)
     
     M = np.full((h, w), 10.0, dtype=np.float32)
-    R = np.clip(90.0 + peel * 70.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(90.0 + peel * 70.0 * sm, 15, 255)
     # Give it a thick clearcoat property to emulate baked finish
     CC = np.clip(50.0 - peel * 20.0 * sm, 0, 255).astype(np.float32)
     return M, R, CC
@@ -4073,7 +4073,7 @@ def spec_sandblasted_v2(shape, seed, sm, base_m, base_r):
     
     # Pure metal, but scattered everywhere so it's both highly metallic AND highly rough
     M = np.clip(180.0 + blast_grit * 60.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(150.0 + blast_grit * 50.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(150.0 + blast_grit * 50.0 * sm, 15, 255)
     return M, R, np.full((h, w), 155.0, dtype=np.float32)  # CC=155 raw stripped metal
 
 
@@ -4311,7 +4311,7 @@ def spec_thermal_titanium(shape, mask, seed, sm):
     # heat_warped=0 (cold/gray zone) -> high M, low R
     # heat_warped=1 (hot/oxide zone) -> lower M, higher R
     M = np.clip(220.0 - heat_warped * 60.0, 0, 255)
-    R = np.clip( 15.0 + heat_warped * 30.0, 0, 255)
+    R = np.clip( 15.0 + heat_warped * 30.0, 15, 255)
     CC = np.clip( 20.0 + heat_warped * 30.0, 16, 255)
     spec[:, :, 0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
     spec[:, :, 1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)

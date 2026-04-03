@@ -45,7 +45,7 @@ from engine.spec_paint import (
 
 def paint_liquid_metal_flow_v2(paint, shape, mask, seed, pm, bb):
     h, w = shape[:2] if len(shape) > 2 else shape
-    from engine.core import _get_mgrid
+    from engine.core import get_mgrid as _get_mgrid
     y, x = _get_mgrid(shape)
     flow = np.sin(x * 0.15 + np.sin(y * 0.08) * 3.0) * 0.5 + 0.5
     flow = np.clip((flow + 1.0) * 0.5, 0, 1).astype(np.float32)
@@ -56,16 +56,16 @@ def paint_liquid_metal_flow_v2(paint, shape, mask, seed, pm, bb):
 
 def spec_exotic_metal(shape, mask, seed, sm):
     h, w = shape[:2] if len(shape) > 2 else shape
-    from engine.core import _multi_scale_noise, _get_mgrid
+    from engine.core import multi_scale_noise as _multi_scale_noise, get_mgrid as _get_mgrid
     y, x = _get_mgrid(shape)
     flow = np.sin(x * 0.15 + np.sin(y * 0.08) * 3.0) * 0.5 + 0.5
     grain = _multi_scale_noise(shape, [2, 4], [0.5, 0.5], seed)
     M = np.clip(180 + flow * 75.0, 0, 255).astype(np.float32)
-    R = np.clip(5 + grain * 25.0, 0, 255).astype(np.float32)
+    R = np.clip(5 + grain * 25.0, 15, 255)
     return M, R, np.full(shape, 16.0, dtype=np.float32)  # CC=16 exotic metal gloss (was 0=mirror)
 
 def paint_tungsten_heavy(paint, shape, mask, seed, pm, bb):
-    from engine.core import _multi_scale_noise
+    from engine.core import multi_scale_noise as _multi_scale_noise
     gray = paint.mean(axis=2, keepdims=True)
     paint[:,:,0] = np.clip(paint[:,:,0] * 0.6 + gray[:,:,0] * 0.2, 0, 1)
     paint[:,:,1] = np.clip(paint[:,:,1] * 0.6 + gray[:,:,0] * 0.2, 0, 1)
@@ -74,7 +74,7 @@ def paint_tungsten_heavy(paint, shape, mask, seed, pm, bb):
     return np.clip(paint + flake[:,:,np.newaxis] * 0.08 * pm * mask[:,:,np.newaxis] + bb * 0.3, 0, 1)
 
 def paint_oem_metallic_v2(paint, shape, mask, seed, pm, bb):
-    from engine.core import _multi_scale_noise
+    from engine.core import multi_scale_noise as _multi_scale_noise
     flake1 = _multi_scale_noise(shape, [1, 2], [0.6, 0.4], seed+1)
     flake2 = _multi_scale_noise(shape, [2, 4], [0.5, 0.5], seed+5)
     pearl = np.clip((flake1 * 0.7 + flake2 * 0.3), 0, 1)
@@ -84,15 +84,15 @@ def paint_oem_metallic_v2(paint, shape, mask, seed, pm, bb):
     return np.clip(paint + bb * 0.5, 0, 1)
 
 def spec_oem_automotive(shape, mask, seed, sm):
-    from engine.core import _multi_scale_noise
+    from engine.core import multi_scale_noise as _multi_scale_noise
     peel = _multi_scale_noise(shape, [16, 32], [0.7, 0.3], seed)
     M = np.clip(30 + peel * 10.0, 0, 255).astype(np.float32)
-    R = np.clip(45 + peel * 20.0, 0, 255).astype(np.float32)
+    R = np.clip(45 + peel * 20.0, 15, 255)
     CC = np.clip(32 - peel * 16.0, 16, 255).astype(np.float32)
     return M, R, CC
 
 def paint_mil_spec_od_v2(paint, shape, mask, seed, pm, bb):
-    from engine.core import _multi_scale_noise
+    from engine.core import multi_scale_noise as _multi_scale_noise
     gray = paint.mean(axis=2, keepdims=True)
     paint = paint * 0.4 + gray * 0.4
     paint[:,:,0] = np.clip(paint[:,:,0] + 0.15*pm*mask, 0, 1)
@@ -103,10 +103,10 @@ def paint_mil_spec_od_v2(paint, shape, mask, seed, pm, bb):
     return np.clip(paint + bb * 0.2, 0, 1)
 
 def spec_industrial_tactical(shape, mask, seed, sm):
-    from engine.core import _multi_scale_noise
+    from engine.core import multi_scale_noise as _multi_scale_noise
     grit = _multi_scale_noise(shape, [8, 16, 32], [0.5, 0.3, 0.2], seed)
     M = np.clip(5 + grit * 40.0, 0, 255).astype(np.float32)
-    R = np.clip(170 + grit * 85.0, 0, 255).astype(np.float32)
+    R = np.clip(170 + grit * 85.0, 15, 255)
     return M, R, np.full(shape, 180.0, dtype=np.float32)  # CC=180 tactical dull (was 0=mirror)
 
 def paint_matte_wrap_v2(paint, shape, mask, seed, pm, bb):
@@ -119,21 +119,21 @@ def paint_matte_wrap_v2(paint, shape, mask, seed, pm, bb):
     return np.clip(paint + bb * 0.15 * blend, 0, 1)
 
 def spec_satin_wrap(shape, mask, seed, sm):
-    from engine.core import _multi_scale_noise
+    from engine.core import multi_scale_noise as _multi_scale_noise
     ripple = _multi_scale_noise(shape, [32, 64], [0.5, 0.5], seed)
     M = np.clip(10 + ripple * 5.0, 0, 255).astype(np.float32)
-    R = np.clip(120 + ripple * 20.0, 0, 255).astype(np.float32)
+    R = np.clip(120 + ripple * 20.0, 15, 255)
     return M, R, np.full(shape, 120.0, dtype=np.float32)  # CC=120 satin sheen (was 0=mirror)
 
 def paint_sun_fade_v2(paint, shape, mask, seed, pm, bb):
-    from engine.core import _multi_scale_noise
+    from engine.core import multi_scale_noise as _multi_scale_noise
     damage = _multi_scale_noise(shape, [16,32,64], [0.4, 0.4, 0.2], seed)
     paint = np.clip(paint + damage[:,:,np.newaxis]*0.15*mask[:,:,np.newaxis]*pm, 0, 1)
     gray = paint.mean(axis=2, keepdims=True)
     return np.clip(paint * 0.6 + gray * 0.4 + bb * 0.2, 0, 1)
 
 def spec_weathered_aged(shape, mask, seed, sm):
-    from engine.core import _multi_scale_noise
+    from engine.core import multi_scale_noise as _multi_scale_noise
     rot = _multi_scale_noise(shape, [8, 16, 32], [0.4, 0.3, 0.3], seed)
     M = np.where(rot > 0.6, 90.0, 15.0).astype(np.float32)
     R = np.where(rot > 0.6, 220.0, 90.0).astype(np.float32)
@@ -141,7 +141,7 @@ def spec_weathered_aged(shape, mask, seed, sm):
     return M, R, CC
 
 def paint_race_day_gloss_v2(paint, shape, mask, seed, pm, bb):
-    from engine.core import _multi_scale_noise
+    from engine.core import multi_scale_noise as _multi_scale_noise
     paint = np.clip(paint * 1.1, 0, 1)
     dust = _multi_scale_noise(shape, [2,4,8], [0.5, 0.3, 0.2], seed+1)
     dust_mask = np.where(dust > 0.8, 1, 0).astype(np.float32)
@@ -149,15 +149,15 @@ def paint_race_day_gloss_v2(paint, shape, mask, seed, pm, bb):
     return np.clip(paint + bb * 0.7, 0, 1)
 
 def spec_racing_heritage(shape, mask, seed, sm):
-    from engine.core import _multi_scale_noise
+    from engine.core import multi_scale_noise as _multi_scale_noise
     scuff = _multi_scale_noise(shape, [2, 4, 8], [0.4, 0.4, 0.2], seed)
     M = np.clip(100 - scuff * 80.0, 0, 255).astype(np.float32)
-    R = np.clip(15 + scuff * 200.0, 0, 255).astype(np.float32)
+    R = np.clip(15 + scuff * 200.0, 15, 255)
     CC = np.clip(32 - scuff * 32.0, 16, 255).astype(np.float32)
     return M, R, CC
 
 def paint_quantum_black_v2(paint, shape, mask, seed, pm, bb):
-    from engine.core import _multi_scale_noise
+    from engine.core import multi_scale_noise as _multi_scale_noise
     paint = np.clip(paint * 0.02, 0, 1) 
     flux = _multi_scale_noise(shape, [1, 2], [0.5, 0.5], seed)
     glow = np.where(flux > 0.95, 1, 0).astype(np.float32)
@@ -165,7 +165,7 @@ def paint_quantum_black_v2(paint, shape, mask, seed, pm, bb):
     return np.clip(paint + bb * 0.05, 0, 1)
 
 def spec_extreme_experimental(shape, mask, seed, sm):
-    from engine.core import _multi_scale_noise
+    from engine.core import multi_scale_noise as _multi_scale_noise
     void = _multi_scale_noise(shape, [1, 2, 4], [0.33, 0.33, 0.34], seed+99)
     M = np.where(void > 0.8, 255.0, 0.0).astype(np.float32)
     R = np.where(void > 0.8, 0.0, 255.0).astype(np.float32)
@@ -175,7 +175,7 @@ def spec_extreme_experimental(shape, mask, seed, sm):
 def paint_bentley_silver_v2(paint, shape, mask, seed, pm, bb):
     if pm == 0.0:
         return paint
-    from engine.core import _multi_scale_noise
+    from engine.core import multi_scale_noise as _multi_scale_noise
     blend = pm * mask
     gray = paint.mean(axis=2, keepdims=True)
     target = gray * 0.10 + 0.90
@@ -185,18 +185,18 @@ def paint_bentley_silver_v2(paint, shape, mask, seed, pm, bb):
     return np.clip(paint + flake[:,:,np.newaxis]*0.05*blend[:,:,np.newaxis] + bb*0.8*blend[:,:,np.newaxis], 0, 1)
 
 def spec_premium_luxury(shape, mask, seed, sm):
-    from engine.core import _multi_scale_noise
+    from engine.core import multi_scale_noise as _multi_scale_noise
     flake = _multi_scale_noise(shape, [1, 2], [0.8, 0.2], seed)
     M = np.clip(180 + flake * 75.0, 0, 255).astype(np.float32)
-    R = np.clip(5 + flake * 5.0, 0, 255).astype(np.float32)
+    R = np.clip(5 + flake * 5.0, 15, 255)
     CC = np.full(shape, 16.0, dtype=np.float32)  # CC=16 luxury high gloss (was 255=dead flat)
     return M, R, CC
 
 def spec_metallic_standard(shape, mask, seed, sm):
-    from engine.core import _multi_scale_noise
+    from engine.core import multi_scale_noise as _multi_scale_noise
     flake = _multi_scale_noise(shape, [1, 2], [0.6, 0.4], seed+1)
     M = np.clip(120 + flake * 80.0, 0, 255).astype(np.float32)
-    R = np.clip(30 - flake * 15.0, 0, 255).astype(np.float32)
+    R = np.clip(30 - flake * 15.0, 15, 255)
     CC = np.full(shape, 24.0, dtype=np.float32)
     return M, R, CC
 
@@ -11107,7 +11107,7 @@ def spec_forged_titanium(shape, mask, seed, sm):
     # Oxidation bands follow y-axis with slight warping
     bands = np.sin((y + noise * 0.08) * np.pi * 6) * 0.5 + 0.5
     M = np.clip(210 + bands * 10 + noise * 8 * sm, 0, 255)
-    R = np.clip(20 + (1 - bands) * 10 + noise * 6 * sm, 0, 255)
+    R = np.clip(20 + (1 - bands) * 10 + noise * 6 * sm, 15, 255)
     CC = np.clip(180 + bands * 40 + noise * 15, 0, 255)
     spec[:, :, 0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
     spec[:, :, 1] = np.clip(R * mask + 80 * (1 - mask), 15, 255).astype(np.uint8)
@@ -11142,7 +11142,7 @@ def spec_brushed_gunmetal(shape, mask, seed, sm):
     fine_noise = _multi_scale_noise(shape, [1, 2], [0.7, 0.3], seed + 4111)
     grain = np.abs(np.sin(x_noise * 20 + fine_noise * 3)) ** 0.3
     M = np.clip(230 + grain * 10 + fine_noise * 5 * sm, 0, 255)
-    R = np.clip(12 + (1 - grain) * 8 + fine_noise * 4 * sm, 0, 255)
+    R = np.clip(12 + (1 - grain) * 8 + fine_noise * 4 * sm, 15, 255)
     CC = np.clip(210 + grain * 20, 0, 255)
     spec[:, :, 0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
     spec[:, :, 1] = np.clip(R * mask + 80 * (1 - mask), 15, 255).astype(np.uint8)
@@ -11177,7 +11177,7 @@ def spec_cast_iron_raw(shape, mask, seed, sm):
     # Porous surface: deep pits where noise is low
     pores = np.clip(pore_noise * 0.5 + 0.5, 0, 1)
     M = np.clip(75 + pores * 10 + fine_noise * 5 * sm, 0, 255)
-    R = np.clip(195 + (1 - pores) * 15 + fine_noise * 10 * sm, 0, 255)
+    R = np.clip(195 + (1 - pores) * 15 + fine_noise * 10 * sm, 15, 255)
     CC = np.clip(5 + pores * 10, 0, 255)
     spec[:, :, 0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
     spec[:, :, 1] = np.clip(R * mask + 180 * (1 - mask), 15, 255).astype(np.uint8)
@@ -11208,7 +11208,7 @@ def spec_polished_brass(shape, mask, seed, sm):
     spec = np.zeros((h, w, 4), dtype=np.uint8)
     micro_noise = _multi_scale_noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + 4130)
     M = np.clip(250 + micro_noise * 3 * sm, 0, 255)
-    R = np.clip(5 + micro_noise * 3 * sm, 0, 255)
+    R = np.clip(5 + micro_noise * 3 * sm, 15, 255)
     CC = np.clip(240 + micro_noise * 8, 0, 255)
     spec[:, :, 0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
     spec[:, :, 1] = np.clip(R * mask + 30 * (1 - mask), 15, 255).astype(np.uint8)
@@ -11242,7 +11242,7 @@ def spec_annealed_steel(shape, mask, seed, sm):
     # Temper color field driven by combined y + noise
     field = np.clip((y + noise * 0.12) % 1.0, 0, 1)
     M = np.clip(205 + field * 10 + noise * 5 * sm, 0, 255)
-    R = np.clip(25 + (1 - field) * 10 + noise * 5 * sm, 0, 255)
+    R = np.clip(25 + (1 - field) * 10 + noise * 5 * sm, 15, 255)
     CC = np.clip(175 + field * 30 + noise * 10, 0, 255)
     spec[:, :, 0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
     spec[:, :, 1] = np.clip(R * mask + 80 * (1 - mask), 15, 255).astype(np.uint8)
@@ -11278,7 +11278,7 @@ def spec_oxidized_bronze(shape, mask, seed, sm):
     fine_noise = _multi_scale_noise(shape, [2, 4], [0.6, 0.4], seed + 4151)
     patina = np.clip(patina_noise * 0.5 + 0.5, 0, 1)
     M = np.clip(145 + (1 - patina) * 30 + fine_noise * 10 * sm, 0, 255)
-    R = np.clip(110 + patina * 30 + fine_noise * 12 * sm, 0, 255)
+    R = np.clip(110 + patina * 30 + fine_noise * 12 * sm, 15, 255)
     CC = np.clip(50 + (1 - patina) * 30 + fine_noise * 8, 0, 255)
     spec[:, :, 0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
     spec[:, :, 1] = np.clip(R * mask + 120 * (1 - mask), 15, 255).astype(np.uint8)
@@ -11317,7 +11317,7 @@ def spec_damascus_steel(shape, mask, seed, sm):
     # Folded layer bands — warped diagonal striations
     layers = np.sin((y * 0.6 + x * 0.4 + warp_noise * 0.15) * np.pi * 28) * 0.5 + 0.5
     M = np.clip(220 + layers * 20 + fine_noise * 5 * sm, 0, 255)
-    R = np.clip(15 + (1 - layers) * 10 + fine_noise * 5 * sm, 0, 255)
+    R = np.clip(15 + (1 - layers) * 10 + fine_noise * 5 * sm, 15, 255)
     CC = np.clip(200 + layers * 20 + fine_noise * 8, 0, 255)
     spec[:, :, 0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
     spec[:, :, 1] = np.clip(R * mask + 60 * (1 - mask), 15, 255).astype(np.uint8)

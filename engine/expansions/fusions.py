@@ -1357,7 +1357,7 @@ def _make_weather_fusion(weather_type, seed_offset=0):
             exposure = warped_grad  # top = exposed
             # UV-faded areas: lose metallic, become rough, clearcoat degrades
             M = np.clip(200 - exposure * 180 * sm, 0, 255)
-            R = np.clip(30 + exposure * 170 * sm, 0, 255)
+            R = np.clip(30 + exposure * 170 * sm, 15, 255)
             CC = np.clip(16 + exposure * 174 * sm, 16, 255)
             # Micro-cracking from UV in heavily exposed areas
             cracks = _noise(shape, [2, 4, 8], [0.3, 0.4, 0.3], seed + seed_offset + 100)
@@ -1388,7 +1388,7 @@ def _make_weather_fusion(weather_type, seed_offset=0):
             # Acid etching: roughens surface, strips metallic, damages clearcoat
             etch_depth = spot_mask * warped_grad
             M = np.clip(190 - etch_depth * 170 * sm, 0, 255)
-            R = np.clip(35 + etch_depth * 185 * sm, 0, 255)
+            R = np.clip(35 + etch_depth * 185 * sm, 15, 255)
             CC = np.clip(16 + etch_depth * 159 * sm, 16, 255)
             # Chemical staining at spot edges
             edge_ring = np.exp(-((spot_mask - 0.5)**2) * 30) * warped_grad
@@ -1398,7 +1398,7 @@ def _make_weather_fusion(weather_type, seed_offset=0):
             sand_exposure = warped_grad
             # Sand-blasted: stripped of clearcoat, heavily roughened
             M = np.clip(195 - sand_exposure * 160 * sm, 0, 255)
-            R = np.clip(40 + sand_exposure * 190 * sm, 0, 255)
+            R = np.clip(40 + sand_exposure * 190 * sm, 15, 255)
             CC = np.clip(16 + sand_exposure * 189 * sm, 16, 255)
             # Wind-streak patterns
             streak = _noise(shape, [2, 64], [0.6, 0.4], seed + seed_offset + 100)
@@ -1412,7 +1412,7 @@ def _make_weather_fusion(weather_type, seed_offset=0):
             ice_pattern = np.clip(ice_noise * ice_grad * 2, 0, 1)
             # Icy areas: high roughness (frost), moderate metallic, heavy CC
             M = np.clip(220 - ice_pattern * 130 * sm, 0, 255)
-            R = np.clip(25 + ice_pattern * 160 * sm, 0, 255)
+            R = np.clip(25 + ice_pattern * 160 * sm, 15, 255)
             CC = np.clip(16 + ice_pattern * 164 * sm, 16, 255)
             # Ice crystal edges are extra rough
             crystal_edge = _noise(shape, [2, 4, 6], [0.3, 0.4, 0.3], seed + seed_offset + 200)
@@ -1429,7 +1429,7 @@ def _make_weather_fusion(weather_type, seed_offset=0):
             combined = np.clip(fine_spray * 0.6 + splat_mask * 0.4, 0, 1)
             # Grime: kills metallic, maxes roughness
             M = np.clip(200 - combined * 190 * sm, 0, 255)
-            R = np.clip(45 + combined * 175 * sm, 0, 255)
+            R = np.clip(45 + combined * 175 * sm, 15, 255)
             CC = np.clip(20 + combined * 150 * sm, 16, 255)
 
         elif s == 7660:  # hood_bake: heat damage on hood/roof areas
@@ -1438,7 +1438,7 @@ def _make_weather_fusion(weather_type, seed_offset=0):
             craze = _noise(shape, [2, 4, 8], [0.3, 0.4, 0.3], seed + seed_offset + 100)
             craze_mask = np.clip(np.abs(craze) * heat_exposure * 3, 0, 1)
             M = np.clip(210 - heat_exposure * 100 * sm - craze_mask * 50 * sm, 0, 255)
-            R = np.clip(30 + heat_exposure * 120 * sm + craze_mask * 60 * sm, 0, 255)
+            R = np.clip(30 + heat_exposure * 120 * sm + craze_mask * 60 * sm, 15, 255)
             CC = np.clip(200 * (1 - heat_exposure * sm) + craze_mask * 80 * sm, 16, 255)
 
         elif s == 7670:  # barn_dust: dust accumulation in recesses
@@ -1447,7 +1447,7 @@ def _make_weather_fusion(weather_type, seed_offset=0):
             dust_mask = np.clip((cavity + 0.3) * warped_grad * 1.5, 0, 1)
             # Dust: zero metallic, very high roughness
             M = np.clip(185 - dust_mask * 175 * sm, 0, 255)
-            R = np.clip(50 + dust_mask * 170 * sm, 0, 255)
+            R = np.clip(50 + dust_mask * 170 * sm, 15, 255)
             CC = np.clip(16 + dust_mask * 129 * sm, 16, 255)
             # Dust settles in noise patterns
             fine_dust = _noise(shape, [2, 4], [0.5, 0.5], seed + seed_offset + 200)
@@ -1460,7 +1460,7 @@ def _make_weather_fusion(weather_type, seed_offset=0):
             ox_mask = np.clip((ox_noise - 0.1) * 2.5 * salt_exposure, 0, 1)
             # Oxidized: low M, high R, damaged CC
             M = np.clip(195 - ox_mask * 165 * sm, 0, 255)
-            R = np.clip(40 + ox_mask * 180 * sm, 0, 255)
+            R = np.clip(40 + ox_mask * 180 * sm, 15, 255)
             CC = np.clip(60 + ox_mask * 120 * sm, 16, 255)
             # White salt deposits
             salt_crystals = rng.random((h, w)).astype(np.float32)
@@ -1474,7 +1474,7 @@ def _make_weather_fusion(weather_type, seed_offset=0):
             ash_mask = np.clip((ash_noise + 0.2) * ash_fall * 1.8, 0, 1)
             # Ash: kills all metallic, extreme roughness
             M = np.clip(170 - ash_mask * 165 * sm, 0, 255)
-            R = np.clip(55 + ash_mask * 195 * sm, 0, 255)
+            R = np.clip(55 + ash_mask * 195 * sm, 15, 255)
             CC = np.clip(16 + ash_mask * 184 * sm, 16, 255)
             # Heat-warped spots under ash
             heat = _noise(shape, [16, 32], [0.5, 0.5], seed + seed_offset + 200)

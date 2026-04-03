@@ -3798,6 +3798,9 @@ if __name__ == '__main__':
                                 const _bHex = (z.baseColor || '#ffffff').toString();
                                 const hex = _bHex.length >= 7 ? _bHex : '#ffffff';
                                 zoneObj.base_color = [parseInt(hex.slice(1, 3), 16) / 255, parseInt(hex.slice(3, 5), 16) / 255, parseInt(hex.slice(5, 7), 16) / 255];
+                            } else if (_bMode === 'gradient' && z.gradientStops && z.gradientStops.length >= 2) {
+                                zoneObj.gradient_stops = z.gradientStops;
+                                zoneObj.gradient_direction = z.gradientDirection || 'horizontal';
                             } else if (_bMode === 'special' && z.baseColorSource && z.baseColorSource !== 'undefined') {
                                 zoneObj.base_color_source = z.baseColorSource;
                             }

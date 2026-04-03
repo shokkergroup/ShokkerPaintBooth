@@ -21,12 +21,14 @@ Techniques (all different):
 """
 import numpy as np
 from engine.core import multi_scale_noise, get_mgrid
+from engine.paint_v2 import ensure_bb_2d
 
 
 # ==================================================================
 # CANDY APPLE - Beer-Lambert double-pass candy absorption
 # ==================================================================
 def paint_candy_apple_v2(paint, shape, mask, seed, pm, bb):
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     reflect = multi_scale_noise((h, w), [2, 4, 8], [0.3, 0.4, 0.3], seed + 701)
@@ -59,6 +61,7 @@ def spec_candy_apple(shape, seed, sm, base_m, base_r):
 # CHAMPAGNE METALLIC - Oriented gold-mica flake with warm bias
 # ==================================================================
 def paint_champagne_metallic_v2(paint, shape, mask, seed, pm, bb):
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     y, x = get_mgrid((h, w))
@@ -88,6 +91,7 @@ def spec_champagne_metallic(shape, seed, sm, base_m, base_r):
 # METAL FLAKE BASE - Large aluminum flake Voronoi scatter
 # ==================================================================
 def paint_metal_flake_base_v2(paint, shape, mask, seed, pm, bb):
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     rng = np.random.RandomState(seed + 720)
@@ -124,6 +128,7 @@ def spec_metal_flake_base(shape, seed, sm, base_m, base_r):
 # ORIGINAL METAL FLAKE - 1960s mega-flake prismatic refraction
 # ==================================================================
 def paint_original_metal_flake_v2(paint, shape, mask, seed, pm, bb):
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     rng = np.random.RandomState(seed + 730)
@@ -160,6 +165,7 @@ def spec_original_metal_flake(shape, seed, sm, base_m, base_r):
 # CHAMPAGNE FLAKE - Gold-coated aluminum flake specular map
 # ==================================================================
 def paint_champagne_flake_v2(paint, shape, mask, seed, pm, bb):
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     # Gold-coated flakes: high specular at certain orientations
@@ -189,6 +195,7 @@ def spec_champagne_flake(shape, seed, sm, base_m, base_r):
 # FINE SILVER FLAKE - Micro-diamond particle Mie scattering
 # ==================================================================
 def paint_fine_silver_flake_v2(paint, shape, mask, seed, pm, bb):
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     # Mie scattering: particle size ~ wavelength, creates forward scatter halo
@@ -220,6 +227,7 @@ def spec_fine_silver_flake(shape, seed, sm, base_m, base_r):
 # BLUE ICE FLAKE - Frozen crystal dendritic growth pattern
 # ==================================================================
 def paint_blue_ice_flake_v2(paint, shape, mask, seed, pm, bb):
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     y, x = get_mgrid((h, w))
@@ -258,6 +266,7 @@ def spec_blue_ice_flake(shape, seed, sm, base_m, base_r):
 # BRONZE FLAKE - Copper-tin alloy oxidation gradient
 # ==================================================================
 def paint_bronze_flake_v2(paint, shape, mask, seed, pm, bb):
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     # Bronze = copper-tin alloy; oxidation creates patina gradient
@@ -293,6 +302,7 @@ def spec_bronze_flake(shape, seed, sm, base_m, base_r):
 # GUNMETAL FLAKE - Chameleon-shift multi-angle interference
 # ==================================================================
 def paint_gunmetal_flake_v2(paint, shape, mask, seed, pm, bb):
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     # Chameleon flakes: multi-layer thin film with angle-dependent color
@@ -327,6 +337,7 @@ def spec_gunmetal_flake(shape, seed, sm, base_m, base_r):
 # GREEN FLAKE - Dichroic glass flake color-split
 # ==================================================================
 def paint_green_flake_v2(paint, shape, mask, seed, pm, bb):
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     # Dichroic flakes: transmit green, reflect complementary magenta
@@ -357,6 +368,7 @@ def spec_green_flake(shape, seed, sm, base_m, base_r):
 # FIRE FLAKE - Thermal gradient blackbody emission color
 # ==================================================================
 def paint_fire_flake_v2(paint, shape, mask, seed, pm, bb):
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     # Blackbody radiation: temperature maps to color (cool=red, hot=yellow-white)
@@ -390,6 +402,7 @@ def spec_fire_flake(shape, seed, sm, base_m, base_r):
 # MIDNIGHT PEARL - Deep-base mica with Rayleigh blue scatter
 # ==================================================================
 def paint_midnight_pearl_v2(paint, shape, mask, seed, pm, bb):
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     # Rayleigh scatter: intensity ~ 1/lambda^4, so blue scatters most
@@ -423,6 +436,7 @@ def spec_midnight_pearl(shape, seed, sm, base_m, base_r):
 # PEARLESCENT WHITE - Multi-mica rainbow interference stack
 # ==================================================================
 def paint_pearlescent_white_v2(paint, shape, mask, seed, pm, bb):
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     # Multi-mica layers: each mica type has different thickness -> different color
@@ -457,6 +471,7 @@ def spec_pearlescent_white(shape, seed, sm, base_m, base_r):
 # PEWTER - Tin-lead alloy grain boundary diffusion
 # ==================================================================
 def paint_pewter_v2(paint, shape, mask, seed, pm, bb):
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     # Grain boundaries: Voronoi-approximated crystal grains

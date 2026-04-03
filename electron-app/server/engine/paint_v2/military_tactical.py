@@ -4,9 +4,11 @@ MILITARY & TACTICAL -- 12 bases, each with unique paint_fn + spec_fn
 """
 import numpy as np
 from engine.core import multi_scale_noise, get_mgrid
+from engine.paint_v2 import ensure_bb_2d
 
 def paint_armor_plate_v2(paint, shape, mask, seed, pm, bb):
     """Rolled homogeneous armor plate with directional rolling marks and hardness variation."""
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     # Rolled homogeneous armor: directional rolling marks + hardness variation
@@ -24,12 +26,13 @@ def spec_armor_plate(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
     roll = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.4, 0.3], seed + 1300)
     M = np.clip(170.0 + roll * 40.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(22.0 + roll * 18.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(22.0 + roll * 18.0 * sm, 15, 255)
     CC = np.clip(2.0 + roll * 3.0, 0, 255).astype(np.float32)
     return M, R, CC
 
 def paint_battleship_gray_v2(paint, shape, mask, seed, pm, bb):
     """Haze gray anti-corrosion naval coating with salt spray pitting."""
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     # Haze gray anti-corrosion coating with salt spray pitting
@@ -50,12 +53,13 @@ def spec_battleship_gray(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
     pit = multi_scale_noise((h, w), [2, 4, 8], [0.3, 0.35, 0.35], seed + 1310)
     M = np.clip(15.0 + pit * 10.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(25.0 + pit * 20.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(25.0 + pit * 20.0 * sm, 15, 255)
     CC = np.clip(6.0 + pit * 4.0, 0, 255).astype(np.float32)
     return M, R, CC
 
 def paint_cerakote_v2(paint, shape, mask, seed, pm, bb):
     """Cerakote ceramic-polymer hybrid with micro-ceramic particle distribution."""
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     # Ceramic-polymer hybrid: ultra-thin spray with micro-ceramic particles
@@ -73,12 +77,13 @@ def spec_cerakote(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
     ceramic = multi_scale_noise((h, w), [4, 8, 16], [0.3, 0.35, 0.35], seed + 1320)
     M = np.clip(8.0 + ceramic * 10.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(30.0 + ceramic * 20.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(30.0 + ceramic * 20.0 * sm, 15, 255)
     CC = np.clip(4.0 + ceramic * 4.0, 0, 255).astype(np.float32)
     return M, R, CC
 
 def paint_cerakote_gloss_v2(paint, shape, mask, seed, pm, bb):
     """Gloss Cerakote with polished ceramic surface and smooth finish."""
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     # Gloss Cerakote: same ceramic particle but polished surface
@@ -101,6 +106,7 @@ def spec_cerakote_gloss(shape, seed, sm, base_m, base_r):
 
 def paint_duracoat_v2(paint, shape, mask, seed, pm, bb):
     """DuraCoat air-dry epoxy with self-leveling properties and drip marks."""
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     # DuraCoat: air-dry epoxy with self-leveling properties
@@ -118,12 +124,13 @@ def spec_duracoat(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
     level = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.4, 0.3], seed + 1330)
     M = np.clip(6.0 + level * 8.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(20.0 + level * 15.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(20.0 + level * 15.0 * sm, 15, 255)
     CC = np.clip(6.0 + level * 4.0, 0, 255).astype(np.float32)
     return M, R, CC
 
 def paint_gunship_gray_v2(paint, shape, mask, seed, pm, bb):
     """Low-vis gunship gray with IR-suppressive pigment modulation."""
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     # Low-vis gunship gray with IR-suppressive pigment
@@ -144,12 +151,13 @@ def spec_gunship_gray(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
     ir = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.4, 0.3], seed + 1340)
     M = np.clip(8.0 + ir * 8.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(28.0 + ir * 18.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(28.0 + ir * 18.0 * sm, 15, 255)
     CC = np.clip(4.0 + ir * 3.0, 0, 255).astype(np.float32)
     return M, R, CC
 
 def paint_mil_spec_od_v2(paint, shape, mask, seed, pm, bb):
     """MIL-DTL-53072 olive drab with chromium oxide green pigment and UV fade."""
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     # MIL-DTL-53072 olive drab: chromium oxide green pigment
@@ -167,12 +175,13 @@ def spec_mil_spec_od(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
     pigment = multi_scale_noise((h, w), [8, 16, 32], [0.3, 0.4, 0.3], seed + 1350)
     M = np.clip(5.0 + pigment * 6.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(35.0 + pigment * 20.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(35.0 + pigment * 20.0 * sm, 15, 255)
     CC = np.clip(3.0 + pigment * 3.0, 0, 255).astype(np.float32)
     return M, R, CC
 
 def paint_mil_spec_tan_v2(paint, shape, mask, seed, pm, bb):
     """Coyote tan (FDE) iron oxide pigment with sand-matching IR signature."""
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     # Coyote tan (FDE): iron oxide pigment with sand-matching IR signature
@@ -190,12 +199,13 @@ def spec_mil_spec_tan(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
     iron = multi_scale_noise((h, w), [8, 16, 32], [0.3, 0.4, 0.3], seed + 1360)
     M = np.clip(5.0 + iron * 6.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(32.0 + iron * 20.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(32.0 + iron * 20.0 * sm, 15, 255)
     CC = np.clip(3.0 + iron * 3.0, 0, 255).astype(np.float32)
     return M, R, CC
 
 def paint_powder_coat_v2(paint, shape, mask, seed, pm, bb):
     """Electrostatic powder coat with particle flow and oven cure orange peel."""
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     # Electrostatic powder: particles melt + flow during oven cure
@@ -213,12 +223,13 @@ def spec_powder_coat(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
     flow = multi_scale_noise((h, w), [4, 8, 16], [0.3, 0.35, 0.35], seed + 1370)
     M = np.clip(6.0 + flow * 8.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(18.0 + flow * 15.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(18.0 + flow * 15.0 * sm, 15, 255)
     CC = np.clip(8.0 + flow * 5.0, 0, 255).astype(np.float32)
     return M, R, CC
 
 def paint_rugged_tactical_v2(paint, shape, mask, seed, pm, bb):
     """Rubberized tactical coating with thick textured impact-absorbing surface."""
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     # Rubberized tactical coating: thick, textured, impact-absorbing
@@ -236,12 +247,13 @@ def spec_rugged_tactical(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
     tex = multi_scale_noise((h, w), [2, 4, 8], [0.3, 0.35, 0.35], seed + 1380)
     M = np.clip(3.0 + tex * 5.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(55.0 + tex * 25.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(55.0 + tex * 25.0 * sm, 15, 255)
     CC = np.clip(1.0 + tex * 2.0, 0, 255).astype(np.float32)
     return M, R, CC
 
 def paint_sub_black_v2(paint, shape, mask, seed, pm, bb):
     """Anechoic tile-like sonar-absorbing rubber tile coating with seam detail."""
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     # Anechoic tile-like coating: sonar-absorbing rubber tiles
@@ -270,12 +282,13 @@ def spec_sub_black(shape, seed, sm, base_m, base_r):
     y, x = get_mgrid((h, w))
     seam = np.clip(np.maximum(np.abs(np.mod(x, 32) - 16)/16, np.abs(np.mod(y, 32) - 16)/16) - 0.85, 0, 1)
     M = np.clip(3.0 + seam * 5.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(60.0 + seam * 20.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(60.0 + seam * 20.0 * sm, 15, 255)
     CC = np.clip(1.0 + seam * 2.0, 0, 255).astype(np.float32)
     return M, R, CC
 
 def paint_submarine_black_v2(paint, shape, mask, seed, pm, bb):
     """Deep-dive pressure hull anti-fouling coating with bio-growth patina."""
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     # Deep-dive pressure hull coating: anti-fouling + corrosion resistant
@@ -296,6 +309,6 @@ def spec_submarine_black(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
     fouling = multi_scale_noise((h, w), [8, 16, 32], [0.3, 0.4, 0.3], seed + 1395)
     M = np.clip(4.0 + fouling * 5.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(45.0 + fouling * 25.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(45.0 + fouling * 25.0 * sm, 15, 255)
     CC = np.clip(2.0 + fouling * 3.0, 0, 255).astype(np.float32)
     return M, R, CC

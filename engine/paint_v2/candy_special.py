@@ -12,6 +12,7 @@ Each function implements specific optical phenomena:
 import numpy as np
 from scipy.spatial import cKDTree
 from engine.core import multi_scale_noise, get_mgrid
+from engine.paint_v2 import ensure_bb_2d
 
 
 def paint_candy_v2(paint, shape, mask, seed, pm, bb):
@@ -20,6 +21,7 @@ def paint_candy_v2(paint, shape, mask, seed, pm, bb):
     FIX: was hardcoded red → now tints toward base paint's dominant hue.
     Added micro-sparkle for candy depth.
     """
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
 
@@ -63,6 +65,7 @@ def paint_candy_burgundy_v2(paint, shape, mask, seed, pm, bb):
     Deep burgundy candy with wine-red absorption profile.
     Multi-scale absorption creates depth with warm undertones.
     """
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     
@@ -106,6 +109,7 @@ def paint_candy_chrome_v2(paint, shape, mask, seed, pm, bb):
     Candy over chrome base — maximum reflection + color filter.
     Fresnel effect with strong directional highlights over reflective substrate.
     """
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     
@@ -147,6 +151,7 @@ def paint_candy_emerald_v2(paint, shape, mask, seed, pm, bb):
     Green candy with copper phthalocyanine pigment absorption.
     Deep green with subtle blue shift — wavelength-dependent penetration.
     """
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     
@@ -192,6 +197,7 @@ def paint_hydrographic_v2(paint, shape, mask, seed, pm, bb):
     Water transfer film with Plateau-Rayleigh instability pattern.
     Thin film creates ripple-like surface waves with color shifts.
     """
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     
@@ -232,6 +238,7 @@ def paint_jelly_pearl_v2(paint, shape, mask, seed, pm, bb):
     Translucent jelly pearl: BASE COLOR SHOWS THROUGH with pearlescent wash.
     Pearl particles create shimmer highlights that shift. No fixed jelly color.
     """
+    bb = ensure_bb_2d(bb, shape)
     if pm == 0.0:
         return paint
     h, w = shape[:2] if len(shape) > 2 else shape
@@ -292,6 +299,7 @@ def paint_moonstone_v2(paint, shape, mask, seed, pm, bb):
     Adularescence light scattering from orthoclase feldspar layers.
     Moving light shimmer effect — glow travels across surface.
     """
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     
@@ -338,6 +346,7 @@ def paint_opal_v2(paint, shape, mask, seed, pm, bb):
     Dragon's Pearl Scale: iridescent overlapping hexagonal scale pattern
     with pearlescent shimmer at each scale edge. Not a diffraction grating.
     """
+    bb = ensure_bb_2d(bb, shape)
     if pm == 0.0:
         return paint
     h, w = shape[:2] if len(shape) > 2 else shape
@@ -485,6 +494,7 @@ def paint_smoked_v2(paint, shape, mask, seed, pm, bb):
     Smoke tint darkening via Beer-Lambert gray absorption.
     Translucent smoke effect — darkens underlying color uniformly.
     """
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     
@@ -520,6 +530,7 @@ def paint_spectraflame_v2(paint, shape, mask, seed, pm, bb):
     Shifts hue based on noise topology (simulating viewing angle).
     Like looking through an optical crystal that bends light differently at each point.
     """
+    bb = ensure_bb_2d(bb, shape)
     if pm == 0.0:
         return paint
     h, w = shape[:2] if len(shape) > 2 else shape
@@ -584,6 +595,7 @@ def paint_tinted_clear_v2(paint, shape, mask, seed, pm, bb):
     Colored clearcoat with uniform Beer-Lambert tint.
     Subtle color shift — nearly transparent with consistent hue.
     """
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     
@@ -620,6 +632,7 @@ def paint_tinted_lacquer_v2(paint, shape, mask, seed, pm, bb):
     Nitrocellulose lacquer with dissolved dye molecules.
     Glossy finish with slight orange-peel texture from drying patterns.
     """
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     
@@ -660,6 +673,7 @@ def paint_tri_coat_pearl_v2(paint, shape, mask, seed, pm, bb):
     Each zone has a dominant coat color — not flat averaging.
     FIX: was /3.0 equal blend → now zone-weighted like spec's w1/w2/w3.
     """
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
 
@@ -743,6 +757,7 @@ def paint_candy_apple_v2(paint, shape, mask, seed, pm, bb):
     both suppressed hard.
     WEAK-036 FIX: replaces paint_smoked_darken (15% gray darkener, zero red physics).
     """
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
 

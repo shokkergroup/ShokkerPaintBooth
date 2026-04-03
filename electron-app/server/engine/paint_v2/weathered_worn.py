@@ -1,5 +1,6 @@
 import numpy as np
 from engine.core import multi_scale_noise, get_mgrid
+from engine.paint_v2 import ensure_bb_2d
 
 
 # =============================================================================
@@ -897,6 +898,7 @@ def paint_rugged_v2(paint, shape, mask, seed, pm, bb):
     polyurea particles, impact scars from rocks/debris, and UV-faded edges
     where coating wears thin on high-contact surfaces.
     """
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
 

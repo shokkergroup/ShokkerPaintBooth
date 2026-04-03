@@ -16,6 +16,7 @@ Techniques (all different):
 """
 import numpy as np
 from engine.core import multi_scale_noise, get_mgrid
+from engine.paint_v2 import ensure_bb_2d
 
 
 # ==================================================================
@@ -27,6 +28,7 @@ from engine.core import multi_scale_noise, get_mgrid
 
 def paint_ambulance_white_v2(paint, shape, mask, seed, pm, bb):
     """Ambulance high-vis white with microprismatic retro-reflective glass bead simulation."""
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     rng = np.random.RandomState(seed + 600)
@@ -72,6 +74,7 @@ def spec_ambulance_white(shape, seed, sm, base_m, base_r):
 
 def paint_dealer_pearl_v2(paint, shape, mask, seed, pm, bb):
     """Dealer tri-coat pearl: basecoat + mica flake interference + deep clearcoat."""
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
 
@@ -119,6 +122,7 @@ def spec_dealer_pearl(shape, seed, sm, base_m, base_r):
 
 def paint_factory_basecoat_v2(paint, shape, mask, seed, pm, bb):
     """Factory electrostatic bell-cup spray deposition with radial overlap bands."""
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     y, x = get_mgrid((h, w))
@@ -166,6 +170,7 @@ def spec_factory_basecoat(shape, seed, sm, base_m, base_r):
 
 def paint_fire_engine_v2(paint, shape, mask, seed, pm, bb):
     """Fire engine red: high-chroma cadmium pigment with forward scattering model."""
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
 
@@ -209,6 +214,7 @@ def spec_fire_engine(shape, seed, sm, base_m, base_r):
 
 def paint_fleet_white_v2(paint, shape, mask, seed, pm, bb):
     """Fleet white crosslinked polyurethane with cure-temperature sheen variation."""
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
 
@@ -247,6 +253,7 @@ def spec_fleet_white(shape, seed, sm, base_m, base_r):
 
 def paint_police_black_v2(paint, shape, mask, seed, pm, bb):
     """Police interceptor carbon black nanoparticle absorption with stealth gloss."""
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
 
@@ -288,6 +295,7 @@ def spec_police_black(shape, seed, sm, base_m, base_r):
 
 def paint_school_bus_v2(paint, shape, mask, seed, pm, bb):
     """School bus chrome yellow pigment with HALS UV stabilizer matte haze."""
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
 
@@ -329,6 +337,7 @@ def spec_school_bus(shape, seed, sm, base_m, base_r):
 
 def paint_showroom_clear_v2(paint, shape, mask, seed, pm, bb):
     """Showroom multi-layer clearcoat Fresnel reflection stack with wet-look depth."""
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
 
@@ -374,6 +383,7 @@ def spec_showroom_clear(shape, seed, sm, base_m, base_r):
 
 def paint_taxi_yellow_v2(paint, shape, mask, seed, pm, bb):
     """Taxi yellow with UV photodegradation yellowing, chalking, and wear zones."""
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     y, x = get_mgrid((h, w))

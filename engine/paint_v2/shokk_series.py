@@ -13,6 +13,7 @@ Techniques used (all different):
 """
 import numpy as np
 from engine.core import multi_scale_noise, get_mgrid
+from engine.paint_v2 import ensure_bb_2d
 
 
 # ══════════════════════════════════════════════════════════════════
@@ -23,6 +24,7 @@ from engine.core import multi_scale_noise, get_mgrid
 # ══════════════════════════════════════════════════════════════════
 
 def paint_shokk_blood_v2(paint, shape, mask, seed, pm, bb):
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     rng = np.random.RandomState(seed + 800)
     # --- Gray-Scott reaction-diffusion for vein pattern ---
@@ -129,6 +131,7 @@ def spec_shokk_blood(shape, seed, sm, base_m, base_r):
 # ══════════════════════════════════════════════════════════════════
 
 def paint_shokk_pulse_v2(paint, shape, mask, seed, pm, bb):
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     rng = np.random.RandomState(seed + 810)
     y, x = get_mgrid((h, w))
@@ -228,6 +231,7 @@ def spec_shokk_pulse(shape, seed, sm, base_m, base_r):
 # ══════════════════════════════════════════════════════════════════
 
 def paint_shokk_static_v2(paint, shape, mask, seed, pm, bb):
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     rng = np.random.RandomState(seed + 820)
 
@@ -326,6 +330,7 @@ def spec_shokk_static(shape, seed, sm, base_m, base_r):
 # ══════════════════════════════════════════════════════════════════
 
 def paint_shokk_venom_v2(paint, shape, mask, seed, pm, bb):
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     rng = np.random.RandomState(seed + 830)
 
@@ -463,6 +468,7 @@ def spec_shokk_venom(shape, seed, sm, base_m, base_r):
 # ══════════════════════════════════════════════════════════════════
 
 def paint_shokk_void_v2(paint, shape, mask, seed, pm, bb):
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     rng = np.random.RandomState(seed + 840)
 

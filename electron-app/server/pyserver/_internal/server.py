@@ -88,6 +88,27 @@ _preview_abort = threading.Event()
 # ----------------------------------------------------------------
 _preview_cache_paint_key = None  # "<paint_file_path>|<mtime>|<scale>"
 
+# ----------------------------------------------------------------
+# Spec delta cache (#12): stores the last spec map (uint8 ndarray)
+# returned by /preview-render so subsequent previews can send a
+# compressed delta instead of the full base64 PNG.
+# ----------------------------------------------------------------
+_prev_spec_cache = None  # numpy uint8 array or None
+
+# ----------------------------------------------------------------
+# Render statistics — accumulated during the server session.
+# Exposed via GET /api/render-stats for the UI dashboard.
+# ----------------------------------------------------------------
+_render_stats = {
+    "total_renders": 0,
+    "total_render_time": 0.0,
+    "zone_times": {},       # zone_name -> [list of elapsed times]
+    "cache_hits": 0,
+    "cache_misses": 0,
+    "session_start": None,  # set on first render
+}
+_render_stats_lock = threading.Lock()
+
 # --- Fix OSError [Errno 22] on print() when stdout/stderr pipes break (Electron) ---
 class _SafeStream:
     """Wraps a stream so write() silently catches broken-pipe / invalid-argument errors."""
@@ -2108,6 +2129,9 @@ def preview_render_endpoint():
                 if hasattr(_eng.build_multi_zone, '_zone_cache'):
                     _eng.build_multi_zone._zone_cache.clear()
                     logger.info(f"[preview-cache] Invalidated zone cache (paint file changed)")
+                # Also clear spec delta cache so first render after change sends full PNG
+                global _prev_spec_cache
+                _prev_spec_cache = None
             except Exception:
                 pass
         if changed_zone >= 0 or zone_hashes:
@@ -2224,7 +2248,24 @@ def preview_render_endpoint():
                 zone_obj["base_spec_strength"] = float(z.get("base_spec_strength", 1.0))
             if z.get("base_color_mode") is not None:
                 zone_obj["base_color_mode"] = z.get("base_color_mode", "source")
-            if z.get("base_color") is not None:
+            if z.get("base_color_mode") == "gradient" and z.get("gradient_stops"):
+                # Build gradient config dict for engine — repurpose base_color field
+                _g_stops = z.get("gradient_stops", [])
+                _g_dir = z.get("gradient_direction", "horizontal")
+                _g_angle = float(z.get("gradient_angle", 0))
+                zone_obj["base_color"] = {
+                    "stops": [{"pos": float(s.get("pos", 0)) / 100.0,
+                               "color": [int(s["color"][1:3], 16) / 255.0,
+                                         int(s["color"][3:5], 16) / 255.0,
+                                         int(s["color"][5:7], 16) / 255.0]
+                               } if isinstance(s.get("color"), str) and s["color"].startswith("#")
+                              else {"pos": float(s.get("pos", 0)) / 100.0,
+                                    "color": [float(c) for c in s.get("color", [0, 0, 0])[:3]]}
+                              for s in _g_stops],
+                    "direction": _g_dir,
+                    "angle": _g_angle,
+                }
+            elif z.get("base_color") is not None:
                 zone_obj["base_color"] = z.get("base_color", [1.0, 1.0, 1.0])
             if z.get("base_color_source") is not None:
                 zone_obj["base_color_source"] = z.get("base_color_source")
@@ -2381,6 +2422,28 @@ def preview_render_endpoint():
             except Exception:
                 pass
 
+        # ---- Spec delta encoding (#12) ----
+        # If we have a cached previous spec and shapes match, compute a
+        # compressed delta.  Send it instead of the full PNG when smaller.
+        global _prev_spec_cache
+        spec_delta_b64 = None
+        if spec_normalized is not None and _prev_spec_cache is not None:
+            try:
+                if _prev_spec_cache.shape == spec_normalized.shape:
+                    from engine.compose import compress_spec_delta
+                    delta_bytes = compress_spec_delta(spec_normalized, _prev_spec_cache)
+                    # Only use delta if it is smaller than the full PNG
+                    spec_png_bytes = base64.b64decode(spec_b64.split(",", 1)[-1]) if spec_b64 and spec_b64.startswith("data:") else b""
+                    if len(delta_bytes) < len(spec_png_bytes) * 0.9:
+                        spec_delta_b64 = base64.b64encode(delta_bytes).decode("ascii")
+                        logger.info(f"[preview-delta] delta={len(delta_bytes)}B vs png={len(spec_png_bytes)}B  ({len(delta_bytes)/max(1,len(spec_png_bytes))*100:.0f}%)")
+            except Exception as _de:
+                logger.debug(f"Spec delta encoding skipped: {_de}")
+
+        # Update the cached spec for next delta computation
+        if spec_normalized is not None:
+            _prev_spec_cache = spec_normalized.copy()
+
         payload = {
             "success": True,
             "elapsed_ms": round(elapsed_ms, 1),
@@ -2388,6 +2451,8 @@ def preview_render_endpoint():
             "spec_preview": spec_b64,
             "resolution": [paint_rgb.shape[1], paint_rgb.shape[0]],
         }
+        if spec_delta_b64:
+            payload["spec_delta"] = spec_delta_b64
         if spec_warning:
             payload["spec_warning"] = spec_warning
         return jsonify(payload)
@@ -2675,6 +2740,18 @@ def render():
 
         elapsed = time.time() - start
         logger.info(f"Job {job_id}: completed in {elapsed:.1f}s")
+
+        # ── Track render statistics ──
+        with _render_stats_lock:
+            if _render_stats["session_start"] is None:
+                _render_stats["session_start"] = time.time()
+            _render_stats["total_renders"] += 1
+            _render_stats["total_render_time"] += elapsed
+            for z in zones:
+                zname = z.get("name", "unnamed")
+                if zname not in _render_stats["zone_times"]:
+                    _render_stats["zone_times"][zname] = []
+                _render_stats["zone_times"][zname].append(elapsed / max(1, len(zones)))
 
         # ── PERSIST latest render outputs so SHOKK save always has access ──
         # These survive auto-purge (they live in OUTPUT_FOLDER root, not job_*)
@@ -4781,6 +4858,41 @@ def auto_cleanup_old_jobs(max_age_hours=24):
                 pass
     if cleaned:
         logger.info(f"Auto-cleanup: removed {cleaned} job dirs older than {max_age_hours}h")
+
+
+# ================================================================
+# RENDER STATISTICS ENDPOINT
+# ================================================================
+
+@app.route('/api/render-stats', methods=['GET'])
+def api_render_stats():
+    """Return render statistics for the current session."""
+    with _render_stats_lock:
+        total = _render_stats["total_renders"]
+        total_time = _render_stats["total_render_time"]
+        avg_time = total_time / total if total > 0 else 0.0
+        zone_avgs = {}
+        for zname, times in _render_stats["zone_times"].items():
+            zone_avgs[zname] = round(sum(times) / len(times), 2) if times else 0.0
+        hits = _render_stats["cache_hits"]
+        misses = _render_stats["cache_misses"]
+        cache_total = hits + misses
+        cache_rate = round(hits / cache_total * 100, 1) if cache_total > 0 else 0.0
+        uptime = 0.0
+        if _render_stats["session_start"]:
+            uptime = round(time.time() - _render_stats["session_start"], 1)
+
+    return jsonify({
+        "total_renders": total,
+        "average_render_time": round(avg_time, 2),
+        "total_render_time": round(total_time, 2),
+        "per_zone_avg_times": zone_avgs,
+        "cache_hit_rate": cache_rate,
+        "cache_hits": hits,
+        "cache_misses": misses,
+        "gpu": gpu_info(),
+        "session_uptime_seconds": uptime,
+    })
 
 
 if __name__ == '__main__':

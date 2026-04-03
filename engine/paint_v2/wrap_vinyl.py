@@ -5,6 +5,7 @@ Implements 8 vinyl wrap bases with unique mathematical techniques.
 
 import numpy as np
 from engine.core import multi_scale_noise, get_mgrid
+from engine.paint_v2 import ensure_bb_2d
 
 
 # =============================================================================
@@ -16,6 +17,7 @@ def paint_chrome_wrap_v2(paint, shape, mask, seed, pm, bb):
     Chrome wrap with elastic stretch distortion using advection-like flow.
     Creates directional chrome sheen with constraint-based warping.
     """
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     
     # Laminar flow field — subtle stretch only (smoother chrome wrap base)
@@ -67,6 +69,7 @@ def paint_color_flip_v2(paint, shape, mask, seed, pm, bb):
     Like a chrome that flips between two color states with dramatic wrap transition.
     Dichroic-style — not just rainbow iridescence, but a FLIP between two distinct colors.
     """
+    bb = ensure_bb_2d(bb, shape)
     if pm == 0.0:
         return paint
     h, w = shape[:2] if len(shape) > 2 else shape
@@ -158,6 +161,7 @@ def paint_gloss_wrap_v2(paint, shape, mask, seed, pm, bb):
     Gloss wrap using Fresnel-like edge brightening with calendering waves.
     Creates mirror-like finish with soft radial falloff.
     """
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     
     y, x = get_mgrid((h, w))
@@ -207,6 +211,7 @@ def paint_liquid_wrap_v2(paint, shape, mask, seed, pm, bb):
     """Liquid rubber/vinyl peel coat: WEAK-016 FIX — stretchy rubber/vinyl character.
     Distinct from satin_wrap: fine Perlin micro-texture + slight darkening at stretch points.
     Previously simulated liquid-metal pooling — wrong material character for rubber peel coat."""
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     # Fine rubber compound particle variation texture
     rubber_grain = multi_scale_noise((h, w), [2, 4, 8], [0.45, 0.35, 0.2], seed + 2512)
@@ -250,6 +255,7 @@ def paint_matte_wrap_v2(paint, shape, mask, seed, pm, bb):
     Matte wrap using Lambertian diffusion with micro-texture pattern.
     Creates non-directional light scatter using isotropic Perlin-like noise.
     """
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     
     # Multi-scale diffusion pattern for anti-glare
@@ -301,6 +307,7 @@ def paint_satin_wrap_v2(paint, shape, mask, seed, pm, bb):
     Satin wrap using Gabor-like directional texture with soft directional highlights.
     Creates woven appearance with slight directionality.
     """
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     
     y, x = get_mgrid((h, w))
@@ -348,6 +355,7 @@ def paint_stealth_wrap_v2(paint, shape, mask, seed, pm, bb):
     Stealth wrap using fractal decomposition for low-RCS appearance.
     Creates absorption pattern that minimizes reflectivity.
     """
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     
     # Multi-scale fractal for RCS reduction (absorptive random roughness)
@@ -400,6 +408,7 @@ def paint_textured_wrap_v2(paint, shape, mask, seed, pm, bb):
     """Orange-peel embossed vinyl wrap. Applies raised-dimple surface texture to the
     user's base paint color — preserves any chosen color, adds 3D emboss character
     via bump modulation (peaks lighter, valleys darker). No hardcoded color."""
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     # Coarse bump map: large dimples characteristic of orange-peel vinyl texture
     bump_coarse = multi_scale_noise((h, w), [8, 16], [0.55, 0.45], seed + 2529)
@@ -440,6 +449,7 @@ def paint_brushed_wrap_v2(paint, shape, mask, seed, pm, bb):
     Brushed metal vinyl: directional horizontal grain lines with
     localized brightness variation from machining-pattern print.
     """
+    bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     rng = np.random.RandomState(seed + 2540)

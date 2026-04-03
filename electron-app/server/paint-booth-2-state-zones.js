@@ -904,10 +904,12 @@ function renderZoneDetail(index) {
                     <option value="source" ${_baseColorMode === 'source' ? 'selected' : ''}>Use source paint</option>
                     <option value="solid" ${_baseColorMode === 'solid' ? 'selected' : ''}>Use solid color</option>
                     <option value="special" ${_baseColorMode === 'special' ? 'selected' : ''}>From special</option>
+                    <option value="gradient" ${_baseColorMode === 'gradient' ? 'selected' : ''}>Custom gradient</option>
                 </select>
                 ${_baseColorMode === 'solid' ? `<input type="color" id="baseColorPicker${i}" value="${_baseColorHex}" onchange="setZoneBaseColor(${i}, this.value)" title="Pick base tint">` : ''}
                 ${_baseColorMode === 'solid' ? `<input type="text" value="${_baseColorHex}" onchange="setZoneBaseColor(${i}, this.value)" style="width:78px;font-size:10px;">` : ''}
                 ${_baseColorMode === 'solid' ? `<button onclick="(function(){var inp=document.getElementById('baseColorPicker${i}');if(inp)setZoneBaseColor(${i},inp.value);})()" style="background:#E87A20;color:#fff;border:none;padding:3px 8px;border-radius:3px;cursor:pointer;font-weight:bold;font-size:9px;" title="Apply the selected color">✓ Apply</button>` : ''}
+                ${_baseColorMode === 'gradient' ? _buildGradientEditorHTML(i, zone) : ''}
                 ${_baseColorMode === 'special' ? `</div>
             <div style="display:flex; align-items:center; gap:8px; width:100%; padding-left:0; margin-top:2px;">
                 <span class="stack-label-mini" style="min-width:70px;">Special</span>
@@ -2656,6 +2658,24 @@ function renderZoneDetail(index) {
         </div>`;
     }
 
+    // ── FINISH DNA SECTION ──
+    html += `<div class="section-collapsible collapsed" id="sectionDNA${i}">
+    <div class="section-header" onclick="event.stopPropagation(); this.parentElement.classList.toggle('collapsed')">
+        <span class="section-header-label">FINISH DNA</span>
+        <span class="collapse-arrow section-header-arrow">&#9660;</span>
+    </div>
+    <div style="padding:6px 4px; display:flex; flex-direction:column; gap:6px;">
+        <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
+            <button class="btn btn-sm" onclick="event.stopPropagation(); copyZoneDNA(${i})" title="Copy this zone's finish configuration as a shareable DNA string" style="padding:3px 10px; font-size:10px; border-color:var(--accent-gold); color:var(--accent-gold); font-weight:bold;">&#128203; Copy DNA</button>
+            <span style="font-size:9px; color:var(--text-dim);">Copies a shareable string with all finish settings</span>
+        </div>
+        <div style="display:flex; gap:4px; align-items:center;">
+            <input type="text" id="dnaPasteInput_${i}" placeholder="Paste DNA string: SHOKK:v1:..." style="flex:1; font-size:10px; padding:4px 6px; background:var(--bg-input, #1a1a2e); color:var(--text-main, #e0e0e0); border:1px solid var(--border-dim, #333); border-radius:3px; font-family:monospace;" onclick="event.stopPropagation();" onfocus="this.select();">
+            <button class="btn btn-sm" onclick="event.stopPropagation(); handleDNAPaste(${i})" title="Apply a DNA string to this zone" style="padding:3px 10px; font-size:10px; border-color:var(--accent-blue, #4488ff); color:var(--accent-blue, #4488ff); font-weight:bold; white-space:nowrap;">&#128203; Paste DNA</button>
+        </div>
+    </div>
+    </div>`;
+
     html += `</div>`; // close zone-detail-body
 
     // Footer removed to keep panel persistent.
@@ -3286,6 +3306,8 @@ function addZone(skipUndo) {
         baseColor: '#ffffff',
         baseColorSource: null,
         baseColorStrength: 1,
+        gradientStops: null,
+        gradientDirection: 'horizontal',
         baseHueOffset: 0,
         baseSaturationAdjust: 0,
         baseBrightnessAdjust: 0,
@@ -4172,7 +4194,8 @@ function propagateToLinkedZones(sourceIndex, props) {
 
 const LINK_FINISH_PROPS = ['base', 'pattern', 'finish', 'intensity', 'scale', 'rotation',
     'patternOpacity', 'customSpec', 'customPaint', 'customBright', 'patternStack', 'wear',
-    'baseColorMode', 'baseColor', 'baseColorSource', 'baseColorStrength'];
+    'baseColorMode', 'baseColor', 'baseColorSource', 'baseColorStrength',
+    'gradientStops', 'gradientDirection'];
 
 function promptLinkZone(index) {
     if (zones[index].linkGroup) {
@@ -4232,13 +4255,139 @@ function setZoneBase(index, value) {
 }
 function setZoneBaseColorMode(index, value) {
     pushZoneUndo('Set base color mode', true);
-    const mode = (value === 'solid' || value === 'special') ? value : 'source';
+    const mode = (value === 'solid' || value === 'special' || value === 'gradient') ? value : 'source';
     zones[index].baseColorMode = mode;
     if (!zones[index].baseColor) zones[index].baseColor = '#ffffff';
     if (zones[index].baseColorStrength == null) zones[index].baseColorStrength = 1;
     if (mode !== 'special') zones[index].baseColorSource = null;
+    if (mode === 'gradient' && (!zones[index].gradientStops || zones[index].gradientStops.length < 2)) {
+        zones[index].gradientStops = [
+            { pos: 0, color: '#000000' },
+            { pos: 100, color: '#ffffff' },
+        ];
+        zones[index].gradientDirection = 'horizontal';
+    }
     renderZoneDetail(index);
     triggerPreviewRender();
+}
+
+// ---- Custom Gradient Editor Functions ----
+
+function _buildGradientEditorHTML(zoneIdx, zone) {
+    const stops = zone.gradientStops || [{ pos: 0, color: '#000000' }, { pos: 100, color: '#ffffff' }];
+    const dir = zone.gradientDirection || 'horizontal';
+    const cssGrad = _buildCSSGradient(stops, dir);
+    let stopsHTML = '';
+    for (let s = 0; s < stops.length; s++) {
+        const canDelete = stops.length > 2;
+        stopsHTML += `<div class="gradient-stop-row" style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">
+            <input type="color" value="${stops[s].color}" onchange="setGradientStopColor(${zoneIdx}, ${s}, this.value)" style="width:28px;height:22px;padding:0;border:1px solid var(--border);border-radius:3px;cursor:pointer;">
+            <input type="range" min="0" max="100" step="1" value="${stops[s].pos}" oninput="setGradientStopPos(${zoneIdx}, ${s}, this.value)" class="stack-slider" style="width:80px;" title="Position ${stops[s].pos}%">
+            <span class="stack-val" style="min-width:28px;font-size:9px;">${stops[s].pos}%</span>
+            ${canDelete ? `<button class="btn btn-sm" onclick="event.stopPropagation(); removeGradientStop(${zoneIdx}, ${s})" title="Remove stop" style="padding:0 4px;font-size:9px;color:#ff5555;border-color:#ff555533;">x</button>` : ''}
+        </div>`;
+    }
+    return `</div>
+        <div class="gradient-editor" style="width:100%;margin-top:4px;">
+            <div class="gradient-bar" id="gradBar_${zoneIdx}" onclick="addGradientStopAtClick(${zoneIdx}, event)" title="Click to add a color stop" style="width:100%;height:20px;border-radius:4px;border:1px solid var(--border);cursor:crosshair;background:${cssGrad};margin-bottom:6px;"></div>
+            <div class="gradient-stops">${stopsHTML}</div>
+            <div style="display:flex;align-items:center;gap:8px;margin-top:4px;flex-wrap:wrap;">
+                <span class="stack-label-mini" style="min-width:55px;">Direction</span>
+                <select class="mini-select" style="min-width:140px;flex:1;max-width:180px;" onchange="setGradientDirection(${zoneIdx}, this.value)">
+                    <option value="horizontal" ${dir === 'horizontal' ? 'selected' : ''}>&#x2190; &#x2192; Horizontal</option>
+                    <option value="vertical" ${dir === 'vertical' ? 'selected' : ''}>&#x2191; &#x2193; Vertical</option>
+                    <option value="diagonal_down" ${dir === 'diagonal_down' ? 'selected' : ''}>&#x2198; Diagonal Down</option>
+                    <option value="diagonal_up" ${dir === 'diagonal_up' ? 'selected' : ''}>&#x2197; Diagonal Up</option>
+                    <option value="radial" ${dir === 'radial' ? 'selected' : ''}>&#x25CE; Radial</option>
+                    <option value="angular" ${dir === 'angular' ? 'selected' : ''}>&#x21BB; Angular</option>
+                </select>
+                ${stops.length < 10 ? `<button class="btn btn-sm" onclick="event.stopPropagation(); addGradientStop(${zoneIdx})" style="padding:2px 8px;font-size:9px;border-color:var(--accent-blue);color:var(--accent-blue);">+ Add Stop</button>` : ''}
+            </div>
+        </div>
+    <div style="display:flex; align-items:center; gap:8px; width:100%; flex-wrap:wrap;">`;
+}
+
+function _buildCSSGradient(stops, direction) {
+    if (!stops || stops.length < 2) return 'linear-gradient(to right, #000, #fff)';
+    const sorted = [...stops].sort((a, b) => a.pos - b.pos);
+    const colorStops = sorted.map(s => `${s.color} ${s.pos}%`).join(', ');
+    if (direction === 'radial') return `radial-gradient(circle, ${colorStops})`;
+    if (direction === 'angular') return `conic-gradient(from 0deg, ${colorStops})`;
+    const dirMap = {
+        horizontal: 'to right',
+        vertical: 'to bottom',
+        diagonal_down: 'to bottom right',
+        diagonal_up: 'to top right',
+    };
+    return `linear-gradient(${dirMap[direction] || 'to right'}, ${colorStops})`;
+}
+
+function setGradientStopColor(zoneIdx, stopIdx, color) {
+    pushZoneUndo('', true);
+    if (!zones[zoneIdx].gradientStops) return;
+    zones[zoneIdx].gradientStops[stopIdx].color = color;
+    _refreshGradientBar(zoneIdx);
+    triggerPreviewRender();
+}
+
+function setGradientStopPos(zoneIdx, stopIdx, val) {
+    pushZoneUndo('', true);
+    if (!zones[zoneIdx].gradientStops) return;
+    zones[zoneIdx].gradientStops[stopIdx].pos = Math.max(0, Math.min(100, parseInt(val) || 0));
+    _refreshGradientBar(zoneIdx);
+    triggerPreviewRender();
+}
+
+function setGradientDirection(zoneIdx, dir) {
+    pushZoneUndo('Set gradient direction', true);
+    zones[zoneIdx].gradientDirection = dir;
+    _refreshGradientBar(zoneIdx);
+    triggerPreviewRender();
+}
+
+function addGradientStop(zoneIdx) {
+    pushZoneUndo('Add gradient stop', true);
+    const stops = zones[zoneIdx].gradientStops || [];
+    if (stops.length >= 10) { if (typeof showToast === 'function') showToast('Maximum 10 gradient stops'); return; }
+    // Insert at midpoint between last two stops
+    const last = stops[stops.length - 1] || { pos: 100, color: '#ffffff' };
+    const prev = stops.length >= 2 ? stops[stops.length - 2] : { pos: 0, color: '#000000' };
+    const midPos = Math.round((prev.pos + last.pos) / 2);
+    stops.push({ pos: midPos, color: '#888888' });
+    zones[zoneIdx].gradientStops = stops;
+    renderZoneDetail(zoneIdx);
+    triggerPreviewRender();
+}
+
+function addGradientStopAtClick(zoneIdx, event) {
+    const stops = zones[zoneIdx].gradientStops || [];
+    if (stops.length >= 10) { if (typeof showToast === 'function') showToast('Maximum 10 gradient stops'); return; }
+    const bar = event.currentTarget;
+    const rect = bar.getBoundingClientRect();
+    const pos = Math.round(Math.max(0, Math.min(100, ((event.clientX - rect.left) / rect.width) * 100)));
+    pushZoneUndo('Add gradient stop', true);
+    stops.push({ pos: pos, color: '#888888' });
+    zones[zoneIdx].gradientStops = stops;
+    renderZoneDetail(zoneIdx);
+    triggerPreviewRender();
+}
+
+function removeGradientStop(zoneIdx, stopIdx) {
+    const stops = zones[zoneIdx].gradientStops || [];
+    if (stops.length <= 2) return;
+    pushZoneUndo('Remove gradient stop', true);
+    stops.splice(stopIdx, 1);
+    zones[zoneIdx].gradientStops = stops;
+    renderZoneDetail(zoneIdx);
+    triggerPreviewRender();
+}
+
+function _refreshGradientBar(zoneIdx) {
+    const bar = document.getElementById('gradBar_' + zoneIdx);
+    if (!bar) return;
+    const stops = zones[zoneIdx].gradientStops || [];
+    const dir = zones[zoneIdx].gradientDirection || 'horizontal';
+    bar.style.background = _buildCSSGradient(stops, dir);
 }
 function setZoneBaseColor(index, val) {
     pushZoneUndo('Set base color', true);
@@ -7279,6 +7428,8 @@ function getConfig() {
             baseColor: z.baseColor ?? '#ffffff',
             baseColorSource: z.baseColorSource ?? null,
             baseColorStrength: z.baseColorStrength ?? 1,
+            gradientStops: z.gradientStops || null,
+            gradientDirection: z.gradientDirection || 'horizontal',
             baseHueOffset: z.baseHueOffset ?? 0,
             baseSaturationAdjust: z.baseSaturationAdjust ?? 0,
             baseBrightnessAdjust: z.baseBrightnessAdjust ?? 0,
@@ -7467,6 +7618,8 @@ function loadConfigFromObj(cfg) {
             baseColor: z.baseColor ?? '#ffffff',
             baseColorSource: z.baseColorSource ?? null,
             baseColorStrength: z.baseColorStrength ?? 1,
+            gradientStops: z.gradientStops || null,
+            gradientDirection: z.gradientDirection || 'horizontal',
             baseHueOffset: z.baseHueOffset ?? 0,
             baseSaturationAdjust: z.baseSaturationAdjust ?? 0,
             baseBrightnessAdjust: z.baseBrightnessAdjust ?? 0,
@@ -8244,5 +8397,219 @@ function _refreshFineTuningIfOpen() {
         if (titleEl) titleEl.textContent = 'FINE TUNING \u2014 Zone ' + (zi + 1);
         _buildFineTuningContent(zi);
     }
+}
+
+// ════════════════════════════════════════════════════════════════════
+// FINISH DNA — Shareable zone configuration string (#25)
+// Format: SHOKK:v1:{base64_encoded_json}
+// ════════════════════════════════════════════════════════════════════
+
+/**
+ * Extract the DNA payload from a zone — all settings that define its finish appearance.
+ */
+function _extractZoneDNA(zoneIndex) {
+    if (zoneIndex < 0 || zoneIndex >= zones.length) return null;
+    var z = zones[zoneIndex];
+    var dna = {
+        v: 1,
+        // Core finish
+        base: z.base || null,
+        finish: z.finish || null,
+        pattern: z.pattern || 'none',
+        intensity: z.intensity || '100',
+        scale: z.scale || 1.0,
+        // Base positioning
+        baseRotation: z.baseRotation || 0,
+        baseOffsetX: z.baseOffsetX != null ? z.baseOffsetX : 0.5,
+        baseOffsetY: z.baseOffsetY != null ? z.baseOffsetY : 0.5,
+        baseFlipH: z.baseFlipH || false,
+        baseFlipV: z.baseFlipV || false,
+        basePlacement: z.basePlacement || 'normal',
+        // Base color settings
+        baseColorMode: z.baseColorMode || 'source',
+        baseColor: z.baseColor || '#ffffff',
+        baseColorSource: z.baseColorSource || null,
+        baseColorStrength: z.baseColorStrength != null ? z.baseColorStrength : 1,
+        gradientStops: z.gradientStops || null,
+        gradientDirection: z.gradientDirection || 'horizontal',
+        baseHueOffset: z.baseHueOffset || 0,
+        baseSaturationAdjust: z.baseSaturationAdjust || 0,
+        baseBrightnessAdjust: z.baseBrightnessAdjust || 0,
+        // Pattern positioning
+        patternOffsetX: z.patternOffsetX != null ? z.patternOffsetX : 0.5,
+        patternOffsetY: z.patternOffsetY != null ? z.patternOffsetY : 0.5,
+        patternFlipH: z.patternFlipH || false,
+        patternFlipV: z.patternFlipV || false,
+        patternPlacement: z.patternPlacement || 'normal',
+        // Wear
+        wear: z.wear || 0,
+        // 2nd base overlay
+        secondBase: z.secondBase || null,
+        secondBaseColor: z.secondBaseColor || '#ffffff',
+        secondBaseStrength: z.secondBaseStrength || 0,
+        secondBaseBlendMode: z.secondBaseBlendMode || 'noise',
+        secondBaseFractalScale: z.secondBaseFractalScale || 24,
+        secondBaseScale: z.secondBaseScale || 1.0,
+        secondBaseColorSource: z.secondBaseColorSource || null,
+        secondBaseHueShift: z.secondBaseHueShift || 0,
+        secondBaseSaturation: z.secondBaseSaturation || 0,
+        secondBaseBrightness: z.secondBaseBrightness || 0,
+        // 3rd base overlay
+        thirdBase: z.thirdBase || null,
+        thirdBaseColor: z.thirdBaseColor || '#ffffff',
+        thirdBaseStrength: z.thirdBaseStrength || 0,
+        thirdBaseBlendMode: z.thirdBaseBlendMode || 'noise',
+        thirdBaseFractalScale: z.thirdBaseFractalScale || 24,
+        thirdBaseScale: z.thirdBaseScale || 1.0,
+        thirdBaseColorSource: z.thirdBaseColorSource || null,
+        thirdBaseHueShift: z.thirdBaseHueShift || 0,
+        thirdBaseSaturation: z.thirdBaseSaturation || 0,
+        thirdBaseBrightness: z.thirdBaseBrightness || 0,
+        // 4th base overlay
+        fourthBase: z.fourthBase || null,
+        fourthBaseColor: z.fourthBaseColor || '#ffffff',
+        fourthBaseStrength: z.fourthBaseStrength || 0,
+        fourthBaseBlendMode: z.fourthBaseBlendMode || 'noise',
+        fourthBaseFractalScale: z.fourthBaseFractalScale || 24,
+        fourthBaseScale: z.fourthBaseScale || 1.0,
+        fourthBaseColorSource: z.fourthBaseColorSource || null,
+        fourthBaseHueShift: z.fourthBaseHueShift || 0,
+        fourthBaseSaturation: z.fourthBaseSaturation || 0,
+        fourthBaseBrightness: z.fourthBaseBrightness || 0,
+        // 5th base overlay
+        fifthBase: z.fifthBase || null,
+        fifthBaseColor: z.fifthBaseColor || '#ffffff',
+        fifthBaseStrength: z.fifthBaseStrength || 0,
+        fifthBaseBlendMode: z.fifthBaseBlendMode || 'noise',
+        fifthBaseFractalScale: z.fifthBaseFractalScale || 24,
+        fifthBaseScale: z.fifthBaseScale || 1.0,
+        fifthBaseColorSource: z.fifthBaseColorSource || null,
+        fifthBaseHueShift: z.fifthBaseHueShift || 0,
+        fifthBaseSaturation: z.fifthBaseSaturation || 0,
+        fifthBaseBrightness: z.fifthBaseBrightness || 0,
+    };
+    // Strip default/null values to minimize DNA string size
+    var cleaned = {};
+    for (var key in dna) {
+        var val = dna[key];
+        if (val === null || val === false || val === 0 || val === '' || val === 'none' || val === 'source' || val === 'normal') continue;
+        if (key === 'baseOffsetX' && val === 0.5) continue;
+        if (key === 'baseOffsetY' && val === 0.5) continue;
+        if (key === 'patternOffsetX' && val === 0.5) continue;
+        if (key === 'patternOffsetY' && val === 0.5) continue;
+        if (key === 'baseColorStrength' && val === 1) continue;
+        if (key === 'scale' && val === 1.0) continue;
+        if (key === 'intensity' && val === '100') continue;
+        if (key === 'baseColor' && val === '#ffffff') continue;
+        if (typeof val === 'string' && val.startsWith('#ffffff') && key.endsWith('Color')) continue;
+        cleaned[key] = val;
+    }
+    cleaned.v = 1; // always include version
+    return cleaned;
+}
+
+/**
+ * Copy zone DNA to clipboard as SHOKK:v1:{base64} string.
+ */
+function copyZoneDNA(zoneIndex) {
+    var dna = _extractZoneDNA(zoneIndex);
+    if (!dna) { if (typeof showToast === 'function') showToast('No zone to copy DNA from.'); return; }
+    try {
+        var json = JSON.stringify(dna);
+        var b64 = btoa(unescape(encodeURIComponent(json)));
+        var dnaStr = 'SHOKK:v1:' + b64;
+        navigator.clipboard.writeText(dnaStr).then(function () {
+            if (typeof showToast === 'function') showToast('Finish DNA copied to clipboard!');
+        }).catch(function () {
+            // Fallback: select a temp textarea
+            var ta = document.createElement('textarea');
+            ta.value = dnaStr;
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+            if (typeof showToast === 'function') showToast('Finish DNA copied (fallback).');
+        });
+    } catch (e) {
+        if (typeof showToast === 'function') showToast('DNA copy failed: ' + e.message);
+    }
+}
+
+/**
+ * Parse a SHOKK:v1:{base64} DNA string and return the JSON payload, or null on error.
+ */
+function _parseDNAString(dnaStr) {
+    if (!dnaStr || typeof dnaStr !== 'string') return null;
+    dnaStr = dnaStr.trim();
+    if (!dnaStr.startsWith('SHOKK:v1:')) return null;
+    var b64 = dnaStr.substring(9);
+    try {
+        var json = decodeURIComponent(escape(atob(b64)));
+        var obj = JSON.parse(json);
+        if (!obj || typeof obj !== 'object' || obj.v !== 1) return null;
+        return obj;
+    } catch (e) {
+        return null;
+    }
+}
+
+/**
+ * Apply a DNA payload to a zone — merges DNA properties onto the existing zone.
+ */
+function pasteZoneDNA(zoneIndex, dnaStr) {
+    if (zoneIndex < 0 || zoneIndex >= zones.length) {
+        if (typeof showToast === 'function') showToast('Invalid zone.');
+        return;
+    }
+    var dna = _parseDNAString(dnaStr);
+    if (!dna) {
+        if (typeof showToast === 'function') showToast('Invalid DNA string. Expected format: SHOKK:v1:...');
+        return;
+    }
+    pushZoneUndo('Paste DNA');
+    var z = zones[zoneIndex];
+    // Apply all DNA keys to zone
+    var applyKeys = [
+        'base', 'finish', 'pattern', 'intensity', 'scale',
+        'baseRotation', 'baseOffsetX', 'baseOffsetY', 'baseFlipH', 'baseFlipV', 'basePlacement',
+        'baseColorMode', 'baseColor', 'baseColorSource', 'baseColorStrength',
+        'gradientStops', 'gradientDirection',
+        'baseHueOffset', 'baseSaturationAdjust', 'baseBrightnessAdjust',
+        'patternOffsetX', 'patternOffsetY', 'patternFlipH', 'patternFlipV', 'patternPlacement',
+        'wear',
+        'secondBase', 'secondBaseColor', 'secondBaseStrength', 'secondBaseBlendMode',
+        'secondBaseFractalScale', 'secondBaseScale', 'secondBaseColorSource',
+        'secondBaseHueShift', 'secondBaseSaturation', 'secondBaseBrightness',
+        'thirdBase', 'thirdBaseColor', 'thirdBaseStrength', 'thirdBaseBlendMode',
+        'thirdBaseFractalScale', 'thirdBaseScale', 'thirdBaseColorSource',
+        'thirdBaseHueShift', 'thirdBaseSaturation', 'thirdBaseBrightness',
+        'fourthBase', 'fourthBaseColor', 'fourthBaseStrength', 'fourthBaseBlendMode',
+        'fourthBaseFractalScale', 'fourthBaseScale', 'fourthBaseColorSource',
+        'fourthBaseHueShift', 'fourthBaseSaturation', 'fourthBaseBrightness',
+        'fifthBase', 'fifthBaseColor', 'fifthBaseStrength', 'fifthBaseBlendMode',
+        'fifthBaseFractalScale', 'fifthBaseScale', 'fifthBaseColorSource',
+        'fifthBaseHueShift', 'fifthBaseSaturation', 'fifthBaseBrightness',
+    ];
+    for (var k = 0; k < applyKeys.length; k++) {
+        var key = applyKeys[k];
+        if (key in dna) {
+            z[key] = dna[key];
+        }
+    }
+    renderZones();
+    if (typeof renderZoneDetail === 'function') renderZoneDetail(zoneIndex);
+    if (typeof showToast === 'function') showToast('Finish DNA applied to Zone ' + (zoneIndex + 1) + '!');
+}
+
+/**
+ * Handle Paste DNA from the input field.
+ */
+function handleDNAPaste(zoneIndex) {
+    var inp = document.getElementById('dnaPasteInput_' + zoneIndex);
+    if (!inp) return;
+    var val = inp.value.trim();
+    if (!val) { if (typeof showToast === 'function') showToast('Paste a DNA string first.'); return; }
+    pasteZoneDNA(zoneIndex, val);
+    inp.value = '';
 }
 

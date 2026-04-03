@@ -883,6 +883,7 @@ function renderZoneDetail(index) {
         <div style="display:flex; gap:6px; padding-left:46px;">
             <button class="btn btn-sm" onclick="event.stopPropagation(); openFinishBrowser(${i})" title="Opens a full-screen gallery of all finishes with thumbnail previews. Filter by type, search by name, click to apply." style="padding:2px 8px; font-size:9px; border-color:var(--accent-gold); color:var(--accent-gold);">🎨 Browse</button>
             <button class="btn btn-sm" onclick="event.stopPropagation(); openFinishCompare(${i})" title="Compare two finishes side-by-side on your car" style="padding:2px 8px; font-size:9px; border-color:var(--accent-blue); color:var(--accent-blue);">🔍 Compare</button>
+            <button class="btn btn-sm" onclick="event.stopPropagation(); openFinishMixer(${i})" title="Mix 2-3 finishes together at custom ratios to create a hybrid finish" style="padding:2px 8px; font-size:9px; border-color:#e844e8; color:#e844e8;">&#129514; Mixer</button>
         </div>
     </div>`;
 
@@ -1303,6 +1304,40 @@ function renderZoneDetail(index) {
                             <input type="range" min="0" max="100" step="5" value="${Math.round((zone.patternSpecMult ?? 1) * 100)}" oninput="setZonePatternSpecMult(${i}, this.value)" class="stack-slider" title="Pattern punch (spec map), 5% steps">
                             <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); stepZonePatternSpecMult(${i}, 1)" title="+5%" style="padding:0 4px;font-size:10px;">+</button>
                             <span class="stack-val" id="detPatStrVal${i}">${Math.round((zone.patternSpecMult ?? 1) * 100)}%</span></div>
+                        <div class="stack-control-group strength-map-toggle-row" style="margin-top:4px;">
+                            <button class="btn btn-sm ${zone.patternStrengthMapEnabled ? 'strength-map-btn-active' : 'strength-map-btn'}" onclick="event.stopPropagation(); toggleStrengthMap(${i})" title="Paint where the pattern is strong vs weak — like a heat map brush">
+                                Strength Map ${zone.patternStrengthMapEnabled ? 'ON' : 'OFF'}
+                            </button>
+                        </div>
+                        ${zone.patternStrengthMapEnabled ? `
+                        <div class="strength-map-panel" id="strengthMapPanel${i}">
+                            <div class="strength-map-canvas-wrap">
+                                <canvas id="strengthMapCanvas${i}" class="strength-map-canvas" width="256" height="256"
+                                    onmousedown="strengthMapStartPaint(event, ${i})"
+                                    onmousemove="strengthMapPaint(event, ${i})"
+                                    onmouseup="strengthMapStopPaint(${i})"
+                                    onmouseleave="strengthMapStopPaint(${i})"></canvas>
+                            </div>
+                            <div class="strength-map-controls">
+                                <div class="strength-map-brush-row">
+                                    <span class="stack-label-mini">Brush</span>
+                                    <input type="range" min="2" max="80" step="1" value="${window._strengthMapBrushSize || 20}" oninput="window._strengthMapBrushSize = parseInt(this.value); document.getElementById('smBrushSizeVal${i}').textContent = this.value + 'px'" class="stack-slider" title="Brush size">
+                                    <span class="stack-val" id="smBrushSizeVal${i}">${window._strengthMapBrushSize || 20}px</span>
+                                </div>
+                                <div class="strength-map-brush-row">
+                                    <span class="stack-label-mini">Value</span>
+                                    <input type="range" min="0" max="255" step="1" value="${window._strengthMapBrushValue ?? 0}" oninput="window._strengthMapBrushValue = parseInt(this.value); document.getElementById('smBrushValLabel${i}').textContent = Math.round(this.value/255*100)+'%'" class="stack-slider" title="Brush value: 0=no pattern, 255=full pattern">
+                                    <span class="stack-val" id="smBrushValLabel${i}">${Math.round((window._strengthMapBrushValue ?? 0)/255*100)}%</span>
+                                </div>
+                                <div class="strength-map-quick-btns">
+                                    <button class="btn btn-xs" onclick="event.stopPropagation(); strengthMapFill(${i}, 255)" title="Reset to 100% everywhere">Fill White</button>
+                                    <button class="btn btn-xs" onclick="event.stopPropagation(); strengthMapFill(${i}, 0)" title="Zero out everywhere">Fill Black</button>
+                                    <button class="btn btn-xs" onclick="event.stopPropagation(); strengthMapGradient(${i}, 'tb')" title="Top=100% fading to Bottom=0%">Top-Bottom</button>
+                                    <button class="btn btn-xs" onclick="event.stopPropagation(); strengthMapGradient(${i}, 'lr')" title="Left=100% fading to Right=0%">Left-Right</button>
+                                    <button class="btn btn-xs" onclick="event.stopPropagation(); strengthMapGradient(${i}, 'center')" title="Center=100% fading to edges=0%">Center Fade</button>
+                                </div>
+                            </div>
+                        </div>` : ''}
                         </div>`;
                     }
 
@@ -3296,6 +3331,8 @@ function addZone(skipUndo) {
         patternPlacement: 'normal',  // 'normal' | 'fit' | 'manual'
         patternFlipH: false,
         patternFlipV: false,
+        patternStrengthMap: null,       // null = uniform (slider only), or {width, height, data: Uint8Array}
+        patternStrengthMapEnabled: false, // toggle for per-pixel strength map
         baseOffsetX: 0.5,
         baseOffsetY: 0.5,
         baseRotation: 0,
@@ -8223,6 +8260,166 @@ function hasAnyRegionMasks() {
     return zones.some(z => z.regionMask && z.regionMask.some(v => v > 0));
 }
 
+// ===== PATTERN STRENGTH MAP =====
+// Globals for brush state
+if (typeof window._strengthMapBrushSize === 'undefined') window._strengthMapBrushSize = 20;
+if (typeof window._strengthMapBrushValue === 'undefined') window._strengthMapBrushValue = 0;
+if (typeof window._strengthMapPainting === 'undefined') window._strengthMapPainting = false;
+
+const STRENGTH_MAP_SIZE = 256; // low-res grayscale canvas dimension
+
+/** Toggle the strength map on/off for a zone */
+function toggleStrengthMap(zoneIdx) {
+    pushZoneUndo('Toggle strength map');
+    const z = zones[zoneIdx];
+    z.patternStrengthMapEnabled = !z.patternStrengthMapEnabled;
+    if (z.patternStrengthMapEnabled && !z.patternStrengthMap) {
+        // Initialize to all-white (100% strength everywhere)
+        z.patternStrengthMap = {
+            width: STRENGTH_MAP_SIZE,
+            height: STRENGTH_MAP_SIZE,
+            data: new Uint8Array(STRENGTH_MAP_SIZE * STRENGTH_MAP_SIZE).fill(255)
+        };
+    }
+    renderZoneDetail(zoneIdx);
+    // After DOM update, initialize the canvas display
+    if (z.patternStrengthMapEnabled) {
+        requestAnimationFrame(() => strengthMapRedraw(zoneIdx));
+    }
+}
+
+/** Redraw the strength map canvas from zone data */
+function strengthMapRedraw(zoneIdx) {
+    const z = zones[zoneIdx];
+    if (!z || !z.patternStrengthMap) return;
+    const canvas = document.getElementById('strengthMapCanvas' + zoneIdx);
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const w = z.patternStrengthMap.width;
+    const h = z.patternStrengthMap.height;
+    canvas.width = w;
+    canvas.height = h;
+    const imgData = ctx.createImageData(w, h);
+    const data = z.patternStrengthMap.data;
+    for (let i = 0; i < data.length; i++) {
+        const v = data[i];
+        imgData.data[i * 4] = v;       // R
+        imgData.data[i * 4 + 1] = v;   // G
+        imgData.data[i * 4 + 2] = v;   // B
+        imgData.data[i * 4 + 3] = 255; // A
+    }
+    ctx.putImageData(imgData, 0, 0);
+}
+
+/** Start painting on the strength map canvas */
+function strengthMapStartPaint(event, zoneIdx) {
+    window._strengthMapPainting = true;
+    strengthMapPaint(event, zoneIdx);
+}
+
+/** Paint on the strength map canvas (mousemove while button held) */
+function strengthMapPaint(event, zoneIdx) {
+    if (!window._strengthMapPainting) return;
+    const z = zones[zoneIdx];
+    if (!z || !z.patternStrengthMap) return;
+    const canvas = document.getElementById('strengthMapCanvas' + zoneIdx);
+    if (!canvas) return;
+    const rect = canvas.getBoundingClientRect();
+    // Map mouse position to canvas coordinates (canvas may be CSS-scaled)
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    const cx = (event.clientX - rect.left) * scaleX;
+    const cy = (event.clientY - rect.top) * scaleY;
+    const brushR = (window._strengthMapBrushSize || 20) / 2;
+    const val = window._strengthMapBrushValue ?? 0;
+    const w = z.patternStrengthMap.width;
+    const h = z.patternStrengthMap.height;
+    const data = z.patternStrengthMap.data;
+    const x0 = Math.max(0, Math.floor(cx - brushR));
+    const y0 = Math.max(0, Math.floor(cy - brushR));
+    const x1 = Math.min(w - 1, Math.ceil(cx + brushR));
+    const y1 = Math.min(h - 1, Math.ceil(cy + brushR));
+    const rSq = brushR * brushR;
+    for (let y = y0; y <= y1; y++) {
+        for (let x = x0; x <= x1; x++) {
+            const dx = x - cx;
+            const dy = y - cy;
+            const distSq = dx * dx + dy * dy;
+            if (distSq <= rSq) {
+                // Soft brush: alpha falloff at edges
+                const t = Math.sqrt(distSq) / brushR;
+                const alpha = t < 0.7 ? 1.0 : 1.0 - ((t - 0.7) / 0.3);
+                const idx = y * w + x;
+                data[idx] = Math.round(data[idx] * (1 - alpha) + val * alpha);
+            }
+        }
+    }
+    strengthMapRedraw(zoneIdx);
+}
+
+/** Stop painting */
+function strengthMapStopPaint(zoneIdx) {
+    window._strengthMapPainting = false;
+}
+
+/** Fill the entire strength map with a value (0-255) */
+function strengthMapFill(zoneIdx, value) {
+    const z = zones[zoneIdx];
+    if (!z || !z.patternStrengthMap) return;
+    pushZoneUndo('Strength map fill');
+    z.patternStrengthMap.data.fill(value);
+    strengthMapRedraw(zoneIdx);
+}
+
+/** Apply a gradient preset to the strength map */
+function strengthMapGradient(zoneIdx, direction) {
+    const z = zones[zoneIdx];
+    if (!z || !z.patternStrengthMap) return;
+    pushZoneUndo('Strength map gradient');
+    const w = z.patternStrengthMap.width;
+    const h = z.patternStrengthMap.height;
+    const data = z.patternStrengthMap.data;
+    for (let y = 0; y < h; y++) {
+        for (let x = 0; x < w; x++) {
+            let v;
+            if (direction === 'tb') {
+                v = 1.0 - (y / (h - 1)); // top=white, bottom=black
+            } else if (direction === 'lr') {
+                v = 1.0 - (x / (w - 1)); // left=white, right=black
+            } else if (direction === 'center') {
+                const cx = (x / (w - 1)) * 2 - 1; // -1 to 1
+                const cy = (y / (h - 1)) * 2 - 1;
+                const dist = Math.sqrt(cx * cx + cy * cy) / Math.SQRT2; // 0 at center, 1 at corners
+                v = 1.0 - dist;
+            } else {
+                v = 1.0;
+            }
+            data[y * w + x] = Math.round(Math.max(0, Math.min(1, v)) * 255);
+        }
+    }
+    strengthMapRedraw(zoneIdx);
+}
+
+/** Encode a strength map as RLE for server transmission */
+function encodeStrengthMapRLE(strengthMap) {
+    if (!strengthMap || !strengthMap.data) return null;
+    const data = strengthMap.data;
+    const runs = [];
+    let currentVal = data[0];
+    let count = 1;
+    for (let i = 1; i < data.length; i++) {
+        if (data[i] === currentVal) {
+            count++;
+        } else {
+            runs.push([currentVal, count]);
+            currentVal = data[i];
+            count = 1;
+        }
+    }
+    runs.push([currentVal, count]);
+    return { width: strengthMap.width, height: strengthMap.height, runs };
+}
+
 // ===== FINE TUNING PANEL =====
 // State
 window._fineTuningOpen = false;
@@ -8611,5 +8808,265 @@ function handleDNAPaste(zoneIndex) {
     if (!val) { if (typeof showToast === 'function') showToast('Paste a DNA string first.'); return; }
     pasteZoneDNA(zoneIndex, val);
     inp.value = '';
+}
+
+// ================================================================
+// FINISH MIXER - Blend 2-3 finishes at custom ratios
+// ================================================================
+
+var _mixerState = {
+    zoneIndex: 0,
+    slots: [
+        { id: 'chrome', weight: 40 },
+        { id: 'candy_burgundy', weight: 35 }
+    ],
+    previewImg: null,
+    panelOpen: false
+};
+
+function openFinishMixer(zoneIndex) {
+    _mixerState.zoneIndex = zoneIndex;
+    _mixerState.panelOpen = true;
+    var z = (typeof zones !== 'undefined' && zones[zoneIndex]) ? zones[zoneIndex] : null;
+    if (z && z.base) {
+        _mixerState.slots[0].id = z.base;
+    }
+    _renderMixerPanel();
+}
+
+function closeMixerPanel() {
+    _mixerState.panelOpen = false;
+    var el = document.getElementById('finishMixerOverlay');
+    if (el) el.remove();
+}
+
+function _getMixerBaseOptions() {
+    if (typeof BASES === 'undefined') return '<option value="">No bases loaded</option>';
+    var opts = '';
+    for (var i = 0; i < BASES.length; i++) {
+        opts += '<option value="' + BASES[i].id + '">' + BASES[i].name + '</option>';
+    }
+    if (typeof _customMixFinishes !== 'undefined' && _customMixFinishes.length) {
+        for (var j = 0; j < _customMixFinishes.length; j++) {
+            opts += '<option value="' + _customMixFinishes[j].id + '">' + _customMixFinishes[j].name + ' (Custom Mix)</option>';
+        }
+    }
+    return opts;
+}
+
+function _normalizeMixerWeights() {
+    var total = 0;
+    for (var i = 0; i < _mixerState.slots.length; i++) total += _mixerState.slots[i].weight;
+    if (total <= 0) {
+        var eq = Math.round(100 / _mixerState.slots.length);
+        for (var j = 0; j < _mixerState.slots.length; j++) _mixerState.slots[j].weight = eq;
+    }
+}
+
+function _mixerSlotChange(idx, newId) {
+    _mixerState.slots[idx].id = newId;
+}
+
+function _mixerWeightChange(idx, val) {
+    _mixerState.slots[idx].weight = Math.max(0, Math.min(100, parseInt(val) || 0));
+}
+
+function _mixerAddSlot() {
+    if (_mixerState.slots.length >= 3) return;
+    _mixerState.slots.push({ id: 'carbon_base', weight: 25 });
+    _renderMixerPanel();
+}
+
+function _mixerRemoveSlot(idx) {
+    if (_mixerState.slots.length <= 2) return;
+    _mixerState.slots.splice(idx, 1);
+    _renderMixerPanel();
+}
+
+function _mixerPreview() {
+    var ids = [];
+    var weights = [];
+    for (var i = 0; i < _mixerState.slots.length; i++) {
+        ids.push(_mixerState.slots[i].id);
+        weights.push(_mixerState.slots[i].weight / 100.0);
+    }
+    var previewEl = document.getElementById('mixerPreviewImg');
+    var statusEl = document.getElementById('mixerStatus');
+    if (statusEl) statusEl.textContent = 'Generating preview...';
+
+    fetch('/api/mix-preview', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ finish_ids: ids, weights: weights, seed: 51 })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+        if (data.error) {
+            if (statusEl) statusEl.textContent = 'Error: ' + data.error;
+            return;
+        }
+        if (previewEl) {
+            previewEl.src = data.image;
+            previewEl.style.display = 'block';
+        }
+        _mixerState.previewImg = data.image;
+        if (statusEl) statusEl.textContent = 'Preview ready';
+    })
+    .catch(function(err) {
+        if (statusEl) statusEl.textContent = 'Error: ' + err.message;
+    });
+}
+
+function _mixerSave() {
+    var nameInput = document.getElementById('mixerSaveName');
+    var name = nameInput ? nameInput.value.trim() : '';
+    if (!name) {
+        if (typeof showToast === 'function') showToast('Enter a name for your custom finish');
+        return;
+    }
+    var ids = [];
+    var weights = [];
+    for (var i = 0; i < _mixerState.slots.length; i++) {
+        ids.push(_mixerState.slots[i].id);
+        weights.push(_mixerState.slots[i].weight / 100.0);
+    }
+    var statusEl = document.getElementById('mixerStatus');
+    if (statusEl) statusEl.textContent = 'Saving...';
+
+    fetch('/api/save-custom-finish', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: name, finish_ids: ids, weights: weights })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+        if (data.error) {
+            if (statusEl) statusEl.textContent = 'Error: ' + data.error;
+            return;
+        }
+        if (statusEl) statusEl.textContent = 'Saved as ' + data.id + '!';
+        if (typeof showToast === 'function') showToast('Custom finish saved: ' + data.name);
+        _loadCustomFinishes();
+    })
+    .catch(function(err) {
+        if (statusEl) statusEl.textContent = 'Error: ' + err.message;
+    });
+}
+
+function _mixerApplyToZone() {
+    if (typeof showToast === 'function') showToast('Use "Save as Custom Finish" first, then select it from the Custom Mixes group in the base picker.');
+}
+
+function _renderMixerPanel() {
+    var existing = document.getElementById('finishMixerOverlay');
+    if (existing) existing.remove();
+
+    var overlay = document.createElement('div');
+    overlay.id = 'finishMixerOverlay';
+    overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:10000;display:flex;align-items:center;justify-content:center;';
+    overlay.onclick = function(e) { if (e.target === overlay) closeMixerPanel(); };
+
+    var options = _getMixerBaseOptions();
+    var slotsHtml = '';
+    for (var i = 0; i < _mixerState.slots.length; i++) {
+        var s = _mixerState.slots[i];
+        var removeBtn = _mixerState.slots.length > 2
+            ? '<button onclick="_mixerRemoveSlot(' + i + ')" style="background:none;border:1px solid #666;color:#ff6666;padding:2px 6px;border-radius:3px;cursor:pointer;font-size:10px;" title="Remove this finish">X</button>'
+            : '';
+        slotsHtml += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">'
+            + '<span style="color:#aaa;font-size:11px;min-width:55px;">Finish ' + (i + 1) + ':</span>'
+            + '<select onchange="_mixerSlotChange(' + i + ', this.value)" style="flex:1;background:#1a1a2e;color:#eee;border:1px solid #444;padding:4px 6px;border-radius:4px;font-size:11px;">';
+        for (var j = 0; j < BASES.length; j++) {
+            var sel = BASES[j].id === s.id ? ' selected' : '';
+            slotsHtml += '<option value="' + BASES[j].id + '"' + sel + '>' + BASES[j].name + '</option>';
+        }
+        if (typeof _customMixFinishes !== 'undefined' && _customMixFinishes.length) {
+            for (var k = 0; k < _customMixFinishes.length; k++) {
+                var csel = _customMixFinishes[k].id === s.id ? ' selected' : '';
+                slotsHtml += '<option value="' + _customMixFinishes[k].id + '"' + csel + '>' + _customMixFinishes[k].name + ' (Custom)</option>';
+            }
+        }
+        slotsHtml += '</select>'
+            + '<span style="color:#aaa;font-size:11px;min-width:28px;text-align:right;">' + s.weight + '%</span>'
+            + '<input type="range" min="0" max="100" value="' + s.weight + '" oninput="_mixerWeightChange(' + i + ', this.value); this.previousElementSibling.textContent=this.value+\'%\'" style="width:100px;accent-color:#e844e8;">'
+            + removeBtn
+            + '</div>';
+    }
+
+    var addBtn = _mixerState.slots.length < 3
+        ? '<button onclick="_mixerAddSlot()" style="background:none;border:1px dashed #666;color:#aaa;padding:4px 12px;border-radius:4px;cursor:pointer;font-size:11px;margin-right:8px;">+ Add Finish</button>'
+        : '';
+
+    var previewImgHtml = _mixerState.previewImg
+        ? '<img id="mixerPreviewImg" src="' + _mixerState.previewImg + '" style="width:200px;height:200px;border:1px solid #444;border-radius:4px;margin-top:8px;image-rendering:pixelated;">'
+        : '<img id="mixerPreviewImg" style="display:none;width:200px;height:200px;border:1px solid #444;border-radius:4px;margin-top:8px;image-rendering:pixelated;">';
+
+    var html = '<div style="background:#12122a;border:1px solid #e844e8;border-radius:10px;padding:20px 24px;min-width:420px;max-width:520px;box-shadow:0 8px 32px rgba(232,68,232,0.3);" onclick="event.stopPropagation();">'
+        + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">'
+        + '<h3 style="margin:0;color:#e844e8;font-size:16px;letter-spacing:1px;">&#129514; FINISH MIXER</h3>'
+        + '<button onclick="closeMixerPanel()" style="background:none;border:none;color:#888;font-size:18px;cursor:pointer;">&times;</button>'
+        + '</div>'
+        + '<div style="margin-bottom:12px;">' + slotsHtml + '</div>'
+        + '<div style="display:flex;gap:8px;margin-bottom:12px;">'
+        + addBtn
+        + '<button onclick="_mixerPreview()" style="background:linear-gradient(135deg,#7c3aed,#e844e8);color:#fff;border:none;padding:6px 14px;border-radius:4px;cursor:pointer;font-size:11px;font-weight:bold;">Preview Mix</button>'
+        + '</div>'
+        + '<div style="text-align:center;">' + previewImgHtml + '</div>'
+        + '<div id="mixerStatus" style="color:#888;font-size:10px;margin-top:8px;text-align:center;min-height:14px;"></div>'
+        + '<hr style="border-color:#333;margin:12px 0;">'
+        + '<div style="display:flex;gap:8px;align-items:center;">'
+        + '<input id="mixerSaveName" type="text" placeholder="My Chrome Candy Carbon" style="flex:1;background:#1a1a2e;color:#eee;border:1px solid #444;padding:6px 8px;border-radius:4px;font-size:11px;">'
+        + '<button onclick="_mixerSave()" style="background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;border:none;padding:6px 12px;border-radius:4px;cursor:pointer;font-size:11px;font-weight:bold;white-space:nowrap;">&#128190; Save Custom</button>'
+        + '</div>'
+        + '</div>';
+
+    overlay.innerHTML = html;
+    document.body.appendChild(overlay);
+}
+
+// ================================================================
+// CUSTOM FINISHES LOADER
+// ================================================================
+
+var _customMixFinishes = [];
+
+function _loadCustomFinishes() {
+    fetch('/api/custom-finishes')
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+        if (!Array.isArray(data)) return;
+        _customMixFinishes = data;
+        if (typeof BASES !== 'undefined') {
+            for (var i = 0; i < data.length; i++) {
+                var exists = false;
+                for (var j = 0; j < BASES.length; j++) {
+                    if (BASES[j].id === data[i].id) { exists = true; break; }
+                }
+                if (!exists) {
+                    var recipe = data[i].finish_ids.join(' + ');
+                    BASES.push({
+                        id: data[i].id,
+                        name: data[i].name,
+                        desc: 'Custom mix: ' + recipe,
+                        swatch: '#e844e8'
+                    });
+                }
+            }
+        }
+        if (typeof BASE_GROUPS !== 'undefined' && data.length > 0) {
+            var customIds = [];
+            for (var k = 0; k < data.length; k++) customIds.push(data[k].id);
+            BASE_GROUPS["\u2605 CUSTOM MIXES"] = customIds;
+        }
+    })
+    .catch(function() { /* silent fail */ });
+}
+
+if (typeof window !== 'undefined') {
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', _loadCustomFinishes);
+    } else {
+        _loadCustomFinishes();
+    }
 }
 

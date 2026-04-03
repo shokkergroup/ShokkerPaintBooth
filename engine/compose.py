@@ -593,6 +593,21 @@ def compose_finish(base_id, pattern_id, shape, mask, seed, sm, scale=1.0, spec_m
     _pat_int_raw = max(0.0, min(1.0, float(pattern_intensity)))
     _pat_int = _pat_int_raw ** 0.5 if _pat_int_raw > 0 else 0.0  # perceptual curve matches paint
     pattern_sm_eff = pattern_sm * _pat_int  # sqrt curve: 5%→22%, 50%→71%, 100%→100%
+
+    # Pattern strength map: per-pixel modulation of pattern_sm_eff
+    _psm_raw = kwargs.get("pattern_strength_map")
+    if _psm_raw is not None:
+        try:
+            from PIL import Image as _PSM_Image
+            _psm_arr = np.asarray(_psm_raw, dtype=np.float32)
+            if _psm_arr.shape[0] != shape[0] or _psm_arr.shape[1] != shape[1]:
+                _psm_img = _PSM_Image.fromarray((_psm_arr * 255).clip(0, 255).astype(np.uint8), mode="L")
+                _psm_img = _psm_img.resize((shape[1], shape[0]), _PSM_Image.BILINEAR)
+                _psm_arr = np.asarray(_psm_img, dtype=np.float32) / 255.0
+            pattern_sm_eff = pattern_sm_eff * _psm_arr
+        except Exception as _psm_e:
+            print(f"[compose] WARNING: pattern_strength_map failed: {_psm_e}")
+
     # NOTE: base_strength is a paint slider, handled in compose_paint_mod — not used in spec compositing.
     _sm_base = sm * max(0.0, min(2.0, float(base_spec_strength)))
     base = BASE_REGISTRY[base_id]
@@ -604,6 +619,9 @@ def compose_finish(base_id, pattern_id, shape, mask, seed, sm, scale=1.0, spec_m
     # Transfer mask to GPU at entry — used throughout
     if _gpu_active:
         mask = to_gpu(mask)
+        # Transfer pattern_sm_eff to GPU if it's a per-pixel array
+        if isinstance(pattern_sm_eff, np.ndarray):
+            pattern_sm_eff = to_gpu(pattern_sm_eff)
 
     if base_scale != 1.0 and base_scale > 0:
         MAX_BASE_DIM = 4096
@@ -1350,6 +1368,21 @@ def compose_finish_stacked(base_id, all_patterns, shape, mask, seed, sm, spec_mu
     _pat_int_raw = max(0.0, min(1.0, float(pattern_intensity)))
     _pat_int = _pat_int_raw ** 0.5 if _pat_int_raw > 0 else 0.0  # perceptual curve
     pattern_sm_eff = pattern_sm * _pat_int  # sqrt curve: 5%→22%, 50%→71%, 100%→100%
+
+    # Pattern strength map: per-pixel modulation of pattern_sm_eff
+    _psm_raw = kwargs.get("pattern_strength_map")
+    if _psm_raw is not None:
+        try:
+            from PIL import Image as _PSM_Image
+            _psm_arr = np.asarray(_psm_raw, dtype=np.float32)
+            if _psm_arr.shape[0] != shape[0] or _psm_arr.shape[1] != shape[1]:
+                _psm_img = _PSM_Image.fromarray((_psm_arr * 255).clip(0, 255).astype(np.uint8), mode="L")
+                _psm_img = _psm_img.resize((shape[1], shape[0]), _PSM_Image.BILINEAR)
+                _psm_arr = np.asarray(_psm_img, dtype=np.float32) / 255.0
+            pattern_sm_eff = pattern_sm_eff * _psm_arr
+        except Exception as _psm_e:
+            print(f"[compose] WARNING: pattern_strength_map failed: {_psm_e}")
+
     # NOTE: base_strength is a paint slider, handled in compose_paint_mod_stacked — not used in spec compositing.
     _sm_base = sm * max(0.0, min(2.0, float(base_spec_strength)))
     base = BASE_REGISTRY[base_id]
@@ -1361,6 +1394,9 @@ def compose_finish_stacked(base_id, all_patterns, shape, mask, seed, sm, spec_mu
     # Transfer mask to GPU at entry
     if _gpu_active:
         mask = to_gpu(mask)
+        # Transfer pattern_sm_eff to GPU if it's a per-pixel array
+        if isinstance(pattern_sm_eff, np.ndarray):
+            pattern_sm_eff = to_gpu(pattern_sm_eff)
 
     if base_scale != 1.0 and base_scale > 0:
         MAX_BASE_DIM = 4096
@@ -3326,6 +3362,170 @@ def decompress_spec_delta(compressed, spec_old):
     return result
 
 
+# ================================================================
+# FINISH MIXER - Blend 2-3 finishes at custom weight ratios
+# ================================================================
+
+def _resolve_finish_spec(finish_id, shape, mask, seed, sm, monolithic_registry=None):
+    """Resolve a finish ID to (M_arr, R_arr, CC_arr) arrays.
+
+    Checks BASE_REGISTRY first (uses base_spec_fn or static M/R/CC values),
+    then MONOLITHIC_REGISTRY (uses spec_fn which returns a 4-channel spec).
+    Returns float32 arrays of shape (H, W).
+    """
+    from engine.registry import BASE_REGISTRY, MONOLITHIC_REGISTRY as _MONO
+    mono_reg = monolithic_registry if monolithic_registry is not None else _MONO
+    h, w = shape[0], shape[1]
+
+    if finish_id in BASE_REGISTRY:
+        base = BASE_REGISTRY[finish_id]
+        base_M = float(base["M"])
+        base_R = float(base["R"])
+        base_CC = float(base.get("CC", 16))
+        _seed_off = abs(hash(finish_id)) % 10000
+        if base.get("base_spec_fn"):
+            result = base["base_spec_fn"]((h, w), seed + _seed_off, sm, base_M, base_R)
+            M_arr = np.asarray(result[0], dtype=np.float32)
+            R_arr = np.asarray(result[1], dtype=np.float32)
+            CC_arr = np.asarray(result[2], dtype=np.float32) if len(result) > 2 else np.full((h, w), base_CC, dtype=np.float32)
+        elif base.get("perlin") or "noise_scales" in base or base.get("brush_grain"):
+            # For noise-based bases, generate simple noise-based spec
+            noise = multi_scale_noise((h, w), [8, 16, 32], [0.5, 0.3, 0.2], seed + abs(hash(finish_id)) % 10000)
+            M_arr = (base_M + noise * base.get("noise_M", 0) * sm).astype(np.float32)
+            R_arr = (base_R + noise * base.get("noise_R", 0) * sm).astype(np.float32)
+            CC_arr = np.full((h, w), base_CC, dtype=np.float32)
+            if base.get("noise_CC", 0) > 0:
+                CC_arr = (CC_arr + noise * base["noise_CC"] * sm).astype(np.float32)
+        else:
+            M_arr = np.full((h, w), base_M, dtype=np.float32)
+            R_arr = np.full((h, w), base_R, dtype=np.float32)
+            CC_arr = np.full((h, w), base_CC, dtype=np.float32)
+        return M_arr, R_arr, CC_arr
+
+    if finish_id in mono_reg:
+        entry = mono_reg[finish_id]
+        spec_fn = entry[0]
+        spec_arr = spec_fn((h, w), mask, seed, sm)
+        spec_arr = np.asarray(spec_arr)
+        if spec_arr.ndim == 3 and spec_arr.shape[2] >= 3:
+            M_arr = spec_arr[:, :, 0].astype(np.float32)
+            R_arr = spec_arr[:, :, 1].astype(np.float32)
+            CC_arr = spec_arr[:, :, 2].astype(np.float32)
+        else:
+            M_arr = np.full((h, w), 128.0, dtype=np.float32)
+            R_arr = np.full((h, w), 80.0, dtype=np.float32)
+            CC_arr = np.full((h, w), 16.0, dtype=np.float32)
+        return M_arr, R_arr, CC_arr
+
+    # Fallback: neutral spec
+    return (np.full((h, w), 0.0, dtype=np.float32),
+            np.full((h, w), 128.0, dtype=np.float32),
+            np.full((h, w), 16.0, dtype=np.float32))
+
+
+def _resolve_finish_paint_fn(finish_id, monolithic_registry=None):
+    """Resolve a finish ID to its paint_fn callable.
+
+    Returns paint_none if not found.
+    """
+    from engine.registry import BASE_REGISTRY, MONOLITHIC_REGISTRY as _MONO
+    mono_reg = monolithic_registry if monolithic_registry is not None else _MONO
+
+    if finish_id in BASE_REGISTRY:
+        return BASE_REGISTRY[finish_id].get("paint_fn", paint_none)
+    if finish_id in mono_reg:
+        return mono_reg[finish_id][1]
+    return paint_none
+
+
+def mix_finishes(shape, mask, seed, sm, finish_ids, weights, monolithic_registry=None):
+    """Blend 2-3 finishes into a single spec map by weighted average.
+
+    Args:
+        shape: (H, W) tuple.
+        mask: (H, W) float32 mask array.
+        seed: int random seed.
+        sm: float smoothness multiplier.
+        finish_ids: list of 2-3 finish ID strings (base or monolithic).
+        weights: list of floats summing to 1.0, one per finish_id.
+        monolithic_registry: optional override for MONOLITHIC_REGISTRY.
+
+    Returns:
+        numpy uint8 array (H, W, 4) spec map [M, R, CC, 0].
+    """
+    assert len(finish_ids) == len(weights), "finish_ids and weights must be same length"
+    assert 2 <= len(finish_ids) <= 3, "Mix requires 2-3 finishes"
+    # Normalize weights to sum to 1.0
+    w_sum = sum(weights)
+    if w_sum <= 0:
+        weights = [1.0 / len(weights)] * len(weights)
+    else:
+        weights = [w / w_sum for w in weights]
+
+    h, w = shape[0], shape[1]
+    M_blend = np.zeros((h, w), dtype=np.float32)
+    R_blend = np.zeros((h, w), dtype=np.float32)
+    CC_blend = np.zeros((h, w), dtype=np.float32)
+
+    for fid, wt in zip(finish_ids, weights):
+        M_arr, R_arr, CC_arr = _resolve_finish_spec(fid, shape, mask, seed, sm, monolithic_registry)
+        # Ensure correct shape
+        if M_arr.shape != (h, w):
+            M_arr = cv2.resize(M_arr, (w, h), interpolation=cv2.INTER_LINEAR)
+        if R_arr.shape != (h, w):
+            R_arr = cv2.resize(R_arr, (w, h), interpolation=cv2.INTER_LINEAR)
+        if CC_arr.shape != (h, w):
+            CC_arr = cv2.resize(CC_arr, (w, h), interpolation=cv2.INTER_LINEAR)
+        M_blend += M_arr * wt
+        R_blend += R_arr * wt
+        CC_blend += CC_arr * wt
+
+    spec = np.zeros((h, w, 4), dtype=np.uint8)
+    spec[:, :, 0] = np.clip(M_blend, 0, 255).astype(np.uint8)
+    spec[:, :, 1] = np.clip(R_blend, 0, 255).astype(np.uint8)
+    spec[:, :, 2] = np.clip(CC_blend, 0, 255).astype(np.uint8)
+    return spec
+
+
+def mix_finish_paint(paint, shape, mask, seed, pm, bb, finish_ids, weights, monolithic_registry=None):
+    """Blend 2-3 finishes' paint modifications by weighted average.
+
+    Each finish's paint_fn is called independently on a copy of the input paint,
+    then the results are blended by weight.
+
+    Args:
+        paint: (H, W, 3) float32 paint array.
+        shape: (H, W) tuple.
+        mask: (H, W) float32 mask.
+        seed: int random seed.
+        pm: float paint modifier strength.
+        bb: float brightness bias.
+        finish_ids: list of 2-3 finish ID strings.
+        weights: list of floats summing to 1.0.
+        monolithic_registry: optional override for MONOLITHIC_REGISTRY.
+
+    Returns:
+        (H, W, 3) float32 blended paint array.
+    """
+    assert len(finish_ids) == len(weights), "finish_ids and weights must be same length"
+    w_sum = sum(weights)
+    if w_sum <= 0:
+        weights = [1.0 / len(weights)] * len(weights)
+    else:
+        weights = [w / w_sum for w in weights]
+
+    paint = np.asarray(paint, dtype=np.float32)
+    result = np.zeros_like(paint)
+
+    for fid, wt in zip(finish_ids, weights):
+        paint_fn = _resolve_finish_paint_fn(fid, monolithic_registry)
+        painted = paint_fn(paint.copy(), shape, mask, seed, pm, bb)
+        painted = np.asarray(painted, dtype=np.float32)
+        result += painted * wt
+
+    return np.clip(result, 0, 1).astype(np.float32)
+
+
 __all__ = [
     "compose_finish",
     "compose_finish_stacked",
@@ -3335,4 +3535,6 @@ __all__ = [
     "_apply_spec_blend_mode",
     "compress_spec_delta",
     "decompress_spec_delta",
+    "mix_finishes",
+    "mix_finish_paint",
 ]

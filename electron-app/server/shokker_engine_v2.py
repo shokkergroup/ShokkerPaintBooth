@@ -8000,6 +8000,59 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
                           f"in_MONO_REG={finish_name in MONOLITHIC_REGISTRY if finish_name else 'N/A'}, "
                           f"in_FINISH_REG={finish_name in FINISH_REGISTRY if finish_name else 'N/A'}")
 
+        # PATH 0: CUSTOM MIX FINISH — base_id starts with "custom_"
+        # Load mix recipe from custom_finishes.json and blend spec+paint
+        if base_id and base_id.startswith("custom_"):
+            try:
+                _custom_json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'custom_finishes.json')
+                if not os.path.exists(_custom_json_path):
+                    # Try project root
+                    _custom_json_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'custom_finishes.json')
+                _custom_recipe = None
+                if os.path.exists(_custom_json_path):
+                    import json as _json_mod
+                    with open(_custom_json_path, 'r', encoding='utf-8') as _cf:
+                        _custom_list = _json_mod.load(_cf)
+                    for _ce in _custom_list:
+                        if _ce.get('id') == base_id:
+                            _custom_recipe = _ce
+                            break
+                if _custom_recipe:
+                    from engine.compose import mix_finishes, mix_finish_paint
+                    _mix_ids = _custom_recipe['finish_ids']
+                    _mix_wts = _custom_recipe['weights']
+                    print(f"    [{name}] -> PATH 0 (custom mix): {base_id} = {_mix_ids} @ {_mix_wts}")
+                    zone_spec = mix_finishes(shape, zone_mask, seed + i * 13, sm, _mix_ids, _mix_wts, monolithic_registry=MONOLITHIC_REGISTRY)
+                    paint = mix_finish_paint(paint, shape, zone_mask, seed + i * 13, pm, bb, _mix_ids, _mix_wts, monolithic_registry=MONOLITHIC_REGISTRY)
+                    # Blend zone_spec into combined_spec using zone_mask
+                    hard_edge = zone.get("hard_edge", False)
+                    mask3d = zone_mask[:, :, np.newaxis]
+                    if hard_edge:
+                        combined_spec = np.where(mask3d > 0.01, zone_spec.astype(np.float32), combined_spec)
+                    else:
+                        strong = mask3d > 0.5
+                        soft = (mask3d > 0.05) & ~strong
+                        blended = np.clip(
+                            zone_spec.astype(np.float32) * mask3d +
+                            combined_spec * (1 - mask3d),
+                            0, 255
+                        )
+                        combined_spec = np.where(strong, zone_spec.astype(np.float32), np.where(soft, blended, combined_spec))
+                    # Cache if in preview mode
+                    if preview_mode and _zone_cache_key and _paint_before is not None:
+                        _pdelta = paint - _paint_before
+                        build_multi_zone._zone_cache[_zone_cache_key] = {
+                            'zone_spec': zone_spec, 'paint_delta': _pdelta, 'mask': zone_mask
+                        }
+                    print(f"    [Zone {i+1}] \"{name}\" rendered in {time.time()-t_zone:.2f}s (custom mix)")
+                    continue
+                else:
+                    print(f"    [{name}] WARNING: custom finish '{base_id}' not found in custom_finishes.json, falling through")
+            except Exception as _cmix_err:
+                print(f"    [{name}] custom mix error: {_cmix_err}, falling through to normal render")
+                import traceback as _tb
+                _tb.print_exc()
+
         if base_id:
             # CHECK: Is this actually a monolithic masquerading as a base?
             # This lets the UI send monolithics via "base" key seamlessly.

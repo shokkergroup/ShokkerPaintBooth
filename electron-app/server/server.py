@@ -5095,6 +5095,151 @@ def api_render_stats():
     })
 
 
+# ================================================================
+# FINISH MIXER ENDPOINTS
+# ================================================================
+
+_CUSTOM_FINISHES_PATH = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))) if not getattr(sys, 'frozen', False) else SERVER_DIR,
+    'custom_finishes.json'
+)
+
+
+def _load_custom_finishes():
+    """Load custom finishes from JSON file. Returns list of dicts."""
+    if os.path.exists(_CUSTOM_FINISHES_PATH):
+        try:
+            with open(_CUSTOM_FINISHES_PATH, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        except Exception:
+            pass
+    return []
+
+
+def _save_custom_finishes(finishes):
+    """Save custom finishes list to JSON file."""
+    with open(_CUSTOM_FINISHES_PATH, 'w', encoding='utf-8') as f:
+        json.dump(finishes, f, indent=2, ensure_ascii=False)
+
+
+@app.route('/api/mix-preview', methods=['POST'])
+def api_mix_preview():
+    """Generate a 256x256 preview of blended finishes.
+
+    POST JSON: { "finish_ids": [...], "weights": [...], "seed": 51 }
+    Returns: { "image": "data:image/png;base64,..." }
+    """
+    try:
+        data = request.get_json(force=True)
+        finish_ids = data.get('finish_ids', [])
+        weights = data.get('weights', [])
+        seed = int(data.get('seed', 51))
+
+        if len(finish_ids) < 2 or len(finish_ids) > 3:
+            return jsonify({"error": "Need 2-3 finish_ids"}), 400
+        if len(finish_ids) != len(weights):
+            return jsonify({"error": "finish_ids and weights must match in length"}), 400
+
+        from engine.compose import mix_finishes
+        import numpy as np
+        from PIL import Image
+
+        shape = (256, 256)
+        mask = np.ones(shape, dtype=np.float32)
+        sm = 1.0
+
+        spec = mix_finishes(shape, mask, seed, sm, finish_ids, weights,
+                            monolithic_registry=engine.MONOLITHIC_REGISTRY)
+
+        # Convert spec to a visible preview image:
+        # Map M channel to blue, R to green, CC to red for visual distinction
+        preview = np.zeros((256, 256, 3), dtype=np.uint8)
+        preview[:, :, 0] = spec[:, :, 2]  # CC -> Red
+        preview[:, :, 1] = spec[:, :, 1]  # R -> Green
+        preview[:, :, 2] = spec[:, :, 0]  # M -> Blue
+
+        img = Image.fromarray(preview, 'RGB')
+        buf = io.BytesIO()
+        img.save(buf, format='PNG', optimize=True)
+        b64 = base64.b64encode(buf.getvalue()).decode('ascii')
+
+        return jsonify({"image": f"data:image/png;base64,{b64}"})
+    except Exception as e:
+        logger.error(f"[mix-preview] Error: {e}")
+        logger.error(traceback.format_exc())
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/save-custom-finish', methods=['POST'])
+def api_save_custom_finish():
+    """Save a custom mixed finish recipe.
+
+    POST JSON: { "name": "My Mix", "finish_ids": [...], "weights": [...] }
+    Returns: { "id": "custom_001", "name": "My Mix", ... }
+    """
+    try:
+        data = request.get_json(force=True)
+        name = data.get('name', '').strip()
+        finish_ids = data.get('finish_ids', [])
+        weights = data.get('weights', [])
+
+        if not name:
+            return jsonify({"error": "Name is required"}), 400
+        if len(finish_ids) < 2 or len(finish_ids) > 3:
+            return jsonify({"error": "Need 2-3 finish_ids"}), 400
+        if len(finish_ids) != len(weights):
+            return jsonify({"error": "finish_ids and weights must match in length"}), 400
+
+        # Normalize weights
+        w_sum = sum(weights)
+        if w_sum > 0:
+            weights = [round(w / w_sum, 4) for w in weights]
+        else:
+            weights = [round(1.0 / len(weights), 4)] * len(weights)
+
+        finishes = _load_custom_finishes()
+
+        # Generate next ID
+        existing_nums = []
+        for cf in finishes:
+            cid = cf.get('id', '')
+            if cid.startswith('custom_'):
+                try:
+                    existing_nums.append(int(cid.split('_')[1]))
+                except (IndexError, ValueError):
+                    pass
+        next_num = max(existing_nums, default=0) + 1
+        new_id = f"custom_{next_num:03d}"
+
+        entry = {
+            "id": new_id,
+            "name": name,
+            "finish_ids": finish_ids,
+            "weights": weights,
+            "created": datetime.now().isoformat(),
+        }
+        finishes.append(entry)
+        _save_custom_finishes(finishes)
+
+        logger.info(f"[mixer] Saved custom finish: {new_id} = {name}")
+        return jsonify(entry)
+    except Exception as e:
+        logger.error(f"[save-custom-finish] Error: {e}")
+        logger.error(traceback.format_exc())
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/custom-finishes', methods=['GET'])
+def api_custom_finishes():
+    """Return the list of saved custom mixed finishes."""
+    try:
+        finishes = _load_custom_finishes()
+        return jsonify(finishes)
+    except Exception as e:
+        logger.error(f"[custom-finishes] Error: {e}")
+        return jsonify([])
+
+
 if __name__ == '__main__':
     import socket
 

@@ -2224,6 +2224,25 @@ def preview_render_endpoint():
             if z.get("pattern_spec_mult") is not None:
                 zone_obj["pattern_spec_mult"] = float(z["pattern_spec_mult"])
 
+            # Pattern strength map (per-pixel strength modulation)
+            if z.get("pattern_strength_map"):
+                try:
+                    import numpy as np
+                    psm_rle = z["pattern_strength_map"]
+                    if isinstance(psm_rle, str):
+                        psm_rle = json.loads(psm_rle)
+                    psm_w = psm_rle.get("width", 0)
+                    psm_h = psm_rle.get("height", 0)
+                    psm_runs = psm_rle.get("runs", [])
+                    psm_flat = np.zeros(psm_w * psm_h, dtype=np.float32)
+                    psm_pos = 0
+                    for run_val, run_len in psm_runs:
+                        psm_flat[psm_pos:psm_pos + run_len] = float(run_val) / 255.0
+                        psm_pos += run_len
+                    zone_obj["pattern_strength_map"] = psm_flat.reshape((psm_h, psm_w))
+                except Exception as _psm_err:
+                    logger.warning(f"Failed to decode pattern_strength_map: {_psm_err}")
+
             # Custom intensity
             if z.get("custom_intensity"):
                 zone_obj["custom_intensity"] = z["custom_intensity"]
@@ -2700,6 +2719,25 @@ def render():
                 except Exception:
                     z.pop("spatial_mask", None)
 
+            # Decode pattern_strength_map RLE
+            if z.get("pattern_strength_map") and isinstance(z["pattern_strength_map"], (dict, str)):
+                try:
+                    import numpy as np
+                    psm_rle = z["pattern_strength_map"]
+                    if isinstance(psm_rle, str):
+                        psm_rle = json.loads(psm_rle)
+                    psm_w = psm_rle.get("width", 0)
+                    psm_h = psm_rle.get("height", 0)
+                    psm_runs = psm_rle.get("runs", [])
+                    psm_flat = np.zeros(psm_w * psm_h, dtype=np.float32)
+                    psm_pos = 0
+                    for run_val, run_len in psm_runs:
+                        psm_flat[psm_pos:psm_pos + run_len] = float(run_val) / 255.0
+                        psm_pos += run_len
+                    z["pattern_strength_map"] = psm_flat.reshape((psm_h, psm_w))
+                except Exception:
+                    z.pop("pattern_strength_map", None)
+
         results = engine.full_render_pipeline(
             car_paint_file=actual_paint_file,
             output_dir=job_dir,
@@ -3069,6 +3107,24 @@ def export_to_photoshop():
                     z.pop("region_mask", None)
                 except Exception:
                     z.pop("spatial_mask", None)
+            # Decode pattern_strength_map RLE
+            if z.get("pattern_strength_map") and isinstance(z["pattern_strength_map"], (dict, str)):
+                try:
+                    import numpy as np
+                    psm_rle = z["pattern_strength_map"]
+                    if isinstance(psm_rle, str):
+                        psm_rle = json.loads(psm_rle)
+                    psm_w = psm_rle.get("width", 0)
+                    psm_h = psm_rle.get("height", 0)
+                    psm_runs = psm_rle.get("runs", [])
+                    psm_flat = np.zeros(psm_w * psm_h, dtype=np.float32)
+                    psm_pos = 0
+                    for run_val, run_len in psm_runs:
+                        psm_flat[psm_pos:psm_pos + run_len] = float(run_val) / 255.0
+                        psm_pos += run_len
+                    z["pattern_strength_map"] = psm_flat.reshape((psm_h, psm_w))
+                except Exception:
+                    z.pop("pattern_strength_map", None)
 
         _imp = data.get("import_spec_map")
         _import_spec_map = _imp if (_imp and os.path.exists(_imp)) else None
@@ -4723,6 +4779,25 @@ def export_psd_layers():
                 except Exception:
                     z.pop("region_mask", None)
 
+        # Decode pattern_strength_map RLE for each zone
+        for z in zones:
+            if z.get("pattern_strength_map") and isinstance(z["pattern_strength_map"], (dict, str)):
+                try:
+                    psm_rle = z["pattern_strength_map"]
+                    if isinstance(psm_rle, str):
+                        psm_rle = json.loads(psm_rle)
+                    psm_w = psm_rle.get("width", 0)
+                    psm_h = psm_rle.get("height", 0)
+                    psm_runs = psm_rle.get("runs", [])
+                    psm_flat = np.zeros(psm_w * psm_h, dtype=np.float32)
+                    psm_pos = 0
+                    for run_val, run_len in psm_runs:
+                        psm_flat[psm_pos:psm_pos + run_len] = float(run_val) / 255.0
+                        psm_pos += run_len
+                    z["pattern_strength_map"] = psm_flat.reshape((psm_h, psm_w))
+                except Exception:
+                    z.pop("pattern_strength_map", None)
+
         # Build server_zones (simplified zone conversion)
         server_zones = []
         for z in zones:
@@ -4749,6 +4824,8 @@ def export_psd_layers():
                 zone_obj["region_mask"] = z["region_mask"]
             if z.get("pattern_spec_mult") is not None:
                 zone_obj["pattern_spec_mult"] = float(z["pattern_spec_mult"])
+            if z.get("pattern_strength_map") is not None and isinstance(z["pattern_strength_map"], np.ndarray):
+                zone_obj["pattern_strength_map"] = z["pattern_strength_map"]
             if z.get("custom_intensity"): zone_obj["custom_intensity"] = z["custom_intensity"]
             if z.get("wear_level"): zone_obj["wear_level"] = z["wear_level"]
             # v6 params
@@ -5093,6 +5170,151 @@ def api_render_stats():
         "gpu": gpu_info(),
         "session_uptime_seconds": uptime,
     })
+
+
+# ================================================================
+# FINISH MIXER ENDPOINTS
+# ================================================================
+
+_CUSTOM_FINISHES_PATH = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))) if not getattr(sys, 'frozen', False) else SERVER_DIR,
+    'custom_finishes.json'
+)
+
+
+def _load_custom_finishes():
+    """Load custom finishes from JSON file. Returns list of dicts."""
+    if os.path.exists(_CUSTOM_FINISHES_PATH):
+        try:
+            with open(_CUSTOM_FINISHES_PATH, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        except Exception:
+            pass
+    return []
+
+
+def _save_custom_finishes(finishes):
+    """Save custom finishes list to JSON file."""
+    with open(_CUSTOM_FINISHES_PATH, 'w', encoding='utf-8') as f:
+        json.dump(finishes, f, indent=2, ensure_ascii=False)
+
+
+@app.route('/api/mix-preview', methods=['POST'])
+def api_mix_preview():
+    """Generate a 256x256 preview of blended finishes.
+
+    POST JSON: { "finish_ids": [...], "weights": [...], "seed": 51 }
+    Returns: { "image": "data:image/png;base64,..." }
+    """
+    try:
+        data = request.get_json(force=True)
+        finish_ids = data.get('finish_ids', [])
+        weights = data.get('weights', [])
+        seed = int(data.get('seed', 51))
+
+        if len(finish_ids) < 2 or len(finish_ids) > 3:
+            return jsonify({"error": "Need 2-3 finish_ids"}), 400
+        if len(finish_ids) != len(weights):
+            return jsonify({"error": "finish_ids and weights must match in length"}), 400
+
+        from engine.compose import mix_finishes
+        import numpy as np
+        from PIL import Image
+
+        shape = (256, 256)
+        mask = np.ones(shape, dtype=np.float32)
+        sm = 1.0
+
+        spec = mix_finishes(shape, mask, seed, sm, finish_ids, weights,
+                            monolithic_registry=engine.MONOLITHIC_REGISTRY)
+
+        # Convert spec to a visible preview image:
+        # Map M channel to blue, R to green, CC to red for visual distinction
+        preview = np.zeros((256, 256, 3), dtype=np.uint8)
+        preview[:, :, 0] = spec[:, :, 2]  # CC -> Red
+        preview[:, :, 1] = spec[:, :, 1]  # R -> Green
+        preview[:, :, 2] = spec[:, :, 0]  # M -> Blue
+
+        img = Image.fromarray(preview, 'RGB')
+        buf = io.BytesIO()
+        img.save(buf, format='PNG', optimize=True)
+        b64 = base64.b64encode(buf.getvalue()).decode('ascii')
+
+        return jsonify({"image": f"data:image/png;base64,{b64}"})
+    except Exception as e:
+        logger.error(f"[mix-preview] Error: {e}")
+        logger.error(traceback.format_exc())
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/save-custom-finish', methods=['POST'])
+def api_save_custom_finish():
+    """Save a custom mixed finish recipe.
+
+    POST JSON: { "name": "My Mix", "finish_ids": [...], "weights": [...] }
+    Returns: { "id": "custom_001", "name": "My Mix", ... }
+    """
+    try:
+        data = request.get_json(force=True)
+        name = data.get('name', '').strip()
+        finish_ids = data.get('finish_ids', [])
+        weights = data.get('weights', [])
+
+        if not name:
+            return jsonify({"error": "Name is required"}), 400
+        if len(finish_ids) < 2 or len(finish_ids) > 3:
+            return jsonify({"error": "Need 2-3 finish_ids"}), 400
+        if len(finish_ids) != len(weights):
+            return jsonify({"error": "finish_ids and weights must match in length"}), 400
+
+        # Normalize weights
+        w_sum = sum(weights)
+        if w_sum > 0:
+            weights = [round(w / w_sum, 4) for w in weights]
+        else:
+            weights = [round(1.0 / len(weights), 4)] * len(weights)
+
+        finishes = _load_custom_finishes()
+
+        # Generate next ID
+        existing_nums = []
+        for cf in finishes:
+            cid = cf.get('id', '')
+            if cid.startswith('custom_'):
+                try:
+                    existing_nums.append(int(cid.split('_')[1]))
+                except (IndexError, ValueError):
+                    pass
+        next_num = max(existing_nums, default=0) + 1
+        new_id = f"custom_{next_num:03d}"
+
+        entry = {
+            "id": new_id,
+            "name": name,
+            "finish_ids": finish_ids,
+            "weights": weights,
+            "created": datetime.now().isoformat(),
+        }
+        finishes.append(entry)
+        _save_custom_finishes(finishes)
+
+        logger.info(f"[mixer] Saved custom finish: {new_id} = {name}")
+        return jsonify(entry)
+    except Exception as e:
+        logger.error(f"[save-custom-finish] Error: {e}")
+        logger.error(traceback.format_exc())
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/custom-finishes', methods=['GET'])
+def api_custom_finishes():
+    """Return the list of saved custom mixed finishes."""
+    try:
+        finishes = _load_custom_finishes()
+        return jsonify(finishes)
+    except Exception as e:
+        logger.error(f"[custom-finishes] Error: {e}")
+        return jsonify([])
 
 
 if __name__ == '__main__':

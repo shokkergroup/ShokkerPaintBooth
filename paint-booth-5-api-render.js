@@ -766,6 +766,7 @@ async function doFleetRender() {
             }
         }
         if (z.base || (z.finish && z.pattern && z.pattern !== 'none')) zoneObj.pattern_spec_mult = Number(z.patternSpecMult ?? 1);
+        if (z.patternStrengthMapEnabled && z.patternStrengthMap && typeof encodeStrengthMapRLE === 'function') { zoneObj.pattern_strength_map = encodeStrengthMapRLE(z.patternStrengthMap); }
         if (z.base || (z.finish && z.pattern && z.pattern !== 'none')) { zoneObj.pattern_offset_x = Math.max(0, Math.min(1, Number(z.patternOffsetX ?? 0.5))); zoneObj.pattern_offset_y = Math.max(0, Math.min(1, Number(z.patternOffsetY ?? 0.5))); zoneObj.pattern_flip_h = !!z.patternFlipH; zoneObj.pattern_flip_v = !!z.patternFlipV; }
         if (z.patternPlacement === 'fit' || z.patternFitZone) zoneObj.pattern_fit_zone = true;
         if (z.hardEdge) zoneObj.hard_edge = true;
@@ -1082,6 +1083,7 @@ async function doSeasonRender() {
             }
         }
         if (z.base || (z.finish && z.pattern && z.pattern !== 'none')) zoneObj.pattern_spec_mult = Number(z.patternSpecMult ?? 1);
+        if (z.patternStrengthMapEnabled && z.patternStrengthMap && typeof encodeStrengthMapRLE === 'function') { zoneObj.pattern_strength_map = encodeStrengthMapRLE(z.patternStrengthMap); }
         if (z.base || (z.finish && z.pattern && z.pattern !== 'none')) { zoneObj.pattern_offset_x = Math.max(0, Math.min(1, Number(z.patternOffsetX ?? 0.5))); zoneObj.pattern_offset_y = Math.max(0, Math.min(1, Number(z.patternOffsetY ?? 0.5))); zoneObj.pattern_flip_h = !!z.patternFlipH; zoneObj.pattern_flip_v = !!z.patternFlipV; }
         if (z.patternPlacement === 'fit' || z.patternFitZone) zoneObj.pattern_fit_zone = true;
         if (z.hardEdge) zoneObj.hard_edge = true;
@@ -1432,6 +1434,7 @@ function buildServerZonesForRender(zones) {
             }
         }
         if (z.base || (z.finish && z.pattern && z.pattern !== 'none')) zoneObj.pattern_spec_mult = Number(z.patternSpecMult ?? 1);
+        if (z.patternStrengthMapEnabled && z.patternStrengthMap && typeof encodeStrengthMapRLE === 'function') { zoneObj.pattern_strength_map = encodeStrengthMapRLE(z.patternStrengthMap); }
         if (z.base || (z.finish && z.pattern && z.pattern !== 'none')) {
             zoneObj.pattern_offset_x = Math.max(0, Math.min(1, Number(z.patternOffsetX ?? 0.5)));
             zoneObj.pattern_offset_y = Math.max(0, Math.min(1, Number(z.patternOffsetY ?? 0.5)));

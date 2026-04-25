@@ -1,0 +1,63 @@
+{
+  "name": "Driver Nameplate",
+  "description": "Driver name above the door — medium size, italic, authoritative but not overbearing. The driver name sits in the secondary hierarchy: readable at close range (pit-lane, TV close-ups) but not fighting the car number for attention. Italic conveys speed without being gimmicky.",
+  "category": "Driver",
+  "version": "6.2.0",
+  "template": {
+    "text": "R. SHOKKER",
+    "font_family": "Helvetica Neue, Arial, sans-serif",
+    "font_weight": 700,
+    "font_size": 48,
+    "italic": true,
+    "color": "#ffffff",
+    "stroke_color": "#000000",
+    "stroke_width": 2,
+    "shadow": {
+      "color": "#000000",
+      "opacity": 0.35,
+      "dx": 1,
+      "dy": 1,
+      "blur": 0
+    },
+    "alignment": "left",
+    "letter_spacing": 1,
+    "line_height": 1.0,
+    "rotation": 0,
+    "anchor_x": 0.0,
+    "anchor_y": 0.5
+  },
+  "placement_hints": {
+    "recommended_zones": ["door_top", "roof_window_edge", "a_pillar", "rear_quarter"],
+    "min_size_px": 32,
+    "max_size_px": 80,
+    "safe_area_padding_px": 10
+  },
+  "variants": [
+    {
+      "name": "Surname Only Large",
+      "overrides": {
+        "text": "SHOKKER",
+        "font_size": 64,
+        "letter_spacing": 2
+      }
+    },
+    {
+      "name": "Flag Prefix",
+      "overrides": {
+        "text": "USA  R. SHOKKER",
+        "letter_spacing": 2
+      }
+    },
+    {
+      "name": "Script Signature",
+      "overrides": {
+        "font_family": "Brush Script Std, Lucida Handwriting, cursive",
+        "font_weight": 700,
+        "italic": true,
+        "letter_spacing": 0
+      }
+    }
+  ],
+  "compatible_finishes": ["gloss", "satin", "matte"],
+  "notes": "Driver name follows car-number color logic — if the number is white, the name matches. Keep font_size at 1/4 to 1/3 of the car number for proper hierarchy. For long surnames, drop to 40px or switch to Oswald condensed."
+}

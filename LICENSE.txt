@@ -1,0 +1,58 @@
+Shokker Paint Booth — License
+===============================
+
+Copyright (c) 2025-2026 Shokker Group. All rights reserved.
+
+License Status: TBD (To Be Determined)
+---------------------------------------
+
+During the Gold-to-Platinum experimental phase, Shokker Paint Booth source
+code and binaries are distributed under a proprietary, private arrangement.
+No public open-source license has been granted at this time.
+
+What this means in practice
+---------------------------
+
+- You may install and use the SPB Setup.exe for personal iRacing painting.
+- You may create, modify, and distribute liveries you paint using SPB.
+- You may NOT redistribute the SPB source code, binaries, or any derivative
+  works without explicit written permission from the Shokker Group.
+- You may NOT reverse-engineer, decompile, or disassemble the SPB binaries.
+- You may NOT remove or alter any copyright or license notices.
+
+The livery / artwork you create with SPB is YOURS.
+SPB itself (the tool, the engine, the source) is OURS.
+
+What we plan to do at Platinum GA
+---------------------------------
+
+Before the Platinum public release (target: late 2026), the Shokker Group
+will select and apply a formal software license. Candidates under
+consideration include:
+
+- MIT (permissive, simple)
+- Apache 2.0 (permissive, patent grant)
+- PolyForm Noncommercial (allows noncommercial use)
+- Business Source License 1.1 (commercial-restricted, converts to open)
+- Dual-license: MIT for personal use + commercial license for redistribution
+
+The final choice will be announced in CHANGELOG.md and SPB_RELEASE_NOTES.md
+and will cover all future releases from that point forward.
+
+Third-party components
+----------------------
+
+SPB bundles or links against open-source components including Electron,
+Python, numpy, Pillow, Flask, and others. Each third-party component
+retains its original license. See AUTHORS.md for the full attribution
+list and THIRD_PARTY_LICENSES.txt (generated at build time) for the
+bundled license texts.
+
+Contact
+-------
+
+Licensing questions: ricky@shokkergroup.com
+General inquiries:   https://discord.gg/shokker
+
+Shokker Group
+"Paint the paint. Not the pixel."

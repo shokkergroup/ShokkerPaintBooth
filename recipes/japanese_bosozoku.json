@@ -1,0 +1,104 @@
+{
+  "name": "Japanese Bosozoku",
+  "description": "Wild pearl candy paint with heavy graphics, kanji inspired panels, and deep metallic flake. Pays tribute to 80s-90s Japanese biker/street styling with absolutely zero restraint.",
+  "author": "Shokker Paint Booth",
+  "version": "6.2.0",
+  "compatible_with": "any JDM chassis, especially kyusha / ita shakotan-style bodies",
+  "notes": "The pearl candy base is HEAVY — bring scale down on metallic flake if the final render feels overwhelming. This recipe leans into pink/purple, swap Body baseColor to #2a5ec6 for classic 'police-blue' bosozoku.",
+  "zones": [
+    {
+      "name": "Candy Pearl Body",
+      "color": "everything",
+      "base": "candy_apple",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "special",
+      "baseColor": "#c41a6b",
+      "baseColorMode": "solid",
+      "baseStrength": 1,
+      "baseSpecStrength": 1
+    },
+    {
+      "name": "Pearl Flake Wash",
+      "color": "remaining",
+      "base": "pearl",
+      "pattern": "none",
+      "intensity": "70",
+      "colorMode": "special",
+      "baseColor": "#ffd6ec",
+      "baseColorMode": "solid",
+      "baseStrength": 0.7,
+      "baseSpecStrength": 1
+    },
+    {
+      "name": "Graphic Panel Primary",
+      "color": "white",
+      "base": "gloss",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#ffffff",
+      "pickerTolerance": 25,
+      "baseColor": "#ffffff",
+      "baseColorMode": "solid"
+    },
+    {
+      "name": "Graphic Panel Accent",
+      "color": "blue",
+      "base": "candy_cobalt",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#3366ff",
+      "pickerTolerance": 35,
+      "baseColor": "#1a2fc8",
+      "baseColorMode": "solid"
+    },
+    {
+      "name": "Kanji Chrome",
+      "color": "yellow",
+      "base": "chrome",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#ffcc00",
+      "pickerTolerance": 30,
+      "baseColorMode": "source"
+    },
+    {
+      "name": "Flake Detail",
+      "color": "red",
+      "base": "candy_apple",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#cc2222",
+      "pickerTolerance": 35,
+      "baseColor": "#d10024",
+      "baseColorMode": "solid"
+    },
+    {
+      "name": "Exhaust Blackout",
+      "color": "dark",
+      "base": "piano_black",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#1a1a1a",
+      "pickerTolerance": 35,
+      "baseColor": "#0c0c0c",
+      "baseColorMode": "solid"
+    },
+    {
+      "name": "Pinstripe Gold",
+      "color": "gray",
+      "base": "mirror_gold",
+      "pattern": "pinstripe",
+      "intensity": "95",
+      "colorMode": "quick",
+      "pickerColor": "#aaaaaa",
+      "pickerTolerance": 30,
+      "patternIntensity": "100"
+    }
+  ]
+}

@@ -37,6 +37,7 @@ def _shape2(shape):
 
 def _blend_paint(paint, mask, pm, color, strength=0.90):
     """Standard masked color blend for paint_fn."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     m3 = mask[:, :, np.newaxis]
     bl = np.clip(pm * strength, 0, 1)
     paint[:, :, :3] = paint[:, :, :3] * (1 - m3 * bl) + np.clip(color, 0, 1) * m3 * bl
@@ -50,6 +51,7 @@ def _blend_paint(paint, mask, pm, color, strength=0.90):
 
 def paint_anime_cel_shade_chrome(paint, shape, mask, seed, pm, bb):
     """Cel-shaded chrome: quantized light bands with hard steps, metallic highlight pops."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = _shape2(shape)
     yf, xf = _anime_mgrid((h, w))
     # Simulated light direction from top-right
@@ -94,6 +96,7 @@ def spec_anime_cel_shade_chrome(shape, seed, sm, base_m, base_r):
 
 def paint_anime_speed_lines(paint, shape, mask, seed, pm, bb):
     """Speed lines: radial streaks from center-right (anime motion effect)."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = _shape2(shape)
     yf, xf = _anime_mgrid((h, w))
     # Focal point: center-right of texture
@@ -113,7 +116,7 @@ def paint_anime_speed_lines(paint, shape, mask, seed, pm, bb):
     r_norm = np.clip(r / (max(h, w) * 0.5), 0, 1)
     lines *= np.clip(r_norm * 2.0 - 0.3, 0, 1)
     # Vary line intensity with noise
-    turb = multi_scale_noise((h, w), [4, 8], [0.5, 0.5], seed + 9301)
+    turb = multi_scale_noise((h, w), [16, 32], [0.5, 0.5], seed + 9301)
     lines *= np.clip(turb * 0.5 + 0.7, 0.3, 1.0)
     # White lines on dark base
     dark_base = np.array([0.06, 0.06, 0.10], dtype=np.float32)
@@ -148,29 +151,48 @@ def spec_anime_speed_lines(shape, seed, sm, base_m, base_r):
 # Seed: 9302
 # ════════════════════════════════════════════════════════════════════
 
-def paint_anime_sparkle_burst(paint, shape, mask, seed, pm, bb):
-    """Sparkle burst: concentrated 4-pointed star clusters scattered across surface."""
-    h, w = _shape2(shape)
+_sparkle_burst_cache = {}
+
+def _get_sparkle_burst_map(shape, seed):
+    """Cached sparkle burst field — shared between paint and spec."""
+    _key = (shape, seed)
+    if _key in _sparkle_burst_cache:
+        return _sparkle_burst_cache[_key]
+    h, w = shape
     yf, xf = _anime_mgrid((h, w))
     rng = np.random.RandomState((seed + 9302) & 0x7FFFFFFF)
-    # Generate ~40 sparkle center points
     n_sparkles = 40
     sy = rng.uniform(0, h, n_sparkles).astype(np.float32)
     sx = rng.uniform(0, w, n_sparkles).astype(np.float32)
     sizes = rng.uniform(15, 60, n_sparkles).astype(np.float32)
     brightnesses = rng.uniform(0.5, 1.0, n_sparkles).astype(np.float32)
+    # Vectorized: only compute sparkles near their center (skip far pixels)
     sparkle_map = np.zeros((h, w), dtype=np.float32)
     for k in range(n_sparkles):
-        dy = yf - sy[k]
-        dx = xf - sx[k]
-        # 4-pointed star: bright along axes, falls off otherwise
-        ax_v = np.exp(-np.abs(dx) / sizes[k]) * np.exp(-np.abs(dy) / (sizes[k] * 0.08))
-        ax_h = np.exp(-np.abs(dy) / sizes[k]) * np.exp(-np.abs(dx) / (sizes[k] * 0.08))
-        ax_d1 = np.exp(-np.abs(dx - dy) / (sizes[k] * 0.7)) * np.exp(-np.abs(dx + dy) / (sizes[k] * 0.06))
-        ax_d2 = np.exp(-np.abs(dx + dy) / (sizes[k] * 0.7)) * np.exp(-np.abs(dx - dy) / (sizes[k] * 0.06))
-        star = np.clip(ax_v + ax_h + ax_d1 * 0.5 + ax_d2 * 0.5, 0, 1) * brightnesses[k]
-        sparkle_map = np.maximum(sparkle_map, star)
+        # Only compute in a bounding box around the sparkle (3x size radius)
+        radius = int(sizes[k] * 3)
+        y0, y1 = max(0, int(sy[k]) - radius), min(h, int(sy[k]) + radius)
+        x0, x1 = max(0, int(sx[k]) - radius), min(w, int(sx[k]) + radius)
+        if y1 <= y0 or x1 <= x0:
+            continue
+        dy = yf[y0:y1, x0:x1] - sy[k]
+        dx = xf[y0:y1, x0:x1] - sx[k]
+        s = sizes[k]
+        ax_v = np.exp(-np.abs(dx) / s) * np.exp(-np.abs(dy) / (s * 0.08))
+        ax_h = np.exp(-np.abs(dy) / s) * np.exp(-np.abs(dx) / (s * 0.08))
+        star = np.clip(ax_v + ax_h, 0, 1) * brightnesses[k]
+        sparkle_map[y0:y1, x0:x1] = np.maximum(sparkle_map[y0:y1, x0:x1], star)
     sparkle_map = np.clip(sparkle_map, 0, 1).astype(np.float32)
+    if len(_sparkle_burst_cache) > 4:
+        _sparkle_burst_cache.pop(next(iter(_sparkle_burst_cache)))
+    _sparkle_burst_cache[_key] = sparkle_map
+    return sparkle_map
+
+def paint_anime_sparkle_burst(paint, shape, mask, seed, pm, bb):
+    """Sparkle burst: concentrated 4-pointed star clusters scattered across surface."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
+    h, w = _shape2(shape)
+    sparkle_map = _get_sparkle_burst_map((h, w), seed)
     # Deep midnight blue base + white-gold sparkles
     base_col = np.array([0.04, 0.04, 0.12], dtype=np.float32)
     sparkle_col = np.array([1.0, 0.97, 0.85], dtype=np.float32)
@@ -179,24 +201,9 @@ def paint_anime_sparkle_burst(paint, shape, mask, seed, pm, bb):
 
 
 def spec_anime_sparkle_burst(shape, seed, sm, base_m, base_r):
-    """Sparkle burst spec: sparkles are pure chrome, base is deep matte."""
+    """Sparkle burst spec: sparkles are pure chrome, base is deep matte. Uses cached map."""
     h, w = _shape2(shape)
-    yf, xf = _anime_mgrid((h, w))
-    rng = np.random.RandomState((seed + 9302) & 0x7FFFFFFF)
-    n_sparkles = 40
-    sy = rng.uniform(0, h, n_sparkles).astype(np.float32)
-    sx = rng.uniform(0, w, n_sparkles).astype(np.float32)
-    sizes = rng.uniform(15, 60, n_sparkles).astype(np.float32)
-    brightnesses = rng.uniform(0.5, 1.0, n_sparkles).astype(np.float32)
-    sparkle_map = np.zeros((h, w), dtype=np.float32)
-    for k in range(n_sparkles):
-        dy = yf - sy[k]
-        dx = xf - sx[k]
-        ax_v = np.exp(-np.abs(dx) / sizes[k]) * np.exp(-np.abs(dy) / (sizes[k] * 0.08))
-        ax_h = np.exp(-np.abs(dy) / sizes[k]) * np.exp(-np.abs(dx) / (sizes[k] * 0.08))
-        star = np.clip(ax_v + ax_h, 0, 1) * brightnesses[k]
-        sparkle_map = np.maximum(sparkle_map, star)
-    sparkle_map = np.clip(sparkle_map, 0, 1)
+    sparkle_map = _get_sparkle_burst_map((h, w), seed)
     M = np.clip(15.0 + sparkle_map * 240.0 * sm, 0, 255)
     R = np.clip(180.0 - sparkle_map * 160.0 * sm, 15, 255)
     CC = np.clip(50.0 - sparkle_map * 34.0, 16, 255)
@@ -210,6 +217,7 @@ def spec_anime_sparkle_burst(shape, seed, sm, base_m, base_r):
 
 def paint_anime_gradient_hair(paint, shape, mask, seed, pm, bb):
     """Gradient hair: vivid saturated color at top fading to deep dark at bottom."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = _shape2(shape)
     yf, _ = _anime_mgrid((h, w))
     t = np.clip(yf / h, 0, 1).astype(np.float32)
@@ -250,6 +258,7 @@ def spec_anime_gradient_hair(shape, seed, sm, base_m, base_r):
 
 def paint_anime_mecha_plate(paint, shape, mask, seed, pm, bb):
     """Mecha plate: hard rectangular panel lines with alternating metallic zones."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = _shape2(shape)
     yf, xf = _anime_mgrid((h, w))
     # Panel grid: large panels with hard edges
@@ -267,7 +276,7 @@ def paint_anime_mecha_plate(paint, shape, mask, seed, pm, bb):
     edge_x = np.clip((0.03 - np.minimum(px, 1.0 - px)) * 40.0, 0, 1).astype(np.float32)
     seam = np.clip(edge_y + edge_x, 0, 1)
     # Add subtle per-panel shade variation
-    turb = multi_scale_noise((h, w), [4, 8], [0.5, 0.5], seed + 9304)
+    turb = multi_scale_noise((h, w), [16, 32], [0.5, 0.5], seed + 9304)
     # Colors: gunmetal blue vs steel gray panels, dark seam lines
     panel_a = np.array([0.20, 0.25, 0.38], dtype=np.float32)
     panel_b = np.array([0.40, 0.42, 0.48], dtype=np.float32)
@@ -304,14 +313,16 @@ def spec_anime_mecha_plate(shape, seed, sm, base_m, base_r):
 # Seed: 9305
 # ════════════════════════════════════════════════════════════════════
 
-def paint_anime_sakura_scatter(paint, shape, mask, seed, pm, bb):
-    """Sakura scatter: cherry blossom petals drifting across a soft pink-white surface."""
-    h, w = _shape2(shape)
+_sakura_cache = {}
+
+def _get_sakura_map(shape, seed):
+    """Cached sakura petal field — shared between paint and spec."""
+    _key = (shape, seed)
+    if _key in _sakura_cache:
+        return _sakura_cache[_key]
+    h, w = shape
     yf, xf = _anime_mgrid((h, w))
     rng = np.random.RandomState((seed + 9305) & 0x7FFFFFFF)
-    # Soft gradient background: pale pink
-    bg = np.array([0.95, 0.88, 0.90], dtype=np.float32)
-    # Scatter ~60 petals
     n_petals = 60
     py_c = rng.uniform(0, h, n_petals).astype(np.float32)
     px_c = rng.uniform(0, w, n_petals).astype(np.float32)
@@ -319,16 +330,31 @@ def paint_anime_sakura_scatter(paint, shape, mask, seed, pm, bb):
     sizes = rng.uniform(8, 25, n_petals).astype(np.float32)
     petal_map = np.zeros((h, w), dtype=np.float32)
     for k in range(n_petals):
-        dy = yf - py_c[k]
-        dx = xf - px_c[k]
-        # Rotate
+        radius = int(sizes[k] * 4)
+        y0, y1 = max(0, int(py_c[k]) - radius), min(h, int(py_c[k]) + radius)
+        x0, x1 = max(0, int(px_c[k]) - radius), min(w, int(px_c[k]) + radius)
+        if y1 <= y0 or x1 <= x0:
+            continue
+        dy = yf[y0:y1, x0:x1] - py_c[k]
+        dx = xf[y0:y1, x0:x1] - px_c[k]
         ca, sa = np.cos(angles[k]), np.sin(angles[k])
         ry = dy * ca - dx * sa
         rx = dy * sa + dx * ca
-        # Elongated petal shape
-        petal = np.exp(-(rx**2) / (sizes[k]**2 * 0.15) - (ry**2) / (sizes[k]**2 * 0.6))
-        petal_map = np.maximum(petal_map, petal)
+        s = sizes[k]
+        petal = np.exp(-(rx**2) / (s**2 * 0.15) - (ry**2) / (s**2 * 0.6))
+        petal_map[y0:y1, x0:x1] = np.maximum(petal_map[y0:y1, x0:x1], petal)
     petal_map = np.clip(petal_map, 0, 1).astype(np.float32)
+    if len(_sakura_cache) > 4:
+        _sakura_cache.pop(next(iter(_sakura_cache)))
+    _sakura_cache[_key] = petal_map
+    return petal_map
+
+def paint_anime_sakura_scatter(paint, shape, mask, seed, pm, bb):
+    """Sakura scatter: cherry blossom petals drifting across a soft pink-white surface."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
+    h, w = _shape2(shape)
+    petal_map = _get_sakura_map((h, w), seed)
+    bg = np.array([0.95, 0.88, 0.90], dtype=np.float32)
     petal_col = np.array([0.92, 0.55, 0.62], dtype=np.float32)
     petal_center = np.array([0.98, 0.80, 0.82], dtype=np.float32)
     petal_color = petal_col[None, None, :] * 0.7 + petal_center[None, None, :] * 0.3
@@ -337,28 +363,22 @@ def paint_anime_sakura_scatter(paint, shape, mask, seed, pm, bb):
 
 
 def spec_anime_sakura_scatter(shape, seed, sm, base_m, base_r):
-    """Sakura spec: soft satin petals on smooth background, gentle pearl sheen."""
+    """Sakura spec: soft satin petals on smooth background. Uses cached petal map.
+
+    2026-04-20 HEENAN AUTO-LOOP-15 — the weakest anime_style spec
+    (measured dM=60 dR=20 dCC=8 at seed=42 shape=256²). Petals should
+    pop against the background with stronger material contrast:
+    background dielectric satin, petals chrome-bright pearlescent.
+    Widen:
+      M amp 60→130 (bg 80 dielectric, petal peaks 210 metallic)
+      R amp 20→40 (petals smoother than before; bg scattered)
+      CC amp 8→20 (petal surface film thickens)
+    """
     h, w = _shape2(shape)
-    rng = np.random.RandomState((seed + 9305) & 0x7FFFFFFF)
-    yf, xf = _anime_mgrid((h, w))
-    n_petals = 60
-    py_c = rng.uniform(0, h, n_petals).astype(np.float32)
-    px_c = rng.uniform(0, w, n_petals).astype(np.float32)
-    angles = rng.uniform(0, np.pi, n_petals).astype(np.float32)
-    sizes = rng.uniform(8, 25, n_petals).astype(np.float32)
-    petal_map = np.zeros((h, w), dtype=np.float32)
-    for k in range(n_petals):
-        dy = yf - py_c[k]
-        dx = xf - px_c[k]
-        ca, sa = np.cos(angles[k]), np.sin(angles[k])
-        ry = dy * ca - dx * sa
-        rx = dy * sa + dx * ca
-        petal = np.exp(-(rx**2) / (sizes[k]**2 * 0.15) - (ry**2) / (sizes[k]**2 * 0.6))
-        petal_map = np.maximum(petal_map, petal)
-    petal_map = np.clip(petal_map, 0, 1)
-    M = np.clip(90.0 + petal_map * 60.0 * sm, 0, 255)
-    R = np.clip(50.0 - petal_map * 20.0, 15, 255)
-    CC = np.clip(18.0 + petal_map * 8.0, 16, 255)
+    petal_map = _get_sakura_map((h, w), seed)
+    M = np.clip(80.0 + petal_map * 130.0 * sm, 0, 255)
+    R = np.clip(55.0 - petal_map * 40.0, 15, 255)
+    CC = np.clip(16.0 + petal_map * 20.0, 16, 255)
     return M.astype(np.float32), R.astype(np.float32), CC.astype(np.float32)
 
 
@@ -369,6 +389,7 @@ def spec_anime_sakura_scatter(shape, seed, sm, base_m, base_r):
 
 def paint_anime_energy_aura(paint, shape, mask, seed, pm, bb):
     """Energy aura: radial glowing lines emanating outward with power-up glow zones."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = _shape2(shape)
     yf, xf = _anime_mgrid((h, w))
     cy, cx = h * 0.5, w * 0.5
@@ -385,7 +406,7 @@ def paint_anime_energy_aura(paint, shape, mask, seed, pm, bb):
     # Core glow
     core = np.exp(-r_norm * 3.0).astype(np.float32)
     # Turbulence
-    turb = multi_scale_noise((h, w), [4, 8, 16], [0.3, 0.4, 0.3], seed + 9306)
+    turb = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.4, 0.3], seed + 9306)
     turb_n = np.clip(turb * 0.5 + 0.5, 0, 1)
     energy = np.clip(rays * 0.6 + rings * 0.3 + core * 0.8 + turb_n * 0.15, 0, 1)
     # Electric blue-white energy on dark base
@@ -422,6 +443,7 @@ def spec_anime_energy_aura(shape, seed, sm, base_m, base_r):
 
 def paint_anime_comic_halftone(paint, shape, mask, seed, pm, bb):
     """Comic halftone: Ben-Day dots that vary in size based on a gradient field."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = _shape2(shape)
     yf, xf = _anime_mgrid((h, w))
     # Dot grid spacing
@@ -457,9 +479,16 @@ def spec_anime_comic_halftone(shape, seed, sm, base_m, base_r):
     gradient = np.clip((yf / h) * 0.6 + (xf / w) * 0.4, 0, 1)
     dot_r = spacing * 0.08 + (spacing * 0.37) * (1 - gradient)
     dots = np.clip((dot_r - dist_to_center) / (spacing * 0.05 + 1e-6), 0, 1).astype(np.float32)
-    M = np.clip(10.0 + dots * 80.0 * sm, 0, 255)
-    R = np.clip(120.0 - dots * 50.0, 15, 255)
-    CC = np.clip(60.0 - dots * 20.0, 16, 255)
+    # 2026-04-20 HEENAN AUTO-LOOP-16 — halftone paper + magenta ink
+    # dots. Pre-tune dM=80 dR=50 dCC=20 — paper and dots looked too
+    # similar. Real halftone ink has wet-metallic surface sheen vs
+    # matte-absorbent paper. Widen:
+    #   M amp 80→170 (paper 5 dielectric, dots 175 near-metallic ink)
+    #   R amp 50→90 (paper 140 scattered, dots 50 smooth wet-ink)
+    #   CC amp 20→40 (paper 80 thin/dull, dots 40 thicker glossy film)
+    M = np.clip(5.0 + dots * 170.0 * sm, 0, 255)
+    R = np.clip(140.0 - dots * 90.0, 15, 255)
+    CC = np.clip(80.0 - dots * 40.0, 16, 255)
     return M.astype(np.float32), R.astype(np.float32), CC.astype(np.float32)
 
 
@@ -470,6 +499,7 @@ def spec_anime_comic_halftone(shape, seed, sm, base_m, base_r):
 
 def paint_anime_neon_outline(paint, shape, mask, seed, pm, bb):
     """Neon outline: dark surface with glowing neon edge lines (Sobel-detected contours)."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = _shape2(shape)
     # Generate a structural pattern to find edges on
     turb = multi_scale_noise((h, w), [8, 16, 32, 64], [0.2, 0.3, 0.3, 0.2], seed + 9308)
@@ -481,7 +511,7 @@ def paint_anime_neon_outline(paint, shape, mask, seed, pm, bb):
     # Thicken edges slightly
     edges = np.clip(gaussian_filter(edges, sigma=1.0) * 2.0, 0, 1).astype(np.float32)
     # Micro noise for glow variation
-    glow_var = multi_scale_noise((h, w), [2, 4], [0.5, 0.5], seed + 9309)
+    glow_var = multi_scale_noise((h, w), [32, 64], [0.5, 0.5], seed + 9309)
     glow_var_n = np.clip(glow_var * 0.3 + 0.7, 0.5, 1.0)
     edges *= glow_var_n
     # Dark base with neon cyan-magenta edges
@@ -518,6 +548,7 @@ def spec_anime_neon_outline(shape, seed, sm, base_m, base_r):
 
 def paint_anime_crystal_facet(paint, shape, mask, seed, pm, bb):
     """Crystal facet: large geometric Voronoi-style facets, each with unique color."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = _shape2(shape)
     rng = np.random.RandomState((seed + 9309) & 0x7FFFFFFF)
     # Voronoi cells for facets (~50 large cells)

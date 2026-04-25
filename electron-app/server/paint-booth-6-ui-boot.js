@@ -1,4 +1,4 @@
-        // ============================================================
+﻿        // ============================================================
         // PAINT-BOOTH-6-UI-BOOT.JS - Modals, shortcuts, boot
         // ============================================================
         // Purpose: Modals (finish browser, compare, templates, presets), NLP chat bar,
@@ -11,23 +11,107 @@
 
         // ===== COMBINATION HINTS =====
         const COMBO_HINTS = {
+            // === CHROME COMBOS ===
             "chrome+carbon_fiber": "Premium supercar look - mirror carbon weave",
             "chrome+diamond_plate": "Industrial chrome tread - tough and shiny",
-            "matte+carbon_fiber": "Stealth carbon - the classic DTM look",
-            "matte+hex_mesh": "Tactical honeycomb - military spec",
+            "chrome+lightning": "Thunder chrome - electric mirror",
+            "chrome+hologram": "Sci-fi chrome - futuristic scanlines",
+            "chrome+hex_mesh": "Chrome honeycomb - high-tech racing",
+            "chrome+ekg": "SHOKKER signature - chrome heartbeat",
+            "chrome+stardust": "Starfield chrome - deep space mirror",
+            "dark_chrome+carbon_fiber": "Dark carbon chrome - stealth luxury",
+            "dark_chrome+hex_mesh": "Tactical dark chrome mesh",
+            "satin_chrome+carbon_fiber": "Satin carbon - understated elegance",
+            // === CANDY COMBOS ===
             "candy+holographic_flake": "Candy flake - classic hot rod show car",
             "candy+stardust": "Galaxy candy - deep space effect",
-            "metallic+metal_flake": "Double metallic - maximum sparkle",
-            "pearl+interference": "Chameleon pearl - color shifts everywhere",
-            "chrome+lightning": "Thunder chrome - electric mirror",
+            "candy+tribal_flame": "Candy flames - hot rod tradition",
+            "candy+carbon_fiber": "Carbon candy - modern show car",
+            "candy+lightning": "Electric candy - high voltage",
+            "candy+interference": "Chameleon candy - color-shift depth",
+            // === MATTE COMBOS ===
+            "matte+matte_grain": "Soft stealth grain - flat, clean, no surprise carbon weave",
+            "matte+hex_mesh": "Tactical honeycomb - military spec",
+            "matte+diamond_plate": "Industrial matte tread",
+            "matte+ekg": "SHOKKER stealth - matte heartbeat",
             "blackout+carbon_fiber": "Full stealth carbon - invisible",
+            "blackout+hex_mesh": "Murdered-out mesh - dark ops",
+            "blackout+ekg": "SHOKKER blackout - dark pulse",
+            "flat_black+carbon_fiber": "Flat carbon - no-frills stealth",
+            "vantablack+stardust": "Event horizon - stars in the void",
+            "vantablack+lightning": "Dark lightning - electric void",
+            "vantablack+plasma": "Void plasma - pure energy",
+            // === PEARL COMBOS ===
+            "pearl+interference": "Chameleon pearl - color shifts everywhere",
+            "pearl+holographic_flake": "Pearl flake - premium sparkle",
+            "pearl+stardust": "Cosmic pearl - starfield shimmer",
+            // === METALLIC COMBOS ===
+            "metallic+metal_flake": "Double metallic - maximum sparkle",
+            "metallic+carbon_fiber": "Metallic carbon - motorsport premium",
+            "metallic+tribal_flame": "Metallic flames - show car classic",
+            "metallic+diamond_plate": "Heavy metal tread",
+            // === FROZEN COMBOS ===
             "frozen+cracked_ice": "Arctic frozen - cracked ice crystal",
-            "chrome+hologram": "Sci-fi chrome - futuristic scanlines",
+            "frozen+interference": "Frozen rainbow - ice prism",
+            "frozen+stardust": "Frozen galaxy - ice and stars",
+            // === SPECIAL COMBOS ===
+            "chameleon+none": "Pure chameleon - let the color shift speak",
+            "cerakote+carbon_fiber": "Tactical ceramic carbon - mil-spec",
+            "cerakote+hex_mesh": "Tactical ceramic mesh",
+            "brushed_aluminum+diamond_plate": "Brushed tread - industrial elegance",
+            "barn_find+acid_wash": "Barn find patina - authentic aged",
+            "copper+celtic_knot": "Celtic copper - old-world metal art",
+            "volcanic+fracture": "Volcanic fracture - molten cracks",
+            "satin+none": "Clean satin - sponsor-friendly professional",
+            "gloss+none": "Clean gloss - OEM showroom finish",
         };
+
+        // ===== UTILITY: DEBOUNCE =====
+        // Improvement: debounce utility for rapid-fire event handlers (resize, scroll, input)
+        function _spbDebounce(fn, delay) {
+            let timer = null;
+            return function(...args) {
+                clearTimeout(timer);
+                timer = setTimeout(() => fn.apply(this, args), delay);
+            };
+        }
+
+        // ===== UTILITY: BUTTON LOADING STATE =====
+        // Sets a button to loading state (disabled + "..." text), returns restore function
+        function _spbButtonLoading(btn, loadingText) {
+            if (!btn) return () => {};
+            const origText = btn.textContent;
+            const origDisabled = btn.disabled;
+            btn.disabled = true;
+            btn.textContent = loadingText || 'Loading...';
+            btn.style.opacity = '0.6';
+            return function restore(newText) {
+                btn.disabled = origDisabled;
+                btn.textContent = newText || origText;
+                btn.style.opacity = '';
+            };
+        }
+
+        // Material-aware combo scoring based on BASE_METADATA
+        function getComboScore(base, pattern) {
+            if (!base || !pattern || pattern === 'none') return 0;
+            var meta = (typeof getBaseMetadata === 'function') ? getBaseMetadata(base) : {};
+            if (!meta || !meta.best_with) return 50; // Unknown = neutral
+            if (meta.best_with.indexOf(pattern) >= 0) return 100; // Recommended pair
+            if (meta.best_with.indexOf('none') >= 0 && pattern === 'none') return 80;
+            return 50; // No specific recommendation
+        }
 
         function getComboHint(base, pattern) {
             if (!base || !pattern || pattern === 'none') return '';
-            return COMBO_HINTS[base + '+' + pattern] || '';
+            var hint = COMBO_HINTS[base + '+' + pattern];
+            if (hint) return hint;
+            // Auto-generate hint from metadata
+            var meta = (typeof getBaseMetadata === 'function') ? getBaseMetadata(base) : {};
+            if (meta && meta.best_with && meta.best_with.indexOf(pattern) >= 0) {
+                return 'Recommended combo for ' + (meta.family || base);
+            }
+            return '';
         }
 
         // ===== DECAL & NUMBER OVERLAY SYSTEM =====
@@ -44,6 +128,83 @@
         function getPaintCanvasSize() {
             const c = document.getElementById('paintCanvas');
             return c ? { w: c.width, h: c.height } : { w: 2048, h: 2048 };
+        }
+
+        function _spbBuildLayerBitmap(sourceImg, targetW, targetH, onReady) {
+            if (!sourceImg || typeof onReady !== 'function') return;
+            const naturalW = sourceImg.naturalWidth || sourceImg.width || 1;
+            const naturalH = sourceImg.naturalHeight || sourceImg.height || 1;
+            const finalW = Math.max(1, Math.round(targetW || naturalW));
+            const finalH = Math.max(1, Math.round(targetH || naturalH));
+            if (finalW === naturalW && finalH === naturalH) {
+                onReady(sourceImg);
+                return;
+            }
+            const canvas = document.createElement('canvas');
+            canvas.width = finalW;
+            canvas.height = finalH;
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, finalW, finalH);
+            ctx.drawImage(sourceImg, 0, 0, finalW, finalH);
+            const scaledImg = new Image();
+            scaledImg.onload = () => onReady(scaledImg);
+            scaledImg.src = canvas.toDataURL('image/png');
+        }
+
+        function addImageToUnifiedLayerStack(options) {
+            const opts = options || {};
+            const img = opts.img;
+            if (!img) return;
+            const x = Math.max(0, Math.round(opts.x || 0));
+            const y = Math.max(0, Math.round(opts.y || 0));
+            const targetW = opts.width || img.naturalWidth || img.width;
+            const targetH = opts.height || img.naturalHeight || img.height;
+            _spbBuildLayerBitmap(img, targetW, targetH, (layerImg) => {
+                const finalW = layerImg.naturalWidth || layerImg.width || Math.max(1, Math.round(targetW));
+                const finalH = layerImg.naturalHeight || layerImg.height || Math.max(1, Math.round(targetH));
+                if (typeof _psdLayers !== 'undefined') {
+                    const newLayer = {
+                        id: (opts.idPrefix || 'decal') + '_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6),
+                        name: opts.name || 'Layer',
+                        path: opts.path || (opts.groupName || 'Layers') + '/' + (opts.name || 'Layer'),
+                        visible: true,
+                        opacity: 255,
+                        img: layerImg,
+                        bbox: [x, y, x + finalW, y + finalH],
+                        groupName: opts.groupName || 'Decals',
+                        blendMode: 'source-over',
+                        locked: false,
+                        effects: null,
+                    };
+                    _psdLayers.push(newLayer);
+                    _psdLayersLoaded = true;
+                    _selectedLayerId = newLayer.id;
+                    if (typeof window !== 'undefined') window._selectedLayerId = _selectedLayerId;
+                    if (typeof recompositeFromLayers === 'function') recompositeFromLayers();
+                    if (typeof renderLayerPanel === 'function') renderLayerPanel();
+                    if (typeof drawLayerBounds === 'function') drawLayerBounds();
+                    if (typeof switchRightTab === 'function') switchRightTab('layers');
+                    if (typeof triggerPreviewRender === 'function') triggerPreviewRender();
+                } else {
+                    decalLayers.push({
+                        name: opts.legacyName || opts.name || 'Decal',
+                        img: layerImg,
+                        x: x,
+                        y: y,
+                        scale: 1.0,
+                        rotation: 0,
+                        opacity: 100,
+                        visible: true,
+                        flipH: false,
+                        flipV: false,
+                        specFinish: opts.specFinish || 'none',
+                    });
+                    selectedDecalIndex = decalLayers.length - 1;
+                    renderDecalList();
+                    renderDecalOverlay();
+                }
+                if (opts.successToast && typeof showToast === 'function') showToast(opts.successToast);
+            });
         }
 
         function getDecalBounds(d) {
@@ -93,8 +254,26 @@
             input.onchange = (e) => {
                 const file = e.target.files[0];
                 if (!file) return;
+                // 2026-04-18 MARATHON bug #59 (Flair, MED-HIGH): pre-fix,
+                // every decal import called URL.createObjectURL without a
+                // matching revokeObjectURL — each imported decal leaked a
+                // blob URL for the lifetime of the tab. Also, the image
+                // had NO onerror handler: a corrupt PNG / wrong MIME /
+                // someone picking an .svg via "All Files" produced zero
+                // painter-visible feedback. Now both cleanup AND error
+                // path are covered.
                 const img = new Image();
+                const blobUrl = URL.createObjectURL(file);
+                img.onerror = () => {
+                    URL.revokeObjectURL(blobUrl);
+                    if (typeof showToast === 'function') {
+                        showToast('Could not decode decal "' + file.name + '" — file may be corrupt or an unsupported format.', true);
+                    }
+                };
                 img.onload = () => {
+                    // Decode succeeded; free the blob URL now that the
+                    // Image element owns the pixel data.
+                    URL.revokeObjectURL(blobUrl);
                     const { w: cw, h: ch } = getPaintCanvasSize();
                     // Smart scale: full-size images import at 1.0, oversized get scaled to fit
                     let scale = 1.0;
@@ -104,41 +283,83 @@
                     const dw = img.width * scale, dh = img.height * scale;
                     const x = Math.max(0, (cw - dw) / 2);
                     const y = Math.max(0, (ch - dh) / 2);
-                    decalLayers.push({
-                        name: file.name.replace(/\.[^.]+$/, ''),
+                    const fileName = file.name.replace(/\.[^.]+$/, '');
+                    addImageToUnifiedLayerStack({
+                        idPrefix: 'decal',
                         img: img,
-                        x: x, y: y,
-                        scale: scale,
-                        rotation: 0,
-                        opacity: 100,
-                        visible: true,
-                        flipH: false,
-                        flipV: false,
-                        specFinish: 'none',
+                        name: fileName || 'Sponsor',
+                        legacyName: fileName || 'Sponsor',
+                        path: 'Decals/' + (fileName || 'Sponsor'),
+                        groupName: 'Decals',
+                        x: x,
+                        y: y,
+                        width: dw,
+                        height: dh,
+                        successToast: 'Decal added: ' + file.name + ' - drag to move, use handles to scale/rotate',
                     });
-                    selectedDecalIndex = decalLayers.length - 1;
-                    renderDecalList();
-                    renderDecalOverlay();
-                    showToast(`Decal added: ${file.name} — drag to move, use handles to scale/rotate`);
                 };
-                img.src = URL.createObjectURL(file);
+                img.src = blobUrl;
             };
             input.click();
         }
 
         function removeDecal(idx) {
+            // 2026-04-18 MARATHON (Windham bug #23): pre-fix, removeDecal
+            // only patched selectedDecalIndex. But draggingDecal /
+            // decalScaleStart / decalRotateStart all index into decalLayers
+            // — removing a decal BEFORE the in-flight one shifted the
+            // remaining decals down but left the drag handles pointing at
+            // stale indices. Next mousemove then moved the WRONG decal
+            // (or threw on undefined). Full splice-aware fixup here.
             decalLayers.splice(idx, 1);
             if (selectedDecalIndex === idx) selectedDecalIndex = -1;
             else if (selectedDecalIndex > idx) selectedDecalIndex--;
+            // Drag handle (mousedown-and-hold drag)
+            if (draggingDecal === idx) {
+                draggingDecal = -1; // cancel the drag — target is gone
+            } else if (draggingDecal > idx) {
+                draggingDecal--;
+            }
+            // Scale gesture state
+            if (decalScaleStart) {
+                if (decalScaleStart.index === idx) {
+                    decalScaleStart = null;
+                } else if (decalScaleStart.index > idx) {
+                    decalScaleStart.index--;
+                }
+            }
+            // Rotate gesture state
+            if (decalRotateStart) {
+                if (decalRotateStart.index === idx) {
+                    decalRotateStart = null;
+                } else if (decalRotateStart.index > idx) {
+                    decalRotateStart.index--;
+                }
+            }
             renderDecalList();
             renderDecalOverlay();
+            if (typeof triggerPreviewRender === 'function') triggerPreviewRender();
         }
 
+        // FIVE-HOUR SHIFT Win H6: pre-fix, ALL of these decal mutators only
+        // redrew the region-canvas overlay — they did NOT call
+        // triggerPreviewRender(). Decals flow into the render via
+        // compositeDecalsForRender() → extras.paint_image_base64. Painter
+        // flipped/scaled/rotated/toggled a decal, saw the overlay update on
+        // the source canvas, but the LIVE PREVIEW pane stayed on the old
+        // state until they touched any other control. Same silent-stale
+        // class as marathon #15 (zone reorder) and this shift's C1/C2/H1.
         function setDecalFlipH(idx, val) {
-            if (decalLayers[idx]) { decalLayers[idx].flipH = !!val; renderDecalOverlay(); }
+            if (!decalLayers[idx]) return;
+            decalLayers[idx].flipH = !!val;
+            renderDecalOverlay();
+            if (typeof triggerPreviewRender === 'function') triggerPreviewRender();
         }
         function setDecalFlipV(idx, val) {
-            if (decalLayers[idx]) { decalLayers[idx].flipV = !!val; renderDecalOverlay(); }
+            if (!decalLayers[idx]) return;
+            decalLayers[idx].flipV = !!val;
+            renderDecalOverlay();
+            if (typeof triggerPreviewRender === 'function') triggerPreviewRender();
         }
 
         function snapDecalToCanvas(idx) {
@@ -151,28 +372,37 @@
             decalLayers[idx].flipV = false;
             renderDecalList();
             renderDecalOverlay();
-            if (typeof showToast === 'function') showToast('Decal snapped to canvas — position (0,0), scale 1.0', 'success');
+            if (typeof triggerPreviewRender === 'function') triggerPreviewRender();
+            if (typeof showToast === 'function') showToast('Decal snapped to canvas \u2014 position (0,0), scale 1.0', 'success');
         }
 
         function setDecalScale(idx, val) {
+            if (!decalLayers[idx]) return;
             decalLayers[idx].scale = parseFloat(val);
             renderDecalOverlay();
+            if (typeof triggerPreviewRender === 'function') triggerPreviewRender();
         }
 
         function setDecalOpacity(idx, val) {
+            if (!decalLayers[idx]) return;
             decalLayers[idx].opacity = parseInt(val);
             renderDecalOverlay();
+            if (typeof triggerPreviewRender === 'function') triggerPreviewRender();
         }
 
         function setDecalRotation(idx, val) {
+            if (!decalLayers[idx]) return;
             decalLayers[idx].rotation = parseInt(val);
             renderDecalOverlay();
+            if (typeof triggerPreviewRender === 'function') triggerPreviewRender();
         }
 
         function toggleDecalVisibility(idx) {
+            if (!decalLayers[idx]) return;
             decalLayers[idx].visible = !decalLayers[idx].visible;
             renderDecalList();
             renderDecalOverlay();
+            if (typeof triggerPreviewRender === 'function') triggerPreviewRender();
         }
 
         function renderDecalList() {
@@ -205,15 +435,15 @@
                 <input type="range" min="0" max="100" value="${d.opacity}" oninput="setDecalOpacity(${idx}, this.value)" title="Opacity">
                 <span>Rot</span>
                 <input type="range" min="0" max="360" value="${d.rotation || 0}" oninput="setDecalRotation(${idx}, this.value)" title="Rotation" style="width:35px;">
-                <button onclick="setDecalFlipH(${idx}, !decalLayers[${idx}].flipH)" title="Flip H">↔</button>
-                <button onclick="setDecalFlipV(${idx}, !decalLayers[${idx}].flipV)" title="Flip V">↕</button>
+                <button onclick="setDecalFlipH(${idx}, !decalLayers[${idx}].flipH)" title="Flip Decal H &#x2014; flip this decal horizontally">&#x2194;</button>
+                <button onclick="setDecalFlipV(${idx}, !decalLayers[${idx}].flipV)" title="Flip Decal V &#x2014; flip this decal vertically">&#x2195;</button>
                 <button onclick="toggleDecalVisibility(${idx})" title="Toggle visibility">${d.visible ? '&#x1F441;' : '&#x1F6AB;'}</button>
                 <button onclick="snapDecalToCanvas(${idx})" title="Snap to Canvas — reset to position (0,0), scale 1.0, no rotation" style="color:#00C8C8;">⊞</button>
                 <button onclick="removeDecal(${idx})" title="Remove">&times;</button>
             </div>
             <select onchange="decalLayers[${idx}].specFinish = this.value; renderDecalOverlay();"
                     style="background:#1a1a1a; color:#ccc; border:1px solid #333; padding:2px 4px; font-size:10px; width:100%;"
-                    title="Apply a spec finish to just this decal's pixels">
+                    title="Apply a spec finish to just this decal's pixels.">
               <option value="none" ${(!d.specFinish || d.specFinish === 'none') ? 'selected' : ''}>No Spec Finish</option>
               ${(() => {
                 // BASE_GROUPS and BASES are top-level const in paint-booth-0-finish-data.js.
@@ -221,10 +451,23 @@
                 const foundationIds = (typeof BASE_GROUPS !== 'undefined' && BASE_GROUPS['Foundation']) ||
                                      (typeof window.BASE_GROUPS !== 'undefined' && window.BASE_GROUPS['Foundation']) ||
                                      [];
+                const referenceFoundationIds = (typeof BASE_GROUPS !== 'undefined' && BASE_GROUPS['Reference Foundations']) ||
+                                              (typeof window.BASE_GROUPS !== 'undefined' && window.BASE_GROUPS['Reference Foundations']) ||
+                                              [];
                 const basesArr = (typeof BASES !== 'undefined' ? BASES : null) ||
                                  (typeof window.BASES !== 'undefined' ? window.BASES : null) ||
                                  [];
-                const foundationBases = foundationIds.map(id => basesArr.find(b => b.id === id)).filter(Boolean);
+                // 2026-04-22 Codex P1 fix: filter the decal specFinish dropdown to
+                // only ids that have a working Python decal-spec dispatcher. The
+                // 15 classic non-f_ Foundation ids (gloss/matte/satin/semi_gloss/
+                // silk/wet_look/clear_matte/primer/flat_black/eggshell/ceramic/
+                // piano_black/scuffed_satin/chalky_base/living_matte) route through
+                // 5-arg engine.spec_paint handlers that crash at this decal call
+                // site (4-arg signature) and get silently swallowed — the painter
+                // picks them and gets no spec on their decal. f_* entries route
+                // through the flat-spec shim and work correctly. Restrict the
+                // dropdown to f_* until the classic backend path is fixed.
+                const _decalSpecIsSupported = id => typeof id === 'string' && id.startsWith('f_');
                 // Hardcoded fallback in case data hasn't loaded yet
                 const fallback = [
                     {id: 'gloss',          name: 'Gloss'},
@@ -262,7 +505,27 @@
                     {id: 'f_clear_satin',  name: 'Clear Satin (Foundation)'},
                     {id: 'f_warm_white',   name: 'Warm White (Foundation)'},
                 ];
-                const options = foundationBases.length > 0 ? foundationBases : fallback;
+                // Loaded-data branch must expose the SAME safe set in the SAME
+                // order as the fallback: shipping f_* ids from Foundation only.
+                // Reference Foundations was redundant shipping UI and is gone.
+                const availableFoundationIds = [];
+                for (const id of [...foundationIds, ...referenceFoundationIds]) {
+                    if (_decalSpecIsSupported(id) && !availableFoundationIds.includes(id)) {
+                        availableFoundationIds.push(id);
+                    }
+                }
+                const preferredFoundationIds = fallback
+                    .filter(b => _decalSpecIsSupported(b.id))
+                    .map(b => b.id);
+                const foundationBases = preferredFoundationIds
+                    .filter(id => availableFoundationIds.includes(id))
+                    .map(id => basesArr.find(b => b.id === id))
+                    .filter(Boolean);
+                // Same P1 filter on the hardcoded fallback: only offer ids that
+                // actually render on the decal-spec path.
+                const options = foundationBases.length > 0
+                    ? foundationBases
+                    : fallback.filter(b => _decalSpecIsSupported(b.id));
                 return options.map(b => `<option value="${b.id}" ${d.specFinish === b.id ? 'selected' : ''}>${b.name}</option>`).join('');
               })()}
             </select>
@@ -423,30 +686,33 @@
             ctx.fillStyle = color;
             ctx.fillText(text, c.width / 2, c.height / 2);
 
+            // BUG #64: the const img declaration used to live INSIDE this
+            // comment (no newline separator), so `const img` never executed
+            // and the next line threw ReferenceError. Entire Number Decal
+            // feature was silently broken.
             // Convert to image
             const img = new Image();
+            img.onerror = function () {
+                if (typeof showToast === 'function') showToast('Failed to generate number decal image', true);
+            };
             img.onload = () => {
                 const { w: cw, h: ch } = getPaintCanvasSize();
-                const scale = 1.0;
-                const dw = img.width * scale, dh = img.height * scale;
+                const dw = img.width, dh = img.height;
                 const x = Math.max(0, (cw - dw) / 2);
                 const y = Math.max(0, (ch - dh) / 2);
-                decalLayers.push({
-                    name: `#${text}`,
+                addImageToUnifiedLayerStack({
+                    idPrefix: 'number',
                     img: img,
-                    x: x, y: y,
-                    scale: scale,
-                    rotation: 0,
-                    opacity: 100,
-                    visible: true,
-                    flipH: false,
-                    flipV: false,
-                    specFinish: 'none',
+                    name: '#' + text,
+                    legacyName: '#' + text,
+                    path: 'Numbers/' + text,
+                    groupName: 'Numbers',
+                    x: x,
+                    y: y,
+                    width: dw,
+                    height: dh,
+                    successToast: 'Number decal "' + text + '" added',
                 });
-                selectedDecalIndex = decalLayers.length - 1;
-                renderDecalList();
-                renderDecalOverlay();
-                showToast(`Number decal "${text}" added`);
             };
             img.src = c.toDataURL('image/png');
         }
@@ -570,7 +836,7 @@
                 desc: "Classic GT3 race car layout with body, front/rear panels, and sponsor areas.",
                 zones: [
                     { name: "Main Body", base: "gloss", pattern: "none", finish: null, intensity: "100", color: "everything", colorMode: "special" },
-                    { name: "Hood/Roof", base: "matte", pattern: "carbon_fiber", finish: null, intensity: "100", color: null, colorMode: "none" },
+                    { name: "Hood/Roof", base: "matte", pattern: "none", finish: null, intensity: "100", color: null, colorMode: "none" },
                     { name: "Side Panels", base: "metallic", pattern: "none", finish: null, intensity: "80", color: null, colorMode: "none" },
                     { name: "Accents", base: "chrome", pattern: "none", finish: null, intensity: "50", color: null, colorMode: "none" }
                 ]
@@ -580,7 +846,7 @@
                 category: "Performance",
                 desc: "Exposed carbon fiber everywhere with clear-coated accent areas.",
                 zones: [
-                    { name: "Carbon Body", base: "matte", pattern: "carbon_fiber", finish: null, intensity: "100", color: "everything", colorMode: "special" },
+                    { name: "Carbon Body", base: "carbon_base", pattern: "none", finish: null, intensity: "100", color: "everything", colorMode: "special" },
                     { name: "Gloss Panels", base: "gloss", pattern: "carbon_fiber", finish: null, intensity: "80", color: null, colorMode: "none" }
                 ]
             },
@@ -869,11 +1135,14 @@
         // ===== PRESET GALLERY =====
         function openPresetGallery() {
             renderPresetGalleryCards();
-            document.getElementById('presetGalleryOverlay').classList.add('active');
+            const overlay = document.getElementById('presetGalleryOverlay');
+            if (overlay) overlay.classList.add('active');
+            else console.warn('[SPB] presetGalleryOverlay element not found');
         }
 
         function closePresetGallery() {
-            document.getElementById('presetGalleryOverlay').classList.remove('active');
+            const overlay = document.getElementById('presetGalleryOverlay');
+            if (overlay) overlay.classList.remove('active');
         }
 
         function renderPresetGalleryCards() {
@@ -891,8 +1160,8 @@
 
             let html = '';
             const categoryIcons = {
-                'Show Car': '🏆', 'Clean': '✨', 'Aggressive': '🔥',
-                'Special Effect': '🌈', 'Themed': '🎯', 'Other': '🎨'
+                'Show Car': 'ðŸ†', 'Clean': '✨', 'Aggressive': 'ðŸ”¥',
+                'Special Effect': 'ðŸŒˆ', 'Themed': 'ðŸŽ¯', 'Other': 'ðŸŽ¨'
             };
 
             // Render in category order, then any remaining
@@ -900,7 +1169,7 @@
             for (const cat of allCats) {
                 if (!grouped[cat] || grouped[cat].length === 0) continue;
                 html += `<div style="grid-column:1/-1; padding:8px 4px 4px; margin-top:8px; border-bottom:1px solid var(--border); font-size:11px; font-weight:700; letter-spacing:1.5px; color:var(--accent); text-transform:uppercase;">
-            ${categoryIcons[cat] || '🎨'} ${cat} <span style="font-weight:400; color:var(--text-dim); font-size:9px;">(${grouped[cat].length})</span>
+            ${categoryIcons[cat] || 'ðŸŽ¨'} ${cat} <span style="font-weight:400; color:var(--text-dim); font-size:9px;">(${grouped[cat].length})</span>
         </div>`;
 
                 for (const { id, preset } of grouped[cat]) {
@@ -956,23 +1225,38 @@
                     patSelect.appendChild(opt);
                 });
             }
-            // Reset filters
-            document.getElementById('fbFilterType').value = 'all';
-            document.getElementById('fbFilterBase').value = 'all';
-            document.getElementById('fbFilterPattern').value = 'all';
-            document.getElementById('fbSearch').value = '';
-            if (document.getElementById('fbSort')) document.getElementById('fbSort').value = 'default';
+            // Reset filters (null-safe)
+            const fbFilterType = document.getElementById('fbFilterType');
+            const fbFilterBase2 = document.getElementById('fbFilterBase');
+            const fbFilterPattern2 = document.getElementById('fbFilterPattern');
+            const fbSearchEl = document.getElementById('fbSearch');
+            const fbSortEl = document.getElementById('fbSort');
+            if (fbFilterType) fbFilterType.value = 'all';
+            if (fbFilterBase2) fbFilterBase2.value = 'all';
+            if (fbFilterPattern2) fbFilterPattern2.value = 'all';
+            if (fbSearchEl) fbSearchEl.value = '';
+            if (fbSortEl) fbSortEl.value = 'default';
             finishBrowserFavOnly = false;
             const favBtn = document.getElementById('fbFavToggle');
             if (favBtn) favBtn.classList.remove('active');
             // Restore view toggle state (viewBtn already declared above)
             if (viewBtn) viewBtn.innerHTML = finishBrowserCatalogView ? '⊞ Grid' : '☰ List';
             filterFinishBrowser();
-            document.getElementById('finishBrowserOverlay').classList.add('active');
+            const fbOverlay = document.getElementById('finishBrowserOverlay');
+            if (fbOverlay) fbOverlay.classList.add('active');
+            else console.warn('[SPB] finishBrowserOverlay element not found');
+            // Wire up debounced search so it does not re-filter on every keystroke
+            const fbSearchInput = document.getElementById('fbSearch');
+            if (fbSearchInput && !fbSearchInput._spbDebounced) {
+                fbSearchInput._spbDebounced = true;
+                fbSearchInput.removeAttribute('oninput');
+                fbSearchInput.addEventListener('input', _spbDebounce(filterFinishBrowser, 250));
+            }
         }
 
         function closeFinishBrowser() {
-            document.getElementById('finishBrowserOverlay').classList.remove('active');
+            const overlay = document.getElementById('finishBrowserOverlay');
+            if (overlay) overlay.classList.remove('active');
             hideFinishTooltip();
         }
 
@@ -995,9 +1279,13 @@
                 grid.classList.remove('catalog-view');
             }
             const baseUrl = (typeof ShokkerAPI !== 'undefined' && ShokkerAPI.baseUrl) ? ShokkerAPI.baseUrl : (window.location.origin || '');
-            fetch(baseUrl + '/api/for-review/list')
-                .then(res => res.json())
+            fetch(baseUrl + '/api/for-review/list', { signal: AbortSignal.timeout(10000) })
+                .then(res => {
+                    if (!res.ok) throw new Error('Server returned ' + res.status + ' ' + res.statusText);
+                    return res.json();
+                })
                 .then(data => {
+                    if (!data || typeof data !== 'object') throw new Error('Invalid response format from server');
                     const items = data.items || [];
                     if (!grid) return;
                     if (items.length === 0) {
@@ -1017,7 +1305,8 @@
                     grid.innerHTML = html;
                 })
                 .catch(err => {
-                    if (grid) grid.innerHTML = '<div style="padding:12px; color:var(--accent);">Could not load For Review list. Is the server running?</div>';
+                    console.warn('[SPB] For Review list fetch failed:', err.message);
+                    if (grid) grid.innerHTML = '<div style="padding:12px; color:var(--accent);">Could not load For Review list: ' + (err.message || 'Server unreachable') + '</div>';
                 });
         }
 
@@ -1079,6 +1368,10 @@
         function makeMonoSwatchCSS(monoId) {
             const mono = MONOLITHICS.find(m => m.id === monoId);
             if (!mono) return 'background: #666;';
+            if (typeof getSwatchUrl === 'function') {
+                const url = getSwatchUrl(monoId, '888888', true, 96);
+                if (url) return `background: url("${url}") center/cover, #111827;`;
+            }
             const color = mono.swatch || '#666';
             // Dual-color entries (gradients, color-shifts) show both colors
             if (mono.swatch2) {
@@ -1161,10 +1454,14 @@
         }
 
         function filterFinishBrowser() {
-            const type = document.getElementById('fbFilterType').value;
-            const baseFilter = document.getElementById('fbFilterBase').value;
-            const patFilter = document.getElementById('fbFilterPattern').value;
-            const search = (document.getElementById('fbSearch').value || '').toLowerCase();
+            const typeEl = document.getElementById('fbFilterType');
+            const baseEl = document.getElementById('fbFilterBase');
+            const patEl = document.getElementById('fbFilterPattern');
+            const searchEl = document.getElementById('fbSearch');
+            const type = typeEl ? typeEl.value : 'all';
+            const baseFilter = baseEl ? baseEl.value : 'all';
+            const patFilter = patEl ? patEl.value : 'all';
+            const search = (searchEl ? searchEl.value : '').toLowerCase();
             const sortMode = document.getElementById('fbSort')?.value || 'default';
             const grid = document.getElementById('finishBrowserGrid');
             if (!grid) return;
@@ -1194,7 +1491,18 @@
 
             // Monolithics
             if (type === 'all' || type === 'mono') {
+                const monolithicIdSet = new Set(MONOLITHICS.map(m => m.id));
+                const groupedSpecialMonoIds = new Set();
+                if (typeof SPECIAL_GROUPS !== 'undefined') {
+                    Object.values(SPECIAL_GROUPS).forEach(arr => {
+                        if (!Array.isArray(arr)) return;
+                        arr.forEach(id => {
+                            if (monolithicIdSet.has(id)) groupedSpecialMonoIds.add(id);
+                        });
+                    });
+                }
                 for (const m of MONOLITHICS) {
+                    if (groupedSpecialMonoIds.size && !groupedSpecialMonoIds.has(m.id)) continue;
                     const key = `mono:${m.id}`;
                     if (search && !m.name.toLowerCase().includes(search) && !m.id.includes(search) &&
                         !(m.desc && m.desc.toLowerCase().includes(search))) continue;
@@ -1228,6 +1536,14 @@
                 });
             }
 
+            // Highlight search matches in label text
+            function _highlightMatch(text, query) {
+                if (!query) return text;
+                const idx = text.toLowerCase().indexOf(query);
+                if (idx < 0) return text;
+                return text.substring(0, idx) + '<mark style="background:var(--accent-gold);color:#000;padding:0 1px;border-radius:2px;">' + text.substring(idx, idx + query.length) + '</mark>' + text.substring(idx + query.length);
+            }
+
             // Cap at 500 for performance (24K+ combos would kill the DOM)
             const maxItems = 500;
             const totalFound = items.length;
@@ -1241,10 +1557,11 @@
                 const swatchStyle = isMono ? makeMonoSwatchCSS(item.monoId) : makeSwatchCSS(item.baseId, item.patId);
                 const isFav = favs.includes(item.key);
                 const dataAttr = `data-item='${JSON.stringify(item).replace(/'/g, "&#39;")}'`;
+                const displayLabel = search ? _highlightMatch(item.label, search) : item.label;
 
                 if (isCatalog) {
                     // Catalog (list) view with descriptions and favorites
-                    const desc = getFinishDesc(item);
+                    const desc = search ? _highlightMatch(getFinishDesc(item), search) : getFinishDesc(item);
                     const onclick = isMono
                         ? `applyFinishFromBrowser(null,null,'${item.monoId}')`
                         : `applyFinishFromBrowser('${item.baseId}','${item.patId}')`;
@@ -1254,7 +1571,7 @@
                 ${isMono ? 'style="border-color:var(--accent-gold);"' : ''}>
                 <div class="fs-swatch-block" style="${swatchStyle}"></div>
                 <div class="fs-info">
-                    <div class="fs-label" ${isMono ? 'style="color:var(--accent-gold);"' : ''}>${item.label}</div>
+                    <div class="fs-label" ${isMono ? 'style="color:var(--accent-gold);"' : ''}>${displayLabel}</div>
                     <div class="fs-desc">${desc}</div>
                 </div>
                 <span class="fs-fav ${isFav ? 'favorited' : ''}" onclick="event.stopPropagation(); toggleFinishFavorite('${item.key}')">★</span>
@@ -1269,7 +1586,7 @@
                 onmousemove="positionFinishTooltip(event)" onmouseleave="hideFinishTooltip()"
                 ${isMono ? 'style="border-color:var(--accent-gold);"' : ''}>
                 <div class="fs-swatch-block" style="${swatchStyle}">${isFav ? '<span style="position:absolute;top:1px;right:2px;font-size:10px;color:var(--accent-gold);">★</span>' : ''}</div>
-                <div class="fs-label" ${isMono ? 'style="color:var(--accent-gold);"' : ''}>${item.label}</div>
+                <div class="fs-label" ${isMono ? 'style="color:var(--accent-gold);"' : ''}>${displayLabel}</div>
             </div>`;
                 }
             }
@@ -1282,24 +1599,47 @@
             grid.innerHTML = html;
             const countText = capped ? `Showing ${maxItems} of ${totalFound} finishes (filter to see more)` : `Showing ${totalFound} finishes`;
             const favCount = favs.length;
-            document.getElementById('fbCount').textContent = countText + (favCount > 0 ? ` | ${favCount} favorites` : '');
+            const fbCountEl = document.getElementById('fbCount');
+            if (fbCountEl) fbCountEl.textContent = countText + (favCount > 0 ? ` | ${favCount} favorites` : '');
         }
 
         function applyFinishFromBrowser(baseId, patternId, monoId) {
+            // Intercept: custom color shift opens the modal
+            if (monoId === 'dualshift_custom' || monoId === 'cx_custom_shift') {
+                closeFinishBrowser();
+                if (typeof openDualShiftModal === 'function') openDualShiftModal(finishBrowserTargetZone);
+                return;
+            }
             pushZoneUndo('Apply finish from catalog');
             const z = zones[finishBrowserTargetZone];
             if (monoId) {
-                z.finish = monoId;
-                z.base = null;
+                if (typeof _spbApplyPickedMonolithicToZone === 'function') {
+                    _spbApplyPickedMonolithicToZone(z, monoId);
+                } else {
+                    z.finish = monoId;
+                    z.base = null;
+                    z.baseColorMode = 'special';
+                    z.baseColorSource = 'mono:' + monoId;
+                    z._autoBaseColorFill = true;
+                }
                 z.pattern = null;
                 addRecentFinish(`mono:${monoId}`);
             } else {
-                z.finish = null;
-                z.base = baseId;
+                if (typeof _spbApplyPickedBaseToZone === 'function') {
+                    _spbApplyPickedBaseToZone(z, baseId);
+                } else {
+                    z.finish = null;
+                    z.base = baseId;
+                }
                 z.pattern = patternId || 'none';
                 addRecentFinish(`${baseId}:${patternId || 'none'}`);
             }
             renderZones();
+            // 2026-04-19 FIVE-HOUR DEEP SHIFT (Pillman recon W1): silent-stale.
+            // The finish-browser was the canonical "apply this finish" UX, yet
+            // it left the rendered car preview frozen on the prior finish until
+            // the painter touched something else. Mirror what assignFinishToSelected does.
+            if (typeof triggerPreviewRender === 'function') triggerPreviewRender();
             closeFinishBrowser();
             hideFinishTooltip();
             const name = monoId || (baseId + (patternId && patternId !== 'none' ? ' + ' + patternId : ''));
@@ -1313,17 +1653,21 @@
         function openFinishCompare(zoneIndex) {
             compareTargetZone = zoneIndex;
             const z = zones[zoneIndex];
+            if (!z) { showToast('Invalid zone index for compare', true); return; }
             // Pre-populate first column with current zone's finish
             compareColumns = [
                 { base: z.base || 'chrome', pattern: z.pattern || 'none', mono: z.finish || null },
                 { base: 'metallic', pattern: 'carbon_fiber', mono: null }
             ];
             renderCompareColumns();
-            document.getElementById('finishCompareOverlay').classList.add('active');
+            const overlay = document.getElementById('finishCompareOverlay');
+            if (overlay) overlay.classList.add('active');
+            else console.warn('[SPB] finishCompareOverlay element not found');
         }
 
         function closeFinishCompare() {
-            document.getElementById('finishCompareOverlay').classList.remove('active');
+            const overlay = document.getElementById('finishCompareOverlay');
+            if (overlay) overlay.classList.remove('active');
         }
 
         function renderCompareColumns() {
@@ -1412,25 +1756,67 @@
 
         // ===== RANDOMIZE WITH STYLE LOCK =====
         const GOOD_COMBOS = [
+            // Chrome family — mirror + structure
             "chrome+carbon_fiber", "chrome+diamond_plate", "chrome+hex_mesh", "chrome+lightning",
-            "chrome+hologram", "chrome+stardust", "chrome+none",
-            "matte+carbon_fiber", "matte+hex_mesh", "matte+battle_worn",
+            "chrome+hologram", "chrome+stardust", "chrome+none", "chrome+ekg",
+            "dark_chrome+carbon_fiber", "dark_chrome+hex_mesh", "dark_chrome+lightning",
+            "satin_chrome+carbon_fiber", "satin_chrome+hex_mesh",
+            "candy_chrome+holographic_flake", "candy_chrome+stardust",
+            // Candy family — depth + sparkle
             "candy+holographic_flake", "candy+stardust", "candy+metal_flake", "candy+none",
-            "metallic+metal_flake", "metallic+holographic_flake", "metallic+carbon_fiber",
+            "candy+tribal_flame", "candy+carbon_fiber", "candy+lightning", "candy+interference",
+            // Matte family — stealth + texture
+            "matte+matte_grain", "matte+hex_mesh", "matte+battle_worn", "matte+diamond_plate",
+            "matte+ekg", "matte+topographic",
+            "blackout+carbon_fiber", "blackout+hex_mesh", "blackout+lightning", "blackout+ekg",
+            "flat_black+carbon_fiber", "flat_black+hex_mesh",
+            "vantablack+stardust", "vantablack+lightning", "vantablack+plasma",
+            "cerakote+carbon_fiber", "cerakote+hex_mesh", "cerakote+diamond_plate",
+            // Pearl family — shimmer + iridescence
             "pearl+interference", "pearl+stardust", "pearl+holographic_flake", "pearl+ripple",
-            "satin_metal+carbon_fiber", "satin_metal+diamond_plate",
+            "pearl+none",
+            // Metallic family — sparkle + structure
+            "metallic+metal_flake", "metallic+holographic_flake", "metallic+carbon_fiber",
+            "metallic+tribal_flame", "metallic+diamond_plate",
+            "gunmetal+carbon_fiber", "gunmetal+hex_mesh", "gunmetal+diamond_plate",
+            "rose_gold+holographic_flake", "rose_gold+stardust",
+            "copper+celtic_knot", "copper+tribal_flame",
+            // Brushed family — directional + geometric
+            "brushed_aluminum+carbon_fiber", "brushed_aluminum+diamond_plate", "brushed_aluminum+none",
             "brushed_titanium+carbon_fiber", "brushed_titanium+diamond_plate", "brushed_titanium+hex_mesh",
-            "frozen+cracked_ice", "frozen+holographic_flake", "frozen+stardust",
-            "blackout+carbon_fiber", "blackout+hex_mesh", "blackout+lightning",
-            "anodized+diamond_plate", "anodized+hex_mesh",
+            // Frozen/exotic
+            "frozen+cracked_ice", "frozen+holographic_flake", "frozen+stardust", "frozen+interference",
+            "electric_ice+lightning", "electric_ice+cracked_ice", "electric_ice+stardust",
+            "volcanic+fracture", "volcanic+lightning", "volcanic+plasma",
+            "chameleon+none", "chameleon+holographic_flake", "chameleon+interference",
+            // Wrap family
+            "satin_wrap+none", "satin_wrap+carbon_fiber",
+            "chrome_wrap+none", "chrome_wrap+carbon_fiber",
+            // Weathered family
+            "barn_find+acid_wash", "barn_find+battle_worn", "barn_find+rust_bloom",
+            "acid_etch+acid_wash", "acid_etch+fracture",
+            "battle_patina+battle_worn", "battle_patina+rust_bloom",
+            // Clean/OEM
             "gloss+none", "gloss+carbon_fiber", "gloss+metal_flake",
             "satin+carbon_fiber", "satin+none",
+            "ceramic+none", "ceramic+diamond_plate",
+            "anodized+diamond_plate", "anodized+hex_mesh",
         ];
 
         const BAD_COMBOS = new Set([
+            // Matte + sparkle = contradicts physics (matte absorbs, sparkle reflects)
             "blackout+stardust", "blackout+holographic_flake", "blackout+interference",
             "matte+holographic_flake", "matte+metal_flake", "matte+interference",
-            "chrome+battle_worn", "chrome+acid_wash",
+            "flat_black+holographic_flake", "flat_black+metal_flake", "flat_black+stardust",
+            "vantablack+holographic_flake", "vantablack+metal_flake",
+            "cerakote+holographic_flake", "cerakote+metal_flake", "cerakote+stardust",
+            // Chrome + weathering = contradicts material (chrome doesn't rust/fade)
+            "chrome+battle_worn", "chrome+acid_wash", "chrome+rust_bloom",
+            "dark_chrome+battle_worn", "dark_chrome+acid_wash",
+            "candy_chrome+battle_worn", "candy_chrome+acid_wash",
+            // Weathered + sparkle = unlikely combo
+            "barn_find+holographic_flake", "barn_find+stardust",
+            "acid_etch+holographic_flake", "battle_patina+stardust",
         ]);
 
         function toggleLock(index, prop) {
@@ -1537,7 +1923,7 @@
             const blendModes = ['noise', 'marble', 'pattern-edges', 'pattern', 'pattern-vivid', 'tint', 'pattern-peaks', 'pattern-contour', 'pattern-screen', 'pattern-threshold'];
             const intensities = (typeof INTENSITY_OPTIONS !== 'undefined') ? INTENSITY_OPTIONS.map(o => o.id) : ['50', '70', '80', '90', '100'];
 
-            // ── 1. BASE FINISH ──
+            // —€—€ 1. BASE FINISH —€—€
             // 85% base from BASES, 15% monolithic from MONOLITHICS
             if (Math.random() < 0.85) {
                 zone.base = pick(BASES).id;
@@ -1547,7 +1933,7 @@
                 zone.base = null;
             }
 
-            // ── 2. PATTERN ──
+            // —€—€ 2. PATTERN —€—€
             // 75% get a pattern, 25% no pattern
             if (Math.random() < 0.75) {
                 zone.pattern = pick(PATTERNS).id;
@@ -1555,10 +1941,10 @@
                 zone.pattern = 'none';
             }
 
-            // ── 3. INTENSITY ──
+            // —€—€ 3. INTENSITY —€—€
             zone.intensity = pick(intensities);
 
-            // ── 4. PATTERN SETTINGS ──
+            // —€—€ 4. PATTERN SETTINGS —€—€
             zone.scale = randFloat(0.3, 3.0, 0.1);
             zone.rotation = randInt(0, 359);
             zone.patternOffsetX = randFloat(0, 1, 0.05);
@@ -1567,7 +1953,7 @@
             zone.patternFlipV = Math.random() < 0.2;
             zone.patternSpecMult = randFloat(0.3, 2.0, 0.1);
 
-            // ── 5. BASE SETTINGS ──
+            // —€—€ 5. BASE SETTINGS —€—€
             zone.baseRotation = randInt(0, 359);
             zone.baseScale = randFloat(0.5, 2.5, 0.1);
             zone.baseStrength = randFloat(0.5, 2.0, 0.1);
@@ -1577,7 +1963,7 @@
             zone.baseFlipH = Math.random() < 0.15;
             zone.baseFlipV = Math.random() < 0.15;
 
-            // ── 6. BASE COLOR MODE ──
+            // —€—€ 6. BASE COLOR MODE —€—€
             // 50% source paint, 25% solid color, 25% from special
             const colorRoll = Math.random();
             if (colorRoll < 0.50) {
@@ -1604,7 +1990,7 @@
                 zone.baseBrightnessAdjust = 0;
             }
 
-            // ── 7. PATTERN STACK (extra pattern layers) ──
+            // —€—€ 7. PATTERN STACK (extra pattern layers) —€—€
             zone.patternStack = [];
             if (zone.pattern !== 'none' && Math.random() < 0.3) {
                 // 30% chance to add 1-2 stacked patterns
@@ -1625,7 +2011,7 @@
                 }
             }
 
-            // ── 8. OVERLAY LAYERS (the real magic — 0 to 5 layers) ──
+            // —€—€ 8. OVERLAY LAYERS (the real magic — 0 to 5 layers) —€—€
             // Weighted: 0 layers=15%, 1=30%, 2=25%, 3=15%, 4=10%, 5=5%
             const overlayCount = weightedPick([15, 30, 25, 15, 10, 5]);
             const layerPrefixes = ['second', 'third', 'fourth', 'fifth'];
@@ -1712,7 +2098,7 @@
                 }
             }
 
-            // ── 9. WEAR ──
+            // —€—€ 9. WEAR —€—€
             zone.wear = Math.random() < 0.15 ? randInt(1, 3) : 0;
 
             // Refresh UI
@@ -1724,7 +2110,11 @@
             const overlayMsg = activeCount > 0 ? ` + ${activeCount} overlay${activeCount > 1 ? 's' : ''}` : '';
             const baseName = zone.base ? (BASES.find(b => b.id === zone.base) || {}).name || zone.base : (MONOLITHICS.find(m => m.id === zone.finish) || {}).name || zone.finish;
             const patName = zone.pattern !== 'none' ? (PATTERNS.find(p => p.id === zone.pattern) || {}).name || zone.pattern : 'no pattern';
-            showToast(`⚡ SHOKK'D! ${baseName} + ${patName}${overlayMsg}`, 4000);
+            // 2026-04-19 TRUE FIVE-HOUR (TF17c) — wrong showToast signature.
+            // Pre-fix `, 4000` was treated as truthy isError → the celebratory
+            // SHOKK'D toast was styled as an error. showToast has no duration
+            // arg; drop it and let the default styling stand.
+            showToast(`⚡ SHOKK'D! ${baseName} + ${patName}${overlayMsg}`);
         }
         if (typeof window !== 'undefined') window.shokkMe = shokkMe;
 
@@ -1920,6 +2310,10 @@
             z.intensity = c.intensity || '100';
             z.scale = c.scale || 1.0;
             renderZones();
+            // 2026-04-19 FIVE-HOUR DEEP SHIFT (Pillman recon W2): silent-stale.
+            // applyCombo mutates render-relevant zone state (finish/base/pattern/
+            // intensity/scale) but never refreshed the live preview.
+            if (typeof triggerPreviewRender === 'function') triggerPreviewRender();
             showToast(`Applied combo: "${name}"`);
         }
 
@@ -2277,6 +2671,10 @@
                 if (cfg.scale) zone.scale = cfg.scale;
             }
             renderZones();
+            // 2026-04-19 FIVE-HOUR DEEP SHIFT (Pillman recon W3): silent-stale.
+            // Chat-driven zone application could create/modify many zones at
+            // once and still leave the preview frozen on the prior state.
+            if (typeof triggerPreviewRender === 'function') triggerPreviewRender();
         }
 
         // --- Chat Submit ---
@@ -2663,71 +3061,49 @@
             zones[targetIdx].colors = [];
             selectedZoneIndex = targetIdx;
             renderZones();
+            // 2026-04-19 FIVE-HOUR DEEP SHIFT (Pillman recon W4): silent-stale.
+            // Harmony palette dropper updated zone color but the rendered car
+            // didn't reflect the new color until the painter touched anything
+            // else. Sister bug to W1-W3.
+            if (typeof triggerPreviewRender === 'function') triggerPreviewRender();
             showToast(`Applied ${hex} to Zone ${targetIdx + 1}: ${zones[targetIdx].name}`);
         }
 
         // ===== SHORTCUT LEGEND =====
         function showShortcutLegend() {
-            let overlay = document.getElementById('shortcutLegendOverlay');
-            if (!overlay) {
-                overlay = document.createElement('div');
-                overlay.id = 'shortcutLegendOverlay';
-                overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:10000;display:flex;align-items:center;justify-content:center;';
-                overlay.onclick = (e) => { if (e.target === overlay) overlay.style.display = 'none'; };
-                overlay.innerHTML = `<div style="background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:24px 32px;max-width:520px;width:90%;max-height:80vh;overflow-y:auto;">
-            <h3 style="margin:0 0 16px;color:var(--accent-gold);font-size:16px;">Keyboard Shortcuts</h3>
-            <div style="display:grid;grid-template-columns:120px 1fr;gap:6px 16px;font-size:12px;">
-                <span style="color:var(--accent);font-weight:700;">ZONES</span><span></span>
-                <kbd style="color:var(--text-bright);">1-9</kbd><span style="color:var(--text-dim);">Select zone by number</span>
-                <kbd style="color:var(--text-bright);">&#8593; / &#8595;</kbd><span style="color:var(--text-dim);">Navigate between zones</span>
-                <kbd style="color:var(--text-bright);">Ctrl+&#8593; / &#8595;</kbd><span style="color:var(--text-dim);">Move zone up/down (reorder priority)</span>
-                <kbd style="color:var(--text-bright);">N</kbd><span style="color:var(--text-dim);">Add new zone</span>
-                <kbd style="color:var(--text-bright);">D</kbd><span style="color:var(--text-dim);">Duplicate selected zone</span>
-                <kbd style="color:var(--text-bright);">Delete</kbd><span style="color:var(--text-dim);">Delete selected zone</span>
-                <kbd style="color:var(--text-bright);">R</kbd><span style="color:var(--text-dim);">Randomize selected zone</span>
-                <span style="color:var(--accent);font-weight:700;margin-top:8px;">ACTIONS</span><span></span>
-                <kbd style="color:var(--text-bright);">Ctrl+R</kbd><span style="color:var(--text-dim);">Render</span>
-                <kbd style="color:var(--text-bright);">Ctrl+G</kbd><span style="color:var(--text-dim);">Generate script</span>
-                <kbd style="color:var(--text-bright);">Ctrl+S</kbd><span style="color:var(--text-dim);">Save config</span>
-                <kbd style="color:var(--text-bright);">Ctrl+Z</kbd><span style="color:var(--text-dim);">Undo</span>
-                <kbd style="color:var(--text-bright);">Ctrl+Shift+Z</kbd><span style="color:var(--text-dim);">Redo</span>
-                <span style="color:var(--accent);font-weight:700;margin-top:8px;">CANVAS</span><span></span>
-                <kbd style="color:var(--text-bright);">Space+Drag</kbd><span style="color:var(--text-dim);">Pan canvas</span>
-                <kbd style="color:var(--text-bright);">Scroll</kbd><span style="color:var(--text-dim);">Zoom in/out</span>
-                <kbd style="color:var(--text-bright);">/</kbd><span style="color:var(--text-dim);">Focus NLP chat input</span>
-                <kbd style="color:var(--text-bright);">Escape</kbd><span style="color:var(--text-dim);">Close modal / exit compare</span>
-                <span style="color:var(--accent);font-weight:700;margin-top:8px;">VIEW</span><span></span>
-                <kbd style="color:var(--text-bright);">V</kbd><span style="color:var(--text-dim);">Toggle split view (live preview)</span>
-                <kbd style="color:var(--text-bright);">H</kbd><span style="color:var(--text-dim);">History gallery</span>
-                <kbd style="color:var(--text-bright);">T</kbd><span style="color:var(--text-dim);">Template library</span>
-                <kbd style="color:var(--text-bright);">E</kbd><span style="color:var(--text-dim);">Toggle zone editor panel</span>
-                <kbd style="color:var(--text-bright);">?</kbd><span style="color:var(--text-dim);">Show this legend (also Ctrl+/)</span>
-                <span style="color:var(--accent);font-weight:700;margin-top:8px;">TOOLS</span><span></span>
-                <kbd style="color:var(--text-bright);">P</kbd><span style="color:var(--text-dim);">Eyedropper / Color pick</span>
-                <kbd style="color:var(--text-bright);">W</kbd><span style="color:var(--text-dim);">Magic wand select</span>
-                <kbd style="color:var(--text-bright);">A</kbd><span style="color:var(--text-dim);">Select all</span>
-                <kbd style="color:var(--text-bright);">B</kbd><span style="color:var(--text-dim);">Brush</span>
-                <kbd style="color:var(--text-bright);">O</kbd><span style="color:var(--text-dim);">Rectangle select</span>
-                <kbd style="color:var(--text-bright);">L</kbd><span style="color:var(--text-dim);">Lasso select</span>
-                <kbd style="color:var(--text-bright);">X</kbd><span style="color:var(--text-dim);">Erase selection</span>
-                <kbd style="color:var(--text-bright);">Alt+Arrows</kbd><span style="color:var(--text-dim);">Nudge selection (Shift = 5px)</span>
-            </div>
-            <div style="margin-top:16px;text-align:center;"><button class="btn btn-sm" onclick="this.closest('#shortcutLegendOverlay').style.display='none'" style="padding:4px 20px;">Close</button></div>
-        </div>`;
-                document.body.appendChild(overlay);
+            // Use the rich HTML-based shortcut overlay (id=shortcutOverlay) in paint-booth-v2.html
+            var overlay = document.getElementById('shortcutOverlay');
+            if (overlay) {
+                overlay.style.display = overlay.style.display === 'none' ? 'block' : 'none';
             }
-            overlay.style.display = 'flex';
+            // Also hide old dynamic overlay if it exists (backward compat)
+            var oldOverlay = document.getElementById('shortcutLegendOverlay');
+            if (oldOverlay) oldOverlay.style.display = 'none';
         }
 
         // ===== KEYBOARD SHORTCUTS =====
         document.addEventListener('keydown', (e) => {
+            if (e.defaultPrevented) return;
             // Don't trigger when typing in inputs
             if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return;
 
+            // F5: Force refresh the Live Preview (abort any stuck render, reset pipeline)
+            if (e.key === 'F5') {
+                e.preventDefault();
+                if (typeof forcePreviewRefresh === 'function') forcePreviewRefresh();
+                return;
+            }
             // Ctrl+R: Render (if server online)
             if (e.ctrlKey && e.key === 'r') {
                 e.preventDefault();
                 safeDoRender();
+                return;
+            }
+            // Ctrl+S: Save config (trigger autosave immediately)
+            if (e.ctrlKey && e.key === 's') {
+                e.preventDefault();
+                if (typeof autoSave === 'function') autoSave();
+                if (typeof showToast === 'function') showToast('Config saved');
                 return;
             }
             // Ctrl+G: Generate Script
@@ -2744,13 +3120,13 @@
                 }
                 return;
             }
-            // R key (no ctrl): Randomize selected zone
-            if (e.key === 'r' && !e.ctrlKey && !e.altKey) {
+            // Shift+R: Randomize selected zone (bare R = recolor tool)
+            if (e.key === 'R' && e.shiftKey && !e.ctrlKey && !e.altKey) {
                 randomizeZone(selectedZoneIndex);
                 return;
             }
-            // E key: Toggle zone editor panel collapse/expand
-            if (e.key === 'e' && !e.ctrlKey && !e.altKey) {
+            // Shift+E: Toggle zone editor panel collapse/expand (bare E = edge detect tool)
+            if (e.key === 'E' && e.shiftKey && !e.ctrlKey && !e.altKey) {
                 const floatPanel = document.getElementById('zoneEditorFloat');
                 if (floatPanel && floatPanel.classList.contains('active')) {
                     toggleZoneFloat();
@@ -2796,8 +3172,8 @@
                 moveZoneDown(selectedZoneIndex);
                 return;
             }
-            // D key: Duplicate selected zone
-            if (e.key === 'd' && !e.ctrlKey && !e.altKey) {
+            // Shift+D: Duplicate selected zone (bare D = dodge tool)
+            if (e.key === 'D' && e.shiftKey && !e.ctrlKey && !e.altKey) {
                 duplicateZone(selectedZoneIndex);
                 return;
             }
@@ -2806,8 +3182,8 @@
                 deleteZone(selectedZoneIndex);
                 return;
             }
-            // N key: Add new zone
-            if (e.key === 'n' && !e.ctrlKey && !e.altKey) {
+            // Shift+N: Add new zone (bare N = pen tool)
+            if (e.key === 'N' && e.shiftKey && !e.ctrlKey && !e.altKey) {
                 addZone();
                 return;
             }
@@ -2822,13 +3198,13 @@
                 showShortcutLegend();
                 return;
             }
-            // H key: Open history gallery
-            if (e.key === 'h' && !e.ctrlKey && !e.altKey) {
+            // Shift+H: Open history gallery (bare H = sharpen tool)
+            if (e.key === 'H' && e.shiftKey && !e.ctrlKey && !e.altKey) {
                 openHistoryGallery();
                 return;
             }
-            // T key: Open template library
-            if (e.key === 't' && !e.ctrlKey && !e.altKey) {
+            // Shift+T: Open template library (bare T = text tool)
+            if (e.key === 'T' && e.shiftKey && !e.ctrlKey && !e.altKey) {
                 openTemplateLibrary();
                 return;
             }
@@ -2852,6 +3228,9 @@
                 if (document.getElementById('shortcutLegendOverlay')?.style.display === 'flex') {
                     document.getElementById('shortcutLegendOverlay').style.display = 'none'; return;
                 }
+                if (document.getElementById('shortcutOverlay')?.style.display !== 'none') {
+                    document.getElementById('shortcutOverlay').style.display = 'none'; return;
+                }
                 if (typeof compareMode !== 'undefined' && compareMode) { toggleCompareMode(); return; }
                 if (document.getElementById('finishCompareOverlay')?.classList.contains('active')) { closeFinishCompare(); return; }
                 if (document.getElementById('finishBrowserOverlay')?.classList.contains('active')) { closeFinishBrowser(); return; }
@@ -2867,14 +3246,14 @@
             const btn = document.getElementById('themeToggleBtn');
             const isLight = body.classList.toggle('theme-light');
             localStorage.setItem(THEME_KEY, isLight ? 'light' : 'dark');
-            if (btn) btn.textContent = isLight ? '🌙 Dark' : '☀ Light';
+            if (btn) btn.textContent = isLight ? 'ðŸŒ™ Dark' : '☀ Light';
         }
         function applySavedTheme() {
             const saved = localStorage.getItem(THEME_KEY);
             const btn = document.getElementById('themeToggleBtn');
             if (saved === 'light') {
                 document.body.classList.add('theme-light');
-                if (btn) btn.textContent = '🌙 Dark';
+                if (btn) btn.textContent = 'ðŸŒ™ Dark';
             } else if (btn) {
                 btn.textContent = '☀ Light';
             }
@@ -2910,9 +3289,25 @@
                     });
                     renderStampList();
                     showToast('Stamp added: ' + file.name + ' (' + img.width + 'x' + img.height + ')');
+                    // FIVE-HOUR SHIFT Win H10: blob URL never revoked.
+                    // Marathon #59 fixed this for the decal importer; the
+                    // stamp importer was the asymmetric outlier. Without
+                    // revocation, every stamp import leaks the blob (small
+                    // per stamp but accumulates across a long painting
+                    // session). Note: we keep the Image alive in
+                    // stampLayers, so we can revoke after onload because
+                    // the image's pixel data is already decoded.
+                    try { URL.revokeObjectURL(url); } catch (_) {}
+                    if (!window._spbStampSessionWarned) {
+                        window._spbStampSessionWarned = true;
+                        if (typeof showToast === 'function') {
+                            showToast('Stamps are session-only \u2014 they are lost on page reload. Export before refreshing.', true);
+                        }
+                    }
                 };
                 img.onerror = function() {
                     // TGA files can't be loaded by Image directly
+                    try { URL.revokeObjectURL(url); } catch (_) {}
                     showToast('Could not load image. Use PNG format for best results.', true);
                 };
                 img.src = url;
@@ -2920,15 +3315,20 @@
             input.click();
         }
 
+        // 2026-04-18 MARATHON bug #20: stamp ops didn't fire preview refresh.
+        // Painter toggled a stamp visibility, Live Preview kept rendering
+        // the old state. Same class as the strength-map silent drop.
         function removeStamp(idx) {
             window.stampLayers.splice(idx, 1);
             renderStampList();
+            if (typeof triggerPreviewRender === 'function') triggerPreviewRender();
         }
 
         function toggleStampVisibility(idx) {
             if (window.stampLayers[idx]) {
                 window.stampLayers[idx].visible = !window.stampLayers[idx].visible;
                 renderStampList();
+                if (typeof triggerPreviewRender === 'function') triggerPreviewRender();
             }
         }
 
@@ -2936,18 +3336,30 @@
             if (window.stampLayers[idx]) {
                 window.stampLayers[idx].opacity = parseFloat(val);
                 renderStampList();
+                if (typeof triggerPreviewRender === 'function') triggerPreviewRender();
             }
         }
 
         function updateStampFinish() {
             const sel = document.getElementById('stampSpecFinish');
             if (sel) window.stampSpecFinish = sel.value;
+            if (typeof triggerPreviewRender === 'function') triggerPreviewRender();
         }
 
         function clearAllStamps() {
+            // 2026-04-19 FIVE-HOUR DEEP SHIFT (Pillman recon W13): destructive without confirm.
+            // One misclick wiped every imported stamp with no undo. Sister
+            // operations (delete one stamp, clear decals) all confirm — parity fix.
+            var n = (window.stampLayers && window.stampLayers.length) || 0;
+            if (n === 0) { showToast('No stamps to clear'); return; }
+            if (typeof confirm === 'function' &&
+                !confirm('Clear all ' + n + ' stamp' + (n === 1 ? '' : 's') + '? This cannot be undone.')) {
+                return;
+            }
             window.stampLayers = [];
             renderStampList();
             showToast('All stamps cleared');
+            if (typeof triggerPreviewRender === 'function') triggerPreviewRender();
         }
 
         function renderStampList() {
@@ -3016,25 +3428,847 @@
         window.renderStampList = renderStampList;
         window.compositeStampsForRender = compositeStampsForRender;
 
+        // ============================================================
+        // SPB BOOT/UI POLISH MODULE  (50+ improvements; see report)
+        // Single global namespace to avoid leaking into the rest of
+        // the file. All hooks are defensive (guarded by typeof / try).
+        // ============================================================
+        window.SPB = window.SPB || {};
+        const SPB = window.SPB;
+
+        // ---------- (1) BOOT TIMING / STAGED INIT ----------
+        // Improvement 1: Capture boot start so we can report cold-boot timing in console.
+        SPB.bootStartTs = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
+        SPB.bootMarks = [];
+        SPB.mark = function(label) {
+            try {
+                const t = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
+                SPB.bootMarks.push({ label, t: t - SPB.bootStartTs });
+                if (typeof console !== 'undefined') console.log('[SPB-BOOT]', label, '+' + Math.round(t - SPB.bootStartTs) + 'ms');
+            } catch (e) {}
+        };
+
+        // Improvement 2: Idle scheduler — defer non-critical init until after first paint.
+        SPB.idle = function(fn, timeout) {
+            if (typeof window.requestIdleCallback === 'function') {
+                return window.requestIdleCallback(fn, { timeout: timeout || 2000 });
+            }
+            return setTimeout(fn, 16);
+        };
+
+        // Improvement 3: rAF helper for double-buffered post-paint init (used to push polling start to next frame).
+        SPB.afterPaint = function(fn) {
+            if (typeof requestAnimationFrame === 'function') {
+                requestAnimationFrame(function() { requestAnimationFrame(fn); });
+            } else {
+                setTimeout(fn, 32);
+            }
+        };
+
+        // ---------- (4-5) SERVER HEALTH / RECONNECT BANNER ----------
+        // Improvement 4: Server health state machine with adaptive backoff.
+        SPB.health = {
+            online: null,            // null = unknown, true/false otherwise
+            lastOk: 0,
+            failures: 0,
+            interval: null,
+            minMs: 5000,
+            maxMs: 60000,
+            currentMs: 5000,
+        };
+
+        // Improvement 5: Reconnect banner element (created lazily so we don't bloat boot).
+        SPB.showServerBanner = function(state, msg) {
+            try {
+                let el = document.getElementById('spbServerBanner');
+                if (!el) {
+                    el = document.createElement('div');
+                    el.id = 'spbServerBanner';
+                    el.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:99999;padding:6px 12px;font-size:12px;text-align:center;font-family:inherit;letter-spacing:0.04em;display:none;';
+                    document.body && document.body.appendChild(el);
+                }
+                if (state === 'down') {
+                    el.style.background = '#7a1d1d';
+                    el.style.color = '#fff';
+                    el.textContent = msg || 'Render server unreachable — retrying...';
+                    el.style.display = 'block';
+                } else if (state === 'reconnected') {
+                    el.style.background = '#1d6a3a';
+                    el.style.color = '#fff';
+                    el.textContent = msg || 'Server reconnected';
+                    el.style.display = 'block';
+                    setTimeout(function() { el.style.display = 'none'; }, 2500);
+                } else {
+                    el.style.display = 'none';
+                }
+            } catch (e) {}
+        };
+
+        // Improvement 6: Health probe with adaptive polling — back off on failure, fast on success.
+        SPB.probeHealth = async function() {
+            const h = SPB.health;
+            try {
+                if (typeof ShokkerAPI === 'undefined' || !ShokkerAPI.baseUrl) return;
+                const ctrl = (typeof AbortSignal !== 'undefined' && AbortSignal.timeout) ? { signal: AbortSignal.timeout(4000) } : {};
+                const res = await fetch(ShokkerAPI.baseUrl + '/build-check', ctrl);
+                if (res && res.ok) {
+                    if (h.online === false) SPB.showServerBanner('reconnected');
+                    h.online = true;
+                    h.lastOk = Date.now();
+                    h.failures = 0;
+                    h.currentMs = h.minMs;
+                } else {
+                    throw new Error('status ' + (res && res.status));
+                }
+            } catch (e) {
+                h.failures += 1;
+                if (h.online !== false) {
+                    SPB.showServerBanner('down', 'Render server unreachable (attempt ' + h.failures + ') — retrying...');
+                }
+                h.online = false;
+                // Improvement 7: Exponential backoff capped at maxMs.
+                h.currentMs = Math.min(h.maxMs, Math.max(h.minMs, h.currentMs * 1.6));
+            }
+            // Improvement 8: Reschedule with current adaptive delay.
+            if (h.interval) clearTimeout(h.interval);
+            if (!document.hidden) h.interval = setTimeout(SPB.probeHealth, h.currentMs);
+        };
+
+        // ---------- (9) BUILD VERSION DISPLAY / UPDATE DETECTION ----------
+        // Improvement 9: Persistent build/version cache so we can detect updates between launches.
+        SPB.lastKnownBuild = null;
+        try { SPB.lastKnownBuild = localStorage.getItem('spb_last_build'); } catch (e) {}
+
+        SPB.applyBuildInfo = function(d) {
+            try {
+                if (!d) return;
+                const v = d.version || '';
+                const b = d.build || '';
+                // Improvement 10: Title bar always reflects current version + build.
+                if (v) document.title = 'Shokker Paint Booth v' + v + (b ? ' • B' + b : '');
+                // Improvement 11: Update detection — toast if build number jumped while app was open elsewhere.
+                if (b && SPB.lastKnownBuild && String(b) !== String(SPB.lastKnownBuild)) {
+                    if (typeof showToast === 'function') {
+                        showToast('New build detected (B' + b + '). Press F5 to reload.', false);
+                    }
+                }
+                if (b) {
+                    SPB.lastKnownBuild = String(b);
+                    try { localStorage.setItem('spb_last_build', String(b)); } catch (e) {}
+                }
+                // Improvement 12: Stamp version in a status pill if present.
+                const pill = document.getElementById('spbVersionPill');
+                if (pill) pill.textContent = v ? 'v' + v : '';
+            } catch (e) {}
+        };
+
+        // ---------- (13-19) MODAL STACK / FOCUS TRAP / KEYBOARD ----------
+        // Improvement 13: Centralized modal stack so Esc closes the topmost modal first.
+        SPB.modalStack = [];
+        SPB.pushModal = function(id, closeFn) {
+            if (!id) return;
+            // De-dupe — bring to top.
+            SPB.modalStack = SPB.modalStack.filter(function(m) { return m.id !== id; });
+            SPB.modalStack.push({ id: id, close: closeFn });
+        };
+        SPB.popModal = function(id) {
+            SPB.modalStack = SPB.modalStack.filter(function(m) { return m.id !== id; });
+        };
+        SPB.closeTopModal = function() {
+            const top = SPB.modalStack.pop();
+            if (top && typeof top.close === 'function') {
+                try { top.close(); return true; } catch (e) {}
+            }
+            return false;
+        };
+
+        // Improvement 14: Tab focus trap — keeps focus inside an open modal.
+        SPB.installFocusTrap = function(rootEl) {
+            if (!rootEl) return function() {};
+            function handler(e) {
+                if (e.key !== 'Tab') return;
+                const focusables = rootEl.querySelectorAll('a[href],button:not([disabled]),input:not([disabled]):not([type=hidden]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])');
+                if (!focusables.length) return;
+                const first = focusables[0];
+                const last = focusables[focusables.length - 1];
+                if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+                else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+            }
+            rootEl.addEventListener('keydown', handler);
+            return function uninstall() { rootEl.removeEventListener('keydown', handler); };
+        };
+
+        // Improvement 15: Centralized keyboard shortcut registry (used by cheat-sheet generator).
+        SPB.shortcuts = SPB.shortcuts || [
+            { keys: 'F1 / ?', desc: 'Show this cheat sheet' },
+            { keys: 'F5', desc: 'Force preview refresh' },
+            { keys: 'Ctrl+R', desc: 'Render' },
+            { keys: 'Ctrl+S', desc: 'Save config (autosave)' },
+            { keys: 'Ctrl+G', desc: 'Generate script' },
+            { keys: '1-9', desc: 'Select zone' },
+            { keys: 'Shift+R', desc: 'Randomize selected zone' },
+            { keys: 'Shift+E', desc: 'Toggle zone editor panel' },
+            { keys: '/', desc: 'Focus chat / finish search' },
+            { keys: 'Esc', desc: 'Close top modal / cancel tool / clear search' },
+            { keys: 'Alt+Arrows', desc: 'Nudge region selection' },
+            { keys: 'Up/Down', desc: 'Cycle zones' },
+            { keys: 'Ctrl+Up/Down', desc: 'Reorder zone priority' },
+            { keys: 'Shift+D', desc: 'Duplicate zone' },
+            { keys: 'Shift+N', desc: 'New zone' },
+            { keys: 'Shift+H', desc: 'History gallery' },
+            { keys: 'Shift+T', desc: 'Template library' },
+            { keys: 'V', desc: 'Toggle split view' },
+            { keys: 'P / W / A / B / O / L / X', desc: 'Pick / Wand / All / Brush / Rect / Lasso / Erase' },
+            { keys: 'Delete / Backspace', desc: 'Delete selected zone' },
+        ];
+
+        // Improvement 16: Detect duplicate shortcut bindings at boot (warn in console only — no UI noise).
+        SPB.detectShortcutConflicts = function() {
+            try {
+                const seen = {};
+                const conflicts = [];
+                SPB.shortcuts.forEach(function(s) {
+                    s.keys.split('/').forEach(function(k) {
+                        const key = k.trim().toLowerCase();
+                        if (!key) return;
+                        if (seen[key]) conflicts.push(key + ' (' + seen[key] + ' vs ' + s.desc + ')');
+                        else seen[key] = s.desc;
+                    });
+                });
+                if (conflicts.length) console.warn('[SPB-SHORTCUTS] potential conflicts:', conflicts);
+            } catch (e) {}
+        };
+
+        // ---------- (20-26) LOCALSTORAGE / SETTINGS PERSISTENCE ----------
+        // Improvement 17: Safe localStorage wrappers (handles QuotaExceededError, JSON errors).
+        SPB.lsGet = function(key, fallback) {
+            try {
+                const v = localStorage.getItem(key);
+                if (v == null) return fallback;
+                return JSON.parse(v);
+            } catch (e) { return fallback; }
+        };
+        SPB.lsSet = function(key, value) {
+            try {
+                localStorage.setItem(key, JSON.stringify(value));
+                return true;
+            } catch (e) {
+                if (e && (e.name === 'QuotaExceededError' || (e.code && e.code === 22))) {
+                    SPB.warnQuota();
+                }
+                return false;
+            }
+        };
+
+        // Improvement 18: localStorage quota check — warn approaching 5MB ceiling.
+        SPB.warnQuota = function() {
+            try {
+                if (SPB._quotaWarned) return;
+                SPB._quotaWarned = true;
+                if (typeof showToast === 'function') showToast('Browser storage is nearly full — clear old templates/combos to free space.', true);
+                console.warn('[SPB-STORAGE] localStorage quota exceeded.');
+            } catch (e) {}
+        };
+        SPB.getStorageUsage = function() {
+            try {
+                let bytes = 0;
+                for (let i = 0; i < localStorage.length; i++) {
+                    const k = localStorage.key(i);
+                    const v = localStorage.getItem(k) || '';
+                    bytes += k.length + v.length;
+                }
+                return bytes;
+            } catch (e) { return 0; }
+        };
+
+        // Improvement 19: Schema version + migration scaffold for stored settings.
+        SPB.STORAGE_SCHEMA_VERSION = 2;
+        SPB.migrateStorage = function() {
+            try {
+                const current = parseInt(localStorage.getItem('spb_schema_version') || '0', 10) || 0;
+                if (current >= SPB.STORAGE_SCHEMA_VERSION) return;
+                // v0 → v1: ensure spb_has_launched is normalized to '1'.
+                if (current < 1 && localStorage.getItem('spb_has_launched')) {
+                    localStorage.setItem('spb_has_launched', '1');
+                }
+                // v1 → v2: prune legacy keys from very old builds (silent best-effort).
+                if (current < 2) {
+                    ['shokker_old_palette', 'shokker_v3_state'].forEach(function(k) {
+                        try { localStorage.removeItem(k); } catch (e) {}
+                    });
+                }
+                localStorage.setItem('spb_schema_version', String(SPB.STORAGE_SCHEMA_VERSION));
+            } catch (e) {}
+        };
+
+        // Improvement 20: UI scale (zoom) persistence.
+        SPB.applySavedUiScale = function() {
+            try {
+                const s = parseFloat(localStorage.getItem('spb_ui_scale') || '1');
+                if (s && s !== 1 && s >= 0.6 && s <= 1.6) {
+                    document.documentElement.style.fontSize = (16 * s) + 'px';
+                }
+            } catch (e) {}
+        };
+        SPB.setUiScale = function(s) {
+            try {
+                if (!s || s < 0.6 || s > 1.6) return;
+                localStorage.setItem('spb_ui_scale', String(s));
+                document.documentElement.style.fontSize = (16 * s) + 'px';
+            } catch (e) {}
+        };
+
+        // Improvement 21: Window size restore (Electron + browser).
+        SPB.applySavedWindowSize = function() {
+            try {
+                if (typeof window === 'undefined' || !window.resizeTo) return;
+                const w = parseInt(localStorage.getItem('spb_win_w') || '0', 10);
+                const h = parseInt(localStorage.getItem('spb_win_h') || '0', 10);
+                if (w > 600 && h > 400 && w < screen.width && h < screen.height) {
+                    try { window.resizeTo(w, h); } catch (e) {}
+                }
+            } catch (e) {}
+        };
+        SPB.captureWindowSize = function() {
+            try {
+                if (window.outerWidth && window.outerHeight) {
+                    localStorage.setItem('spb_win_w', String(window.outerWidth));
+                    localStorage.setItem('spb_win_h', String(window.outerHeight));
+                }
+            } catch (e) {}
+        };
+
+        // Improvement 22: Panel collapse-state persistence.
+        SPB.PANEL_KEY = 'spb_collapsed_panels';
+        SPB.applyCollapsedPanels = function() {
+            try {
+                const map = SPB.lsGet(SPB.PANEL_KEY, {}) || {};
+                Object.keys(map).forEach(function(id) {
+                    const el = document.getElementById(id);
+                    if (el && map[id]) el.classList.add('collapsed');
+                });
+            } catch (e) {}
+        };
+        SPB.persistPanelToggle = function(id, collapsed) {
+            try {
+                const map = SPB.lsGet(SPB.PANEL_KEY, {}) || {};
+                if (collapsed) map[id] = true; else delete map[id];
+                SPB.lsSet(SPB.PANEL_KEY, map);
+            } catch (e) {}
+        };
+
+        // Improvement 23: Right-panel last-used tab persistence.
+        SPB.RIGHT_TAB_KEY = 'spb_right_tab';
+        SPB.applySavedRightTab = function() {
+            try {
+                const last = localStorage.getItem(SPB.RIGHT_TAB_KEY);
+                if (last && typeof switchRightTab === 'function') {
+                    SPB.idle(function() { try { switchRightTab(last); } catch (e) {} }, 500);
+                }
+            } catch (e) {}
+        };
+        // Patch switchRightTab to record last-used (safe wrapper, only once).
+        if (typeof window.switchRightTab === 'function' && !window.switchRightTab.__spbWrapped) {
+            const _origSwitchRightTab = window.switchRightTab;
+            window.switchRightTab = function(name) {
+                try { localStorage.setItem(SPB.RIGHT_TAB_KEY, name); } catch (e) {}
+                return _origSwitchRightTab.apply(this, arguments);
+            };
+            window.switchRightTab.__spbWrapped = true;
+        }
+
+        // ---------- (27-31) RECENT FILES / RELOAD / NETWORK ERRORS ----------
+        // Improvement 24: Recent paint files (last 5) for quick reload.
+        SPB.RECENT_PAINTS_KEY = 'spb_recent_paints';
+        SPB.MAX_RECENT_PAINTS = 5;
+        SPB.getRecentPaints = function() { return SPB.lsGet(SPB.RECENT_PAINTS_KEY, []) || []; };
+        SPB.addRecentPaint = function(path, meta) {
+            if (!path) return;
+            try {
+                let list = SPB.getRecentPaints();
+                list = list.filter(function(p) { return p && p.path !== path; });
+                list.unshift({ path: path, meta: meta || {}, ts: Date.now() });
+                if (list.length > SPB.MAX_RECENT_PAINTS) list = list.slice(0, SPB.MAX_RECENT_PAINTS);
+                SPB.lsSet(SPB.RECENT_PAINTS_KEY, list);
+            } catch (e) {}
+        };
+        SPB.clearRecentPaints = function() { SPB.lsSet(SPB.RECENT_PAINTS_KEY, []); };
+
+        // Improvement 25: Reload last paint helper.
+        SPB.reloadLastPaint = function() {
+            const list = SPB.getRecentPaints();
+            if (!list.length) {
+                if (typeof showToast === 'function') showToast('No recent paint files', true);
+                return;
+            }
+            const last = list[0];
+            if (typeof window.loadPaintByPath === 'function') {
+                try { window.loadPaintByPath(last.path); return; } catch (e) {}
+            }
+            if (typeof showToast === 'function') showToast('Reload helper not wired — last path: ' + last.path);
+        };
+
+        // Improvement 26: Network error wrapper — produces friendly user-facing message.
+        SPB.friendlyFetchError = function(err) {
+            if (!err) return 'Unknown network error';
+            const msg = String(err.message || err);
+            if (msg.indexOf('AbortError') >= 0 || msg.indexOf('aborted') >= 0) return 'Request timed out — server may be busy';
+            if (msg.indexOf('Failed to fetch') >= 0) return 'Cannot reach render server (is it running?)';
+            if (msg.indexOf('NetworkError') >= 0) return 'Network unreachable';
+            return msg;
+        };
+
+        // Improvement 27: Loading overlay helper (busy indicator) for long fetches.
+        SPB.setBusy = function(on, label) {
+            try {
+                let el = document.getElementById('spbBusyOverlay');
+                if (on) {
+                    if (!el) {
+                        el = document.createElement('div');
+                        el.id = 'spbBusyOverlay';
+                        el.style.cssText = 'position:fixed;bottom:14px;right:14px;z-index:99998;background:rgba(0,0,0,0.78);color:#ffd84d;font-size:11px;padding:8px 12px;border-radius:6px;font-family:inherit;letter-spacing:0.05em;pointer-events:none;border:1px solid #b58200;box-shadow:0 4px 14px rgba(0,0,0,0.5);';
+                        document.body && document.body.appendChild(el);
+                    }
+                    el.textContent = label || 'Working...';
+                    el.style.display = 'block';
+                } else if (el) {
+                    el.style.display = 'none';
+                }
+            } catch (e) {}
+        };
+
+        // ---------- (32-34) STALE CONFIG / FIRST-RUN / PATH NORMALIZE ----------
+        // Improvement 28: Stale-data warning if cached config is older than 24h.
+        SPB.STALE_THRESHOLD_MS = 24 * 60 * 60 * 1000;
+        SPB.checkStaleConfig = function() {
+            try {
+                const lastSave = parseInt(localStorage.getItem('spb_last_save_ts') || '0', 10);
+                if (!lastSave) return;
+                const age = Date.now() - lastSave;
+                if (age > SPB.STALE_THRESHOLD_MS) {
+                    const days = Math.floor(age / (24 * 60 * 60 * 1000));
+                    if (typeof showToast === 'function') {
+                        showToast('Restored config is ' + days + 'd old — verify before rendering.', false);
+                    }
+                }
+            } catch (e) {}
+        };
+        SPB.stampConfigSave = function() {
+            try { localStorage.setItem('spb_last_save_ts', String(Date.now())); } catch (e) {}
+        };
+
+        // Improvement 29: Sane first-run defaults applier (only once per profile).
+        SPB.applyFirstRunDefaults = function() {
+            try {
+                if (localStorage.getItem('spb_defaults_applied')) return;
+                if (!localStorage.getItem(SPB.RIGHT_TAB_KEY)) localStorage.setItem(SPB.RIGHT_TAB_KEY, 'finishes');
+                if (!localStorage.getItem('spb_ui_scale')) localStorage.setItem('spb_ui_scale', '1');
+                localStorage.setItem('spb_defaults_applied', '1');
+            } catch (e) {}
+        };
+
+        // Improvement 30: Cross-platform path normalization.
+        SPB.normalizePath = function(p) {
+            if (!p) return p;
+            try {
+                let s = String(p).replace(/\\\\/g, '/').replace(/\\/g, '/');
+                // Collapse repeats.
+                s = s.replace(/\/{2,}/g, '/');
+                return s;
+            } catch (e) { return p; }
+        };
+
+        // Improvement 31: iRacing ID validation feedback (digits 1–9, length 4–9).
+        SPB.validateIracingId = function(value) {
+            const v = String(value || '').trim();
+            if (!v) return { ok: false, reason: 'empty' };
+            if (!/^\d+$/.test(v)) return { ok: false, reason: 'non-digit' };
+            if (v.length < 4 || v.length > 9) return { ok: false, reason: 'length' };
+            return { ok: true };
+        };
+
+        // Improvement 32: Output folder validation — flag obviously bad paths client-side.
+        SPB.validateOutputFolder = function(value) {
+            const v = String(value || '').trim();
+            if (!v) return { ok: false, reason: 'empty' };
+            // Reject path traversal / suspicious chars.
+            if (/<|>|\||\?|\*|"|\u0000/.test(v)) return { ok: false, reason: 'bad-chars' };
+            return { ok: true };
+        };
+
+        // ---------- (35-40) KEYBOARD / VISIBILITY / AUTOSAVE ----------
+        // Improvement 33: Document-wide keydown additions: F1 cheat sheet, '/' search focus, Esc clears search.
+        document.addEventListener('keydown', function(e) {
+            try {
+                if (e.defaultPrevented) return;
+                // F1 → shortcut legend (in addition to `?`).
+                if (e.key === 'F1') {
+                    e.preventDefault();
+                    if (typeof showShortcutLegend === 'function') showShortcutLegend();
+                    return;
+                }
+                // Esc on top modal first (before delegating to legacy Esc handler).
+                if (e.key === 'Escape' && SPB.modalStack.length) {
+                    if (SPB.closeTopModal()) { e.preventDefault(); return; }
+                }
+                // '/' focuses search field if present (browser elements only).
+                if (e.key === '/' && document.activeElement && (document.activeElement.tagName === 'BODY' || document.activeElement === document.documentElement)) {
+                    const search = document.getElementById('finishSearchInput') || document.getElementById('chatInput');
+                    if (search) { e.preventDefault(); search.focus(); search.select && search.select(); }
+                    return;
+                }
+                // Esc clears search input when focused.
+                if (e.key === 'Escape' && document.activeElement && document.activeElement.id === 'finishSearchInput') {
+                    document.activeElement.value = '';
+                    document.activeElement.dispatchEvent(new Event('input', { bubbles: true }));
+                    return;
+                }
+            } catch (err) {}
+        }, true);  // capture so we run before legacy handlers
+
+        // Improvement 34: Visibility change handler — pause polling when tab hidden, resume when visible.
+        document.addEventListener('visibilitychange', function() {
+            try {
+                if (document.hidden) {
+                    if (SPB.health.interval) { clearTimeout(SPB.health.interval); SPB.health.interval = null; }
+                    if (typeof ShokkerAPI !== 'undefined' && ShokkerAPI && typeof ShokkerAPI.pausePolling === 'function') {
+                        ShokkerAPI.pausePolling();
+                    }
+                } else {
+                    if (!SPB.health.interval) SPB.probeHealth();
+                    if (typeof ShokkerAPI !== 'undefined' && ShokkerAPI && typeof ShokkerAPI.resumePolling === 'function') {
+                        ShokkerAPI.resumePolling();
+                    }
+                }
+            } catch (e) {}
+        });
+
+        // Improvement 35: Save on window blur — reduces data loss on Alt-Tab.
+        window.addEventListener('blur', function() {
+            try { if (typeof autoSave === 'function') { autoSave(); SPB.stampConfigSave(); } } catch (e) {}
+        });
+
+        // Improvement 36: Save on tab change — triggers when switching browser tabs to background.
+        document.addEventListener('visibilitychange', function() {
+            try {
+                if (document.hidden && typeof autoSave === 'function') {
+                    autoSave();
+                    SPB.stampConfigSave();
+                    SPB.captureWindowSize();
+                }
+            } catch (e) {}
+        });
+
+        // Improvement 37: beforeunload safety net — last-chance save and polling cleanup.
+        window.addEventListener('beforeunload', function() {
+            try {
+                // BUG #72 (Owen, HIGH): autoSave() uses a 500ms debounce; the page
+                // unloads before the timer fires. Use flushAutoSave() which writes
+                // synchronously, then fall back to autoSave() if unavailable.
+                if (typeof flushAutoSave === 'function') flushAutoSave();
+                else if (typeof autoSave === 'function') autoSave();
+                SPB.stampConfigSave();
+                SPB.captureWindowSize();
+                if (SPB.health.interval) { clearTimeout(SPB.health.interval); SPB.health.interval = null; }
+                if (typeof ShokkerAPI !== 'undefined' && ShokkerAPI && typeof ShokkerAPI.stopPolling === 'function') {
+                    ShokkerAPI.stopPolling();
+                }
+            } catch (e) {}
+        });
+
+        // Improvement 38: pagehide cleanup (Safari/iOS firing path that beforeunload can miss).
+        window.addEventListener('pagehide', function() {
+            try {
+                // BUG #72: pagehide must ALSO flush — on mobile/Safari it's the only
+                // reliable save hook (beforeunload is unreliable there).
+                if (typeof flushAutoSave === 'function') flushAutoSave();
+                if (SPB.health.interval) { clearTimeout(SPB.health.interval); SPB.health.interval = null; }
+            } catch (e) {}
+        });
+
+        // BUG #72: visibilitychange → hidden is a THIRD save hook that fires
+        // reliably when the painter switches apps / minimizes without closing.
+        // Flushes opportunistically so 500ms of pending work doesn't sit in
+        // the debounce timer while the painter is away.
+        document.addEventListener('visibilitychange', function () {
+            try {
+                if (document.visibilityState === 'hidden' && typeof flushAutoSave === 'function') {
+                    flushAutoSave();
+                }
+            } catch (e) {}
+        });
+
+        // ---------- (41-44) GLOBAL ERROR HOOKS ----------
+        // Improvement 39: Global error handler — surfaces script errors as toast (rate-limited).
+        SPB._lastErrTs = 0;
+        window.addEventListener('error', function(ev) {
+            try {
+                const now = Date.now();
+                if (now - SPB._lastErrTs < 2000) return; // throttle
+                SPB._lastErrTs = now;
+                const msg = (ev && ev.message) ? ev.message : 'Script error';
+                console.error('[SPB-ERR]', msg, ev && ev.error);
+                if (typeof showToast === 'function') showToast('Script error: ' + msg, true);
+            } catch (e) {}
+        });
+
+        // Improvement 40: Unhandled promise rejection handler.
+        window.addEventListener('unhandledrejection', function(ev) {
+            try {
+                const reason = ev && ev.reason;
+                const msg = reason && reason.message ? reason.message : String(reason || 'unknown');
+                console.error('[SPB-ERR-PROMISE]', msg);
+                if (typeof showToast === 'function' && Date.now() - SPB._lastErrTs > 2000) {
+                    SPB._lastErrTs = Date.now();
+                    showToast('Background task failed: ' + SPB.friendlyFetchError(reason), true);
+                }
+            } catch (e) {}
+        });
+
+        // ---------- (45-50) BOOT PROGRESS / RECOVERY / TOUR ----------
+        // Improvement 41: Boot progress indicator (only shown on first launch or slow boots).
+        SPB._showBootProgress = function() {
+            try {
+                if (document.getElementById('spbBootProgress')) return;
+                const el = document.createElement('div');
+                el.id = 'spbBootProgress';
+                el.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:99999;background:#000;color:#ffd84d;padding:18px 26px;border:1px solid #b58200;border-radius:8px;font-family:inherit;font-size:13px;letter-spacing:0.06em;box-shadow:0 8px 30px rgba(0,0,0,0.7);';
+                el.innerHTML = '<div style="margin-bottom:8px;">Initializing Shokker Paint Booth...</div><div id="spbBootStage" style="font-size:10px;color:#999;">Loading modules...</div>';
+                document.body && document.body.appendChild(el);
+            } catch (e) {}
+        };
+        SPB._setBootStage = function(label) {
+            try {
+                const el = document.getElementById('spbBootStage');
+                if (el) el.textContent = label;
+            } catch (e) {}
+        };
+        SPB._hideBootProgress = function() {
+            try {
+                const el = document.getElementById('spbBootProgress');
+                if (el) el.parentNode.removeChild(el);
+            } catch (e) {}
+        };
+
+        // Improvement 42: Boot recovery / retry — if init fails, show error with Retry button.
+        SPB.showBootError = function(err) {
+            try {
+                const wrap = document.createElement('div');
+                wrap.id = 'spbBootError';
+                wrap.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:99999;background:#1a0e0e;color:#ffb3b3;padding:22px 28px;border:1px solid #7a1d1d;border-radius:8px;font-family:inherit;max-width:560px;font-size:12px;line-height:1.5;box-shadow:0 8px 40px rgba(0,0,0,0.8);';
+                wrap.innerHTML = '<div style="font-size:14px;color:#ff6b6b;margin-bottom:8px;">Initialization failed</div>'
+                    + '<div style="margin-bottom:14px;font-family:monospace;background:#000;padding:8px;border-radius:4px;">' + (err && err.message ? err.message : String(err || 'unknown')) + '</div>'
+                    + '<div style="display:flex;gap:8px;">'
+                    + '<button id="spbBootRetry" style="background:#b58200;color:#000;border:none;padding:8px 14px;cursor:pointer;font-weight:bold;border-radius:4px;">Retry</button>'
+                    + '<button id="spbBootReload" style="background:#333;color:#ccc;border:none;padding:8px 14px;cursor:pointer;border-radius:4px;">Reload page</button>'
+                    + '</div>';
+                document.body && document.body.appendChild(wrap);
+                const retry = document.getElementById('spbBootRetry');
+                if (retry) retry.onclick = function() {
+                    try { wrap.parentNode.removeChild(wrap); } catch (e) {}
+                    try { runBoot(); } catch (e) { SPB.showBootError(e); }
+                };
+                const rel = document.getElementById('spbBootReload');
+                if (rel) rel.onclick = function() { try { window.location.reload(); } catch (e) {} };
+            } catch (e) {}
+        };
+
+        // Improvement 43: Tour guide stub — first-launch walkthrough trigger (lightweight, no UI bloat).
+        SPB.shouldShowTour = function() {
+            try { return !localStorage.getItem('spb_tour_seen'); } catch (e) { return false; }
+        };
+        SPB.markTourSeen = function() {
+            try { localStorage.setItem('spb_tour_seen', '1'); } catch (e) {}
+        };
+
+        // Improvement 44: Welcome message gate — only show once per browser session (in addition to first-launch).
+        SPB.shouldShowWelcomeThisSession = function() {
+            try {
+                if (sessionStorage.getItem('spb_welcomed_this_session')) return false;
+                sessionStorage.setItem('spb_welcomed_this_session', '1');
+                return true;
+            } catch (e) { return true; }
+        };
+
+        // Improvement 45: Tooltip enhancement — append shortcut hints to elements with data-shortcut.
+        SPB.enhanceTooltips = function() {
+            try {
+                document.querySelectorAll('[data-shortcut]').forEach(function(el) {
+                    if (el.__spbTipDone) return;
+                    const sc = el.getAttribute('data-shortcut');
+                    const t = el.getAttribute('title') || '';
+                    el.setAttribute('title', t ? (t + '  (' + sc + ')') : sc);
+                    el.__spbTipDone = true;
+                });
+            } catch (e) {}
+        };
+
+        // Improvement 46: Status-bar polish — inject thin separators between status pill children.
+        SPB.polishStatusBar = function() {
+            try {
+                const bar = document.getElementById('statusBar') || document.querySelector('.status-bar');
+                if (!bar || bar.__spbPolished) return;
+                bar.style.gap = bar.style.gap || '10px';
+                Array.prototype.forEach.call(bar.children, function(child, i, arr) {
+                    if (i > 0 && i < arr.length) {
+                        child.style.borderLeft = child.style.borderLeft || '1px solid rgba(255,255,255,0.08)';
+                        child.style.paddingLeft = child.style.paddingLeft || '10px';
+                    }
+                });
+                bar.__spbPolished = true;
+            } catch (e) {}
+        };
+
+        // Improvement 47: Theme quick-toggle keyboard shortcut (Shift+Ctrl+T).
+        // SESSION ROUTER: bail on defaultPrevented.
+        document.addEventListener('keydown', function(e) {
+            try {
+                if (e.defaultPrevented) return;
+                if (e.ctrlKey && e.shiftKey && (e.key === 'T' || e.key === 't')) {
+                    e.preventDefault();
+                    if (typeof toggleTheme === 'function') toggleTheme();
+                }
+            } catch (err) {}
+        });
+
+        // Improvement 48: Settings dropdown organizer — groups settings buttons by data-settings-group attr.
+        SPB.organizeSettingsDropdown = function() {
+            try {
+                const dd = document.getElementById('settingsDropdown');
+                if (!dd || dd.__spbOrganized) return;
+                const items = Array.prototype.slice.call(dd.querySelectorAll('[data-settings-group]'));
+                if (!items.length) return;
+                const groups = {};
+                items.forEach(function(it) {
+                    const g = it.getAttribute('data-settings-group') || 'Other';
+                    (groups[g] = groups[g] || []).push(it);
+                });
+                Object.keys(groups).forEach(function(g) {
+                    const header = document.createElement('div');
+                    header.textContent = g.toUpperCase();
+                    header.style.cssText = 'font-size:9px;color:#888;letter-spacing:0.1em;padding:6px 10px 2px;';
+                    if (groups[g][0].parentNode) groups[g][0].parentNode.insertBefore(header, groups[g][0]);
+                });
+                dd.__spbOrganized = true;
+            } catch (e) {}
+        };
+
+        // Improvement 49: Render-history polling cleanup helper — exposed for window unload paths.
+        SPB.cleanupAllPolling = function() {
+            try {
+                if (SPB.health.interval) { clearTimeout(SPB.health.interval); SPB.health.interval = null; }
+                if (typeof ShokkerAPI !== 'undefined' && ShokkerAPI && typeof ShokkerAPI.stopPolling === 'function') {
+                    ShokkerAPI.stopPolling();
+                }
+                (SPB._intervals || []).forEach(function(id) { try { clearInterval(id); } catch (e) {} });
+                SPB._intervals = [];
+            } catch (e) {}
+        };
+        SPB._intervals = [];
+        SPB.trackInterval = function(id) { SPB._intervals.push(id); return id; };
+
+        // Improvement 50: Boot finalize — runs after DOM settles to apply non-critical polish.
+        SPB.finalizeBoot = function() {
+            SPB.mark('finalize-start');
+            SPB.applySavedUiScale();
+            SPB.applyCollapsedPanels();
+            SPB.applySavedRightTab();
+            SPB.checkStaleConfig();
+            SPB.detectShortcutConflicts();
+            SPB.enhanceTooltips();
+            SPB.polishStatusBar();
+            SPB.organizeSettingsDropdown();
+            SPB.mark('finalize-end');
+        };
+
+        // Improvement 51: Slow-boot detection — show progress only if init takes > 600ms.
+        SPB._slowBootTimer = setTimeout(function() {
+            if (!SPB._bootDone) SPB._showBootProgress();
+        }, 600);
+
+        // Improvement 52: BroadcastChannel cross-tab notify — alert other tabs about updates.
+        try {
+            if (typeof BroadcastChannel === 'function') {
+                SPB._bc = new BroadcastChannel('spb_updates');
+                SPB._bc.onmessage = function(ev) {
+                    if (!ev || !ev.data) return;
+                    if (ev.data.type === 'build' && SPB.lastKnownBuild && String(ev.data.build) !== String(SPB.lastKnownBuild)) {
+                        if (typeof showToast === 'function') showToast('Another tab detected a new build (B' + ev.data.build + ')', false);
+                    }
+                };
+            }
+        } catch (e) {}
+
+        // Improvement 53: Wrapper that lets the rest of the file kick adaptive health probing.
+        SPB.startAdaptiveHealth = function() {
+            if (SPB.health.interval) clearTimeout(SPB.health.interval);
+            SPB.idle(function() { SPB.probeHealth(); }, 1500);
+        };
+
+        // Run lightweight one-shots immediately (safe even before DOMContentLoaded).
+        SPB.migrateStorage();
+        SPB.applyFirstRunDefaults();
+
         function runBoot() {
-            applySavedTheme();
-            if (typeof init !== 'function') return;
-            init();
-            applySavedTheme();
-            if (typeof renderZones === 'function') renderZones();
-            if (typeof renderZoneDetail === 'function' && typeof zones !== 'undefined' && zones.length > 0) renderZoneDetail(0);
-            var didRestore = false;
-            if (typeof autoRestore === 'function') didRestore = autoRestore();
-            if (typeof zones !== 'undefined' && zones.length === 0) {
+            try {
+                SPB.mark('runBoot-start');
+                applySavedTheme();
+                if (typeof init !== 'function') {
+                    // Improvement 54: explicit recoverable failure path.
+                    SPB._bootDone = true;
+                    if (SPB._slowBootTimer) clearTimeout(SPB._slowBootTimer);
+                    SPB._hideBootProgress();
+                    SPB.showBootError(new Error('init() function not found — script load order broken'));
+                    return;
+                }
+                SPB._setBootStage('Initializing core...');
                 init();
+                applySavedTheme();
+                SPB._setBootStage('Rendering zones...');
                 if (typeof renderZones === 'function') renderZones();
-                if (typeof renderZoneDetail === 'function' && zones.length > 0) renderZoneDetail(0);
+                if (typeof renderZoneDetail === 'function' && typeof zones !== 'undefined' && zones.length > 0) renderZoneDetail(0);
+                var didRestore = false;
+                SPB._setBootStage('Restoring previous session...');
+                if (typeof autoRestore === 'function') didRestore = autoRestore();
+                if (typeof zones !== 'undefined' && zones.length === 0) {
+                    init();
+                    if (typeof renderZones === 'function') renderZones();
+                    if (typeof renderZoneDetail === 'function' && zones.length > 0) renderZoneDetail(0);
+                }
+                SPB._bootDone = true;
+                if (SPB._slowBootTimer) clearTimeout(SPB._slowBootTimer);
+                SPB._hideBootProgress();
+                SPB.mark('runBoot-end');
+                // Improvement 55: defer non-critical polish to next idle cycle so first paint is fast.
+                SPB.afterPaint(function() {
+                    SPB.idle(function() { SPB.finalizeBoot(); }, 1500);
+                    SPB.idle(function() { SPB.startAdaptiveHealth(); }, 2000);
+                });
+            } catch (err) {
+                SPB._bootDone = true;
+                if (SPB._slowBootTimer) clearTimeout(SPB._slowBootTimer);
+                SPB._hideBootProgress();
+                SPB.showBootError(err);
+                console.error('[SPB-BOOT] runBoot failed:', err);
             }
         }
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', runBoot);
         } else {
             runBoot();
+        }
+
+        // First-run welcome message  (Improvement 56: gated to first-launch AND first time this session)
+        if (!localStorage.getItem('spb_has_launched')) {
+            localStorage.setItem('spb_has_launched', '1');
+            setTimeout(function() {
+                if (typeof showToast === 'function') {
+                    showToast('Welcome to Shokker Paint Booth! Press ? or F1 for keyboard shortcuts.', false);
+                }
+            }, 2000);
+        } else if (SPB.shouldShowWelcomeThisSession && SPB.shouldShowWelcomeThisSession()) {
+            // Returning user, new browser session — quieter reminder only on slow boots.
+            // Intentionally do nothing here to keep startup quiet for repeat users.
         }
 
         // Clear iRacing ID highlight once user enters their ID
@@ -3066,11 +4300,156 @@
             }
         }, { passive: false });
 
-        // Auto-save: listen for changes on ALL inputs in the sidebar
+        // Auto-save: listen for changes on ALL inputs in the sidebar (debounced to avoid save-per-keystroke)
+        // Improvement 59: stamp last-save timestamp so stale-config check works.
+        const _debouncedAutoSave = _spbDebounce(function() { try { autoSave(); SPB.stampConfigSave(); } catch (e) {} }, 500);
+        const _autoSaveStamped = function() { try { autoSave(); SPB.stampConfigSave(); } catch (e) {} };
         document.querySelectorAll('#car-info-body input, #car-info-body select').forEach(el => {
-            el.addEventListener('change', autoSave);
-            el.addEventListener('input', autoSave);
+            el.addEventListener('change', _autoSaveStamped);
+            el.addEventListener('input', _debouncedAutoSave);
         });
+
+        // Improvement 60: Live iRacing ID validation feedback (uses SPB.validateIracingId).
+        try {
+            const _idEl = document.getElementById('iracingId');
+            if (_idEl && !_idEl.__spbValidatorBound) {
+                const _validate = function() {
+                    const r = SPB.validateIracingId(_idEl.value);
+                    if (r.ok) {
+                        _idEl.style.outline = '';
+                        _idEl.title = 'iRacing customer ID';
+                    } else if (_idEl.value.trim()) {
+                        _idEl.style.outline = '1px solid #ff8c42';
+                        _idEl.title = 'iRacing ID should be 4–9 digits (' + r.reason + ')';
+                    } else {
+                        _idEl.style.outline = '';
+                    }
+                };
+                _idEl.addEventListener('input', _validate);
+                _idEl.addEventListener('blur', _validate);
+                _idEl.__spbValidatorBound = true;
+            }
+        } catch (e) {}
+
+        // Improvement 61: Output folder client-side validation.
+        try {
+            const _outEl = document.getElementById('outputFolder') || document.getElementById('outputPath');
+            if (_outEl && !_outEl.__spbValidatorBound) {
+                const _validateOut = function() {
+                    const r = SPB.validateOutputFolder(_outEl.value);
+                    if (r.ok) {
+                        _outEl.style.outline = '';
+                    } else if (_outEl.value.trim()) {
+                        _outEl.style.outline = '1px solid #ff8c42';
+                        _outEl.title = 'Invalid output path (' + r.reason + ')';
+                    } else {
+                        _outEl.style.outline = '';
+                    }
+                    // Improvement 62: Auto-normalize backslashes on blur for consistency.
+                    if (_outEl.value && _outEl.value.indexOf('\\') >= 0) {
+                        // do not rewrite during input; only on blur
+                    }
+                };
+                _outEl.addEventListener('input', _validateOut);
+                _outEl.addEventListener('blur', function() {
+                    _validateOut();
+                    try { _outEl.value = SPB.normalizePath(_outEl.value); } catch (e) {}
+                });
+                _outEl.__spbValidatorBound = true;
+            }
+        } catch (e) {}
+
+        // Improvement 63: Storage usage logger (one-shot, console only — useful for QA).
+        SPB.idle(function() {
+            try {
+                const used = SPB.getStorageUsage();
+                if (used > 0) console.log('[SPB-STORAGE] localStorage usage: ' + Math.round(used / 1024) + 'KB');
+                if (used > 4 * 1024 * 1024) SPB.warnQuota();
+            } catch (e) {}
+        }, 4000);
+
+        // Improvement 64: Recent paints menu renderer (idempotent — safe if no anchor element).
+        SPB.renderRecentPaintsMenu = function() {
+            try {
+                const host = document.getElementById('recentPaintsMenu');
+                if (!host) return;
+                const list = SPB.getRecentPaints();
+                if (!list.length) {
+                    host.innerHTML = '<div style="font-size:10px;color:#888;padding:4px;">No recent paints yet</div>';
+                    return;
+                }
+                host.innerHTML = list.map(function(p, i) {
+                    const name = (p.path || '').split('/').pop().split('\\').pop();
+                    return '<div data-rp-idx="' + i + '" style="cursor:pointer;padding:4px 6px;font-size:11px;border-bottom:1px solid #222;" title="' + (p.path || '') + '">' + (name || '(unnamed)') + '</div>';
+                }).join('');
+                Array.prototype.forEach.call(host.querySelectorAll('[data-rp-idx]'), function(row) {
+                    row.onclick = function() {
+                        const idx = parseInt(row.getAttribute('data-rp-idx'), 10);
+                        const p = SPB.getRecentPaints()[idx];
+                        if (!p) return;
+                        if (typeof window.loadPaintByPath === 'function') {
+                            try { window.loadPaintByPath(p.path); } catch (e) {}
+                        } else if (typeof showToast === 'function') {
+                            showToast('Recent: ' + p.path);
+                        }
+                    };
+                });
+            } catch (e) {}
+        };
+
+        // Improvement 65: Expose recent-paint helpers globally so save/load flows can call them.
+        window.spbAddRecentPaint = SPB.addRecentPaint;
+        window.spbReloadLastPaint = SPB.reloadLastPaint;
+        window.spbRenderRecentPaintsMenu = SPB.renderRecentPaintsMenu;
+
+        // Improvement 66: Ctrl+Shift+R reload-last-paint shortcut (note: differs from Ctrl+R = render).
+        // SESSION ROUTER: bail on defaultPrevented.
+        document.addEventListener('keydown', function(e) {
+            try {
+                if (e.defaultPrevented) return;
+                if (e.ctrlKey && e.shiftKey && (e.key === 'R' || e.key === 'r')) {
+                    e.preventDefault();
+                    SPB.reloadLastPaint();
+                }
+            } catch (err) {}
+        });
+
+        // Improvement 67: MutationObserver to enhance tooltips on any newly-added [data-shortcut] elements.
+        try {
+            if (typeof MutationObserver === 'function') {
+                const _spbMO = new MutationObserver(_spbDebounce(function() { SPB.enhanceTooltips(); }, 250));
+                _spbMO.observe(document.documentElement, { childList: true, subtree: true });
+                SPB._mo = _spbMO;
+            }
+        } catch (e) {}
+
+        // Improvement 68: Click-delegated panel-collapse persistence — any element with [data-panel-id] persists state.
+        document.addEventListener('click', function(e) {
+            try {
+                const t = e.target.closest && e.target.closest('[data-panel-toggle]');
+                if (!t) return;
+                const pid = t.getAttribute('data-panel-toggle');
+                if (!pid) return;
+                const panel = document.getElementById(pid);
+                if (!panel) return;
+                const collapsed = panel.classList.toggle('collapsed');
+                SPB.persistPanelToggle(pid, collapsed);
+            } catch (err) {}
+        });
+
+        // Improvement 69: Save window-size on resize end (debounced).
+        window.addEventListener('resize', _spbDebounce(function() { SPB.captureWindowSize(); }, 500));
+
+        // Improvement 70: Window-focus health probe — quick check on tab regain.
+        window.addEventListener('focus', function() {
+            try { if (!document.hidden) SPB.idle(function() { SPB.probeHealth(); }, 200); } catch (e) {}
+        });
+
+        // Debounced window resize handler -- relayout UI on resize without hammering DOM
+        window.addEventListener('resize', _spbDebounce(function() {
+            if (typeof renderZoneQuickView === 'function') renderZoneQuickView();
+            if (typeof updateBottomBarShift === 'function') updateBottomBarShift();
+        }, 200));
 
         ShokkerAPI.startPolling();
 
@@ -3080,17 +4459,26 @@
         }, 2500);
 
         // BUILD 25: Server build check (zombie process fix applied in Electron)
+        // Improvement 57: integrated with SPB.health (banner + adaptive backoff) and SPB.applyBuildInfo (title + update detect).
         setTimeout(async () => {
             const el = document.getElementById('b21check');
             try {
+                if (typeof ShokkerAPI === 'undefined' || !ShokkerAPI.baseUrl) {
+                    console.warn('[BUILD-CHECK] ShokkerAPI not available yet');
+                    return;
+                }
                 const res = await fetch(ShokkerAPI.baseUrl + '/build-check', { signal: AbortSignal.timeout(5000) });
+                if (!res.ok) console.warn('[BUILD-CHECK] Server returned status ' + res.status);
                 const rawText = await res.text();
                 console.log('[BUILD-CHECK] status=' + res.status + ' raw=' + rawText.substring(0, 200));
                 try {
                     const d = JSON.parse(rawText);
-                    // Server info logged to console only — not shown in header
                     console.log(`[BUILD-CHECK] Server B${d.build} | PID:${d.pid} | port:${d.shokker_port_env}`);
-                    document.title = `Shokker Paint Booth v${d.version || '5'}`;
+                    SPB.applyBuildInfo(d);
+                    SPB.health.online = true;
+                    SPB.health.lastOk = Date.now();
+                    // Improvement 58: notify other tabs about current build via BroadcastChannel.
+                    try { if (SPB._bc && d.build) SPB._bc.postMessage({ type: 'build', build: d.build }); } catch (e) {}
                     // GPU status badge
                     if (d.gpu) {
                         var gpuBadge = document.getElementById('gpuStatusBadge');
@@ -3109,6 +4497,9 @@
             } catch (e) {
                 console.error('[BUILD-CHECK] FAILED:', e);
                 console.error(`[BUILD-CHECK] FAILED: ${e.message}`);
-                document.title = 'Shokker Paint Booth v6.0 — Server Unreachable';
+                document.title = 'Shokker Paint Booth — Server Unreachable';
+                SPB.health.online = false;
+                SPB.showServerBanner('down', 'Render server unreachable: ' + SPB.friendlyFetchError(e));
             }
         }, 3000);
+

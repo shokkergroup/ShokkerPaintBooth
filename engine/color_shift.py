@@ -38,7 +38,9 @@ def _cs_adaptive_v5(paint, shape, mask, seed, pm, bb,
     """Zone-color-adaptive CS: sample paint color, apply hue/sat/val ramp from curves.
     hue_offsets: list of (field_pos, hue_deg) - hue = zone_hue + interp(deg)/360
     sat_curve / val_curve: list of (index, value) - mapped to field segments, additive to zone S/V.
+    Resolution-capped: vectorized interpolation computed at 512 max then upscaled.
     """
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     # Sample zone color (mean under mask or center)
     m = mask > 0.2
@@ -53,8 +55,12 @@ def _cs_adaptive_v5(paint, shape, mask, seed, pm, bb,
     hsv1 = rgb_to_hsv_array(zone_rgb.reshape(1, 1, 3))
     z_h, z_s, z_v = float(hsv1[0,0,0]), float(hsv1[0,0,1]), float(hsv1[0,0,2])
 
-    field = multi_scale_noise(shape, [96, 192, 48], [0.45, 0.35, 0.20], seed + 6000)
-    field = np.clip(field * 0.5 + 0.5, 0, 1)
+    # --- Resolution cap: compute field + vectorize at 512 max ---
+    ds = max(1, min(h, w) // 1024)
+    sh, sw = max(64, h // ds), max(64, w // ds)
+
+    field_s = multi_scale_noise((sh, sw), [8, 16, 4], [0.45, 0.35, 0.20], seed + 6000)
+    field_s = np.clip(field_s * 0.5 + 0.5, 0, 1)
 
     def interp_hue_stops(stops, f):
         """stops = [(field_pos, hue_deg), ...]; f in [0,1]. Linear interpolate hue_deg."""
@@ -91,21 +97,35 @@ def _cs_adaptive_v5(paint, shape, mask, seed, pm, bb,
     sat_curve = sat_curve or [(0, 0.15), (1, 0.15)]
     val_curve = val_curve or [(0, 0.2), (1, 0.2)]
 
-    hue_deg = np.vectorize(lambda f: interp_hue_stops(hue_offsets, f))(field)
-    sat_delta = np.vectorize(lambda f: interp_index_curve(sat_curve, f))(field)
-    val_delta = np.vectorize(lambda f: interp_index_curve(val_curve, f))(field)
+    # Vectorize at SMALL resolution (this is the main bottleneck)
+    hue_deg_s = np.vectorize(lambda f: interp_hue_stops(hue_offsets, f))(field_s)
+    sat_delta_s = np.vectorize(lambda f: interp_index_curve(sat_curve, f))(field_s)
+    val_delta_s = np.vectorize(lambda f: interp_index_curve(val_curve, f))(field_s)
 
-    H = (z_h + hue_deg.astype(np.float32) / 360.0) % 1.0
-    S = np.clip(z_s + sat_delta.astype(np.float32), 0, 1)
-    V = np.clip(z_v + val_delta.astype(np.float32), 0, 1)
+    H_s = (z_h + hue_deg_s.astype(np.float32) / 360.0) % 1.0
+    S_s = np.clip(z_s + sat_delta_s.astype(np.float32), 0, 1)
+    V_s = np.clip(z_v + val_delta_s.astype(np.float32), 0, 1)
 
-    r, g, b = hsv_to_rgb_vec(H, S, V)
-    tr = np.clip(r.astype(np.float32), 0, 1)
-    tg = np.clip(g.astype(np.float32), 0, 1)
-    tb = np.clip(b.astype(np.float32), 0, 1)
+    r_s, g_s, b_s = hsv_to_rgb_vec(H_s, S_s, V_s)
+    tr = np.clip(r_s.astype(np.float32), 0, 1)
+    tg = np.clip(g_s.astype(np.float32), 0, 1)
+    tb = np.clip(b_s.astype(np.float32), 0, 1)
+
+    # Upscale color ramps to full resolution
+    if ds > 1:
+        try:
+            import cv2
+            tr = cv2.resize(tr, (w, h), interpolation=cv2.INTER_LINEAR)
+            tg = cv2.resize(tg, (w, h), interpolation=cv2.INTER_LINEAR)
+            tb = cv2.resize(tb, (w, h), interpolation=cv2.INTER_LINEAR)
+        except ImportError:
+            from PIL import Image
+            tr = np.array(Image.fromarray(tr).resize((w, h), Image.BILINEAR))
+            tg = np.array(Image.fromarray(tg).resize((w, h), Image.BILINEAR))
+            tb = np.array(Image.fromarray(tb).resize((w, h), Image.BILINEAR))
 
     if flake_intensity > 0:
-        micro = multi_scale_noise(shape, [2, 4, 8], [0.4, 0.35, 0.25], seed + 6100)
+        micro = multi_scale_noise(shape, [16, 32, 64], [0.4, 0.35, 0.25], seed + 6100)
         s = micro * flake_intensity * pm * mask
         tr = np.clip(tr + s, 0, 1)
         tg = np.clip(tg + s, 0, 1)
@@ -124,6 +144,7 @@ def _cs_direct_rgb(paint, shape, mask, seed, pm, bb, rgb_stops, shimmer=0.025):
 
     This is the foundation of all CS rendering in V5.
     HSV was replaced because h=0° contamination caused brown on neutral colors.
+    Resolution-capped: field + ramp computed at 512 max then upscaled.
 
     Args:
         paint:     (h,w,4) float32 paint array [0,1]
@@ -138,9 +159,14 @@ def _cs_direct_rgb(paint, shape, mask, seed, pm, bb, rgb_stops, shimmer=0.025):
 
     Returns: paint array with color shift applied
     """
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
+    # --- Resolution cap: compute field + ramp at 512 max ---
+    ds = max(1, min(h, w) // 1024)
+    sh, sw = max(64, h // ds), max(64, w // ds)
+
     # Structural field: large scales simulate panel orientation variation
-    field = multi_scale_noise(shape, [96, 192, 48], [0.45, 0.35, 0.20], seed + 6000)
+    field = multi_scale_noise((sh, sw), [8, 16, 4], [0.45, 0.35, 0.20], seed + 6000)
     field = np.clip(field * 0.5 + 0.5, 0, 1)
 
     # Sort stops by field position
@@ -148,9 +174,9 @@ def _cs_direct_rgb(paint, shape, mask, seed, pm, bb, rgb_stops, shimmer=0.025):
     n = len(stops)
 
     # Interpolate RGB at each pixel from the stop ramp
-    tr = np.zeros((h, w), dtype=np.float32)
-    tg = np.zeros((h, w), dtype=np.float32)
-    tb = np.zeros((h, w), dtype=np.float32)
+    tr = np.zeros((sh, sw), dtype=np.float32)
+    tg = np.zeros((sh, sw), dtype=np.float32)
+    tb = np.zeros((sh, sw), dtype=np.float32)
 
     for i in range(n - 1):
         p0, r0, g0, b0 = stops[i]
@@ -173,6 +199,19 @@ def _cs_direct_rgb(paint, shape, mask, seed, pm, bb, rgb_stops, shimmer=0.025):
     tg = np.where(field > p_last, g_last, tg)
     tb = np.where(field > p_last, b_last, tb)
 
+    # Upscale color ramps to full resolution
+    if ds > 1:
+        try:
+            import cv2
+            tr = cv2.resize(tr, (w, h), interpolation=cv2.INTER_LINEAR)
+            tg = cv2.resize(tg, (w, h), interpolation=cv2.INTER_LINEAR)
+            tb = cv2.resize(tb, (w, h), interpolation=cv2.INTER_LINEAR)
+        except ImportError:
+            from PIL import Image
+            tr = np.array(Image.fromarray(tr).resize((w, h), Image.BILINEAR))
+            tg = np.array(Image.fromarray(tg).resize((w, h), Image.BILINEAR))
+            tb = np.array(Image.fromarray(tb).resize((w, h), Image.BILINEAR))
+
     # Apply to paint
     blend = 0.90 * pm
     result = paint.copy()
@@ -183,17 +222,16 @@ def _cs_direct_rgb(paint, shape, mask, seed, pm, bb, rgb_stops, shimmer=0.025):
     # Brightness-only shimmer (NO hue shift - avoids color contamination)
     avg_lum = 0.299 * tr.mean() + 0.587 * tg.mean() + 0.114 * tb.mean()
     if avg_lum > 0.04 and shimmer > 0:
-        micro = multi_scale_noise(shape, [2, 4, 8], [0.4, 0.35, 0.25], seed + 6100)
-        s = micro * shimmer * pm * mask
-        for c in range(3):
-            result[:,:,c] = np.clip(result[:,:,c] + s, 0, 1)
+        micro = multi_scale_noise(shape, [16, 32, 64], [0.4, 0.35, 0.25], seed + 6100)
+        s = (micro * shimmer * pm * mask)[:, :, np.newaxis]
+        result[:, :, :3] = np.clip(result[:, :, :3] + s, 0, 1)
 
     return result
 
 
 def _spec_cs_v5(shape, mask, seed, sm,
-                M_base=228, M_range=25, R_base=10, R_range=10,
-                CC_base=16, CC_range=40):  # CC: 16=max gloss, 17-255=progressively degraded. Range=40 spans fresh→slightly worn.
+                M_base=228, M_range=25, R_base=12, R_range=14,
+                CC_base=16, CC_range=40):  # CC: 16=max gloss, 17-255=progressively degraded. R_range bumped 10→14 for shimmer.
     """Shared spec function for all CS finishes.
     High metallic for chameleon behavior. Coordinate field-driven M/R/CC variation.
     To use a custom spec for a finish, define spec_cs_XXX in that finish's section.
@@ -222,6 +260,7 @@ def paint_cs_cool(paint, shape, mask, seed, pm, bb):
     FIX: Was previously reading zone hue and shifting 180° - red base = orange/pink/blue.
     Now uses absolute RGB stops so color is always predictably cool.
     """
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     rgb_stops = [
         (0.00, 0.05, 0.55, 0.80),   # Cerulean blue (face-on)
         (0.25, 0.00, 0.40, 0.75),   # Deep blue
@@ -239,6 +278,7 @@ def paint_cs_warm(paint, shape, mask, seed, pm, bb):
     """CS Warm - ABSOLUTE warm palette. Always gold/amber/orange/red.
     Does NOT read base color. Locks to warm spectrum regardless of zone.
     """
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     rgb_stops = [
         (0.00, 0.90, 0.80, 0.10),   # Gold (face-on)
         (0.25, 0.92, 0.60, 0.05),   # Amber
@@ -254,6 +294,7 @@ def spec_cs_warm(shape, mask, seed, sm):
 
 def paint_cs_complementary(paint, shape, mask, seed, pm, bb):
     """CS Complementary - reads zone hue, sweeps to its 180° opposite."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     return _cs_adaptive_v5(paint, shape, mask, seed, pm, bb,
         hue_offsets=[(0.0, 0), (0.25, 45), (0.5, 90), (0.75, 135), (1.0, 180)],
         sat_curve=[(0, 0.12), (1, 0.15), (2, 0.18), (3, 0.15), (4, 0.12)],
@@ -265,6 +306,7 @@ def spec_cs_complementary(shape, mask, seed, sm):
 
 def paint_cs_monochrome(paint, shape, mask, seed, pm, bb):
     """CS Monochrome - stays on zone hue, sweeps saturation/value for depth."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     return _cs_adaptive_v5(paint, shape, mask, seed, pm, bb,
         hue_offsets=[(0.0, -5), (0.25, -2), (0.5, 0), (0.75, 2), (1.0, 5)],
         sat_curve=[(0, -0.10), (1, 0.05), (2, 0.15), (3, 0.05), (4, -0.10)],
@@ -277,6 +319,7 @@ def spec_cs_monochrome(shape, mask, seed, sm):
 
 def paint_cs_subtle(paint, shape, mask, seed, pm, bb):
     """CS Subtle - barely perceptible ±20° color drift for refined finishes."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     return _cs_adaptive_v5(paint, shape, mask, seed, pm, bb,
         hue_offsets=[(0.0, -15), (0.25, -5), (0.5, 5), (0.75, 15), (1.0, 25)],
         sat_curve=[(0, 0.08), (1, 0.10), (2, 0.12), (3, 0.10), (4, 0.08)],
@@ -289,6 +332,7 @@ def spec_cs_subtle(shape, mask, seed, sm):
 
 def paint_cs_rainbow(paint, shape, mask, seed, pm, bb):
     """CS Rainbow - full 360° spectral sweep through every color of light."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     return _cs_adaptive_v5(paint, shape, mask, seed, pm, bb,
         hue_offsets=[(0.0, 0), (0.14, 30), (0.28, 60), (0.43, 120),
                      (0.57, 180), (0.71, 240), (0.86, 300), (1.0, 355)],
@@ -304,6 +348,7 @@ def spec_cs_rainbow(shape, mask, seed, sm):
 
 def paint_cs_vivid(paint, shape, mask, seed, pm, bb):
     """CS Vivid - maximum saturation electric color sweep."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     return _cs_adaptive_v5(paint, shape, mask, seed, pm, bb,
         hue_offsets=[(0.0, 0), (0.2, 25), (0.4, 50), (0.6, 80), (0.8, 120), (1.0, 160)],
         sat_curve=[(0, 0.25), (1, 0.28), (2, 0.30), (3, 0.32), (4, 0.28), (5, 0.25)],
@@ -316,6 +361,7 @@ def spec_cs_vivid(shape, mask, seed, sm):
 
 def paint_cs_extreme(paint, shape, mask, seed, pm, bb):
     """CS Extreme - dramatic wide color push (200° departure from base)."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     return _cs_adaptive_v5(paint, shape, mask, seed, pm, bb,
         hue_offsets=[(0.0, 0), (0.2, 50), (0.4, 100), (0.6, 150), (0.8, 180), (1.0, 210)],
         sat_curve=[(0, 0.18), (1, 0.22), (2, 0.25), (3, 0.22), (4, 0.18), (5, 0.15)],
@@ -328,6 +374,7 @@ def spec_cs_extreme(shape, mask, seed, sm):
 
 def paint_cs_triadic(paint, shape, mask, seed, pm, bb):
     """CS Triadic - three equidistant colors at 120° intervals from zone hue."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     return _cs_adaptive_v5(paint, shape, mask, seed, pm, bb,
         hue_offsets=[(0.0, 0), (0.2, 40), (0.4, 80), (0.6, 120), (0.8, 200), (1.0, 240)],
         sat_curve=[(0, 0.15), (1, 0.18), (2, 0.20), (3, 0.22), (4, 0.20), (5, 0.15)],
@@ -340,6 +387,7 @@ def spec_cs_triadic(shape, mask, seed, sm):
 
 def paint_cs_split(paint, shape, mask, seed, pm, bb):
     """CS Split - zone color + two colors flanking its complement (split-complementary)."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     return _cs_adaptive_v5(paint, shape, mask, seed, pm, bb,
         hue_offsets=[(0.0, 0), (0.25, 50), (0.5, 150), (0.75, 180), (1.0, 210)],
         sat_curve=[(0, 0.12), (1, 0.16), (2, 0.20), (3, 0.16), (4, 0.12)],
@@ -351,6 +399,7 @@ def spec_cs_split(shape, mask, seed, sm):
 
 def paint_cs_neon_shift(paint, shape, mask, seed, pm, bb):
     """CS Neon - electric fluorescent sweep from zone base."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     return _cs_adaptive_v5(paint, shape, mask, seed, pm, bb,
         hue_offsets=[(0.0, 0), (0.2, 40), (0.4, 80), (0.6, 140), (0.8, 200), (1.0, 260)],
         sat_curve=[(0, 0.25), (1, 0.30), (2, 0.32), (3, 0.30), (4, 0.28), (5, 0.25)],
@@ -363,6 +412,7 @@ def spec_cs_neon_shift(shape, mask, seed, sm):
 
 def paint_cs_ocean_shift(paint, shape, mask, seed, pm, bb):
     """CS Ocean Shift - aquatic spectrum: teal → cyan → blue → indigo (relative to zone)."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     return _cs_adaptive_v5(paint, shape, mask, seed, pm, bb,
         hue_offsets=[(0.0, 0), (0.25, -20), (0.5, -40), (0.75, -55), (1.0, -70)],
         sat_curve=[(0, 0.12), (1, 0.18), (2, 0.22), (3, 0.18), (4, 0.14)],
@@ -375,6 +425,7 @@ def spec_cs_ocean_shift(shape, mask, seed, sm):
 
 def paint_cs_chrome_shift(paint, shape, mask, seed, pm, bb):
     """CS Chrome Shift - silver-to-blue metallic chrome spectrum sweep."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     return _cs_adaptive_v5(paint, shape, mask, seed, pm, bb,
         hue_offsets=[(0.0, -10), (0.25, 0), (0.5, 15), (0.75, 30), (1.0, 50)],
         sat_curve=[(0, -0.30), (1, -0.25), (2, -0.15), (3, -0.20), (4, -0.25)],
@@ -382,11 +433,12 @@ def paint_cs_chrome_shift(paint, shape, mask, seed, pm, bb):
         flake_intensity=0.06, flake_hue_spread=0.03, blend_strength=0.90)
 
 def spec_cs_chrome_shift(shape, mask, seed, sm):
-    return _spec_cs_v5(shape, mask, seed, sm, M_base=242, M_range=15, R_base=6, R_range=6, CC_range=20)  # Chrome shift: tight CC - chrome is mostly no-coat
+    return _spec_cs_v5(shape, mask, seed, sm, M_base=242, M_range=15, R_base=10, R_range=10, CC_range=20)  # Chrome shift: R bumped for micro-shimmer
 
 
 def paint_cs_earth(paint, shape, mask, seed, pm, bb):
     """CS Earth - warm natural earth tones: olive → umber → sienna → sage."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     return _cs_adaptive_v5(paint, shape, mask, seed, pm, bb,
         hue_offsets=[(0.0, 15), (0.25, 25), (0.5, 40), (0.75, 55), (1.0, 70)],
         sat_curve=[(0, -0.15), (1, -0.10), (2, -0.05), (3, -0.10), (4, -0.15)],
@@ -400,6 +452,7 @@ def spec_cs_earth(shape, mask, seed, sm):
 
 def paint_cs_prism_shift(paint, shape, mask, seed, pm, bb):
     """CS Prism - spectral dispersion like white light through a crystal prism."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     return _cs_adaptive_v5(paint, shape, mask, seed, pm, bb,
         hue_offsets=[(0.0, -30), (0.17, 0), (0.33, 30), (0.5, 60),
                      (0.67, 120), (0.83, 180), (1.0, 240)],
@@ -432,6 +485,7 @@ def paint_cs_deepocean(paint, shape, mask, seed, pm, bb):
     """CS Deep Ocean - absolute blue spectrum: teal surface to abyssal violet.
     Should shift through BLUES only. Fixed: was recoloring base entirely.
     """
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     rgb_stops = [
         (0.00, 0.00, 0.75, 0.75),   # Bright teal surface (face)
         (0.25, 0.00, 0.50, 0.85),   # Cerulean
@@ -449,6 +503,7 @@ def paint_cs_solarflare(paint, shape, mask, seed, pm, bb):
     """CS Solar Flare - absolute fire: yellow-gold through deep crimson.
     Should be yellow/orange/red/crimson. Fixed: was showing pink (HSV h=345° wraparound).
     """
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     rgb_stops = [
         (0.00, 0.98, 0.92, 0.05),   # Bright solar yellow (face)
         (0.20, 0.98, 0.70, 0.02),   # Gold-amber
@@ -465,6 +520,7 @@ def spec_cs_solarflare(shape, mask, seed, sm):
 
 def paint_cs_inferno(paint, shape, mask, seed, pm, bb):
     """CS Inferno - absolute blazing fire: deep crimson through bright gold."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     rgb_stops = [
         (0.00, 0.50, 0.02, 0.02),   # Deep crimson (face)
         (0.20, 0.82, 0.05, 0.05),   # Red
@@ -481,6 +537,7 @@ def spec_cs_inferno(shape, mask, seed, sm):
 
 def paint_cs_nebula(paint, shape, mask, seed, pm, bb):
     """CS Nebula - cosmic: deep purple → magenta → rose → warm gold."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     rgb_stops = [
         (0.00, 0.25, 0.00, 0.55),   # Deep space purple (face)
         (0.25, 0.55, 0.00, 0.55),   # Magenta
@@ -496,6 +553,7 @@ def spec_cs_nebula(shape, mask, seed, sm):
 
 def paint_cs_mystichrome(paint, shape, mask, seed, pm, bb):
     """CS Mystichrome - Ford SVT tribute: absolute forest green → teal → blue → purple."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     rgb_stops = [
         (0.00, 0.10, 0.55, 0.20),   # Forest green (face)
         (0.20, 0.00, 0.55, 0.45),   # Teal-green
@@ -512,6 +570,7 @@ def spec_cs_mystichrome(shape, mask, seed, sm):
 
 def paint_cs_supernova(paint, shape, mask, seed, pm, bb):
     """CS Supernova - widest shift: copper → gold → lime → green → teal → cyan."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     rgb_stops = [
         (0.00, 0.80, 0.45, 0.10),   # Copper (face)
         (0.20, 0.90, 0.72, 0.05),   # Gold
@@ -528,6 +587,7 @@ def spec_cs_supernova(shape, mask, seed, sm):
 
 def paint_cs_emerald(paint, shape, mask, seed, pm, bb):
     """CS Emerald - gem teal to deep violet."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     rgb_stops = [
         (0.00, 0.00, 0.72, 0.50),   # Emerald teal (face)
         (0.25, 0.00, 0.70, 0.75),   # Cyan-teal
@@ -574,6 +634,7 @@ def paint_cs_candypaint(paint, shape, mask, seed, pm, bb):
     """CS Candy Paint - absolute electric candy sweep: magenta → violet → cobalt → teal → lime.
     Vivid saturated colors only. No base color dependency.
     """
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     rgb_stops = [
         (0.00, 0.95, 0.05, 0.55),   # Electric magenta (face)
         (0.20, 0.70, 0.00, 0.90),   # Violet
@@ -592,6 +653,7 @@ def paint_cs_oilslick(paint, shape, mask, seed, pm, bb):
     """CS Oil Slick - iridescent petroleum rainbow: full spectral sweep.
     Like a puddle of oil in sunlight: red → orange → gold → green → teal → blue → violet.
     """
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     rgb_stops = [
         (0.00, 0.85, 0.10, 0.20),   # Deep red (face)
         (0.15, 0.92, 0.45, 0.02),   # Orange
@@ -605,11 +667,12 @@ def paint_cs_oilslick(paint, shape, mask, seed, pm, bb):
     return _cs_direct_rgb(paint, shape, mask, seed, pm, bb, rgb_stops, shimmer=0.04)
 
 def spec_cs_oilslick(shape, mask, seed, sm):
-    return _spec_cs_v5(shape, mask, seed, sm, M_base=235, M_range=20, R_base=8, R_range=8, CC_range=30)  # Oil slick: thin coat variation
+    return _spec_cs_v5(shape, mask, seed, sm, M_base=235, M_range=22, R_base=12, R_range=14, CC_range=30)  # Oil slick: wider R for iridescent shimmer
 
 
 def paint_cs_rosegold(paint, shape, mask, seed, pm, bb):
     """CS Rose Gold - warm metallic luxury sweep: champagne → rose gold → copper → blush."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     rgb_stops = [
         (0.00, 0.97, 0.90, 0.72),   # Champagne (face)
         (0.25, 0.92, 0.68, 0.58),   # Rose gold warm
@@ -625,6 +688,7 @@ def spec_cs_rosegold(shape, mask, seed, sm):
 
 def paint_cs_goldrush(paint, shape, mask, seed, pm, bb):
     """CS Gold Rush - precious metal spectrum: bright gold → amber → bronze → dark copper."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     rgb_stops = [
         (0.00, 0.98, 0.88, 0.10),   # Bright gold (face)
         (0.25, 0.95, 0.72, 0.05),   # Deep gold
@@ -640,6 +704,7 @@ def spec_cs_goldrush(shape, mask, seed, sm):
 
 def paint_cs_toxic(paint, shape, mask, seed, pm, bb):
     """CS Toxic - biohazard acid: nuclear yellow-green → toxic chartreuse → hazardous lime."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     rgb_stops = [
         (0.00, 0.55, 0.95, 0.02),   # Nuclear yellow-green (face)
         (0.25, 0.30, 0.98, 0.05),   # Toxic chartreuse
@@ -657,6 +722,7 @@ def paint_cs_darkflame(paint, shape, mask, seed, pm, bb):
     """CS Dark Flame - volcanic dark fire: near-black → deep crimson → dark orange → char.
     Darker than cs_inferno - moodier, less bright. Classic dark flame paint job feel.
     """
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     rgb_stops = [
         (0.00, 0.08, 0.00, 0.00),   # Near-black charcoal (face)
         (0.20, 0.40, 0.02, 0.02),   # Dark crimson
@@ -827,9 +893,10 @@ def _make_colorshift_paint_direct(r1, g1, b1, r2, g2, b2):
     Color2 appears at the glancing/edge zone.
     """
     def paint_fn(paint, shape, mask, seed, pm, bb):
+        if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
         h, w = shape
         # Structural orientation field
-        field = multi_scale_noise(shape, [96, 192, 48], [0.45, 0.35, 0.20], seed + 6000)
+        field = multi_scale_noise(shape, [8, 16, 4], [0.45, 0.35, 0.20], seed + 6000)
         field = np.clip(field * 0.5 + 0.5, 0, 1)
         # Non-linear: color1 dominates face view
         t = np.clip(np.power(field, 2.5), 0, 1)
@@ -849,10 +916,9 @@ def _make_colorshift_paint_direct(r1, g1, b1, r2, g2, b2):
         lum1 = 0.299 * r1 + 0.587 * g1 + 0.114 * b1
         lum2 = 0.299 * r2 + 0.587 * g2 + 0.114 * b2
         if lum1 > 0.04 or lum2 > 0.04:
-            micro = multi_scale_noise(shape, [2, 4, 8], [0.4, 0.35, 0.25], seed + 6100)
-            shimmer = micro * 0.025 * pm * mask
-            for c in range(3):
-                result[:,:,c] = np.clip(result[:,:,c] + shimmer, 0, 1)
+            micro = multi_scale_noise(shape, [16, 32, 64], [0.4, 0.35, 0.25], seed + 6100)
+            shimmer = (micro * 0.025 * pm * mask)[:, :, np.newaxis]
+            result[:, :, :3] = np.clip(result[:, :, :3] + shimmer, 0, 1)
 
         return result
     return paint_fn

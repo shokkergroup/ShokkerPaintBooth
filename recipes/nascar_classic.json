@@ -1,0 +1,82 @@
+{
+  "name": "NASCAR Classic",
+  "description": "Throwback stock car livery with gloss body, chrome numbers, carbon hood, and matte lower trim.",
+  "author": "Shokker Paint Booth",
+  "version": "6.2.0",
+  "compatible_with": "chevy_silverado_2019, generic_stock_car",
+  "notes": "Best on cars with a clean door number area. Tune baseColor on Body zone to match your team color. Carbon hood reads well under daylight and night lights.",
+  "zones": [
+    {
+      "name": "Body",
+      "color": "everything",
+      "base": "gloss",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "special",
+      "baseColor": "#1a1a2e",
+      "baseColorMode": "solid",
+      "baseStrength": 1,
+      "baseSpecStrength": 1
+    },
+    {
+      "name": "Car Numbers",
+      "color": "yellow",
+      "base": "chrome",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#ffcc00",
+      "pickerTolerance": 35,
+      "baseColor": "#ffffff",
+      "baseColorMode": "source"
+    },
+    {
+      "name": "Hood",
+      "color": "dark",
+      "base": "carbon_base",
+      "pattern": "carbon_fiber",
+      "intensity": "90",
+      "colorMode": "quick",
+      "pickerColor": "#222222",
+      "pickerTolerance": 40,
+      "patternIntensity": "85",
+      "scale": 1.0
+    },
+    {
+      "name": "Lower Trim",
+      "color": "gray",
+      "base": "matte",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#555555",
+      "pickerTolerance": 30,
+      "baseColor": "#1a1a1a",
+      "baseColorMode": "solid"
+    },
+    {
+      "name": "Sponsors / Logos",
+      "color": "white",
+      "base": "semi_gloss",
+      "pattern": "none",
+      "intensity": "85",
+      "colorMode": "quick",
+      "pickerColor": "#ffffff",
+      "pickerTolerance": 25,
+      "baseColorMode": "source"
+    },
+    {
+      "name": "Racing Stripe Accent",
+      "color": "red",
+      "base": "gloss",
+      "pattern": "racing_stripe",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#cc2222",
+      "pickerTolerance": 35,
+      "baseColor": "#e81818",
+      "baseColorMode": "source",
+      "patternIntensity": "100"
+    }
+  ]
+}

@@ -1,0 +1,93 @@
+{
+  "name": "Rat Rod Patina",
+  "description": "Intentionally ugly-beautiful rat rod. Flat black body with exposed red oxide primer patches, surface rust bloom, weathered matte chrome, and faded hand-painted numbers. Looks abandoned, drives like a rocket.",
+  "author": "Shokker Paint Booth",
+  "version": "6.2.0",
+  "compatible_with": "pre-war coupes, model A, model T, hot rod builds, chopped trucks",
+  "notes": "Rat rod lives in the imperfection. rally_mud stands in for surface rust bloom; keep intensity 70-85 so it reads as natural aging, not caked mud. Don't over-polish — patina should feel earned.",
+  "zones": [
+    {
+      "name": "Flat Black Body",
+      "color": "everything",
+      "base": "flat_black",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "special",
+      "baseColor": "#1c1c1c",
+      "baseColorMode": "solid",
+      "baseStrength": 0.95,
+      "baseSpecStrength": 0.4
+    },
+    {
+      "name": "Red Oxide Primer Patch",
+      "color": "red",
+      "base": "matte",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#993322",
+      "pickerTolerance": 38,
+      "baseColor": "#7a2a17",
+      "baseColorMode": "solid"
+    },
+    {
+      "name": "Surface Rust Bloom",
+      "color": "orange",
+      "base": "rally_mud",
+      "pattern": "none",
+      "intensity": "80",
+      "colorMode": "quick",
+      "pickerColor": "#a85020",
+      "pickerTolerance": 40,
+      "baseColor": "#8a4417",
+      "baseColorMode": "solid"
+    },
+    {
+      "name": "Weathered Matte Chrome",
+      "color": "gray",
+      "base": "dark_chrome",
+      "pattern": "none",
+      "intensity": "85",
+      "colorMode": "quick",
+      "pickerColor": "#8a8a8a",
+      "pickerTolerance": 32,
+      "baseColorMode": "source"
+    },
+    {
+      "name": "Faded Hand Number",
+      "color": "white",
+      "base": "matte",
+      "pattern": "none",
+      "intensity": "95",
+      "colorMode": "quick",
+      "pickerColor": "#d8d2c0",
+      "pickerTolerance": 28,
+      "baseColor": "#c4bda6",
+      "baseColorMode": "solid"
+    },
+    {
+      "name": "Yellowed Old Paint",
+      "color": "yellow",
+      "base": "matte",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#b8a040",
+      "pickerTolerance": 35,
+      "baseColor": "#9a8836",
+      "baseColorMode": "solid"
+    },
+    {
+      "name": "Carbon Black Frame",
+      "color": "dark",
+      "base": "carbon_base",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#0d0d0d",
+      "pickerTolerance": 30,
+      "baseColor": "#080808",
+      "baseColorMode": "solid"
+    }
+  ]
+}

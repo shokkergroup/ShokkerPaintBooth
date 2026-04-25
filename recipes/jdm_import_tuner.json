@@ -1,0 +1,107 @@
+{
+  "name": "JDM Import Tuner",
+  "description": "Modern Japanese tuner aesthetic. Pearl white body with bright red Type-R style accents, carbon fiber hood, electric blue graphics, piano black window trim, chrome badging, and neon pink underglow accent. Spoon/Nismo energy.",
+  "author": "Shokker Paint Booth",
+  "version": "6.2.0",
+  "compatible_with": "civic type r, s2000, gt-r, silvia, evo, sti, modern JDM tuners",
+  "notes": "Pearl white is the hero — don't let graphics overwhelm it. Carbon hood reads darker than flat_black in sun; if carbon looks muddy, bump pickerTolerance to 35. Pink underglow is optional flavor.",
+  "zones": [
+    {
+      "name": "Pearl White Body",
+      "color": "everything",
+      "base": "pearl",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "special",
+      "baseColor": "#f8f4ec",
+      "baseColorMode": "solid",
+      "baseStrength": 1,
+      "baseSpecStrength": 1
+    },
+    {
+      "name": "Type-R Red Accents",
+      "color": "red",
+      "base": "gloss",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#d91818",
+      "pickerTolerance": 32,
+      "baseColor": "#c10a0a",
+      "baseColorMode": "solid"
+    },
+    {
+      "name": "Carbon Fiber Hood",
+      "color": "dark",
+      "base": "carbon_base",
+      "pattern": "carbon_fiber",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#1a1a1a",
+      "pickerTolerance": 30,
+      "baseColor": "#0f0f0f",
+      "baseColorMode": "solid",
+      "patternIntensity": "100"
+    },
+    {
+      "name": "Electric Blue Graphic",
+      "color": "blue",
+      "base": "neon_electric_blue",
+      "pattern": "racing_stripe",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#00a8ff",
+      "pickerTolerance": 30,
+      "baseColor": "#1bbaff",
+      "baseColorMode": "solid",
+      "patternIntensity": "90"
+    },
+    {
+      "name": "Piano Black Window Trim",
+      "color": "gray",
+      "base": "piano_black",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#2a2a2a",
+      "pickerTolerance": 28,
+      "baseColor": "#0a0a0a",
+      "baseColorMode": "solid"
+    },
+    {
+      "name": "Chrome Badges",
+      "color": "white",
+      "base": "chrome",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#d8d8d8",
+      "pickerTolerance": 22,
+      "baseColorMode": "source"
+    },
+    {
+      "name": "Neon Pink Underglow",
+      "color": "orange",
+      "base": "neon_pink_blaze",
+      "pattern": "none",
+      "intensity": "95",
+      "colorMode": "quick",
+      "pickerColor": "#ff3aa0",
+      "pickerTolerance": 32,
+      "baseColor": "#ff2aa8",
+      "baseColorMode": "solid"
+    },
+    {
+      "name": "Toxic Green Decal",
+      "color": "green",
+      "base": "neon_toxic_green",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#33ff55",
+      "pickerTolerance": 32,
+      "baseColor": "#3afa60",
+      "baseColorMode": "solid"
+    }
+  ]
+}

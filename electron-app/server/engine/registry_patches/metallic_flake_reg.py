@@ -18,7 +18,7 @@ SPEC_PATCH = {
     "diamond_coat": "spec_diamond_coat",
     "electric_ice": "spec_electric_ice",
     "gunmetal": "spec_gunmetal_metallic",
-    "metallic": "spec_copper_metallic",
+    "metallic": "spec_standard_metallic",
     "pearl": "spec_pearl_classic",
     "plasma_metal": "spec_plasma_metal",
     "rose_gold": "spec_rose_gold_metallic",

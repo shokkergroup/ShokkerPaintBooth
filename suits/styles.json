@@ -1,0 +1,237 @@
+{
+  "version": "6.2.0",
+  "description": "Driver suit design style presets for SPB",
+  "styles": [
+    {
+      "id": "modern_pro_suit",
+      "name": "Modern Pro Suit",
+      "category": "professional",
+      "primary_color": [240, 240, 240],
+      "secondary_color": [20, 20, 30],
+      "tertiary_color": [220, 0, 30],
+      "zones": {
+        "chest": "primary_with_subtle_secondary_logo",
+        "back": "primary_with_secondary_name_strip",
+        "left_arm": "secondary_band_with_tertiary_accent",
+        "right_arm": "secondary_band_with_tertiary_accent",
+        "left_leg": "primary",
+        "right_leg": "primary",
+        "collar": "secondary",
+        "belt": "secondary"
+      },
+      "finish": "matte",
+      "spec": {"metallic": 0, "roughness": 220, "clearcoat": 200},
+      "notes": "Subtle, professional sponsor placement. White base with dark accents and a small color hit. Reads great on broadcast."
+    },
+    {
+      "id": "vintage_period_suit",
+      "name": "Vintage Period Suit",
+      "category": "historic",
+      "primary_color": [220, 200, 160],
+      "secondary_color": [120, 30, 30],
+      "tertiary_color": [40, 40, 40],
+      "zones": {
+        "chest": "primary_with_simple_secondary_block_logo",
+        "back": "primary",
+        "left_arm": "primary_with_country_patch",
+        "right_arm": "primary",
+        "left_leg": "primary",
+        "right_leg": "primary",
+        "collar": "tertiary",
+        "belt": "tertiary"
+      },
+      "finish": "matte",
+      "spec": {"metallic": 0, "roughness": 230, "clearcoat": 220},
+      "notes": "Cream/tan base with limited sponsor count and a single block-color logo. Period correct for historic series."
+    },
+    {
+      "id": "carbon_accent_suit",
+      "name": "Carbon Accent Suit",
+      "category": "tech_modern",
+      "primary_color": [30, 30, 35],
+      "secondary_color": [220, 220, 220],
+      "tertiary_color": [255, 200, 0],
+      "zones": {
+        "chest": "primary_with_carbon_yoke",
+        "back": "primary_with_carbon_yoke",
+        "left_arm": "carbon_pattern_sleeve_band",
+        "right_arm": "carbon_pattern_sleeve_band",
+        "left_leg": "primary_with_carbon_knee_panel",
+        "right_leg": "primary_with_carbon_knee_panel",
+        "collar": "tertiary",
+        "belt": "secondary"
+      },
+      "finish": "satin",
+      "spec": {"metallic": 40, "roughness": 180, "clearcoat": 120},
+      "notes": "Carbon-pattern accent panels at yoke, knees, and sleeves. Modern/tech aesthetic."
+    },
+    {
+      "id": "color_block_classic",
+      "name": "Color Block Classic",
+      "category": "classic_motorsport",
+      "primary_color": [255, 255, 255],
+      "secondary_color": [200, 30, 30],
+      "tertiary_color": [10, 30, 90],
+      "zones": {
+        "chest": "split_vertical_primary_secondary",
+        "back": "split_vertical_primary_secondary",
+        "left_arm": "secondary",
+        "right_arm": "tertiary",
+        "left_leg": "primary",
+        "right_leg": "primary",
+        "collar": "tertiary",
+        "belt": "secondary"
+      },
+      "finish": "matte",
+      "spec": {"metallic": 0, "roughness": 220, "clearcoat": 200},
+      "notes": "Bold three-color block layout. Great for team identity and easy on-track recognition."
+    },
+    {
+      "id": "gradient_team_suit",
+      "name": "Gradient Team Suit",
+      "category": "modern",
+      "primary_color": [10, 30, 120],
+      "secondary_color": [0, 200, 220],
+      "tertiary_color": [255, 255, 255],
+      "zones": {
+        "chest": "gradient_primary_to_secondary",
+        "back": "gradient_primary_to_secondary",
+        "left_arm": "gradient_primary_to_secondary",
+        "right_arm": "gradient_primary_to_secondary",
+        "left_leg": "primary",
+        "right_leg": "primary",
+        "collar": "tertiary",
+        "belt": "tertiary"
+      },
+      "finish": "matte",
+      "spec": {"metallic": 0, "roughness": 220, "clearcoat": 200},
+      "notes": "Top-to-bottom team-color gradient on the upper body. Pairs with a gradient-fade helmet."
+    },
+    {
+      "id": "minimalist_white",
+      "name": "Minimalist White",
+      "category": "minimalist",
+      "primary_color": [245, 245, 245],
+      "secondary_color": [40, 40, 40],
+      "tertiary_color": [200, 0, 0],
+      "zones": {
+        "chest": "primary_with_small_secondary_chest_logo",
+        "back": "primary_with_secondary_name",
+        "left_arm": "primary",
+        "right_arm": "primary",
+        "left_leg": "primary",
+        "right_leg": "primary",
+        "collar": "primary",
+        "belt": "secondary"
+      },
+      "finish": "matte",
+      "spec": {"metallic": 0, "roughness": 230, "clearcoat": 220},
+      "notes": "Clean white suit with one small logo and a name strip. Looks premium and lets sponsors stand out."
+    },
+    {
+      "id": "bold_sponsor_focused",
+      "name": "Bold Sponsor Focused",
+      "category": "commercial",
+      "primary_color": [255, 230, 0],
+      "secondary_color": [10, 10, 10],
+      "tertiary_color": [255, 255, 255],
+      "zones": {
+        "chest": "primary_with_large_secondary_block_logo",
+        "back": "primary_with_large_secondary_block_logo",
+        "left_arm": "primary_with_secondary_patches_strip",
+        "right_arm": "primary_with_secondary_patches_strip",
+        "left_leg": "primary_with_secondary_block_logo",
+        "right_leg": "primary_with_secondary_block_logo",
+        "collar": "secondary",
+        "belt": "secondary"
+      },
+      "finish": "matte",
+      "spec": {"metallic": 0, "roughness": 220, "clearcoat": 200},
+      "notes": "High-contrast sponsor-heavy layout. Maximizes visibility for primary partners."
+    },
+    {
+      "id": "tech_pattern_suit",
+      "name": "Tech Pattern Suit",
+      "category": "tech_modern",
+      "primary_color": [20, 30, 50],
+      "secondary_color": [80, 200, 255],
+      "tertiary_color": [255, 255, 255],
+      "zones": {
+        "chest": "primary_with_circuit_pattern",
+        "back": "primary_with_circuit_pattern",
+        "left_arm": "primary_with_circuit_pattern",
+        "right_arm": "primary_with_circuit_pattern",
+        "left_leg": "primary",
+        "right_leg": "primary",
+        "collar": "secondary",
+        "belt": "secondary"
+      },
+      "finish": "matte",
+      "spec": {"metallic": 0, "roughness": 220, "clearcoat": 200},
+      "notes": "Subtle circuit-board / hex pattern overlay. Pairs well with carbon-accent helmet."
+    },
+    {
+      "id": "patriotic_team_suit",
+      "name": "Patriotic Team Suit",
+      "category": "patriotic",
+      "primary_color": [200, 30, 40],
+      "secondary_color": [255, 255, 255],
+      "tertiary_color": [20, 40, 120],
+      "zones": {
+        "chest": "tri_color_diagonal_band",
+        "back": "tri_color_diagonal_band",
+        "left_arm": "tertiary_with_country_flag_patch",
+        "right_arm": "primary_with_country_flag_patch",
+        "left_leg": "secondary",
+        "right_leg": "secondary",
+        "collar": "tertiary",
+        "belt": "tertiary"
+      },
+      "finish": "matte",
+      "spec": {"metallic": 0, "roughness": 220, "clearcoat": 200},
+      "notes": "Three-color diagonal band across torso plus arm flag patches. Generic patriotic layout."
+    },
+    {
+      "id": "monochrome_pro",
+      "name": "Monochrome Pro",
+      "category": "minimalist",
+      "primary_color": [25, 25, 25],
+      "secondary_color": [80, 80, 85],
+      "tertiary_color": [200, 200, 200],
+      "zones": {
+        "chest": "primary_with_tertiary_logo",
+        "back": "primary_with_tertiary_name",
+        "left_arm": "secondary_band",
+        "right_arm": "secondary_band",
+        "left_leg": "primary",
+        "right_leg": "primary",
+        "collar": "secondary",
+        "belt": "secondary"
+      },
+      "finish": "matte",
+      "spec": {"metallic": 0, "roughness": 220, "clearcoat": 200},
+      "notes": "All-black palette with grey accents and white text. Stealth pro look."
+    },
+    {
+      "id": "neon_underground_suit",
+      "name": "Neon Underground Suit",
+      "category": "underground",
+      "primary_color": [10, 10, 15],
+      "secondary_color": [0, 255, 180],
+      "tertiary_color": [255, 0, 200],
+      "zones": {
+        "chest": "primary_with_neon_pinstripe",
+        "back": "primary_with_secondary_glow_name",
+        "left_arm": "primary_with_neon_pinstripe",
+        "right_arm": "primary_with_neon_pinstripe",
+        "left_leg": "primary",
+        "right_leg": "primary",
+        "collar": "primary",
+        "belt": "primary"
+      },
+      "finish": "matte",
+      "spec": {"metallic": 0, "roughness": 220, "clearcoat": 200},
+      "notes": "Black suit with neon pinstripe accents. Matches the neon underground helmet preset."
+    }
+  ]
+}

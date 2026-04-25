@@ -1,0 +1,77 @@
+{
+  "name": "Chrome Show Car",
+  "description": "Trailer-queen full chrome body, candy-colored accents, and deep piano-black trim. Built for the lights, not the track.",
+  "author": "Shokker Paint Booth",
+  "version": "6.2.0",
+  "compatible_with": "any chassis, optimized for show cars / display builds",
+  "notes": "Full chrome is visually aggressive and can flood sensors in spec-heavy scenes. Drop Body baseSpecStrength to 0.8 if reflections feel over-amplified in your track environment.",
+  "zones": [
+    {
+      "name": "Chrome Body",
+      "color": "everything",
+      "base": "chrome",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "special",
+      "baseColorMode": "source",
+      "baseStrength": 1,
+      "baseSpecStrength": 1
+    },
+    {
+      "name": "Candy Accent Primary",
+      "color": "red",
+      "base": "candy_apple",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#cc2222",
+      "pickerTolerance": 35,
+      "baseColor": "#b8001f",
+      "baseColorMode": "solid"
+    },
+    {
+      "name": "Candy Accent Secondary",
+      "color": "blue",
+      "base": "candy_cobalt",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#3366ff",
+      "pickerTolerance": 35,
+      "baseColorMode": "source"
+    },
+    {
+      "name": "Candy Accent Tertiary",
+      "color": "green",
+      "base": "candy_emerald",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#22cc22",
+      "pickerTolerance": 35,
+      "baseColorMode": "source"
+    },
+    {
+      "name": "Piano Black Trim",
+      "color": "dark",
+      "base": "piano_black",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#1a1a1a",
+      "pickerTolerance": 35,
+      "baseColorMode": "source"
+    },
+    {
+      "name": "Pinstripe Detail",
+      "color": "yellow",
+      "base": "mirror_gold",
+      "pattern": "pinstripe",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#ffcc00",
+      "pickerTolerance": 30,
+      "patternIntensity": "100"
+    }
+  ]
+}

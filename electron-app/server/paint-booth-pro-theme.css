@@ -1,0 +1,3231 @@
+/* ═══════════════════════════════════════════════════════════════════
+   SHOKKER PAINT BOOTH — PRO THEME OVERLAY v2 ("The 2026 Refit")
+   Loads AFTER paint-booth-v2.css. Pure cosmetic overlay.
+
+   GOAL: Make SPB look like a professional 2026 app (Photoshop CC,
+   Figma, Linear) instead of a 2016 "racing science experiment."
+
+   PRESERVED: EKG heartbeat branding (header line, render button pulse,
+   zone card EKG border, toast EKG accent) — that's the Shokker DNA.
+
+   NEUTRALIZED: Random rainbow accents (cyan/pink/green/yellow circles,
+   colored zone pills, screaming pulse animations on every UI element).
+
+   ZERO HTML or JS changes. Single accent system: ORANGE (state) + TEAL
+   (action) + EKG-PINK (heartbeat moments only).
+   ═══════════════════════════════════════════════════════════════════ */
+
+:root {
+    /* Surface palette — deep navy/slate (Photoshop-like) */
+    --pro-app:           #080c12;
+    --pro-titlebar:      #0b1018;
+    --pro-toolbar:       #0d1219;
+    --pro-panel:         #0f141c;
+    --pro-panel-header:  #111822;
+    --pro-canvas-bg:     #0a0f16;
+    --pro-input:         #0c1119;
+    --pro-hover:         rgba(148, 163, 184, 0.08);
+    --pro-active:        rgba(148, 163, 184, 0.12);
+    --pro-selected:      rgba(255, 122, 24, 0.10);
+
+    /* Borders */
+    --pro-border-subtle:  rgba(148, 163, 184, 0.08);
+    --pro-border-default: rgba(148, 163, 184, 0.14);
+    --pro-border-strong:  rgba(148, 163, 184, 0.22);
+    --pro-border-focus:   rgba(255, 122, 24, 0.55);
+
+    /* Text */
+    --pro-text-primary:   #e8ecf2;
+    --pro-text-secondary: #8899aa;
+    --pro-text-tertiary:  #5a6b7d;
+    --pro-text-quaternary:#465261;
+
+    /* Brand accents — ONLY two colors used for state in the whole app */
+    --pro-orange:         #ff7a18;          /* Active state, selection */
+    --pro-orange-light:   #ff9a4a;
+    --pro-orange-dim:     rgba(255, 122, 24, 0.14);
+    --pro-orange-glow:    rgba(255, 122, 24, 0.32);
+    --pro-teal:           #14b8a6;          /* Create / positive actions */
+    --pro-teal-light:     #5eead4;
+    --pro-teal-dim:       rgba(20, 184, 166, 0.12);
+    --pro-ekg-pink:       #ff3366;          /* RESERVED for EKG only */
+
+    /* Shadows / glow */
+    --pro-glow-orange:    0 0 20px rgba(255, 122, 24, 0.18);
+    --pro-shadow-md:      0 4px 12px rgba(0,0,0,0.4);
+    --pro-shadow-lg:      0 8px 32px rgba(0,0,0,0.5);
+
+    /* Easing */
+    --pro-ease-out:       cubic-bezier(0.16, 1, 0.3, 1);
+    --pro-fast:           120ms;
+    --pro-normal:         200ms;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   GLOBAL — typography & app surface
+   ═══════════════════════════════════════════════════════════════════ */
+body, html {
+    background: var(--pro-app) !important;
+    color: var(--pro-text-primary) !important;
+    font-family: 'Segoe UI', 'Inter', -apple-system, sans-serif !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   HEADER / TITLEBAR — quieter, EKG line preserved
+   ═══════════════════════════════════════════════════════════════════ */
+.header {
+    background: var(--pro-titlebar) !important;
+    /* EKG line preserved — see EKG section at bottom of this file */
+    box-shadow: none !important;
+}
+
+.header h1 {
+    color: var(--pro-text-secondary) !important;
+    letter-spacing: 0.04em !important;
+    font-weight: 600 !important;
+    text-transform: none !important;
+}
+.header h1 strong, .header .accent {
+    color: var(--pro-orange) !important;
+    font-weight: 700 !important;
+}
+
+/* Version badge — muted, no neon */
+.version-badge {
+    background: rgba(255, 122, 24, 0.10) !important;
+    color: var(--pro-orange-light) !important;
+    border: 1px solid rgba(255, 122, 24, 0.25) !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+    border-radius: 999px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.04em !important;
+    animation: none !important;
+}
+
+/* Auto-saved badge — muted */
+#autosaveBadge {
+    color: var(--pro-text-tertiary) !important;
+    font-size: 11px !important;
+    text-transform: none !important;
+    letter-spacing: 0 !important;
+}
+
+/* Server status indicator — quiet dot */
+#serverStatus {
+    text-shadow: none !important;
+    animation: none !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   PANELS — deep panel surfaces
+   ═══════════════════════════════════════════════════════════════════ */
+.left-panel {
+    background: var(--pro-panel) !important;
+    border-right: 1px solid var(--pro-border-subtle) !important;
+    box-shadow: none !important;
+}
+
+.right-panel {
+    background: var(--pro-panel) !important;
+    border-left: 1px solid var(--pro-border-subtle) !important;
+    box-shadow: none !important;
+}
+
+.center-panel {
+    background: var(--pro-canvas-bg) !important;
+}
+
+.vertical-toolbar {
+    background: var(--pro-toolbar) !important;
+    border-right: 1px solid var(--pro-border-subtle) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   VERTICAL TOOLBAR — Photoshop-like 36×36 buttons
+   ═══════════════════════════════════════════════════════════════════ */
+.vtool-btn {
+    border-radius: 8px !important;
+    color: var(--pro-text-secondary) !important;
+    transition: all var(--pro-fast) var(--pro-ease-out) !important;
+    border: 1px solid transparent !important;
+    background: transparent !important;
+}
+.vtool-btn:hover {
+    background: var(--pro-hover) !important;
+    color: var(--pro-text-primary) !important;
+    border-color: var(--pro-border-default) !important;
+}
+.vtool-btn.active {
+    background: var(--pro-orange-dim) !important;
+    color: var(--pro-orange-light) !important;
+    border-color: var(--pro-border-focus) !important;
+    box-shadow: inset 0 0 0 1px rgba(255, 122, 24, 0.30) !important;
+    /* KILL the pulsing animation — calm orange instead */
+    animation: none !important;
+}
+.vtool-btn.vtool-destructive:hover {
+    border-color: var(--pro-ekg-pink) !important;
+    color: var(--pro-ekg-pink) !important;
+    background: rgba(255, 51, 102, 0.08) !important;
+}
+
+.vtool-label {
+    color: var(--pro-text-tertiary) !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.10em !important;
+    font-weight: 600 !important;
+    font-size: 9px !important;
+}
+
+.vtool-group {
+    border-bottom-color: var(--pro-border-subtle) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   SECTION HEADERS — clean Adobe-style
+   ═══════════════════════════════════════════════════════════════════ */
+.section-header {
+    background: var(--pro-panel-header) !important;
+    border-bottom: 1px solid var(--pro-border-subtle) !important;
+    border-left: none !important;
+    padding: 10px 14px !important;
+}
+.section-header h3 {
+    color: var(--pro-text-tertiary) !important;
+    font-size: 11px !important;
+    letter-spacing: 0.14em !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+}
+.section-header:hover {
+    background: rgba(20, 28, 40, 0.95) !important;
+}
+.section-header .toggle-icon {
+    color: var(--pro-text-quaternary) !important;
+}
+.section-body {
+    background: transparent !important;
+    border-bottom-color: var(--pro-border-subtle) !important;
+}
+.settings-section {
+    border-bottom-color: var(--pro-border-subtle) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   BUTTONS — neutral by default, orange/teal for state
+   ═══════════════════════════════════════════════════════════════════ */
+.btn {
+    background: var(--pro-input) !important;
+    border: 1px solid var(--pro-border-default) !important;
+    color: var(--pro-text-secondary) !important;
+    font-family: inherit !important;
+    font-weight: 500 !important;
+    text-transform: none !important;
+    letter-spacing: 0.02em !important;
+    border-radius: 6px !important;
+    transition: all var(--pro-fast) var(--pro-ease-out) !important;
+    text-shadow: none !important;
+    box-shadow: none !important;
+}
+.btn:hover {
+    background: var(--pro-hover) !important;
+    border-color: var(--pro-border-strong) !important;
+    color: var(--pro-text-primary) !important;
+    box-shadow: none !important;
+    transform: none !important;
+}
+.btn:active {
+    background: var(--pro-active) !important;
+    transform: none !important;
+}
+.btn.btn-sm {
+    font-size: 11px !important;
+    padding: 4px 10px !important;
+}
+
+/* Render button — orange brand button (EKG icon preserved separately) */
+.btn-render {
+    background: linear-gradient(180deg, var(--pro-orange) 0%, #e56a14 100%) !important;
+    border: 1px solid rgba(255, 154, 74, 0.4) !important;
+    color: white !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.18em !important;
+    font-weight: 700 !important;
+    font-size: 14px !important;
+    padding: 12px 32px !important;
+    border-radius: 10px !important;
+    box-shadow: var(--pro-glow-orange), inset 0 1px 0 rgba(255,255,255,0.14) !important;
+    /* KEEP the EKG pulse animation — it's the brand */
+}
+.btn-render:hover {
+    background: linear-gradient(180deg, var(--pro-orange-light) 0%, var(--pro-orange) 100%) !important;
+    box-shadow: 0 0 32px var(--pro-orange-glow), inset 0 1px 0 rgba(255,255,255,0.2) !important;
+    transform: translateY(-1px) !important;
+}
+
+/* + Add Zone button — teal create accent */
+.btn-zone-action {
+    background: var(--pro-teal-dim) !important;
+    border: 1px solid rgba(20, 184, 166, 0.35) !important;
+    color: var(--pro-teal-light) !important;
+    font-weight: 600 !important;
+    font-size: 12px !important;
+    text-shadow: none !important;
+    box-shadow: none !important;
+    text-transform: none !important;
+    letter-spacing: 0 !important;
+}
+.btn-zone-action:hover {
+    background: rgba(20, 184, 166, 0.22) !important;
+    border-color: rgba(20, 184, 166, 0.55) !important;
+    color: #99f6e4 !important;
+    box-shadow: 0 0 16px rgba(20, 184, 166, 0.18) !important;
+    transform: none !important;
+}
+
+.btn-accent, .btn.btn-accent {
+    background: var(--pro-orange-dim) !important;
+    border-color: rgba(255, 122, 24, 0.35) !important;
+    color: var(--pro-orange-light) !important;
+}
+.btn-accent:hover {
+    background: rgba(255, 122, 24, 0.22) !important;
+    color: var(--pro-orange-light) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   FORM INPUTS — Photoshop-like
+   ═══════════════════════════════════════════════════════════════════ */
+input[type="text"],
+input[type="number"],
+select,
+textarea {
+    background: var(--pro-input) !important;
+    border: 1px solid var(--pro-border-default) !important;
+    color: var(--pro-text-primary) !important;
+    border-radius: 6px !important;
+    transition: all var(--pro-fast) var(--pro-ease-out) !important;
+    font-family: inherit !important;
+}
+input[type="text"]:focus,
+input[type="number"]:focus,
+select:focus,
+textarea:focus {
+    border-color: var(--pro-border-focus) !important;
+    box-shadow: 0 0 0 2px rgba(255, 122, 24, 0.10) !important;
+    outline: none !important;
+}
+
+/* Range sliders — orange thumb */
+input[type="range"] {
+    background: rgba(148, 163, 184, 0.12) !important;
+    height: 4px !important;
+    border-radius: 2px !important;
+}
+input[type="range"]::-webkit-slider-thumb {
+    background: var(--pro-orange-light) !important;
+    border: 2px solid var(--pro-orange) !important;
+    width: 14px !important;
+    height: 14px !important;
+    border-radius: 50% !important;
+    box-shadow: 0 0 8px rgba(255, 122, 24, 0.35) !important;
+    cursor: pointer !important;
+    -webkit-appearance: none !important;
+    appearance: none !important;
+}
+input[type="range"]::-webkit-slider-thumb:hover {
+    background: white !important;
+    box-shadow: 0 0 12px rgba(255, 122, 24, 0.55) !important;
+}
+
+/* Labels — uppercase tertiary */
+label, .form-label {
+    color: var(--pro-text-secondary) !important;
+    font-size: 11px !important;
+    font-weight: 600 !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   ZONE CARDS — clean cards, calm number badges (NO RAINBOW)
+   ═══════════════════════════════════════════════════════════════════ */
+.zone-card {
+    background: rgba(15, 20, 28, 0.65) !important;
+    border: 1px solid var(--pro-border-subtle) !important;
+    border-left: 3px solid transparent !important;
+    border-radius: 8px !important;
+    padding: 10px 12px !important;
+    margin-bottom: 6px !important;
+    box-shadow: none !important;
+    transition: all var(--pro-fast) var(--pro-ease-out) !important;
+}
+.zone-card:hover {
+    background: rgba(13, 18, 28, 0.85) !important;
+    border-color: var(--pro-border-default) !important;
+    transform: none !important;
+}
+.zone-card.selected {
+    background: var(--pro-selected) !important;
+    border-color: var(--pro-border-focus) !important;
+    border-left-color: var(--pro-orange) !important;
+    box-shadow: 0 0 20px rgba(255, 122, 24, 0.10) !important;
+}
+.zone-card .zone-name-text,
+.zone-card .zone-name {
+    color: var(--pro-text-primary) !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+}
+.zone-card .zone-finish-name,
+.zone-card .zone-finish-badge {
+    color: var(--pro-text-tertiary) !important;
+    font-size: 11px !important;
+    background: transparent !important;
+}
+
+/* ZONE NUMBER BADGES — NEUTRAL squares, NOT rainbow circles */
+.zone-number {
+    background: rgba(148, 163, 184, 0.10) !important;
+    border: 1px solid var(--pro-border-default) !important;
+    color: var(--pro-text-secondary) !important;
+    border-radius: 6px !important;
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+    background-image: none !important;
+    width: 22px !important;
+    height: 22px !important;
+}
+.zone-card.selected .zone-number {
+    background: var(--pro-orange-dim) !important;
+    background-image: none !important;
+    border-color: var(--pro-border-focus) !important;
+    color: var(--pro-orange-light) !important;
+    box-shadow: none !important;
+    /* KILL the cyan pulse animation */
+    animation: none !important;
+}
+.zone-card.zone-muted .zone-number {
+    opacity: 0.45 !important;
+    background: rgba(148, 163, 184, 0.06) !important;
+}
+.zone-detail-panel .zone-detail-header .zone-number,
+.zone-editor-float .zone-number {
+    background: var(--pro-orange-dim) !important;
+    background-image: none !important;
+    border: 1px solid var(--pro-border-focus) !important;
+    color: var(--pro-orange-light) !important;
+    box-shadow: none !important;
+    animation: none !important;
+}
+
+/* Color swatch on zone */
+.zone-card .zone-color-swatch,
+.zone-color-swatch {
+    border-radius: 6px !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.4) !important;
+}
+
+/* Zone "showcase" / finish layer pills (1: CX Blood Mercury, 2: Metallic, etc.) */
+/* These were colored badges — make them muted with subtle accent border */
+.zone-finish-pill,
+.finish-stack-pill,
+.zone-base-pill {
+    background: rgba(148, 163, 184, 0.06) !important;
+    border: 1px solid var(--pro-border-default) !important;
+    color: var(--pro-text-secondary) !important;
+    border-radius: 6px !important;
+    font-weight: 600 !important;
+    font-size: 11px !important;
+    text-shadow: none !important;
+    box-shadow: none !important;
+}
+.zone-finish-pill:hover,
+.finish-stack-pill:hover {
+    background: var(--pro-hover) !important;
+    border-color: var(--pro-border-strong) !important;
+    color: var(--pro-text-primary) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   RIGHT PANEL TABS — clean orange underline
+   ═══════════════════════════════════════════════════════════════════ */
+.rp-tab {
+    color: var(--pro-text-tertiary) !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    padding: 10px 14px !important;
+    border-bottom: 2px solid transparent !important;
+    background: transparent !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.06em !important;
+    transition: all var(--pro-fast) var(--pro-ease-out) !important;
+}
+.rp-tab:hover {
+    color: var(--pro-text-secondary) !important;
+    background: var(--pro-hover) !important;
+}
+.rp-tab.active {
+    color: var(--pro-orange-light) !important;
+    border-bottom-color: var(--pro-orange) !important;
+    background: transparent !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   LAYER ROWS — Photoshop-style
+   ═══════════════════════════════════════════════════════════════════ */
+.layer-row {
+    background: transparent !important;
+    border-radius: 6px !important;
+    transition: background var(--pro-fast) !important;
+    border-left: 2px solid transparent !important;
+}
+.layer-row:hover {
+    background: var(--pro-hover) !important;
+}
+.layer-row.selected {
+    background: var(--pro-selected) !important;
+    border-left-color: var(--pro-orange) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   FINISH ITEMS / BROWSER
+   ═══════════════════════════════════════════════════════════════════ */
+.finish-item {
+    background: rgba(15, 20, 28, 0.5) !important;
+    border: 1px solid var(--pro-border-subtle) !important;
+    border-radius: 8px !important;
+    transition: all var(--pro-fast) var(--pro-ease-out) !important;
+    box-shadow: none !important;
+}
+.finish-item:hover {
+    background: rgba(20, 28, 40, 0.85) !important;
+    border-color: var(--pro-border-default) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: var(--pro-shadow-md) !important;
+}
+.finish-item.selected,
+.finish-item.active {
+    border-color: var(--pro-border-focus) !important;
+    box-shadow: 0 0 16px rgba(255, 122, 24, 0.18) !important;
+}
+
+/* Finish category headers — quieter */
+.finish-category-header h4,
+.finish-category-header {
+    color: var(--pro-text-secondary) !important;
+    font-size: 11px !important;
+    letter-spacing: 0.10em !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   MODALS
+   ═══════════════════════════════════════════════════════════════════ */
+.modal,
+.modal-content {
+    background: var(--pro-panel) !important;
+    border: 1px solid var(--pro-border-default) !important;
+    border-radius: 12px !important;
+    box-shadow: var(--pro-shadow-lg) !important;
+}
+.modal-overlay,
+.modal-overlay.active {
+    background: rgba(8, 12, 18, 0.85) !important;
+    backdrop-filter: blur(16px) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   TOASTS — preserve EKG accent stripe but use orange not pink
+   ═══════════════════════════════════════════════════════════════════ */
+.toast {
+    background: var(--pro-panel-header) !important;
+    border: 1px solid var(--pro-border-default) !important;
+    color: var(--pro-text-primary) !important;
+    border-radius: 8px !important;
+    box-shadow: var(--pro-shadow-md) !important;
+}
+/* EKG-style left accent stripe stays — it's brand */
+
+/* ═══════════════════════════════════════════════════════════════════
+   SCROLLBARS — quieter
+   ═══════════════════════════════════════════════════════════════════ */
+::-webkit-scrollbar { width: 6px !important; height: 6px !important; }
+::-webkit-scrollbar-track { background: transparent !important; }
+::-webkit-scrollbar-thumb {
+    background: rgba(148, 163, 184, 0.18) !important;
+    border-radius: 3px !important;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(148, 163, 184, 0.32) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   STATUS BAR — clean monospace bottom strip
+   ═══════════════════════════════════════════════════════════════════ */
+.status-bar,
+#statusBar,
+.bottom-bar {
+    background: var(--pro-titlebar) !important;
+    border-top: 1px solid var(--pro-border-subtle) !important;
+    color: var(--pro-text-tertiary) !important;
+    font-size: 11px !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   QUICK COLOR PALETTE BUTTONS — keep colors (functional swatches)
+   ═══════════════════════════════════════════════════════════════════ */
+.quick-color-btn {
+    border-radius: 6px !important;
+    border: 1px solid rgba(255,255,255,0.1) !important;
+    transition: all var(--pro-fast) var(--pro-ease-out) !important;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.4) !important;
+}
+.quick-color-btn:hover {
+    transform: translateY(-1px) !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.2) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   SETTINGS DROPDOWN
+   ═══════════════════════════════════════════════════════════════════ */
+.settings-dropdown {
+    background: var(--pro-panel) !important;
+    border: 1px solid var(--pro-border-default) !important;
+    border-radius: 10px !important;
+    box-shadow: var(--pro-shadow-lg) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   SPEC CHANNEL BUTTONS — workspace HUD chip style
+   ═══════════════════════════════════════════════════════════════════ */
+.spec-channel-btn,
+[id^="specChannel"] {
+    background: rgba(148, 163, 184, 0.05) !important;
+    border: 1px solid rgba(148, 163, 184, 0.12) !important;
+    border-radius: 999px !important;
+    color: var(--pro-text-secondary) !important;
+    transition: all var(--pro-fast) var(--pro-ease-out) !important;
+    text-transform: none !important;
+    box-shadow: none !important;
+}
+.spec-channel-btn:hover,
+[id^="specChannel"]:hover {
+    background: var(--pro-hover) !important;
+    color: var(--pro-text-primary) !important;
+}
+.spec-channel-btn.active,
+[id^="specChannel"].active {
+    background: var(--pro-teal-dim) !important;
+    border-color: rgba(20, 184, 166, 0.30) !important;
+    color: var(--pro-teal-light) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   TABS in toolbar (Mode tabs etc.)
+   ═══════════════════════════════════════════════════════════════════ */
+.tab-btn,
+.toolbar-tab,
+.panel-mode-btn {
+    background: transparent !important;
+    color: var(--pro-text-tertiary) !important;
+    border: 1px solid transparent !important;
+    border-radius: 6px !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    font-size: 11px !important;
+    letter-spacing: 0.06em !important;
+}
+.tab-btn:hover,
+.toolbar-tab:hover,
+.panel-mode-btn:hover {
+    background: var(--pro-hover) !important;
+    color: var(--pro-text-secondary) !important;
+}
+.tab-btn.active,
+.toolbar-tab.active,
+.panel-mode-btn.active {
+    background: var(--pro-orange-dim) !important;
+    color: var(--pro-orange-light) !important;
+    border-color: rgba(255, 122, 24, 0.28) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   KILL ALL NEON PULSE ANIMATIONS (except EKG ones — preserved below)
+   ═══════════════════════════════════════════════════════════════════ */
+@keyframes vtool-active-pulse {
+    0%, 100% { box-shadow: inset 0 0 0 1px rgba(255, 122, 24, 0.30); }
+    50%      { box-shadow: inset 0 0 0 1px rgba(255, 122, 24, 0.30); }
+}
+@keyframes zonePulseV7 {
+    0%, 100% { box-shadow: none; }
+    50%      { box-shadow: none; }
+}
+@keyframes finishPulse {
+    0%, 100% { box-shadow: none; }
+    50%      { box-shadow: none; }
+}
+@keyframes renderShimmer {
+    0%, 100% { box-shadow: var(--pro-glow-orange); }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   ZONE EDITOR FLOAT — clean panel
+   ═══════════════════════════════════════════════════════════════════ */
+.zone-editor-float {
+    background: var(--pro-panel) !important;
+    border: 1px solid var(--pro-border-default) !important;
+    border-radius: 10px !important;
+    box-shadow: var(--pro-shadow-lg) !important;
+}
+
+/* Zone editor section pills like "1: CX Blood Mercury" — neutralize */
+.zone-detail-panel .zone-detail-header,
+.zone-editor-float .zone-detail-header {
+    background: var(--pro-panel-header) !important;
+    border-bottom: 1px solid var(--pro-border-subtle) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   FINISH BROWSER MODAL
+   ═══════════════════════════════════════════════════════════════════ */
+.finish-browser,
+#finishBrowserOverlay {
+    background: var(--pro-panel) !important;
+}
+.finish-browser-header {
+    background: var(--pro-panel-header) !important;
+    border-bottom: 1px solid var(--pro-border-subtle) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   PRESERVED: EKG BRANDING
+   The user explicitly asked to KEEP the EKG line/pulse — it's the
+   only signature animated element. Re-asserting our brand colors
+   for the EKG so it integrates with the orange palette.
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* Header EKG line — keep the heartbeat scroll, brand pink */
+/* (Original v2.css rule at line ~6450 stays active — pink EKG works) */
+
+/* Render button EKG icon — keep, but ensure it sits over orange */
+.btn-render::before {
+    /* Inherits original EKG pulse — DO NOT KILL */
+}
+
+/* Zone card selected EKG border trace — keep */
+/* (Original v2.css rule at line ~6525-6550 stays active) */
+
+/* Toast EKG accent stripe — keep */
+/* (Original v2.css rule at line ~6555-6575 stays active) */
+
+/* ═══════════════════════════════════════════════════════════════════
+   FINAL FOCUS POLISH — layer effects dialog harmony
+   ═══════════════════════════════════════════════════════════════════ */
+#layerEffectsDialog .fx-section {
+    background: rgba(15, 20, 28, 0.5) !important;
+    border-color: var(--pro-border-subtle) !important;
+}
+#layerEffectsDialog h3 {
+    color: var(--pro-orange-light) !important;
+}
+
+/* Shortcut overlay harmony */
+#shortcutOverlay {
+    background: rgba(8, 12, 18, 0.94) !important;
+}
+#shortcutOverlay h2 {
+    color: var(--pro-orange-light) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   PLATINUM POLISH PASS — 80+ MATERIAL UX/VISUAL IMPROVEMENTS
+   Added 2026-04-17. Each block is one distinct improvement.
+   Numbered for inventory; counts referenced in changelog.
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* Extra design tokens used by the polish pass */
+:root {
+    --pp-radius-xs: 3px;
+    --pp-radius-sm: 4px;
+    --pp-radius-md: 6px;
+    --pp-radius-lg: 10px;
+    --pp-radius-pill: 999px;
+    --pp-shadow-inset-press: inset 0 1px 2px rgba(0,0,0,0.45);
+    --pp-shadow-card-hover: 0 4px 18px rgba(0,0,0,0.45), 0 0 0 1px rgba(255,255,255,0.03);
+    --pp-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', 'Cascadia Code', monospace;
+    --pp-status-online: #34d399;
+    --pp-status-offline: #6b7280;
+    --pp-status-error:   var(--pro-ekg-pink);
+    --pp-status-warn:    #fbbf24;
+    --pp-checker-a: #1a222d;
+    --pp-checker-b: #0d1219;
+}
+
+/* 01. Universal smooth interactive transition fallback */
+button, a, .btn, .vtool-btn, .tab-btn, .toolbar-tab, .panel-mode-btn,
+.zone-card, .layer-row, .finish-item, .quick-color-btn, .rp-tab,
+.spec-channel-btn, [role="button"] {
+    transition:
+        background-color var(--pro-fast) var(--pro-ease-out),
+        border-color var(--pro-fast) var(--pro-ease-out),
+        color var(--pro-fast) var(--pro-ease-out),
+        box-shadow var(--pro-fast) var(--pro-ease-out),
+        transform var(--pro-fast) var(--pro-ease-out),
+        opacity var(--pro-fast) var(--pro-ease-out) !important;
+}
+
+/* 02. Global focus-visible orange ring (accessibility) */
+:focus-visible {
+    outline: 2px solid var(--pro-orange) !important;
+    outline-offset: 2px !important;
+    border-radius: var(--pp-radius-sm);
+}
+
+/* 03. Remove default outline on mouse focus, keep keyboard focus */
+:focus:not(:focus-visible) {
+    outline: none !important;
+}
+
+/* 04. Button press depth — subtle inset shadow on :active */
+.btn:active,
+.vtool-btn:active,
+.tab-btn:active,
+.toolbar-tab:active,
+.panel-mode-btn:active,
+.btn-zone-action:active,
+.btn-accent:active {
+    box-shadow: var(--pp-shadow-inset-press) !important;
+    transform: translateY(1px) !important;
+}
+
+/* 05. Render button press feedback (preserve glow) */
+.btn-render:active {
+    transform: translateY(1px) !important;
+    box-shadow: 0 0 16px var(--pro-orange-glow), inset 0 2px 4px rgba(0,0,0,0.3) !important;
+}
+
+/* 06. Custom delayed tooltip styling for [title] elements via :hover::after */
+[data-pp-tooltip]:hover::after {
+    content: attr(data-pp-tooltip);
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: #0a0f16;
+    color: var(--pro-text-primary);
+    border: 1px solid var(--pro-border-default);
+    padding: 4px 8px;
+    border-radius: var(--pp-radius-md);
+    font-size: 11px;
+    white-space: nowrap;
+    pointer-events: none;
+    box-shadow: var(--pro-shadow-md);
+    opacity: 0;
+    animation: pp-tooltip-fade 180ms var(--pro-ease-out) 600ms forwards;
+    z-index: 99999;
+}
+@keyframes pp-tooltip-fade {
+    from { opacity: 0; transform: translateX(-50%) translateY(2px); }
+    to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+/* 07. Placeholder text consistency */
+input::placeholder,
+textarea::placeholder,
+select::placeholder {
+    color: var(--pro-text-quaternary) !important;
+    opacity: 1 !important;
+    font-style: italic !important;
+}
+
+/* 08. Disabled input styling */
+input:disabled,
+select:disabled,
+textarea:disabled,
+button:disabled,
+.btn:disabled,
+.btn.disabled {
+    opacity: 0.4 !important;
+    cursor: not-allowed !important;
+    filter: grayscale(0.4) !important;
+}
+
+/* 09. Invalid input — orange-tinted red border (red reserved as ekg-pink) */
+input:invalid:not(:placeholder-shown),
+input.invalid,
+textarea:invalid:not(:placeholder-shown),
+textarea.invalid {
+    border-color: var(--pro-ekg-pink) !important;
+    box-shadow: 0 0 0 2px rgba(255, 51, 102, 0.10) !important;
+}
+
+/* 10. Slider thumb — Firefox */
+input[type="range"]::-moz-range-thumb {
+    background: var(--pro-orange-light) !important;
+    border: 2px solid var(--pro-orange) !important;
+    width: 14px !important;
+    height: 14px !important;
+    border-radius: 50% !important;
+    box-shadow: 0 0 8px rgba(255, 122, 24, 0.35) !important;
+    cursor: pointer !important;
+}
+input[type="range"]::-moz-range-thumb:hover {
+    background: white !important;
+    box-shadow: 0 0 12px rgba(255, 122, 24, 0.55) !important;
+}
+
+/* 11. Slider track — Firefox */
+input[type="range"]::-moz-range-track {
+    background: rgba(148, 163, 184, 0.12) !important;
+    height: 4px !important;
+    border-radius: 2px !important;
+    border: none !important;
+}
+
+/* 12. Slider track — Webkit explicit */
+input[type="range"]::-webkit-slider-runnable-track {
+    background: rgba(148, 163, 184, 0.12) !important;
+    height: 4px !important;
+    border-radius: 2px !important;
+}
+
+/* 13. Slider thumb active — squish feedback */
+input[type="range"]:active::-webkit-slider-thumb {
+    transform: scale(1.15);
+    box-shadow: 0 0 16px var(--pro-orange-glow) !important;
+}
+
+/* 14. Modal scrollbar — extra polish */
+.modal ::-webkit-scrollbar,
+.modal-content ::-webkit-scrollbar,
+.settings-dropdown ::-webkit-scrollbar {
+    width: 8px !important;
+    height: 8px !important;
+}
+.modal ::-webkit-scrollbar-thumb,
+.modal-content ::-webkit-scrollbar-thumb {
+    background: rgba(255, 122, 24, 0.20) !important;
+    border-radius: 4px !important;
+}
+.modal ::-webkit-scrollbar-thumb:hover,
+.modal-content ::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 122, 24, 0.40) !important;
+}
+
+/* 15. Firefox scrollbars */
+* {
+    scrollbar-color: rgba(148, 163, 184, 0.25) transparent;
+    scrollbar-width: thin;
+}
+
+/* 16. Color swatch hover lift + glow */
+.quick-color-btn:hover {
+    transform: translateY(-2px) scale(1.04) !important;
+    box-shadow:
+        0 4px 12px rgba(0,0,0,0.6),
+        0 0 0 1px rgba(255,255,255,0.25),
+        0 0 12px rgba(255, 122, 24, 0.20) !important;
+}
+.quick-color-btn:active {
+    transform: translateY(0) scale(0.98) !important;
+}
+
+/* 17. Section header collapse arrow rotation */
+.section-header .toggle-icon,
+.section-header svg.toggle-icon,
+.section-header .chevron {
+    transition: transform 220ms var(--pro-ease-out) !important;
+}
+.section-header.collapsed .toggle-icon,
+.section-header[aria-expanded="false"] .toggle-icon {
+    transform: rotate(-90deg) !important;
+}
+
+/* 18. Empty state hint */
+.empty-state,
+.empty-list,
+[data-empty="true"] {
+    color: var(--pro-text-quaternary) !important;
+    font-style: italic !important;
+    text-align: center !important;
+    padding: 24px 16px !important;
+    border: 1px dashed var(--pro-border-subtle) !important;
+    border-radius: var(--pp-radius-lg) !important;
+    background: rgba(148, 163, 184, 0.02) !important;
+}
+
+/* 19. Skeleton placeholder loader */
+.skeleton,
+.skeleton-line,
+[data-skeleton="true"] {
+    background: linear-gradient(
+        90deg,
+        rgba(148, 163, 184, 0.04) 0%,
+        rgba(148, 163, 184, 0.10) 50%,
+        rgba(148, 163, 184, 0.04) 100%
+    ) !important;
+    background-size: 200% 100% !important;
+    animation: pp-skeleton-shimmer 1400ms ease-in-out infinite !important;
+    border-radius: var(--pp-radius-sm) !important;
+    color: transparent !important;
+}
+@keyframes pp-skeleton-shimmer {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* 20. Spinner polish */
+.spinner, .loading-spinner {
+    width: 18px;
+    height: 18px;
+    border-width: 2px !important;
+    border-style: solid !important;
+    border-color: rgba(255, 122, 24, 0.18) !important;
+    border-top-color: var(--pro-orange) !important;
+    border-radius: 50% !important;
+    animation: pp-spin 720ms linear infinite !important;
+}
+@keyframes pp-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* 21. Toast slide-in */
+.toast {
+    animation: pp-toast-slide-in 260ms var(--pro-ease-out) !important;
+}
+@keyframes pp-toast-slide-in {
+    from { opacity: 0; transform: translateX(40px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+
+/* 22. Toast dismiss button */
+.toast .toast-dismiss,
+.toast button[aria-label="Close"],
+.toast .close-btn {
+    background: transparent !important;
+    color: var(--pro-text-tertiary) !important;
+    border: none !important;
+    border-radius: var(--pp-radius-sm) !important;
+    padding: 2px 6px !important;
+    cursor: pointer !important;
+    font-size: 14px !important;
+}
+.toast .toast-dismiss:hover,
+.toast button[aria-label="Close"]:hover,
+.toast .close-btn:hover {
+    background: var(--pro-hover) !important;
+    color: var(--pro-text-primary) !important;
+}
+
+/* 23. Modal entrance animation */
+.modal,
+.modal-content {
+    animation: pp-modal-in 240ms var(--pro-ease-out) !important;
+}
+@keyframes pp-modal-in {
+    from { opacity: 0; transform: translateY(8px) scale(0.98); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* 24. Modal overlay fade */
+.modal-overlay,
+.modal-overlay.active {
+    animation: pp-overlay-in 200ms var(--pro-ease-out) !important;
+}
+@keyframes pp-overlay-in {
+    from { opacity: 0; backdrop-filter: blur(0); }
+    to   { opacity: 1; backdrop-filter: blur(16px); }
+}
+
+/* 25. Layer drag handle affordance */
+.layer-row::before,
+.zone-card.draggable::before {
+    content: "⋮⋮";
+    position: absolute;
+    left: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--pro-text-quaternary);
+    font-size: 10px;
+    letter-spacing: -2px;
+    opacity: 0;
+    transition: opacity var(--pro-fast);
+    pointer-events: none;
+}
+.layer-row:hover::before,
+.zone-card.draggable:hover::before {
+    opacity: 0.8;
+}
+.layer-row,
+.zone-card.draggable {
+    position: relative;
+}
+
+/* 26. Selected state ring — consistent across types */
+.layer-row.selected,
+.zone-card.selected,
+.finish-item.selected,
+.finish-item.active {
+    box-shadow: 0 0 0 1px var(--pro-border-focus), 0 0 16px rgba(255,122,24,0.12) !important;
+}
+
+/* 27. Status bar text-shadow for legibility */
+.status-bar,
+#statusBar,
+.bottom-bar {
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6) !important;
+}
+
+/* 28. kbd element styling */
+kbd, .kbd, .keyboard-shortcut {
+    display: inline-block !important;
+    background: linear-gradient(180deg, #1c2734 0%, #131a24 100%) !important;
+    border: 1px solid var(--pro-border-strong) !important;
+    border-bottom-width: 2px !important;
+    border-radius: var(--pp-radius-sm) !important;
+    color: var(--pro-text-primary) !important;
+    font-family: var(--pp-mono) !important;
+    font-size: 10px !important;
+    padding: 2px 6px !important;
+    margin: 0 2px !important;
+    box-shadow: 0 1px 0 rgba(0,0,0,0.4) !important;
+    text-shadow: none !important;
+    line-height: 1 !important;
+    min-width: 18px !important;
+    text-align: center !important;
+}
+
+/* 29. Dropdown menu item polish */
+.settings-dropdown .menu-item,
+.dropdown-menu .menu-item,
+.context-menu li,
+.dropdown-item {
+    padding: 8px 12px !important;
+    border-radius: var(--pp-radius-sm) !important;
+    color: var(--pro-text-secondary) !important;
+    cursor: pointer !important;
+    transition: background var(--pro-fast), color var(--pro-fast) !important;
+    font-size: 12px !important;
+}
+.settings-dropdown .menu-item:hover,
+.dropdown-menu .menu-item:hover,
+.context-menu li:hover,
+.dropdown-item:hover {
+    background: var(--pro-hover) !important;
+    color: var(--pro-text-primary) !important;
+}
+
+/* 30. Right panel tab underline animation */
+.rp-tab {
+    position: relative !important;
+}
+.rp-tab::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: -1px;
+    width: 0;
+    height: 2px;
+    background: var(--pro-orange);
+    transition: width 220ms var(--pro-ease-out), left 220ms var(--pro-ease-out);
+}
+.rp-tab.active::after {
+    width: 100%;
+    left: 0;
+}
+
+/* 31. Layer thumbnail checkerboard for transparency */
+.layer-thumb,
+.layer-thumbnail,
+.layer-row .thumb {
+    background-color: var(--pp-checker-b) !important;
+    background-image:
+        linear-gradient(45deg, var(--pp-checker-a) 25%, transparent 25%),
+        linear-gradient(-45deg, var(--pp-checker-a) 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, var(--pp-checker-a) 75%),
+        linear-gradient(-45deg, transparent 75%, var(--pp-checker-a) 75%) !important;
+    background-size: 8px 8px !important;
+    background-position: 0 0, 0 4px, 4px -4px, -4px 0px !important;
+    border-radius: var(--pp-radius-sm) !important;
+    border: 1px solid var(--pro-border-subtle) !important;
+    transition: transform var(--pro-fast) var(--pro-ease-out) !important;
+}
+.layer-thumb:hover,
+.layer-thumbnail:hover,
+.layer-row .thumb:hover {
+    transform: scale(1.08) !important;
+    border-color: var(--pro-border-default) !important;
+}
+
+/* 32. Spec channel R/G/B color dots */
+.spec-channel-btn[data-channel="R"]::before,
+[id^="specChannelR"]::before {
+    content: "";
+    display: inline-block;
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: #ef4444;
+    margin-right: 6px;
+    vertical-align: middle;
+    box-shadow: 0 0 6px rgba(239, 68, 68, 0.6);
+}
+.spec-channel-btn[data-channel="G"]::before,
+[id^="specChannelG"]::before {
+    content: "";
+    display: inline-block;
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: #22c55e;
+    margin-right: 6px;
+    vertical-align: middle;
+    box-shadow: 0 0 6px rgba(34, 197, 94, 0.6);
+}
+.spec-channel-btn[data-channel="B"]::before,
+[id^="specChannelB"]::before {
+    content: "";
+    display: inline-block;
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: #3b82f6;
+    margin-right: 6px;
+    vertical-align: middle;
+    box-shadow: 0 0 6px rgba(59, 130, 246, 0.6);
+}
+
+/* 33. Zone color swatch — perfect circle option */
+.zone-color-swatch.circular,
+.zone-card .zone-color-swatch.circular {
+    border-radius: 50% !important;
+    width: 18px !important;
+    height: 18px !important;
+}
+
+/* 34. Number badge — opacity / count style */
+.opacity-badge,
+.layer-count-badge,
+.zone-count-badge,
+.badge-count {
+    display: inline-block !important;
+    background: rgba(148, 163, 184, 0.10) !important;
+    border: 1px solid var(--pro-border-subtle) !important;
+    color: var(--pro-text-secondary) !important;
+    border-radius: var(--pp-radius-pill) !important;
+    font-size: 10px !important;
+    font-weight: 700 !important;
+    padding: 1px 7px !important;
+    min-width: 18px !important;
+    text-align: center !important;
+    font-family: var(--pp-mono) !important;
+    line-height: 1.4 !important;
+}
+
+/* 35. Disabled control opacity uniform */
+[aria-disabled="true"],
+.is-disabled {
+    opacity: 0.4 !important;
+    pointer-events: none !important;
+    filter: grayscale(0.4) !important;
+}
+
+/* 36. Long-press / attention pulse hint */
+.needs-attention,
+[data-attention="true"] {
+    animation: pp-attention-pulse 1.6s var(--pro-ease-out) infinite !important;
+}
+@keyframes pp-attention-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(255, 122, 24, 0); }
+    50%      { box-shadow: 0 0 0 6px rgba(255, 122, 24, 0.18); }
+}
+
+/* 37. Print-specific styles (clean export captures) */
+@media print {
+    .vertical-toolbar,
+    .left-panel,
+    .right-panel,
+    .toast,
+    .modal-overlay,
+    .header,
+    .status-bar,
+    #statusBar {
+        display: none !important;
+    }
+    .center-panel {
+        background: white !important;
+    }
+    body, html {
+        background: white !important;
+        color: black !important;
+    }
+}
+
+/* 38. High-DPI image-rendering for crisp icons */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .vtool-btn svg,
+    .btn svg,
+    .icon,
+    .layer-thumb,
+    .zone-color-swatch {
+        image-rendering: -webkit-optimize-contrast;
+        image-rendering: crisp-edges;
+    }
+}
+
+/* 39. Reduced motion — respect prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* 40. Hover text contrast bump */
+.btn:hover,
+.vtool-btn:hover,
+.tab-btn:hover,
+.toolbar-tab:hover,
+.zone-card:hover .zone-name-text,
+.layer-row:hover {
+    text-shadow: 0 1px 1px rgba(0,0,0,0.3);
+}
+
+/* 41. Accent line above active panel section */
+.section-body[aria-expanded="true"]::before,
+.section-body.active::before {
+    content: "";
+    display: block;
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, var(--pro-orange) 50%, transparent 100%);
+    opacity: 0.4;
+}
+
+/* 42. Custom checkbox */
+input[type="checkbox"] {
+    -webkit-appearance: none !important;
+    appearance: none !important;
+    width: 14px !important;
+    height: 14px !important;
+    border: 1px solid var(--pro-border-strong) !important;
+    border-radius: var(--pp-radius-xs) !important;
+    background: var(--pro-input) !important;
+    cursor: pointer !important;
+    position: relative !important;
+    vertical-align: middle !important;
+    transition: all var(--pro-fast) var(--pro-ease-out) !important;
+}
+input[type="checkbox"]:checked {
+    background: var(--pro-orange) !important;
+    border-color: var(--pro-orange) !important;
+}
+input[type="checkbox"]:checked::after {
+    content: "";
+    position: absolute;
+    left: 4px;
+    top: 1px;
+    width: 4px;
+    height: 8px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+input[type="checkbox"]:hover {
+    border-color: var(--pro-orange-light) !important;
+}
+
+/* 43. Custom radio */
+input[type="radio"] {
+    -webkit-appearance: none !important;
+    appearance: none !important;
+    width: 14px !important;
+    height: 14px !important;
+    border: 1px solid var(--pro-border-strong) !important;
+    border-radius: 50% !important;
+    background: var(--pro-input) !important;
+    cursor: pointer !important;
+    position: relative !important;
+    vertical-align: middle !important;
+    transition: all var(--pro-fast) var(--pro-ease-out) !important;
+}
+input[type="radio"]:checked {
+    border-color: var(--pro-orange) !important;
+}
+input[type="radio"]:checked::after {
+    content: "";
+    position: absolute;
+    left: 3px; top: 3px;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--pro-orange);
+}
+
+/* 44. Hex color input — monospace */
+input[name*="hex" i],
+input[id*="hex" i],
+input[placeholder*="#" i],
+input.hex-input {
+    font-family: var(--pp-mono) !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
+}
+
+/* 45. Render button — ready-state subtle glow pulse */
+.btn-render.ready,
+.btn-render:not(:disabled):not(.loading) {
+    animation: pp-render-ready 2.4s ease-in-out infinite !important;
+}
+@keyframes pp-render-ready {
+    0%, 100% { box-shadow: var(--pro-glow-orange), inset 0 1px 0 rgba(255,255,255,0.14); }
+    50%      { box-shadow: 0 0 28px var(--pro-orange-glow), inset 0 1px 0 rgba(255,255,255,0.18); }
+}
+
+/* 46. Group dividers in finish browser */
+.finish-category + .finish-category,
+.finish-category-header:not(:first-of-type) {
+    margin-top: 14px !important;
+    border-top: 1px dashed var(--pro-border-subtle) !important;
+    padding-top: 10px !important;
+}
+
+/* 47. Card lift on hover (cards/finish items) */
+.finish-item:hover,
+.zone-card:hover {
+    transform: translateY(-1px) !important;
+}
+
+/* 48. Status dot indicators */
+.status-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 6px;
+    vertical-align: middle;
+    box-shadow: 0 0 6px currentColor;
+}
+.status-dot.online   { background: var(--pp-status-online); color: var(--pp-status-online); }
+.status-dot.offline  { background: var(--pp-status-offline); color: var(--pp-status-offline); box-shadow: none; }
+.status-dot.error    { background: var(--pp-status-error); color: var(--pp-status-error); }
+.status-dot.warn     { background: var(--pp-status-warn); color: var(--pp-status-warn); }
+.status-dot.busy     { background: var(--pro-orange); color: var(--pro-orange); animation: pp-attention-pulse 1.4s ease-in-out infinite; }
+
+/* 49. Number input spin button polish */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    opacity: 0.5;
+    height: 18px;
+    cursor: pointer;
+}
+input[type="number"]:hover::-webkit-inner-spin-button {
+    opacity: 1;
+}
+
+/* 50. Selection text color — orange tint */
+::selection {
+    background: rgba(255, 122, 24, 0.35);
+    color: white;
+}
+::-moz-selection {
+    background: rgba(255, 122, 24, 0.35);
+    color: white;
+}
+
+/* 51. Better caret color */
+input, textarea, [contenteditable="true"] {
+    caret-color: var(--pro-orange) !important;
+}
+
+/* 52. Button group seam refinement */
+.btn-group .btn:not(:first-child) {
+    border-top-left-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
+    margin-left: -1px !important;
+}
+.btn-group .btn:not(:last-child) {
+    border-top-right-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+}
+.btn-group .btn:hover,
+.btn-group .btn.active {
+    z-index: 1;
+    position: relative;
+}
+
+/* 53. Link styling consistency */
+a {
+    color: var(--pro-teal-light) !important;
+    text-decoration: none !important;
+    transition: color var(--pro-fast) !important;
+}
+a:hover {
+    color: var(--pro-orange-light) !important;
+    text-decoration: underline !important;
+    text-decoration-thickness: 1px !important;
+    text-underline-offset: 2px !important;
+}
+
+/* 54. Section header active accent dot */
+.section-header.has-changes::after,
+.section-header[data-modified="true"]::after {
+    content: "";
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--pro-orange);
+    margin-left: 8px;
+    box-shadow: 0 0 6px var(--pro-orange-glow);
+    vertical-align: middle;
+}
+
+/* 55. Tooltip-arrow style for [data-pp-tooltip] */
+[data-pp-tooltip] {
+    position: relative;
+}
+[data-pp-tooltip]:hover::before {
+    content: "";
+    position: absolute;
+    bottom: calc(100% + 2px);
+    left: 50%;
+    transform: translateX(-50%);
+    border: 4px solid transparent;
+    border-top-color: var(--pro-border-default);
+    opacity: 0;
+    animation: pp-tooltip-fade 180ms var(--pro-ease-out) 600ms forwards;
+    z-index: 99999;
+    pointer-events: none;
+}
+
+/* 56. Layer row visibility toggle hover */
+.layer-row .visibility-toggle,
+.layer-row [data-action="toggle-visibility"] {
+    opacity: 0.5;
+    transition: opacity var(--pro-fast);
+}
+.layer-row:hover .visibility-toggle,
+.layer-row .visibility-toggle.active,
+.layer-row [data-action="toggle-visibility"]:hover {
+    opacity: 1 !important;
+}
+
+/* 57. Right panel divider polish */
+.right-panel hr,
+.left-panel hr,
+.settings-section hr {
+    border: none !important;
+    border-top: 1px solid var(--pro-border-subtle) !important;
+    margin: 8px 0 !important;
+    height: 0 !important;
+}
+
+/* 58. Settings dropdown — slide down entrance */
+.settings-dropdown,
+.dropdown-menu {
+    animation: pp-dropdown-in 180ms var(--pro-ease-out) !important;
+    transform-origin: top right;
+}
+@keyframes pp-dropdown-in {
+    from { opacity: 0; transform: translateY(-6px) scale(0.98); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* 59. Code/value inline element */
+code, .inline-code {
+    background: rgba(148, 163, 184, 0.08) !important;
+    border: 1px solid var(--pro-border-subtle) !important;
+    border-radius: var(--pp-radius-xs) !important;
+    padding: 1px 5px !important;
+    font-family: var(--pp-mono) !important;
+    font-size: 11px !important;
+    color: var(--pro-orange-light) !important;
+}
+
+/* 60. Tool options bar pill spacing */
+#toolOptionsBar > * {
+    margin-right: 8px;
+}
+#toolOptionsBar > *:last-child {
+    margin-right: 0;
+}
+
+/* 61. Vertical toolbar tooltip — right-side appearance for sidebar */
+.vtool-btn[title]:hover::after {
+    content: attr(title);
+    position: absolute;
+    left: calc(100% + 8px);
+    top: 50%;
+    transform: translateY(-50%);
+    background: #0a0f16;
+    color: var(--pro-text-primary);
+    border: 1px solid var(--pro-border-default);
+    padding: 4px 8px;
+    border-radius: var(--pp-radius-sm);
+    font-size: 11px;
+    white-space: nowrap;
+    pointer-events: none;
+    box-shadow: var(--pro-shadow-md);
+    z-index: 99999;
+    opacity: 0;
+    animation: pp-tooltip-fade 180ms var(--pro-ease-out) 500ms forwards;
+}
+.vtool-btn { position: relative; }
+
+/* 62. Active vertical tool — left orange accent bar */
+.vtool-btn.active::before {
+    content: "";
+    position: absolute;
+    left: -1px;
+    top: 6px;
+    bottom: 6px;
+    width: 3px;
+    background: var(--pro-orange);
+    border-radius: 0 2px 2px 0;
+    box-shadow: 0 0 6px var(--pro-orange-glow);
+}
+
+/* 63. Finish browser search input polish */
+.finish-browser input[type="search"],
+.finish-browser input[type="text"][placeholder*="Search" i] {
+    background: var(--pro-input) !important;
+    border: 1px solid var(--pro-border-default) !important;
+    border-radius: var(--pp-radius-pill) !important;
+    padding: 6px 14px 6px 32px !important;
+    font-size: 12px !important;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%238899aa' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E") !important;
+    background-repeat: no-repeat !important;
+    background-position: 10px center !important;
+}
+
+/* 64. Image loading state */
+img[data-loading="true"],
+img.loading {
+    background: linear-gradient(
+        90deg,
+        rgba(148, 163, 184, 0.04) 0%,
+        rgba(148, 163, 184, 0.10) 50%,
+        rgba(148, 163, 184, 0.04) 100%
+    );
+    background-size: 200% 100%;
+    animation: pp-skeleton-shimmer 1400ms ease-in-out infinite;
+}
+
+/* 65. Color picker swatch grid hover */
+.color-swatch:hover,
+.palette-swatch:hover {
+    transform: scale(1.10) !important;
+    box-shadow: 0 0 0 2px var(--pro-orange), 0 4px 12px rgba(0,0,0,0.5) !important;
+    z-index: 2;
+    position: relative;
+}
+
+/* 66. Text overflow ellipsis safety on labels */
+.zone-name-text,
+.zone-finish-name,
+.layer-name,
+.finish-item-name {
+    text-overflow: ellipsis !important;
+    overflow: hidden !important;
+    white-space: nowrap !important;
+}
+
+/* 67. Loading overlay backdrop */
+.loading-overlay,
+.render-progress {
+    backdrop-filter: blur(8px) saturate(0.6) !important;
+    -webkit-backdrop-filter: blur(8px) saturate(0.6) !important;
+}
+
+/* 68. Toggle switch */
+.toggle-switch,
+input[type="checkbox"].switch {
+    -webkit-appearance: none !important;
+    appearance: none !important;
+    width: 32px !important;
+    height: 18px !important;
+    border-radius: var(--pp-radius-pill) !important;
+    background: rgba(148, 163, 184, 0.18) !important;
+    border: 1px solid var(--pro-border-default) !important;
+    position: relative !important;
+    cursor: pointer !important;
+    transition: background var(--pro-fast) var(--pro-ease-out) !important;
+}
+.toggle-switch::after,
+input[type="checkbox"].switch::after {
+    content: "";
+    position: absolute;
+    left: 2px; top: 1px;
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: var(--pro-text-secondary);
+    transition: all var(--pro-fast) var(--pro-ease-out);
+}
+.toggle-switch:checked,
+input[type="checkbox"].switch:checked {
+    background: var(--pro-orange) !important;
+    border-color: var(--pro-orange) !important;
+}
+.toggle-switch:checked::after,
+input[type="checkbox"].switch:checked::after {
+    left: 17px;
+    background: white;
+}
+
+/* 69. Modal close button */
+.modal .close-btn,
+.modal-content .close-btn,
+.modal [data-action="close"] {
+    width: 28px !important;
+    height: 28px !important;
+    border-radius: var(--pp-radius-sm) !important;
+    background: transparent !important;
+    border: 1px solid transparent !important;
+    color: var(--pro-text-tertiary) !important;
+    cursor: pointer !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+.modal .close-btn:hover,
+.modal-content .close-btn:hover {
+    background: rgba(255, 51, 102, 0.10) !important;
+    border-color: rgba(255, 51, 102, 0.30) !important;
+    color: var(--pro-ekg-pink) !important;
+}
+
+/* 70. Numeric value display alignment */
+.value-display,
+.numeric-readout,
+[data-numeric="true"] {
+    font-family: var(--pp-mono) !important;
+    font-variant-numeric: tabular-nums !important;
+    color: var(--pro-text-primary) !important;
+}
+
+/* 71. Slider value bubble */
+.slider-value,
+.range-value {
+    background: rgba(255, 122, 24, 0.14) !important;
+    border: 1px solid rgba(255, 122, 24, 0.28) !important;
+    color: var(--pro-orange-light) !important;
+    border-radius: var(--pp-radius-sm) !important;
+    padding: 1px 6px !important;
+    font-family: var(--pp-mono) !important;
+    font-size: 11px !important;
+    min-width: 32px !important;
+    text-align: center !important;
+}
+
+/* 72. Drag-over highlight */
+.drag-over,
+[data-drag-over="true"] {
+    background: var(--pro-orange-dim) !important;
+    border: 2px dashed var(--pro-orange) !important;
+    box-shadow: inset 0 0 24px rgba(255, 122, 24, 0.10) !important;
+}
+
+/* 73. Successful action flash */
+@keyframes pp-success-flash {
+    0%, 100% { background: transparent; }
+    20%      { background: rgba(20, 184, 166, 0.20); }
+}
+.success-flash {
+    animation: pp-success-flash 800ms var(--pro-ease-out);
+}
+
+/* 74. Error shake animation */
+@keyframes pp-error-shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-4px); }
+    40%, 80% { transform: translateX(4px); }
+}
+.error-shake,
+input.error-shake {
+    animation: pp-error-shake 320ms ease-in-out;
+}
+
+/* 75. Color picker — eyedropper hover cursor */
+.eyedropper-active,
+.eyedropper-active * {
+    cursor: crosshair !important;
+}
+
+/* 76. Tab content fade-in when switched */
+.tab-content.active,
+.rp-tab-panel.active,
+[role="tabpanel"]:not([hidden]) {
+    animation: pp-tab-fade 240ms var(--pro-ease-out);
+}
+@keyframes pp-tab-fade {
+    from { opacity: 0; transform: translateY(4px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* 77. Layer row delete button reveal */
+.layer-row .delete-btn,
+.layer-row [data-action="delete"],
+.zone-card .delete-btn {
+    opacity: 0;
+    transition: opacity var(--pro-fast);
+}
+.layer-row:hover .delete-btn,
+.layer-row:hover [data-action="delete"],
+.zone-card:hover .delete-btn {
+    opacity: 0.7;
+}
+.layer-row .delete-btn:hover,
+.zone-card .delete-btn:hover {
+    opacity: 1 !important;
+    color: var(--pro-ekg-pink) !important;
+}
+
+/* 78. Header EKG line — extra subtle drop shadow on text */
+.header h1 {
+    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+}
+
+/* 79. Vertical toolbar group spacing */
+.vtool-group + .vtool-group {
+    margin-top: 6px !important;
+    padding-top: 6px !important;
+}
+
+/* 80. Body cursor-loading state */
+body.busy,
+body[data-busy="true"] {
+    cursor: progress !important;
+}
+body.busy *,
+body[data-busy="true"] * {
+    cursor: progress !important;
+}
+
+/* 81. Smooth page-level scrolling */
+html {
+    scroll-behavior: smooth;
+}
+
+/* 82. Tooltip popout for spec channel R/G/B legend */
+.spec-legend-tooltip {
+    background: var(--pro-panel) !important;
+    border: 1px solid var(--pro-border-default) !important;
+    border-radius: var(--pp-radius-md) !important;
+    padding: 8px 10px !important;
+    font-size: 11px !important;
+    color: var(--pro-text-secondary) !important;
+    box-shadow: var(--pro-shadow-lg) !important;
+    line-height: 1.6 !important;
+}
+
+/* 83. Better hover on quick-color-btn — outline keyboard focus distinct */
+.quick-color-btn:focus-visible {
+    outline: 2px solid var(--pro-orange) !important;
+    outline-offset: 3px !important;
+    transform: translateY(-2px) scale(1.06) !important;
+}
+
+/* 84. Render history thumbnail polish */
+.render-history-item,
+.history-thumb {
+    border-radius: var(--pp-radius-md) !important;
+    border: 1px solid var(--pro-border-subtle) !important;
+    overflow: hidden !important;
+    transition: all var(--pro-fast) var(--pro-ease-out) !important;
+    cursor: pointer !important;
+}
+.render-history-item:hover,
+.history-thumb:hover {
+    border-color: var(--pro-border-focus) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: var(--pp-shadow-card-hover) !important;
+}
+
+/* 85. Improved focus ring on inputs (more visible than default) */
+input[type="text"]:focus-visible,
+input[type="number"]:focus-visible,
+input[type="search"]:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+    box-shadow:
+        0 0 0 2px rgba(255, 122, 24, 0.18),
+        0 0 0 1px var(--pro-orange) inset !important;
+    border-color: var(--pro-orange) !important;
+}
+
+/* 86. Visible drag cursor on drag handles */
+.drag-handle,
+[data-drag-handle="true"],
+.layer-row .drag-grip,
+.zone-card .drag-grip {
+    cursor: grab !important;
+}
+.drag-handle:active,
+[data-drag-handle="true"]:active {
+    cursor: grabbing !important;
+}
+
+/* 87. Tab bar — smooth indicator transition (already in 30, this adds bg fade) */
+.rp-tab,
+.tab-btn,
+.toolbar-tab {
+    background-image: linear-gradient(180deg, transparent, transparent);
+    transition: background-image var(--pro-normal) var(--pro-ease-out),
+                background-color var(--pro-fast),
+                color var(--pro-fast),
+                border-color var(--pro-fast) !important;
+}
+.rp-tab.active {
+    background-image: linear-gradient(180deg, rgba(255, 122, 24, 0.06) 0%, transparent 70%) !important;
+}
+
+/* 88. Modal title typography */
+.modal h2,
+.modal-content h2,
+.modal .modal-title {
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.02em !important;
+    color: var(--pro-text-primary) !important;
+    margin: 0 0 8px 0 !important;
+}
+
+/* 89. Dialog footer button spacing */
+.modal-footer,
+.dialog-footer {
+    display: flex !important;
+    gap: 8px !important;
+    justify-content: flex-end !important;
+    padding: 12px 16px !important;
+    border-top: 1px solid var(--pro-border-subtle) !important;
+}
+
+/* 90. Confirm/destructive button variant */
+.btn.btn-danger,
+.btn.btn-destructive {
+    background: rgba(255, 51, 102, 0.10) !important;
+    border-color: rgba(255, 51, 102, 0.30) !important;
+    color: var(--pro-ekg-pink) !important;
+}
+.btn.btn-danger:hover,
+.btn.btn-destructive:hover {
+    background: rgba(255, 51, 102, 0.20) !important;
+    border-color: var(--pro-ekg-pink) !important;
+    color: #ffb3c1 !important;
+}
+
+/* 91. Primary CTA button variant */
+.btn.btn-primary {
+    background: linear-gradient(180deg, var(--pro-orange) 0%, #e56a14 100%) !important;
+    border-color: rgba(255, 154, 74, 0.4) !important;
+    color: white !important;
+    font-weight: 700 !important;
+    text-shadow: 0 1px 1px rgba(0,0,0,0.2) !important;
+}
+.btn.btn-primary:hover {
+    background: linear-gradient(180deg, var(--pro-orange-light) 0%, var(--pro-orange) 100%) !important;
+    box-shadow: 0 0 16px var(--pro-orange-glow) !important;
+}
+
+/* 92. Secondary teal CTA */
+.btn.btn-secondary {
+    background: var(--pro-teal-dim) !important;
+    border-color: rgba(20, 184, 166, 0.35) !important;
+    color: var(--pro-teal-light) !important;
+    font-weight: 600 !important;
+}
+.btn.btn-secondary:hover {
+    background: rgba(20, 184, 166, 0.22) !important;
+    border-color: rgba(20, 184, 166, 0.55) !important;
+}
+
+/* 93. Long text wrap protection in narrow panels */
+.right-panel, .left-panel {
+    word-break: break-word;
+}
+
+/* 94. Modal body padding consistency */
+.modal-body,
+.modal .body,
+.modal-content > div:not(.modal-header):not(.modal-footer) {
+    padding: 16px !important;
+}
+
+/* 95. Improved canvas crosshair cursor for paint tool */
+.center-panel canvas.tool-paint,
+canvas[data-tool="paint"] {
+    cursor: crosshair !important;
+}
+
+/* 96. Settings gear hover spin */
+.settings-btn:hover svg,
+[data-action="settings"]:hover svg {
+    animation: pp-spin 1.6s linear infinite;
+}
+
+/* 97. Pill-shaped tag */
+.tag, .pill, .chip {
+    display: inline-flex !important;
+    align-items: center !important;
+    background: rgba(148, 163, 184, 0.08) !important;
+    border: 1px solid var(--pro-border-subtle) !important;
+    color: var(--pro-text-secondary) !important;
+    border-radius: var(--pp-radius-pill) !important;
+    padding: 2px 10px !important;
+    font-size: 11px !important;
+    font-weight: 500 !important;
+    line-height: 1.4 !important;
+}
+.tag.active, .pill.active, .chip.active {
+    background: var(--pro-orange-dim) !important;
+    border-color: var(--pro-border-focus) !important;
+    color: var(--pro-orange-light) !important;
+}
+
+/* 98. Visual subtle separators for label-input pairs */
+.form-row + .form-row,
+.field + .field,
+.setting-row + .setting-row {
+    border-top: 1px solid rgba(148, 163, 184, 0.04) !important;
+    padding-top: 8px !important;
+    margin-top: 8px !important;
+}
+
+/* 99. Image render thumbnail aspect-lock */
+.render-thumb,
+.preview-thumb {
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    width: 100%;
+    border-radius: var(--pp-radius-md);
+}
+
+/* 100. Final overlay — focus trap dimming for active modal context */
+body:has(.modal-overlay.active) .left-panel,
+body:has(.modal-overlay.active) .right-panel,
+body:has(.modal-overlay.active) .vertical-toolbar {
+    filter: brightness(0.8);
+    transition: filter 200ms var(--pro-ease-out);
+}
+
+/* 101. Sticky panel headers (so they remain when scrolling long lists) */
+.section-header {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 5 !important;
+    backdrop-filter: blur(6px);
+}
+
+/* 102. Hide native focus on mouse-clicked buttons */
+button:focus:not(:focus-visible),
+.btn:focus:not(:focus-visible) {
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+/* 103. Consistent monospace for numeric badges/values throughout */
+.badge,
+.zone-number,
+.opacity-badge {
+    font-feature-settings: "tnum" 1;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   END PLATINUM POLISH PASS — 103 distinct improvements
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ═══════════════════════════════════════════════════════════════════
+   WAVE 3 DEPTH POLISH — 60+ deep visual upgrades (2026-04-17)
+   Builds on Wave 1 (103 polish items). Pure cosmetic CSS, no HTML/JS.
+   All rules append-only. Uses existing --pro-* token system.
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* W3-001. Sticky panel headers stay legible — solid + blur backdrop */
+.left-panel .section-header,
+.right-panel .section-header,
+.layer-panel-header,
+.zone-panel-header {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 8 !important;
+    background: linear-gradient(180deg, var(--pro-panel-header) 85%, rgba(15, 20, 28, 0.92)) !important;
+    backdrop-filter: blur(8px) saturate(140%);
+    -webkit-backdrop-filter: blur(8px) saturate(140%);
+    border-bottom: 1px solid var(--pro-border-subtle) !important;
+}
+
+/* W3-002. Subtle parallax on toolbar groups during scroll (transform-only, GPU) */
+.toolbar-group,
+.tool-group {
+    will-change: transform;
+    transition: transform 320ms var(--pro-ease-out);
+}
+.scrolling .toolbar-group:nth-child(odd) { transform: translateY(-1px); }
+.scrolling .toolbar-group:nth-child(even) { transform: translateY(1px); }
+
+/* W3-003. Layer-panel thumbnails — checkered transparency background */
+.layer-thumb,
+.layer-preview,
+.layer-row .thumb {
+    background-image:
+        linear-gradient(45deg, rgba(255,255,255,0.06) 25%, transparent 25%),
+        linear-gradient(-45deg, rgba(255,255,255,0.06) 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, rgba(255,255,255,0.06) 75%),
+        linear-gradient(-45deg, transparent 75%, rgba(255,255,255,0.06) 75%) !important;
+    background-size: 12px 12px !important;
+    background-position: 0 0, 0 6px, 6px -6px, -6px 0 !important;
+    border-radius: 4px;
+    transition: transform 180ms var(--pro-ease-out), box-shadow 180ms var(--pro-ease-out);
+}
+
+/* W3-004. Layer thumbnail hover lift */
+.layer-thumb:hover,
+.layer-preview:hover,
+.layer-row:hover .thumb {
+    transform: translateY(-1px) scale(1.04);
+    box-shadow: 0 6px 14px rgba(0,0,0,0.5), 0 0 0 1px var(--pro-border-strong);
+}
+
+/* W3-005. Zone card "ready to render" subtle pulse (gentle breathe, NOT aggressive) */
+@keyframes pp-w3-ready-breathe {
+    0%, 100% { box-shadow: inset 0 0 0 1px var(--pro-teal-dim), 0 0 0 0 rgba(20,184,166,0); }
+    50%      { box-shadow: inset 0 0 0 1px rgba(20,184,166,0.35), 0 0 14px rgba(20,184,166,0.18); }
+}
+.zone-card.ready,
+.zone-card[data-ready="true"] {
+    animation: pp-w3-ready-breathe 3.6s ease-in-out infinite;
+}
+
+/* W3-006. Render button — explicit "ready" vs "missing config" states */
+.render-btn.ready,
+.btn-render[data-state="ready"] {
+    background: linear-gradient(135deg, var(--pro-teal) 0%, #0e8c7d 100%) !important;
+    border-color: var(--pro-teal-light) !important;
+    color: #fff !important;
+    box-shadow: 0 0 0 1px var(--pro-teal-dim), 0 6px 18px rgba(20,184,166,0.28) !important;
+}
+.render-btn.missing-config,
+.btn-render[data-state="missing"] {
+    background: linear-gradient(135deg, #2a1f1c 0%, #1a1414 100%) !important;
+    border-color: rgba(255, 122, 24, 0.35) !important;
+    color: var(--pro-orange-light) !important;
+    box-shadow: inset 0 0 0 1px rgba(255,122,24,0.25) !important;
+}
+.render-btn.missing-config::before,
+.btn-render[data-state="missing"]::before {
+    content: "!";
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px; height: 16px;
+    background: var(--pro-orange);
+    color: #1a1004;
+    border-radius: 999px;
+    font-weight: 800;
+    margin-right: 8px;
+    font-size: 11px;
+}
+
+/* W3-007. Better disabled state — proper grayscale not opacity-only */
+button:disabled,
+.btn:disabled,
+input:disabled,
+select:disabled,
+[aria-disabled="true"] {
+    filter: grayscale(0.85) brightness(0.7) !important;
+    opacity: 0.55 !important;
+    cursor: not-allowed !important;
+    pointer-events: none;
+    text-shadow: none !important;
+}
+
+/* W3-008. Loading skeleton — finish browser cards */
+.finish-card.skeleton,
+.finish-browser .skeleton-card {
+    background: linear-gradient(90deg, #131923 0%, #1a2230 50%, #131923 100%) !important;
+    background-size: 200% 100% !important;
+    animation: pp-w3-skeleton 1.4s ease-in-out infinite;
+    border-radius: 6px;
+    min-height: 64px;
+}
+@keyframes pp-w3-skeleton {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* W3-009. Loading skeleton — layer panel rows */
+.layer-row.skeleton,
+.layer-panel .skeleton-row {
+    background: linear-gradient(90deg, #131923 0%, #1a2230 50%, #131923 100%) !important;
+    background-size: 200% 100% !important;
+    animation: pp-w3-skeleton 1.4s ease-in-out infinite;
+    height: 36px;
+    margin: 4px 0;
+    border-radius: 4px;
+}
+
+/* W3-010. Smooth panel resize divider */
+.panel-divider,
+.resize-handle,
+.splitter {
+    transition: background 160ms var(--pro-ease-out), width 160ms var(--pro-ease-out);
+    background: var(--pro-border-subtle);
+}
+.panel-divider:hover,
+.resize-handle:hover,
+.splitter:hover {
+    background: var(--pro-orange-glow);
+    width: 5px;
+}
+.panel-divider.dragging,
+.resize-handle.dragging {
+    background: var(--pro-orange) !important;
+    box-shadow: 0 0 12px var(--pro-orange-glow);
+}
+
+/* W3-011. Toast stacking — clean queue (gap, scale) */
+#toast-stack,
+.toast-container {
+    display: flex !important;
+    flex-direction: column;
+    gap: 8px;
+    pointer-events: none;
+}
+#toast-stack > .toast,
+.toast-container > .toast {
+    pointer-events: auto;
+    transform-origin: right top;
+    animation: pp-w3-toast-stack-in 260ms var(--pro-ease-out) both;
+}
+#toast-stack > .toast:nth-child(n+4) { transform: scale(0.96); opacity: 0.9; }
+#toast-stack > .toast:nth-child(n+6) { transform: scale(0.92); opacity: 0.75; }
+@keyframes pp-w3-toast-stack-in {
+    from { opacity: 0; transform: translateX(20px) scale(0.94); }
+    to   { opacity: 1; transform: translateX(0) scale(1); }
+}
+
+/* W3-012. Improved modal entrance — scale + fade with subtle blur lift */
+@keyframes pp-w3-modal-grow {
+    from { opacity: 0; transform: scale(0.94) translateY(8px); filter: blur(4px); }
+    to   { opacity: 1; transform: scale(1) translateY(0);     filter: blur(0); }
+}
+@keyframes pp-w3-modal-shrink {
+    from { opacity: 1; transform: scale(1);    filter: blur(0); }
+    to   { opacity: 0; transform: scale(0.96); filter: blur(2px); }
+}
+.modal,
+.dialog,
+.overlay-dialog {
+    animation: pp-w3-modal-grow 240ms var(--pro-ease-out) both;
+}
+.modal.closing,
+.dialog.closing { animation: pp-w3-modal-shrink 180ms var(--pro-ease-out) both; }
+
+/* W3-013. Zone color swatch hover magnify */
+.zone-swatch,
+.color-swatch,
+.swatch-chip {
+    transition: transform 160ms var(--pro-ease-out), box-shadow 160ms var(--pro-ease-out);
+}
+.zone-swatch:hover,
+.color-swatch:hover,
+.swatch-chip:hover {
+    transform: scale(1.18);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5), 0 0 0 2px var(--pro-border-focus);
+    z-index: 3;
+}
+
+/* W3-014. Right-panel tab indicator — animated sliding underline */
+.right-panel .tab-bar,
+.right-panel .tabs {
+    position: relative;
+}
+.right-panel .tab-bar::after,
+.right-panel .tabs::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: var(--pp-tab-indicator-x, 0);
+    width: var(--pp-tab-indicator-w, 0);
+    height: 2px;
+    background: linear-gradient(90deg, var(--pro-orange), var(--pro-orange-light));
+    border-radius: 2px;
+    transition: left 280ms var(--pro-ease-out), width 280ms var(--pro-ease-out);
+    pointer-events: none;
+}
+.right-panel .tab.active,
+.right-panel .tabs > .active {
+    color: var(--pro-orange) !important;
+}
+
+/* W3-015. Search input focus — animated icon recolor */
+.search-input,
+input[type="search"] {
+    transition: border-color 200ms var(--pro-ease-out), box-shadow 200ms var(--pro-ease-out);
+}
+.search-input:focus + .search-icon,
+.search-wrap:focus-within .search-icon,
+input[type="search"]:focus ~ .search-icon {
+    color: var(--pro-orange) !important;
+    fill: var(--pro-orange) !important;
+    filter: drop-shadow(0 0 4px var(--pro-orange-glow));
+    transform: scale(1.08);
+    transition: color 220ms var(--pro-ease-out), transform 220ms var(--pro-ease-out);
+}
+
+/* W3-016. Custom dropdown arrow + smooth open */
+select,
+.custom-select {
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path d='M1 1l4 4 4-4' stroke='%238899aa' stroke-width='1.5' fill='none' stroke-linecap='round'/></svg>") !important;
+    background-repeat: no-repeat !important;
+    background-position: right 10px center !important;
+    background-size: 10px 6px !important;
+    padding-right: 28px !important;
+    transition: background-color 180ms var(--pro-ease-out), border-color 180ms var(--pro-ease-out);
+}
+select:focus,
+.custom-select:focus {
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path d='M1 1l4 4 4-4' stroke='%23ff7a18' stroke-width='1.5' fill='none' stroke-linecap='round'/></svg>") !important;
+}
+
+/* W3-017. Firefox range slider styling parity with WebKit */
+input[type="range"]::-moz-range-track {
+    height: 4px;
+    background: var(--pro-input);
+    border-radius: 2px;
+    border: 1px solid var(--pro-border-subtle);
+}
+input[type="range"]::-moz-range-progress {
+    height: 4px;
+    background: linear-gradient(90deg, var(--pro-orange) 0%, var(--pro-orange-light) 100%);
+    border-radius: 2px;
+}
+input[type="range"]::-moz-range-thumb {
+    height: 14px;
+    width: 14px;
+    background: #fff;
+    border: 2px solid var(--pro-orange);
+    border-radius: 999px;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+    transition: transform 140ms var(--pro-ease-out);
+}
+input[type="range"]:hover::-moz-range-thumb { transform: scale(1.18); }
+
+/* W3-018. Custom number input arrow buttons */
+input[type="number"] {
+    appearance: textfield !important;
+    -moz-appearance: textfield !important;
+}
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none !important;
+    appearance: none !important;
+    opacity: 1;
+    width: 16px;
+    height: 16px;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='8' height='10' viewBox='0 0 8 10'><path d='M4 0L0 4h8z M4 10L0 6h8z' fill='%238899aa'/></svg>");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 8px 10px;
+    cursor: pointer;
+}
+
+/* W3-019. Color picker — bigger, friendlier */
+input[type="color"] {
+    width: 36px !important;
+    height: 28px !important;
+    padding: 2px !important;
+    border-radius: 6px !important;
+    border: 1px solid var(--pro-border-default) !important;
+    background: var(--pro-input) !important;
+    cursor: pointer;
+    transition: transform 160ms var(--pro-ease-out), box-shadow 160ms var(--pro-ease-out);
+}
+input[type="color"]:hover {
+    transform: scale(1.06);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.45), 0 0 0 1px var(--pro-border-focus);
+}
+input[type="color"]::-webkit-color-swatch { border-radius: 4px; border: none; }
+input[type="color"]::-moz-color-swatch    { border-radius: 4px; border: none; }
+
+/* W3-020. Tooltip arrow — proper triangle pointing at element */
+.tooltip[data-placement="top"]::after,
+.pp-tooltip[data-placement="top"]::after {
+    content: "";
+    position: absolute;
+    bottom: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: var(--pro-panel-header);
+    border-bottom: 0;
+    filter: drop-shadow(0 1px 0 var(--pro-border-default));
+}
+.tooltip[data-placement="bottom"]::after {
+    content: "";
+    position: absolute;
+    top: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-bottom-color: var(--pro-panel-header);
+    border-top: 0;
+}
+
+/* W3-021. Icon button glow on hover — radial backdrop */
+.icon-btn,
+.tool-btn,
+.btn-icon {
+    position: relative;
+    overflow: visible;
+}
+.icon-btn::before,
+.tool-btn::before,
+.btn-icon::before {
+    content: "";
+    position: absolute;
+    inset: -4px;
+    background: radial-gradient(circle at center, var(--pro-orange-glow) 0%, transparent 70%);
+    opacity: 0;
+    border-radius: 999px;
+    pointer-events: none;
+    transition: opacity 220ms var(--pro-ease-out);
+    z-index: -1;
+}
+.icon-btn:hover::before,
+.tool-btn:hover::before,
+.btn-icon:hover::before { opacity: 0.9; }
+
+/* W3-022. Section header counter pills — "Zones 3" */
+.section-header .count,
+.section-header .badge-count,
+.section-title[data-count]::after {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 6px;
+    margin-left: 8px;
+    background: var(--pro-orange-dim);
+    color: var(--pro-orange-light);
+    border: 1px solid rgba(255,122,24,0.30);
+    border-radius: 999px;
+    font-size: 10.5px;
+    font-weight: 700;
+    font-feature-settings: "tnum" 1;
+    line-height: 1;
+}
+.section-title[data-count]::after { content: attr(data-count); }
+
+/* W3-023. Animated gradient text on Shokker logo */
+@keyframes pp-w3-logo-flow {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+.header h1 strong,
+.header .accent,
+.shokker-logo {
+    background: linear-gradient(90deg, var(--pro-orange) 0%, var(--pro-orange-light) 35%, var(--pro-ekg-pink) 65%, var(--pro-orange) 100%);
+    background-size: 220% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent !important;
+    animation: pp-w3-logo-flow 9s ease-in-out infinite;
+}
+
+/* W3-024. Keyboard vs mouse focus distinction */
+:focus:not(:focus-visible) {
+    outline: none !important;
+    box-shadow: none !important;
+}
+:focus-visible {
+    outline: 2px solid var(--pro-orange) !important;
+    outline-offset: 2px !important;
+    box-shadow: 0 0 0 4px var(--pro-orange-dim) !important;
+    border-radius: 4px;
+}
+
+/* W3-025. Joined button group — adjacent buttons share borders */
+.btn-group,
+.button-group {
+    display: inline-flex;
+    isolation: isolate;
+}
+.btn-group > .btn,
+.button-group > button {
+    border-radius: 0 !important;
+    margin-left: -1px !important;
+    position: relative;
+}
+.btn-group > .btn:first-child,
+.button-group > button:first-child {
+    border-top-left-radius: 6px !important;
+    border-bottom-left-radius: 6px !important;
+    margin-left: 0 !important;
+}
+.btn-group > .btn:last-child,
+.button-group > button:last-child {
+    border-top-right-radius: 6px !important;
+    border-bottom-right-radius: 6px !important;
+}
+.btn-group > .btn:hover,
+.button-group > button:hover { z-index: 2; }
+.btn-group > .btn.active,
+.button-group > button.active {
+    z-index: 3;
+    box-shadow: inset 0 0 0 1px var(--pro-orange);
+}
+
+/* W3-026. Keyboard hint <kbd> styling — macOS/Windows look */
+kbd, .kbd, .key-hint {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    font-family: 'SF Mono', 'Consolas', 'Menlo', monospace !important;
+    font-size: 11px !important;
+    font-weight: 600;
+    color: var(--pro-text-primary) !important;
+    background: linear-gradient(180deg, #1a2230 0%, #0f141c 100%) !important;
+    border: 1px solid var(--pro-border-strong) !important;
+    border-bottom-width: 2px !important;
+    border-radius: 4px !important;
+    box-shadow: inset 0 -1px 0 rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.03);
+    text-shadow: 0 1px 0 rgba(0,0,0,0.5);
+    line-height: 1;
+}
+
+/* W3-027. Status messages — info/warn/error/success with leading icons */
+.status-msg, .alert {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    border-left: 3px solid var(--pro-text-tertiary);
+    background: var(--pro-panel);
+}
+.status-msg.info,    .alert-info    { border-left-color: #38bdf8; background: rgba(56,189,248,0.08); }
+.status-msg.success, .alert-success { border-left-color: var(--pro-teal); background: var(--pro-teal-dim); }
+.status-msg.warn,    .alert-warning { border-left-color: var(--pro-orange); background: var(--pro-orange-dim); }
+.status-msg.error,   .alert-error,
+.status-msg.danger { border-left-color: var(--pro-ekg-pink); background: rgba(255,51,102,0.10); }
+.status-msg::before { font-size: 14px; line-height: 1.2; }
+.status-msg.info::before    { content: "i"; font-style: italic; font-weight: 700; color: #38bdf8; }
+.status-msg.success::before { content: "\2713"; color: var(--pro-teal); font-weight: 800; }
+.status-msg.warn::before    { content: "!"; color: var(--pro-orange); font-weight: 800; }
+.status-msg.error::before   { content: "\2715"; color: var(--pro-ekg-pink); font-weight: 800; }
+
+/* W3-028. Selected row gradient (not flat orange tint) */
+tr.selected, .row.selected, .list-item.selected, li.selected {
+    background: linear-gradient(90deg, var(--pro-orange-dim) 0%, rgba(255,122,24,0.04) 100%) !important;
+    border-left: 2px solid var(--pro-orange) !important;
+}
+
+/* W3-029. Layer effects dialog — sectioned controls grouping */
+.layer-effects-dialog .effects-section,
+.fx-dialog .fx-group {
+    border: 1px solid var(--pro-border-subtle);
+    border-radius: 6px;
+    padding: 10px 12px;
+    margin-bottom: 10px;
+    background: rgba(15,20,28,0.55);
+}
+.layer-effects-dialog .effects-section > .group-title,
+.fx-dialog .fx-group > .group-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--pro-text-secondary);
+    margin-bottom: 6px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid var(--pro-border-subtle);
+}
+
+/* W3-030. Collapse arrow — chevron rotation on open */
+.collapsible > .toggle::before,
+[data-collapsible] > [data-toggle]::before,
+.section-header[aria-expanded] > .chevron {
+    content: "";
+    display: inline-block;
+    width: 0; height: 0;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-top: 5px solid var(--pro-text-secondary);
+    margin-right: 6px;
+    transition: transform 220ms var(--pro-ease-out);
+    transform: rotate(-90deg);
+}
+.collapsible.open > .toggle::before,
+[data-collapsible][aria-expanded="true"] > [data-toggle]::before,
+.section-header[aria-expanded="true"] > .chevron {
+    transform: rotate(0deg);
+}
+
+/* W3-031. Consistent scrollbar gutter */
+.scroll-area, .panel-body, .left-panel, .right-panel {
+    scrollbar-gutter: stable both-edges;
+}
+
+/* W3-032. CSS-only empty state illustration */
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 28px 20px;
+    color: var(--pro-text-tertiary);
+}
+.empty-state::before {
+    content: "";
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background:
+        radial-gradient(circle at 35% 35%, var(--pro-orange-glow) 0%, transparent 60%),
+        conic-gradient(from 220deg, var(--pro-border-strong), var(--pro-border-subtle), var(--pro-border-strong));
+    box-shadow: inset 0 0 0 1px var(--pro-border-default);
+    margin-bottom: 12px;
+    opacity: 0.7;
+}
+.empty-state .empty-title {
+    color: var(--pro-text-secondary);
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+/* W3-033. Segmented progress bar (multi-stage) */
+.progress.segmented,
+.progress-bar.segmented {
+    display: flex;
+    gap: 2px;
+    height: 6px;
+    background: var(--pro-input);
+    border-radius: 4px;
+    overflow: hidden;
+    padding: 1px;
+}
+.progress.segmented > .seg,
+.progress-bar.segmented > .seg {
+    flex: 1;
+    background: var(--pro-border-subtle);
+    border-radius: 2px;
+    transition: background 240ms var(--pro-ease-out);
+}
+.progress.segmented > .seg.done,
+.progress-bar.segmented > .seg.done {
+    background: linear-gradient(90deg, var(--pro-teal) 0%, var(--pro-teal-light) 100%);
+}
+.progress.segmented > .seg.active,
+.progress-bar.segmented > .seg.active {
+    background: linear-gradient(90deg, var(--pro-orange) 0%, var(--pro-orange-light) 100%);
+    animation: pp-w3-skeleton 1.6s ease-in-out infinite;
+}
+
+/* W3-034. Card stack visual — depth shadow stack */
+.card-stack {
+    position: relative;
+}
+.card-stack::before,
+.card-stack::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: var(--pro-panel);
+    border: 1px solid var(--pro-border-subtle);
+    z-index: -1;
+}
+.card-stack::before { transform: translate(3px, 3px); opacity: 0.6; }
+.card-stack::after  { transform: translate(6px, 6px); opacity: 0.3; }
+
+/* W3-035. Spec channel pill colors — saturated R/G/B/A */
+.spec-pill,
+.channel-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 22px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 10.5px;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    border: 1px solid transparent;
+}
+.spec-pill[data-channel="R"], .channel-pill.r { background: rgba(239,68,68,0.18); color: #fca5a5; border-color: rgba(239,68,68,0.45); }
+.spec-pill[data-channel="G"], .channel-pill.g { background: rgba(34,197,94,0.18); color: #86efac; border-color: rgba(34,197,94,0.45); }
+.spec-pill[data-channel="B"], .channel-pill.b { background: rgba(59,130,246,0.18); color: #93c5fd; border-color: rgba(59,130,246,0.45); }
+.spec-pill[data-channel="A"], .channel-pill.a { background: rgba(168,85,247,0.18); color: #d8b4fe; border-color: rgba(168,85,247,0.45); }
+
+/* W3-036. Preview spinner — gradient ring */
+.preview-spinner,
+.gradient-spinner {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: conic-gradient(from 0deg, transparent 0deg, var(--pro-orange) 90deg, var(--pro-orange-light) 270deg, transparent 360deg);
+    -webkit-mask: radial-gradient(circle, transparent 9px, #000 10px);
+            mask: radial-gradient(circle, transparent 9px, #000 10px);
+    animation: pp-w3-ring-spin 1.1s linear infinite;
+}
+@keyframes pp-w3-ring-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* W3-037. Zone number badge — depth shadow + hover lift */
+.zone-number,
+.zone-card .zone-number-badge {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.08);
+    transition: transform 200ms var(--pro-ease-out), box-shadow 200ms var(--pro-ease-out);
+}
+.zone-card:hover .zone-number,
+.zone-card:hover .zone-number-badge {
+    transform: translateY(-1px) scale(1.06);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.12);
+}
+
+/* W3-038. Link hover — animated underline reveal */
+a, .link {
+    position: relative;
+    text-decoration: none !important;
+}
+a:not(.btn):not(.no-underline)::after,
+.link::after {
+    content: "";
+    position: absolute;
+    left: 0; right: 100%;
+    bottom: -2px;
+    height: 1px;
+    background: currentColor;
+    opacity: 0.7;
+    transition: right 280ms var(--pro-ease-out);
+}
+a:not(.btn):not(.no-underline):hover::after,
+.link:hover::after { right: 0; }
+
+/* W3-039. Sticky dialog footer with primary/secondary buttons */
+.dialog-footer,
+.modal-footer {
+    position: sticky;
+    bottom: 0;
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 12px 16px;
+    background: linear-gradient(0deg, var(--pro-panel) 80%, transparent);
+    border-top: 1px solid var(--pro-border-subtle);
+    backdrop-filter: blur(6px);
+}
+.dialog-footer .btn-primary,
+.modal-footer .btn-primary { order: 2; }
+.dialog-footer .btn-secondary,
+.modal-footer .btn-secondary { order: 1; }
+
+/* W3-040. Empty zone list — friendly call-to-action */
+.zone-list:empty::after,
+.zone-list .empty-cta {
+    content: "No zones yet — paint a region to begin.";
+    display: block;
+    padding: 20px 16px;
+    text-align: center;
+    color: var(--pro-text-tertiary);
+    border: 1px dashed var(--pro-border-default);
+    border-radius: 8px;
+    margin: 8px;
+    background: linear-gradient(180deg, transparent, var(--pro-orange-dim));
+}
+
+/* W3-041. Layer panel scroll snap */
+.layer-panel,
+.layer-list {
+    scroll-snap-type: y proximity;
+}
+.layer-panel .layer-row,
+.layer-list .layer-row {
+    scroll-snap-align: start;
+    scroll-margin-top: 4px;
+}
+
+/* W3-042. Paint preview canvas — subtle inner glow */
+.preview-canvas,
+.canvas-preview,
+#preview-canvas {
+    box-shadow:
+        inset 0 0 0 1px var(--pro-border-default),
+        inset 0 0 24px rgba(255,122,24,0.06),
+        0 8px 32px rgba(0,0,0,0.5);
+    border-radius: 6px;
+}
+
+/* W3-043. Status bar — proper segment separators */
+.status-bar,
+.statusbar {
+    display: flex;
+    align-items: center;
+    gap: 0;
+}
+.status-bar > .seg,
+.status-bar > .status-item,
+.statusbar > * {
+    padding: 0 12px;
+    border-right: 1px solid var(--pro-border-subtle);
+    line-height: 1.6;
+    color: var(--pro-text-secondary);
+}
+.status-bar > .seg:last-child,
+.status-bar > .status-item:last-child,
+.statusbar > *:last-child { border-right: none; }
+
+/* W3-044. Tab focus order indicator — number badges */
+[data-tab-order]:focus-visible::before {
+    content: attr(data-tab-order);
+    position: absolute;
+    top: -8px; left: -8px;
+    background: var(--pro-orange);
+    color: #1a1004;
+    font-size: 10px;
+    font-weight: 800;
+    width: 16px; height: 16px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    box-shadow: 0 0 0 2px var(--pro-app);
+}
+
+/* W3-045. Popover styling — arrow-pointing tooltip */
+.popover {
+    position: absolute;
+    background: var(--pro-panel-header);
+    border: 1px solid var(--pro-border-strong);
+    border-radius: 6px;
+    padding: 8px 12px;
+    box-shadow: var(--pro-shadow-lg);
+    color: var(--pro-text-primary);
+    font-size: 12px;
+}
+.popover[data-arrow="bottom"]::after {
+    content: "";
+    position: absolute;
+    bottom: -6px; left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: var(--pro-panel-header);
+    border-bottom: 0;
+}
+
+/* W3-046. Save indicator — pulsing dot when dirty */
+.save-indicator.dirty::before,
+.dirty-dot {
+    content: "";
+    display: inline-block;
+    width: 8px; height: 8px;
+    background: var(--pro-orange);
+    border-radius: 999px;
+    margin-right: 6px;
+    box-shadow: 0 0 0 0 var(--pro-orange-glow);
+    animation: pp-w3-dirty-pulse 1.6s ease-in-out infinite;
+}
+@keyframes pp-w3-dirty-pulse {
+    0%   { box-shadow: 0 0 0 0 var(--pro-orange-glow); }
+    70%  { box-shadow: 0 0 0 8px transparent; }
+    100% { box-shadow: 0 0 0 0 transparent; }
+}
+
+/* W3-047. Menu items — icon + label + shortcut alignment grid */
+.menu-item, .dropdown-item {
+    display: grid !important;
+    grid-template-columns: 18px 1fr auto;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 10px !important;
+    border-radius: 4px;
+}
+.menu-item .menu-icon,
+.dropdown-item .menu-icon { color: var(--pro-text-secondary); }
+.menu-item .menu-shortcut,
+.dropdown-item .menu-shortcut {
+    color: var(--pro-text-tertiary);
+    font-family: 'SF Mono', 'Consolas', monospace;
+    font-size: 11px;
+}
+
+/* W3-048. Card title typography — text balance + ellipsis */
+.card-title, .panel-title, .item-title {
+    text-wrap: balance;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -webkit-line-clamp: 2;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    line-height: 1.3;
+}
+
+/* W3-049. Radio group — visible focus ring + indicator */
+input[type="radio"]:focus-visible + label,
+.radio-group input:focus-visible + label {
+    outline: 2px solid var(--pro-orange);
+    outline-offset: 3px;
+    border-radius: 4px;
+}
+
+/* W3-050. Drag preview — semi-transparent ghost */
+[draggable="true"].dragging,
+.dragging {
+    opacity: 0.55 !important;
+    transform: rotate(-1.5deg) scale(0.97);
+    filter: drop-shadow(0 8px 16px rgba(0,0,0,0.5));
+    cursor: grabbing !important;
+}
+
+/* W3-051. Breadcrumb — last item bold, separators styled */
+.breadcrumb {
+    display: inline-flex;
+    align-items: center;
+    gap: 0;
+    color: var(--pro-text-tertiary);
+}
+.breadcrumb > * {
+    padding: 0 6px;
+    color: var(--pro-text-secondary);
+    transition: color 160ms var(--pro-ease-out);
+}
+.breadcrumb > *:hover { color: var(--pro-text-primary); }
+.breadcrumb > *:not(:last-child)::after {
+    content: "/";
+    margin-left: 8px;
+    color: var(--pro-text-quaternary);
+    font-weight: 300;
+}
+.breadcrumb > *:last-child {
+    color: var(--pro-text-primary) !important;
+    font-weight: 600;
+}
+
+/* W3-052. Animation curve consistency — all transitions */
+*,
+*::before,
+*::after {
+    transition-timing-function: var(--pro-ease-out);
+}
+
+/* W3-053. Modal close button — subtle hover ring */
+.modal-close,
+.dialog-close,
+.close-btn {
+    position: relative;
+    width: 28px; height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--pro-text-secondary);
+    transition: background 180ms var(--pro-ease-out), color 180ms var(--pro-ease-out), box-shadow 180ms var(--pro-ease-out);
+}
+.modal-close:hover,
+.dialog-close:hover,
+.close-btn:hover {
+    background: var(--pro-hover);
+    color: var(--pro-text-primary);
+    box-shadow: 0 0 0 4px var(--pro-orange-dim);
+}
+
+/* W3-054. Section divider — gradient line */
+hr, .divider, .section-divider {
+    border: none !important;
+    height: 1px !important;
+    background: linear-gradient(90deg, transparent 0%, var(--pro-border-strong) 20%, var(--pro-border-strong) 80%, transparent 100%) !important;
+    margin: 12px 0 !important;
+}
+
+/* W3-055. Tooltip delay — show 600ms, hide instant */
+.tooltip,
+.pp-tooltip {
+    transition-delay: 600ms;
+    transition-property: opacity, transform;
+    transition-duration: 180ms;
+}
+.tooltip:not(.show),
+.pp-tooltip:not(.show) {
+    transition-delay: 0ms;
+    opacity: 0;
+}
+
+/* W3-056. High-contrast keyboard focus outline (overrides W3-024 default for accessibility) */
+@media (prefers-contrast: more) {
+    :focus-visible {
+        outline: 3px solid #ffd400 !important;
+        outline-offset: 3px !important;
+        box-shadow: 0 0 0 6px rgba(255,212,0,0.35) !important;
+    }
+}
+
+/* W3-057. Settings dropdown — section headers, icons, descriptions */
+.settings-dropdown .section-title,
+.dropdown-menu .group-title {
+    font-size: 10.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--pro-text-tertiary);
+    padding: 8px 10px 4px 10px;
+}
+.settings-dropdown .item-desc,
+.dropdown-menu .item-desc {
+    display: block;
+    font-size: 11px;
+    color: var(--pro-text-tertiary);
+    margin-top: 2px;
+    line-height: 1.35;
+}
+
+/* W3-058. WCAG AAA-level alert color contrast */
+.alert-error, .status-msg.error,
+.alert-danger, .status-msg.danger {
+    color: #ffd5e0 !important;
+}
+.alert-warning, .status-msg.warn {
+    color: #ffd9b3 !important;
+}
+.alert-success, .status-msg.success {
+    color: #b3f5e8 !important;
+}
+.alert-info, .status-msg.info {
+    color: #cfeeff !important;
+}
+
+/* W3-059. Bigger hit area for radio/checkbox custom styling */
+input[type="checkbox"],
+input[type="radio"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 16px; height: 16px;
+    background: var(--pro-input);
+    border: 1px solid var(--pro-border-strong);
+    border-radius: 3px;
+    cursor: pointer;
+    position: relative;
+    margin: 0;
+    transition: background 160ms var(--pro-ease-out), border-color 160ms var(--pro-ease-out), box-shadow 160ms var(--pro-ease-out);
+}
+input[type="radio"] { border-radius: 999px; }
+input[type="checkbox"]::before,
+input[type="radio"]::before {
+    content: "";
+    position: absolute;
+    inset: -8px;
+    /* expanded hit area */
+}
+input[type="checkbox"]:checked {
+    background: var(--pro-orange);
+    border-color: var(--pro-orange);
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'><path d='M2.5 6.5l2.5 2.5 4.5-5' stroke='white' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+    background-size: 12px 12px;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+input[type="radio"]:checked {
+    background: radial-gradient(circle at center, var(--pro-orange) 0% 35%, var(--pro-input) 38% 100%);
+    border-color: var(--pro-orange);
+}
+input[type="checkbox"]:hover,
+input[type="radio"]:hover {
+    border-color: var(--pro-orange);
+    box-shadow: 0 0 0 4px var(--pro-orange-dim);
+}
+
+/* W3-060. Range slider value bubble above thumb on hover */
+.range-wrap {
+    position: relative;
+}
+.range-wrap .range-bubble,
+input[type="range"] + .range-bubble {
+    position: absolute;
+    top: -28px;
+    left: var(--pp-bubble-x, 50%);
+    transform: translateX(-50%) scale(0.9);
+    background: var(--pro-orange);
+    color: #1a1004;
+    font-size: 10.5px;
+    font-weight: 800;
+    padding: 2px 6px;
+    border-radius: 4px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 180ms var(--pro-ease-out), transform 180ms var(--pro-ease-out);
+    font-feature-settings: "tnum" 1;
+}
+.range-wrap .range-bubble::after {
+    content: "";
+    position: absolute;
+    bottom: -4px; left: 50%;
+    transform: translateX(-50%);
+    border: 4px solid transparent;
+    border-top-color: var(--pro-orange);
+    border-bottom: 0;
+}
+.range-wrap:hover .range-bubble,
+.range-wrap:focus-within .range-bubble,
+input[type="range"]:hover + .range-bubble,
+input[type="range"]:focus + .range-bubble {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+}
+
+/* W3-061. Canvas grid overlay — subtle dotted instead of solid */
+.canvas-grid,
+.grid-overlay {
+    background-image:
+        radial-gradient(circle, var(--pro-border-default) 0.8px, transparent 1.2px) !important;
+    background-size: 18px 18px !important;
+    background-position: 0 0 !important;
+    opacity: 0.55;
+}
+
+/* W3-062. Brand-orange text selection */
+::selection {
+    background: rgba(255,122,24,0.45);
+    color: #1a1004;
+    text-shadow: none;
+}
+::-moz-selection {
+    background: rgba(255,122,24,0.45);
+    color: #1a1004;
+    text-shadow: none;
+}
+
+/* W3-063. Improved input caret color on focus */
+input, textarea, [contenteditable="true"] {
+    caret-color: var(--pro-orange);
+}
+
+/* W3-064. Nicer placeholder styling */
+input::placeholder,
+textarea::placeholder {
+    color: var(--pro-text-quaternary) !important;
+    font-style: italic;
+    opacity: 1;
+    transition: color 200ms var(--pro-ease-out);
+}
+input:focus::placeholder,
+textarea:focus::placeholder {
+    color: var(--pro-text-tertiary) !important;
+}
+
+/* W3-065. Reduced-motion honor — disable our animations gracefully */
+@media (prefers-reduced-motion: reduce) {
+    .zone-card.ready,
+    .zone-card[data-ready="true"],
+    .save-indicator.dirty::before,
+    .dirty-dot,
+    .preview-spinner,
+    .gradient-spinner,
+    .header h1 strong,
+    .header .accent,
+    .shokker-logo,
+    .progress.segmented > .seg.active {
+        animation: none !important;
+    }
+    *, *::before, *::after {
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* W3-066. Print mode — hide UI chrome cleanly */
+@media print {
+    .toolbar, .left-panel, .right-panel, .header, .status-bar, .toast-container,
+    .modal, .dialog, .popover, .tooltip { display: none !important; }
+    body, html, .canvas-area, .preview-canvas {
+        background: #fff !important;
+        color: #000 !important;
+    }
+}
+
+/* W3-067. Cursor affordance polish per element type */
+.btn, button, [role="button"], .clickable, .tab, .menu-item { cursor: pointer; }
+.draggable, [draggable="true"] { cursor: grab; }
+.draggable:active, [draggable="true"]:active { cursor: grabbing; }
+.resizable-h { cursor: ew-resize; }
+.resizable-v { cursor: ns-resize; }
+.zoomable    { cursor: zoom-in; }
+
+/* W3-068. Improved chip / tag styling — pill with close icon */
+.chip, .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    background: var(--pro-input);
+    border: 1px solid var(--pro-border-default);
+    border-radius: 999px;
+    font-size: 11.5px;
+    color: var(--pro-text-secondary);
+    transition: background 160ms var(--pro-ease-out), color 160ms var(--pro-ease-out);
+}
+.chip:hover, .tag:hover {
+    background: var(--pro-hover);
+    color: var(--pro-text-primary);
+}
+.chip .chip-close,
+.tag .tag-close {
+    width: 14px; height: 14px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--pro-text-tertiary);
+}
+.chip .chip-close:hover,
+.tag .tag-close:hover {
+    background: var(--pro-ekg-pink);
+    color: #fff;
+}
+
+/* W3-069. Better aria-busy state — animated stripes */
+[aria-busy="true"] {
+    background-image: repeating-linear-gradient(
+        45deg,
+        rgba(255,122,24,0.05) 0,
+        rgba(255,122,24,0.05) 8px,
+        transparent 8px,
+        transparent 16px
+    );
+    background-size: 200% 100%;
+    animation: pp-w3-busy-slide 1.8s linear infinite;
+}
+@keyframes pp-w3-busy-slide {
+    from { background-position: 0 0; }
+    to   { background-position: 64px 0; }
+}
+
+/* W3-070. Active toolbutton "pressed" depth */
+.tool-btn.active,
+.icon-btn.active,
+.btn.active {
+    box-shadow:
+        inset 0 1px 2px rgba(0,0,0,0.5),
+        inset 0 0 0 1px var(--pro-orange-dim),
+        0 0 0 1px var(--pro-orange-glow);
+    transform: translateY(0.5px);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   END WAVE 3 DEPTH POLISH — 70 distinct improvements (W3-001 … W3-070)
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ═══════════════════════════════════════════════════════════════════
+   END PRO THEME v2 — "The 2026 Refit"
+   ═══════════════════════════════════════════════════════════════════ */

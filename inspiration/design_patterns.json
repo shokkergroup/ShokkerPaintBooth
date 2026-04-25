@@ -1,0 +1,279 @@
+{
+  "version": "6.2.0",
+  "description": "Design pattern inspiration reference for Shokker Paint Booth users. Each entry describes a recognizable racing-livery design archetype, its energy, the era and genre it fits best, and a brief recipe hint for recreating it in SPB using zones, layers, and patterns. No trademarked content is referenced directly — descriptions are generic design archetypes.",
+  "generated_for": "SPB v6.2.0",
+  "author": "Shokker Design Collective",
+  "usage": "Drop open this JSON in an editor, pick a pattern that matches the energy you want, and follow the recipe_hint as a starting point. Every recipe is a suggestion — mix zones, swap bases, and dial pattern strength to taste.",
+  "patterns": [
+    {
+      "id": "stripe_top_to_bottom",
+      "name": "Top-to-Bottom Door Stripe",
+      "description": "A single bold vertical stripe running from the roof edge, down the door panel, and terminating at the rocker. Reads instantly on TV and gives the car a strong central axis.",
+      "energy": "aggressive",
+      "era": "modern",
+      "best_for": "Stock cars, touring cars, GT3, door-to-door racing liveries",
+      "inspiration": "Classic door-to-door stripe tradition — touring car and stock car racing of the 60s through today.",
+      "recipe_hint": "Paint the car in a neutral base (gloss white, matte black, or silver). Add a narrow rectangular zone 30–40% of the door width, vertical, in a high-contrast color. Use a gloss or metallic finish so the stripe pops. Optional: outline with a 2-pixel pinstripe in a tertiary color."
+    },
+    {
+      "id": "hood_flame",
+      "name": "Full Hood Flame",
+      "description": "Tongues of flame licking backward from the grille across the hood, fading as they approach the windshield. Pure muscle-car attitude.",
+      "energy": "aggressive",
+      "era": "retro",
+      "best_for": "Muscle cars, hot rods, show cars, drag racers",
+      "inspiration": "American hot rod culture — Von Dutch, Ed Roth, and the kustom kulture tradition.",
+      "recipe_hint": "Start with a deep base color (candy red, black, or dark blue). Add a hood-only zone with a flame pattern (use the 'wave' or custom 'flame' pattern with high contrast). Layer yellow on red or red on black for traditional look. Finish with gloss clearcoat for wet shine."
+    },
+    {
+      "id": "front_rear_split",
+      "name": "Color-Blocked Front vs Rear",
+      "description": "The front half of the car wears one color family and the rear wears another, with a clean vertical break at the B-pillar or door shut line.",
+      "energy": "bold",
+      "era": "modern",
+      "best_for": "GT cars, time-attack builds, sponsor-split liveries",
+      "inspiration": "Modern GT racing where two primary sponsors each get half the car.",
+      "recipe_hint": "Create two large zones — front half and rear half — meeting at a clean vertical edge near the B-pillar. Use complementary colors (blue front / orange rear, or white front / black rear). Keep the color break razor-sharp; avoid gradients for this look."
+    },
+    {
+      "id": "diagonal_slash",
+      "name": "Diagonal Slash",
+      "description": "A bold diagonal color band running from the lower-front quarter up through the door to the upper-rear quarter, cutting the car visually on a 30–45 degree axis.",
+      "energy": "dynamic",
+      "era": "modern",
+      "best_for": "Rally cars, drift builds, GT4, tuner liveries",
+      "inspiration": "80s and 90s rally liveries — a sense of forward motion even when the car is still.",
+      "recipe_hint": "Add a diagonal zone across the mid-body. Keep the band width 15–25% of the car height. Use the 'stripe' or 'chevron' pattern oriented diagonally. High-contrast colors work best — pair a bright saturated color against a darker base."
+    },
+    {
+      "id": "chevron_wing",
+      "name": "Chevron Wing Tip",
+      "description": "Repeating arrow-shaped chevrons painted on the rear wing endplates, or racing-style chevrons arrayed across the rear deck lid.",
+      "energy": "technical",
+      "era": "modern",
+      "best_for": "GT3, prototype racers, aero-heavy builds",
+      "inspiration": "Aviation and motorsport warning stripes — chevrons signal speed and precision.",
+      "recipe_hint": "Limit chevrons to the rear wing or deck lid. Use SPB's chevron pattern at high density. Contrasting accent color against the wing base. Keep the rest of the car relatively clean so the chevrons read as a focused accent."
+    },
+    {
+      "id": "checkered_edge",
+      "name": "Checkered Flag Edge",
+      "description": "A band of black-and-white checkers running along a specific edge — bottom rocker, rear deck edge, or hood lip. Signals 'finish line' energy.",
+      "energy": "classic",
+      "era": "timeless",
+      "best_for": "Vintage racers, go-karts, nostalgic liveries",
+      "inspiration": "The checkered flag itself — universal symbol of motorsport victory.",
+      "recipe_hint": "Apply a checker pattern to a narrow zone along the rocker panel or rear fascia. Traditional black-and-white is strongest, but red-and-white or team-color-and-white both read well. Keep squares small (8–12 pixel equivalent) for refined look, larger for retro feel."
+    },
+    {
+      "id": "radial_burst",
+      "name": "Radial Burst from Center",
+      "description": "Rays of color emanating outward from a central focal point — often the door handle, hood scoop, or roof center — creating a sunburst effect.",
+      "energy": "explosive",
+      "era": "retro",
+      "best_for": "Show cars, custom builds, lowriders, hot rods",
+      "inspiration": "70s custom van and lowrider mural traditions, plus art-deco sunburst motifs.",
+      "recipe_hint": "Pick a center point (door middle or hood center). Use SPB's 'radial' or 'starburst' pattern with medium strength. Fade rays from a saturated color at center to a deeper shade at the edges. Add candy clearcoat for depth."
+    },
+    {
+      "id": "gradient_fade",
+      "name": "Gradient Fade Front-to-Back",
+      "description": "The paint transitions smoothly along the body length — typically lighter at the front, darker at the rear, or a color shift from warm to cool hues.",
+      "energy": "smooth",
+      "era": "modern",
+      "best_for": "Show cars, concept builds, drift cars, JDM tuners",
+      "inspiration": "Airbrush artistry and modern color-shift metallics.",
+      "recipe_hint": "Use SPB's custom gradient feature. Define two or three stops — for example sunset orange at the front, magenta mid-body, deep purple at the rear. Finish with a pearl or candy clearcoat to enhance the transitions."
+    },
+    {
+      "id": "split_halves",
+      "name": "Split Color Halves",
+      "description": "The car is cleanly divided along its length-axis — driver side one color, passenger side another. Or top half versus bottom half.",
+      "energy": "bold",
+      "era": "classic",
+      "best_for": "Demo derby tradition, fan-car builds, tribute liveries",
+      "inspiration": "Sporting tradition of two-tone team colors; also circus and carnival history.",
+      "recipe_hint": "Create two body zones split along the centerline (roof ridge) or the belt line (window base). Use two strongly contrasting colors. Keep the split line clean; avoid fades. Works best with a gloss finish so the division is crisp."
+    },
+    {
+      "id": "pinstripe_accent",
+      "name": "Pinstripe Accent Lines",
+      "description": "Hand-painted-looking thin lines tracing the car's body contours — along the belt line, fender arches, or as decorative swirls near the nose.",
+      "energy": "refined",
+      "era": "retro",
+      "best_for": "Hot rods, kustoms, lowriders, resto-mods",
+      "inspiration": "Pinstripe artists of the 40s onward — Von Dutch again, Jeff Styles, Alan Johnson.",
+      "recipe_hint": "Add extremely narrow rectangular zones (1–3 pixel equivalent width) tracing along body edges. Use a metallic gold, silver, or a bright warm color for traditional look. Finish with gloss. Keep the rest of the paint simple so the stripes breathe."
+    },
+    {
+      "id": "wave_pattern",
+      "name": "Wave Pattern",
+      "description": "A flowing wave or undulating band across the mid-body, suggesting motion or liquid. Can be a single wave or a repeating set.",
+      "energy": "smooth",
+      "era": "modern",
+      "best_for": "Surfer / beach builds, marine-themed cars, drift cars",
+      "inspiration": "Ocean wave imagery, Japanese ukiyo-e Great Wave motif, 80s Miami Vice aesthetic.",
+      "recipe_hint": "Use SPB's wave pattern at medium strength across the door zone. Pair ocean-blue and teal, or sunset pink and purple, for classic wave vibes. Add a pearl finish for iridescent water-like shimmer."
+    },
+    {
+      "id": "zigzag_bolt",
+      "name": "Zigzag Bolt",
+      "description": "A jagged lightning-bolt-style shape running across the car's side — sharp angles, electric energy.",
+      "energy": "electric",
+      "era": "retro",
+      "best_for": "80s-throwback builds, electric-vehicle themed liveries, kids-style racers",
+      "inspiration": "80s toy commercials, electricity warning signs, punk graphics.",
+      "recipe_hint": "Create a zigzag zone running door-to-door. Use the zigzag pattern or build it from angular linear zones. Pair a neon yellow on black, or electric blue on white. Add a gloss finish to amplify the pop."
+    },
+    {
+      "id": "number_centric",
+      "name": "Number-Centric Panel",
+      "description": "The entire door panel design revolves around making the car's racing number enormous and readable — everything else plays support.",
+      "energy": "classic",
+      "era": "timeless",
+      "best_for": "Stock cars, GT3, endurance racers, vintage racers",
+      "inspiration": "NASCAR, BTCC, IMSA — number readability is a regulation and a design statement.",
+      "recipe_hint": "Reserve the full door panel for the number roundel. Use a solid-color circle, square, or starburst behind the number for maximum contrast. The number font should be chunky and upright. Everything else on the car plays support — sponsors go elsewhere."
+    },
+    {
+      "id": "sponsor_focused",
+      "name": "Sponsor-Focused Layout",
+      "description": "A clean layout where a primary sponsor wordmark dominates the hood and doors, with associate sponsors arrayed in organized tiers across the remaining body panels.",
+      "energy": "professional",
+      "era": "modern",
+      "best_for": "Paid sponsorship racing, series with contingency rules",
+      "inspiration": "Pro-level motorsport across every series — when the money is real, the layout gets serious.",
+      "recipe_hint": "Primary sponsor gets the hood (full width) and both doors (centered). Associates get quarter panels and rear deck. Contingencies stack on the rear quarter and B-pillar. Use a clean neutral base so the logos read. Gloss finish standard."
+    },
+    {
+      "id": "team_triplet",
+      "name": "Team Color Triplet",
+      "description": "Three signature team colors arranged in stripes or bands — often running the full length of the car or wrapping the nose.",
+      "energy": "classic",
+      "era": "timeless",
+      "best_for": "League cars, national-team-style liveries, heritage tributes",
+      "inspiration": "National flags, heritage racing teams, collegiate athletics.",
+      "recipe_hint": "Create three parallel stripes — either horizontal (full body length) or vertical (front to rear). Equal widths or 2:1:2 proportions both work. Keep the base color neutral (white or silver) so the triplet pops."
+    },
+    {
+      "id": "minimalist_accent",
+      "name": "Minimalist Solid + Accent",
+      "description": "A single solid body color with one small but carefully placed accent — a thin stripe, a single logo, or a subtle pinstripe. The less-is-more approach.",
+      "energy": "refined",
+      "era": "modern",
+      "best_for": "Luxury tributes, OEM-style builds, clean sim-racing liveries",
+      "inspiration": "High-end luxury marques and modern OEM stock liveries.",
+      "recipe_hint": "Pick a sophisticated body color — deep black, British racing green, champagne gold. Add one small accent (thin stripe on hood, single crest on door). Finish with a high-gloss or pearl clearcoat. Resist the urge to add more."
+    },
+    {
+      "id": "retro_chrome",
+      "name": "Retro Chrome Trim",
+      "description": "Polished chrome accents tracing the car's contours — window surrounds, belt line, fender edges. Evokes 50s and 60s American cars.",
+      "energy": "nostalgic",
+      "era": "retro",
+      "best_for": "Classic car tributes, resto-mods, show cars",
+      "inspiration": "Mid-century American automotive design — Cadillac, Chevy, Chrysler of the chrome era.",
+      "recipe_hint": "Use narrow chrome-finish zones along body edges and trim lines. Pair with a warm mid-saturation body color (turquoise, teal, salmon, cream). Keep the chrome highly polished — spec R=255, G=0, B=16."
+    },
+    {
+      "id": "military_stencil",
+      "name": "Military Stencil",
+      "description": "Flat tactical colors with stencil-style number fonts and no gloss. Looks like a military vehicle repurposed for the track.",
+      "energy": "utilitarian",
+      "era": "classic",
+      "best_for": "Off-road racers, spec-series cars, tribute builds",
+      "inspiration": "Military vehicle livery traditions — WWII through modern desert tactical.",
+      "recipe_hint": "Use flat olive drab, desert tan, or foliage gray as base. Add matte finish — spec B channel very dull (240+). Numbers in stencil-style font, flat white or black. No gloss anywhere. Optional: light weathering overlay pattern."
+    },
+    {
+      "id": "carbon_weave_accent",
+      "name": "Carbon Weave Accent",
+      "description": "Exposed-carbon-fiber panels on the hood, roof, and rear wing — everything else painted in a body color. Reads as performance-focused.",
+      "energy": "technical",
+      "era": "modern",
+      "best_for": "Track builds, JDM tuners, modern GT",
+      "inspiration": "Real-world lightweight carbon panels on road and race cars.",
+      "recipe_hint": "Use SPB's carbon-fiber base in specific zones — hood, roof, wing. Paint the rest of the car in any body color. Contrast a glossy body color with the matte-satin carbon weave for visual tension."
+    },
+    {
+      "id": "holographic_panel",
+      "name": "Holographic Sheen Panel",
+      "description": "A single large body panel wears a color-shift holographic finish that shifts hue depending on viewing angle, while the rest of the car stays solid.",
+      "energy": "futuristic",
+      "era": "modern",
+      "best_for": "Show cars, sim-racing spec builds, art cars",
+      "inspiration": "Holographic wrap trend of the mid-2010s onward.",
+      "recipe_hint": "Apply a color-shift or iridescent finish (pearl, chameleon, astro cosmic) to the doors only or the full hood only. Keep the rest of the car in a neutral deep color. The contrast between flat and shifting makes both read stronger."
+    },
+    {
+      "id": "tribal_graphic",
+      "name": "Tribal Graphic Overlay",
+      "description": "Interlocking tribal-style curves and points sweeping across the body — think late-90s extreme sports aesthetic.",
+      "energy": "aggressive",
+      "era": "retro",
+      "best_for": "Tuner builds, drift cars, 90s throwback liveries",
+      "inspiration": "Late 90s and early 2000s tribal tattoo and action-sports graphic design.",
+      "recipe_hint": "Use SPB's tribal or flame-style pattern at high density across the door zone. Pair black tribals on silver body, or white tribals on candy red. Keep to no more than two body zones so the graphic stays the focus."
+    },
+    {
+      "id": "pixel_glitch",
+      "name": "Pixel Glitch Panel",
+      "description": "A rectangular region of the car where the paint appears to glitch or pixelate, as if the car is buffering.",
+      "energy": "futuristic",
+      "era": "modern",
+      "best_for": "E-sports team cars, digital-themed liveries, art cars",
+      "inspiration": "Digital error aesthetics, glitch art, esports branding.",
+      "recipe_hint": "Apply SPB's pixel or glitch pattern to a rectangular door zone. Use colors that shift dramatically across the pattern — magenta and cyan, or RGB primary triplet. Leave the rest of the body clean so the glitch region reads as intentional."
+    },
+    {
+      "id": "digital_camo",
+      "name": "Digital Camouflage",
+      "description": "Pixelated camo in tactical or unconventional color palettes covering the entire body.",
+      "energy": "utilitarian",
+      "era": "modern",
+      "best_for": "Military tribute cars, art installations, unconventional showcar builds",
+      "inspiration": "Digital military camouflage adopted since the 2000s (ACU, MARPAT, CADPAT styles).",
+      "recipe_hint": "Apply digital-camo pattern across full body. Use subdued tactical colors (olive/tan/brown) for realism, or unexpected color palettes (pink/purple/teal) for art-statement builds. Matte finish throughout."
+    },
+    {
+      "id": "half_and_half_roof_split",
+      "name": "Belt-Line Two-Tone",
+      "description": "Body below the windows is one color, body above (roof, A-pillars, C-pillars) is another — a classic 'two-tone' look.",
+      "energy": "classic",
+      "era": "retro",
+      "best_for": "Vintage sedans, classic racers, retro tributes",
+      "inspiration": "50s and 60s American and European two-tone factory schemes.",
+      "recipe_hint": "Create a zone split along the belt line (top of door glass). Roof plus greenhouse in one color (often white or cream), lower body in the feature color (red, turquoise, dark green). Gloss finish throughout."
+    },
+    {
+      "id": "nose_cone_contrast",
+      "name": "Nose Cone Contrast",
+      "description": "The entire front fascia — bumper, fender tips, hood leading edge — wears a contrast color versus the rest of the body.",
+      "energy": "bold",
+      "era": "classic",
+      "best_for": "Vintage F1 style, GT endurance tributes, 60s sports racers",
+      "inspiration": "60s sports car racing — nose cones often painted to distinguish team or class.",
+      "recipe_hint": "Create a zone covering the front 20% of the car (nose, front fenders, front of hood). Use a contrast color — yellow nose on silver body, white nose on blue body, red nose on black body. Gloss finish."
+    },
+    {
+      "id": "blanket_monochrome",
+      "name": "Blanket Monochrome",
+      "description": "Single color applied head-to-toe with no breaks, no stripes, no contrasting panels. The entire car is one statement.",
+      "energy": "refined",
+      "era": "timeless",
+      "best_for": "Stealth builds, luxury tributes, murdered-out aesthetics",
+      "inspiration": "Post-2010s murdered-out / all-black aesthetic, plus classic monochromatic luxury.",
+      "recipe_hint": "One base color across every zone. Pick the finish character carefully — matte black reads stealthy and aggressive, gloss champagne reads luxurious, flat olive reads utilitarian. The finish does all the work since there's no color contrast to help."
+    },
+    {
+      "id": "target_bullseye",
+      "name": "Bullseye Target",
+      "description": "Concentric rings centered on the door or hood — like a target.",
+      "energy": "playful",
+      "era": "retro",
+      "best_for": "Fun builds, mascot cars, kid-racer tributes",
+      "inspiration": "Mod era British cars and 60s pop-art culture.",
+      "recipe_hint": "Create concentric circle zones centered on the door. Alternate two strong colors — classic navy and red on white, or black and yellow on orange. Three or four rings work best; more gets busy. Gloss finish."
+    }
+  ]
+}

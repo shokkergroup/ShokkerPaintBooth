@@ -1,4 +1,16 @@
 {
+  "scripts": {
+    "sync-runtime": "node scripts/sync-runtime-copies.js --write",
+    "check-runtime-sync": "node scripts/sync-runtime-copies.js --check",
+    "check:catalog": "node tests/_runtime_harness/validate_finish_data.mjs",
+    "check:js": "node --check paint-booth-0-finish-data.js && node --check paint-booth-2-state-zones.js && node --check paint-booth-3-canvas.js && node --check paint-booth-5-api-render.js && node --check paint-booth-6-ui-boot.js",
+    "test": "python -m pytest -s -q",
+    "test:collect": "python -m pytest -s --collect-only -q",
+    "test:catalog": "python -m pytest -s tests/test_catalog_validate_on_save.py tests/test_regression_specials_catalog_truth.py -q",
+    "test:alpha": "python -m pytest -s tests/test_regression_zone_priority_override_e2e.py tests/test_regression_toolbar_alpha_safety.py tests/test_regression_specials_catalog_truth.py -q",
+    "check:dev": "npm run check-runtime-sync && npm run check:catalog && npm run check:js && npm run test:catalog",
+    "check:alpha": "npm run check:dev && npm run test:alpha"
+  },
   "dependencies": {
     "docx": "^9.6.1",
     "pptxgenjs": "^4.0.1"

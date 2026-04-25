@@ -33,9 +33,9 @@ Author: Shokker Engine - PARADIGM Series
 """
 
 import numpy as np
+import cv2
 
-def _paint_noop(paint, shape, mask, seed, pm, bb):
-    return paint
+from engine.core import paint_none as _paint_noop
 
 from PIL import Image, ImageFilter, ImageDraw
 
@@ -49,23 +49,27 @@ except ImportError:
 # HELPERS
 # ================================================================
 
-def _mgrid(shape):
-    return np.mgrid[0:shape[0], 0:shape[1]]
+from engine.core import get_mgrid as _mgrid  # cached, faster than local np.mgrid
 
 def _noise(shape, scales, weights, seed):
-    """Multi-octave noise."""
+    """Multi-octave noise — delegates to cached core.multi_scale_noise for speed."""
+    try:
+        from engine.core import multi_scale_noise as _cached_msn
+        return _cached_msn(shape, scales, weights, seed)
+    except ImportError:
+        pass
+    # Fallback
     h, w = shape
     result = np.zeros((h, w), dtype=np.float32)
     rng = np.random.RandomState(seed)
     for scale, weight in zip(scales, weights):
         sh, sw = max(1, h // scale), max(1, w // scale)
         small = rng.randn(sh, sw).astype(np.float32)
-        mn, mx = small.min(), small.max()
-        norm = ((small - mn) / (mx - mn + 1e-8) * 255).clip(0, 255).astype(np.uint8)
-        img = Image.fromarray(norm).resize((w, h), Image.BILINEAR)
-        arr = np.array(img).astype(np.float32) / 255.0
-        arr = arr * (mx - mn) + mn
+        arr = cv2.resize(small, (w, h), interpolation=cv2.INTER_LINEAR)
         result += arr * weight
+    rmin, rmax = float(result.min()), float(result.max())
+    if rmax > rmin:
+        result = (result - rmin) / (rmax - rmin) * 2.0 - 1.0
     return result
 
 def _voronoi(shape, n_points, seed):
@@ -112,6 +116,15 @@ def _hsv_to_rgb(h, s, v):
     return r + off, g + off, b + off
 
 
+def _norm01(arr):
+    arr = np.asarray(arr, dtype=np.float32)
+    mn = float(arr.min())
+    mx = float(arr.max())
+    if mx <= mn:
+        return np.zeros_like(arr, dtype=np.float32)
+    return ((arr - mn) / (mx - mn + 1e-8)).astype(np.float32)
+
+
 # ================================================================
 # FIELD CACHES - avoid recomputing expensive fields across
 # texture_* and paint_* calls for the same finish/seed
@@ -139,46 +152,60 @@ def clear_paradigm_cache():
 # ================================================================
 
 def paint_singularity(paint, shape, mask, seed, pm, bb):
-    """Singularity - DEVASTATING gravitational lensing with blazing accretion rings."""
+    """Singularity - dense micro-lensing wells with fine accretion filaments."""
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     if pm == 0.0:
         return paint
     h, w = shape
     rng = np.random.RandomState(seed + 5000)
-    n_wells = max(3, (h * w) // (512 * 512) * 5 + 3)
+    n_wells = max(5, min(18, (h * w) // (512 * 512) * 4 + 6))
     y, x = _mgrid(shape)
-    yf = y.astype(np.float32)
-    xf = x.astype(np.float32)
+    yf = y.astype(np.float32) / max(h - 1, 1)
+    xf = x.astype(np.float32) / max(w - 1, 1)
 
-    accum = np.zeros((h, w), dtype=np.float32)
+    core_accum = np.zeros((h, w), dtype=np.float32)
     ring_accum = np.zeros((h, w), dtype=np.float32)
+    filament_accum = np.zeros((h, w), dtype=np.float32)
+    lens_accum = np.zeros((h, w), dtype=np.float32)
     for _ in range(n_wells):
-        cy = rng.randint(h // 8, 7 * h // 8)
-        cx = rng.randint(w // 8, 7 * w // 8)
-        mass = rng.uniform(40, 100)
-        dist = np.sqrt((yf - cy)**2 + (xf - cx)**2) + 1e-3
-        potential = np.clip(mass / dist, 0, 3.0)
-        ring_r = mass * 0.8
-        ring = np.exp(-((dist - ring_r)**2) / (mass * 2))
-        accum += potential * 0.3 + ring * 0.7
+        cy = rng.uniform(0.15, 0.85)
+        cx = rng.uniform(0.15, 0.85)
+        scale = rng.uniform(0.05, 0.16)
+        dist = np.sqrt((yf - cy) ** 2 + (xf - cx) ** 2) + 1e-4
+        theta = np.arctan2(yf - cy, xf - cx + 1e-8)
+        local_core = np.exp(-((dist) / (scale * 0.45 + 1e-4)) ** 2)
+        ring = np.exp(-((dist - scale * 0.82) ** 2) / (scale * 0.14 + 1e-4))
+        lens = scale / (dist + scale * 0.35)
+        filament = 1.0 - np.abs(
+            np.sin((dist * (38.0 + rng.uniform(-6.0, 7.0)) + theta * rng.uniform(2.0, 4.5)) * np.pi)
+        )
+        filament = np.clip(filament, 0.0, 1.0) ** 3.0
+        core_accum += local_core * 1.15
         ring_accum += ring
+        filament_accum += filament * ring
+        lens_accum += lens * 0.28 + ring * 0.30
 
-    accum = accum / (accum.max() + 1e-8)
-    ring_accum = ring_accum / (ring_accum.max() + 1e-8)
+    grain = _norm01(_noise(shape, [4, 8, 16, 32], [0.18, 0.24, 0.32, 0.26], seed + 5003))
+    core_accum = _norm01(core_accum)
+    ring_accum = _norm01(ring_accum)
+    filament_accum = _norm01(filament_accum)
+    lens_accum = _norm01(lens_accum * 0.55 + filament_accum * 0.25 + grain * 0.20)
 
-    # Heavy darkening in gravity wells
-    darken = np.clip(accum * 2.0, 0, 1) * 0.60 * pm
+    darken = np.clip(core_accum * 0.78 + lens_accum * 0.14, 0, 1) * 0.68 * pm
     for c in range(3):
         paint[:, :, c] = np.clip(paint[:, :, c] * (1 - darken * mask), 0, 1)
 
-    # Blazing accretion ring glow - orange-white hot
-    ring_bright = np.clip(ring_accum, 0, 1)
-    paint[:, :, 0] = np.clip(paint[:, :, 0] + ring_bright * 0.35 * pm * mask, 0, 1)
-    paint[:, :, 1] = np.clip(paint[:, :, 1] + ring_bright * 0.20 * pm * mask, 0, 1)
-    paint[:, :, 2] = np.clip(paint[:, :, 2] + ring_bright * 0.10 * pm * mask, 0, 1)
+    ring_glow = np.clip(ring_accum * 0.55 + filament_accum * 0.45, 0, 1) * 0.32 * pm
+    paint[:, :, 0] = np.clip(paint[:, :, 0] + ring_glow * 0.90 * mask, 0, 1)
+    paint[:, :, 1] = np.clip(paint[:, :, 1] + ring_glow * 0.45 * mask, 0, 1)
+    paint[:, :, 2] = np.clip(paint[:, :, 2] + ring_glow * 0.14 * mask, 0, 1)
 
-    # Hot white center of rings
-    ring_core = np.clip((ring_accum - 0.4) * 2.0, 0, 1) * 0.45 * pm
-    paint = np.clip(paint + ring_core[:, :, np.newaxis] * mask[:, :, np.newaxis], 0, 1)
+    white_core = np.clip((core_accum - 0.35) * 1.6, 0, 1) * 0.22 * pm
+    micro_lens = np.clip(filament_accum * 0.18 + grain * 0.08, 0, 1) * 0.18 * pm
+    paint = np.clip(paint + white_core[:, :, np.newaxis] * mask[:, :, np.newaxis], 0, 1)
+    paint[:, :, 2] = np.clip(paint[:, :, 2] + micro_lens * 0.55 * mask, 0, 1)
 
     paint = np.clip(paint + bb * 0.5 * mask[:, :, np.newaxis], 0, 1)
     return paint
@@ -190,13 +217,16 @@ def paint_singularity(paint, shape, mask, seed, pm, bb):
 
 def paint_bioluminescent(paint, shape, mask, seed, pm, bb):
     """Bioluminescent - VIVID organic cell glow with pulsing bio-light veins."""
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     if pm == 0.0:
         return paint
     h, w = shape
     rng = np.random.RandomState(seed + 5101)
 
     # Cell structure at multiple scales
-    cell_noise = _noise(shape, [32, 64, 128], [0.3, 0.4, 0.3], seed + 5100)
+    cell_noise = _noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + 5100)
     cell_noise = (cell_noise - cell_noise.min()) / (cell_noise.max() - cell_noise.min() + 1e-8)
     cells = np.clip((cell_noise - 0.35) * 3.0, 0, 1)
 
@@ -212,7 +242,7 @@ def paint_bioluminescent(paint, shape, mask, seed, pm, bb):
     paint[:, :, 2] = np.clip(paint[:, :, 2] + glow * 0.7 * mask, 0, 1)
 
     # Bio-vein network - fine-scale connecting lines between cells
-    vein_noise = _noise(shape, [4, 8, 16], [0.3, 0.4, 0.3], seed + 5102)
+    vein_noise = _noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + 5102)
     vein_noise = (vein_noise - vein_noise.min()) / (vein_noise.max() - vein_noise.min() + 1e-8)
     veins = np.clip(1.0 - np.abs(vein_noise - 0.5) * 6.0, 0, 1) * cells
     vein_glow = veins * 0.20 * pm
@@ -233,6 +263,9 @@ def paint_bioluminescent(paint, shape, mask, seed, pm, bb):
 # ================================================================
 
 def paint_liquid_obsidian(paint, shape, mask, seed, pm, bb):
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     if pm == 0.0:
         return paint
     h, w = shape
@@ -347,6 +380,7 @@ def texture_fresnel_ghost(shape, mask, seed, sm):
 
 def paint_fresnel_ghost(paint, shape, mask, seed, pm, bb):
     """Fresnel ghost - subtle iridescent edge glow at Fresnel zone boundaries."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     if pm == 0.0:
         return paint
     cache_key = ("fresnel_ghost", shape, seed)
@@ -447,6 +481,7 @@ def texture_caustic(shape, mask, seed, sm):
 
 def paint_caustic(paint, shape, mask, seed, pm, bb):
     """Caustic - bright aqua-white focal lines on subtle dark background."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     if pm == 0.0:
         return paint
     cache_key = ("caustic", shape, seed)
@@ -555,6 +590,7 @@ def texture_dimensional(shape, mask, seed, sm):
 
 def paint_dimensional(paint, shape, mask, seed, pm, bb):
     """Dimensional rift - deep violet/cyan void with hot accretion glow."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     if pm == 0.0:
         return paint
     cache_key = ("dimensional", shape, seed)
@@ -680,9 +716,7 @@ def _compute_neural_field(shape, seed):
 
     # --- Blur for organic look ---
     def _blur(arr, radius):
-        img = Image.fromarray((arr * 255).clip(0, 255).astype(np.uint8))
-        img = img.filter(ImageFilter.GaussianBlur(radius=radius))
-        return np.array(img).astype(np.float32) / 255.0
+        return cv2.GaussianBlur(arr.astype(np.float32), (0, 0), radius)
 
     dendrite_field = _blur(dendrite_field, 1.5)
     axon_field = _blur(axon_field, 1.0)
@@ -706,6 +740,7 @@ def texture_neural(shape, mask, seed, sm):
 def paint_neural(paint, shape, mask, seed, pm, bb):
     """Neural - bioluminescent glow: soma bright cyan, axons electric blue,
     dendrites faint green. Like fluorescent-stained neurons under microscope."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     if pm == 0.0:
         return paint
     cache_key = ("neural", shape, seed)
@@ -803,14 +838,14 @@ def _compute_plasma_field(shape, seed):
     discharge_arr = np.array(discharge_img).astype(np.float32) / 255.0
 
     # Create glow by blurring the discharge pattern
-    glow_img = Image.fromarray((discharge_arr * 255).astype(np.uint8))
-    glow_img = glow_img.filter(ImageFilter.GaussianBlur(radius=max(3, h // 200)))
-    glow_field = np.array(glow_img).astype(np.float32) / 255.0
+    _glow_r = max(3, h // 200)
+    _glow_k = _glow_r * 2 + 1
+    glow_field = cv2.GaussianBlur(discharge_arr.astype(np.float32), (_glow_k, _glow_k), 0)
 
     # Wider atmospheric glow
-    atmo_img = Image.fromarray((discharge_arr * 255).astype(np.uint8))
-    atmo_img = atmo_img.filter(ImageFilter.GaussianBlur(radius=max(8, h // 80)))
-    atmo_field = np.array(atmo_img).astype(np.float32) / 255.0
+    _atmo_r = max(8, h // 80)
+    _atmo_k = _atmo_r * 2 + 1
+    atmo_field = cv2.GaussianBlur(discharge_arr.astype(np.float32), (_atmo_k, _atmo_k), 0)
 
     # --- Compose: sharp discharge + inner glow + atmospheric glow ---
     field = discharge_arr * 0.6 + glow_field * 0.3 + atmo_field * 0.15
@@ -825,6 +860,7 @@ def texture_plasma(shape, mask, seed, sm):
 
 def paint_plasma(paint, shape, mask, seed, pm, bb):
     """Plasma discharge: white-hot core fading to electric violet/blue corona."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     if pm == 0.0:
         return paint
     cache_key = ("plasma", shape, seed)
@@ -940,6 +976,7 @@ def texture_holographic(shape, mask, seed, sm):
 
 def paint_holographic(paint, shape, mask, seed, pm, bb):
     """Diffractive hologram: vivid rainbow that shifts per-zone with visible grating lines."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     if pm == 0.0:
         return paint
     cache_key = ("holographic", shape, seed)
@@ -1086,9 +1123,7 @@ def _compute_circuit_field(shape, seed):
 
     # Anti-alias with slight blur
     def _aa(arr):
-        img = Image.fromarray((arr * 255).clip(0, 255).astype(np.uint8))
-        img = img.filter(ImageFilter.GaussianBlur(radius=0.8))
-        return np.array(img).astype(np.float32) / 255.0
+        return cv2.GaussianBlur(arr.astype(np.float32), (0, 0), 0.8)
 
     trace_field = _aa(trace_field)
 
@@ -1104,6 +1139,7 @@ def texture_circuitboard(shape, mask, seed, sm):
 
 def paint_circuitboard(paint, shape, mask, seed, pm, bb):
     """Circuit board: copper traces get green-gold PCB tint, vias get bright solder shine."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     if pm == 0.0:
         return paint
     cache_key = ("circuit", shape, seed)
@@ -1241,6 +1277,7 @@ def texture_soundwave(shape, mask, seed, sm):
 
 def paint_soundwave(paint, shape, mask, seed, pm, bb):
     """Soundwave: green phosphor oscilloscope glow with hot-white peaks."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     if pm == 0.0:
         return paint
     cache_key = ("soundwave", shape, seed)
@@ -1266,7 +1303,7 @@ def paint_soundwave(paint, shape, mask, seed, pm, bb):
 
 def _compute_topo_field(shape, seed):
     h, w = shape
-    elevation = _noise(shape, [16, 32, 64, 128], [0.15, 0.25, 0.35, 0.25], seed + 5540)
+    elevation = _noise(shape, [4, 8, 16, 32], [0.15, 0.25, 0.35, 0.25], seed + 5540)
     elevation = (elevation - elevation.min()) / (elevation.max() - elevation.min() + 1e-8)
     # Contour lines: sharp bands at regular elevation intervals
     n_contours = 20
@@ -1282,6 +1319,7 @@ def texture_topographic(shape, mask, seed, sm):
     return {"pattern_val": field, "R_range": -55.0, "M_range": 75.0, "CC": None}
 
 def paint_topographic(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     if pm == 0.0:
         return paint
     cache_key = ("topo", shape, seed)
@@ -1311,6 +1349,7 @@ def texture_tessellation(shape, mask, seed, sm):
     return {"pattern_val": field, "R_range": -65.0, "M_range": 80.0, "CC": None}
 
 def paint_tessellation(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     if pm == 0.0:
         return paint
     h, w = shape
@@ -1333,52 +1372,27 @@ def paint_tessellation(paint, shape, mask, seed, pm, bb):
 # PERF FIX: Capped to 25 voids max. Voronoi cached between spec/paint.
 
 def _compute_void_field(shape, seed):
-    """Generate void holes using a hex grid - dense honeycomb perforation pattern.
-    Voids cover ~50% of cells for dramatic visible coverage across entire surface."""
+    """Generate a dense micro-perforation field instead of giant checkerboard voids."""
     h, w = shape
-    rng = np.random.RandomState(seed + 5600)
+    y, x = _mgrid(shape)
+    yf = y.astype(np.float32) / max(h - 1, 1)
+    xf = x.astype(np.float32) / max(w - 1, 1)
 
-    # Hex grid cell size: ~6% of smaller dimension for denser, more visible pattern
-    cell_size = max(16, int(min(h, w) * 0.06))
-    hex_h = cell_size
-    hex_w = int(cell_size * 1.1547)  # 2/sqrt(3)
+    warp_a = _noise(shape, [8, 16, 32], [0.25, 0.40, 0.35], seed + 5601) * 0.035
+    warp_b = _noise(shape, [12, 24, 48], [0.30, 0.40, 0.30], seed + 5602) * 0.035
+    u = xf + warp_a
+    v = yf + warp_b
 
-    y_grid, x_grid = np.mgrid[0:h, 0:w].astype(np.float32)
+    thread_a = np.abs(np.sin((u * 26.0 + v * 7.0) * np.pi))
+    thread_b = np.abs(np.sin((u * 19.0 - v * 17.0) * np.pi))
+    thread_c = np.abs(np.sin((u * 31.0 + v * 13.0) * np.pi))
+    filigree = np.minimum(np.minimum(thread_a, thread_b), thread_c)
+    micro = _norm01(_noise(shape, [4, 8, 16, 32], [0.20, 0.24, 0.30, 0.26], seed + 5603))
 
-    # Hex grid row/col assignment
-    row = (y_grid / hex_h).astype(np.int32)
-    # Offset every other row by half a cell width
-    x_offset = np.where(row % 2 == 0, 0.0, hex_w * 0.5)
-    col = ((x_grid + x_offset) / hex_w).astype(np.int32)
-
-    # Center of each hex cell
-    cy = (row + 0.5) * hex_h
-    cx = (col + 0.5) * hex_w - x_offset
-
-    # Distance from pixel to its cell center
-    dist_to_center = np.sqrt((y_grid - cy)**2 + (x_grid - cx)**2)
-
-    # Void radius: ~42% of cell size for clean circular holes
-    void_radius = cell_size * 0.42
-
-    # Checkerboard pattern: every other cell is void using (row+col) % 2 == 0
-    # This gives ~50% void coverage - dramatic and unmistakable
-    is_void_cell = ((row + col) % 2 == 0).astype(np.float32)
-
-    # Slight randomness: hash-based jitter to break perfect regularity
-    cell_hash = ((row * 7919 + col * 104729 + seed) % 100).astype(np.float32) / 100.0
-    # Keep 85% of void cells (vs old 35%) - much denser coverage
-    is_void_cell = np.where(cell_hash < 0.85, is_void_cell, 0.0)
-
-    # Circular void mask within void cells
-    is_void = is_void_cell * np.clip(1.0 - dist_to_center / void_radius, 0, 1)
-
-    # Smooth edges
-    void_img = Image.fromarray((is_void * 255).clip(0, 255).astype(np.uint8))
-    void_img = void_img.filter(ImageFilter.GaussianBlur(radius=max(2, cell_size // 12)))
-    is_void_soft = np.array(void_img).astype(np.float32) / 255.0
-
-    n_voids = int(is_void_cell.sum() / max(1, h * w / (hex_h * hex_w)))
+    pores = np.clip(1.0 - filigree * 6.5, 0, 1) * (0.55 + micro * 0.45)
+    pores = np.clip((pores - 0.55) * 2.4, 0, 1)
+    is_void_soft = cv2.GaussianBlur(pores.astype(np.float32), (0, 0), max(0.6, min(h, w) / 1800.0))
+    n_voids = int((is_void_soft > 0.52).sum() / max(1, (h * w) / 900.0))
     return is_void_soft, n_voids
 
 def spec_void(shape, mask, seed, sm):
@@ -1411,6 +1425,9 @@ def spec_void(shape, mask, seed, sm):
 
 def paint_void(paint, shape, mask, seed, pm, bb):
     """Void - darken void patches, keep chrome areas bright. Uses cached field."""
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     if pm == 0.0:
         return paint
     cache_key = ("void", shape, seed)
@@ -1447,7 +1464,7 @@ def spec_living_chrome(shape, mask, seed, sm):
     wave3 = np.sin((yf + xf) * 0.004) * 0.5 + 0.5
     undulation = wave1 * 0.4 + wave2 * 0.35 + wave3 * 0.25
 
-    micro = _noise(shape, [4, 8], [0.4, 0.6], seed + 5701)
+    micro = _noise(shape, [16, 32], [0.4, 0.6], seed + 5701)
     micro = (micro - micro.min()) / (micro.max() - micro.min() + 1e-8)
 
     M = np.clip(130 + undulation * 80 + micro * 45, 130, 255) * sm
@@ -1462,6 +1479,9 @@ def spec_living_chrome(shape, mask, seed, sm):
 
 def paint_living_chrome(paint, shape, mask, seed, pm, bb):
     """Living Chrome - UNDULATING liquid mirror with dramatic bright/dark wave contrast."""
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     if pm == 0.0:
         return paint
     h, w = shape
@@ -1518,13 +1538,13 @@ def spec_quantum(shape, mask, seed, sm):
     bw = (w + block_size - 1) // block_size
 
     # Coherent noise for M and R instead of pure random
-    m_noise = _noise((bh, bw), [2, 4, 8], [0.3, 0.4, 0.3], seed + 5800)
-    r_noise = _noise((bh, bw), [2, 4, 8], [0.3, 0.4, 0.3], seed + 5801)
+    m_noise = _noise((bh, bw), [16, 32, 64], [0.3, 0.4, 0.3], seed + 5800)
+    r_noise = _noise((bh, bw), [16, 32, 64], [0.3, 0.4, 0.3], seed + 5801)
     m_noise = (m_noise - m_noise.min()) / (m_noise.max() - m_noise.min() + 1e-8)
     r_noise = (r_noise - r_noise.min()) / (r_noise.max() - r_noise.min() + 1e-8)
 
     # Independent noise for CC channel (new seed)
-    cc_noise = _noise((bh, bw), [2, 4, 8], [0.3, 0.4, 0.3], seed + 5802)
+    cc_noise = _noise((bh, bw), [16, 32, 64], [0.3, 0.4, 0.3], seed + 5802)
     cc_noise = (cc_noise - cc_noise.min()) / (cc_noise.max() - cc_noise.min() + 1e-8)
 
     # Add some randomness on top of the noise for quantum unpredictability
@@ -1532,12 +1552,9 @@ def spec_quantum(shape, mask, seed, sm):
     block_R = np.clip(r_noise * 200 + rng_block.randint(-40, 40, (bh, bw)), 0, 255).astype(np.float32)
     block_CC = np.clip(16 + cc_noise * 90, 16, 106).astype(np.float32)
 
-    M_img = Image.fromarray(block_M.clip(0, 255).astype(np.uint8))
-    R_img = Image.fromarray(block_R.clip(0, 255).astype(np.uint8))
-    CC_img = Image.fromarray(block_CC.clip(0, 255).astype(np.uint8))
-    M_full = np.array(M_img.resize((w, h), Image.NEAREST)).astype(np.float32)
-    R_full = np.array(R_img.resize((w, h), Image.NEAREST)).astype(np.float32)
-    CC_full = np.array(CC_img.resize((w, h), Image.NEAREST)).astype(np.float32)
+    M_full = cv2.resize(block_M.clip(0, 255).astype(np.float32), (w, h), interpolation=cv2.INTER_NEAREST)
+    R_full = cv2.resize(block_R.clip(0, 255).astype(np.float32), (w, h), interpolation=cv2.INTER_NEAREST)
+    CC_full = cv2.resize(block_CC.clip(0, 255).astype(np.float32), (w, h), interpolation=cv2.INTER_NEAREST)
 
     M_full = M_full * sm
     R_full = R_full * sm
@@ -1549,6 +1566,9 @@ def spec_quantum(shape, mask, seed, sm):
     return spec
 
 def paint_quantum(paint, shape, mask, seed, pm, bb):
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     if pm == 0.0:
         return paint
     h, w = shape
@@ -1557,12 +1577,11 @@ def paint_quantum(paint, shape, mask, seed, pm, bb):
     bh = (h + block_size - 1) // block_size
     bw = (w + block_size - 1) // block_size
 
-    m_noise = _noise((bh, bw), [2, 4, 8], [0.3, 0.4, 0.3], seed + 5800)
+    m_noise = _noise((bh, bw), [16, 32, 64], [0.3, 0.4, 0.3], seed + 5800)
     m_noise = (m_noise - m_noise.min()) / (m_noise.max() - m_noise.min() + 1e-8)
     block_hue = m_noise
 
-    hue_img = Image.fromarray((block_hue * 255).clip(0, 255).astype(np.uint8))
-    hue_full = np.array(hue_img.resize((w, h), Image.NEAREST)).astype(np.float32) / 255.0
+    hue_full = cv2.resize(block_hue.astype(np.float32), (w, h), interpolation=cv2.INTER_NEAREST)
 
     r_shift, g_shift, b_shift = _hsv_to_rgb(hue_full, np.full_like(hue_full, 0.6), np.full_like(hue_full, 0.6))
     blend = 0.22 * pm
@@ -1613,6 +1632,9 @@ def spec_aurora(shape, mask, seed, sm):
     return spec
 
 def paint_aurora(paint, shape, mask, seed, pm, bb):
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     if pm == 0.0:
         return paint
     h, w = shape
@@ -1688,6 +1710,9 @@ def spec_magnetic(shape, mask, seed, sm):
 
 def paint_magnetic(paint, shape, mask, seed, pm, bb):
     """Magnetic - VISIBLE field line pattern with pole glow and iron filing texture."""
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     if pm == 0.0:
         return paint
     h, w = shape
@@ -1736,7 +1761,7 @@ def paint_magnetic(paint, shape, mask, seed, pm, bb):
 def spec_ember(shape, mask, seed, sm):
     h, w = shape
     spec = np.zeros((h, w, 4), dtype=np.uint8)
-    heat = _noise(shape, [8, 16, 32, 64], [0.2, 0.3, 0.3, 0.2], seed + 5820)
+    heat = _noise(shape, [16, 32, 64, 128], [0.2, 0.3, 0.3, 0.2], seed + 5820)
     heat = (heat - heat.min()) / (heat.max() - heat.min() + 1e-8)
 
     # Independent noise for R channel
@@ -1756,11 +1781,14 @@ def spec_ember(shape, mask, seed, sm):
 
 def paint_ember(paint, shape, mask, seed, pm, bb):
     """Ember - GLOWING hot metal with blazing orange cracks and dark cooled surface."""
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     if pm == 0.0:
         return paint
     h, w = shape
     rng = np.random.RandomState(seed + 5821)
-    heat = _noise(shape, [8, 16, 32, 64], [0.2, 0.3, 0.3, 0.2], seed + 5820)
+    heat = _noise(shape, [16, 32, 64, 128], [0.2, 0.3, 0.3, 0.2], seed + 5820)
     heat = (heat - heat.min()) / (heat.max() - heat.min() + 1e-8)
 
     # Cool zones darken heavily - cooled metal is near-black
@@ -1817,6 +1845,9 @@ def spec_stealth(shape, mask, seed, sm):
 
 def paint_stealth(paint, shape, mask, seed, pm, bb):
     """Stealth - ANGULAR faceted dark surface with visible facet edges and subtle green-gray tint."""
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     if pm == 0.0:
         return paint
     h, w = shape
@@ -1869,7 +1900,7 @@ def spec_glass_armor(shape, mask, seed, sm):
     is_edge = (edge_y | edge_x).astype(np.float32)
 
     # Independent crack noise for R channel
-    crack_noise = _noise(shape, [4, 8, 16], [0.3, 0.4, 0.3], seed + 5845)
+    crack_noise = _noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + 5845)
     crack_noise = (crack_noise - crack_noise.min()) / (crack_noise.max() - crack_noise.min() + 1e-8)
 
     M = (is_edge * 200 + (1 - is_edge) * 5) * sm
@@ -1884,6 +1915,9 @@ def spec_glass_armor(shape, mask, seed, sm):
 
 def paint_glass_armor(paint, shape, mask, seed, pm, bb):
     """Glass Armor - VISIBLE plate grid with strong blue glass panels and dark metallic frame."""
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     if pm == 0.0:
         return paint
     h, w = shape
@@ -1940,11 +1974,10 @@ def spec_static(shape, mask, seed, sm):
     # Per-pixel noise (but generated at half-res and upscaled for speed)
     half_h, half_w = max(1, h // 2), max(1, w // 2)
     noise_small = rng.randint(0, 256, (half_h, half_w)).astype(np.uint8)
-    noise_img = Image.fromarray(noise_small).resize((w, h), Image.NEAREST)
-    noise_full = np.array(noise_img).astype(np.float32) / 255.0
+    noise_full = cv2.resize(noise_small.astype(np.float32) / 255.0, (w, h), interpolation=cv2.INTER_NEAREST)
 
     # Independent noise for CC channel
-    cc_noise = _noise(shape, [4, 8, 16], [0.3, 0.4, 0.3], seed + 5855)
+    cc_noise = _noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + 5855)
     cc_noise = (cc_noise - cc_noise.min()) / (cc_noise.max() - cc_noise.min() + 1e-8)
 
     M = (noise_full * 255 * (1 - scan_line * 0.5)) * sm
@@ -1958,14 +1991,16 @@ def spec_static(shape, mask, seed, sm):
     return spec
 
 def paint_static(paint, shape, mask, seed, pm, bb):
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     if pm == 0.0:
         return paint
     h, w = shape
     rng = np.random.RandomState(seed + 5850)
     half_h, half_w = max(1, h // 2), max(1, w // 2)
     noise_small = rng.randint(0, 256, (half_h, half_w)).astype(np.uint8)
-    noise_img = Image.fromarray(noise_small).resize((w, h), Image.NEAREST)
-    noise_full = np.array(noise_img).astype(np.float32) / 255.0
+    noise_full = cv2.resize(noise_small.astype(np.float32) / 255.0, (w, h), interpolation=cv2.INTER_NEAREST)
 
     # Heavy desaturate toward gray static
     gray = paint.mean(axis=2, keepdims=True)
@@ -2001,20 +2036,17 @@ def paint_static(paint, shape, mask, seed, pm, bb):
 def spec_mercury_pool(shape, mask, seed, sm):
     h, w = shape
     spec = np.zeros((h, w, 4), dtype=np.uint8)
+    flow_a = _norm01(_noise(shape, [8, 16, 32, 64], [0.18, 0.24, 0.34, 0.24], seed + 5860))
+    flow_b = _norm01(_noise(shape, [4, 8, 16], [0.25, 0.40, 0.35], seed + 5862))
+    rivulets = 1.0 - np.abs(np.sin((flow_a * 2.8 + flow_b * 1.9) * np.pi * 2.8))
+    pool_smooth = _norm01(flow_a * 0.48 + np.clip(rivulets, 0, 1) * 0.32 + flow_b * 0.20)
+    pool_smooth = cv2.GaussianBlur(pool_smooth.astype(np.float32), (0, 0), 1.2)
+    edge_seed = np.abs(np.diff(pool_smooth, axis=1, prepend=pool_smooth[:, :1])) + \
+        np.abs(np.diff(pool_smooth, axis=0, prepend=pool_smooth[:1, :]))
+    edge_seed = np.clip(edge_seed * 18.0, 0, 1)
 
-    # Smooth flowing noise for mercury pools
-    flow = _noise(shape, [8, 16, 32, 64], [0.15, 0.25, 0.35, 0.25], seed + 5860)
-    flow = (flow - flow.min()) / (flow.max() - flow.min() + 1e-8)
-
-    # Mercury: full metallic everywhere, roughness varies with pools
-    # Pool centers = mirror smooth, between pools = slightly rough
-    pool = np.clip((flow - 0.3) * 3, 0, 1)  # threshold into pool shapes
-    pool_img = Image.fromarray((pool * 255).astype(np.uint8))
-    pool_img = pool_img.filter(ImageFilter.GaussianBlur(radius=4))
-    pool_smooth = np.array(pool_img).astype(np.float32) / 255.0
-
-    M = np.clip(120 + pool_smooth * 130, 120, 250) * sm
-    R = ((1 - pool_smooth) * 120 + pool_smooth * 3) * sm  # Pools = mirror, gaps = rougher
+    M = np.clip(150 + pool_smooth * 95 + edge_seed * 18, 120, 250) * sm
+    R = ((1 - pool_smooth) * 95 + edge_seed * 24 + 8) * sm
 
     CC = 16 + pool_smooth * 80  # span 80, min 16
 
@@ -2025,38 +2057,35 @@ def spec_mercury_pool(shape, mask, seed, sm):
     return spec
 
 def paint_mercury_pool(paint, shape, mask, seed, pm, bb):
-    """Mercury Pool - DRAMATIC liquid metal pools with mirror-bright centers and dark gaps."""
+    """Mercury Pool - fine capillary silver flow instead of a few giant blobs."""
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     if pm == 0.0:
         return paint
-    h, w = shape
     rng = np.random.RandomState(seed + 5861)
-    flow = _noise(shape, [8, 16, 32, 64], [0.15, 0.25, 0.35, 0.25], seed + 5860)
-    flow = (flow - flow.min()) / (flow.max() - flow.min() + 1e-8)
-    pool = np.clip((flow - 0.3) * 3, 0, 1)
-    pool_img = Image.fromarray((pool * 255).astype(np.uint8))
-    pool_img = pool_img.filter(ImageFilter.GaussianBlur(radius=4))
-    pool_smooth = np.array(pool_img).astype(np.float32) / 255.0
+    flow_a = _norm01(_noise(shape, [8, 16, 32, 64], [0.18, 0.24, 0.34, 0.24], seed + 5860))
+    flow_b = _norm01(_noise(shape, [4, 8, 16], [0.25, 0.40, 0.35], seed + 5862))
+    rivulets = 1.0 - np.abs(np.sin((flow_a * 2.8 + flow_b * 1.9) * np.pi * 2.8))
+    pool_smooth = _norm01(flow_a * 0.48 + np.clip(rivulets, 0, 1) * 0.32 + flow_b * 0.20)
+    pool_smooth = cv2.GaussianBlur(pool_smooth.astype(np.float32), (0, 0), 1.2)
 
-    # Pool centers = mirror-bright silver
-    bright = pool_smooth * 0.30 * pm
+    bright = pool_smooth * 0.24 * pm
     paint[:, :, 0] = np.clip(paint[:, :, 0] + bright * 0.85 * mask, 0, 1)
     paint[:, :, 1] = np.clip(paint[:, :, 1] + bright * 0.90 * mask, 0, 1)
     paint[:, :, 2] = np.clip(paint[:, :, 2] + bright * 1.0 * mask, 0, 1)
 
-    # Gaps between pools = dark recessed channels
-    gap = np.clip((0.3 - flow) * 4, 0, 1) * 0.30 * pm
+    gap = np.clip((0.35 - flow_a) * 2.8, 0, 1) * 0.22 * pm
     for c in range(3):
         paint[:, :, c] = np.clip(paint[:, :, c] - gap * mask, 0, 1)
 
-    # Pool edge highlight where mercury meets gap
     gx = np.abs(np.diff(pool_smooth, axis=1, prepend=pool_smooth[:, :1]))
     gy = np.abs(np.diff(pool_smooth, axis=0, prepend=pool_smooth[:1, :]))
-    edge = np.clip((gx + gy) * 15, 0, 1) * 0.18 * pm
+    edge = np.clip((gx + gy) * 18, 0, 1) * 0.14 * pm
     paint = np.clip(paint + edge[:, :, np.newaxis] * mask[:, :, np.newaxis], 0, 1)
 
-    # Mercury sparkle
     sparkle = rng.random(shape).astype(np.float32)
-    merc_spark = np.where((sparkle > 0.975) & (pool_smooth > 0.4), 0.22 * pm, 0.0)
+    merc_spark = np.where((sparkle > 0.985) & (pool_smooth > 0.55), 0.16 * pm, 0.0)
     paint = np.clip(paint + merc_spark[:, :, np.newaxis] * mask[:, :, np.newaxis], 0, 1)
 
     paint = np.clip(paint + bb * 0.5 * mask[:, :, np.newaxis], 0, 1)
@@ -2068,6 +2097,9 @@ def paint_mercury_pool(paint, shape, mask, seed, pm, bb):
 
 def paint_prismatic(paint, shape, mask, seed, pm, bb):
     """Prismatic - VIVID rainbow spectral shift with noise-warped iridescence."""
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     if pm == 0.0:
         return paint
     h, w = shape
@@ -2103,6 +2135,9 @@ def paint_prismatic(paint, shape, mask, seed, pm, bb):
 
 def paint_mercury(paint, shape, mask, seed, pm, bb):
     """Mercury - LIQUID METAL pooling with dramatic bright/dark flow contrast."""
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     if pm == 0.0:
         return paint
     h, w = shape
@@ -2136,12 +2171,15 @@ def paint_mercury(paint, shape, mask, seed, pm, bb):
 
 def paint_phantom(paint, shape, mask, seed, pm, bb):
     """Phantom - ETHEREAL translucent mist with ghostly wisps and spectral fade."""
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     if pm == 0.0:
         return paint
     h, w = shape
 
     # Multi-layer mist at different scales
-    mist1 = _noise(shape, [32, 64, 128], [0.2, 0.4, 0.4], seed + 5220)
+    mist1 = _noise(shape, [16, 32, 64], [0.2, 0.4, 0.4], seed + 5220)
     mist1 = (mist1 - mist1.min()) / (mist1.max() - mist1.min() + 1e-8)
     mist2 = _noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + 5222)
     mist2 = (mist2 - mist2.min()) / (mist2.max() - mist2.min() + 1e-8)
@@ -2179,11 +2217,14 @@ def paint_phantom(paint, shape, mask, seed, pm, bb):
 
 def paint_volcanic(paint, shape, mask, seed, pm, bb):
     """Volcanic - MOLTEN LAVA with blazing cracks, scorched rock, and ember glow."""
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     if pm == 0.0:
         return paint
     h, w = shape
     rng = np.random.RandomState(seed + 5231)
-    heat = _noise(shape, [8, 16, 32, 64], [0.2, 0.3, 0.3, 0.2], seed + 5230)
+    heat = _noise(shape, [16, 32, 64, 128], [0.2, 0.3, 0.3, 0.2], seed + 5230)
     heat = (heat - heat.min()) / (heat.max() - heat.min() + 1e-8)
 
     # Cool rock zones - darken HARD to near-black
@@ -2216,6 +2257,9 @@ def paint_volcanic(paint, shape, mask, seed, pm, bb):
 
 def paint_arctic_ice(paint, shape, mask, seed, pm, bb):
     """Arctic Ice - FROZEN crystalline with deep blue cracks and frost shimmer."""
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     if pm == 0.0:
         return paint
     h, w = shape
@@ -2263,6 +2307,9 @@ def paint_arctic_ice(paint, shape, mask, seed, pm, bb):
 
 def paint_carbon_weave(paint, shape, mask, seed, pm, bb):
     """Carbon Weave - DEEP carbon fiber with visible weave texture and metallic thread glint."""
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     if pm == 0.0:
         return paint
     h, w = shape
@@ -2303,6 +2350,9 @@ def paint_carbon_weave(paint, shape, mask, seed, pm, bb):
 
 def paint_nebula(paint, shape, mask, seed, pm, bb):
     """Nebula - DEEP SPACE cosmic cloud with vivid purple-blue, hot pink, and bright stars."""
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     if pm == 0.0:
         return paint
     h, w = shape
@@ -2311,7 +2361,7 @@ def paint_nebula(paint, shape, mask, seed, pm, bb):
     # Multi-scale cloud layers
     cloud1 = _noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + 5260)
     cloud2 = _noise(shape, [8, 16, 32], [0.3, 0.4, 0.3], seed + 5261)
-    cloud3 = _noise(shape, [32, 64, 128], [0.3, 0.4, 0.3], seed + 5263)
+    cloud3 = _noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + 5263)
     cloud1 = (cloud1 - cloud1.min()) / (cloud1.max() - cloud1.min() + 1e-8)
     cloud2 = (cloud2 - cloud2.min()) / (cloud2.max() - cloud2.min() + 1e-8)
     cloud3 = (cloud3 - cloud3.min()) / (cloud3.max() - cloud3.min() + 1e-8)
@@ -2362,7 +2412,7 @@ def spec_phase_shift(shape, mask, seed, sm):
     stripe_phase = (y // stripe_width) % 2  # 0 or 1
 
     # Independent noise fields for R and CC
-    phase_noise = _noise(shape, [4, 8, 16], [0.3, 0.4, 0.3], seed + 6005)
+    phase_noise = _noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + 6005)
     phase_noise = (phase_noise - phase_noise.min()) / (phase_noise.max() - phase_noise.min() + 1e-8)
 
     stripe_phase_f = stripe_phase.astype(np.float32)
@@ -2386,6 +2436,9 @@ def spec_phase_shift(shape, mask, seed, sm):
 
 def paint_phase_shift(paint, shape, mask, seed, pm, bb):
     """Phase Shift - DRAMATIC conductor/dielectric striping with warm-cool contrast and shimmer."""
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     if pm == 0.0:
         return paint
     h, w = shape
@@ -2477,6 +2530,9 @@ def spec_gravity_well(shape, mask, seed, sm):
     return spec
 
 def paint_gravity_well(paint, shape, mask, seed, pm, bb):
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     if pm == 0.0:
         return paint
     h, w = shape
@@ -2516,7 +2572,7 @@ def paint_gravity_well(paint, shape, mask, seed, pm, bb):
 def _compute_film_field(shape, seed):
     h, w = shape
     # Multi-scale film thickness
-    film = _noise(shape, [8, 16, 32, 64, 128], [0.1, 0.2, 0.3, 0.25, 0.15], seed + 6200)
+    film = _noise(shape, [2, 4, 8, 16, 32], [0.1, 0.2, 0.3, 0.25, 0.15], seed + 6200)
     film = (film - film.min()) / (film.max() - film.min() + 1e-8)
     return film
 
@@ -2542,6 +2598,9 @@ def spec_thin_film(shape, mask, seed, sm):
     return spec
 
 def paint_thin_film(paint, shape, mask, seed, pm, bb):
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     if pm == 0.0:
         return paint
     h, w = shape
@@ -2572,7 +2631,7 @@ def paint_thin_film(paint, shape, mask, seed, pm, bb):
 def _compute_blackbody_field(shape, seed):
     h, w = shape
     # Temperature field: multi-scale noise with strong gradients
-    temp = _noise(shape, [8, 16, 32, 64], [0.15, 0.3, 0.35, 0.2], seed + 6300)
+    temp = _noise(shape, [16, 32, 64, 128], [0.15, 0.3, 0.35, 0.2], seed + 6300)
     temp = (temp - temp.min()) / (temp.max() - temp.min() + 1e-8)
     # Sharpen contrast to create distinct hot/cold regions
     temp = np.clip((temp - 0.2) * 1.5, 0, 1)
@@ -2602,6 +2661,9 @@ def spec_blackbody(shape, mask, seed, sm):
     return spec
 
 def paint_blackbody(paint, shape, mask, seed, pm, bb):
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     if pm == 0.0:
         return paint
     h, w = shape
@@ -2708,6 +2770,9 @@ def spec_wormhole(shape, mask, seed, sm):
     return spec
 
 def paint_wormhole(paint, shape, mask, seed, pm, bb):
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     if pm == 0.0:
         return paint
     h, w = shape
@@ -2742,82 +2807,104 @@ def paint_wormhole(paint, shape, mask, seed, pm, bb):
 
 def spec_crystal_lattice(shape, mask, seed, sm):
     h, w = shape
-    spec = np.zeros((h, w, 4), dtype=np.uint8)
-    y, x = _mgrid(shape)
+    # --- Resolution cap: compute at 512 max, upscale ---
+    ds = max(1, min(h, w) // 512)
+    sh, sw = max(64, h // ds), max(64, w // ds)
+    y, x = _mgrid((sh, sw))
     yf = y.astype(np.float32)
     xf = x.astype(np.float32)
 
-    # Three hex grids at different scales
+    warp_a = _noise((sh, sw), [8, 16, 32], [0.25, 0.40, 0.35], seed + 6460) * 2.2
+    warp_b = _noise((sh, sw), [12, 24, 48], [0.30, 0.40, 0.30], seed + 6461) * 2.2
+
     layers = []
-    for scale in [60, 90, 140]:
+    for idx, scale in enumerate([18, 24, 32, 44, 58, 76]):
         hex_h = scale
         hex_w = int(scale * 1.1547)
-        row = (yf / hex_h).astype(np.int32)
+        wy = yf + warp_a * (0.08 + idx * 0.01)
+        wx = xf + warp_b * (0.08 + idx * 0.01)
+        row = (wy / hex_h).astype(np.int32)
         offset = np.where(row % 2 == 0, 0.0, hex_w * 0.5)
-        col = ((xf + offset) / hex_w).astype(np.int32)
+        col = ((wx + offset) / hex_w).astype(np.int32)
         cy = (row + 0.5) * hex_h
         cx = (col + 0.5) * hex_w - offset
-        dist = np.sqrt((yf - cy)**2 + (xf - cx)**2)
-        # Node proximity: 1 at center, 0 at edge
-        node = np.clip(1.0 - dist / (scale * 0.35), 0, 1)
-        # Edge detection: where dist ≈ radius
-        edge = np.clip(1.0 - np.abs(dist - scale * 0.45) / 4, 0, 1)
+        dist = np.sqrt((wy - cy)**2 + (wx - cx)**2)
+        node = np.clip(1.0 - dist / (scale * 0.22), 0, 1) ** 1.4
+        edge = np.clip(1.0 - np.abs(dist - scale * 0.34) / (scale * 0.06 + 1.0), 0, 1)
         layers.append((node, edge))
 
-    # Combine layers: alignment = all nodes overlap
-    node_sum = sum(n for n, e in layers) / 3.0
-    edge_sum = np.clip(sum(e for n, e in layers), 0, 1)
+    node_sum = _norm01(sum(n for n, e in layers))
+    edge_sum = _norm01(sum(e for n, e in layers))
 
-    # Nodes: high metallic. Edges: varied. Background: low metallic
-    M = np.clip(node_sum * 255 + edge_sum * 100, 0, 255) * sm
-    R = np.clip((1 - node_sum) * 120 + edge_sum * 40, 0, 255) * sm
+    M = np.clip(node_sum * 225 + edge_sum * 65, 0, 255) * sm
+    R = np.clip((1 - node_sum) * 110 + edge_sum * 28 + 10, 0, 255) * sm
     CC = np.clip(16 + (1 - node_sum) * 90, 16, 106)  # span 90, min 16
 
-    spec[:, :, 0] = np.clip(M * mask, 0, 255).astype(np.uint8)
-    spec[:, :, 1] = np.clip(R * mask, 15, 255).astype(np.uint8)  # GGX floor
-    spec[:, :, 2] = np.clip(CC * mask, 0, 255).astype(np.uint8)
-    spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
-    return spec
+    mask_s = cv2.resize(mask.astype(np.float32), (sw, sh), interpolation=cv2.INTER_LINEAR) if ds > 1 else mask
+    spec_small = np.zeros((sh, sw, 4), dtype=np.uint8)
+    spec_small[:, :, 0] = np.clip(M * mask_s, 0, 255).astype(np.uint8)
+    spec_small[:, :, 1] = np.clip(R * mask_s, 15, 255).astype(np.uint8)  # GGX floor
+    spec_small[:, :, 2] = np.clip(CC * mask_s, 0, 255).astype(np.uint8)
+    spec_small[:, :, 3] = np.clip(mask_s * 255, 0, 255).astype(np.uint8)
+    if ds > 1:
+        spec = np.zeros((h, w, 4), dtype=np.uint8)
+        for ch in range(4):
+            spec[:, :, ch] = cv2.resize(spec_small[:, :, ch].astype(np.float32), (w, h), interpolation=cv2.INTER_LINEAR).astype(np.uint8)
+        return spec
+    return spec_small
 
 def paint_crystal_lattice(paint, shape, mask, seed, pm, bb):
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     if pm == 0.0:
         return paint
     h, w = shape
-    y, x = _mgrid(shape)
+    ds = max(1, min(h, w) // 512)
+    sh, sw = max(64, h // ds), max(64, w // ds)
+    y, x = _mgrid((sh, sw))
     yf = y.astype(np.float32)
     xf = x.astype(np.float32)
-    # Compute node alignment for prismatic color at intersections
-    node_sum = np.zeros((h, w), dtype=np.float32)
-    for scale in [60, 90, 140]:
+    warp_a = _noise((sh, sw), [8, 16, 32], [0.25, 0.40, 0.35], seed + 6460) * 2.2
+    warp_b = _noise((sh, sw), [12, 24, 48], [0.30, 0.40, 0.30], seed + 6461) * 2.2
+    node_sum_s = np.zeros((sh, sw), dtype=np.float32)
+    edge_sum_s = np.zeros((sh, sw), dtype=np.float32)
+    for idx, scale in enumerate([18, 24, 32, 44, 58, 76]):
         hex_h = scale
         hex_w = int(scale * 1.1547)
-        row = (yf / hex_h).astype(np.int32)
+        wy = yf + warp_a * (0.08 + idx * 0.01)
+        wx = xf + warp_b * (0.08 + idx * 0.01)
+        row = (wy / hex_h).astype(np.int32)
         offset = np.where(row % 2 == 0, 0.0, hex_w * 0.5)
-        col = ((xf + offset) / hex_w).astype(np.int32)
+        col = ((wx + offset) / hex_w).astype(np.int32)
         cy = (row + 0.5) * hex_h
         cx = (col + 0.5) * hex_w - offset
-        dist = np.sqrt((yf - cy)**2 + (xf - cx)**2)
-        node = np.clip(1.0 - dist / (scale * 0.35), 0, 1)
-        node_sum += node
-    node_sum /= 3.0
-    # Darken background between lattice nodes
-    bg_dark = np.clip(1.0 - node_sum * 2, 0, 1) * 0.20 * pm
+        dist = np.sqrt((wy - cy)**2 + (wx - cx)**2)
+        node = np.clip(1.0 - dist / (scale * 0.22), 0, 1) ** 1.4
+        edge = np.clip(1.0 - np.abs(dist - scale * 0.34) / (scale * 0.06 + 1.0), 0, 1)
+        node_sum_s += node
+        edge_sum_s += edge
+    node_sum_s = _norm01(node_sum_s)
+    edge_sum_s = _norm01(edge_sum_s)
+    node_sum = cv2.resize(node_sum_s, (w, h), interpolation=cv2.INTER_LINEAR) if ds > 1 else node_sum_s
+    edge_sum = cv2.resize(edge_sum_s, (w, h), interpolation=cv2.INTER_LINEAR) if ds > 1 else edge_sum_s
+    bg_dark = np.clip(1.0 - node_sum * 1.8, 0, 1) * 0.16 * pm
     for c in range(3):
         paint[:, :, c] = np.clip(paint[:, :, c] - bg_dark * mask, 0, 1)
 
-    # Vivid prismatic hue shift at aligned nodes
-    hue = (node_sum * 1.5) % 1.0
+    hue = (node_sum * 1.35 + edge_sum * 0.20) % 1.0
     r_c, g_c, b_c = _hsv_to_rgb(hue,
-        np.clip(node_sum * 0.9, 0, 1),
-        np.clip(node_sum * 0.8 + 0.2, 0, 1))
-    blend = 0.25 * pm * node_sum
+        np.clip(node_sum * 0.70 + edge_sum * 0.25, 0, 1),
+        np.clip(node_sum * 0.60 + edge_sum * 0.25 + 0.18, 0, 1))
+    blend = 0.20 * pm * np.clip(node_sum * 0.75 + edge_sum * 0.25, 0, 1)
     paint[:, :, 0] = np.clip(paint[:, :, 0] * (1 - blend * mask) + r_c * blend * mask, 0, 1)
     paint[:, :, 1] = np.clip(paint[:, :, 1] * (1 - blend * mask) + g_c * blend * mask, 0, 1)
     paint[:, :, 2] = np.clip(paint[:, :, 2] * (1 - blend * mask) + b_c * blend * mask, 0, 1)
 
-    # Bright node intersection highlights
-    bright_nodes = np.clip((node_sum - 0.6) * 4, 0, 1) * 0.20 * pm
+    bright_nodes = np.clip((node_sum - 0.55) * 3.5, 0, 1) * 0.18 * pm
+    edge_glow = np.clip(edge_sum * 0.14 * pm, 0, 1)
     paint = np.clip(paint + bright_nodes[:, :, np.newaxis] * mask[:, :, np.newaxis], 0, 1)
+    paint[:, :, 2] = np.clip(paint[:, :, 2] + edge_glow * mask, 0, 1)
 
     paint = np.clip(paint + bb * 0.5 * mask[:, :, np.newaxis], 0, 1)
     return paint
@@ -2878,6 +2965,9 @@ def spec_pulse(shape, mask, seed, sm):
     return spec
 
 def paint_pulse(paint, shape, mask, seed, pm, bb):
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     if pm == 0.0:
         return paint
     h, w = shape
@@ -2909,6 +2999,9 @@ def paint_pulse(paint, shape, mask, seed, pm, bb):
 # ================================================================
 
 def paint_superfluid(paint, shape, mask, seed, pm, bb):
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     if pm == 0.0:
         return paint
     h, w = shape
@@ -2928,54 +3021,63 @@ def paint_superfluid(paint, shape, mask, seed, pm, bb):
     return paint
 
 def paint_coronal(paint, shape, mask, seed, pm, bb):
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     if pm == 0.0:
         return paint
     h, w = shape
-    rng = np.random.RandomState(seed + 9010)
-    
-    # Coronal Mass Ejection - Blinding looping fusion flares
-    flare1 = _noise(shape, [32, 64], [0.3, 0.7], seed + 9011)
-    flare2 = _noise(shape, [16, 32], [0.5, 0.5], seed + 9012)
-    
-    # High contrast looping
-    fusion = np.clip((flare1 - flare2) * 10.0, 0, 1)
-    core = np.clip((fusion - 0.5) * 4.0, 0, 1)
-    
-    # Base sun orange-yellow
-    paint[:, :, 0] = np.clip(paint[:, :, 0] + fusion * 0.8 * mask * pm, 0, 1)
-    paint[:, :, 1] = np.clip(paint[:, :, 1] + fusion * 0.4 * mask * pm, 0, 1)
-    paint[:, :, 2] = np.clip(paint[:, :, 2] + core * 0.9 * mask * pm, 0, 1) # Hot white core
+    y, x = _mgrid(shape)
+    yf = y.astype(np.float32) / max(h - 1, 1)
+    xf = x.astype(np.float32) / max(w - 1, 1)
+
+    warp = _noise(shape, [8, 16, 32], [0.25, 0.40, 0.35], seed + 9011) * 0.28
+    loop_a = 1.0 - np.abs(np.sin((yf * 7.5 + np.sin(xf * 6.0 + warp) * 0.8) * np.pi))
+    loop_b = 1.0 - np.abs(np.sin((xf * 5.5 - np.cos(yf * 5.0 + warp * 0.6) * 0.9) * np.pi))
+    granules = _norm01(_noise(shape, [4, 8, 16], [0.20, 0.35, 0.45], seed + 9012))
+    fusion = np.clip(_norm01(loop_a * 0.50 + loop_b * 0.35 + granules * 0.15), 0, 1)
+    core = np.clip((fusion - 0.58) * 2.6, 0, 1)
+
+    paint[:, :, 0] = np.clip(paint[:, :, 0] + fusion * 0.68 * mask * pm, 0, 1)
+    paint[:, :, 1] = np.clip(paint[:, :, 1] + fusion * 0.34 * mask * pm, 0, 1)
+    paint[:, :, 2] = np.clip(paint[:, :, 2] + core * 0.28 * mask * pm, 0, 1)
+    paint = np.clip(paint + core[:, :, np.newaxis] * 0.18 * mask[:, :, np.newaxis] * pm, 0, 1)
 
     paint = np.clip(paint + bb * 0.5 * mask[:, :, np.newaxis], 0, 1)
     return paint
 
 def paint_seismic(paint, shape, mask, seed, pm, bb):
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     if pm == 0.0:
         return paint
-    h, w = shape
+    fault_a = _norm01(_noise(shape, [6, 12, 24, 48], [0.20, 0.30, 0.30, 0.20], seed + 9020))
+    fault_b = _norm01(_noise(shape, [8, 16, 32], [0.25, 0.40, 0.35], seed + 9021))
+    fissure_a = np.clip(1.0 - np.abs(fault_a - 0.5) * 12.0, 0, 1)
+    fissure_b = np.clip(1.0 - np.abs(fault_b - 0.5) * 18.0, 0, 1)
+    cracks = _norm01(fissure_a * 0.60 + fissure_b * 0.40)
 
-    # Tectonic faultlines opening to reveal magma
-    faults = _noise(shape, [16, 32, 64], [0.1, 0.3, 0.6], seed + 9020)
-    cracks = np.clip(1.0 - np.abs(faults - 0.5) * 15.0, 0, 1)
-    
-    # Darken everything heavily (graphite plate)
     dark_mask = (1.0 - cracks) * pm
     for c in range(3):
         paint[:, :, c] = np.clip(paint[:, :, c] * (1.0 - dark_mask * mask), 0, 1)
-        
-    # Magma bleeding through the cracks
-    paint[:, :, 0] = np.clip(paint[:, :, 0] + cracks * 0.9 * mask * pm, 0, 1)
-    paint[:, :, 1] = np.clip(paint[:, :, 1] + cracks * 0.2 * mask * pm, 0, 1)
+
+    paint[:, :, 0] = np.clip(paint[:, :, 0] + cracks * 0.75 * mask * pm, 0, 1)
+    paint[:, :, 1] = np.clip(paint[:, :, 1] + cracks * 0.18 * mask * pm, 0, 1)
+    paint[:, :, 2] = np.clip(paint[:, :, 2] + cracks * 0.03 * mask * pm, 0, 1)
 
     paint = np.clip(paint + bb * 0.4 * mask[:, :, np.newaxis], 0, 1)
     return paint
 
 def paint_hypercane(paint, shape, mask, seed, pm, bb):
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     if pm == 0.0:
         return paint
     h, w = shape
     # Volumetric trapped storm
-    storm = _noise(shape, [8, 16, 32, 64], [0.2, 0.3, 0.4, 0.1], seed + 9030)
+    storm = _noise(shape, [16, 32, 64, 128], [0.2, 0.3, 0.4, 0.1], seed + 9030)
     blend = mask * pm  # gate ALL effects by pm
 
     # Lightning strikes inside the paint
@@ -2995,19 +3097,25 @@ def paint_hypercane(paint, shape, mask, seed, pm, bb):
     return paint
 
 def paint_geomagnetic(paint, shape, mask, seed, pm, bb):
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     if pm == 0.0:
         return paint
     h, w = shape
     y, x = _mgrid(shape)
-    yf = y.astype(np.float32) / max(h, 1)
+    yf = y.astype(np.float32) / max(h - 1, 1)
+    xf = x.astype(np.float32) / max(w - 1, 1)
 
-    # Aurora borealis trapped entirely within a metallic matrix
-    waves = np.sin(yf * 15.0 + _noise(shape, [32, 64], [0.5, 0.5], seed+9040)*5.0)
-    aurora = np.clip((waves - 0.5) * 5.0, 0, 1)
-    
-    paint[:, :, 0] = np.clip(paint[:, :, 0] + aurora * 0.1 * mask * pm, 0, 1)
-    paint[:, :, 1] = np.clip(paint[:, :, 1] + aurora * 0.8 * mask * pm, 0, 1)
-    paint[:, :, 2] = np.clip(paint[:, :, 2] + aurora * 0.5 * mask * pm, 0, 1)
+    drift = _noise(shape, [8, 16, 32], [0.25, 0.40, 0.35], seed + 9040) * 0.22
+    curtain1 = 1.0 - np.abs(np.sin((yf * 18.0 + xf * 1.4 + drift) * np.pi))
+    curtain2 = 1.0 - np.abs(np.sin((yf * 24.0 - xf * 1.1 + drift * 1.2) * np.pi))
+    shimmer = _norm01(_noise(shape, [4, 8, 16], [0.18, 0.32, 0.50], seed + 9041))
+    aurora = _norm01(curtain1 * 0.48 + curtain2 * 0.34 + shimmer * 0.18)
+
+    paint[:, :, 0] = np.clip(paint[:, :, 0] + aurora * 0.05 * mask * pm, 0, 1)
+    paint[:, :, 1] = np.clip(paint[:, :, 1] + aurora * 0.62 * mask * pm, 0, 1)
+    paint[:, :, 2] = np.clip(paint[:, :, 2] + aurora * 0.38 * mask * pm, 0, 1)
 
     paint = np.clip(paint + bb * 0.5 * mask[:, :, np.newaxis], 0, 1)
     return paint
@@ -3015,6 +3123,9 @@ def paint_geomagnetic(paint, shape, mask, seed, pm, bb):
 def paint_hypercube(paint, shape, mask, seed, pm, bb):
     """Non-Euclidean hypercube -- recursive fractal depth illusion with overlapping
     geometric planes at exotic angles and warped/folded space feel."""
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     if pm == 0.0:
         return paint
     h, w = shape
@@ -3061,7 +3172,7 @@ def paint_hypercube(paint, shape, mask, seed, pm, bb):
     planes_b = np.clip(plane3 * 0.6 + plane1 * 0.3, 0, 1)
 
     # --- Layer 3: Paradoxical shadow - depth cue from Escher-like shadow gradient ---
-    depth_gradient = _noise(shape, [32, 64], [0.6, 0.4], seed + 9052)
+    depth_gradient = _noise(shape, [16, 32], [0.6, 0.4], seed + 9052)
     depth_shadow = np.clip(depth_gradient * 0.5 + 0.5, 0, 1)
 
     # --- Combine: wireframe structure + colored planes + depth shadow ---
@@ -3080,6 +3191,9 @@ def paint_hypercube(paint, shape, mask, seed, pm, bb):
     return paint
 
 def paint_time_reversed(paint, shape, mask, seed, pm, bb):
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     if pm == 0.0:
         return paint
     h, w = shape
@@ -3110,11 +3224,14 @@ def paint_time_reversed(paint, shape, mask, seed, pm, bb):
     return paint
 
 def paint_utility_fog(paint, shape, mask, seed, pm, bb):
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     if pm == 0.0:
         return paint
     h, w = shape
     # Programmable nanobot swarm: void zones darken, mirror zones brighten
-    swarm = _noise(shape, [2, 4], [0.5, 0.5], seed + 9070)
+    swarm = _noise(shape, [32, 64], [0.5, 0.5], seed + 9070)
 
     void_state = np.where(swarm < 0.5, 1.0, 0.0)
     mirror_state = np.where(swarm >= 0.5, 1.0, 0.0)
@@ -3130,31 +3247,31 @@ def paint_utility_fog(paint, shape, mask, seed, pm, bb):
     return paint
 
 def paint_negative_mirror(paint, shape, mask, seed, pm, bb):
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     if pm == 0.0:
         return paint
     h, w = shape
-    # Warped reflection with ripple distortion
-    y, x = _mgrid(shape)
-    yf = y.astype(np.float32) / max(h, 1)
-    xf = x.astype(np.float32) / max(w, 1)
-
-    # A ripple in the reflection
-    distortion = np.sin(yf * 30.0 + xf * 30.0) * 0.5 + 0.5
-    blend = mask * pm  # gate everything by pm
-
-    # Replacement blend: warp paint toward distorted reflection
-    for c in range(3):
-        target = paint[:, :, c] * distortion
-        paint[:, :, c] = np.clip(paint[:, :, c] * (1 - blend * 0.7) + target * blend * 0.7, 0, 1)
-
-    # Warm shift at strength
-    paint[:, :, 0] = np.clip(paint[:, :, 0] + 0.08 * blend, 0, 1)
-    paint[:, :, 2] = np.clip(paint[:, :, 2] - 0.06 * blend, 0, 1)
+    warp_x = _noise(shape, [8, 16, 32], [0.25, 0.40, 0.35], seed + 9071) * (w * 0.035)
+    warp_y = _noise(shape, [4, 8, 16], [0.20, 0.35, 0.45], seed + 9072) * (h * 0.035)
+    yy, xx = _mgrid(shape)
+    map_x = np.clip(xx.astype(np.float32) + warp_x.astype(np.float32), 0, w - 1)
+    map_y = np.clip(yy.astype(np.float32) + warp_y.astype(np.float32), 0, h - 1)
+    distorted = cv2.remap(paint[:, :, :3].astype(np.float32), map_x, map_y, interpolation=cv2.INTER_LINEAR, borderMode=cv2.BORDER_REFLECT101)
+    grain = _norm01(_noise(shape, [4, 8, 16, 32], [0.18, 0.22, 0.30, 0.30], seed + 9073))
+    blend = np.clip(mask * pm * (0.55 + grain * 0.25), 0, 1)
+    paint[:, :, :3] = np.clip(paint[:, :, :3] * (1 - blend[:, :, np.newaxis]) + distorted * blend[:, :, np.newaxis], 0, 1)
+    paint[:, :, 0] = np.clip(paint[:, :, 0] + grain * 0.03 * blend, 0, 1)
+    paint[:, :, 2] = np.clip(paint[:, :, 2] - grain * 0.04 * blend, 0, 1)
 
     paint = np.clip(paint + bb * 0.5 * mask[:, :, np.newaxis], 0, 1)
     return paint
 
 def paint_schrodinger(paint, shape, mask, seed, pm, bb):
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     if pm == 0.0:
         return paint
     h, w = shape
@@ -3190,7 +3307,7 @@ _PARADIGM_SPEC_FNS = _get_paradigm_base_specs()
 PARADIGM_BASES = {
     # PARADIGM - Elemental Forces (CC 16 = max clearcoat; R 0-255 only)
     "p_superfluid": {
-        "M": 0, "R": 2, "CC": 16,
+        "M": 0, "R": 15, "CC": 16,
         "paint_fn": paint_superfluid,
         "base_spec_fn": _PARADIGM_SPEC_FNS["p_superfluid"],
         "desc": "Frictionless liquid helium behavior; flowing, crawling bose-einstein condensate",
@@ -3222,7 +3339,7 @@ PARADIGM_BASES = {
 
     # PARADIGM - Exotic Materials (no negative R; CC 16-255)
     "p_non_euclidean": {
-        "M": 150, "R": 5, "CC": 16,
+        "M": 150, "R": 15, "CC": 16,
         "paint_fn": paint_hypercube,
         "base_spec_fn": _PARADIGM_SPEC_FNS["p_non_euclidean"],
         "desc": "Infinite recursive structural depth that actively defies exterior dimensions",
@@ -3367,17 +3484,13 @@ def _wrap_paradigm_texture(original_fn, pattern_id):
             gen_w = max(16, ((int(safe_w / scale_factor) + _ALIGN - 1) // _ALIGN) * _ALIGN)
             # Generate mask at reduced size too
             if mask is not None and mask.size > 0:
-                mask_img = Image.fromarray((mask * 255).clip(0, 255).astype(np.uint8))
-                small_mask = np.array(mask_img.resize((gen_w, gen_h), Image.BILINEAR)).astype(np.float32) / 255.0
+                small_mask = cv2.resize(mask.astype(np.float32), (gen_w, gen_h), interpolation=cv2.INTER_LINEAR)
             else:
                 small_mask = np.ones((gen_h, gen_w), dtype=np.float32)
             result = original_fn((gen_h, gen_w), small_mask, seed, sm)
             # Upscale pattern_val to exact target resolution
             pv = result["pattern_val"]
-            pv_u8 = (pv * 255).clip(0, 255).astype(np.uint8)
-            pv_img = Image.fromarray(pv_u8)
-            pv_img = pv_img.resize((w, h), Image.BILINEAR)
-            result["pattern_val"] = np.array(pv_img).astype(np.float32) / 255.0
+            result["pattern_val"] = cv2.resize(pv.astype(np.float32), (w, h), interpolation=cv2.INTER_LINEAR)
             return result
         else:
             # Generate at safe aligned size, then crop to exact

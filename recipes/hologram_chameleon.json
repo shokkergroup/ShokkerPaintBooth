@@ -1,0 +1,89 @@
+{
+  "name": "Hologram Chameleon",
+  "description": "Color-shift base, pearl overlay for depth, and iridescent sponsor panels that flip through the spectrum under different angles.",
+  "author": "Shokker Paint Booth",
+  "version": "6.2.0",
+  "compatible_with": "any chassis, most dramatic on curved bodywork",
+  "notes": "Chameleon bases respond heavily to lighting angle - expect different looks at different tracks and times of day. The Pearl Overlay zone is what gives the finish its depth; don't disable it.",
+  "zones": [
+    {
+      "name": "Chameleon Body",
+      "color": "everything",
+      "base": "chameleon",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "special",
+      "baseColor": "#6b2a9c",
+      "baseColorMode": "solid",
+      "baseStrength": 1,
+      "baseSpecStrength": 1
+    },
+    {
+      "name": "Pearl Overlay",
+      "color": "remaining",
+      "base": "pearl",
+      "pattern": "none",
+      "intensity": "60",
+      "colorMode": "special",
+      "baseColor": "#ffffff",
+      "baseColorMode": "solid",
+      "baseStrength": 0.6,
+      "baseSpecStrength": 1
+    },
+    {
+      "name": "Iridescent Sponsors",
+      "color": "white",
+      "base": "iridescent",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#ffffff",
+      "pickerTolerance": 25,
+      "baseColorMode": "source"
+    },
+    {
+      "name": "Holographic Accent",
+      "color": "blue",
+      "base": "holographic_base",
+      "pattern": "holographic",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#3366ff",
+      "pickerTolerance": 35,
+      "patternIntensity": "100"
+    },
+    {
+      "name": "Prismatic Stripe",
+      "color": "red",
+      "base": "prismatic",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#cc2222",
+      "pickerTolerance": 35,
+      "baseColorMode": "source"
+    },
+    {
+      "name": "Opal Trim",
+      "color": "yellow",
+      "base": "opal",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#ffcc00",
+      "pickerTolerance": 30,
+      "baseColorMode": "source"
+    },
+    {
+      "name": "Dark Detail",
+      "color": "dark",
+      "base": "dark_chrome",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#1a1a1a",
+      "pickerTolerance": 35,
+      "baseColorMode": "source"
+    }
+  ]
+}

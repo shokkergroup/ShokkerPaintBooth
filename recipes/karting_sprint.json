@@ -1,0 +1,83 @@
+{
+  "name": "Karting Sprint",
+  "description": "Hi-viz fluorescent sprint-kart livery. Toxic green body with neon yellow accents, hot pink stripe work, and piano black numbers. Built to be SEEN on a short oval under bright lights.",
+  "author": "Shokker Paint Booth",
+  "version": "6.2.0",
+  "compatible_with": "karting chassis, micro sprint, legends car, small-displacement bodies",
+  "notes": "Fluoro bases read HOT — if the green overpowers, drop Body baseStrength to 0.85. Racing stripes sit best on a dark picker tolerance so they don't bleed into fenders.",
+  "zones": [
+    {
+      "name": "Toxic Green Body",
+      "color": "everything",
+      "base": "neon_toxic_green",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "special",
+      "baseColor": "#39ff14",
+      "baseColorMode": "solid",
+      "baseStrength": 1,
+      "baseSpecStrength": 1
+    },
+    {
+      "name": "Hi-Viz Yellow Nose",
+      "color": "yellow",
+      "base": "gloss",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#ffee00",
+      "pickerTolerance": 35,
+      "baseColor": "#faff1a",
+      "baseColorMode": "solid"
+    },
+    {
+      "name": "Hot Pink Stripe",
+      "color": "red",
+      "base": "neon_pink_blaze",
+      "pattern": "racing_stripe",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#ff0080",
+      "pickerTolerance": 35,
+      "baseColor": "#ff2aa0",
+      "baseColorMode": "solid",
+      "patternIntensity": "90"
+    },
+    {
+      "name": "Piano Black Numbers",
+      "color": "dark",
+      "base": "piano_black",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#111111",
+      "pickerTolerance": 30,
+      "baseColor": "#050505",
+      "baseColorMode": "solid"
+    },
+    {
+      "name": "Chrome Sidepod Trim",
+      "color": "gray",
+      "base": "chrome",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#cccccc",
+      "pickerTolerance": 28,
+      "baseColorMode": "source"
+    },
+    {
+      "name": "Electric Blue Graphic",
+      "color": "blue",
+      "base": "neon_electric_blue",
+      "pattern": "pinstripe",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#00aaff",
+      "pickerTolerance": 30,
+      "baseColor": "#1ec8ff",
+      "baseColorMode": "solid",
+      "patternIntensity": "85"
+    }
+  ]
+}

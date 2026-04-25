@@ -22,12 +22,7 @@ from scipy.spatial import cKDTree
 _engine = None
 
 
-def _ensure_bb_2d(bb, shape):
-    """Expand scalar bb to (H,W) float32 if needed."""
-    if np.isscalar(bb) or (hasattr(bb, "ndim") and bb.ndim == 0):
-        h, w = shape[0], shape[1]
-        return np.full((h, w), float(bb), dtype=np.float32)
-    return bb
+from engine.paint_v2 import ensure_bb_2d as _ensure_bb_2d  # canonical shared version
 
 
 def _atelier_spec(M=120, R=35, CC=45):
@@ -65,8 +60,8 @@ def _spec_japanese_lacquer(shape, mask, seed, sm):
     # CC: 16 deep pools, 80 thin areas, driven by depth
     cc_ch = (16.0 + 64.0 * depth01) * mask + 30.0 * (1 - mask)
     spec[:, :, 0] = np.clip(m_ch, 0, 255).astype(np.uint8)
-    spec[:, :, 1] = np.clip(r_ch, 0, 255).astype(np.uint8)
-    spec[:, :, 2] = np.clip(cc_ch, 0, 255).astype(np.uint8)
+    spec[:, :, 1] = np.clip(r_ch, 15, 255).astype(np.uint8)
+    spec[:, :, 2] = np.clip(cc_ch, 16, 255).astype(np.uint8)
     spec[:, :, 3] = 255
     return spec
 
@@ -102,8 +97,8 @@ def _spec_engine_turned(shape, mask, seed, sm):
     # CC: 16-96 driven by independent noise (span 80)
     cc_ch = (16.0 + 80.0 * cc_var01) * mask + 30.0 * (1 - mask)
     spec[:, :, 0] = np.clip(m_ch, 0, 255).astype(np.uint8)
-    spec[:, :, 1] = np.clip(r_ch, 0, 255).astype(np.uint8)
-    spec[:, :, 2] = np.clip(cc_ch, 0, 255).astype(np.uint8)
+    spec[:, :, 1] = np.clip(r_ch, 15, 255).astype(np.uint8)
+    spec[:, :, 2] = np.clip(cc_ch, 16, 255).astype(np.uint8)
     spec[:, :, 3] = 255
     return spec
 
@@ -115,7 +110,7 @@ def _spec_damascus_layers(shape, mask, seed, sm):
     spec = np.zeros((h, w, 4), dtype=np.uint8)
     # Domain warp noise
     warp = e.multi_scale_noise(shape, [8, 16, 32, 64], [0.2, 0.3, 0.3, 0.2], seed + 70)
-    grain = e.multi_scale_noise(shape, [2, 4, 8, 16], [0.25, 0.3, 0.25, 0.2], seed + 71)
+    grain = e.multi_scale_noise(shape, [16, 32, 64, 128], [0.25, 0.3, 0.25, 0.2], seed + 71)
     # Independent noise for CC channel
     cc_ind = e.multi_scale_noise(shape, [6, 12, 24, 48], [0.2, 0.3, 0.3, 0.2], seed + 72)
     cc_ind01 = np.clip((cc_ind + 1) * 0.5, 0, 1)
@@ -131,8 +126,8 @@ def _spec_damascus_layers(shape, mask, seed, sm):
     # CC: 16-116 driven by independent noise (span 100)
     cc_ch = (16.0 + 100.0 * cc_ind01) * mask + 30.0 * (1 - mask)
     spec[:, :, 0] = np.clip(m_ch, 0, 255).astype(np.uint8)
-    spec[:, :, 1] = np.clip(r_ch, 0, 255).astype(np.uint8)
-    spec[:, :, 2] = np.clip(cc_ch, 0, 255).astype(np.uint8)
+    spec[:, :, 1] = np.clip(r_ch, 15, 255).astype(np.uint8)
+    spec[:, :, 2] = np.clip(cc_ch, 16, 255).astype(np.uint8)
     spec[:, :, 3] = 255
     return spec
 
@@ -142,6 +137,7 @@ def _spec_cathedral_glass(shape, mask, seed, sm):
     e = _engine
     h, w = shape
     spec = np.zeros((h, w, 4), dtype=np.uint8)
+    y, x = e.get_mgrid(shape)
     # Approximate Voronoi with multi-scale noise gradients
     panes_lo = e.multi_scale_noise(shape, [32, 64, 128], [0.3, 0.4, 0.3], seed + 80)
     panes_hi = e.multi_scale_noise(shape, [16, 32], [0.5, 0.5], seed + 81)
@@ -155,13 +151,25 @@ def _spec_cathedral_glass(shape, mask, seed, sm):
     # Per-pane noise for M interior variation
     pane_noise = e.multi_scale_noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + 83)
     pane_n01 = np.clip((pane_noise + 1) * 0.5, 0, 1)
-    # Pane interiors: M=10/R=5/CC=20, Lead: M=140/R=125/CC=100 (span M~150, R~120)
-    m_ch = (10.0 + 130.0 * edge + pane_n01 * 20.0) * mask + 5.0 * (1 - mask)
-    r_ch = (5.0 + 120.0 * edge) * mask + 100.0 * (1 - mask)
-    cc_ch = (20.0 + 80.0 * edge + (1 - edge) * pane_cc01 * 40.0) * mask + 30.0 * (1 - mask)
+    glass_grain = e.multi_scale_noise(shape, [2, 4, 8], [0.42, 0.36, 0.22], seed + 84)
+    glass_grain01 = np.clip((glass_grain + 1.0) * 0.5, 0, 1)
+    lead_pit = e.multi_scale_noise(shape, [1, 2, 4], [0.45, 0.35, 0.20], seed + 85)
+    lead_pit01 = np.clip((lead_pit + 1.0) * 0.5, 0, 1)
+    ripple = np.clip(
+        np.sin(x * 0.23 + pane_noise * 4.0) * 0.5
+        + np.sin((x + y) * 0.11 + pane_cc_var * 3.0) * 0.5,
+        -1,
+        1,
+    )
+    ripple01 = np.clip((ripple + 1.0) * 0.5, 0, 1)
+    interior = 1.0 - edge
+    # Pane interiors keep glass ripple/grain; lead edges get pitted metal variation.
+    m_ch = (10.0 + 130.0 * edge + pane_n01 * 18.0 + interior * (glass_grain01 * 26.0 + ripple01 * 18.0) + edge * lead_pit01 * 34.0) * mask + 5.0 * (1 - mask)
+    r_ch = (5.0 + 105.0 * edge + interior * ((1.0 - glass_grain01) * 28.0 + ripple01 * 12.0) + edge * lead_pit01 * 32.0) * mask + 100.0 * (1 - mask)
+    cc_ch = (20.0 + 74.0 * edge + interior * (pane_cc01 * 40.0 + glass_grain01 * 22.0 + ripple01 * 18.0) + edge * lead_pit01 * 18.0) * mask + 30.0 * (1 - mask)
     spec[:, :, 0] = np.clip(m_ch, 0, 255).astype(np.uint8)
-    spec[:, :, 1] = np.clip(r_ch, 0, 255).astype(np.uint8)
-    spec[:, :, 2] = np.clip(cc_ch, 0, 255).astype(np.uint8)
+    spec[:, :, 1] = np.clip(r_ch, 15, 255).astype(np.uint8)
+    spec[:, :, 2] = np.clip(cc_ch, 16, 255).astype(np.uint8)
     spec[:, :, 3] = 255
     return spec
 
@@ -173,7 +181,7 @@ def _spec_vintage_enamel_crackle(shape, mask, seed, sm):
     spec = np.zeros((h, w, 4), dtype=np.uint8)
     # Crack network from high-freq noise edges (Worley approximation)
     n1 = e.multi_scale_noise(shape, [4, 8, 16, 32], [0.2, 0.3, 0.3, 0.2], seed + 90)
-    n2 = e.multi_scale_noise(shape, [2, 4, 8], [0.3, 0.4, 0.3], seed + 91)
+    n2 = e.multi_scale_noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + 91)
     # Stress noise varies crack width
     stress = e.multi_scale_noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + 92)
     stress01 = np.clip((stress + 1) * 0.5, 0, 1)
@@ -190,8 +198,8 @@ def _spec_vintage_enamel_crackle(shape, mask, seed, sm):
     r_ch = (25.0 + 155.0 * crack) * mask + 100.0 * (1 - mask)
     cc_ch = (30.0 + 130.0 * crack * 0.5 + cc_ind01 * 65.0) * mask + 30.0 * (1 - mask)
     spec[:, :, 0] = np.clip(m_ch, 0, 255).astype(np.uint8)
-    spec[:, :, 1] = np.clip(r_ch, 0, 255).astype(np.uint8)
-    spec[:, :, 2] = np.clip(cc_ch, 0, 255).astype(np.uint8)
+    spec[:, :, 1] = np.clip(r_ch, 15, 255).astype(np.uint8)
+    spec[:, :, 2] = np.clip(cc_ch, 16, 255).astype(np.uint8)
     spec[:, :, 3] = 255
     return spec
 
@@ -210,8 +218,10 @@ def _spec_carbon_weave_micro(shape, mask, seed, sm):
     # Independent micro-texture noise
     micro = e.multi_scale_noise(shape, [1, 2, 4], [0.3, 0.4, 0.3], seed + 100)
     micro01 = np.clip((micro + 1) * 0.5, 0, 1)
+    fiber_chroma = e.multi_scale_noise(shape, [2, 4, 8], [0.42, 0.34, 0.24], seed + 105)
+    fiber_chroma01 = np.clip((fiber_chroma + 1) * 0.5, 0, 1)
     # Independent thread noise for R
-    thread_noise = e.multi_scale_noise(shape, [2, 4, 8, 16], [0.2, 0.3, 0.3, 0.2], seed + 101)
+    thread_noise = e.multi_scale_noise(shape, [16, 32, 64, 128], [0.2, 0.3, 0.3, 0.2], seed + 101)
     thread01 = np.clip((thread_noise + 1) * 0.5, 0, 1)
     # Independent CC noise
     cc_ind = e.multi_scale_noise(shape, [4, 8, 16, 32], [0.2, 0.3, 0.3, 0.2], seed + 102)
@@ -221,10 +231,10 @@ def _spec_carbon_weave_micro(shape, mask, seed, sm):
     # R: 10-170 (span ~160) driven by inverse twill + thread noise
     r_ch = (10.0 + 130.0 * (1 - twill01) + thread01 * 30.0) * mask + 100.0 * (1 - mask)
     # CC: 16-106 (span 90) driven by independent noise
-    cc_ch = (16.0 + 90.0 * cc_ind01) * mask + 30.0 * (1 - mask)
+    cc_ch = (16.0 + 72.0 * cc_ind01 + 24.0 * fiber_chroma01 * twill01) * mask + 30.0 * (1 - mask)
     spec[:, :, 0] = np.clip(m_ch, 0, 255).astype(np.uint8)
-    spec[:, :, 1] = np.clip(r_ch, 0, 255).astype(np.uint8)
-    spec[:, :, 2] = np.clip(cc_ch, 0, 255).astype(np.uint8)
+    spec[:, :, 1] = np.clip(r_ch, 15, 255).astype(np.uint8)
+    spec[:, :, 2] = np.clip(cc_ch, 16, 255).astype(np.uint8)
     spec[:, :, 3] = 255
     return spec
 
@@ -238,18 +248,20 @@ def _spec_pearl_depth_layers(shape, mask, seed, sm):
     layer1 = e.multi_scale_noise(shape, [4, 8, 16, 32], [0.2, 0.25, 0.3, 0.25], seed + 110)
     layer2 = e.multi_scale_noise(shape, [8, 16, 32, 64], [0.2, 0.3, 0.3, 0.2], seed + 111)
     layer3 = e.multi_scale_noise(shape, [16, 32, 64, 128], [0.25, 0.3, 0.25, 0.2], seed + 112)
+    micro = e.multi_scale_noise(shape, [2, 4, 8], [0.42, 0.36, 0.22], seed + 113)
     l1 = np.clip((layer1 + 1) * 0.5, 0, 1)
     l2 = np.clip((layer2 + 1) * 0.5, 0, 1)
     l3 = np.clip((layer3 + 1) * 0.5, 0, 1)
+    micro01 = np.clip((micro + 1) * 0.5, 0, 1)
     # M: 30-160 (span 130) driven by 3 independent layers
-    m_ch = (30.0 + 60.0 * l1 + 40.0 * l2 + 30.0 * l3) * mask + 5.0 * (1 - mask)
+    m_ch = (30.0 + 54.0 * l1 + 34.0 * l2 + 26.0 * l3 + 42.0 * micro01) * mask + 5.0 * (1 - mask)
     # R: 10-130 (span 120) each layer contributes independently
-    r_ch = (10.0 + 50.0 * l1 + 40.0 * (1 - l2) + 30.0 * l3) * mask + 100.0 * (1 - mask)
+    r_ch = (10.0 + 44.0 * l1 + 34.0 * (1 - l2) + 26.0 * l3 + 34.0 * (1.0 - micro01)) * mask + 100.0 * (1 - mask)
     # CC: visible depth 16-120
-    cc_ch = (16.0 + 40.0 * l2 + 35.0 * l3 + 29.0 * l1) * mask + 30.0 * (1 - mask)
+    cc_ch = (16.0 + 34.0 * l2 + 28.0 * l3 + 24.0 * l1 + 34.0 * micro01) * mask + 30.0 * (1 - mask)
     spec[:, :, 0] = np.clip(m_ch, 0, 255).astype(np.uint8)
-    spec[:, :, 1] = np.clip(r_ch, 0, 255).astype(np.uint8)
-    spec[:, :, 2] = np.clip(cc_ch, 0, 255).astype(np.uint8)
+    spec[:, :, 1] = np.clip(r_ch, 15, 255).astype(np.uint8)
+    spec[:, :, 2] = np.clip(cc_ch, 16, 255).astype(np.uint8)
     spec[:, :, 3] = 255
     return spec
 
@@ -276,8 +288,8 @@ def _spec_hand_brushed_metal(shape, mask, seed, sm):
     # CC: 16-106 (span 90) driven by independent noise
     cc_ch = (16.0 + 90.0 * cc_ind01) * mask + 30.0 * (1 - mask)
     spec[:, :, 0] = np.clip(m_ch, 0, 255).astype(np.uint8)
-    spec[:, :, 1] = np.clip(r_ch, 0, 255).astype(np.uint8)
-    spec[:, :, 2] = np.clip(cc_ch, 0, 255).astype(np.uint8)
+    spec[:, :, 1] = np.clip(r_ch, 15, 255).astype(np.uint8)
+    spec[:, :, 2] = np.clip(cc_ch, 16, 255).astype(np.uint8)
     spec[:, :, 3] = 255
     return spec
 
@@ -301,8 +313,8 @@ def _spec_forged_iron_texture(shape, mask, seed, sm):
     # CC: 16-116 (span 100) driven by inverse marks
     cc_ch = (16.0 + 100.0 * (1 - marks)) * mask + 30.0 * (1 - mask)
     spec[:, :, 0] = np.clip(m_ch, 0, 255).astype(np.uint8)
-    spec[:, :, 1] = np.clip(r_ch, 0, 255).astype(np.uint8)
-    spec[:, :, 2] = np.clip(cc_ch, 0, 255).astype(np.uint8)
+    spec[:, :, 1] = np.clip(r_ch, 15, 255).astype(np.uint8)
+    spec[:, :, 2] = np.clip(cc_ch, 16, 255).astype(np.uint8)
     spec[:, :, 3] = 255
     return spec
 
@@ -383,7 +395,7 @@ def _spec_marble_vein_fine(shape, mask, seed, sm):
     cc_ind01 = np.clip((cc_ind + 1) * 0.5, 0, 1)
 
     # Vein: M driven by vein + micro. Stone: R driven by inverse vein. CC independent.
-    micro = e.multi_scale_noise(shape, [2, 4, 8], [0.3, 0.4, 0.3], seed + 1102)
+    micro = e.multi_scale_noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + 1102)
     micro01 = np.clip((micro + 1) * 0.5, 0, 1)
     M = vein_accum * 140 + micro01 * 20
     R = vein_accum * 15 + (1 - vein_accum) * 100 + micro * 10
@@ -405,7 +417,7 @@ def _spec_obsidian_glass(shape, mask, seed, sm):
 
     n1 = e.multi_scale_noise(shape, [8, 16, 32, 64], [0.2, 0.3, 0.3, 0.2], seed + 1200)
     n2 = e.multi_scale_noise(shape, [6, 12, 24, 48], [0.25, 0.3, 0.25, 0.2], seed + 1201)
-    n3 = e.multi_scale_noise(shape, [4, 8, 16], [0.3, 0.4, 0.3], seed + 1202)
+    n3 = e.multi_scale_noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + 1202)
 
     # Thin fracture lines where noise fields cross zero
     edge1 = 1.0 - np.clip(np.abs(n1) * 4, 0, 1)
@@ -453,7 +465,7 @@ def _spec_silk_weave(shape, mask, seed, sm):
     dip = np.clip(1.0 - intersection * 1.5, 0, 1) * 0.3
 
     # Independent thread noise for channel separation
-    thread_noise = e.multi_scale_noise(shape, [2, 4, 8, 16], [0.2, 0.3, 0.3, 0.2], seed + 1301)
+    thread_noise = e.multi_scale_noise(shape, [16, 32, 64, 128], [0.2, 0.3, 0.3, 0.2], seed + 1301)
     thread01 = np.clip((thread_noise + 1) * 0.5, 0, 1)
     # Independent CC noise
     cc_ind = e.multi_scale_noise(shape, [4, 8, 16, 32], [0.2, 0.3, 0.3, 0.2], seed + 1302)
@@ -583,7 +595,7 @@ def _spec_gold_leaf_micro(shape, mask, seed, sm):
     M = leaf_area * (250 + patch_offset_map) + crack_border * 100
     R = leaf_area * 10 + crack_border * 140
 
-    micro = e.multi_scale_noise(shape, [2, 4, 8], [0.3, 0.4, 0.3], seed + 1602)
+    micro = e.multi_scale_noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + 1602)
     M = M + micro * 8 * leaf_area
     R = R + np.abs(micro) * 6 * leaf_area
     # Independent CC noise (separate driver from leaf_area)
@@ -607,7 +619,7 @@ def _spec_fluid_metal(shape, mask, seed, sm):
 
     warp1 = e.multi_scale_noise(shape, [16, 32, 64, 128], [0.2, 0.3, 0.3, 0.2], seed + 1700)
     warp2 = e.multi_scale_noise(shape, [8, 16, 32, 64], [0.2, 0.3, 0.3, 0.2], seed + 1701)
-    turb = e.multi_scale_noise(shape, [4, 8, 16], [0.3, 0.4, 0.3], seed + 1702)
+    turb = e.multi_scale_noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + 1702)
 
     # Flow streams with gravity bias (dominant y-direction)
     flow1 = np.sin(y / max(1, h) * 10 + warp1 * 4 + x / max(1, w) * 3) * 0.5 + 0.5
@@ -637,6 +649,7 @@ def _spec_fluid_metal(shape, mask, seed, sm):
 
 def _paint_japanese_lacquer(paint, shape, mask, seed, pm, bb):
     """Deep red-black tint in crackle zones, smooth gloss in lacquer areas. Blend 0.40."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = _ensure_bb_2d(bb, shape)
     h, w = shape
     m3 = mask[:, :, np.newaxis]
@@ -666,6 +679,7 @@ def _paint_japanese_lacquer(paint, shape, mask, seed, pm, bb):
 
 def _paint_engine_turned(paint, shape, mask, seed, pm, bb):
     """Silver/chrome with groove-driven brightness variation. Blend 0.45."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = _ensure_bb_2d(bb, shape)
     h, w = shape
     m3 = mask[:, :, np.newaxis]
@@ -696,12 +710,13 @@ def _paint_engine_turned(paint, shape, mask, seed, pm, bb):
 
 def _paint_damascus_layers(paint, shape, mask, seed, pm, bb):
     """Alternating light/dark silver bands with warm undertone. Blend 0.45."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = _ensure_bb_2d(bb, shape)
     h, w = shape
     m3 = mask[:, :, np.newaxis]
     e = _engine
     warp = e.multi_scale_noise(shape, [8, 16, 32, 64], [0.2, 0.3, 0.3, 0.2], seed + 70)
-    grain = e.multi_scale_noise(shape, [2, 4, 8, 16], [0.25, 0.3, 0.25, 0.2], seed + 71)
+    grain = e.multi_scale_noise(shape, [16, 32, 64, 128], [0.25, 0.3, 0.25, 0.2], seed + 71)
     y, _ = e.get_mgrid(shape)
     band = np.sin(y / max(1, h) * 14.0 + warp * 4.5) * 0.5 + 0.5
     band = np.clip(band + grain * 0.15, 0, 1)
@@ -726,10 +741,12 @@ def _paint_damascus_layers(paint, shape, mask, seed, pm, bb):
 
 def _paint_cathedral_glass(paint, shape, mask, seed, pm, bb):
     """Per-pane random hue tinting (stained glass effect). Blend 0.35."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = _ensure_bb_2d(bb, shape)
     h, w = shape
     m3 = mask[:, :, np.newaxis]
     e = _engine
+    y, x = e.get_mgrid(shape)
     # Pane regions from low-freq noise
     panes = e.multi_scale_noise(shape, [32, 64, 128], [0.3, 0.4, 0.3], seed + 80)
     # Lead line edges
@@ -740,10 +757,24 @@ def _paint_cathedral_glass(paint, shape, mask, seed, pm, bb):
     tint_r = e.multi_scale_noise(shape, [32, 64], [0.5, 0.5], seed + 82)
     tint_g = e.multi_scale_noise(shape, [32, 64], [0.5, 0.5], seed + 83)
     tint_b = e.multi_scale_noise(shape, [32, 64], [0.5, 0.5], seed + 84)
+    glass_grain = e.multi_scale_noise(shape, [2, 4, 8], [0.42, 0.36, 0.22], seed + 185)
+    glass_grain01 = np.clip((glass_grain + 1.0) * 0.5, 0, 1)
+    lead_pit = e.multi_scale_noise(shape, [1, 2, 4], [0.45, 0.35, 0.20], seed + 186)
+    lead_pit01 = np.clip((lead_pit + 1.0) * 0.5, 0, 1)
+    ripple = np.clip(
+        np.sin(x * 0.23 + panes * 4.0) * 0.5
+        + np.sin((x + y) * 0.11 + tint_b * 3.0) * 0.5,
+        -1,
+        1,
+    )
+    ripple01 = np.clip((ripple + 1.0) * 0.5, 0, 1)
+    interior = 1.0 - edge
     # Pane interiors get hue shift, lead lines darken
-    hue_r = tint_r * 0.25 * (1 - edge) - edge * 0.40
-    hue_g = tint_g * 0.25 * (1 - edge) - edge * 0.40
-    hue_b = tint_b * 0.25 * (1 - edge) - edge * 0.40
+    glass_detail = interior * (glass_grain * 0.105 + ripple01 * 0.070)
+    lead_detail = edge * (lead_pit01 * 0.13 - 0.08)
+    hue_r = tint_r * 0.25 * interior + glass_detail * 0.75 - edge * 0.40 + lead_detail
+    hue_g = tint_g * 0.25 * interior + glass_detail * 0.90 - edge * 0.40 + lead_detail * 0.82
+    hue_b = tint_b * 0.25 * interior + glass_detail * 1.10 - edge * 0.40 + lead_detail * 0.66
     blend = 0.70 * pm * m3
     result = paint.copy()
     # Target color = paint modified by finish's signature tint
@@ -760,13 +791,14 @@ def _paint_cathedral_glass(paint, shape, mask, seed, pm, bb):
 
 def _paint_vintage_enamel_crackle(paint, shape, mask, seed, pm, bb):
     """Cream/ivory enamel with dark brown crack lines. Blend 0.40."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = _ensure_bb_2d(bb, shape)
     h, w = shape
     m3 = mask[:, :, np.newaxis]
     e = _engine
     # Crack network matching spec
     n1 = e.multi_scale_noise(shape, [4, 8, 16, 32], [0.2, 0.3, 0.3, 0.2], seed + 90)
-    n2 = e.multi_scale_noise(shape, [2, 4, 8], [0.3, 0.4, 0.3], seed + 91)
+    n2 = e.multi_scale_noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + 91)
     stress = e.multi_scale_noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + 92)
     stress01 = np.clip((stress + 1) * 0.5, 0, 1)
     crack = np.clip(np.abs(n1) + np.abs(n2) * 0.5, 0, 1)
@@ -791,6 +823,7 @@ def _paint_vintage_enamel_crackle(paint, shape, mask, seed, pm, bb):
 
 def _paint_carbon_weave_micro(paint, shape, mask, seed, pm, bb):
     """Near-black carbon fiber with slight fiber direction sheen. Blend 0.40."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = _ensure_bb_2d(bb, shape)
     h, w = shape
     m3 = mask[:, :, np.newaxis]
@@ -802,6 +835,8 @@ def _paint_carbon_weave_micro(paint, shape, mask, seed, pm, bb):
     twill01 = np.clip(twill * 0.5 + 0.5, 0, 1)
     micro = e.multi_scale_noise(shape, [1, 2, 4], [0.3, 0.4, 0.3], seed + 100)
     micro01 = np.clip((micro + 1) * 0.5, 0, 1)
+    fiber_chroma = e.multi_scale_noise(shape, [2, 4, 8], [0.42, 0.34, 0.24], seed + 105)
+    fiber_chroma01 = np.clip((fiber_chroma + 1) * 0.5, 0, 1)
     # Darken toward carbon black, with fiber sheen variation
     darken = -0.25 - 0.15 * (1 - twill01)
     sheen = twill01 * 0.10 + micro01 * 0.03
@@ -813,12 +848,18 @@ def _paint_carbon_weave_micro(paint, shape, mask, seed, pm, bb):
         target_c = np.clip(paint[:, :, c] + tint, 0, 1)
         # Replacement blend: fade between base and finish
         result[:, :, c] = paint[:, :, c] * (1 - blend[:, :, 0]) + target_c * blend[:, :, 0]
+    fiber_blue = twill01 * fiber_chroma01 * 0.075
+    fiber_warm = (1.0 - twill01) * micro01 * 0.045
+    result[:, :, 0] = np.clip(result[:, :, 0] + (fiber_warm * 0.70 - fiber_blue * 0.20) * mask * pm, 0, 1)
+    result[:, :, 1] = np.clip(result[:, :, 1] + (fiber_warm * 0.35 + fiber_blue * 0.18) * mask * pm, 0, 1)
+    result[:, :, 2] = np.clip(result[:, :, 2] + (fiber_blue + micro01 * 0.018) * mask * pm, 0, 1)
     result = np.clip(result + bb[:, :, np.newaxis] * 0.4 * m3, 0, 1)
     return result
 
 
 def _paint_pearl_depth_layers(paint, shape, mask, seed, pm, bb):
     """Iridescent pearl with multi-harmonic hue shift. Blend 0.35."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = _ensure_bb_2d(bb, shape)
     h, w = shape
     m3 = mask[:, :, np.newaxis]
@@ -827,10 +868,14 @@ def _paint_pearl_depth_layers(paint, shape, mask, seed, pm, bb):
     layer1 = e.multi_scale_noise(shape, [4, 8, 16, 32], [0.2, 0.25, 0.3, 0.25], seed + 110)
     layer2 = e.multi_scale_noise(shape, [8, 16, 32, 64], [0.2, 0.3, 0.3, 0.2], seed + 111)
     layer3 = e.multi_scale_noise(shape, [16, 32, 64, 128], [0.25, 0.3, 0.25, 0.2], seed + 112)
+    micro = e.multi_scale_noise(shape, [2, 4, 8], [0.42, 0.36, 0.22], seed + 113)
+    y, x = e.get_mgrid(shape)
+    nacre_lines = np.sin(x * 0.19 + y * 0.07 + layer2 * 4.0) * 0.5 + 0.5
     # Iridescent hue shift: each layer shifts a different channel
-    hue_r = layer1 * 0.25 + layer3 * 0.12
-    hue_g = layer2 * 0.20 - layer1 * 0.08
-    hue_b = layer3 * 0.25 + layer2 * 0.12
+    platelet_flash = np.clip((micro - 0.18) * 1.7, 0, 1)
+    hue_r = layer1 * 0.20 + layer3 * 0.09 + micro * 0.120 + platelet_flash * 0.060 + nacre_lines * 0.055
+    hue_g = layer2 * 0.17 - layer1 * 0.06 + micro * 0.092 + platelet_flash * 0.046 + (1.0 - nacre_lines) * 0.045
+    hue_b = layer3 * 0.20 + layer2 * 0.09 + micro * 0.132 + platelet_flash * 0.070 + nacre_lines * 0.065
     blend = 0.70 * pm * m3
     result = paint.copy()
     # Target color = paint modified by finish's signature tint
@@ -847,6 +892,7 @@ def _paint_pearl_depth_layers(paint, shape, mask, seed, pm, bb):
 
 def _paint_hand_brushed_metal(paint, shape, mask, seed, pm, bb):
     """Bronze/copper tone with grain-driven brightness variation. Blend 0.40."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = _ensure_bb_2d(bb, shape)
     h, w = shape
     m3 = mask[:, :, np.newaxis]
@@ -875,6 +921,7 @@ def _paint_hand_brushed_metal(paint, shape, mask, seed, pm, bb):
 
 def _paint_forged_iron_texture(paint, shape, mask, seed, pm, bb):
     """Dark iron with scale mark brightness variation. Blend 0.45."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = _ensure_bb_2d(bb, shape)
     h, w = shape
     m3 = mask[:, :, np.newaxis]
@@ -900,13 +947,14 @@ def _paint_forged_iron_texture(paint, shape, mask, seed, pm, bb):
 
 def _paint_micro_flake_burst(paint, shape, mask, seed, pm, bb):
     """Dense micro flake: sparkle-driven brightness variation over base color. Blend 0.40."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = _ensure_bb_2d(bb, shape)
     h, w = shape
     m3 = mask[:, :, np.newaxis]
     e = _engine
     result = paint.copy()
     fine = e.multi_scale_noise(shape, [1, 2, 3, 4, 6, 8, 12, 16], [0.1, 0.12, 0.14, 0.14, 0.15, 0.15, 0.1, 0.1], seed + 1000)
-    mid = e.multi_scale_noise(shape, [4, 8, 16], [0.33, 0.34, 0.33], seed + 1001)
+    mid = e.multi_scale_noise(shape, [16, 32, 64], [0.33, 0.34, 0.33], seed + 1001)
     sparkle = np.clip((fine + 1) * 0.5, 0, 1)
     # Sparkle peaks brighten, valleys darken slightly, mid-scale adds variation
     brightness = sparkle ** 2 * 0.40 - (1 - sparkle) * 0.12 + mid * 0.08
@@ -922,6 +970,7 @@ def _paint_micro_flake_burst(paint, shape, mask, seed, pm, bb):
 
 def _paint_marble_vein_fine(paint, shape, mask, seed, pm, bb):
     """Fine marble veining: vein-driven tinting with warm stone undertone. Blend 0.38."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = _ensure_bb_2d(bb, shape)
     h, w = shape
     m3 = mask[:, :, np.newaxis]
@@ -951,6 +1000,7 @@ def _paint_marble_vein_fine(paint, shape, mask, seed, pm, bb):
 
 def _paint_obsidian_glass(paint, shape, mask, seed, pm, bb):
     """Obsidian glass: fracture-driven darkening with subtle reflection highlights. Blend 0.42."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = _ensure_bb_2d(bb, shape)
     h, w = shape
     m3 = mask[:, :, np.newaxis]
@@ -973,15 +1023,16 @@ def _paint_obsidian_glass(paint, shape, mask, seed, pm, bb):
 
 def _paint_silk_weave(paint, shape, mask, seed, pm, bb):
     """Fine silk weave: thread-driven sheen variation with warm silk tint. Blend 0.38."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = _ensure_bb_2d(bb, shape)
     h, w = shape
     m3 = mask[:, :, np.newaxis]
     e = _engine
     result = paint.copy()
     y, x = e.get_mgrid(shape)
-    n1 = e.multi_scale_noise(shape, [2, 4, 8, 16], [0.25, 0.25, 0.25, 0.25], seed + 1300)
+    n1 = e.multi_scale_noise(shape, [16, 32, 64, 128], [0.25, 0.25, 0.25, 0.25], seed + 1300)
     weft = np.sin(y / max(1, h) * 100 + n1 * 2) * 0.5 + 0.5
-    warp = np.sin(x / max(1, w) * 100 + e.multi_scale_noise(shape, [2, 4, 8], [0.33, 0.33, 0.34], seed + 1301) * 2) * 0.5 + 0.5
+    warp = np.sin(x / max(1, w) * 100 + e.multi_scale_noise(shape, [16, 32, 64], [0.33, 0.33, 0.34], seed + 1301) * 2) * 0.5 + 0.5
     weave = np.clip(weft * warp + 0.2, 0, 1)
     # Silk sheen on thread crests, slight warmth
     tint_r = weave * 0.25 - (1 - weave) * 0.12 + 0.08
@@ -1002,13 +1053,14 @@ def _paint_silk_weave(paint, shape, mask, seed, pm, bb):
 
 def _paint_ceramic_glaze(paint, shape, mask, seed, pm, bb):
     """Ceramic glaze: depth-driven tint with craze darkening. Blend 0.40."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = _ensure_bb_2d(bb, shape)
     h, w = shape
     m3 = mask[:, :, np.newaxis]
     e = _engine
     result = paint.copy()
     n1 = e.multi_scale_noise(shape, [16, 32, 64, 128], [0.2, 0.3, 0.3, 0.2], seed + 1400)
-    n2 = e.multi_scale_noise(shape, [2, 4, 8, 16], [0.25, 0.25, 0.25, 0.25], seed + 1401)
+    n2 = e.multi_scale_noise(shape, [16, 32, 64, 128], [0.25, 0.25, 0.25, 0.25], seed + 1401)
     depth = np.clip((n1 + 1) * 0.5, 0, 1)
     crazing = np.clip(np.abs(n2) * 1.2 - 0.2, 0, 1)
     # Deep pools get slight cool tint, crazing darkens
@@ -1030,6 +1082,7 @@ def _paint_ceramic_glaze(paint, shape, mask, seed, pm, bb):
 
 def _paint_brushed_titanium(paint, shape, mask, seed, pm, bb):
     """Brushed titanium: grain-driven brightness with cool blue-gray tint. Blend 0.42."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = _ensure_bb_2d(bb, shape)
     h, w = shape
     m3 = mask[:, :, np.newaxis]
@@ -1058,13 +1111,14 @@ def _paint_brushed_titanium(paint, shape, mask, seed, pm, bb):
 
 def _paint_gold_leaf_micro(paint, shape, mask, seed, pm, bb):
     """Gold leaf: patch-driven warm gold tint with crack darkening. Blend 0.40."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = _ensure_bb_2d(bb, shape)
     h, w = shape
     m3 = mask[:, :, np.newaxis]
     e = _engine
     result = paint.copy()
     n1 = e.multi_scale_noise(shape, [4, 8, 16, 32, 64], [0.15, 0.2, 0.25, 0.25, 0.15], seed + 1600)
-    n2 = e.multi_scale_noise(shape, [2, 4, 8, 16], [0.25, 0.25, 0.25, 0.25], seed + 1601)
+    n2 = e.multi_scale_noise(shape, [16, 32, 64, 128], [0.25, 0.25, 0.25, 0.25], seed + 1601)
     patch = np.clip((n1 + 1) * 0.5, 0, 1)
     crack = np.clip(np.abs(n2) * 1.3 - 0.4, 0, 1)
     # Gold leaf patches get warm golden tint, cracks darken
@@ -1086,6 +1140,7 @@ def _paint_gold_leaf_micro(paint, shape, mask, seed, pm, bb):
 
 def _paint_fluid_metal(paint, shape, mask, seed, pm, bb):
     """Liquid metal: flow-driven brightness variation with cool metallic tint. Blend 0.45."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = _ensure_bb_2d(bb, shape)
     h, w = shape
     m3 = mask[:, :, np.newaxis]
@@ -1093,7 +1148,7 @@ def _paint_fluid_metal(paint, shape, mask, seed, pm, bb):
     result = paint.copy()
     y, x = e.get_mgrid(shape)
     n1 = e.multi_scale_noise(shape, [8, 16, 32, 64], [0.2, 0.3, 0.3, 0.2], seed + 1700)
-    n2 = e.multi_scale_noise(shape, [2, 4, 8, 16], [0.2, 0.25, 0.3, 0.25], seed + 1701)
+    n2 = e.multi_scale_noise(shape, [16, 32, 64, 128], [0.2, 0.25, 0.3, 0.25], seed + 1701)
     flow = np.sin(y / max(1, h) * 6 + n1 * 3) * np.cos(x / max(1, w) * 5 + n2 * 2)
     flow = np.clip(flow * 0.5 + 0.5, 0, 1)
     # Flow crests brighten, troughs darken, slight cool metallic shift
@@ -1130,6 +1185,58 @@ ATELIER_ENTRIES = [
     ("atelier_fluid_metal", "Fluid Metal", _spec_fluid_metal, _paint_fluid_metal),
 ]
 
+_ATELIER_EXTRA_DETAIL_GAIN = {
+    "atelier_carbon_weave_micro": 0.85,
+    "atelier_cathedral_glass": 0.70,
+    "atelier_ceramic_glaze": 0.72,
+    "atelier_fluid_metal": 0.82,
+    "atelier_forged_iron_texture": 0.76,
+    "atelier_gold_leaf_micro": 0.78,
+    "atelier_pearl_depth_layers": 0.60,
+}
+
+
+def _atelier_detail_wrap(fid, spec_fn, paint_fn):
+    def _spec(shape, mask, seed, sm):
+        spec = spec_fn(shape, mask, seed, sm).astype(np.float32, copy=True)
+        e = _engine
+        detail = e.multi_scale_noise(shape, [1, 2, 4, 8], [0.36, 0.30, 0.22, 0.12], seed + 8841)
+        detail = np.clip((detail + 1.0) * 0.5, 0, 1)
+        extra_gain = float(_ATELIER_EXTRA_DETAIL_GAIN.get(fid, 0.0))
+        needle = e.multi_scale_noise(shape, [1, 2, 3], [0.44, 0.34, 0.22], seed + 8897) if extra_gain > 0 else 0.0
+        dust = np.clip((detail - 0.78) * 4.5, 0, 1)
+        if "micro_flake" in fid or "gold_leaf" in fid:
+            dust = np.maximum(dust, np.clip((detail - 0.66) * 2.5, 0, 1) * 0.55)
+        spec[:, :, 0] = np.clip(spec[:, :, 0] + (detail - 0.5) * 16.0 * sm + dust * 32.0 * sm + needle * 44.0 * extra_gain * sm, 0, 255)
+        spec[:, :, 1] = np.clip(spec[:, :, 1] - dust * 13.0 * sm + (1.0 - detail) * 4.0 * sm - np.abs(needle) * 14.0 * extra_gain * sm, 15, 255)
+        spec[:, :, 2] = np.where(mask > 0.01, np.clip(spec[:, :, 2] + dust * 3.0, 16, 255), 0)
+        spec[:, :, 3] = np.clip(mask * 255, 0, 255)
+        return spec.astype(np.uint8)
+
+    def _paint(paint, shape, mask, seed, pm, bb):
+        out = paint_fn(paint, shape, mask, seed, pm, bb)
+        e = _engine
+        detail = e.multi_scale_noise(shape, [1, 2, 4, 8], [0.36, 0.30, 0.22, 0.12], seed + 8841)
+        detail = np.clip((detail + 1.0) * 0.5, 0, 1)
+        extra_gain = float(_ATELIER_EXTRA_DETAIL_GAIN.get(fid, 0.0))
+        needle = e.multi_scale_noise(shape, [1, 2, 3], [0.44, 0.34, 0.22], seed + 8897) if extra_gain > 0 else 0.0
+        dust = np.clip((detail - 0.78) * 4.5, 0, 1)
+        tint = np.stack([dust * 0.08, dust * 0.065, dust * 0.035], axis=2)
+        if "glass" in fid or "ceramic" in fid:
+            tint = tint[:, :, ::-1] * 0.70
+        micro_luma = needle[:, :, np.newaxis] * extra_gain * 0.075 if extra_gain > 0 else 0.0
+        if fid == "atelier_carbon_weave_micro" and extra_gain > 0:
+            chroma = np.stack([
+                needle * 0.030,
+                -needle * 0.010,
+                np.abs(needle) * 0.055,
+            ], axis=2)
+            tint = tint + chroma
+        out = np.clip(out[:, :, :3] + (tint + micro_luma) * mask[:, :, np.newaxis] * float(pm), 0, 1)
+        return out.astype(np.float32)
+
+    return _spec, _paint
+
 
 def integrate_atelier(engine_module):
     """Register all Atelier ultra-detail finishes into the engine's MONOLITHIC_REGISTRY."""
@@ -1141,7 +1248,7 @@ def integrate_atelier(engine_module):
         return 0
     count = 0
     for fid, name, spec_fn, paint_fn in ATELIER_ENTRIES:
-        reg[fid] = (spec_fn, paint_fn)
+        reg[fid] = _atelier_detail_wrap(fid, spec_fn, paint_fn)
         count += 1
     print(f"[Atelier] Loaded {count} ultra-detail finishes (Pro Grade)")
     return count

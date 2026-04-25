@@ -115,7 +115,7 @@ def _chameleon_v5_field(shape, seed, flow_complexity=3):
             field = field + wave * amp
 
         # Very light noise for organic panel boundary breakup
-        noise = _msn(shape, [64, 128, 256], [0.25, 0.40, 0.35], seed + 8001)
+        noise = _msn(shape, [8, 16, 32], [0.25, 0.40, 0.35], seed + 8001)
         field = field + noise * 0.05
 
     # Normalize to 0-1
@@ -198,6 +198,7 @@ def spec_chameleon_v5(shape, mask, seed, sm, field=None,
                       M_base=225, M_range=30, R_base=10, R_range=12,
                       CC_base=16, CC_range=50):
     """Chameleon v5 COORDINATED spec - spatially varied M/R/CC driven by paint field.
+    Resolution-capped: computes at 512 max then upscales.
 
     CC SCALE: 16=max gloss, 17-255=progressively degraded. CC_range=50 means the
     field drives CC from 16 (perfectly glazed face-on panels) to 66 (slightly worn
@@ -214,32 +215,59 @@ def spec_chameleon_v5(shape, mask, seed, sm, field=None,
     flash competes). This creates the dual-layer effect of real chameleon paint.
     """
     h, w = shape
-    spec = np.zeros((h, w, 4), dtype=np.uint8)
+    # --- Resolution cap: compute at 512 max ---
+    ds = max(1, min(h, w) // 1024)
+    sh, sw = max(64, h // ds), max(64, w // ds)
 
     if field is None:
-        field = _chameleon_v5_field(shape, seed)
+        field = _chameleon_v5_field((sh, sw), seed)
+    elif ds > 1:
+        # If field passed in at full res, downsample it
+        if _cv2 is not None:
+            field = _cv2.resize(field, (sw, sh), interpolation=_cv2.INTER_LINEAR)
+        else:
+            field = field[::ds, ::ds][:sh, :sw]
 
     # Metallic: INVERSE of field - darker/warmer paint = more metallic
     M_arr = M_base + (1.0 - field) * M_range
 
     # Roughness: low base with micro-flake variation
-    flake = _chameleon_v5_flake(shape, seed + 50, cell_size=5)
+    flake = _chameleon_v5_flake((sh, sw), seed + 50, cell_size=max(2, 5 * sh // h) if ds > 1 else 5)
+    mask_s = mask
+    if ds > 1:
+        if _cv2 is not None:
+            mask_s = _cv2.resize(mask.astype(np.float32), (sw, sh), interpolation=_cv2.INTER_LINEAR)
+        else:
+            mask_s = mask[::ds, ::ds][:sh, :sw]
     R_arr = R_base + flake * R_range * sm
 
     # Clearcoat: OPPOSING metallic - follows field
     CC_arr = CC_base + field * CC_range
 
-    # Light smooth noise overlay for organic feel
-    m_noise = _msn(shape, [32, 64], [0.5, 0.5], seed + 8200)
-    M_arr = M_arr + m_noise * 5 * sm
-    r_noise = _msn(shape, [16, 32], [0.5, 0.5], seed + 8210)
-    R_arr = R_arr + r_noise * 3 * sm
+    # Independent noise overlays for M and R — creates viewing-angle shimmer
+    m_noise = _msn((sh, sw), [16, 32, 64], [0.3, 0.4, 0.3], seed + 8200)
+    M_arr = M_arr + m_noise * 8 * sm
+    # R noise at DIFFERENT scale + seed so M and R vary independently (key for shimmer)
+    r_noise = _msn((sh, sw), [32, 64, 128], [0.3, 0.4, 0.3], seed + 8310)
+    R_arr = R_arr + r_noise * 8 * sm
 
-    spec[:,:,0] = np.clip(M_arr * mask, 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(R_arr * mask, 15, 255).astype(np.uint8)  # GGX floor: G≥15 prevents whitewash
-    spec[:,:,2] = np.clip(CC_arr * mask, 0, 255).astype(np.uint8)
-    spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
-    return spec
+    spec_small = np.zeros((sh, sw, 4), dtype=np.uint8)
+    spec_small[:,:,0] = np.clip(M_arr * mask_s, 0, 255).astype(np.uint8)
+    spec_small[:,:,1] = np.where(mask_s > 0.01, np.clip(R_arr, 15, 255), 0).astype(np.uint8)
+    spec_small[:,:,2] = np.where(mask_s > 0.01, np.clip(CC_arr, 16, 255), 0).astype(np.uint8)
+    spec_small[:,:,3] = np.clip(mask_s * 255, 0, 255).astype(np.uint8)
+
+    if ds > 1:
+        spec = np.zeros((h, w, 4), dtype=np.uint8)
+        if _cv2 is not None:
+            for ch in range(4):
+                spec[:,:,ch] = _cv2.resize(spec_small[:,:,ch].astype(np.float32), (w, h), interpolation=_cv2.INTER_LINEAR).astype(np.uint8)
+        else:
+            from PIL import Image
+            for ch in range(4):
+                spec[:,:,ch] = np.array(Image.fromarray(spec_small[:,:,ch]).resize((w, h), Image.BILINEAR))
+        return spec
+    return spec_small
 
 
 def spec_chameleon_pro(shape, mask, seed, sm):
@@ -259,22 +287,29 @@ def paint_chameleon_v5_core(paint, shape, mask, seed, pm, bb,
     3. Adds Voronoi micro-flake texture with per-flake hue variation
     4. Compensates for iRacing metallic PBR darkening
     5. Blends with original paint at high strength
+    Resolution-capped: field/ramp computed at 512 max then upscaled.
 
     color_stops: [(position, H_deg, S, V), ...] - at least 3 stops
     flake_intensity: brightness variation per flake (0.02-0.08)
     flake_hue_spread: hue variation per flake in 0-1 range (0.02-0.10)
     metallic_brighten: compensation for iRacing metallic darkening
     """
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
+    # --- Resolution cap: compute field/ramp at 512 max ---
+    ds = max(1, min(h, w) // 1024)
+    sh, sw = max(64, h // ds), max(64, w // ds)
 
-    # Step 1: Generate master field (SAME seed → matches spec)
-    field = _chameleon_v5_field(shape, seed, flow_complexity)
+    # Step 1: Generate master field at small res (SAME seed → matches spec)
+    field = _chameleon_v5_field((sh, sw), seed, flow_complexity)
 
-    # Step 2: Map through multi-stop color ramp
+    # Step 2: Map through multi-stop color ramp at small res
     ramp_r, ramp_g, ramp_b = _chameleon_v5_color_ramp(field, color_stops)
 
-    # Step 3: Add Voronoi micro-flake texture
-    flake = _chameleon_v5_flake(shape, seed, cell_size=5)
+    # Step 3: Add Voronoi micro-flake texture at small res
+    flake = _chameleon_v5_flake((sh, sw), seed, cell_size=max(2, 5 * sh // h) if ds > 1 else 5)
     # Per-flake brightness variation
     flake_bright = (flake - 0.5) * 2.0 * flake_intensity
     ramp_r = np.clip(ramp_r + flake_bright, 0, 1)
@@ -292,6 +327,18 @@ def paint_chameleon_v5_core(paint, shape, mask, seed, pm, bb,
     ramp_g = np.clip(ramp_g + metallic_brighten, 0, 1)
     ramp_b = np.clip(ramp_b + metallic_brighten, 0, 1)
 
+    # Upscale ramps to full resolution
+    if ds > 1:
+        if _cv2 is not None:
+            ramp_r = _cv2.resize(ramp_r, (w, h), interpolation=_cv2.INTER_LINEAR)
+            ramp_g = _cv2.resize(ramp_g, (w, h), interpolation=_cv2.INTER_LINEAR)
+            ramp_b = _cv2.resize(ramp_b, (w, h), interpolation=_cv2.INTER_LINEAR)
+        else:
+            from PIL import Image
+            ramp_r = np.array(Image.fromarray(ramp_r).resize((w, h), Image.BILINEAR))
+            ramp_g = np.array(Image.fromarray(ramp_g).resize((w, h), Image.BILINEAR))
+            ramp_b = np.array(Image.fromarray(ramp_b).resize((w, h), Image.BILINEAR))
+
     # Step 5: Blend with original paint
     blend = blend_strength * pm
     mask3 = mask[:, :, np.newaxis]
@@ -308,6 +355,7 @@ def paint_chameleon_gradient(paint, shape, mask, seed, pm, bb, primary_hue, shif
     """Backward-compatible wrapper - converts old 2-param HSV ramp to v5 multi-stop.
     Now generates a 5-stop physically-motivated ramp from the primary hue + shift range.
     """
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h_start = primary_hue
     h_end = primary_hue + shift_range
     stops = [
@@ -324,6 +372,7 @@ def paint_chameleon_gradient(paint, shape, mask, seed, pm, bb, primary_hue, shif
 
 def paint_chameleon_midnight(paint, shape, mask, seed, pm, bb):
     """Midnight - Deep purple → indigo → teal → gold (dark luxury shift)"""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     stops = [
         (0.00, 275, 0.85, 0.65),   # Deep Purple
         (0.25, 245, 0.82, 0.68),   # Indigo
@@ -336,6 +385,7 @@ def paint_chameleon_midnight(paint, shape, mask, seed, pm, bb):
 
 def paint_chameleon_phoenix(paint, shape, mask, seed, pm, bb):
     """Phoenix - Crimson → red → orange → gold → yellow-green (fire rebirth)"""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     stops = [
         (0.00, 345, 0.92, 0.75),   # Crimson
         (0.20, 8,   0.90, 0.80),   # Red
@@ -349,6 +399,7 @@ def paint_chameleon_phoenix(paint, shape, mask, seed, pm, bb):
 
 def paint_chameleon_ocean(paint, shape, mask, seed, pm, bb):
     """Ocean - Teal → cerulean → blue → indigo → violet (deep sea)"""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     stops = [
         (0.00, 178, 0.88, 0.78),   # Teal
         (0.25, 200, 0.90, 0.76),   # Cerulean
@@ -361,6 +412,7 @@ def paint_chameleon_ocean(paint, shape, mask, seed, pm, bb):
 
 def paint_chameleon_venom(paint, shape, mask, seed, pm, bb):
     """Venom - Toxic green → teal → blue → purple → magenta (toxic shift)"""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     stops = [
         (0.00, 110, 0.92, 0.82),   # Toxic Green
         (0.25, 155, 0.88, 0.78),   # Teal-Green
@@ -373,6 +425,7 @@ def paint_chameleon_venom(paint, shape, mask, seed, pm, bb):
 
 def paint_chameleon_copper(paint, shape, mask, seed, pm, bb):
     """Copper - Copper → rose gold → magenta → violet → teal (full spectrum)"""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     stops = [
         (0.00, 22,  0.85, 0.82),   # Copper
         (0.20, 350, 0.78, 0.80),   # Rose Gold
@@ -386,6 +439,7 @@ def paint_chameleon_copper(paint, shape, mask, seed, pm, bb):
 
 def paint_chameleon_arctic(paint, shape, mask, seed, pm, bb):
     """Arctic - Silver → ice blue → sky → teal → aqua (frozen metallic)"""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     stops = [
         (0.00, 210, 0.20, 0.90),   # Silver (low sat, high value)
         (0.25, 205, 0.45, 0.87),   # Ice Blue
@@ -399,6 +453,7 @@ def paint_chameleon_arctic(paint, shape, mask, seed, pm, bb):
 
 def paint_chameleon_amethyst(paint, shape, mask, seed, pm, bb):
     """Amethyst - Deep purple → violet → pink → magenta → rose (jewel shift)"""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     stops = [
         (0.00, 270, 0.88, 0.68),   # Deep Purple
         (0.25, 290, 0.85, 0.72),   # Violet
@@ -411,6 +466,7 @@ def paint_chameleon_amethyst(paint, shape, mask, seed, pm, bb):
 
 def paint_chameleon_emerald(paint, shape, mask, seed, pm, bb):
     """Emerald - Emerald → teal → cyan → sky blue → sapphire (jewel ocean)"""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     stops = [
         (0.00, 145, 0.90, 0.72),   # Emerald
         (0.25, 170, 0.88, 0.76),   # Teal
@@ -423,6 +479,7 @@ def paint_chameleon_emerald(paint, shape, mask, seed, pm, bb):
 
 def paint_chameleon_obsidian(paint, shape, mask, seed, pm, bb):
     """Obsidian - Black → deep purple → dark blue → dark teal (stealth shift)"""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     stops = [
         (0.00, 270, 0.70, 0.35),   # Near-Black Purple
         (0.30, 260, 0.75, 0.42),   # Deep Purple
@@ -439,6 +496,7 @@ def paint_chameleon_obsidian(paint, shape, mask, seed, pm, bb):
 
 def paint_mystichrome(paint, shape, mask, seed, pm, bb):
     """Mystichrome - Green → blue → purple (Ford SVT Cobra tribute, wide shift)"""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     stops = [
         (0.00, 140, 0.85, 0.76),   # Forest Green
         (0.20, 165, 0.88, 0.78),   # Teal
@@ -520,6 +578,9 @@ def paint_aurora_flow_core(paint, shape, mask, seed, pm, bb, color_stops,
     flow_stretch: how much the bands stretch along flow direction
     num_bands: more bands = finer color threads
     """
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
 
     # Generate the flowing band field
@@ -557,6 +618,7 @@ def paint_aurora_flow_core(paint, shape, mask, seed, pm, bb, color_stops,
 
 def paint_aurora_borealis(paint, shape, mask, seed, pm, bb):
     """Northern Lights — Green → teal → cyan → blue → violet flowing curtains"""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     stops = [
         (0.00, 120, 0.88, 0.82),   # Green
         (0.20, 165, 0.85, 0.78),   # Teal
@@ -570,6 +632,7 @@ def paint_aurora_borealis(paint, shape, mask, seed, pm, bb):
 
 def paint_aurora_solar_wind(paint, shape, mask, seed, pm, bb):
     """Solar Wind — Orange → gold → yellow → lime → cyan → blue electric bands"""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     stops = [
         (0.00, 25,  0.92, 0.85),   # Orange
         (0.20, 42,  0.90, 0.88),   # Gold
@@ -583,6 +646,7 @@ def paint_aurora_solar_wind(paint, shape, mask, seed, pm, bb):
 
 def paint_aurora_nebula(paint, shape, mask, seed, pm, bb):
     """Nebula — Deep purple → magenta → pink → rose → coral → amber flowing wisps"""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     stops = [
         (0.00, 280, 0.85, 0.65),   # Deep Purple
         (0.20, 310, 0.88, 0.72),   # Magenta
@@ -596,6 +660,7 @@ def paint_aurora_nebula(paint, shape, mask, seed, pm, bb):
 
 def paint_aurora_chromatic_surge(paint, shape, mask, seed, pm, bb):
     """Chromatic Surge — Full rainbow spectrum in tight concentrated bands"""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     stops = [
         (0.00, 0,   0.90, 0.82),   # Red
         (0.14, 30,  0.88, 0.85),   # Orange
@@ -611,6 +676,7 @@ def paint_aurora_chromatic_surge(paint, shape, mask, seed, pm, bb):
 
 def paint_aurora_frozen_flame(paint, shape, mask, seed, pm, bb):
     """Frozen Flame — Ice blue → white → gold → red concentrated flow"""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     stops = [
         (0.00, 200, 0.60, 0.90),   # Ice Blue
         (0.25, 210, 0.15, 0.95),   # Near-White
@@ -623,6 +689,7 @@ def paint_aurora_frozen_flame(paint, shape, mask, seed, pm, bb):
 
 def paint_aurora_deep_ocean(paint, shape, mask, seed, pm, bb):
     """Deep Ocean — Dark navy → sapphire → teal → aqua → seafoam subtle flowing bands"""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     stops = [
         (0.00, 230, 0.85, 0.45),   # Dark Navy
         (0.25, 218, 0.82, 0.58),   # Sapphire
@@ -635,6 +702,7 @@ def paint_aurora_deep_ocean(paint, shape, mask, seed, pm, bb):
 
 def paint_aurora_volcanic(paint, shape, mask, seed, pm, bb):
     """Volcanic Flow — Black → deep red → orange → gold flowing magma veins"""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     stops = [
         (0.00, 0,   0.10, 0.15),   # Near-Black
         (0.20, 0,   0.85, 0.45),   # Deep Red
@@ -648,6 +716,7 @@ def paint_aurora_volcanic(paint, shape, mask, seed, pm, bb):
 
 def paint_aurora_ethereal(paint, shape, mask, seed, pm, bb):
     """Ethereal — Soft pastel flowing: lavender → mint → peach → sky ultra-fine threads"""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     stops = [
         (0.00, 270, 0.40, 0.88),   # Lavender
         (0.25, 155, 0.35, 0.90),   # Mint
@@ -661,6 +730,7 @@ def paint_aurora_ethereal(paint, shape, mask, seed, pm, bb):
 
 def paint_aurora_toxic_current(paint, shape, mask, seed, pm, bb):
     """Toxic Current — Acid green → neon yellow → electric blue concentrated electric bands"""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     stops = [
         (0.00, 110, 0.95, 0.85),   # Acid Green
         (0.25, 80,  0.92, 0.90),   # Neon Yellow-Green
@@ -673,6 +743,7 @@ def paint_aurora_toxic_current(paint, shape, mask, seed, pm, bb):
 
 def paint_aurora_midnight_silk(paint, shape, mask, seed, pm, bb):
     """Midnight Silk — Very dark with subtle deep blue → purple → teal threads barely visible"""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     stops = [
         (0.00, 240, 0.70, 0.30),   # Dark Blue
         (0.25, 270, 0.65, 0.28),   # Dark Purple
@@ -689,6 +760,7 @@ def paint_aurora_midnight_silk(paint, shape, mask, seed, pm, bb):
 
 def paint_aurora_electric_candy(paint, shape, mask, seed, pm, bb):
     """Electric Candy — WILD: hot pink → electric blue → neon yellow → lime → magenta sharp bands"""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     stops = [
         (0.00, 330, 0.95, 0.82),   # Hot Pink
         (0.20, 220, 0.96, 0.88),   # Electric Blue
@@ -703,6 +775,7 @@ def paint_aurora_electric_candy(paint, shape, mask, seed, pm, bb):
 
 def paint_aurora_ocean_phosphor(paint, shape, mask, seed, pm, bb):
     """Ocean Phosphorescence — deep navy → bioluminescent blue → cyan → teal → seafoam gentle bands"""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     stops = [
         (0.00, 235, 0.88, 0.35),   # Deep Navy
         (0.25, 210, 0.85, 0.55),   # Bioluminescent Blue
@@ -716,6 +789,7 @@ def paint_aurora_ocean_phosphor(paint, shape, mask, seed, pm, bb):
 
 def paint_aurora_molten_earth(paint, shape, mask, seed, pm, bb):
     """Molten Earth — burnt sienna → copper → dark red → amber → charcoal warm earthy flow"""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     stops = [
         (0.00, 18,  0.78, 0.58),   # Burnt Sienna
         (0.25, 25,  0.72, 0.65),   # Copper
@@ -729,6 +803,7 @@ def paint_aurora_molten_earth(paint, shape, mask, seed, pm, bb):
 
 def paint_aurora_arctic_shimmer(paint, shape, mask, seed, pm, bb):
     """Arctic Shimmer — ice white → pale blue → silver → frost blue → pale lavender cold delicate"""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     stops = [
         (0.00, 200, 0.12, 0.96),   # Ice White
         (0.25, 208, 0.38, 0.88),   # Pale Blue
@@ -742,6 +817,7 @@ def paint_aurora_arctic_shimmer(paint, shape, mask, seed, pm, bb):
 
 def paint_aurora_neon_storm(paint, shape, mask, seed, pm, bb):
     """Neon Storm — ULTRA WILD: neon green → hot pink → electric purple → bright orange → cyan"""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     stops = [
         (0.00, 115, 0.98, 0.90),   # Neon Green
         (0.20, 330, 0.97, 0.86),   # Hot Pink
@@ -756,6 +832,7 @@ def paint_aurora_neon_storm(paint, shape, mask, seed, pm, bb):
 
 def paint_aurora_twilight_veil(paint, shape, mask, seed, pm, bb):
     """Twilight Veil — deep purple → rose gold → dusty pink → slate blue → dark magenta elegant"""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     stops = [
         (0.00, 275, 0.78, 0.52),   # Deep Purple
         (0.25, 25,  0.55, 0.72),   # Rose Gold
@@ -769,6 +846,7 @@ def paint_aurora_twilight_veil(paint, shape, mask, seed, pm, bb):
 
 def paint_aurora_dragon_fire(paint, shape, mask, seed, pm, bb):
     """Dragon Fire — WILD: bright orange → deep red → gold → black → surprise electric blue"""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     stops = [
         (0.00, 25,  0.96, 0.88),   # Bright Orange
         (0.20, 5,   0.92, 0.65),   # Deep Red
@@ -783,6 +861,7 @@ def paint_aurora_dragon_fire(paint, shape, mask, seed, pm, bb):
 
 def paint_aurora_crystal_prism(paint, shape, mask, seed, pm, bb):
     """Crystal Prism — WILD: full rainbow red → orange → yellow → green → blue → violet spectrum"""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     stops = [
         (0.00, 0,   0.92, 0.85),   # Red
         (0.17, 25,  0.90, 0.88),   # Orange
@@ -798,6 +877,7 @@ def paint_aurora_crystal_prism(paint, shape, mask, seed, pm, bb):
 
 def paint_aurora_shadow_silk(paint, shape, mask, seed, pm, bb):
     """Shadow Silk — very dark: black → dark purple → dark teal → charcoal → midnight blue luxury"""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     stops = [
         (0.00, 0,   0.05, 0.10),   # Near-Black
         (0.25, 275, 0.65, 0.22),   # Dark Purple
@@ -811,6 +891,7 @@ def paint_aurora_shadow_silk(paint, shape, mask, seed, pm, bb):
 
 def paint_aurora_copper_patina(paint, shape, mask, seed, pm, bb):
     """Copper Patina — copper → verdigris green → brown → teal → oxidized orange aged metal flow"""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     stops = [
         (0.00, 22,  0.72, 0.65),   # Copper
         (0.25, 162, 0.58, 0.52),   # Verdigris Green
@@ -824,6 +905,7 @@ def paint_aurora_copper_patina(paint, shape, mask, seed, pm, bb):
 
 def paint_aurora_poison_ivy(paint, shape, mask, seed, pm, bb):
     """Poison Ivy — ULTRA WILD: toxic green → black → bright lime → dark emerald → acid yellow"""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     stops = [
         (0.00, 112, 0.96, 0.82),   # Toxic Green
         (0.20, 0,   0.05, 0.10),   # Black
@@ -838,6 +920,7 @@ def paint_aurora_poison_ivy(paint, shape, mask, seed, pm, bb):
 
 def paint_aurora_champagne_dream(paint, shape, mask, seed, pm, bb):
     """Champagne Dream — pale gold → cream → blush pink → soft peach → pearl white luxurious"""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     stops = [
         (0.00, 45,  0.45, 0.90),   # Pale Gold
         (0.25, 35,  0.15, 0.96),   # Cream
@@ -851,6 +934,7 @@ def paint_aurora_champagne_dream(paint, shape, mask, seed, pm, bb):
 
 def paint_aurora_thunderhead(paint, shape, mask, seed, pm, bb):
     """Thunderhead — steel grey → dark charcoal → silver flash → slate → gunmetal dramatic storm"""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     stops = [
         (0.00, 210, 0.15, 0.62),   # Steel Grey
         (0.25, 215, 0.10, 0.30),   # Dark Charcoal
@@ -864,6 +948,7 @@ def paint_aurora_thunderhead(paint, shape, mask, seed, pm, bb):
 
 def paint_aurora_coral_reef(paint, shape, mask, seed, pm, bb):
     """Coral Reef — coral pink → turquoise → sand gold → seafoam → deep blue tropical underwater"""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     stops = [
         (0.00, 10,  0.78, 0.80),   # Coral Pink
         (0.25, 175, 0.80, 0.72),   # Turquoise
@@ -877,6 +962,7 @@ def paint_aurora_coral_reef(paint, shape, mask, seed, pm, bb):
 
 def paint_aurora_black_rainbow(paint, shape, mask, seed, pm, bb):
     """Black Rainbow — WILD: dark versions of rainbow — dark red → dark orange → dark yellow → dark green → dark blue"""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     stops = [
         (0.00, 0,   0.88, 0.38),   # Dark Red
         (0.17, 20,  0.85, 0.42),   # Dark Orange
@@ -892,6 +978,7 @@ def paint_aurora_black_rainbow(paint, shape, mask, seed, pm, bb):
 
 def paint_aurora_cherry_blossom(paint, shape, mask, seed, pm, bb):
     """Cherry Blossom — soft pink → white → pale rose → light green → blush delicate spring"""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     stops = [
         (0.00, 345, 0.42, 0.92),   # Soft Pink
         (0.25, 0,   0.05, 0.98),   # White
@@ -905,6 +992,7 @@ def paint_aurora_cherry_blossom(paint, shape, mask, seed, pm, bb):
 
 def paint_aurora_plasma_reactor(paint, shape, mask, seed, pm, bb):
     """Plasma Reactor — ULTRA WILD: electric cyan → white-hot → purple → bright blue → magenta"""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     stops = [
         (0.00, 185, 0.96, 0.88),   # Electric Cyan
         (0.20, 195, 0.10, 0.98),   # White-Hot
@@ -919,6 +1007,7 @@ def paint_aurora_plasma_reactor(paint, shape, mask, seed, pm, bb):
 
 def paint_aurora_autumn_ember(paint, shape, mask, seed, pm, bb):
     """Autumn Ember — burnt orange → dark red → gold → maroon → brown fall foliage flow"""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     stops = [
         (0.00, 22,  0.88, 0.72),   # Burnt Orange
         (0.25, 5,   0.85, 0.50),   # Dark Red
@@ -932,6 +1021,7 @@ def paint_aurora_autumn_ember(paint, shape, mask, seed, pm, bb):
 
 def paint_aurora_ice_crystal(paint, shape, mask, seed, pm, bb):
     """Ice Crystal — very pale blue → white → crystal clear → frost → pale cyan nearly-white ice"""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     stops = [
         (0.00, 208, 0.30, 0.94),   # Very Pale Blue
         (0.25, 200, 0.06, 0.99),   # White
@@ -945,6 +1035,7 @@ def paint_aurora_ice_crystal(paint, shape, mask, seed, pm, bb):
 
 def paint_aurora_supernova(paint, shape, mask, seed, pm, bb):
     """Supernova — ULTRA WILD: white-hot → orange → red → deep purple → black stellar explosion"""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     stops = [
         (0.00, 55,  0.10, 0.99),   # White-Hot Core
         (0.20, 35,  0.90, 0.92),   # Orange

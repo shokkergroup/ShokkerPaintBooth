@@ -7,6 +7,7 @@ unrelated legacy textures). Key categories: Flames, Decades, Music, Astro/Zodiac
 
 from collections import OrderedDict
 import numpy as np
+import cv2
 from scipy.spatial import cKDTree
 
 
@@ -150,11 +151,11 @@ def _tex_flame_hotrod_classic(shape, seed):
     out = np.zeros((h, w), dtype=np.float32)
     yy = np.arange(h, dtype=np.float32)
     xx = np.arange(w, dtype=np.float32)
-    n = rng.integers(5, 9)
+    n = rng.integers(18, 30)  # Many fine tongues (was 8-14 with fat widths)
     for _ in range(n):
-        cy      = rng.uniform(0.1, 0.9) * h
-        length  = rng.uniform(0.45, 0.92) * w
-        base_hw = rng.uniform(0.05, 0.14) * h
+        cy      = rng.uniform(0.05, 0.95) * h
+        length  = rng.uniform(0.40, 0.95) * w
+        base_hw = rng.uniform(0.015, 0.045) * h  # Fine tongues (was 0.06-0.18 = huge bands)
         curve   = rng.uniform(0.5, 2.5) * (1 if rng.random() > 0.5 else -1)
         taper   = rng.uniform(1.2, 2.2)
         wobble  = rng.uniform(0.5, 2.5)
@@ -165,6 +166,8 @@ def _tex_flame_hotrod_classic(shape, seed):
         tongue  = np.clip(1.0 - dist / (hw_at_x[None, :] + 1e-4), 0, 1)
         tongue[:, xx >= length] = 0.0
         out = np.maximum(out, tongue)
+    bg = _multi_scale_noise_fast(shape, [4, 8, 16, 32], seed + 2130) * 0.13 + 0.08
+    out = np.clip(out + bg, 0, 1)
     return out
 
 
@@ -179,12 +182,12 @@ def _tex_flame_ghost(shape, seed):
     out = np.zeros((h, w), dtype=np.float32)
     yy = np.arange(h, dtype=np.float32)
     xx = np.arange(w, dtype=np.float32)
-    noise = _multi_scale_noise_fast(shape, [8, 16, 32], seed + 7)
-    for i in range(rng.integers(6, 11)):
+    noise = _noise_simple(shape, seed=seed + 7, scale=40.0)  # Fine wisp turbulence
+    for i in range(rng.integers(10, 16)):  # More wisps (was 6-11)
         cx     = rng.uniform(0.0, 1.0) * w
         length = rng.uniform(0.55, 0.95) * w
-        sigma  = rng.uniform(0.008, 0.022) * h   # very thin
-        peak   = rng.uniform(0.35, 0.65)          # keep it ghostly
+        sigma  = rng.uniform(0.005, 0.015) * h    # Fine wisps (was 0.015-0.04 = too thick)
+        peak   = rng.uniform(0.55, 0.90)          # Brighter (was 0.35-0.65)
         x_norm = np.clip(xx / max(length, 1), 0, 1)
         # Wobble driven by noise column
         wobble_amp = h * rng.uniform(0.06, 0.18)
@@ -194,10 +197,12 @@ def _tex_flame_ghost(shape, seed):
                     np.sin(x_norm * np.pi * rng.uniform(1.2, 3.5)) * wobble_amp)
         # One row per x: gaussian
         dist     = np.abs(yy[:, None] - centre_y[None, :])
-        wisp     = np.exp(-(dist**2) / (2 * sigma**2)) * peak
+        wisp     = np.exp(-(dist**2) / (sigma**2)) * np.clip(peak * 1.4, 0, 1)  # Sharper + brighter
         wisp    *= (1 - x_norm)[None, :] ** 0.6   # fade at tip
         wisp[:, xx >= length] = 0.0
         out = np.maximum(out, wisp.astype(np.float32))
+    bg = _multi_scale_noise_fast(shape, [4, 8, 16, 32], seed + 2120) * 0.13 + 0.08
+    out = np.clip(out + bg, 0, 1)
     return out
 
 
@@ -210,29 +215,33 @@ def _tex_flame_blue_propane(shape, seed):
     """
     h, w = shape
     rng = np.random.default_rng(seed)
-    out = np.zeros((h, w), dtype=np.float32)
-    yy = np.arange(h, dtype=np.float32)
-    xx = np.arange(w, dtype=np.float32)
-    n_cones = rng.integers(7, 13)
+    # PERF: compute at 512 max to avoid slow per-cone noise at full res
+    ds = max(1, min(h, w) // 1024)
+    sh, sw = max(64, h // ds), max(64, w // ds)
+    out = np.zeros((sh, sw), dtype=np.float32)
+    yy = np.arange(sh, dtype=np.float32)
+    xx = np.arange(sw, dtype=np.float32)
+    n_cones = rng.integers(14, 22)
     for i in range(n_cones):
-        base_x  = rng.uniform(0.02, 0.98) * w
-        height  = rng.uniform(0.25, 0.55) * h
-        base_hw = rng.uniform(0.018, 0.038) * w   # very narrow
-        taper   = rng.uniform(2.8, 4.2)            # sharp tip
-        # y = 0 is top of canvas; flame rises from bottom (y = h-1)
-        y_from_base = h - 1 - yy                   # 0 at tip, grows downward
+        base_x  = rng.uniform(0.0, 1.0) * sw
+        height  = rng.uniform(0.20, 0.60) * sh
+        base_hw = rng.uniform(0.022, 0.050) * sw
+        taper   = rng.uniform(2.8, 4.2)
+        y_from_base = sh - 1 - yy
         progress    = np.clip(y_from_base / max(height, 1), 0, 1)
-        hw_at_y     = base_hw * progress ** 0.45   # widen near base
-        # Edge flicker via small noise
-        n_col       = _multi_scale_noise_fast(shape, [3, 6], seed + i * 13)
+        hw_at_y     = base_hw * progress ** 0.45
+        n_col       = _noise_simple((sh, sw), seed=seed + i * 13, scale=20.0)
         flicker     = n_col * base_hw * 0.25
         dist        = np.abs(xx[None, :] - base_x - flicker[:, 0:1])
         cone        = np.clip(1.0 - dist / (hw_at_y[:, None] + 1e-4), 0, 1)
-        # Only in height range
         cone[y_from_base > height] = 0.0
-        # Sharp power taper
-        cone        = np.power(cone, taper * (1 - progress[:, None] * 0.5))
+        cone        = np.power(cone, taper * (1 - progress[:, None] * 0.15))
         out = np.maximum(out, cone.astype(np.float32))
+    if ds > 1:
+        out = cv2.resize(out, (w, h), interpolation=cv2.INTER_LINEAR)
+    # Heat shimmer background
+    bg = _multi_scale_noise_fast(shape, [4, 8, 16, 32], seed + 2110) * 0.16 + 0.10
+    out = np.clip(out + bg, 0, 1)
     return out
 
 
@@ -249,21 +258,32 @@ def _tex_flame_tribal_knife(shape, seed):
     out = np.zeros((h, w), dtype=np.float32)
     yy = np.arange(h, dtype=np.float32)[:, None]
     xx = np.arange(w, dtype=np.float32)[None, :]
-    n_blades = rng.integers(4, 8)
+    n_blades = rng.integers(6, 12)  # More blades for density
     for i in range(n_blades):
-        # Blade centre
-        cx   = rng.uniform(0.05, 0.75) * w
-        cy   = rng.uniform(0.2, 0.8) * h
-        # Half-lengths of the kite along its axes
-        a    = rng.uniform(0.10, 0.22) * h   # height half-extent
-        b    = rng.uniform(0.025, 0.07) * w  # width half-extent
-        lean = rng.uniform(0.25, 0.70)       # lean right (rearward)
-        dx   = xx - cx + (yy - cy) * lean    # shear x by lean * dy
+        cx   = rng.uniform(0.05, 0.85) * w
+        cy   = rng.uniform(0.15, 0.85) * h
+        a    = rng.uniform(0.08, 0.20) * h
+        b    = rng.uniform(0.02, 0.06) * w
+        lean = rng.uniform(0.2, 0.6)
+        dx   = xx - cx + (yy - cy) * lean
         dy   = yy - cy
-        # SDF of a kite: |dx|/b + |dy|/a <= 1
         sdf  = 1.0 - (np.abs(dx) / (b + 1e-4) + np.abs(dy) / (a + 1e-4))
-        blade = np.clip(sdf * 8.0, 0, 1)    # soft 1-pixel antialiased edge
-        out  = np.maximum(out, blade.astype(np.float32))
+        blade = np.clip(sdf * 18.0, 0, 1)
+        glow = np.clip(sdf * 4.0, 0, 1) * 0.3  # Heat glow halo
+        out  = np.maximum(out, (blade + glow).astype(np.float32))
+    # Secondary smaller blades for complexity
+    for _ in range(rng.integers(8, 16)):
+        cx2 = rng.uniform(0.0, 1.0) * w
+        cy2 = rng.uniform(0.1, 0.9) * h
+        a2  = rng.uniform(0.04, 0.10) * h
+        b2  = rng.uniform(0.01, 0.03) * w
+        lean2 = rng.uniform(0.15, 0.8)
+        dx2 = xx - cx2 + (yy - cy2) * lean2
+        dy2 = yy - cy2
+        sdf2 = 1.0 - (np.abs(dx2) / (b2 + 1e-4) + np.abs(dy2) / (a2 + 1e-4))
+        out = np.maximum(out, np.clip(sdf2 * 14.0, 0, 0.7).astype(np.float32))
+    bg = _multi_scale_noise_fast(shape, [4, 8, 16, 32], seed + 2100) * 0.16 + 0.10
+    out = np.clip(out + bg, 0, 1)
     return out
 
 
@@ -282,7 +302,7 @@ def _tex_flame_hellfire_column(shape, seed):
     xx = np.arange(w, dtype=np.float32)[None, :]
     yy = np.arange(h, dtype=np.float32)[:, None]
     # Ambient hellglow base
-    glow = _multi_scale_noise_fast(shape, [16, 32, 64], seed + 1) * 0.18
+    glow = _noise_simple(shape, seed=seed + 1, scale=40.0) * 0.18  # Fine ambient hellglow
     out = np.maximum(out, glow)
     for _ in range(n_cols):
         x_base  = rng.uniform(-0.05, 1.05) * w
@@ -321,30 +341,39 @@ def _tex_flame_inferno_wall(shape, seed):
     Zero dead zones — the entire canvas is fire.
     Vertical flame structure drives from bottom; heat-shimmer noise
     ensures every pixel above 0.0.  Three overlapping density passes.
+    OPTIMIZED: compute at 256x256 max, upscale.
     """
     h, w = shape
     rng = np.random.default_rng(seed)
-    yy = np.arange(h, dtype=np.float32).reshape(-1, 1)
-    xx = np.arange(w, dtype=np.float32).reshape(1, -1)
-    # Layer 1: heat shimmer base — full canvas
-    heat = _multi_scale_noise_fast(shape, [8, 16, 32], seed + 1)
+    # Resolution cap for performance
+    ds = max(1, min(h, w) // 1024)
+    sh, sw = max(64, h // ds), max(64, w // ds)
+    yy = np.arange(sh, dtype=np.float32).reshape(-1, 1)
+    xx = np.arange(sw, dtype=np.float32).reshape(1, -1)
+    # Layer 1: heat shimmer base — uses full shape (has own resolution handling)
+    heat = _noise_simple(shape, seed=seed + 1, scale=50.0)  # Fine heat shimmer
+    if ds > 1:
+        heat = cv2.resize(heat.astype(np.float32), (sw, sh), interpolation=cv2.INTER_LINEAR)
     out  = heat * 0.20
-    # Layer 2: dense flame columns (~40)
+    # Layer 2: dense flame columns (~40) — at reduced resolution
     for _ in range(40):
-        cx      = rng.uniform(-0.05, 1.05) * w
-        height  = rng.uniform(0.70, 1.0) * h
-        sigma   = rng.uniform(0.025, 0.10) * w
+        cx      = rng.uniform(-0.05, 1.05) * sw
+        height  = rng.uniform(0.70, 1.0) * sh
+        sigma   = rng.uniform(0.025, 0.10) * sw
         phase   = rng.uniform(0, 2 * np.pi)
         peak    = rng.uniform(0.50, 1.0)
         y_norm  = np.clip(1.0 - yy / max(height, 1), 0, 1)
-        wobble  = (np.sin(yy * 0.055 + phase) * sigma * 0.4 +
-                   np.sin(yy * 0.12 + phase * 2.3) * sigma * 0.18)
+        wobble  = (np.sin(yy * 0.055 * ds + phase) * sigma * 0.4 +
+                   np.sin(yy * 0.12 * ds + phase * 2.3) * sigma * 0.18)
         dist    = np.abs(xx - cx - wobble)
         col     = np.clip(1.0 - dist / (sigma * y_norm + 1), 0, 1) * y_norm
         out     = np.maximum(out, col.astype(np.float32) * peak)
     # Layer 3: bright base glow
-    base_glow = np.clip(1.0 - yy / (h * 0.30), 0, 1) ** 1.8 * 0.4
-    out = np.maximum(out, base_glow * np.ones((1, w), dtype=np.float32))
+    base_glow = np.clip(1.0 - yy / (sh * 0.30), 0, 1) ** 1.8 * 0.4
+    out = np.maximum(out, base_glow * np.ones((1, sw), dtype=np.float32))
+    # Upscale to full resolution
+    if ds > 1:
+        out = cv2.resize(np.clip(out, 0, 1).astype(np.float32), (w, h), interpolation=cv2.INTER_LINEAR)
     return np.clip(out, 0, 1)
 
 
@@ -371,10 +400,14 @@ def _tex_flame_pinstripe_outline(shape, seed):
             np.abs(fill - fill_shifted_d))
     # Normalise and sharpen
     grad = grad / (grad.max() + 1e-8)
-    # Two lines: outer (at fill ≈ 0.12) and inner (at fill ≈ 0.55)
-    outer = np.exp(-((fill - 0.12) ** 2) / 0.004) * 0.9
-    inner = np.exp(-((fill - 0.55) ** 2) / 0.003) * 0.65
-    outline = np.clip(outer + inner, 0, 1).astype(np.float32)
+    # Two thick outline bands + gradient fill + edge gradient
+    outer = np.exp(-((fill - 0.12) ** 2) / 0.005) * 1.0   # Wider outer line
+    inner = np.exp(-((fill - 0.55) ** 2) / 0.004) * 0.85   # Wider inner line
+    # Faint fill between outlines
+    fill_between = np.where((fill > 0.15) & (fill < 0.52), fill * 0.3, 0)
+    # Edge gradient for depth
+    edge_glow = grad * 0.4
+    outline = np.clip(outer + inner + fill_between + edge_glow, 0, 1).astype(np.float32)
     return outline
 
 
@@ -387,28 +420,34 @@ def _tex_flame_ember_field(shape, seed):
     """
     h, w = shape
     rng = np.random.default_rng(seed)
-    out = np.zeros((h, w), dtype=np.float32)
+    # Resolution cap — N embers × per-ember Gaussian patch = O(N × patch²)
+    ds = max(1, min(h, w) // 512)
+    sh, sw = max(64, h // ds), max(64, w // ds)
+    out = np.zeros((sh, sw), dtype=np.float32)
     n_embers = rng.integers(80, 180)
-    yy = np.arange(h, dtype=np.float32)[:, None]
-    xx = np.arange(w, dtype=np.float32)[None, :]
+    yy = np.arange(sh, dtype=np.float32)[:, None]
+    xx = np.arange(sw, dtype=np.float32)[None, :]
     for _ in range(n_embers):
-        # Bias position toward lower half
-        ex     = rng.uniform(0.0, 1.0) * w
-        ey     = rng.uniform(0.1, 1.0) ** 0.6 * h   # power < 1 → bottom bias
-        r_core = rng.uniform(1.5, 4.5)               # core dot radius px
-        r_halo = r_core * rng.uniform(2.5, 5.0)      # soft halo
+        # Bias position toward lower half (use scaled coords)
+        ex     = rng.uniform(0.0, 1.0) * sw
+        ey     = rng.uniform(0.1, 1.0) ** 0.6 * sh   # power < 1 → bottom bias
+        r_core = rng.uniform(1.5, 4.5) / ds           # scale radii with downsample
+        r_halo = r_core * rng.uniform(2.5, 5.0)       # soft halo
         peak   = rng.uniform(0.75, 1.0)
-        tail_l = rng.uniform(0.04, 0.14) * h          # comet tail length
+        tail_l = rng.uniform(0.04, 0.14) * sh          # comet tail length
         # Core dot
         d2 = (xx - ex)**2 + (yy - ey)**2
-        core = np.exp(-d2 / (2 * r_core**2)) * peak
-        halo = np.exp(-d2 / (2 * r_halo**2)) * peak * 0.35
+        core = np.exp(-d2 / (2 * max(r_core, 0.5)**2)) * peak
+        halo = np.exp(-d2 / (2 * max(r_halo, 0.5)**2)) * peak * 0.35
         # Tail: gaussian elongated downward (y > ey)
         dy    = np.clip(yy - ey, 0, None)            # only below ember
-        tail  = np.exp(-(xx - ex)**2 / (2 * r_core**2)) * np.exp(-dy / max(tail_l, 1)) * peak * 0.5
+        tail  = np.exp(-(xx - ex)**2 / (2 * max(r_core, 0.5)**2)) * np.exp(-dy / max(tail_l, 1)) * peak * 0.5
         ember = np.clip(core + halo + tail, 0, 1).astype(np.float32)
         out   = np.maximum(out, ember)
-    # Very faint ambient shimmer
+    # Upscale to full resolution before adding noise (noise uses full shape)
+    if ds > 1:
+        out = cv2.resize(out.astype(np.float32), (w, h), interpolation=cv2.INTER_LINEAR)
+    # Very faint ambient shimmer (uses full shape — has own resolution handling)
     out += _multi_scale_noise_fast(shape, [6, 12], seed + 9) * 0.06
     return np.clip(out, 0, 1)
 
@@ -426,17 +465,16 @@ def _tex_flame_split_fishtail(shape, seed):
     out = np.zeros((h, w), dtype=np.float32)
     yy = np.arange(h, dtype=np.float32)
     xx = np.arange(w, dtype=np.float32)
-    n_pairs = rng.integers(3, 6)
+    n_pairs = rng.integers(5, 9)  # More pairs (was 3-6)
     for i in range(n_pairs):
-        # Each pair: two tongues mirrored about a vertical centre axis
-        cy_top  = rng.uniform(0.2, 0.45) * h
+        cy_top  = rng.uniform(0.15, 0.48) * h
         cy_bot  = h - cy_top
-        x_start = rng.uniform(0.0, 0.4) * w
+        x_start = rng.uniform(0.0, 0.35) * w
         x_end   = rng.uniform(0.6, 1.0) * w
         length  = x_end - x_start
-        base_hw = rng.uniform(0.05, 0.10) * h
-        split_k = rng.uniform(0.18, 0.42)  # how far apart the lobes spread
-        peak    = rng.uniform(0.65, 1.0)
+        base_hw = rng.uniform(0.07, 0.14) * h  # Wider lobes (was 0.05-0.10)
+        split_k = rng.uniform(0.15, 0.40)
+        peak    = rng.uniform(0.80, 1.0)  # Brighter (was 0.65-1.0)
         x_norm  = np.clip((xx - x_start) / max(length, 1), 0, 1)
         # As x_norm increases, the two lobes spread apart
         spread  = h * split_k * x_norm
@@ -447,6 +485,8 @@ def _tex_flame_split_fishtail(shape, seed):
             tongue[:, xx < x_start] = 0.0
             tongue[:, xx > x_end]   = 0.0
             out = np.maximum(out, tongue.astype(np.float32))
+    bg = _multi_scale_noise_fast(shape, [4, 8, 16, 32], seed + 2140) * 0.13 + 0.08
+    out = np.clip(out + bg, 0, 1)
     return out
 
 
@@ -464,7 +504,7 @@ def _tex_flame_smoke_fade(shape, seed):
     # Flame base (classic tongues) in the lower portion
     flame = _tex_flame_hotrod_classic(shape, seed)
     # Smoke layer: turbulent noise
-    smoke = _multi_scale_noise_fast(shape, [6, 12, 24], seed + 50)
+    smoke = _noise_simple(shape, seed=seed + 50, scale=35.0)  # Fine smoke turbulence
     smoke = np.power(smoke, 0.7)  # lift midtones
     # Blend gradient: 0.0 at top (pure smoke), 1.0 at bottom (pure flame)
     blend = np.clip((h - 1 - yy) / max(h * 0.75, 1), 0, 1) ** 1.3
@@ -515,6 +555,7 @@ def _paint_flame(paint, shape, mask, seed, pm, bb, variant):
     For ghost and smoke variants the palette shifts to cooler / lower contrast
     so they stay subtle.  For blue_propane the hue shift is toward blue-white.
     """
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     is_ghost  = "ghost"   in variant
     is_blue   = "blue"    in variant
     is_smoke  = "smoke"   in variant
@@ -970,23 +1011,47 @@ def _texture_expansion(shape, mask, seed, sm, variant):
         e2 = _engine()
         return e2.texture_lightning(shape, mask, seed, sm)
     if "music_arrow_bold" in variant:
-        # Rightward ">" chevron: interior-fill cone, vertex at right, opening at left — WARN-EXPAND-001 FIX
-        # clip(0.18 - (|Y| - X*0.7), 0, 1) * (X>0): bright inside cone abs(Y) < X*0.7, tip at right edge
-        Y, X = _get_grid(shape)
-        arrow = np.clip(0.18 - (np.abs(Y) - X * 0.7), 0, 1) * (X > 0).astype(np.float32)
+        # Tiled rightward chevrons — many small arrows across the canvas
+        h_s, w_s = shape
+        yy = np.arange(h_s, dtype=np.float32).reshape(-1, 1)
+        xx = np.arange(w_s, dtype=np.float32).reshape(1, -1)
+        cell = max(20, min(h_s, w_s) // 30)  # ~68px cells at 2048
+        ly = (yy % cell) / cell * 2 - 1  # Local [-1,1] within each cell
+        lx = (xx % cell) / cell * 2 - 1
+        arrow = np.clip(0.15 - (np.abs(ly) - lx * 0.7), 0, 1) * (lx > -0.3).astype(np.float32)
+        bg = _noise_simple(shape, seed=seed + 2150, scale=40.0) * 0.1 + 0.06
+        arrow = np.clip(arrow + bg, 0, 1)
         return _pack(arrow.astype(np.float32), -100, 80)
     if "music_wing_sweep" in variant:
         Y, X = _get_grid(shape)
-        # Wing: broad sweep from centre-right, curving up
-        wing = np.clip(1 - np.abs(Y - X * 0.5) * 3, 0, 1) * (X > -0.2).astype(np.float32)
-        return _pack(wing, -100, 80)
+        # Wing: multiple sweep lines fanning from centre — finer detail
+        wing = np.zeros_like(Y)
+        for i in range(5):
+            offset = (i - 2) * 0.12
+            curve = 0.3 + i * 0.1
+            w = np.clip(1.0 - np.abs(Y - X * curve + offset) * 12.0, 0, 1) * (X > -0.3).astype(np.float32)
+            wing = np.maximum(wing, w * (0.6 + i * 0.08))
+        bg = _noise_simple(shape, seed=seed + 2160, scale=40.0) * 0.10 + 0.06
+        wing = np.clip(wing + bg, 0, 1)
+        return _pack(wing.astype(np.float32), -100, 80)
     if "music_script_curve" in variant:
         Y, X = _get_grid(shape)
         script = np.exp(-(Y - np.sin(X * np.pi * 1.5) * 0.35) ** 2 / 0.012)
-        return _pack(np.clip(script, 0, 1), -60, 60)
+        bg = _multi_scale_noise_fast(shape, [4, 8, 16, 32], seed + 2170) * 0.13 + 0.08
+        script = np.clip(script + bg, 0, 1)
+        return _pack(script, -60, 60)
     if "music_skull_abstract" in variant:
         e2 = _engine()
-        return e2.texture_skull(shape, mask, seed, sm) if hasattr(e2, 'texture_skull') else _pack(_noise_simple(shape, seed, 8), -60, 40)
+        if hasattr(e2, 'texture_skull'):
+            result = e2.texture_skull(shape, mask, seed, sm)
+            bg = _multi_scale_noise_fast(shape, [4, 8, 16, 32], seed + 2180) * 0.13 + 0.08
+            result["pattern_val"] = np.clip(result["pattern_val"] + bg, 0, 1)
+            return result
+        else:
+            skull_val = _noise_simple(shape, seed, 8)
+            bg = _multi_scale_noise_fast(shape, [4, 8, 16, 32], seed + 2180) * 0.13 + 0.08
+            skull_val = np.clip(skull_val + bg, 0, 1)
+            return _pack(skull_val, -60, 40)
     if "music_star_burst" in variant:
         val = _radial_starburst(shape, 12)
         return _pack(val, -80, 80)
@@ -1003,16 +1068,19 @@ def _texture_expansion(shape, mask, seed, sm, variant):
         val = _flame_tongues(shape, 5, seed) * 0.7 + _stripe_diagonal(shape, 15, 3) * 0.3
         return _pack(np.clip(val, 0, 1), -140, 120)
     if "music_blues" in variant:
-        # Blues: rolling sine-wave staff lines — notes flowing across
+        # Blues: rolling sine-wave staff lines — notes flowing across (finer lines)
         Y2, X2 = _get_grid(shape)
-        val = (np.sin(Y2 * np.pi * 6 + np.sin(X2 * np.pi * 2) * 0.8) * 0.5 + 0.5).astype(np.float32)
+        val = (np.sin(Y2 * np.pi * 14 + np.sin(X2 * np.pi * 4) * 1.2) * 0.5 + 0.5).astype(np.float32)
         return _pack(val, -80, 60)
     if "music_strat" in variant:
-        # Stratocaster: contoured body double-curve silhouette
+        # Stratocaster: contoured body curves + fret lines — denser for finer detail
         Y2, X2 = _get_grid(shape)
-        c1 = np.exp(-(np.abs(Y2 - np.sin(X2 * np.pi * 0.8) * 0.35))**2 / 0.015)
-        c2 = np.exp(-(np.abs(Y2 + np.sin(X2 * np.pi * 0.6) * 0.25))**2 / 0.015)
-        return _pack(np.clip(c1 + c2, 0, 1).astype(np.float32), -100, 80)
+        c1 = np.exp(-(np.abs(Y2 - np.sin(X2 * np.pi * 2.0) * 0.3))**2 / 0.003)
+        c2 = np.exp(-(np.abs(Y2 + np.sin(X2 * np.pi * 1.5) * 0.25))**2 / 0.003)
+        c3 = np.exp(-(np.abs(Y2 * 0.8 - np.sin(X2 * np.pi * 2.5) * 0.2))**2 / 0.003)
+        # Fret lines (vertical detail) — more frets
+        frets = (np.sin(X2 * np.pi * 24) * 0.5 + 0.5) * 0.12
+        return _pack(np.clip(c1 + c2 + c3 * 0.6 + frets, 0, 1).astype(np.float32), -100, 80)
     if "music_the_artist" in variant:
         # The Artist (Prince): ornate symbol — concentric rings with radiating wedges
         val = _concentric_rings(shape, 5) * 0.6 + _radial_starburst(shape, 8) * 0.4
@@ -1024,12 +1092,22 @@ def _texture_expansion(shape, mask, seed, sm, variant):
         ring = np.exp(-(r - 0.55)**2 / 0.006)
         leye = np.exp(-((X2 + 0.22)**2 + (Y2 - 0.15)**2) / 0.004)
         reye = np.exp(-((X2 - 0.22)**2 + (Y2 - 0.15)**2) / 0.004)
-        return _pack(np.clip(ring + leye + reye, 0, 1).astype(np.float32), -120, 80)
+        smiley = np.clip(ring + leye + reye, 0, 1)
+        bg = _multi_scale_noise_fast(shape, [4, 8, 16, 32], seed + 2190) * 0.13 + 0.08
+        smiley = np.clip(smiley + bg, 0, 1)
+        return _pack(smiley.astype(np.float32), -120, 80)
     if "music_licked" in variant:
-        # KISS tongue: bold downward-curved band (Simmons-style tongue logo)
-        Y2, X2 = _get_grid(shape)
-        tongue = np.exp(-(X2**2 * 12 + (Y2 + 0.1 + X2**2 * 0.5)**2 * 5))
-        return _pack(np.clip(tongue, 0, 1).astype(np.float32), -120, 80)
+        # KISS tongue: tiled downward-curved bands across canvas
+        h_s, w_s = shape
+        yy = np.arange(h_s, dtype=np.float32).reshape(-1, 1)
+        xx = np.arange(w_s, dtype=np.float32).reshape(1, -1)
+        cell = max(20, min(h_s, w_s) // 25)
+        ly = (yy % cell) / cell * 2 - 1
+        lx = (xx % cell) / cell * 2 - 1
+        tongue = np.exp(-(lx**2 * 8 + (ly + 0.1 + lx**2 * 0.5)**2 * 4))
+        bg = _noise_simple(shape, seed=seed + 2200, scale=40.0) * 0.1 + 0.06
+        tongue = np.clip(tongue + bg, 0, 1)
+        return _pack(tongue.astype(np.float32), -120, 80)
 
     # ── ASTRO ────────────────────────────────────────────
     if "astro_moon_phases" in variant:
@@ -1112,13 +1190,15 @@ def _texture_expansion(shape, mask, seed, sm, variant):
     if "hero_crest_curve" in variant:
         Y, X = _get_grid(shape)
         # Arch: crest curve at top
-        arch = np.clip(1 - np.abs(Y - (-X**2 * 0.4 + 0.3)) * 6, 0, 1)
+        arch = np.clip(1 - np.abs(Y - (-X**2 * 0.6 + 0.3)) * 14.0, 0, 1)  # Fine arch line (was *3.5 = fat band)
+        bg = _multi_scale_noise_fast(shape, [4, 8, 16, 32], seed + 2210) * 0.13 + 0.08
+        arch = np.clip(arch + bg, 0, 1)
         return _pack(arch, -80, 80)
     if "hero_scallop_edge" in variant:
-        # Batman-ish scalloped lower edge
+        # Batman-ish scalloped lower edge — dense small scallops
         h2, w2 = shape
         val = np.zeros((h2, w2), dtype=np.float32)
-        n_scallops = 7
+        n_scallops = 28  # Many small scallops (was 7 = huge circles)
         for i in range(n_scallops):
             cx = int(w2 * (i + 0.5) / n_scallops)
             cy = int(h2 * 0.62)
@@ -1126,13 +1206,21 @@ def _texture_expansion(shape, mask, seed, sm, variant):
             Y2, X2 = np.ogrid[:h2, :w2]
             scallop = ((X2 - cx)**2 + (Y2 - cy)**2 <= r**2).astype(np.float32)
             val = np.maximum(val, scallop)
+        bg = _multi_scale_noise_fast(shape, [4, 8, 16, 32], seed + 2220) * 0.13 + 0.08
+        val = np.clip(val + bg, 0, 1)
         return _pack(val, -120, 0)
     if "hero_pointed_cowl" in variant:
         Y, X = _get_grid(shape)
         # Two pointed upward triangles like bat ears
-        left_ear = np.clip(1 - np.abs(X + 0.4) * 4 - np.abs(Y + 0.5) * 2, 0, 1) * (Y < -0.1).astype(np.float32)
-        right_ear = np.clip(1 - np.abs(X - 0.4) * 4 - np.abs(Y + 0.5) * 2, 0, 1) * (Y < -0.1).astype(np.float32)
-        return _pack(np.clip(left_ear + right_ear, 0, 1), -120, 0)
+        # Wider cowl points with body fill
+        left_ear = np.clip(1.3 - np.abs(X + 0.35) * 5 - np.abs(Y + 0.4) * 2.5, 0, 1) * (Y < 0.0).astype(np.float32)
+        right_ear = np.clip(1.3 - np.abs(X - 0.35) * 5 - np.abs(Y + 0.4) * 2.5, 0, 1) * (Y < 0.0).astype(np.float32)
+        # Add brow ridge connecting the ears
+        brow = np.clip(1.0 - np.abs(Y + 0.15) * 8, 0, 1) * np.clip(1.0 - np.abs(X) / 0.55, 0, 1) * 0.6
+        cowl = np.clip(left_ear + right_ear + brow, 0, 1)
+        bg = _multi_scale_noise_fast(shape, [4, 8, 16, 32], seed + 2230) * 0.13 + 0.08
+        cowl = np.clip(cowl + bg, 0, 1)
+        return _pack(cowl, -120, 0)
     if "sport_stadium_line" in variant:
         val = _stripe_diagonal(shape, 80, 7)
         return _pack(val, -80, 80)
@@ -1150,6 +1238,7 @@ def _texture_expansion(shape, mask, seed, sm, variant):
 # ─────────────────────────────────────────────────────────
 
 def _paint_expansion(paint, shape, mask, seed, pm, bb, variant):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     e = _engine()
     seed_off = hash(variant) % 10000
 
@@ -1710,6 +1799,7 @@ def _reactive_wave_moire(shape, seed=0):
 
 def _paint_reactive_iridescent_flake(paint, shape, mask, seed, pm, bb):
     """Metallic flake paint: per-flake hue micro-shift + specular sparkle boost."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     if pm == 0.0:
         return paint[:, :, :3].astype(np.float32)
     h, w = shape[:2] if len(shape) > 2 else shape
@@ -1738,6 +1828,7 @@ def _paint_reactive_iridescent_flake(paint, shape, mask, seed, pm, bb):
 
 def _paint_reactive_pearl_shift(paint, shape, mask, seed, pm, bb):
     """Pearlescent paint: smooth luminance-driven warm/cool color shift."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     if pm == 0.0:
         return paint[:, :, :3].astype(np.float32)
     h, w = shape[:2] if len(shape) > 2 else shape
@@ -1758,6 +1849,7 @@ def _paint_reactive_pearl_shift(paint, shape, mask, seed, pm, bb):
 
 def _paint_reactive_candy_depth(paint, shape, mask, seed, pm, bb):
     """Candy depth paint: deep saturation boost in cell centers, darkened edges."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     if pm == 0.0:
         return paint[:, :, :3].astype(np.float32)
     h, w = shape[:2] if len(shape) > 2 else shape
@@ -1769,15 +1861,15 @@ def _paint_reactive_candy_depth(paint, shape, mask, seed, pm, bb):
     darken = (1.0 - pv) * pm * 0.4
     p *= (1.0 - darken)[:, :, np.newaxis]
     # In bright regions (high pv = cell centers), boost saturation
-    sat_boost = pv * pm * 0.5
-    for c in range(3):
-        p[:, :, c] = lum + (p[:, :, c] - lum) * (1.0 + sat_boost)
+    sat_boost = (pv * pm * 0.5)[:, :, np.newaxis]
+    p[:, :, :3] = lum[:, :, np.newaxis] + (p[:, :, :3] - lum[:, :, np.newaxis]) * (1.0 + sat_boost)
     return np.clip(p, 0, 255).astype(np.float32)
 
 
 def _paint_reactive_chrome_veil(paint, shape, mask, seed, pm, bb):
     """Chrome veil paint: mirror-like reflection blending toward white in smooth
     pools and dark in fold creases."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     if pm == 0.0:
         return paint[:, :, :3].astype(np.float32)
     h, w = shape[:2] if len(shape) > 2 else shape
@@ -1787,9 +1879,9 @@ def _paint_reactive_chrome_veil(paint, shape, mask, seed, pm, bb):
     chrome_white = pv * pm * 80.0
     # Desaturate proportionally (chrome is mostly achromatic)
     lum = (p[:, :, 0] + p[:, :, 1] + p[:, :, 2]) / 3.0
-    desat = pm * 0.6 * pv
-    for c in range(3):
-        p[:, :, c] = p[:, :, c] * (1.0 - desat) + lum * desat + chrome_white
+    desat = (pm * 0.6 * pv)[:, :, np.newaxis]
+    cw3 = chrome_white[:, :, np.newaxis]
+    p[:, :, :3] = p[:, :, :3] * (1.0 - desat) + lum[:, :, np.newaxis] * desat + cw3
     # Darken creases (low pv areas)
     crease_dark = (1.0 - pv) * pm * 0.3
     p *= (1.0 - crease_dark)[:, :, np.newaxis]
@@ -1798,6 +1890,7 @@ def _paint_reactive_chrome_veil(paint, shape, mask, seed, pm, bb):
 
 def _paint_reactive_spectra_ripple(paint, shape, mask, seed, pm, bb):
     """Spectral ripple paint: prismatic color fringing along interference fringes."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     if pm == 0.0:
         return paint[:, :, :3].astype(np.float32)
     h, w = shape[:2] if len(shape) > 2 else shape
@@ -1818,6 +1911,7 @@ def _paint_reactive_spectra_ripple(paint, shape, mask, seed, pm, bb):
 def _paint_reactive_micro_weave(paint, shape, mask, seed, pm, bb):
     """Micro weave paint: directional darkening along thread valleys with cross-thread
     highlight at intersections."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     if pm == 0.0:
         return paint[:, :, :3].astype(np.float32)
     h, w = shape[:2] if len(shape) > 2 else shape
@@ -1841,6 +1935,7 @@ def _paint_reactive_micro_weave(paint, shape, mask, seed, pm, bb):
 
 def _paint_reactive_depth_cell(paint, shape, mask, seed, pm, bb):
     """Depth cell paint: cells appear to glow from within with edge shadow bevel."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     if pm == 0.0:
         return paint[:, :, :3].astype(np.float32)
     h, w = shape[:2] if len(shape) > 2 else shape
@@ -1860,6 +1955,7 @@ def _paint_reactive_depth_cell(paint, shape, mask, seed, pm, bb):
 def _paint_reactive_shimmer_mist(paint, shape, mask, seed, pm, bb):
     """Shimmer mist paint: sparkle points get white-hot highlights, haze areas
     get soft luminance lift."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     if pm == 0.0:
         return paint[:, :, :3].astype(np.float32)
     h, w = shape[:2] if len(shape) > 2 else shape
@@ -1880,6 +1976,7 @@ def _paint_reactive_shimmer_mist(paint, shape, mask, seed, pm, bb):
 def _paint_reactive_oil_slick(paint, shape, mask, seed, pm, bb):
     """Oil slick paint: continuous rainbow color cycling mapped to film thickness
     interference bands."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     if pm == 0.0:
         return paint[:, :, :3].astype(np.float32)
     h, w = shape[:2] if len(shape) > 2 else shape
@@ -1903,6 +2000,7 @@ def _paint_reactive_oil_slick(paint, shape, mask, seed, pm, bb):
 def _paint_reactive_wave_moire(paint, shape, mask, seed, pm, bb):
     """Wave moire paint: alternating warm/cool tint in moire interference diamonds
     with luminance modulation."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     if pm == 0.0:
         return paint[:, :, :3].astype(np.float32)
     h, w = shape[:2] if len(shape) > 2 else shape
@@ -1928,29 +2026,34 @@ def _paint_reactive_wave_moire(paint, shape, mask, seed, pm, bb):
 
 def _shimmer_quantum_shard(shape, seed=0):
     """VORONOI FACETS: random cell centers, per-cell random brightness, dark edges.
-    Uses scipy cKDTree for O(n log n) nearest-neighbor queries instead of brute-force loop."""
+    Uses scipy cKDTree for O(n log n) nearest-neighbor queries. Resolution-capped for speed."""
     h, w = shape
     rng = np.random.default_rng(seed)
-    n_pts = 42 + rng.integers(0, 14)
+    # Resolution-cap: Voronoi at 1024 max for better edge detail
+    MAX_DIM = 1024
+    ds = max(1, min(h, w) // MAX_DIM)
+    ch, cw = max(64, h // ds), max(64, w // ds)
+    n_pts = 200 + rng.integers(0, 80)
     pts_y = (rng.random(n_pts).astype(np.float32) * 2.0 - 1.0)
     pts_x = (rng.random(n_pts).astype(np.float32) * 2.0 - 1.0)
     cell_bright = rng.uniform(0.25, 1.0, size=n_pts).astype(np.float32)
-    # Build KD-tree for fast nearest-neighbor lookup
     pts = np.column_stack([pts_y, pts_x])
     tree = cKDTree(pts)
-    yy = np.linspace(-1, 1, h, dtype=np.float32)
-    xx = np.linspace(-1, 1, w, dtype=np.float32)
+    yy = np.linspace(-1, 1, ch, dtype=np.float32)
+    xx = np.linspace(-1, 1, cw, dtype=np.float32)
     grid_y, grid_x = np.meshgrid(yy, xx, indexing='ij')
     coords = np.column_stack([grid_y.ravel(), grid_x.ravel()])
-    # Query 2 nearest neighbors for d_min and d_second
     dists, ids = tree.query(coords, k=2)
-    d_min = dists[:, 0].reshape(h, w).astype(np.float32)
-    d_second = dists[:, 1].reshape(h, w).astype(np.float32)
-    nearest_id = ids[:, 0].reshape(h, w)
+    d_min = dists[:, 0].reshape(ch, cw).astype(np.float32)
+    d_second = dists[:, 1].reshape(ch, cw).astype(np.float32)
+    nearest_id = ids[:, 0].reshape(ch, cw)
     edge = np.clip((d_second - d_min) * 12.0, 0.0, 1.0)
     out = (1.0 - edge) * cell_bright[nearest_id]
     out = (out - out.min()) / (out.max() - out.min() + 1e-8)
-    return np.clip(out, 0.0, 1.0).astype(np.float32)
+    out = np.clip(out, 0.0, 1.0).astype(np.float32)
+    if (ch, cw) != (h, w):
+        out = cv2.resize(out, (w, h), interpolation=cv2.INTER_LINEAR)
+    return out
 
 
 def _shimmer_prism_frost(shape, seed=0):
@@ -1974,47 +2077,71 @@ def _shimmer_prism_frost(shape, seed=0):
 
 
 def _shimmer_velvet_static(shape, seed=0):
-    """PURE FBM: multi-scale noise only — no single dominant frequency, no sine grids."""
-    n1 = _noise_simple(shape, seed=seed + 31, scale=5.0)
-    n2 = _noise_simple(shape, seed=seed + 32, scale=14.0)
-    n3 = _noise_simple(shape, seed=seed + 33, scale=38.0)
-    n4 = _noise_simple(shape, seed=seed + 34, scale=95.0)
-    v = n1 * 0.45 + n2 * 0.30 + n3 * 0.18 + n4 * 0.07
+    """Velvet Static: multi-scale noise FBM — fine grain like velvet fabric texture.
+    All scales HIGH for small features (20-60px at 2048)."""
+    n1 = _noise_simple(shape, seed=seed + 31, scale=30.0)   # ~68px features at 2048
+    n2 = _noise_simple(shape, seed=seed + 32, scale=50.0)   # ~41px
+    n3 = _noise_simple(shape, seed=seed + 33, scale=80.0)   # ~26px
+    n4 = _noise_simple(shape, seed=seed + 34, scale=120.0)  # ~17px (finest)
+    n5 = _noise_simple(shape, seed=seed + 35, scale=60.0)   # ~34px
+    v = n1 * 0.25 + n2 * 0.25 + n3 * 0.20 + n4 * 0.15 + n5 * 0.15
     v = (v - v.min()) / (v.max() - v.min() + 1e-8)
-    return np.power(np.clip(v, 0.0, 1.0), 1.2).astype(np.float32)
+    return np.power(np.clip(v, 0.0, 1.0), 1.05).astype(np.float32)  # Less dampening (was 1.2)
 
 
 def _shimmer_chrome_flux(shape, seed=0):
-    """ANISOTROPIC STREAKS: noise smeared along one axis — horizontal brush streaks."""
+    """Chrome Flux: liquid metal flow — fine organic chrome/matte patches.
+    HIGH frequency noise = small features (20-60px at 2048). Like brushed metal grain."""
     h, w = shape
-    raw = _noise_simple(shape, seed=seed + 41, scale=18.0)
-    # Smear along rows (axis 0) to create horizontal streaks
-    out = (raw + np.roll(raw, 5, axis=0) + np.roll(raw, -5, axis=0) +
-           np.roll(raw, 11, axis=0) + np.roll(raw, -11, axis=0)) / 5.0
-    out = (out - out.min()) / (out.max() - out.min() + 1e-8)
-    return np.clip(out, 0.0, 1.0).astype(np.float32)
+    # _noise_simple: scale = max sinusoid cycles across canvas
+    # scale=40 = up to 40 cycles → ~50px features at 2048
+    # scale=80 = up to 80 cycles → ~25px features at 2048
+    flow1 = _noise_simple(shape, seed=seed + 41, scale=40.0)
+    flow2 = _noise_simple(shape, seed=seed + 42, scale=60.0)
+    grain = _noise_simple(shape, seed=seed + 43, scale=100.0)
+    out = flow1 * 0.45 + flow2 * 0.35 + grain * 0.20
+    # Strong contrast for visible chrome/matte differentiation
+    out = np.clip((out - 0.25) * 2.5, 0.0, 1.0)
+    return out.astype(np.float32)
 
 
 def _shimmer_matte_halo(shape, seed=0):
-    """RADIAL HARD BANDS: concentric rings from floor(r*freq + noise), binary bands — no sin(r)."""
-    Y, X = _get_grid(shape)
-    r = np.sqrt(X * X + Y * Y)
-    n = _noise_simple(shape, seed=seed + 51, scale=2.5) * 0.35
-    band = np.floor(r * 24.0 + n).astype(np.int32) % 2
-    v = band.astype(np.float32)
-    # Soften band edges slightly
-    frac = (r * 24.0 + n) % 1.0
-    v = v * (1.0 - frac) + (1.0 - v) * frac
+    """Matte Halo: fine-grained matte/gloss cloudy patches — strong contrast bands.
+    HIGH frequency noise = small features (20-60px at 2048)."""
+    h, w = shape
+    # _noise_simple: scale=50 → ~40px features, scale=80 → ~25px features at 2048
+    n1 = _noise_simple(shape, seed=seed + 51, scale=50.0)  # Full 0-1 range
+    n2 = _noise_simple(shape, seed=seed + 52, scale=80.0)
+    n3 = _noise_simple(shape, seed=seed + 53, scale=30.0)  # Larger cloud layer
+    # Quantize into sharp matte/gloss zones with visible transitions
+    levels = 5.0
+    banded = np.floor(n1 * levels) / (levels - 1.0)  # Spread to full 0-1
+    frac = (n1 * levels) % 1.0
+    smooth_edge = np.clip(frac * 5.0, 0, 1) * np.clip((1.0 - frac) * 5.0, 0, 1)
+    v = banded * 0.7 + smooth_edge * 0.15 + n2 * 0.15 + n3 * 0.10
+    # Stretch to full range
+    v_min, v_max = float(v.min()), float(v.max())
+    if v_max > v_min:
+        v = (v - v_min) / (v_max - v_min)
     return np.clip(v, 0.0, 1.0).astype(np.float32)
 
 
 def _shimmer_oil_tension(shape, seed=0):
-    """CIRCULAR THIN-FILM: rings from radius + noise (Newton-style), sawtooth per ring — no sin."""
-    Y, X = _get_grid(shape)
-    r = np.sqrt(X * X + Y * Y)
-    n = _noise_simple(shape, seed=seed + 61, scale=2.0) * 0.08
-    ring_phase = ((r + n) * 32.0) % 1.0
-    v = ring_phase.astype(np.float32)
+    """Oil Tension: thin-film iridescence — fine warped rainbow bands like oil on water.
+    HIGH frequency noise warp + tight band period = small intricate features."""
+    h, w = shape
+    dim = min(h, w)
+    yy = np.arange(h, dtype=np.float32).reshape(-1, 1)
+    xx = np.arange(w, dtype=np.float32).reshape(1, -1)
+    # Fine warp via _noise_simple: scale=60 → ~34px distortion features at 2048
+    warp_y = _noise_simple(shape, seed=seed + 61, scale=60.0) * 15.0
+    warp_x = _noise_simple(shape, seed=seed + 62, scale=60.0) * 10.0
+    # Tight band period — many thin color bands
+    period = max(4, dim // 120)  # ~17px at 2048 — very fine bands
+    flow = ((yy + warp_y + xx * 0.1 + warp_x * 0.2) / period * np.pi * 2)
+    # Sawtooth = rainbow thin-film look
+    phase = (flow % (2 * np.pi)) / (2 * np.pi)
+    v = phase.astype(np.float32)
     return np.clip(v, 0.0, 1.0).astype(np.float32)
 
 
@@ -2033,54 +2160,111 @@ def _shimmer_neon_weft(shape, seed=0):
 
 
 def _shimmer_void_dust(shape, seed=0):
-    """POINT SPRITES: scattered Gaussian blobs — each point adds exp(-dist^2/sigma^2)."""
+    """Void Dust: dense fine sparkle field covering entire canvas.
+    3-layer approach: fine pixel dust (thousands) + medium sparkles + bright stars.
+    Scales with canvas size so it looks detailed at 2048×2048."""
     h, w = shape
     rng = np.random.default_rng(seed)
-    n_pts = 26
-    pts_y = (rng.random(n_pts).astype(np.float32) * 2.0 - 1.0)
-    pts_x = (rng.random(n_pts).astype(np.float32) * 2.0 - 1.0)
-    yy = np.linspace(-1, 1, h, dtype=np.float32)[:, None]
-    xx = np.linspace(-1, 1, w, dtype=np.float32)[None, :]
-    # (n_pts, h, w) distance squared
-    dy = yy - pts_y.reshape(-1, 1, 1)
-    dx = xx - pts_x.reshape(-1, 1, 1)
-    dist_sq = dy * dy + dx * dx
-    sigma = 0.11
-    out = np.exp(-0.5 * dist_sq / (sigma * sigma)).sum(axis=0).astype(np.float32)
-    out = (out - out.min()) / (out.max() - out.min() + 1e-8)
-    return np.clip(out, 0.0, 1.0).astype(np.float32)
+    dim = min(h, w)
+    out = np.zeros((h, w), dtype=np.float32)
+
+    # Layer 1: Fine pixel dust — thousands of 1-2px bright pixels (fast, vectorized)
+    n_fine = int(h * w * 0.008)  # 0.8% of pixels = ~33K at 2048 — DOUBLED for density
+    fine_y = rng.integers(0, h, n_fine)
+    fine_x = rng.integers(0, w, n_fine)
+    fine_bright = rng.uniform(0.20, 0.65, n_fine).astype(np.float32)  # Brighter range
+    out[fine_y, fine_x] = np.maximum(out[fine_y, fine_x], fine_bright)
+    # Slight blur to make dust 2px wide instead of single pixels
+    out = cv2.GaussianBlur(out, (3, 3), 0.8)
+
+    # Layer 2: Medium sparkle particles — canvas-scaled sizes
+    n_medium = max(200, int(dim * dim / 5000))
+    for _ in range(n_medium):
+        sy = rng.integers(0, h)
+        sx = rng.integers(0, w)
+        brightness = rng.uniform(0.3, 0.8)
+        size = rng.uniform(0.001, 0.004) * dim  # Scale to canvas (2-8px at 2048)
+        m = int(size * 2.5) + 1
+        y0, y1 = max(0, sy - m), min(h, sy + m)
+        x0, x1 = max(0, sx - m), min(w, sx + m)
+        if y1 <= y0 or x1 <= x0:
+            continue
+        ly = np.arange(y0, y1, dtype=np.float32).reshape(-1, 1)
+        lx = np.arange(x0, x1, dtype=np.float32).reshape(1, -1)
+        sparkle = np.exp(-((lx - sx)**2 + (ly - sy)**2) / (2 * max(0.5, size)**2)) * brightness
+        out[y0:y1, x0:x1] = np.maximum(out[y0:y1, x0:x1], sparkle)
+
+    # Layer 3: Bright stars with cross-spike diffraction (fewer, larger, dramatic)
+    n_bright = max(15, int(dim / 60))
+    for _ in range(n_bright):
+        sy = rng.integers(0, h)
+        sx = rng.integers(0, w)
+        brightness = rng.uniform(0.7, 1.0)
+        core_r = rng.uniform(0.002, 0.006) * dim
+        spike_len = core_r * rng.uniform(3, 6)
+        # Core glow
+        m = int(core_r * 3) + 2
+        y0, y1 = max(0, sy - m), min(h, sy + m)
+        x0, x1 = max(0, sx - m), min(w, sx + m)
+        if y1 > y0 and x1 > x0:
+            ly = np.arange(y0, y1, dtype=np.float32).reshape(-1, 1)
+            lx = np.arange(x0, x1, dtype=np.float32).reshape(1, -1)
+            core = np.exp(-((lx - sx)**2 + (ly - sy)**2) / (2 * max(0.5, core_r)**2)) * brightness
+            out[y0:y1, x0:x1] = np.maximum(out[y0:y1, x0:x1], core)
+        # Cross spikes (4 directions)
+        sl = int(spike_len)
+        for dy, dx in [(1,0), (-1,0), (0,1), (0,-1)]:
+            for t in range(1, sl + 1):
+                py, px = sy + dy * t, sx + dx * t
+                if 0 <= py < h and 0 <= px < w:
+                    fade = brightness * (1.0 - t / sl) * 0.6
+                    out[py, px] = max(out[py, px], fade)
+
+    # Layer 4: Cosmic nebula dust — finer scales to avoid oversized blobs
+    dust = _noise_simple(shape, seed=seed + 50, scale=40.0) * 0.15
+    dust2 = _noise_simple(shape, seed=seed + 51, scale=20.0) * 0.10
+    dust = dust + dust2 + 0.10
+    # Layer 5: Very fine grain noise for constant-on shimmer
+    grain = _noise_simple(shape, seed=seed + 99, scale=80.0) * 0.08
+    return np.clip(out + dust + grain, 0.0, 1.0).astype(np.float32)
 
 
 def _shimmer_turbine_sheen(shape, seed=0):
-    """LOG-SPIRAL ARMS: binary arms from (angle + k*log(r)) % 2pi — no sin(angle)."""
-    Y, X = _get_grid(shape)
-    ang = np.arctan2(Y, X)
-    r = np.sqrt(X * X + Y * Y) + 0.25
-    spiral_phase = (ang + 1.7 * np.log(r + 0.2)) % (2.0 * np.pi)
-    # Arm = band around phase pi
-    arm = 1.0 - np.clip(np.abs(spiral_phase - np.pi) / 0.5, 0.0, 1.0)
-    return np.clip(arm.astype(np.float32), 0.0, 1.0)
+    """Turbine Sheen: very fine brushed-metal micro-streaks.
+    HIGH frequency warp + tight period = tiny directional grain like real brushed metal."""
+    h, w = shape
+    dim = min(h, w)
+    yy = np.arange(h, dtype=np.float32).reshape(-1, 1)
+    xx = np.arange(w, dtype=np.float32).reshape(1, -1)
+    # Fine warp via _noise_simple: scale=50 → ~40px warp features at 2048
+    warp = _noise_simple(shape, seed=seed + 10, scale=50.0) * 6.0
+    period = max(3, dim // 150)
+    streak = np.sin((yy + warp) / period * np.pi * 2) * 0.5 + 0.5
+    warp2 = _noise_simple(shape, seed=seed + 20, scale=70.0) * 4.0
+    period2 = max(2, dim // 200)
+    streak2 = np.sin((yy * 0.97 + xx * 0.03 + warp2) / period2 * np.pi * 2) * 0.5 + 0.5
+    result = np.clip(streak * 0.55 + streak2 * 0.45, 0.0, 1.0)
+    return result.astype(np.float32)
 
 
 def _shimmer_spectral_mesh(shape, seed=0):
-    """DIFFRACTION RINGS: concentric sinusoidal rings with 3-fold spiral warp.
-    Models normal-incidence diffraction grating (Newton's ring interference pattern).
-    Structurally distinct from hex_circuit (tiling 3-family parallel lines):
-    this is radially symmetric with no periodic tiling unit."""
-    Y, X = _get_grid(shape)
-    rng = np.random.default_rng(seed)
-    ring_freq = float(rng.uniform(30.0, 38.0))
-    spiral_amp = float(rng.uniform(0.030, 0.055))
-    Y_f = Y.astype(np.float32)
-    X_f = X.astype(np.float32)
-    angle = np.arctan2(Y_f, X_f)
-    r = np.sqrt(X_f ** 2 + Y_f ** 2)
-    # 3-fold spiral warp breaks pure radial degeneracy — creates spiraling ring modulation
-    spiral_warp = np.sin(angle * 3.0) * spiral_amp
-    rings = np.sin((r + spiral_warp) * ring_freq) * 0.5 + 0.5
-    out = rings.astype(np.float32)
-    out = (out - out.min()) / (out.max() - out.min() + 1e-8)
-    return np.clip(out, 0.0, 1.0).astype(np.float32)
+    """Spectral Mesh: fine diamond/hex wire mesh — NOT circular.
+    Dense tiled wire grid with per-cell brightness variation for spectral shimmer."""
+    h, w = shape
+    yy = np.arange(h, dtype=np.float32).reshape(-1, 1)
+    xx = np.arange(w, dtype=np.float32).reshape(1, -1)
+    # Very fine mesh — tight cells, many wires
+    cell = max(6, min(h, w) // 100)  # ~20px cells at 2048
+    d1 = (yy + xx) % cell
+    d2 = (yy - xx + 10000) % cell
+    wire_w = max(1.0, cell * 0.10)
+    wire1 = np.clip(1.0 - np.minimum(d1, cell - d1) / wire_w, 0, 1)
+    wire2 = np.clip(1.0 - np.minimum(d2, cell - d2) / wire_w, 0, 1)
+    mesh = np.maximum(wire1, wire2)
+    # High-freq per-cell shimmer
+    cell_noise = _noise_simple(shape, seed=seed + 80, scale=60.0) * 0.3 + 0.5  # Fine per-cell shimmer
+    out = np.clip(mesh * 0.7 + (1 - mesh) * cell_noise * 0.4, 0.0, 1.0)
+    return out.astype(np.float32)
 
 
 _MICRO_SHIMMER_FIELD_MAP = {
@@ -2105,6 +2289,7 @@ def _get_micro_shimmer_field(variant, shape, seed):
 
 
 def _paint_micro_shimmer(paint, shape, mask, seed, pm, bb, variant):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     if pm == 0.0:
         return paint[:, :, :3].astype(np.float32)
     h, w = shape[:2] if len(shape) > 2 else shape
@@ -2119,10 +2304,25 @@ def _paint_micro_shimmer(paint, shape, mask, seed, pm, bb, variant):
         p += (np.clip(pv - 0.35, 0.0, 1.0) * pm * 16.0)[:, :, np.newaxis]
         p[:, :, 2] += cx * 12.0
     elif variant == "shimmer_velvet_static":
-        p *= (1.0 - np.clip(pv, 0.0, 1.0) * pm * 0.12)[:, :, np.newaxis]
+        # Complementary color hints — warm highlights in noise peaks, cool in troughs
+        warm = np.clip(pv - 0.5, 0, 0.5) * pm * 2.0   # peaks get warm
+        cool = np.clip(0.5 - pv, 0, 0.5) * pm * 2.0   # troughs get cool
+        p[:, :, 0] += warm * 18.0   # Pink/magenta in peaks
+        p[:, :, 1] += cool * 12.0   # Green/teal in troughs
+        p[:, :, 2] += warm * 10.0 + cool * 8.0  # Purple hints
+        p *= (1.0 - np.clip(pv, 0.0, 1.0) * pm * 0.06)[:, :, np.newaxis]  # Subtle depth
     elif variant == "shimmer_chrome_flux":
-        lift = np.power(np.clip(pv, 0.0, 1.0), 0.6) * pm
-        p += (lift * 28.0)[:, :, np.newaxis]
+        # Liquid metal flow — bright chrome zones vs darker matte zones
+        chrome_zone = np.clip(pv, 0.0, 1.0) * pm
+        matte_zone = np.clip(1.0 - pv, 0.0, 1.0) * pm
+        # Chrome zones brighten strongly (metallic highlight)
+        p[:, :, 0] += chrome_zone * 35.0
+        p[:, :, 1] += chrome_zone * 40.0
+        p[:, :, 2] += chrome_zone * 30.0
+        # Matte zones darken slightly (absorption)
+        p[:, :, 0] -= matte_zone * 8.0
+        p[:, :, 1] -= matte_zone * 6.0
+        p[:, :, 2] -= matte_zone * 10.0
     elif variant == "shimmer_matte_halo":
         p *= (1.0 - np.clip(pv, 0.0, 1.0) * pm * 0.16)[:, :, np.newaxis]
         p[:, :, 1] += cx * 4.0
@@ -2135,8 +2335,13 @@ def _paint_micro_shimmer(paint, shape, mask, seed, pm, bb, variant):
         p[:, :, 0] += np.clip(pv - 0.5, 0.0, 1.0) * pm * 24.0
         p[:, :, 2] += np.clip(0.5 - pv, 0.0, 1.0) * pm * 20.0
     elif variant == "shimmer_void_dust":
-        spark = np.clip((pv - 0.82) / 0.18, 0.0, 1.0) * pm
-        p += (spark * 54.0)[:, :, np.newaxis]
+        # Dense sparkle dust — strong effect across full canvas
+        spark = np.clip(pv * 1.5, 0.0, 1.0) * pm
+        # Bright white core on high-intensity particles
+        bright = np.clip((pv - 0.3) * 2.0, 0.0, 1.0) * pm
+        p[:, :, 0] += spark * 40.0 + bright * 20.0
+        p[:, :, 1] += spark * 45.0 + bright * 22.0
+        p[:, :, 2] += spark * 35.0 + bright * 18.0
     elif variant == "shimmer_turbine_sheen":
         p += (np.abs(cx) * 28.0)[:, :, np.newaxis]
         p[:, :, 2] += cx * 10.0

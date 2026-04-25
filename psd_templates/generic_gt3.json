@@ -1,0 +1,69 @@
+{
+  "id": "generic_gt3",
+  "name": "Generic GT3 Class",
+  "category": "GT3 Sportscar",
+  "canvas_size": [2048, 2048],
+  "color_space": "sRGB",
+  "alpha_required": true,
+  "iracing_folder": "gt3",
+  "schema_version": "1.0.0",
+  "description": "Generic baseline for GT3-class sportscars (Porsche 911 GT3 R, BMW M4 GT3, Mercedes AMG GT3, Audi R8 LMS, Ferrari 296 GT3, etc.). Specific car PSDs override this layout but inherit the layer naming.",
+  "layer_tree": [
+    {"name": "Wire", "type": "raster", "purpose": "Wireframe placement reference.", "default_visibility": true, "export_visibility": false},
+    {"name": "Mask", "type": "mask", "purpose": "Paintable region constraint.", "default_visibility": true, "export_visibility": true},
+    {
+      "name": "Paintable Area",
+      "type": "group",
+      "purpose": "User-editable paint and decals.",
+      "children": ["Car_Paint", "Numbers", "Sponsors", "Aero", "Color Change Logos"]
+    },
+    {"name": "Car_Paint", "type": "raster", "purpose": "SPB-generated paint output.", "default_visibility": true, "export_visibility": true},
+    {"name": "Numbers", "type": "smart_object", "purpose": "Door roundels (left, right) + windscreen + rear.", "default_visibility": true, "export_visibility": true},
+    {"name": "Sponsors", "type": "group", "purpose": "Sponsor logos arranged for endurance racing layout.", "default_visibility": true, "export_visibility": true},
+    {"name": "Aero", "type": "raster", "purpose": "Front splitter, rear wing endplates, diffuser fins.", "default_visibility": true, "export_visibility": true},
+    {"name": "Color Change Logos", "type": "raster", "purpose": "Manufacturer logos that recolor.", "default_visibility": true, "export_visibility": true},
+    {"name": "Windshield Banner", "type": "raster", "purpose": "Driver name strip.", "default_visibility": true, "export_visibility": true},
+    {"name": "Class Decals", "type": "raster", "purpose": "GT3 class identifier and series logos.", "default_visibility": true, "export_visibility": true},
+    {"name": "Turn Off Before Exporting TGA", "type": "group", "purpose": "Reference layers to hide before export.", "children": ["Wire", "Guides"], "default_visibility": true, "export_visibility": false}
+  ],
+  "uv_safe_areas": [
+    {"name": "left_door_roundel", "bbox_uv": [0.12, 0.42, 0.28, 0.62], "use": "circular driver number — keep clear"},
+    {"name": "right_door_roundel", "bbox_uv": [0.57, 0.42, 0.73, 0.62], "use": "circular driver number — keep clear"},
+    {"name": "hood", "bbox_uv": [0.30, 0.05, 0.60, 0.30], "use": "primary sponsor + windshield-extended branding"},
+    {"name": "roof", "bbox_uv": [0.32, 0.62, 0.55, 0.78], "use": "spotter number / team name"},
+    {"name": "front_quarter_left", "bbox_uv": [0.04, 0.30, 0.16, 0.42], "use": "associate sponsor"},
+    {"name": "front_quarter_right", "bbox_uv": [0.64, 0.30, 0.76, 0.42], "use": "associate sponsor"},
+    {"name": "sidepod_left", "bbox_uv": [0.06, 0.55, 0.18, 0.68], "use": "co-primary sponsor — visible in TV side shots"},
+    {"name": "sidepod_right", "bbox_uv": [0.62, 0.55, 0.74, 0.68], "use": "co-primary sponsor — visible in TV side shots"},
+    {"name": "rear_quarter_left", "bbox_uv": [0.05, 0.62, 0.18, 0.80], "use": "associate sponsor / class decal"},
+    {"name": "rear_quarter_right", "bbox_uv": [0.62, 0.62, 0.75, 0.80], "use": "associate sponsor / class decal"},
+    {"name": "rear_wing_endplate", "bbox_uv": [0.80, 0.30, 0.96, 0.50], "use": "team/sponsor branding visible from following car"}
+  ],
+  "number_panels": [
+    {"id": "door_left", "bbox_uv": [0.15, 0.46, 0.25, 0.58], "shape": "circle"},
+    {"id": "door_right", "bbox_uv": [0.60, 0.46, 0.70, 0.58], "shape": "circle"},
+    {"id": "windscreen_top", "bbox_uv": [0.42, 0.83, 0.52, 0.92], "shape": "rectangle"},
+    {"id": "rear", "bbox_uv": [0.84, 0.45, 0.92, 0.58], "shape": "rectangle"}
+  ],
+  "windshield_banner": {
+    "bbox_uv": [0.30, 0.86, 0.60, 0.92],
+    "max_chars": 14,
+    "default_height_px": 88
+  },
+  "recommended_zones": [
+    {"id": "main_body", "label": "Main Body", "default_finish": "candy_special", "default_color": "#0E2A47"},
+    {"id": "aero_kit", "label": "Aero Kit", "default_finish": "carbon_composite", "default_color": "#1A1A1A"},
+    {"id": "roof_zone", "label": "Roof + Engine Cover", "default_finish": "matte_basic", "default_color": "#FFFFFF"},
+    {"id": "accent_band", "label": "Accent Stripe", "default_finish": "metallic_flake", "default_color": "#FFD700"}
+  ],
+  "warnings": [
+    "GT3 door roundels are circular — rectangular sponsors clipped behind a roundel will look like background noise.",
+    "Aero parts (splitter, wing) often share UV with body. Painting body solid will leak into aero unless masked.",
+    "Class Decals must remain visible per series rules — do not paint over."
+  ],
+  "tips": [
+    "Sidepods are TV gold — give your secondary sponsor real estate here.",
+    "Carbon-finish aero kit pairs well with any solid body color and reads as 'factory premium'.",
+    "Rear wing endplates are the most-photographed sponsor location in endurance racing."
+  ]
+}

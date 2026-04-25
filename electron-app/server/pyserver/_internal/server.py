@@ -45,11 +45,12 @@ TABLE OF CONTENTS - Use these line numbers to jump to sections:
     /api/shokk/* (library-path, list, save, open, delete, preview)
 
   SECTION 10: EXPORT & UTILITIES (L3250-L3480)
+    /export-psd-layers (Photoshop layer ZIP export #21)
     /api/export-spec-channels, /api/blank-canvas, log_message
 ================================================================
 """
 
-from flask import Flask, request, jsonify, send_file
+from flask import Flask, request, jsonify, send_file, g
 from flask_cors import CORS
 import os
 import time
@@ -62,7 +63,408 @@ import io
 import base64
 import threading
 import hashlib
+import re
+import uuid
+import platform
+import gc
 from datetime import datetime
+from urllib.parse import urlparse
+from collections import deque, OrderedDict
+from functools import wraps, lru_cache
+
+# Server startup timestamp for uptime tracking
+_server_start_time = time.time()
+
+# Server version constants — kept in one place, exposed via headers + endpoints.
+# DO NOT change the version strings without updating the build/CHANGELOG.
+SPB_VERSION = "6.2.0-alpha"            # Public/UI-facing version
+SPB_ENGINE_VERSION = "v6.2 PRO"        # Engine identifier shown in headers
+SPB_BUILD_ID = "Gold-to-Platinum"      # Build family marker
+
+# ----------------------------------------------------------------
+# NAMED CONSTANTS — replace bare magic numbers throughout the file.
+# Documented so future devs know WHY each value was chosen.
+# ----------------------------------------------------------------
+
+# Maximum allowed request body size (16 MB). Prevents OOM from
+# malicious or accidental multi-gigabyte POSTs.  Base64-encoded
+# 2048x2048 RGBA paint images are ~22 MB raw but compress to ~8 MB,
+# so 16 MB covers normal use while rejecting absurd payloads.
+MAX_CONTENT_LENGTH_BYTES = 16 * 1024 * 1024
+
+# --- Zone parameter bounds ---
+# Intensity: 0 = invisible, 100 = full strength (UI slider range)
+INTENSITY_MIN = 0
+INTENSITY_MAX = 100
+INTENSITY_DEFAULT = 100  # Full strength unless user dials it back
+
+# Scale: pattern tile scale. 0.01 = 100x zoom in, 10.0 = very tiled
+SCALE_MIN = 0.01
+SCALE_MAX = 10.0
+SCALE_DEFAULT = 1.0  # 1:1 pattern mapping, no scaling
+
+# Rotation: degrees. 0-360 wraps, but engine accepts any float and
+# does modular arithmetic internally, so we clamp loosely.
+ROTATION_MIN = -3600.0
+ROTATION_MAX = 3600.0
+ROTATION_DEFAULT = 0.0
+
+# Pattern opacity: 0.0 = pattern invisible, 1.0 = fully opaque
+OPACITY_MIN = 0.0
+OPACITY_MAX = 1.0
+OPACITY_DEFAULT = 1.0
+
+# Preview scale: fraction of full resolution for live preview.
+# 0.0625 = 1/16 (tiny), 1.0 = full res (slow but pixel-perfect)
+PREVIEW_SCALE_MIN = 0.0625
+PREVIEW_SCALE_MAX = 1.0
+PREVIEW_SCALE_DEFAULT = 0.25  # Quarter-res is the sweet spot
+
+# Wear level: 0 = pristine, 100 = maximum damage/patina
+WEAR_LEVEL_MIN = 0
+WEAR_LEVEL_MAX = 100
+WEAR_LEVEL_DEFAULT = 0
+
+# Swatch thumbnail size range
+SWATCH_SIZE_MIN = 32
+SWATCH_SIZE_MAX = 256
+SWATCH_SIZE_DEFAULT = 64
+
+# Night boost: multiplier for spec highlights in dark conditions
+NIGHT_BOOST_DEFAULT = 0.7
+
+# Seed: noise seed, any non-negative integer; 51 is the app default
+SEED_DEFAULT = 51
+
+# ----------------------------------------------------------------
+# VALIDATION HELPERS — reusable bounds-checking for route handlers
+# ----------------------------------------------------------------
+
+def _clamp(value, lo, hi, default=None):
+    """Clamp a numeric value to [lo, hi]. Return default if value is None."""
+    if value is None:
+        return default if default is not None else lo
+    try:
+        v = float(value)
+    except (TypeError, ValueError):
+        return default if default is not None else lo
+    return max(lo, min(hi, v))
+
+
+def _safe_int(value, default=0):
+    """Convert value to int, returning default on failure."""
+    if value is None:
+        return default
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return default
+
+
+def _safe_float(value, default=0.0):
+    """Convert value to float, returning default on failure."""
+    if value is None:
+        return default
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return default
+
+
+def _validate_zone_required_fields(zone, index):
+    """Check that a zone dict has the minimum required fields.
+    Returns (ok, error_message) tuple."""
+    if not isinstance(zone, dict):
+        return False, f"Zone {index}: expected dict, got {type(zone).__name__}"
+    if not zone.get("color") and zone.get("color") != 0:
+        # color can be a string like "blue" or "everything", or an RGB list
+        pass  # color is optional if region_mask is set
+    if not zone.get("base") and not zone.get("finish"):
+        return False, f"Zone {index} ('{zone.get('name', 'unnamed')}'): must have 'base' or 'finish'"
+    return True, ""
+
+
+def _sanitize_path(raw_path, allowed_roots=None):
+    """Normalise a file path and optionally verify it falls under an allowed root.
+    Returns (safe_path, error) — error is None on success."""
+    if not raw_path or not isinstance(raw_path, str):
+        return None, "Empty or non-string path"
+    normed = os.path.normpath(os.path.abspath(raw_path))
+    # Block path traversal: no .. components after normalisation
+    if ".." in normed.split(os.sep):
+        return None, "Path traversal detected"
+    if allowed_roots:
+        real = os.path.realpath(normed)
+        if not any(real.startswith(os.path.realpath(r) + os.sep) or real == os.path.realpath(r)
+                   for r in allowed_roots):
+            return None, "Path outside allowed directories"
+    return normed, None
+
+
+def _is_local_ui_url(raw_url):
+    try:
+        parsed = urlparse(raw_url or "")
+    except Exception:
+        return False
+    host = (parsed.hostname or "").lower()
+    return host in {"127.0.0.1", "localhost"}
+
+
+def _require_spb_internal_request():
+    """Require the local SPB UI marker header for sensitive PSD routes.
+
+    We still allow the user to open arbitrary local iRacing/template PSDs from
+    disk, but browser pages on other origins should not be able to poke these
+    loopback endpoints and read back PSD composites/layers.
+    """
+    if request.headers.get("X-Shokker-Internal") != "1":
+        return False, "Blocked: missing SPB internal request header"
+    for hdr in ("Origin", "Referer"):
+        raw = request.headers.get(hdr)
+        if raw and not _is_local_ui_url(raw):
+            return False, f"Blocked non-local {hdr.lower()}"
+    return True, None
+
+# ----------------------------------------------------------------
+# HARDENING: extra validators, rate limiter, request log ring,
+# memoised registry helpers. All purely additive — existing
+# routes can opt-in by calling these helpers explicitly.
+# ----------------------------------------------------------------
+
+# Hard ceiling on zone arrays — anything past this is almost
+# certainly a runaway script or malicious payload.
+MAX_ZONES_PER_REQUEST = 50
+
+# Request body hard limit (separate from Flask's MAX_CONTENT_LENGTH;
+# this one is checked manually by routes that need a tighter cap).
+MAX_REQUEST_BYTES_HARD = 32 * 1024 * 1024  # 32 MB
+
+# Minimum / maximum iRacing customer IDs we'll accept.
+IRACING_ID_MIN_DIGITS = 4
+IRACING_ID_MAX_DIGITS = 7
+
+# Per-endpoint rate limit: { (endpoint, ip): deque[timestamps] }
+_rate_limit_buckets = {}
+_rate_limit_lock = threading.Lock()
+
+# Recent-render ring buffer (most recent first).  Bounded to avoid leaks.
+_recent_renders = deque(maxlen=64)
+_recent_renders_lock = threading.Lock()
+
+# Recent-error ring buffer for diagnostics endpoint.
+_recent_errors = deque(maxlen=32)
+_recent_errors_lock = threading.Lock()
+
+# Total request counter — incremented in before_request hook.
+_request_counter = 0
+_request_counter_lock = threading.Lock()
+
+
+def _new_request_id():
+    """Short unique correlation ID used in logs and error responses."""
+    return uuid.uuid4().hex[:12]
+
+
+def _record_recent_error(rid, path, status, message):
+    """Append an error entry to the recent-errors ring (used by /api/diagnostics)."""
+    try:
+        with _recent_errors_lock:
+            _recent_errors.append({
+                "rid": rid,
+                "path": path,
+                "status": status,
+                "message": (message or "")[:500],
+                "at": time.time(),
+            })
+    except Exception:
+        pass
+
+
+def _record_recent_render(kind, paint_file, elapsed_ms, success=True):
+    """Append a render entry to the recent-renders ring (used by /api/recent-renders)."""
+    try:
+        with _recent_renders_lock:
+            _recent_renders.appendleft({
+                "kind": kind,                  # "preview" or "full"
+                "paint_file": (paint_file or "")[:512],
+                "elapsed_ms": int(elapsed_ms or 0),
+                "success": bool(success),
+                "at": time.time(),
+            })
+    except Exception:
+        pass
+
+
+def _validate_color_array(arr):
+    """Strictly validate an [r, g, b] (or [r, g, b, a]) colour list.
+    Returns (ok, normalized_list_or_None, error_message)."""
+    if arr is None:
+        return False, None, "color is None"
+    if not isinstance(arr, (list, tuple)):
+        return False, None, f"color must be list/tuple, got {type(arr).__name__}"
+    if len(arr) not in (3, 4):
+        return False, None, f"color must have 3 or 4 elements, got {len(arr)}"
+    out = []
+    for i, v in enumerate(arr):
+        try:
+            iv = int(v)
+        except (TypeError, ValueError):
+            return False, None, f"color[{i}] not an integer ({v!r})"
+        if iv < 0 or iv > 255:
+            return False, None, f"color[{i}]={iv} out of range 0-255"
+        out.append(iv)
+    return True, out, ""
+
+
+def _validate_zone_dict(z):
+    """Comprehensive zone validation. Returns (ok, error_message).
+    Looser than _validate_zone_required_fields — checks types/bounds for
+    every recognised field but lets unknown keys through."""
+    if not isinstance(z, dict):
+        return False, f"zone must be dict, got {type(z).__name__}"
+    # Numeric fields with bounds
+    bounded = {
+        "intensity":         (INTENSITY_MIN, INTENSITY_MAX),
+        "pattern_intensity": (INTENSITY_MIN, INTENSITY_MAX),
+        "scale":             (SCALE_MIN,     SCALE_MAX),
+        "rotation":          (ROTATION_MIN,  ROTATION_MAX),
+        "pattern_opacity":   (OPACITY_MIN,   OPACITY_MAX),
+        "wear_level":        (WEAR_LEVEL_MIN, WEAR_LEVEL_MAX),
+        "pattern_offset_x":  (0.0, 1.0),
+        "pattern_offset_y":  (0.0, 1.0),
+    }
+    for k, (lo, hi) in bounded.items():
+        if k not in z or z[k] is None:
+            continue
+        try:
+            v = float(z[k])
+        except (TypeError, ValueError):
+            return False, f"zone.{k} not numeric ({z[k]!r})"
+        if v < lo - 1e-6 or v > hi + 1e-6:
+            return False, f"zone.{k}={v} outside [{lo}, {hi}]"
+    # base/finish presence — same rule as the legacy helper but explicit.
+    if not z.get("base") and not z.get("finish") and not z.get("region_mask"):
+        return False, f"zone needs one of: base, finish, region_mask"
+    return True, ""
+
+
+def _validate_path_safe(raw_path):
+    """Reject obviously dangerous paths (traversal, NULs, weird URI schemes)
+    BEFORE we hand them to os.path.exists or send_file.
+    Returns (ok, normalized_path_or_None, error_message)."""
+    if not raw_path or not isinstance(raw_path, str):
+        return False, None, "path must be non-empty string"
+    if "\x00" in raw_path:
+        return False, None, "path contains NUL byte"
+    if raw_path.lower().startswith(("file://", "http://", "https://", "ftp://")):
+        return False, None, "URI schemes not allowed in path"
+    # Resolve and re-check for traversal attempts.
+    try:
+        normed = os.path.normpath(os.path.abspath(raw_path))
+    except (ValueError, OSError) as e:
+        return False, None, f"path normalisation failed: {e}"
+    if ".." in normed.split(os.sep):
+        return False, None, "path traversal detected"
+    return True, normed, ""
+
+
+def _validate_iracing_id(raw_id):
+    """Validate iRacing customer ID — must be all digits, 4-7 long.
+    Returns (ok, normalized_string, error_message)."""
+    if raw_id is None:
+        return False, None, "iracing_id is required"
+    s = str(raw_id).strip()
+    if not s.isdigit():
+        return False, None, "iracing_id must be all digits"
+    if len(s) < IRACING_ID_MIN_DIGITS or len(s) > IRACING_ID_MAX_DIGITS:
+        return False, None, (
+            f"iracing_id must be {IRACING_ID_MIN_DIGITS}-{IRACING_ID_MAX_DIGITS} digits "
+            f"(got {len(s)})"
+        )
+    return True, s, ""
+
+
+def _rate_limit(endpoint_key, max_per_second=10):
+    """Lightweight per-endpoint rate limit keyed by remote IP.
+    Returns True if the request is within the budget, False if it should be rejected."""
+    try:
+        ip = (request.remote_addr or "?")
+    except Exception:
+        ip = "?"
+    bucket_key = (endpoint_key, ip)
+    now = time.time()
+    with _rate_limit_lock:
+        bucket = _rate_limit_buckets.get(bucket_key)
+        if bucket is None:
+            bucket = deque()
+            _rate_limit_buckets[bucket_key] = bucket
+        # Drop timestamps older than 1s
+        while bucket and bucket[0] < now - 1.0:
+            bucket.popleft()
+        if len(bucket) >= max_per_second:
+            return False
+        bucket.append(now)
+        return True
+
+
+def _safe_jsonify_error(message, status, rid=None, **extra):
+    """Build a consistent error response with request ID + timestamp."""
+    payload = {
+        "error": message,
+        "status": status,
+        "rid": rid or getattr(g, "_rid", None) or _new_request_id(),
+        "at": time.time(),
+    }
+    payload.update(extra or {})
+    return jsonify(payload), status
+
+
+def _api_route(*args, **kwargs):
+    """Decorator wrapper for Flask routes that adds:
+       - request ID injection
+       - blanket try/except → consistent JSON error
+       - logging of unhandled exceptions
+    Existing routes are NOT migrated automatically — opt-in only."""
+    def deco(fn):
+        @wraps(fn)
+        def wrapped(*a, **kw):
+            rid = getattr(g, "_rid", None) or _new_request_id()
+            try:
+                g._rid = rid
+            except Exception:
+                pass
+            try:
+                return fn(*a, **kw)
+            except FileNotFoundError as e:
+                _record_recent_error(rid, request.path, 404, str(e))
+                return _safe_jsonify_error(str(e), 404, rid)
+            except (ValueError, TypeError) as e:
+                _record_recent_error(rid, request.path, 400, str(e))
+                return _safe_jsonify_error(str(e), 400, rid)
+            except Exception as e:
+                tb = traceback.format_exc()
+                logger.error(f"[rid={rid}] Unhandled in {fn.__name__}: {e}\n{tb}")
+                _record_recent_error(rid, request.path, 500, str(e))
+                return _safe_jsonify_error("internal_server_error", 500, rid,
+                                           detail=str(e)[:200])
+        return app.route(*args, **kwargs)(wrapped)
+    return deco
+
+
+# ----------------------------------------------------------------
+# JS→Python key conversion: JS sends camelCase, engine expects snake_case.
+# Applied to zone dicts before processing in /preview-render and /render.
+# ----------------------------------------------------------------
+def _camel_to_snake(name):
+    s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
+    return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
+
+def _convert_zone_keys(zone_dict):
+    """Recursively convert camelCase keys to snake_case in a zone dict."""
+    if not isinstance(zone_dict, dict):
+        return zone_dict
+    return {_camel_to_snake(k): _convert_zone_keys(v) if isinstance(v, dict) else v
+            for k, v in zone_dict.items()}
 
 # ----------------------------------------------------------------
 # Preview render serialisation — prevents CPU thrashing when the
@@ -107,6 +509,21 @@ _render_stats = {
     "cache_misses": 0,
     "session_start": None,  # set on first render
 }
+
+# ----------------------------------------------------------------
+# Render progress — tracks zone-by-zone progress for full renders.
+# Polled by the UI via GET /api/render-progress.
+# ----------------------------------------------------------------
+_render_progress = {
+    "active": False,
+    "job_id": None,
+    "total_zones": 0,
+    "current_zone": 0,
+    "current_zone_name": "",
+    "phase": "idle",  # idle, preparing, rendering, encoding, done
+    "started_at": 0,
+    "elapsed_ms": 0,
+}
 _render_stats_lock = threading.Lock()
 
 # --- Fix OSError [Errno 22] on print() when stdout/stderr pipes break (Electron) ---
@@ -148,11 +565,146 @@ except ImportError:
 
 # Setup Flask
 app = Flask(__name__)
+app.config['MAX_CONTENT_LENGTH'] = MAX_CONTENT_LENGTH_BYTES  # Reject oversized POSTs (improvement #5)
+# Enable JSON pretty-print only in dev — saves bytes in prod responses.
+app.config['JSONIFY_PRETTYPRINT_REGULAR'] = False
+# Track app start for /api/health & /api/stats (mirrors _server_start_time).
+app._start_time = _server_start_time
 CORS(app)
+
+# Shared cache-control header dicts (avoids typos and inconsistency)
+_no_cache_headers = {'Cache-Control': 'no-store, no-cache, must-revalidate', 'Pragma': 'no-cache'}
+_immutable_cache_headers = {'Cache-Control': 'public, max-age=31536000, immutable'}
+# Short-lived cache for finish data, swatches that change rarely (5 minutes).
+_short_cache_headers = {'Cache-Control': 'public, max-age=300'}
+
+
+# ----------------------------------------------------------------
+# REQUEST MIDDLEWARE — adds correlation IDs, timing headers,
+# version headers, and structured access logs. Runs for every
+# request without changing existing route handlers.
+# ----------------------------------------------------------------
+@app.before_request
+def _spb_before_request():
+    """Stamp request with start time + correlation ID."""
+    try:
+        g._t0 = time.perf_counter()
+        g._rid = request.headers.get("X-Request-ID") or _new_request_id()
+        global _request_counter
+        with _request_counter_lock:
+            _request_counter += 1
+    except Exception:
+        pass
+
+
+@app.after_request
+def _spb_after_request(resp):
+    """Add timing + version headers to every response and log access line."""
+    try:
+        t0 = getattr(g, "_t0", None)
+        elapsed_ms = int((time.perf_counter() - t0) * 1000) if t0 else 0
+        rid = getattr(g, "_rid", "-")
+        resp.headers['X-SPB-Version'] = SPB_VERSION
+        resp.headers['X-SPB-Engine']  = SPB_ENGINE_VERSION
+        resp.headers['X-Render-Time-Ms'] = str(elapsed_ms)
+        resp.headers['X-Request-ID'] = rid
+        # Optional gzip for large JSON responses when client accepts it.
+        # Skips small bodies (<2KB) and already-compressed types.
+        try:
+            ae = (request.headers.get('Accept-Encoding') or '').lower()
+            ctype = (resp.headers.get('Content-Type') or '').lower()
+            if ('gzip' in ae and 'gzip' not in (resp.headers.get('Content-Encoding') or '')
+                    and ctype.startswith('application/json')
+                    and resp.content_length and resp.content_length > 2048):
+                import gzip as _gzip
+                gz = _gzip.compress(resp.get_data(), compresslevel=4)
+                resp.set_data(gz)
+                resp.headers['Content-Encoding'] = 'gzip'
+                resp.headers['Content-Length'] = str(len(gz))
+                resp.headers.add('Vary', 'Accept-Encoding')
+        except Exception:
+            # Compression must NEVER break a response.
+            pass
+        # Quiet down spammy polling endpoints — only log slow / non-200 hits.
+        # 2026-04-21 perf fix: added /build-check (polled every 5s by the UI) to
+        # the silenced set — every build-check was hitting logger.info and
+        # Windows stdout, adding GIL pressure during active renders.
+        path = request.path or ""
+        spammy = path in ("/api/render-status", "/api/render-progress",
+                          "/health", "/api/health", "/api/ping",
+                          "/build-check")
+        if (not spammy) or resp.status_code >= 400 or elapsed_ms > 250:
+            logger.info(
+                f"access rid={rid} {request.method} {path} -> {resp.status_code} "
+                f"in {elapsed_ms}ms ip={request.remote_addr or '-'}"
+            )
+    except Exception:
+        pass
+    return resp
 
 @app.errorhandler(404)
 def _handle_404(e):
-    return jsonify({"error": "not_found", "path": request.path}), 404
+    rid = getattr(g, "_rid", None) or "-"
+    _record_recent_error(rid, request.path, 404, "not_found")
+    return jsonify({"error": "not_found", "path": request.path, "rid": rid}), 404
+
+@app.errorhandler(413)
+def _handle_413(e):
+    """Request entity too large — MAX_CONTENT_LENGTH exceeded."""
+    rid = getattr(g, "_rid", None) or "-"
+    logger.warning(f"[rid={rid}] Request too large on {request.path} "
+                   f"(limit: {MAX_CONTENT_LENGTH_BYTES // (1024*1024)}MB)")
+    _record_recent_error(rid, request.path, 413, "payload_too_large")
+    return jsonify({"error": "Request body too large",
+                    "max_mb": MAX_CONTENT_LENGTH_BYTES // (1024 * 1024),
+                    "rid": rid}), 413
+
+@app.errorhandler(400)
+def _handle_400(e):
+    """Bad request — catches malformed JSON, missing fields, etc."""
+    rid = getattr(g, "_rid", None) or "-"
+    # 400 errors are user-facing: log message only, NOT full traceback.
+    msg = getattr(e, 'description', None) or str(e)
+    logger.info(f"[rid={rid}] 400 on {request.path}: {msg}")
+    _record_recent_error(rid, request.path, 400, msg)
+    return jsonify({"error": "bad_request", "message": msg, "rid": rid}), 400
+
+@app.errorhandler(429)
+def _handle_429(e):
+    """Too many requests — typically from rate limiter."""
+    rid = getattr(g, "_rid", None) or "-"
+    return jsonify({"error": "too_many_requests",
+                    "message": "Rate limit exceeded — slow down and retry.",
+                    "rid": rid}), 429
+
+@app.errorhandler(500)
+def _handle_500(e):
+    """Internal server error — log traceback and return safe message."""
+    rid = getattr(g, "_rid", None) or "-"
+    # Full traceback ONLY for 500s — 400/404 keep the log clean.
+    logger.error(f"[rid={rid}] Unhandled 500 on {request.path}: {e}\n{traceback.format_exc()}")
+    _record_recent_error(rid, request.path, 500, str(e))
+    return jsonify({"error": "internal_server_error",
+                    "message": "An unexpected error occurred. Check server logs for details.",
+                    "rid": rid}), 500
+
+@app.errorhandler(503)
+def _handle_503(e):
+    """Service unavailable — engine not loaded, GPU busy, etc."""
+    rid = getattr(g, "_rid", None) or "-"
+    return jsonify({"error": "service_unavailable",
+                    "message": getattr(e, 'description', 'Service temporarily unavailable.'),
+                    "rid": rid,
+                    "retry_after_s": 5}), 503
+
+@app.errorhandler(405)
+def _handle_405(e):
+    """Method not allowed — wrong HTTP verb on a known route."""
+    rid = getattr(g, "_rid", None) or "-"
+    return jsonify({"error": "method_not_allowed",
+                    "method": request.method,
+                    "path": request.path,
+                    "rid": rid}), 405
 
 @app.route('/favicon.ico')
 def favicon():
@@ -160,10 +712,15 @@ def favicon():
 
 @app.route('/thumbnails/<path:filename>')
 def serve_thumbnail(filename):
-    """Serve pre-baked thumbnails directly as static files — no generation, maximum speed."""
+    """Serve pre-baked thumbnails directly as static files — no generation, maximum speed.
+    Uses conditional=True so browsers get proper 304 Not Modified responses
+    based on If-Modified-Since / ETag, saving bandwidth on repeat loads."""
+    # Block path traversal: filename can contain subdirs but never ..
+    if ".." in filename.replace("\\", "/").split("/"):
+        return jsonify({"error": "invalid_path"}), 400
     thumb_path = os.path.join(THUMBNAIL_DIR, filename)
     if os.path.exists(thumb_path):
-        resp = send_file(thumb_path, mimetype='image/png')
+        resp = send_file(thumb_path, mimetype='image/png', conditional=True)
         # Long cache: thumbnails only change when content changes (hash-managed)
         resp.headers['Cache-Control'] = 'public, max-age=31536000, immutable'
         return resp
@@ -204,12 +761,107 @@ CONFIG_FILE = os.path.join(SERVER_DIR, 'shokker_config.json')
 THUMBNAIL_DIR = os.environ.get('SHOKKER_THUMBNAIL_DIR') or getattr(CFG, 'THUMBNAIL_DIR', None) or os.path.join(SERVER_DIR, 'thumbnails')
 os.makedirs(OUTPUT_FOLDER, exist_ok=True)
 
+# --- Auto-invalidate swatch disk cache when engine code changes ---
+def _engine_files_fingerprint():
+    """Hash of modification times of all engine .py files. Changes when ANY engine code is edited."""
+    import hashlib
+    mtimes = []
+    for root, dirs, files in os.walk(os.path.join(SERVER_DIR, 'engine')):
+        for f in sorted(files):
+            if f.endswith('.py'):
+                try:
+                    mtimes.append(f"{f}:{os.path.getmtime(os.path.join(root, f)):.0f}")
+                except OSError:
+                    pass
+    # Also include main engine files
+    for f in ['shokker_engine_v2.py', 'server.py']:
+        fp = os.path.join(SERVER_DIR, f)
+        if os.path.isfile(fp):
+            try:
+                mtimes.append(f"{f}:{os.path.getmtime(fp):.0f}")
+            except OSError:
+                pass
+    return hashlib.md5('|'.join(mtimes).encode()).hexdigest()[:12]
+
+def _check_swatch_cache_freshness():
+    """If engine code changed since last swatch cache build, wipe the disk cache."""
+    cache_dir = os.path.join(THUMBNAIL_DIR, 'swatch_cache')
+    fp_file = os.path.join(cache_dir, '_fingerprint.txt')
+    current_fp = _engine_files_fingerprint()
+    if os.path.isdir(cache_dir) and os.path.isfile(fp_file):
+        try:
+            with open(fp_file, 'r') as f:
+                stored_fp = f.read().strip()
+            if stored_fp == current_fp:
+                return  # Cache is fresh
+        except Exception:
+            pass
+    # Cache is stale or doesn't exist — wipe and rebuild
+    if os.path.isdir(cache_dir):
+        import shutil
+        try:
+            shutil.rmtree(cache_dir)
+            logging.getLogger('shokker.startup').info(f"Swatch disk cache invalidated (engine code changed)")
+        except Exception:
+            pass
+    os.makedirs(cache_dir, exist_ok=True)
+    try:
+        with open(fp_file, 'w') as f:
+            f.write(current_fp)
+    except Exception:
+        pass
+
+_check_swatch_cache_freshness()
+
+_SWATCH_CACHE_TOKEN = None
+_SWATCH_CACHE_TOKEN_TS = 0.0
+
+def _swatch_cache_token():
+    """Short-lived engine fingerprint for swatch cache keys.
+
+    The startup wipe catches normal restarts. This token also prevents a running
+    dev server from serving forever-old PNGs after engine files are edited.
+    """
+    global _SWATCH_CACHE_TOKEN, _SWATCH_CACHE_TOKEN_TS
+    now = time.time()
+    if _SWATCH_CACHE_TOKEN is None or (now - _SWATCH_CACHE_TOKEN_TS) > 10.0:
+        _SWATCH_CACHE_TOKEN = _engine_files_fingerprint()
+        _SWATCH_CACHE_TOKEN_TS = now
+    return _SWATCH_CACHE_TOKEN
+
 # Startup log
 logger_startup = logging.getLogger('shokker.startup')
 
 # Logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
 logger = logging.getLogger('shokker')
+
+# 2026-04-21 perf fix: werkzeug's built-in request-access logger prints every
+# request at INFO level. During a live render the UI polls
+# /api/render-status every 2s and /build-check every 5s — that's 7-13 stdout
+# writes per zone render, each one a GIL-held `sys.stdout.write`. On Windows
+# Defender-protected terminals the write itself can take 50-200ms. Measured
+# impact: zone renders taking 20s+ when isolated benchmark is 1s.
+#
+# Silence werkzeug access-log spam for poll endpoints. Still logs warnings
+# / errors / slow (>250ms) requests via the Flask access-log middleware
+# below.
+class _SilencePollEndpoints(logging.Filter):
+    """Drop werkzeug access-log records for spammy poll endpoints so they
+    don't steal GIL / stdout time during long renders."""
+    _SPAMMY = (
+        '/api/render-status', '/api/render-progress',
+        '/health', '/api/health', '/api/ping',
+        '/build-check',
+    )
+    def filter(self, record):
+        try:
+            msg = record.getMessage()
+        except Exception:
+            return True
+        return not any(p in msg for p in self._SPAMMY)
+
+logging.getLogger('werkzeug').addFilter(_SilencePollEndpoints())
 
 # Log thumbnail dir and warn if missing/empty so user knows to run rebuild_thumbnails.py
 def _log_thumbnail_dir():
@@ -329,27 +981,53 @@ def save_config(cfg):
 # ENDPOINTS
 # ================================================================
 
-@app.route('/build-check', methods=['GET'])
-def build_check():
-    """Diagnostic endpoint - returns server status and configuration."""
-    # Read actual version from electron-app/package.json if available
-    _pkg_version = "5.9.2"
+# 2026-04-21 perf fix: /build-check is polled by the UI every ~5s.
+# The pre-fix handler did 3 filesystem `isfile` checks + one `open` +
+# `json.loads` on EVERY call. On Windows with Defender real-time
+# scanning, each file probe can take 50-200ms and holds the GIL — so
+# during an active render the poll thread was stealing 150-600ms per
+# poll from the CPU-bound render thread. At 5-6 polls per zone that
+# adds 1-4 seconds of stall time per zone. Painter's log showed a
+# 22-second render on a zone that benchmarks at ~1 s in isolation.
+#
+# Cache the package.json lookup across calls. Re-resolve only if the
+# SERVER_DIR changes (never, in practice) or the session starts fresh.
+_build_check_cache = {
+    "pkg_version": None,
+    "pkg_path_searched": False,
+}
+
+def _resolve_pkg_version():
+    """Resolve the Electron package.json version once, then cache."""
+    if _build_check_cache["pkg_path_searched"]:
+        return _build_check_cache["pkg_version"] or "5.9.2"
+    _build_check_cache["pkg_path_searched"] = True
     try:
         import json as _json
         for _pkg_path in [
-            os.path.join(SERVER_DIR, 'electron-app', 'package.json'),   # dev mode: V5/electron-app/package.json
-            os.path.join(os.path.dirname(SERVER_DIR), 'package.json'),  # electron-app/package.json (installed)
-            os.path.join(SERVER_DIR, '..', 'package.json'),             # fallback
+            os.path.join(SERVER_DIR, 'electron-app', 'package.json'),
+            os.path.join(os.path.dirname(SERVER_DIR), 'package.json'),
+            os.path.join(SERVER_DIR, '..', 'package.json'),
         ]:
             if os.path.isfile(_pkg_path):
                 with open(_pkg_path, 'r') as _f:
-                    _pkg_version = _json.load(_f).get('version', _pkg_version)
+                    _build_check_cache["pkg_version"] = _json.load(_f).get('version', '5.9.2')
                 break
     except Exception:
         pass
+    return _build_check_cache["pkg_version"] or "5.9.2"
+
+
+@app.route('/build-check', methods=['GET'])
+def build_check():
+    """Diagnostic endpoint - returns server status and configuration.
+    Cached version lookup; this handler is polled every ~5s by the UI
+    and must stay cheap enough to not stall concurrent renders."""
+    # Downgrade log level so poll-spam doesn't contend with render stdout.
+    logger.debug("[build-check] Health check requested")
     return jsonify({
         "build": "V5",
-        "version": _pkg_version,
+        "version": _resolve_pkg_version(),
         "status": "running",
         "debug": False,
         "engine": "Shokker Engine V5 - Modular Architecture",
@@ -359,13 +1037,20 @@ def build_check():
         "gpu": gpu_info(),
     })
 
+@app.route('/health', methods=['GET'])
+def health():
+    """Lightweight health check — no heavy computation, just confirms server is alive."""
+    return jsonify({"ok": True, "version": "6.2.0-alpha", "uptime_s": int(time.time() - _server_start_time)})
+
+
 @app.route('/status', methods=['GET'])
 def status():
     """Server heartbeat + engine capabilities."""
+    logger.debug("[status] Heartbeat requested")
     cfg = load_config()
     return jsonify({
         "status": "online",
-        "version": "6.0.0-alpha",
+        "version": "6.2.0-alpha",
         "engine": "Shokker Engine v6.0 PRO - 24K Arsenal",
         "capabilities": {
             "bases": list(engine.BASE_REGISTRY.keys()),
@@ -405,6 +1090,7 @@ def status():
 def license_endpoint():
     """Check or activate license."""
     global _license_key, _license_active
+    logger.info(f"[license] {request.method} request")
 
     if request.method == 'GET':
         return jsonify({
@@ -451,6 +1137,7 @@ def license_deactivate():
 @app.route('/finish-groups', methods=['GET'])
 def finish_groups():
     """Return group metadata for UI organization of 24K Arsenal finishes."""
+    logger.info("[finish-groups] Requested")
     try:
         import shokker_24k_expansion as _exp24k
         groups = _exp24k.get_expansion_group_map()
@@ -606,6 +1293,7 @@ def _load_canonical_finish_ids():
 @app.route('/api/thumbnail-status', methods=['GET'])
 def api_thumbnail_status():
     """Return thumbnail dir, PNG count, expected count (canonical list or registries), and list of missing keys."""
+    logger.info("[thumbnail-status] Status check requested")
     exists = os.path.isdir(THUMBNAIL_DIR)
     count = 0
     if exists:
@@ -664,12 +1352,23 @@ def api_thumbnail_status():
 
 @app.route('/api/clear-cache', methods=['GET', 'POST'])
 def api_clear_cache():
-    """Clear in-memory caches (swatch + finish-data). Use after code changes or for hard reset."""
+    """Clear in-memory + disk swatch caches. Use after code changes or for hard reset."""
+    logger.info("[clear-cache] Cache clear requested")
     global _FINISH_DATA_CACHE
     with _SWATCH_CACHE_LOCK:
         _SWATCH_CACHE.clear()
     _FINISH_DATA_CACHE = None
-    return jsonify({"status": "ok", "message": "Swatch and finish-data caches cleared."})
+    # Also clear disk swatch cache
+    _swatch_disk_dir = os.path.join(THUMBNAIL_DIR, 'swatch_cache')
+    cleared_disk = 0
+    if os.path.isdir(_swatch_disk_dir):
+        import shutil
+        try:
+            shutil.rmtree(_swatch_disk_dir)
+            cleared_disk = 1
+        except Exception:
+            pass
+    return jsonify({"status": "ok", "message": f"Caches cleared (memory + disk={cleared_disk})."})
 
 
 @app.route('/api/thumb-regen/<finish_type>/<finish_id>', methods=['POST'])
@@ -677,6 +1376,9 @@ def regen_thumbnail(finish_type, finish_id):
     """Force regeneration of a specific thumbnail. Useful for dev / after hot-adding a finish.
     finish_type: spec_patterns | bases | patterns | monolithics
     """
+    logger.info(f"[thumb-regen] Queuing regen: {finish_type}/{finish_id}")
+    if finish_type not in ('spec_patterns', 'bases', 'patterns', 'monolithics', 'base', 'pattern', 'monolithic'):
+        return jsonify({"error": f"Invalid finish_type: {finish_type}"}), 400
     _queue_thumbnail_regen(finish_type, finish_id)
     return jsonify({"status": "queued", "finish_type": finish_type, "id": finish_id})
 
@@ -741,6 +1443,7 @@ def spec_preview_composite():
     """Render a 256x128 composite preview of spec pattern stack over a base finish.
     Body: { zone_spec_stack: [...], base_finish: 'chrome'|'matte'|'brushed'|'carbon' }
     """
+    logger.info("[spec-preview-composite] Composite preview requested")
     from engine.spec_patterns import PATTERN_CATALOG
     import numpy as np
     from PIL import Image as _PILImage, ImageDraw as _ImageDraw
@@ -824,6 +1527,444 @@ def spec_preview_composite():
     return send_file(buf, mimetype='image/png')
 
 
+@app.route('/api/psd-import', methods=['POST'])
+def api_psd_import():
+    """Import a PSD file and return its complete layer tree with rasterized thumbnails.
+
+    Body: { "psd_path": "E:/path/to/file.psd", "thumbnail_size": 256 }
+    Returns: {
+        "success": true,
+        "width": 2048, "height": 2048,
+        "layers": [
+            {
+                "name": "Paintable Area", "kind": "group", "visible": true, "opacity": 255,
+                "bbox": [0, 0, 2048, 2048],
+                "children": [
+                    { "name": "Base Paint", "kind": "pixel", "visible": true, "opacity": 255,
+                      "bbox": [0, 0, 2048, 2048],
+                      "thumbnail": "data:image/png;base64,...",
+                      "full_image": "data:image/png;base64,..." }
+                ]
+            }
+        ],
+        "composite": "data:image/png;base64,..."  // Full flattened composite
+    }
+    """
+    try:
+        data = request.get_json(force=True, silent=True) or {}
+        psd_path = data.get('psd_path', '')
+        thumb_size = int(data.get('thumbnail_size', 256))
+        ok, _req_err = _require_spb_internal_request()
+        if not ok:
+            return jsonify({"error": _req_err}), 403
+
+        # BUG #70 (Bigelow, HIGH): pre-fix, this route accepted any path
+        # and only checked os.path.exists(). Attacker on the same host (or
+        # a misconfigured CORS/loopback setup) could read any PSD on the
+        # server user's disk and receive a base64 composite of it.
+        # Sanitize + restrict extension before touching the filesystem.
+        psd_path, _err = _sanitize_path(psd_path)
+        if _err:
+            return jsonify({"error": _err}), 400
+        if not psd_path.lower().endswith('.psd'):
+            return jsonify({"error": "Only .psd files are allowed"}), 400
+        if not os.path.exists(psd_path):
+            return jsonify({"error": "PSD file not found"}), 404
+
+        try:
+            from psd_tools import PSDImage
+        except ImportError:
+            return jsonify({"error": "psd-tools not installed. Run: pip install psd-tools"}), 500
+
+        psd = _get_cached_psd(psd_path)
+        logger.info(f"[PSD Import] Opened {psd_path}: {psd.width}x{psd.height}, {len(psd)} top layers")
+
+        import numpy as np
+        from PIL import Image as PILImage
+
+        def layer_to_dict(layer, include_full=True):
+            """Convert a PSD layer to a serializable dict with optional rasterized image."""
+            entry = {
+                "name": layer.name,
+                "kind": layer.kind,
+                "visible": layer.visible,
+                "opacity": layer.opacity,
+                "bbox": list(layer.bbox) if hasattr(layer, 'bbox') else [0, 0, psd.width, psd.height],
+            }
+
+            # Blend mode
+            if hasattr(layer, 'blend_mode'):
+                entry["blend_mode"] = str(layer.blend_mode).replace('BlendMode.', '')
+
+            # Group: recurse into children
+            if layer.kind == 'group' or hasattr(layer, '__iter__'):
+                entry["children"] = []
+                try:
+                    for child in layer:
+                        entry["children"].append(layer_to_dict(child, include_full))
+                except Exception:
+                    pass
+                return entry
+
+            # Skip heavy per-layer rasterization on initial import (5+ seconds each)
+            # Layers are rasterized on demand via /api/psd-layer endpoint
+            entry["has_pixels"] = True
+
+            return entry
+
+        # Build layer tree
+        layers = []
+        for layer in psd:
+            layers.append(layer_to_dict(layer))
+
+        # Full composite
+        composite_b64 = None
+        try:
+            composite = psd.composite()
+            buf = io.BytesIO()
+            composite.save(buf, 'PNG')
+            composite_b64 = "data:image/png;base64," + base64.b64encode(buf.getvalue()).decode('ascii')
+        except Exception as comp_err:
+            logger.warning(f"[PSD Import] Composite failed: {comp_err}")
+
+        logger.info(f"[PSD Import] Success: {len(layers)} top layers extracted")
+        return jsonify({
+            "success": True,
+            "width": psd.width,
+            "height": psd.height,
+            "layers": layers,
+            "composite": composite_b64,
+            "psd_path": psd_path,
+        })
+
+    except Exception as e:
+        logger.error(f"/api/psd-import failed: {e}\n{traceback.format_exc()}")
+        return jsonify({"error": str(e)}), 500
+
+
+_psd_cache = {}  # { path: (mtime, PSDImage) }
+
+def _get_cached_psd(psd_path):
+    """Get a PSD file from cache, or open and cache it."""
+    from psd_tools import PSDImage
+    mtime = os.path.getmtime(psd_path)
+    if psd_path in _psd_cache and _psd_cache[psd_path][0] == mtime:
+        return _psd_cache[psd_path][1]
+    psd = PSDImage.open(psd_path)
+    _psd_cache[psd_path] = (mtime, psd)
+    # Keep cache small — only 3 PSDs max
+    if len(_psd_cache) > 3:
+        oldest = next(iter(_psd_cache))
+        del _psd_cache[oldest]
+    return psd
+
+
+@app.route('/api/psd-rasterize-all', methods=['POST'])
+def api_psd_rasterize_all():
+    """Rasterize ALL pixel layers from a PSD, returning them as base64 images.
+    This is the heavy operation — may take 30-60 seconds for large PSDs.
+    Results are cached on the server.
+
+    Body: { "psd_path": "..." }
+    Returns: { "success": true, "layers": { "path/to/layer": { "image": "data:...", "bbox": [...], "size": [...] } } }
+    """
+    try:
+        data = request.get_json(force=True, silent=True) or {}
+        psd_path = data.get('psd_path', '')
+        ok, _req_err = _require_spb_internal_request()
+        if not ok:
+            return jsonify({"error": _req_err}), 403
+        # BUG #70: same path-traversal surface as /api/psd-import. Sanitize.
+        psd_path, _err = _sanitize_path(psd_path)
+        if _err:
+            return jsonify({"error": _err}), 400
+        if not psd_path.lower().endswith('.psd'):
+            return jsonify({"error": "Only .psd files are allowed"}), 400
+        if not os.path.exists(psd_path):
+            return jsonify({"error": "PSD not found"}), 404
+
+        psd = _get_cached_psd(psd_path)
+        result_layers = {}
+
+        def rasterize_tree(layer, path_prefix=""):
+            """Recursively rasterize all pixel layers."""
+            for child in layer:
+                full_path = f"{path_prefix}/{child.name}" if path_prefix else child.name
+                if child.kind == 'group' or hasattr(child, '__iter__'):
+                    try:
+                        rasterize_tree(child, full_path)
+                    except Exception:
+                        pass
+                else:
+                    # Pixel/type/shape layer — rasterize
+                    try:
+                        # Force-rasterize even hidden layers by temporarily setting visible
+                        was_visible = child.visible
+                        if not was_visible:
+                            child.visible = True
+                        img = child.composite(force=True)
+                        if not was_visible:
+                            child.visible = False
+                        if img is None or img.size[0] == 0:
+                            continue
+                        buf = io.BytesIO()
+                        img.save(buf, 'PNG')
+                        b64 = base64.b64encode(buf.getvalue()).decode('ascii')
+                        result_layers[full_path] = {
+                            "image": f"data:image/png;base64,{b64}",
+                            "bbox": list(child.bbox),
+                            "size": [img.width, img.height],
+                            "visible": child.visible,
+                            "opacity": child.opacity,
+                        }
+                        logger.info(f"[PSD Rasterize] {full_path}: {img.size}")
+                    except Exception as layer_err:
+                        logger.warning(f"[PSD Rasterize] Skip {full_path}: {layer_err}")
+
+        t0 = time.time()
+        rasterize_tree(psd)
+        elapsed = time.time() - t0
+        logger.info(f"[PSD Rasterize] Done: {len(result_layers)} layers in {elapsed:.1f}s")
+
+        return jsonify({
+            "success": True,
+            "layers": result_layers,
+            "count": len(result_layers),
+            "elapsed_ms": round(elapsed * 1000),
+        })
+    except Exception as e:
+        logger.error(f"/api/psd-rasterize-all failed: {e}\n{traceback.format_exc()}")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/psd-layer', methods=['POST'])
+def api_psd_layer():
+    """Rasterize a specific layer from a PSD file on demand.
+
+    Body: { "psd_path": "...", "layer_path": ["Paintable Area", "Base Paint"] }
+    Returns: { "success": true, "image": "data:image/png;base64,..." }
+    """
+    try:
+        data = request.get_json(force=True, silent=True) or {}
+        psd_path = data.get('psd_path', '')
+        layer_path = data.get('layer_path', [])
+        ok, _req_err = _require_spb_internal_request()
+        if not ok:
+            return jsonify({"error": _req_err}), 403
+
+        # BUG #70: same path-traversal surface as /api/psd-import. Sanitize.
+        psd_path, _err = _sanitize_path(psd_path)
+        if _err:
+            return jsonify({"error": _err}), 400
+        if not psd_path.lower().endswith('.psd'):
+            return jsonify({"error": "Only .psd files are allowed"}), 400
+        if not os.path.exists(psd_path):
+            return jsonify({"error": "PSD not found"}), 404
+
+        psd = _get_cached_psd(psd_path)
+
+        # Navigate to the requested layer by path
+        current = psd
+        for name in layer_path:
+            found = None
+            for child in current:
+                if child.name == name:
+                    found = child
+                    break
+            if found is None:
+                return jsonify({"error": f"Layer '{name}' not found"}), 404
+            current = found
+
+        # Rasterize
+        img = current.composite()
+        if img is None:
+            return jsonify({"error": "Layer could not be rasterized"}), 500
+
+        buf = io.BytesIO()
+        img.save(buf, 'PNG')
+        b64 = base64.b64encode(buf.getvalue()).decode('ascii')
+
+        return jsonify({
+            "success": True,
+            "image": f"data:image/png;base64,{b64}",
+            "size": [img.width, img.height],
+            "bbox": list(current.bbox) if hasattr(current, 'bbox') else [0, 0, img.width, img.height],
+        })
+    except Exception as e:
+        logger.error(f"/api/psd-layer failed: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/dual-shift-preview', methods=['POST'])
+def api_dual_shift_preview():
+    """Generate a quick swatch preview of a custom dual color shift.
+
+    Body: {
+        "color_a": [R, G, B],      // 0-255 integers or 0.0-1.0 floats
+        "color_b": [R, G, B],
+        "shift_intensity": 0.8,     // 0.0-1.0, default 1.0
+        "size": 256                 // preview px, default 256
+    }
+    Returns: base64 PNG of the shift swatch (paint + spec side-by-side).
+    """
+    import numpy as np
+    try:
+        data = request.get_json(force=True, silent=True) or {}
+        raw_a = data.get('color_a', [255, 50, 140])
+        raw_b = data.get('color_b', [255, 230, 25])
+        intensity = float(data.get('shift_intensity', 1.0))
+        sz = int(data.get('size', 256))
+        sz = max(64, min(512, sz))
+
+        # Normalize colors to 0-1
+        def _norm(c):
+            c = [float(x) for x in c]
+            if any(x > 1.0 for x in c):
+                c = [x / 255.0 for x in c]
+            return tuple(np.clip(c, 0, 1))
+
+        ca = _norm(raw_a)
+        cb = _norm(raw_b)
+
+        from engine.dual_color_shift import (
+            spec_dual_shift, paint_dual_shift, _dual_shift_field
+        )
+
+        shape = (sz, sz)
+        mask = np.ones(shape, dtype=np.float32)
+        seed = 42
+
+        # Generate spec map swatch
+        spec = spec_dual_shift(shape, mask, seed, 1.0,
+                               color_a=ca, color_b=cb,
+                               shift_intensity=intensity)
+
+        # Generate paint swatch — start with mid-grey canvas
+        paint = np.full((sz, sz, 3), 0.5, dtype=np.float32)
+        bb = np.zeros(shape, dtype=np.float32)
+        paint = paint_dual_shift(paint, shape, mask, seed, 1.0, bb,
+                                 color_a=ca, color_b=cb,
+                                 shift_intensity=intensity)
+
+        # Build side-by-side: paint | spec
+        paint_u8 = (np.clip(paint[:, :, :3], 0, 1) * 255).astype(np.uint8)
+        spec_vis = np.zeros((sz, sz, 3), dtype=np.uint8)
+        spec_vis[:, :, 0] = spec[:, :, 0]  # M → red
+        spec_vis[:, :, 1] = spec[:, :, 1]  # R → green
+        spec_vis[:, :, 2] = spec[:, :, 2]  # CC → blue
+
+        combined = np.concatenate([paint_u8, spec_vis], axis=1)
+
+        from PIL import Image as PILImage
+        img = PILImage.fromarray(combined, 'RGB')
+        buf = io.BytesIO()
+        img.save(buf, 'PNG', optimize=True)
+        buf.seek(0)
+        b64 = base64.b64encode(buf.getvalue()).decode('ascii')
+
+        return jsonify({
+            "success": True,
+            "preview": f"data:image/png;base64,{b64}",
+            "color_a": list(ca),
+            "color_b": list(cb),
+            "intensity": intensity,
+        })
+    except Exception as e:
+        logger.error(f"/api/dual-shift-preview failed: {e}\n{traceback.format_exc()}")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/dual-shift-register', methods=['POST'])
+def api_dual_shift_register():
+    """Register a custom dual shift as a temporary monolithic finish.
+
+    Body: {
+        "color_a": [R, G, B],
+        "color_b": [R, G, B],
+        "shift_intensity": 1.0,
+        "name": "My Custom Shift"   // optional display name
+    }
+    Returns: { "finish_id": "dualshift_custom_XXXXXX" }
+
+    The registered finish can then be used as zone.finish in /preview-render and /render.
+    """
+    import numpy as np
+    try:
+        data = request.get_json(force=True, silent=True) or {}
+        raw_a = data.get('color_a', [255, 50, 140])
+        raw_b = data.get('color_b', [255, 230, 25])
+        intensity = float(data.get('shift_intensity', 1.0))
+        name = data.get('name', 'Custom Dual Shift')
+
+        def _norm(c):
+            c = [float(x) for x in c]
+            if any(x > 1.0 for x in c):
+                c = [x / 255.0 for x in c]
+            return tuple(np.clip(c, 0, 1))
+
+        ca = _norm(raw_a)
+        cb = _norm(raw_b)
+
+        from engine.dual_color_shift import spec_dual_shift, paint_dual_shift
+        import shokker_engine_v2 as eng
+
+        # Create a unique ID from the color values
+        _hash = hash((ca, cb, intensity)) & 0xFFFFFF
+        finish_id = f"dualshift_custom_{_hash:06x}"
+
+        # Build spec and paint functions for this color pair
+        def _spec(shape, mask, seed, sm, _ca=ca, _cb=cb, _int=intensity):
+            return spec_dual_shift(shape, mask, seed, sm,
+                                   color_a=_ca, color_b=_cb,
+                                   shift_intensity=_int)
+
+        def _paint(paint, shape, mask, seed, pm, bb, _ca=ca, _cb=cb, _int=intensity):
+            return paint_dual_shift(paint, shape, mask, seed, pm, bb,
+                                    color_a=_ca, color_b=_cb,
+                                    shift_intensity=_int)
+
+        # Register into the engine's monolithic registry
+        if hasattr(eng, 'MONOLITHIC_REGISTRY'):
+            eng.MONOLITHIC_REGISTRY[finish_id] = (_spec, _paint)
+            logger.info(f"Registered custom dual shift: {finish_id} ({name}) "
+                        f"A={ca} B={cb} int={intensity}")
+        else:
+            return jsonify({"error": "Engine registry not available"}), 500
+
+        return jsonify({
+            "success": True,
+            "finish_id": finish_id,
+            "name": name,
+            "color_a": list(ca),
+            "color_b": list(cb),
+            "intensity": intensity,
+        })
+    except Exception as e:
+        logger.error(f"/api/dual-shift-register failed: {e}\n{traceback.format_exc()}")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/finish-registry-status', methods=['GET'])
+def api_finish_registry_status():
+    """Return which finish IDs are registered in the engine vs. unregistered.
+    Used by the UI to show warning badges on placeholder finishes."""
+    try:
+        from shokker_engine_v2 import MONOLITHIC_REGISTRY, BASE_REGISTRY, PATTERN_REGISTRY
+        registered = set()
+        registered.update(MONOLITHIC_REGISTRY.keys())
+        registered.update(BASE_REGISTRY.keys())
+        registered.update(PATTERN_REGISTRY.keys())
+        return jsonify({
+            "registered": sorted(registered),
+            "count": len(registered),
+            "mono": len(MONOLITHIC_REGISTRY),
+            "base": len(BASE_REGISTRY),
+            "pattern": len(PATTERN_REGISTRY),
+        })
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 @app.route('/api/finish-data', methods=['GET'])
 def api_finish_data():
     """Serve the full finish catalogue as JSON.
@@ -839,19 +1980,27 @@ def api_finish_data():
       ?type=bases  - return only one registry type
     """
     global _FINISH_DATA_CACHE
+    logger.info(f"[finish-data] Requested (nocache={request.args.get('nocache')}, type={request.args.get('type')})")
     try:
         force = request.args.get("nocache") == "1"
         if _FINISH_DATA_CACHE is None or force:
+            logger.debug("[finish-data] Building payload from registries")
             _FINISH_DATA_CACHE = _build_finish_data_payload()
         payload = _FINISH_DATA_CACHE
 
         # Optional filter by type
         filter_type = request.args.get("type")
         if filter_type and filter_type in payload:
-            return jsonify({"status": "ok", filter_type: payload[filter_type],
+            resp = jsonify({"status": "ok", filter_type: payload[filter_type],
                             "count": len(payload[filter_type])})
+        else:
+            resp = jsonify({"status": "ok", **payload})
 
-        return jsonify({"status": "ok", **payload})
+        # Cache for 5 minutes — registries are stable per server lifetime,
+        # but a short cache lets clients get updates after /api/reload-engine.
+        for k, v in _short_cache_headers.items():
+            resp.headers[k] = v
+        return resp
     except Exception as e:
         logger.error(f"/api/finish-data failed: {e}\n{traceback.format_exc()}")
         return jsonify({"status": "error", "error": str(e)}), 500
@@ -963,28 +2112,66 @@ def apply_paint_recolor(paint_file, rules, job_dir, mask_rle=None, mask_has_incl
 
 
 def numpy_to_base64_png(arr):
-    """Convert a numpy uint8 array to a base64-encoded PNG data URI."""
-    from PIL import Image as PILImage
-    img = PILImage.fromarray(arr)
-    buf = io.BytesIO()
-    img.save(buf, format='PNG')
-    b64 = base64.b64encode(buf.getvalue()).decode('ascii')
+    """Convert a numpy uint8 array to a base64-encoded PNG data URI.
+    Uses cv2 with fast compression (level 1) instead of PIL default (level 6).
+    ~3-5x faster encoding for preview images with negligible size increase."""
+    import cv2 as _cv2
+    import numpy as _np
+    a = _np.asarray(arr)
+    # cv2.imencode expects BGR(A), but our arrays are RGB(A) -- convert
+    if a.ndim == 3:
+        if a.shape[2] == 4:
+            a = _cv2.cvtColor(a, _cv2.COLOR_RGBA2BGRA)
+        elif a.shape[2] == 3:
+            a = _cv2.cvtColor(a, _cv2.COLOR_RGB2BGR)
+    # PNG compression level 1 (fast) -- level 0 is no compression (huge),
+    # level 9 is max compression (slow). Level 1 is ~4x faster than default 3.
+    ok, png_bytes = _cv2.imencode('.png', a, [_cv2.IMWRITE_PNG_COMPRESSION, 1])
+    if not ok:
+        # Fallback to PIL if cv2 fails
+        from PIL import Image as PILImage
+        img = PILImage.fromarray(arr)
+        buf = io.BytesIO()
+        img.save(buf, format='PNG')
+        png_bytes = buf.getvalue()
+    else:
+        png_bytes = png_bytes.tobytes()
+    b64 = base64.b64encode(png_bytes).decode('ascii')
     return f"data:image/png;base64,{b64}"
 
 
 def _spec_array_to_rgba_uint8(arr):
-    """Normalize spec array to (H, W, 4) uint8 for PNG encoding. Handles float, 3-chan, shape issues."""
+    """Normalize spec array to (H, W, 4) uint8 for PNG encoding. Handles float, 3-chan, shape issues.
+    Optimized: pre-allocates output array instead of concatenating/stacking."""
     import numpy as _np
     if arr is None or not hasattr(arr, 'shape') or arr.size == 0:
         return None
     a = _np.asarray(arr)
     if a.ndim == 2:
-        a = _np.stack([a, a, a, _np.full_like(a, 255)], axis=-1)
+        # Grayscale -> RGBA: pre-allocate and fill channels (avoids 4 temp arrays from stack)
+        h, w = a.shape
+        out = _np.empty((h, w, 4), dtype=_np.uint8)
+        if a.dtype != _np.uint8:
+            gray = _np.clip(a, 0, 255).astype(_np.uint8)
+        else:
+            gray = a
+        out[:, :, 0] = gray
+        out[:, :, 1] = gray
+        out[:, :, 2] = gray
+        out[:, :, 3] = 255
+        return out
     elif a.ndim == 3 and a.shape[-1] == 3:
-        alpha = _np.full((a.shape[0], a.shape[1], 1), 255, dtype=a.dtype)
-        a = _np.concatenate([a, alpha], axis=-1)
+        # RGB -> RGBA: pre-allocate with alpha=255 (avoids concatenate temp array)
+        h, w = a.shape[:2]
+        out = _np.empty((h, w, 4), dtype=_np.uint8)
+        if a.dtype != _np.uint8:
+            out[:, :, :3] = _np.clip(a, 0, 255).astype(_np.uint8)
+        else:
+            out[:, :, :3] = a
+        out[:, :, 3] = 255
+        return out
     if a.dtype != _np.uint8:
-        a = _np.clip(a.astype(_np.float32), 0, 255).astype(_np.uint8)
+        a = _np.clip(a, 0, 255).astype(_np.uint8)
     if a.shape[-1] != 4:
         return None
     return a
@@ -1349,8 +2536,8 @@ def _render_swatch_bytes(finish_type, finish_key, color_hex, size, seed):
             if spec_fn and callable(spec_fn):
                 try:
                     spec_result = spec_fn(shape, mask, seed, 1.0)
-                    if spec_result is not None and hasattr(spec_result, 'shape'):
-                        spec_arr = spec_result.astype(np.float32)
+                    spec_arr = _normalize_spec_result_to_rgba(spec_result, shape)
+                    if spec_arr is not None:
                         M_mean  = float(spec_arr[:, :, 0].mean())
                         R_mean  = float(spec_arr[:, :, 1].mean())
                         CC_mean = float(spec_arr[:, :, 2].mean())
@@ -1585,22 +2772,38 @@ def api_swatch(finish_type, finish_key):
     seed      = int(request.args.get('seed', 42))
     nocache   = request.args.get('nocache') == '1'
     mode      = request.args.get('mode', '')
+    cache_token = _swatch_cache_token()
 
-    cache_key = f"{finish_type}:{finish_key}:{color_hex}:{size}:{mode}"
-    prefer_live = request.args.get('prefer') == 'live'
+    cache_key = f"{cache_token}:{finish_type}:{finish_key}:{color_hex}:{size}:{mode}"
+    prefer = (request.args.get('prefer') or '').lower()
+    # Correctness first: live engine swatches are the default. Static/prebuilt
+    # thumbnails can hide rebuilt finish math behind old PNGs.
+    prefer_live = prefer != 'static' and prefer != 'prerender'
+    allow_prerender = not prefer_live
 
-    # Use no-cache so browser always gets fresh swatches after server/code changes (no stale thumbnails)
-    _no_cache_headers = {'Cache-Control': 'no-store, no-cache, must-revalidate', 'Pragma': 'no-cache'}
+    # Permanent disk cache + browser cache. Swatches are tiny (2-5KB each).
+    # Once rendered, saved to disk forever. Browser caches for 24h. ?v= busts on restart.
+    _cache_headers = {'Cache-Control': 'public, max-age=86400, immutable'}
 
-    # Pre-rendered thumbnail (from rebuild_thumbnails.py): when a pre-rendered file exists, NEVER use the
-    # generic in-memory cache (cache_key) - it may hold bytes from before the last rebuild. Use only
-    # mtime-based prerender cache so rebuilt thumbnails are always served without server restart.
-    # Normalize key: same as rebuild_thumbnails (safe_key), and try hyphen→underscore so URLs match filenames.
+    # Disk cache path: thumbnails/swatch_cache/{type}_{key}_{color}_{size}_{mode}.png
+    _swatch_cache_dir = os.path.join(THUMBNAIL_DIR, 'swatch_cache')
+    _safe = (f"{cache_token}_{finish_type}_{finish_key}_{color_hex}_{size}_{mode}").replace('/', '_').replace('\\', '_').replace(':', '_')
+    _disk_path = os.path.join(_swatch_cache_dir, _safe + '.png')
+
+    # Check disk cache first (survives server restarts)
+    if not nocache and os.path.isfile(_disk_path):
+        try:
+            with open(_disk_path, 'rb') as _df:
+                return FlaskResponse(_df.read(), mimetype='image/png', headers=_cache_headers)
+        except Exception:
+            pass
+
+    # Pre-rendered thumbnail (from rebuild_thumbnails.py)
     def _pre_path_for_key(key):
         safe = (key or '').replace('/', '_').replace('\\', '_').replace(':', '_').replace('-', '_').strip() or 'none'
         return os.path.join(THUMBNAIL_DIR, finish_type, safe + '.png')
     _pre_path = None
-    if not prefer_live and mode != 'split' and finish_type in ('base', 'pattern', 'monolithic'):
+    if allow_prerender and mode != 'split' and finish_type in ('base', 'pattern', 'monolithic'):
         _safe_key = (finish_key or '').replace('/', '_').replace('\\', '_').replace(':', '_').strip() or 'none'
         _pre_path = os.path.join(THUMBNAIL_DIR, finish_type, _safe_key + '.png')
         if not os.path.isfile(_pre_path):
@@ -1609,17 +2812,17 @@ def api_swatch(finish_type, finish_key):
                 _pre_path = alt_path
 
     if _pre_path is None or not os.path.isfile(_pre_path):
-        # No pre-rendered file: use generic cache
+        # No pre-rendered file: use in-memory cache
         with _SWATCH_CACHE_LOCK:
             if not nocache and cache_key in _SWATCH_CACHE:
                 return FlaskResponse(
                     _SWATCH_CACHE[cache_key],
                     mimetype='image/png',
-                    headers=_no_cache_headers
+                    headers=_cache_headers
                 )
 
     # Pre-rendered thumbnail: serve when present; cache key includes file mtime so rebuild = fresh
-    if not prefer_live and mode != 'split' and finish_type in ('base', 'pattern', 'monolithic'):
+    if allow_prerender and mode != 'split' and finish_type in ('base', 'pattern', 'monolithic'):
         if os.path.isfile(_pre_path):
             try:
                 _mtime = int(os.path.getmtime(_pre_path))
@@ -1654,7 +2857,7 @@ def api_swatch(finish_type, finish_key):
             # Pre-rendered thumbnail (from rebuild_thumbnails.py): use when present so thumbnails actually show
             png_left = png_right = None
             _split_pre = _pre_path if _pre_path and os.path.isfile(_pre_path) else _pre_path_for_key(finish_key) if os.path.isfile(_pre_path_for_key(finish_key)) else None
-            if _split_pre and not prefer_live:
+            if _split_pre and allow_prerender:
                 try:
                     from PIL import Image as _PILImg
                     with open(_split_pre, 'rb') as _f:
@@ -1707,10 +2910,18 @@ def api_swatch(finish_type, finish_key):
     with _SWATCH_CACHE_LOCK:
         _SWATCH_CACHE[cache_key] = png_bytes
 
+    # Save to disk cache (permanent, survives restarts, ~3KB per swatch)
+    try:
+        os.makedirs(_swatch_cache_dir, exist_ok=True)
+        with open(_disk_path, 'wb') as _df:
+            _df.write(png_bytes)
+    except Exception:
+        pass  # Non-critical: in-memory cache still works
+
     return FlaskResponse(
         png_bytes,
         mimetype='image/png',
-        headers=_no_cache_headers
+        headers=_cache_headers
     )
 
 
@@ -1936,9 +3147,13 @@ def _prebake_spec_patterns():
             errors += 1
             logger.warning(f"Spec thumb bake failed for {pattern_id}: {e}")
 
-        # Yield CPU between thumbnails if large batch
+        # Yield to active renders — don't compete for CPU
+        while not _preview_render_lock.acquire(blocking=False):
+            time.sleep(0.1)
+        _preview_render_lock.release()
+        # Small delay between bakes to avoid CPU saturation
         if len(pattern_items) > 50:
-            time.sleep(0.05)
+            time.sleep(0.02)
 
     if changed:
         manifest['spec_patterns'] = sp_manifest
@@ -2003,8 +3218,16 @@ def _prebake_swatches():
         [('base', k) for k in engine.BASE_REGISTRY.keys()] +
         [('pattern', k) for k in engine.PATTERN_REGISTRY.keys()]
     )
+    import time as _bake_time
+    def _yield_to_render():
+        """If a real render is active, pause pre-bake until it finishes."""
+        while not _preview_render_lock.acquire(blocking=False):
+            _bake_time.sleep(0.1)  # Wait 100ms and retry
+        _preview_render_lock.release()
+
     for finish_type, finish_key in items:
-        cache_key = f"{finish_type}:{finish_key}:{neutral}:{size}"
+        _yield_to_render()  # Don't compete with active renders
+        cache_key = f"{_swatch_cache_token()}:{finish_type}:{finish_key}:{neutral}:{size}:"
         try:
             png_bytes = _render_swatch_bytes(finish_type, finish_key, neutral, size, seed)
             with _SWATCH_CACHE_LOCK:
@@ -2013,12 +3236,13 @@ def _prebake_swatches():
         except Exception as e:
             logger.debug(f"Pre-bake skip [{finish_type}/{finish_key}]: {e}")
             errors += 1
-    # Phase 2: priority bases at 48px (picker) so FOUNDATION / CERAMIC & GLASS / CARBON & COMPOSITE show correctly
+    # Phase 2: priority bases at 48px (picker)
     size = 48
     for finish_key in PREBAKE_PRIORITY_BASE_IDS:
         if finish_key not in base_reg:
             continue
-        cache_key = f"base:{finish_key}:{neutral}:{size}"
+        _yield_to_render()
+        cache_key = f"{_swatch_cache_token()}:base:{finish_key}:{neutral}:{size}:"
         try:
             png_bytes = _render_swatch_bytes('base', finish_key, neutral, size, seed)
             with _SWATCH_CACHE_LOCK:
@@ -2030,7 +3254,8 @@ def _prebake_swatches():
     # Phase 3: first 80 monolithics at 48px
     mono_keys = list(engine.MONOLITHIC_REGISTRY.keys())[:80]
     for finish_key in mono_keys:
-        cache_key = f"monolithic:{finish_key}:{neutral}:{size}"
+        _yield_to_render()
+        cache_key = f"{_swatch_cache_token()}:monolithic:{finish_key}:{neutral}:{size}:"
         try:
             png_bytes = _render_swatch_bytes('monolithic', finish_key, neutral, size, seed)
             with _SWATCH_CACHE_LOCK:
@@ -2077,6 +3302,12 @@ def preview_render_endpoint():
         "resolution": [512, 512]
     }
     """
+    # Per-IP rate limit: protect the engine from runaway slider drags.
+    # 10 previews/sec/IP is generous — the UI debounces at ~3/sec.
+    if not _rate_limit("preview-render", max_per_second=10):
+        return jsonify({"error": "rate_limited",
+                        "message": "Too many preview requests — slow down."}), 429
+
     # Signal any in-flight preview to abort, then wait for the lock.
     # If the previous render is still finishing after 2 s, reject this
     # request with 429 so the UI can retry rather than pile up renders.
@@ -2085,27 +3316,43 @@ def preview_render_endpoint():
     if not acquired:
         return jsonify({"error": "Preview busy — previous render still finishing"}), 429
     _preview_abort.clear()
+    _preview_t0 = time.time()
     try:
+        import numpy as np  # Must be at function scope — conditional np imports below shadow this
         data = request.get_json()
         if not data:
             return jsonify({"error": "No JSON body provided"}), 400
 
-
         paint_file = data.get("paint_file")
-        if not paint_file or not os.path.exists(paint_file):
+        paint_image_base64_early = data.get("paint_image_base64")
+        if not paint_image_base64_early and (not paint_file or not os.path.exists(paint_file)):
             return jsonify({"error": f"Paint file not found: {paint_file}"}), 404
 
-        zones = data.get("zones", [])
+        zones = [_convert_zone_keys(z) for z in data.get("zones", [])]
         import_spec_map_early = data.get("import_spec_map")
         if not zones and not import_spec_map_early:
             return jsonify({"error": "No zones provided"}), 400
+        # Reject runaway zone arrays before we spend any CPU on them.
+        if len(zones) > MAX_ZONES_PER_REQUEST:
+            return jsonify({
+                "error": "too_many_zones",
+                "message": f"Zone count {len(zones)} exceeds limit {MAX_ZONES_PER_REQUEST}.",
+                "limit": MAX_ZONES_PER_REQUEST,
+            }), 400
 
-        seed = data.get("seed", 51)
-        preview_scale = float(data.get("preview_scale", 0.25))
-        preview_scale = max(0.0625, min(1.0, preview_scale))  # Clamp 1/16 to 1x
+        # Validate zone data has required fields
+        for zi, z in enumerate(zones):
+            ok, err = _validate_zone_required_fields(z, zi + 1)
+            if not ok:
+                logger.warning(f"[preview-render] Zone validation: {err}")
+                # Don't reject — just log. Some zones may be incomplete during editing.
+
+        seed = _safe_int(data.get("seed"), SEED_DEFAULT)
+        preview_scale = _clamp(data.get("preview_scale"), PREVIEW_SCALE_MIN,
+                               PREVIEW_SCALE_MAX, PREVIEW_SCALE_DEFAULT)
 
         # Incremental rendering hints from client
-        changed_zone = data.get("changed_zone", -1)
+        changed_zone = _safe_int(data.get("changed_zone"), -1)
         zone_hashes = data.get("zone_hashes", [])
 
         # Invalidate engine zone cache when paint file or preview scale changes.
@@ -2181,21 +3428,22 @@ def preview_render_endpoint():
             zone_obj = {
                 "name": z.get("name", "Zone"),
                 "color": z.get("color", "everything"),
-                "intensity": z.get("intensity", "100"),
+                "intensity": str(_clamp(z.get("intensity"), INTENSITY_MIN, INTENSITY_MAX, INTENSITY_DEFAULT)),
             }
             # Base vs Pattern Intensity: when set, pattern uses pattern_intensity so lowering base doesn't kill pattern
             if z.get("pattern_intensity") is not None:
-                zone_obj["pattern_intensity"] = z.get("pattern_intensity")
+                zone_obj["pattern_intensity"] = str(_clamp(z.get("pattern_intensity"),
+                                                           INTENSITY_MIN, INTENSITY_MAX, INTENSITY_DEFAULT))
             # Compositing mode
             if z.get("base"):
                 zone_obj["base"] = z["base"]
                 zone_obj["pattern"] = z.get("pattern", "none")
-                if z.get("scale") and float(z.get("scale", 1.0)) != 1.0:
-                    zone_obj["scale"] = float(z["scale"])
-                if z.get("rotation") and float(z.get("rotation", 0)) != 0:
-                    zone_obj["rotation"] = float(z["rotation"])
-                if z.get("pattern_opacity") and float(z.get("pattern_opacity", 1.0)) != 1.0:
-                    zone_obj["pattern_opacity"] = float(z["pattern_opacity"])
+                if z.get("scale") and _safe_float(z.get("scale"), SCALE_DEFAULT) != SCALE_DEFAULT:
+                    zone_obj["scale"] = _clamp(z["scale"], SCALE_MIN, SCALE_MAX, SCALE_DEFAULT)
+                if z.get("rotation") and _safe_float(z.get("rotation"), ROTATION_DEFAULT) != ROTATION_DEFAULT:
+                    zone_obj["rotation"] = _clamp(z["rotation"], ROTATION_MIN, ROTATION_MAX, ROTATION_DEFAULT)
+                zone_obj["pattern_opacity"] = _clamp(z.get("pattern_opacity"),
+                                                     OPACITY_MIN, OPACITY_MAX, OPACITY_DEFAULT)
                 if z.get("pattern_stack"):
                     zone_obj["pattern_stack"] = z["pattern_stack"]
             # Monolithic/legacy mode
@@ -2205,23 +3453,60 @@ def preview_render_endpoint():
                 if z.get("finish_colors"):
                     zone_obj["finish_colors"] = z["finish_colors"]
                 # Pass rotation for gradient direction control
-                if z.get("rotation") and float(z.get("rotation", 0)) != 0:
-                    zone_obj["rotation"] = float(z["rotation"])
+                if z.get("rotation") and _safe_float(z.get("rotation"), ROTATION_DEFAULT) != ROTATION_DEFAULT:
+                    zone_obj["rotation"] = _clamp(z["rotation"], ROTATION_MIN, ROTATION_MAX, ROTATION_DEFAULT)
                 # BUG FIX: Pass pattern data for monolithic zones too - engine supports
                 # pattern overlay on monolithics via overlay_pattern_on_spec/overlay_pattern_paint
                 if z.get("pattern") and z.get("pattern") != "none":
                     zone_obj["pattern"] = z["pattern"]
-                if z.get("scale") and float(z.get("scale", 1.0)) != 1.0:
-                    zone_obj["scale"] = float(z["scale"])
-                if z.get("pattern_opacity") and float(z.get("pattern_opacity", 1.0)) != 1.0:
-                    zone_obj["pattern_opacity"] = float(z["pattern_opacity"])
+                if z.get("scale") and _safe_float(z.get("scale"), SCALE_DEFAULT) != SCALE_DEFAULT:
+                    zone_obj["scale"] = _clamp(z["scale"], SCALE_MIN, SCALE_MAX, SCALE_DEFAULT)
+                zone_obj["pattern_opacity"] = _clamp(z.get("pattern_opacity"),
+                                                     OPACITY_MIN, OPACITY_MAX, OPACITY_DEFAULT)
                 if z.get("pattern_stack"):
                     zone_obj["pattern_stack"] = z["pattern_stack"]
 
+            # --- PARAMETER PASSTHROUGH: fields from JS buildServerZonesForRender ---
+            # Pattern position offsets (0.0-1.0, default 0.5 = centered)
+            if z.get("pattern_offset_x") is not None:
+                zone_obj["pattern_offset_x"] = _clamp(z["pattern_offset_x"], 0.0, 1.0, 0.5)
+            if z.get("pattern_offset_y") is not None:
+                zone_obj["pattern_offset_y"] = _clamp(z["pattern_offset_y"], 0.0, 1.0, 0.5)
+            # Pattern flip (boolean toggles)
+            if z.get("pattern_flip_h"):
+                zone_obj["pattern_flip_h"] = bool(z["pattern_flip_h"])
+            if z.get("pattern_flip_v"):
+                zone_obj["pattern_flip_v"] = bool(z["pattern_flip_v"])
+            # Pattern placement modes
+            if z.get("pattern_fit_zone"):
+                zone_obj["pattern_fit_zone"] = True
+            if z.get("hard_edge"):
+                zone_obj["hard_edge"] = True
+            if z.get("pattern_manual"):
+                zone_obj["pattern_manual"] = True
 
             # Pattern spec multiplier (controls spec map punch independently)
             if z.get("pattern_spec_mult") is not None:
-                zone_obj["pattern_spec_mult"] = float(z["pattern_spec_mult"])
+                zone_obj["pattern_spec_mult"] = _safe_float(z["pattern_spec_mult"], 1.0)
+
+            # Pattern strength map (per-pixel strength modulation)
+            if z.get("pattern_strength_map"):
+                try:
+                    import numpy as np
+                    psm_rle = z["pattern_strength_map"]
+                    if isinstance(psm_rle, str):
+                        psm_rle = json.loads(psm_rle)
+                    psm_w = psm_rle.get("width", 0)
+                    psm_h = psm_rle.get("height", 0)
+                    psm_runs = psm_rle.get("runs", [])
+                    psm_flat = np.zeros(psm_w * psm_h, dtype=np.float32)
+                    psm_pos = 0
+                    for run_val, run_len in psm_runs:
+                        psm_flat[psm_pos:psm_pos + run_len] = float(run_val) / 255.0
+                        psm_pos += run_len
+                    zone_obj["pattern_strength_map"] = psm_flat.reshape((psm_h, psm_w))
+                except Exception as _psm_err:
+                    logger.warning(f"Failed to decode pattern_strength_map: {_psm_err}")
 
             # Custom intensity
             if z.get("custom_intensity"):
@@ -2233,52 +3518,43 @@ def preview_render_endpoint():
 
             # v6.0 advanced finish params - must pass through for engine to use
             if z.get("cc_quality") is not None:
-                zone_obj["cc_quality"] = float(z["cc_quality"])
+                zone_obj["cc_quality"] = _safe_float(z["cc_quality"], 1.0)
             if z.get("blend_base"):
                 zone_obj["blend_base"] = z["blend_base"]
                 zone_obj["blend_dir"] = z.get("blend_dir", "horizontal")
-                zone_obj["blend_amount"] = float(z.get("blend_amount", 0.5))
+                zone_obj["blend_amount"] = _clamp(z.get("blend_amount"), 0.0, 1.0, 0.5)
             if z.get("paint_color"):
                 zone_obj["paint_color"] = z["paint_color"]
-            if z.get("base_scale") and float(z.get("base_scale", 1.0)) != 1.0:
-                zone_obj["base_scale"] = float(z["base_scale"])
+            if z.get("base_scale") and _safe_float(z.get("base_scale"), SCALE_DEFAULT) != SCALE_DEFAULT:
+                zone_obj["base_scale"] = _clamp(z["base_scale"], SCALE_MIN, SCALE_MAX, SCALE_DEFAULT)
             if z.get("base_strength") is not None:
-                zone_obj["base_strength"] = float(z["base_strength"])
+                zone_obj["base_strength"] = _safe_float(z["base_strength"], 1.0)
             if z.get("base_spec_strength") is not None:
-                zone_obj["base_spec_strength"] = float(z.get("base_spec_strength", 1.0))
+                zone_obj["base_spec_strength"] = _safe_float(z.get("base_spec_strength"), 1.0)
+            # Base spec blend mode (normal, multiply, screen, etc.) — passthrough from JS
+            if z.get("base_spec_blend_mode") and z["base_spec_blend_mode"] != "normal":
+                zone_obj["base_spec_blend_mode"] = z["base_spec_blend_mode"]
             if z.get("base_color_mode") is not None:
                 zone_obj["base_color_mode"] = z.get("base_color_mode", "source")
-            if z.get("base_color_mode") == "gradient" and z.get("gradient_stops"):
-                # Build gradient config dict for engine — repurpose base_color field
-                _g_stops = z.get("gradient_stops", [])
-                _g_dir = z.get("gradient_direction", "horizontal")
-                _g_angle = float(z.get("gradient_angle", 0))
-                zone_obj["base_color"] = {
-                    "stops": [{"pos": float(s.get("pos", 0)) / 100.0,
-                               "color": [int(s["color"][1:3], 16) / 255.0,
-                                         int(s["color"][3:5], 16) / 255.0,
-                                         int(s["color"][5:7], 16) / 255.0]
-                               } if isinstance(s.get("color"), str) and s["color"].startswith("#")
-                              else {"pos": float(s.get("pos", 0)) / 100.0,
-                                    "color": [float(c) for c in s.get("color", [0, 0, 0])[:3]]}
-                              for s in _g_stops],
-                    "direction": _g_dir,
-                    "angle": _g_angle,
-                }
-            elif z.get("base_color") is not None:
+            if z.get("base_color") is not None:
                 zone_obj["base_color"] = z.get("base_color", [1.0, 1.0, 1.0])
             if z.get("base_color_source") is not None:
                 zone_obj["base_color_source"] = z.get("base_color_source")
+            # Gradient color mode — must pass stops and direction for preview parity with full render
+            if z.get("gradient_stops"):
+                zone_obj["gradient_stops"] = z["gradient_stops"]
+            if z.get("gradient_direction"):
+                zone_obj["gradient_direction"] = z["gradient_direction"]
             if z.get("base_color_strength") is not None:
-                zone_obj["base_color_strength"] = float(z.get("base_color_strength", 1.0))
+                zone_obj["base_color_strength"] = _clamp(z.get("base_color_strength"), 0.0, 1.0, 1.0)
+            if z.get("base_color_fit_zone"):
+                zone_obj["base_color_fit_zone"] = True
             if z.get("base_hue_offset") is not None:
-                zone_obj["base_hue_offset"] = float(z.get("base_hue_offset", 0))
+                zone_obj["base_hue_offset"] = _safe_float(z.get("base_hue_offset"), 0.0)
             if z.get("base_saturation_adjust") is not None:
-                zone_obj["base_saturation_adjust"] = float(z.get("base_saturation_adjust", 0))
+                zone_obj["base_saturation_adjust"] = _safe_float(z.get("base_saturation_adjust"), 0.0)
             if z.get("base_brightness_adjust") is not None:
-                zone_obj["base_brightness_adjust"] = float(z.get("base_brightness_adjust", 0))
-            if z.get("pattern_spec_mult") is not None:
-                zone_obj["pattern_spec_mult"] = float(z["pattern_spec_mult"])
+                zone_obj["base_brightness_adjust"] = _safe_float(z.get("base_brightness_adjust"), 0.0)
 
             # Spec pattern overlay stack
             if z.get("spec_pattern_stack"):
@@ -2299,6 +3575,7 @@ def preview_render_endpoint():
                 _has_src  = z.get(f"{_pfx}_color_source")
                 if not _has_base and not _has_src:
                     continue
+                logger.info(f"[PREVIEW OVERLAY] {_pfx}: base={_has_base}, src={_has_src}, str={z.get(f'{_pfx}_strength')}, blend={z.get(f'{_pfx}_blend_mode')}, color={z.get(f'{_pfx}_color')}")
                 if _has_base:
                     zone_obj[_pfx] = _has_base
                 zone_obj[f"{_pfx}_color"]        = z.get(f"{_pfx}_color", [1.0, 1.0, 1.0])
@@ -2308,12 +3585,19 @@ def preview_render_endpoint():
                 zone_obj[f"{_pfx}_noise_scale"]  = int(z.get(f"{_pfx}_noise_scale", 24))
                 zone_obj[f"{_pfx}_scale"]        = max(0.01, min(5.0, float(z.get(f"{_pfx}_scale", 1.0))))
                 zone_obj[f"{_pfx}_pattern"]      = z.get(f"{_pfx}_pattern")
-                for _k in (f"{_pfx}_pattern_opacity", f"{_pfx}_pattern_scale",
+                # Preview must pass the same base-overlay tuning fields as the
+                # full render payload; otherwise sliders look dead until export.
+                for _k in (f"{_pfx}_spec_strength",
+                           f"{_pfx}_hue_shift", f"{_pfx}_saturation", f"{_pfx}_brightness",
+                           f"{_pfx}_pattern_hue_shift", f"{_pfx}_pattern_saturation", f"{_pfx}_pattern_brightness",
+                           f"{_pfx}_pattern_opacity", f"{_pfx}_pattern_scale",
                            f"{_pfx}_pattern_rotation", f"{_pfx}_pattern_strength",
                            f"{_pfx}_pattern_offset_x", f"{_pfx}_pattern_offset_y"):
                     if z.get(_k) is not None:
                         zone_obj[_k] = float(z[_k])
-                for _bk in (f"{_pfx}_pattern_invert", f"{_pfx}_pattern_harden"):
+                for _bk in (f"{_pfx}_pattern_invert", f"{_pfx}_pattern_harden",
+                            f"{_pfx}_pattern_flip_h", f"{_pfx}_pattern_flip_v",
+                            f"{_pfx}_fit_zone"):
                     if z.get(_bk) is not None:
                         zone_obj[_bk] = bool(z[_bk])
 
@@ -2332,11 +3616,47 @@ def preview_render_endpoint():
                     pos = 0
                     for run_val, run_len in runs:
                         # Client sends binary 0/1; engine expects float 0.0 or 1.0 (not 0/255)
-                        flat[pos:pos + run_len] = 1.0 if run_val else 0.0
+                        flat[pos:pos + run_len] = float(run_val) / 255.0 if run_val else 0.0
                         pos += run_len
                     zone_obj["region_mask"] = flat.reshape((rh, rw))
                 except Exception:
                     pass  # Skip broken masks
+
+            # Source layer mask (PSD layer alpha — restricts zone to layer pixels)
+            if z.get("source_layer_mask"):
+                try:
+                    import numpy as np
+                    rle = z["source_layer_mask"]
+                    if isinstance(rle, str):
+                        rle = json.loads(rle)
+                    rw = rle.get("width", 0)
+                    rh = rle.get("height", 0)
+                    runs = rle.get("runs", [])
+                    flat = np.zeros(rw * rh, dtype=np.float32)
+                    pos = 0
+                    for run_val, run_len in runs:
+                        flat[pos:pos + run_len] = float(run_val) / 255.0 if run_val else 0.0
+                        pos += run_len
+                    zone_obj["source_layer_mask"] = flat.reshape((rh, rw))
+                    logger.info(f"[PSD] Zone '{zone_obj.get('name','')}' restricted to layer mask ({rw}x{rh})")
+                except Exception as _slm_err:
+                    logger.warning(f"[PSD] source_layer_mask decode failed: {_slm_err}")
+
+            # Photoshop-correct layer-local color matching: decode the layer's
+            # own RGB image so the engine can color-match against the layer's
+            # unblended pixels instead of the composite. See Codex finding.
+            if z.get("source_layer_rgb_png"):
+                try:
+                    import base64 as _b64lr, io as _iolr, numpy as np
+                    from PIL import Image as _PILlr
+                    _raw = z["source_layer_rgb_png"]
+                    if _raw.startswith("data:"):
+                        _raw = _raw.split(",", 1)[-1]
+                    _img = _PILlr.open(_iolr.BytesIO(_b64lr.b64decode(_raw))).convert("RGBA")
+                    zone_obj["source_layer_rgb"] = np.asarray(_img, dtype=np.uint8)
+                    logger.info(f"[PSD] Zone '{zone_obj.get('name','')}' will color-match against layer RGB ({_img.size[0]}x{_img.size[1]})")
+                except Exception as _slr_err:
+                    logger.warning(f"[PSD] source_layer_rgb decode failed: {_slr_err}")
 
             # Spatial mask - include/exclude refinement for color-based zones
             # Values: 0=unset, 1=include (green), 2=exclude (red)
@@ -2360,6 +3680,8 @@ def preview_render_endpoint():
                 # Engine uses region_mask first and skips color+spatial; so when spatial is set, drop region_mask
                 if "region_mask" in zone_obj:
                     del zone_obj["region_mask"]
+            if z.get("priority_override") is not None:
+                zone_obj["priority_override"] = bool(z.get("priority_override"))
 
             server_zones.append(zone_obj)
 
@@ -2425,7 +3747,6 @@ def preview_render_endpoint():
         # ---- Spec delta encoding (#12) ----
         # If we have a cached previous spec and shapes match, compute a
         # compressed delta.  Send it instead of the full PNG when smaller.
-        global _prev_spec_cache
         spec_delta_b64 = None
         if spec_normalized is not None and _prev_spec_cache is not None:
             try:
@@ -2441,8 +3762,10 @@ def preview_render_endpoint():
                 logger.debug(f"Spec delta encoding skipped: {_de}")
 
         # Update the cached spec for next delta computation
+        # Use np.array with copy=True instead of .copy() -- same result but
+        # ensures contiguous memory layout for faster delta comparisons next time.
         if spec_normalized is not None:
-            _prev_spec_cache = spec_normalized.copy()
+            _prev_spec_cache = np.ascontiguousarray(spec_normalized)
 
         payload = {
             "success": True,
@@ -2455,11 +3778,30 @@ def preview_render_endpoint():
             payload["spec_delta"] = spec_delta_b64
         if spec_warning:
             payload["spec_warning"] = spec_warning
+        # Record successful preview render in the recent-renders ring.
+        try:
+            _record_recent_render("preview", paint_file,
+                                  int((time.time() - _preview_t0) * 1000), success=True)
+        except Exception:
+            pass
         return jsonify(payload)
 
     except Exception as e:
+        err_msg = str(e)
+        # Provide friendlier error messages for common issues
+        if 'numpy' in err_msg.lower() or 'np' in err_msg:
+            err_msg = f"Engine computation error: {err_msg}. Try re-rendering."
+        elif 'FileNotFoundError' in type(e).__name__ or 'not found' in err_msg.lower():
+            err_msg = f"File not found: {err_msg}. Check that the paint file path is correct."
+        elif 'MemoryError' in type(e).__name__:
+            err_msg = "Out of memory — try reducing preview scale or number of zones."
         logger.error(f"Preview render failed: {e}\n{traceback.format_exc()}")
-        return jsonify({"error": str(e)}), 500
+        try:
+            _record_recent_render("preview", paint_file if 'paint_file' in dir() else None,
+                                  int((time.time() - _preview_t0) * 1000), success=False)
+        except Exception:
+            pass
+        return jsonify({"error": err_msg, "rid": getattr(g, "_rid", "-")}), 500
     finally:
         # Always release the preview render lock so the next request can proceed.
         try:
@@ -2517,6 +3859,7 @@ def render():
         _preview_render_lock.acquire(timeout=1.0)
 
     try:
+        import numpy as np  # Must be at function scope — conditional np imports below shadow this
         data = request.get_json()
         if not data:
             _preview_render_lock.release()
@@ -2529,13 +3872,20 @@ def render():
         if paint_file and not paint_image_base64 and not os.path.exists(paint_file):
             return jsonify({"error": f"Paint file not found: {paint_file}"}), 404
 
-        zones = data.get("zones", [])
+        zones = [_convert_zone_keys(z) for z in data.get("zones", [])]
         import_spec_map_early = data.get("import_spec_map")
         if not zones and not import_spec_map_early:
             return jsonify({"error": "No zones provided"}), 400
+        # Reject runaway zone arrays before we spend any CPU on them.
+        if len(zones) > MAX_ZONES_PER_REQUEST:
+            return jsonify({
+                "error": "too_many_zones",
+                "message": f"Zone count {len(zones)} exceeds limit {MAX_ZONES_PER_REQUEST}.",
+                "limit": MAX_ZONES_PER_REQUEST,
+            }), 400
 
         iracing_id = data.get("iracing_id", "00000")
-        seed = data.get("seed", 51)
+        seed = _safe_int(data.get("seed"), SEED_DEFAULT)
         use_live_link = data.get("live_link", False)
         output_dir_user = data.get("output_dir", "")  # UI-specified iRacing paint folder
         # Car file naming: car_num_ (custom numbers) vs car_ (no custom numbers)
@@ -2547,10 +3897,10 @@ def render():
         car_prefix = "car_num" if use_custom_number else "car"
         helmet_paint = data.get("helmet_paint_file")
         suit_paint = data.get("suit_paint_file")
-        wear_level = int(data.get("wear_level", 0))
+        wear_level = int(_clamp(data.get("wear_level"), WEAR_LEVEL_MIN, WEAR_LEVEL_MAX, WEAR_LEVEL_DEFAULT))
         export_zip = data.get("export_zip", False)
         dual_spec = data.get("dual_spec", False)
-        night_boost = float(data.get("night_boost", 0.7))
+        night_boost = _safe_float(data.get("night_boost"), NIGHT_BOOST_DEFAULT)
         import_spec_map = data.get("import_spec_map")
         if import_spec_map and not os.path.exists(import_spec_map):
             logger.warning(f"Import spec map not found: {import_spec_map}")
@@ -2643,6 +3993,9 @@ def render():
                      f"{', +mask' if recolor_mask_rle else ''}")
         # Log each zone's render path for diagnostics
         for i, z in enumerate(zones):
+            # Log overlay data if present
+            if z.get('second_base') or z.get('second_base_color_source'):
+                logger.info(f"  Zone {i+1} OVERLAY: 2nd_base={z.get('second_base')}, color_src={z.get('second_base_color_source')}, strength={z.get('second_base_strength')}, blend={z.get('second_base_blend_mode')}, color={z.get('second_base_color')}")
             # Determine which render path this zone will take
             if z.get('base'):
                 path_label = f"base={z['base']} pattern={z.get('pattern','none')}"
@@ -2689,11 +4042,44 @@ def render():
                     pos = 0
                     for run_val, run_len in runs:
                         # Client sends binary 0/1; engine expects float 0.0 or 1.0 (not 0/255)
-                        flat[pos:pos + run_len] = 1.0 if run_val else 0.0
+                        flat[pos:pos + run_len] = float(run_val) / 255.0 if run_val else 0.0
                         pos += run_len
                     z["region_mask"] = flat.reshape((rh, rw))
                 except Exception:
                     z.pop("region_mask", None)
+
+            # Decode source_layer_mask RLE (same as preview-render)
+            if z.get("source_layer_mask") and isinstance(z["source_layer_mask"], (dict, str)):
+                try:
+                    import numpy as np
+                    rle = z["source_layer_mask"]
+                    if isinstance(rle, str):
+                        rle = json.loads(rle)
+                    rw = rle.get("width", 0)
+                    rh = rle.get("height", 0)
+                    runs = rle.get("runs", [])
+                    flat = np.zeros(rw * rh, dtype=np.float32)
+                    pos = 0
+                    for run_val, run_len in runs:
+                        flat[pos:pos + run_len] = float(run_val) / 255.0 if run_val else 0.0
+                        pos += run_len
+                    z["source_layer_mask"] = flat.reshape((rh, rw))
+                except Exception:
+                    z.pop("source_layer_mask", None)
+
+            # Decode source_layer_rgb_png so the engine can color-match against
+            # the layer's unblended pixels (Photoshop-correct behavior).
+            if z.get("source_layer_rgb_png"):
+                try:
+                    import base64 as _b64lr, io as _iolr, numpy as np
+                    from PIL import Image as _PILlr
+                    _raw = z["source_layer_rgb_png"]
+                    if _raw.startswith("data:"):
+                        _raw = _raw.split(",", 1)[-1]
+                    _img = _PILlr.open(_iolr.BytesIO(_b64lr.b64decode(_raw))).convert("RGBA")
+                    z["source_layer_rgb"] = np.asarray(_img, dtype=np.uint8)
+                except Exception as _slr_err_r:
+                    z.pop("source_layer_rgb", None)
 
             # Decode spatial_mask RLE
             if z.get("spatial_mask") and isinstance(z["spatial_mask"], (dict, str)):
@@ -2716,6 +4102,39 @@ def render():
                 except Exception:
                     z.pop("spatial_mask", None)
 
+            # Decode pattern_strength_map RLE
+            if z.get("pattern_strength_map") and isinstance(z["pattern_strength_map"], (dict, str)):
+                try:
+                    import numpy as np
+                    psm_rle = z["pattern_strength_map"]
+                    if isinstance(psm_rle, str):
+                        psm_rle = json.loads(psm_rle)
+                    psm_w = psm_rle.get("width", 0)
+                    psm_h = psm_rle.get("height", 0)
+                    psm_runs = psm_rle.get("runs", [])
+                    psm_flat = np.zeros(psm_w * psm_h, dtype=np.float32)
+                    psm_pos = 0
+                    for run_val, run_len in psm_runs:
+                        psm_flat[psm_pos:psm_pos + run_len] = float(run_val) / 255.0
+                        psm_pos += run_len
+                    z["pattern_strength_map"] = psm_flat.reshape((psm_h, psm_w))
+                except Exception:
+                    z.pop("pattern_strength_map", None)
+
+        # Update render progress for UI polling
+        _render_progress["active"] = True
+        _render_progress["job_id"] = job_id
+        _render_progress["total_zones"] = len(zones)
+        _render_progress["current_zone"] = 0
+        _render_progress["phase"] = "rendering"
+        _render_progress["started_at"] = time.time()
+
+        # Progress callback: updates _render_progress so the UI can poll per-zone status
+        def _progress_cb(zone_num, total, zone_name):
+            _render_progress["current_zone"] = zone_num
+            _render_progress["current_zone_name"] = zone_name
+            _render_progress["elapsed_ms"] = int((time.time() - _render_progress["started_at"]) * 1000)
+
         results = engine.full_render_pipeline(
             car_paint_file=actual_paint_file,
             output_dir=job_dir,
@@ -2736,10 +4155,25 @@ def render():
             decal_spec_finishes=decal_spec_finishes if decal_spec_finishes else None,
             decal_paint_path=decal_paint_path,
             decal_mask_base64=decal_mask_base64 or None,
+            progress_callback=_progress_cb,
         )
 
+        _render_progress["phase"] = "encoding"
+        _render_progress["current_zone"] = len(zones)
+
         elapsed = time.time() - start
+        _render_progress["elapsed_ms"] = int(elapsed * 1000)
+        _render_progress["phase"] = "done"
+        _render_progress["active"] = False
         logger.info(f"Job {job_id}: completed in {elapsed:.1f}s")
+        try:
+            _render_paint_src = os.path.join(job_dir, f"{car_prefix}_{iracing_id}.tga")
+            _render_paint_png = os.path.join(job_dir, "RENDER_paint.png")
+            if os.path.exists(_render_paint_src):
+                from PIL import Image as PILImage
+                PILImage.open(_render_paint_src).save(_render_paint_png)
+        except Exception as _paint_png_err:
+            logger.warning(f"Job {job_id}: failed to generate RENDER_paint.png: {_paint_png_err}")
 
         # ── Track render statistics ──
         with _render_stats_lock:
@@ -2760,7 +4194,9 @@ def render():
             os.makedirs(_latest_dir, exist_ok=True)
             _spec_src = os.path.join(job_dir, f"car_spec_{iracing_id}.tga")
             _paint_src = os.path.join(job_dir, f"{car_prefix}_{iracing_id}.tga")
-            _preview_src = os.path.join(job_dir, "PREVIEW_paint.png")
+            _preview_src = os.path.join(job_dir, "RENDER_paint.png")
+            if not os.path.exists(_preview_src):
+                _preview_src = os.path.join(job_dir, "PREVIEW_paint.png")
             if os.path.exists(_spec_src):
                 shutil.copy2(_spec_src, os.path.join(_latest_dir, "spec.tga"))
             if os.path.exists(_paint_src):
@@ -3004,10 +4440,17 @@ def export_to_photoshop():
         if paint_file and not paint_image_base64 and not os.path.exists(paint_file):
             return jsonify({"error": f"Paint file not found: {paint_file}"}), 404
 
-        zones = data.get("zones", [])
+        zones = [_convert_zone_keys(z) for z in data.get("zones", [])]
         import_spec_map_early = data.get("import_spec_map")
         if not zones and not import_spec_map_early:
             return jsonify({"error": "No zones provided"}), 400
+        # Reject runaway zone arrays before we spend any CPU on them.
+        if len(zones) > MAX_ZONES_PER_REQUEST:
+            return jsonify({
+                "error": "too_many_zones",
+                "message": f"Zone count {len(zones)} exceeds limit {MAX_ZONES_PER_REQUEST}.",
+                "limit": MAX_ZONES_PER_REQUEST,
+            }), 400
 
         car_file_name = (data.get("car_file_name") or "shokker_export").strip()
         if not car_file_name:
@@ -3063,11 +4506,41 @@ def export_to_photoshop():
                     flat = np.zeros(rw * rh, dtype=np.float32)
                     pos = 0
                     for run_val, run_len in runs:
-                        flat[pos:pos + run_len] = 1.0 if run_val else 0.0
+                        flat[pos:pos + run_len] = float(run_val) / 255.0 if run_val else 0.0
                         pos += run_len
                     z["region_mask"] = flat.reshape((rh, rw))
                 except Exception:
                     z.pop("region_mask", None)
+            if z.get("source_layer_mask") and isinstance(z["source_layer_mask"], (dict, str)):
+                try:
+                    import numpy as np
+                    rle = z["source_layer_mask"]
+                    if isinstance(rle, str):
+                        rle = json.loads(rle)
+                    rw, rh = rle.get("width", 0), rle.get("height", 0)
+                    runs = rle.get("runs", [])
+                    flat = np.zeros(rw * rh, dtype=np.float32)
+                    pos = 0
+                    for run_val, run_len in runs:
+                        flat[pos:pos + run_len] = float(run_val) / 255.0 if run_val else 0.0
+                        pos += run_len
+                    z["source_layer_mask"] = flat.reshape((rh, rw))
+                except Exception:
+                    z.pop("source_layer_mask", None)
+            # PARITY FIX: export-to-photoshop must also decode layer-local RGB
+            # so color matching is Photoshop-correct (matches /render and
+            # /preview-render semantics exactly).
+            if z.get("source_layer_rgb_png"):
+                try:
+                    import base64 as _b64lr, io as _iolr, numpy as np
+                    from PIL import Image as _PILlr
+                    _raw = z["source_layer_rgb_png"]
+                    if _raw.startswith("data:"):
+                        _raw = _raw.split(",", 1)[-1]
+                    _img = _PILlr.open(_iolr.BytesIO(_b64lr.b64decode(_raw))).convert("RGBA")
+                    z["source_layer_rgb"] = np.asarray(_img, dtype=np.uint8)
+                except Exception:
+                    z.pop("source_layer_rgb", None)
             if z.get("spatial_mask") and isinstance(z["spatial_mask"], (dict, str)):
                 try:
                     import numpy as np
@@ -3085,6 +4558,24 @@ def export_to_photoshop():
                     z.pop("region_mask", None)
                 except Exception:
                     z.pop("spatial_mask", None)
+            # Decode pattern_strength_map RLE
+            if z.get("pattern_strength_map") and isinstance(z["pattern_strength_map"], (dict, str)):
+                try:
+                    import numpy as np
+                    psm_rle = z["pattern_strength_map"]
+                    if isinstance(psm_rle, str):
+                        psm_rle = json.loads(psm_rle)
+                    psm_w = psm_rle.get("width", 0)
+                    psm_h = psm_rle.get("height", 0)
+                    psm_runs = psm_rle.get("runs", [])
+                    psm_flat = np.zeros(psm_w * psm_h, dtype=np.float32)
+                    psm_pos = 0
+                    for run_val, run_len in psm_runs:
+                        psm_flat[psm_pos:psm_pos + run_len] = float(run_val) / 255.0
+                        psm_pos += run_len
+                    z["pattern_strength_map"] = psm_flat.reshape((psm_h, psm_w))
+                except Exception:
+                    z.pop("pattern_strength_map", None)
 
         _imp = data.get("import_spec_map")
         _import_spec_map = _imp if (_imp and os.path.exists(_imp)) else None
@@ -3469,11 +4960,17 @@ def reset_backup():
         return jsonify({"error": str(e)}), 500
 
 
+# LRU cache for TGA→PNG previews (keyed by path + mtime, max 8 entries)
+_tga_preview_cache = {}  # {key: (mtime, png_bytes)}
+_TGA_CACHE_MAX = 8
+
 @app.route('/preview-tga', methods=['POST'])
 def preview_tga():
     """Convert a local TGA file to PNG and serve it for browser display.
     Body: {"path": "E:/path/to/car_num_23371.tga"}
+    Caches up to 8 recent results so switching cars is instant on revisit.
     """
+    logger.debug("[preview-tga] TGA preview requested")
     try:
         from PIL import Image as PILImage
         import io
@@ -3481,11 +4978,33 @@ def preview_tga():
         tga_path = data.get('path', '')
         if not tga_path or not os.path.isfile(tga_path):
             return jsonify({"error": "File not found"}), 404
+
+        # Check cache — hit if same path + same modification time
+        try:
+            mtime = os.path.getmtime(tga_path)
+        except OSError:
+            mtime = 0
+        cache_key = f"{tga_path}|{mtime}"
+        if cache_key in _tga_preview_cache:
+            logger.debug(f"[preview-tga] Cache hit: {os.path.basename(tga_path)}")
+            buf = io.BytesIO(_tga_preview_cache[cache_key])
+            buf.seek(0)
+            return send_file(buf, mimetype='image/png')
+
         img = PILImage.open(tga_path)
         buf = io.BytesIO()
         img.save(buf, format='PNG')
+        png_bytes = buf.getvalue()
+
+        # Store in cache (evict oldest if full)
+        if len(_tga_preview_cache) >= _TGA_CACHE_MAX:
+            oldest_key = next(iter(_tga_preview_cache))
+            del _tga_preview_cache[oldest_key]
+        _tga_preview_cache[cache_key] = png_bytes
+        logger.debug(f"[preview-tga] Cached: {os.path.basename(tga_path)} ({len(png_bytes)//1024}KB)")
+
         buf.seek(0)
-        return send_file(buf, mimetype='image/png')
+        return send_file(io.BytesIO(png_bytes), mimetype='image/png')
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
@@ -3662,7 +5181,7 @@ def get_mono_swatch(finish_id):
         import io
         import numpy as np
 
-        cache_file = os.path.join(SWATCH_FOLDER, f"mono_{finish_id}.png")
+        cache_file = os.path.join(SWATCH_FOLDER, f"{_swatch_cache_token()}_mono_{finish_id}.png")
         if os.path.exists(cache_file):
             return send_file(cache_file, mimetype='image/png')
 
@@ -3676,7 +5195,13 @@ def get_mono_swatch(finish_id):
         mask = np.ones(shape, dtype=np.float32)
         spec_fn, paint_fn = engine.MONOLITHIC_REGISTRY[finish_id]
 
-        spec = spec_fn(shape, mask, 51, 1.0)
+        spec = _normalize_spec_result_to_rgba(spec_fn(shape, mask, 51, 1.0), shape)
+        if spec is None:
+            spec = np.zeros((shape[0], shape[1], 4), dtype=np.float32)
+            spec[:, :, 0] = 5
+            spec[:, :, 1] = 100
+            spec[:, :, 2] = 16
+            spec[:, :, 3] = 255
 
         # Create a neutral gray paint for the monolithic to modify
         neutral = np.ones((render_size[0], render_size[1], 3), dtype=np.float32) * 0.5
@@ -3796,16 +5321,27 @@ def api_serve_local_file():
 
 @app.route('/api/serve-local-file/download', methods=['GET'])
 def api_serve_local_file_download():
-    """Serve a local file to the client (for SHOKK paint fallback loading)."""
+    """Serve a local file to the client (for SHOKK paint fallback loading).
+    Only serves image files (TGA/PNG/JPG) to prevent arbitrary file access."""
     import urllib.parse
     file_path = urllib.parse.unquote(request.args.get('p', ''))
     if not file_path:
         return jsonify({"error": "No path"}), 400
     file_path = os.path.abspath(file_path)
+    # Path traversal protection: block .. components
+    if ".." in file_path.split(os.sep):
+        logger.warning(f"[serve-local-file] Path traversal attempt blocked: {file_path}")
+        return jsonify({"error": "Invalid path"}), 400
     if not os.path.isfile(file_path):
         return jsonify({"error": "File not found"}), 404
+    # Only serve image file types — prevents serving arbitrary system files
     ext = os.path.splitext(file_path)[1].lower()
-    mimetype = {'.tga': 'image/tga', '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg'}.get(ext)
+    allowed_types = {'.tga': 'image/tga', '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg'}
+    mimetype = allowed_types.get(ext)
+    if not mimetype:
+        logger.warning(f"[serve-local-file] Rejected non-image file type: {ext}")
+        return jsonify({"error": f"File type '{ext}' not allowed. Only TGA/PNG/JPG permitted."}), 400
+    logger.debug(f"[serve-local-file] Serving: {os.path.basename(file_path)}")
     return send_file(file_path, mimetype=mimetype, as_attachment=False)
 
 
@@ -3816,6 +5352,7 @@ def upload_spec_map():
       OR: {"spec_path": "E:/path/to/existing_spec.tga"}
     Returns: {"temp_path": "E:/path/to/imported_spec.tga", "resolution": [w, h]}
     """
+    logger.info("[upload-spec-map] Spec map upload requested")
     try:
         from PIL import Image as PILImage
         import numpy as np
@@ -3921,10 +5458,13 @@ def upload_tga_decal():
 def check_file():
     """Check if a file path exists on disk. Used by UI to validate Source Paint paths."""
     try:
-        data = request.get_json()
-        if not data or 'path' not in data:
-            return jsonify({"error": "Missing 'path'"}), 400
+        data = request.get_json(silent=True)
+        if not data:
+            return jsonify({"error": "Invalid or missing JSON body"}), 400
+        if 'path' not in data:
+            return jsonify({"error": "Missing 'path' field in request"}), 400
         path = data['path']
+        logger.debug(f"[check-file] Checking: {path}")
         exists = os.path.exists(path)
         is_file = os.path.isfile(path) if exists else False
         size = os.path.getsize(path) if is_file else 0
@@ -3946,7 +5486,8 @@ def browse_files():
     Single-pass scandir - detects large dirs dynamically and switches to folders-only.
     """
     try:
-        data = request.get_json() or {}
+        data = request.get_json(silent=True) or {}
+        logger.debug(f"[browse-files] path={data.get('path', '(root)')}")
         browse_path = data.get('path', '')
         file_filter = data.get('filter', '').lower()
 
@@ -4004,13 +5545,14 @@ def browse_files():
 
         # Decide: if dir /b /ad returned results, use a quick entry count to decide fast vs slow
         if fast_folders is not None:
-            # Quick count: how many total entries? Use dir /b (all) piped to find /c
+            # Quick count: how many total entries?
+            # Use dir /b WITHOUT pipe (pipe+shell=True hangs on Python 3.13/Windows)
             try:
                 r2 = _sp.run(
-                    ['cmd', '/c', 'dir', '/b', browse_path, '|', 'find', '/c', '/v', '""'],
-                    capture_output=True, text=True, timeout=8, shell=True
+                    ['cmd', '/c', 'dir', '/b', browse_path],
+                    capture_output=True, text=True, timeout=8
                 )
-                entry_count = int(r2.stdout.strip()) if r2.returncode == 0 else 0
+                entry_count = len(r2.stdout.strip().splitlines()) if r2.returncode == 0 and r2.stdout.strip() else 0
             except Exception:
                 entry_count = len(fast_folders) + 500  # assume large if count fails
 
@@ -4093,6 +5635,7 @@ def list_iracing_cars():
     """Discover car folders in the iRacing paint directory.
     Returns list of car folder names that exist in ~/Documents/iRacing/paint/
     """
+    logger.info("[iracing-cars] Car discovery requested")
     try:
         user_home = os.path.expanduser("~")
         iracing_paint = os.path.join(user_home, "Documents", "iRacing", "paint")
@@ -4126,7 +5669,8 @@ def deploy_to_iracing():
     Body: {"job_id": "...", "car_folder": "dallaraarca", "iracing_id": "23371"}
     """
     try:
-        data = request.get_json() or {}
+        data = request.get_json(silent=True) or {}
+        logger.info(f"[deploy] Deploy requested: car={data.get('car_folder')}, job={data.get('job_id')}")
         job_id = data.get("job_id", "")
         car_folder = data.get("car_folder", "")
         iracing_id = data.get("iracing_id", "00000")
@@ -4135,6 +5679,14 @@ def deploy_to_iracing():
             return jsonify({"error": "Missing job_id"}), 400
         if not car_folder:
             return jsonify({"error": "Missing car_folder"}), 400
+        # Validate iracing_id format using shared helper.
+        ok_id, _norm_id, id_err = _validate_iracing_id(iracing_id)
+        if not ok_id:
+            return jsonify({"error": id_err}), 400
+        iracing_id = _norm_id
+        # Block path traversal in car_folder.
+        if "/" in car_folder or "\\" in car_folder or ".." in car_folder:
+            return jsonify({"error": "invalid car_folder name"}), 400
 
         user_home = os.path.expanduser("~")
         iracing_paint = os.path.join(user_home, "Documents", "iRacing", "paint")
@@ -4176,6 +5728,7 @@ def deploy_to_iracing():
 @app.route('/config', methods=['GET'])
 def get_config():
     """Return current config."""
+    logger.debug("[config] GET config requested")
     return jsonify(load_config())
 
 
@@ -4196,10 +5749,11 @@ def set_config():
     }
     """
     try:
-        updates = request.get_json()
+        updates = request.get_json(silent=True)
         if not updates:
-            return jsonify({"error": "No JSON body"}), 400
+            return jsonify({"error": "No JSON body. Send a JSON object with config fields to update."}), 400
 
+        logger.info(f"[config] POST update: keys={list(updates.keys())}")
         cfg = load_config()
 
         # Merge updates
@@ -4292,7 +5846,8 @@ def cleanup_jobs():
     Body (optional): {"max_age_hours": 24}   (default: delete all jobs)
     """
     try:
-        data = request.get_json() or {}
+        data = request.get_json(silent=True) or {}
+        logger.info(f"[cleanup] Cleanup requested (max_age_hours={data.get('max_age_hours', 0)})")
         max_age_hours = data.get("max_age_hours", 0)  # 0 = delete all
 
         deleted = 0
@@ -4372,6 +5927,7 @@ def api_shokk_library_path():
 @app.route('/api/shokk/list', methods=['GET'])
 def api_shokk_list():
     """List all .shokk files in the library + factory dirs."""
+    logger.info("[shokk/list] Listing SHOKK library")
     mgr = _get_shokk_manager()
     if not mgr:
         return jsonify({"error": "SHOKK manager unavailable"}), 500
@@ -4390,6 +5946,7 @@ def api_shokk_save():
     Body: { name, author, description, tags[], session_json{}, include_paint: bool }
     Uses the latest RENDER_spec.png and RENDER_paint.png from the most recent job.
     """
+    logger.info("[shokk/save] Save requested")
     mgr = _get_shokk_manager()
     if not mgr:
         return jsonify({"error": "SHOKK manager unavailable"}), 500
@@ -4533,6 +6090,7 @@ def api_shokk_open():
     Body: { path: "/absolute/path/to/file.shokk" }
     Returns: { manifest, session_json, spec_path, paint_path }
     """
+    logger.info("[shokk/open] Open requested")
     mgr = _get_shokk_manager()
     if not mgr:
         return jsonify({"error": "SHOKK manager unavailable"}), 500
@@ -4653,6 +6211,261 @@ def api_shokk_rename():
         os.rename(old_path, new_path)
         return jsonify({"ok": True, "new_name": safe_new})
     except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+# ================================================================
+# PHOTOSHOP LAYER EXPORT (#21)
+# ================================================================
+@app.route('/export-psd-layers', methods=['POST'])
+def export_psd_layers():
+    """Export per-zone spec + paint images as a ZIP for Photoshop layer import.
+
+    JSON body: same as /render (paint_file, zones, seed, etc.)
+    plus optional: output_name (default: "shokker_layers")
+
+    Returns a ZIP containing:
+      per_zone_1_spec.png, per_zone_1_paint.png, ...
+      combined_spec.png, combined_paint.png
+      layers.json (zone metadata: names, blend modes, order)
+    """
+    logger.info("[export-psd-layers] PSD layer export requested")
+    import zipfile
+    import tempfile
+    import numpy as np
+    from PIL import Image as PILImage
+
+    try:
+        data = request.get_json() or {}
+        paint_file = data.get("paint_file")
+        paint_image_base64 = data.get("paint_image_base64")
+        if not paint_file and not paint_image_base64:
+            return jsonify({"error": "Missing 'paint_file' or 'paint_image_base64'"}), 400
+        if paint_file and not paint_image_base64 and not os.path.exists(paint_file):
+            return jsonify({"error": f"Paint file not found: {paint_file}"}), 404
+
+        zones = [_convert_zone_keys(z) for z in data.get("zones", [])]
+        if not zones:
+            return jsonify({"error": "No zones provided"}), 400
+
+        seed = int(data.get("seed", 51))
+        output_name = (data.get("output_name") or "shokker_layers").strip()
+        output_name = "".join(c if c.isalnum() or c in "._- " else "_" for c in output_name).strip() or "shokker_layers"
+
+        # Create a temp job directory for the render
+        job_id = f"{int(time.time())}_layers"
+        job_dir = os.path.join(OUTPUT_FOLDER, f"job_{job_id}")
+        os.makedirs(job_dir, exist_ok=True)
+
+        # Decode base64 paint if provided
+        if paint_image_base64:
+            try:
+                raw = paint_image_base64
+                if raw.startswith("data:"):
+                    raw = raw.split(",", 1)[-1]
+                buf = base64.b64decode(raw)
+                decal_paint_path = os.path.join(job_dir, "paint_with_decals.png")
+                with open(decal_paint_path, "wb") as f:
+                    f.write(buf)
+                paint_file = decal_paint_path
+            except Exception as e:
+                return jsonify({"error": f"Invalid paint_image_base64: {e}"}), 400
+
+        # Apply recolor if provided
+        actual_paint_file = paint_file
+        recolor_rules = data.get("recolor_rules", [])
+        if recolor_rules:
+            try:
+                actual_paint_file = apply_paint_recolor(paint_file, recolor_rules, job_dir)
+            except Exception:
+                actual_paint_file = paint_file
+
+        # Decode region_mask RLE for each zone (same as /render)
+        for z in zones:
+            if z.get("region_mask") and isinstance(z["region_mask"], (dict, str)):
+                try:
+                    rle = z["region_mask"]
+                    if isinstance(rle, str):
+                        rle = json.loads(rle)
+                    rw, rh = rle.get("width", 0), rle.get("height", 0)
+                    runs = rle.get("runs", [])
+                    flat = np.zeros(rw * rh, dtype=np.float32)
+                    pos = 0
+                    for run_val, run_len in runs:
+                        flat[pos:pos + run_len] = float(run_val) / 255.0 if run_val else 0.0
+                        pos += run_len
+                    z["region_mask"] = flat.reshape((rh, rw))
+                except Exception:
+                    z.pop("region_mask", None)
+            if z.get("source_layer_mask") and isinstance(z["source_layer_mask"], (dict, str)):
+                try:
+                    rle = z["source_layer_mask"]
+                    if isinstance(rle, str):
+                        rle = json.loads(rle)
+                    rw, rh = rle.get("width", 0), rle.get("height", 0)
+                    runs = rle.get("runs", [])
+                    flat = np.zeros(rw * rh, dtype=np.float32)
+                    pos = 0
+                    for run_val, run_len in runs:
+                        flat[pos:pos + run_len] = float(run_val) / 255.0 if run_val else 0.0
+                        pos += run_len
+                    z["source_layer_mask"] = flat.reshape((rh, rw))
+                except Exception:
+                    z.pop("source_layer_mask", None)
+
+        # Decode pattern_strength_map RLE for each zone
+        for z in zones:
+            if z.get("pattern_strength_map") and isinstance(z["pattern_strength_map"], (dict, str)):
+                try:
+                    psm_rle = z["pattern_strength_map"]
+                    if isinstance(psm_rle, str):
+                        psm_rle = json.loads(psm_rle)
+                    psm_w = psm_rle.get("width", 0)
+                    psm_h = psm_rle.get("height", 0)
+                    psm_runs = psm_rle.get("runs", [])
+                    psm_flat = np.zeros(psm_w * psm_h, dtype=np.float32)
+                    psm_pos = 0
+                    for run_val, run_len in psm_runs:
+                        psm_flat[psm_pos:psm_pos + run_len] = float(run_val) / 255.0
+                        psm_pos += run_len
+                    z["pattern_strength_map"] = psm_flat.reshape((psm_h, psm_w))
+                except Exception:
+                    z.pop("pattern_strength_map", None)
+
+        # Build server_zones (simplified zone conversion)
+        server_zones = []
+        for z in zones:
+            zone_obj = {
+                "name": z.get("name", "Zone"),
+                "color": z.get("color", "everything"),
+                "intensity": z.get("intensity", "100"),
+            }
+            if z.get("base"):
+                zone_obj["base"] = z["base"]
+                zone_obj["pattern"] = z.get("pattern", "none")
+                if z.get("scale"): zone_obj["scale"] = float(z["scale"])
+                if z.get("rotation"): zone_obj["rotation"] = float(z["rotation"])
+                if z.get("pattern_opacity"): zone_obj["pattern_opacity"] = float(z["pattern_opacity"])
+                if z.get("pattern_stack"): zone_obj["pattern_stack"] = z["pattern_stack"]
+            elif z.get("finish"):
+                zone_obj["finish"] = z["finish"]
+                if z.get("finish_colors"): zone_obj["finish_colors"] = z["finish_colors"]
+                if z.get("pattern") and z["pattern"] != "none":
+                    zone_obj["pattern"] = z["pattern"]
+                if z.get("scale"): zone_obj["scale"] = float(z["scale"])
+                if z.get("pattern_opacity"): zone_obj["pattern_opacity"] = float(z["pattern_opacity"])
+            if z.get("region_mask") is not None and isinstance(z["region_mask"], np.ndarray):
+                zone_obj["region_mask"] = z["region_mask"]
+            if z.get("priority_override") is not None:
+                zone_obj["priority_override"] = bool(z.get("priority_override"))
+            if z.get("pattern_spec_mult") is not None:
+                zone_obj["pattern_spec_mult"] = float(z["pattern_spec_mult"])
+            if z.get("pattern_strength_map") is not None and isinstance(z["pattern_strength_map"], np.ndarray):
+                zone_obj["pattern_strength_map"] = z["pattern_strength_map"]
+            if z.get("custom_intensity"): zone_obj["custom_intensity"] = z["custom_intensity"]
+            if z.get("wear_level"): zone_obj["wear_level"] = z["wear_level"]
+            # v6 params
+            if z.get("paint_color"): zone_obj["paint_color"] = z["paint_color"]
+            if z.get("blend_base"):
+                zone_obj["blend_base"] = z["blend_base"]
+                zone_obj["blend_dir"] = z.get("blend_dir", "horizontal")
+                zone_obj["blend_amount"] = float(z.get("blend_amount", 0.5))
+            server_zones.append(zone_obj)
+
+        import_spec_map = data.get("import_spec_map")
+        if import_spec_map and not os.path.exists(import_spec_map):
+            import_spec_map = None
+
+        # Run the engine with export_layers=True
+        import shokker_engine_v2 as _eng
+        result = _eng.build_multi_zone(
+            actual_paint_file, job_dir, server_zones,
+            seed=seed, export_layers=True,
+            import_spec_map=import_spec_map,
+        )
+
+        # Unpack result: (paint_rgb, combined_spec_u8, zone_masks, zone_layers)
+        if len(result) == 4:
+            paint_rgb, combined_spec_u8, zone_masks, zone_layers = result
+        else:
+            # Fallback if export_layers somehow returned 3-tuple
+            paint_rgb, combined_spec_u8, zone_masks = result[:3]
+            zone_layers = []
+
+        # Build the ZIP
+        zip_buf = io.BytesIO()
+        with zipfile.ZipFile(zip_buf, "w", zipfile.ZIP_DEFLATED) as zf:
+            # Per-zone images
+            layers_meta = []
+            for layer in zone_layers:
+                idx = layer["zone_index"] + 1
+                zname = layer["zone_name"]
+                safe_name = "".join(c if c.isalnum() or c in "_- " else "_" for c in zname).strip() or f"zone_{idx}"
+
+                # Spec PNG
+                spec_arr = layer["spec"]
+                spec_img = PILImage.fromarray(spec_arr)
+                spec_buf = io.BytesIO()
+                spec_img.save(spec_buf, format="PNG")
+                zf.writestr(f"per_zone_{idx}_spec.png", spec_buf.getvalue())
+
+                # Paint PNG
+                paint_arr = layer["paint"]
+                paint_img = PILImage.fromarray(paint_arr)
+                paint_buf = io.BytesIO()
+                paint_img.save(paint_buf, format="PNG")
+                zf.writestr(f"per_zone_{idx}_paint.png", paint_buf.getvalue())
+
+                layers_meta.append({
+                    "index": idx,
+                    "name": zname,
+                    "safe_name": safe_name,
+                    "spec_file": f"per_zone_{idx}_spec.png",
+                    "paint_file": f"per_zone_{idx}_paint.png",
+                    "blend_mode": "normal",
+                })
+
+            # Combined images
+            combined_paint_img = PILImage.fromarray(paint_rgb)
+            cp_buf = io.BytesIO()
+            combined_paint_img.save(cp_buf, format="PNG")
+            zf.writestr("combined_paint.png", cp_buf.getvalue())
+
+            combined_spec_img = PILImage.fromarray(combined_spec_u8)
+            cs_buf = io.BytesIO()
+            combined_spec_img.save(cs_buf, format="PNG")
+            zf.writestr("combined_spec.png", cs_buf.getvalue())
+
+            # Layers manifest
+            manifest = {
+                "version": 1,
+                "layers": layers_meta,
+                "combined_paint": "combined_paint.png",
+                "combined_spec": "combined_spec.png",
+                "resolution": [int(paint_rgb.shape[1]), int(paint_rgb.shape[0])],
+                "seed": seed,
+            }
+            zf.writestr("layers.json", json.dumps(manifest, indent=2))
+
+        zip_buf.seek(0)
+        zip_bytes = zip_buf.getvalue()
+
+        # Also save to disk for later retrieval
+        zip_path = os.path.join(job_dir, f"{output_name}.zip")
+        with open(zip_path, "wb") as f:
+            f.write(zip_bytes)
+
+        logger.info(f"PSD layer export: {len(zone_layers)} zones, ZIP={len(zip_bytes)} bytes -> {zip_path}")
+
+        return send_file(
+            io.BytesIO(zip_bytes),
+            mimetype="application/zip",
+            as_attachment=True,
+            download_name=f"{output_name}.zip",
+        )
+
+    except Exception as e:
+        logger.error(f"PSD layer export failed: {e}\n{traceback.format_exc()}")
         return jsonify({"error": str(e)}), 500
 
 
@@ -4861,12 +6674,42 @@ def auto_cleanup_old_jobs(max_age_hours=24):
 
 
 # ================================================================
+# RENDER STATUS / PROGRESS ENDPOINTS
+# ================================================================
+
+@app.route('/api/render-status', methods=['GET'])
+def api_render_status():
+    """Return render progress in the format the JS poller expects.
+    Polled by paint-booth-5-api-render.js during full renders."""
+    pct = 0
+    if _render_progress["active"] and _render_progress["total_zones"] > 0:
+        pct = int((_render_progress["current_zone"] / _render_progress["total_zones"]) * 100)
+    return jsonify({
+        "active": _render_progress["active"],
+        "total_zones": _render_progress["total_zones"],
+        "current_zone": _render_progress["current_zone"],
+        "zone_name": _render_progress["current_zone_name"],
+        "phase": _render_progress["phase"],
+        "percent": max(5, min(95, pct)) if _render_progress["active"] else 0,
+        "elapsed_ms": int((time.time() - _render_progress["started_at"]) * 1000) if _render_progress["active"] else _render_progress["elapsed_ms"],
+    })
+
+
+# ================================================================
 # RENDER STATISTICS ENDPOINT
 # ================================================================
+
+@app.route('/api/render-progress', methods=['GET'])
+def api_render_progress():
+    """Return current render progress for the UI progress bar.
+    Polled by the client during full renders."""
+    return jsonify(_render_progress)
+
 
 @app.route('/api/render-stats', methods=['GET'])
 def api_render_stats():
     """Return render statistics for the current session."""
+    logger.debug("[render-stats] Stats requested")
     with _render_stats_lock:
         total = _render_stats["total_renders"]
         total_time = _render_stats["total_render_time"]
@@ -4895,6 +6738,848 @@ def api_render_stats():
     })
 
 
+# ================================================================
+# FINISH MIXER ENDPOINTS
+# ================================================================
+
+_CUSTOM_FINISHES_PATH = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))) if not getattr(sys, 'frozen', False) else SERVER_DIR,
+    'custom_finishes.json'
+)
+
+
+def _load_custom_finishes():
+    """Load custom finishes from JSON file. Returns list of dicts."""
+    if os.path.exists(_CUSTOM_FINISHES_PATH):
+        try:
+            with open(_CUSTOM_FINISHES_PATH, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        except Exception:
+            pass
+    return []
+
+
+def _save_custom_finishes(finishes):
+    """Save custom finishes list to JSON file."""
+    with open(_CUSTOM_FINISHES_PATH, 'w', encoding='utf-8') as f:
+        json.dump(finishes, f, indent=2, ensure_ascii=False)
+
+
+@app.route('/api/mix-preview', methods=['POST'])
+def api_mix_preview():
+    """Generate a 256x256 preview of blended finishes.
+
+    POST JSON: { "finish_ids": [...], "weights": [...], "seed": 51 }
+    Returns: { "image": "data:image/png;base64,..." }
+    """
+    logger.info("[mix-preview] Mix preview requested")
+    try:
+        data = request.get_json(force=True)
+        finish_ids = data.get('finish_ids', [])
+        weights = data.get('weights', [])
+        seed = int(data.get('seed', 51))
+
+        if len(finish_ids) < 2 or len(finish_ids) > 3:
+            return jsonify({"error": "Need 2-3 finish_ids"}), 400
+        if len(finish_ids) != len(weights):
+            return jsonify({"error": "finish_ids and weights must match in length"}), 400
+
+        from engine.compose import mix_finishes
+        import numpy as np
+        from PIL import Image
+
+        shape = (256, 256)
+        mask = np.ones(shape, dtype=np.float32)
+        sm = 1.0
+
+        spec = mix_finishes(shape, mask, seed, sm, finish_ids, weights,
+                            monolithic_registry=engine.MONOLITHIC_REGISTRY)
+
+        # Convert spec to a visible preview image:
+        # Map M channel to blue, R to green, CC to red for visual distinction
+        preview = np.zeros((256, 256, 3), dtype=np.uint8)
+        preview[:, :, 0] = spec[:, :, 2]  # CC -> Red
+        preview[:, :, 1] = spec[:, :, 1]  # R -> Green
+        preview[:, :, 2] = spec[:, :, 0]  # M -> Blue
+
+        img = Image.fromarray(preview, 'RGB')
+        buf = io.BytesIO()
+        img.save(buf, format='PNG', optimize=True)
+        b64 = base64.b64encode(buf.getvalue()).decode('ascii')
+
+        return jsonify({"image": f"data:image/png;base64,{b64}"})
+    except Exception as e:
+        logger.error(f"[mix-preview] Error: {e}")
+        logger.error(traceback.format_exc())
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/save-custom-finish', methods=['POST'])
+def api_save_custom_finish():
+    """Save a custom mixed finish recipe.
+
+    POST JSON: { "name": "My Mix", "finish_ids": [...], "weights": [...] }
+    Returns: { "id": "custom_001", "name": "My Mix", ... }
+    """
+    logger.info("[save-custom-finish] Save custom finish requested")
+    try:
+        data = request.get_json(force=True)
+        name = data.get('name', '').strip()
+        finish_ids = data.get('finish_ids', [])
+        weights = data.get('weights', [])
+
+        if not name:
+            return jsonify({"error": "Name is required"}), 400
+        if len(finish_ids) < 2 or len(finish_ids) > 3:
+            return jsonify({"error": "Need 2-3 finish_ids"}), 400
+        if len(finish_ids) != len(weights):
+            return jsonify({"error": "finish_ids and weights must match in length"}), 400
+
+        # Normalize weights
+        w_sum = sum(weights)
+        if w_sum > 0:
+            weights = [round(w / w_sum, 4) for w in weights]
+        else:
+            weights = [round(1.0 / len(weights), 4)] * len(weights)
+
+        finishes = _load_custom_finishes()
+
+        # Generate next ID
+        existing_nums = []
+        for cf in finishes:
+            cid = cf.get('id', '')
+            if cid.startswith('custom_'):
+                try:
+                    existing_nums.append(int(cid.split('_')[1]))
+                except (IndexError, ValueError):
+                    pass
+        next_num = max(existing_nums, default=0) + 1
+        new_id = f"custom_{next_num:03d}"
+
+        mix_mode = data.get('mix_mode', 'both')  # 'both', 'color', 'spec'
+        entry = {
+            "id": new_id,
+            "name": name,
+            "finish_ids": finish_ids,
+            "weights": weights,
+            "mix_mode": mix_mode,
+            "created": datetime.now().isoformat(),
+        }
+        finishes.append(entry)
+        _save_custom_finishes(finishes)
+
+        logger.info(f"[mixer] Saved custom finish: {new_id} = {name}")
+        return jsonify(entry)
+    except Exception as e:
+        logger.error(f"[save-custom-finish] Error: {e}")
+        logger.error(traceback.format_exc())
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/custom-finishes', methods=['GET'])
+def api_custom_finishes():
+    """Return the list of saved custom mixed finishes."""
+    try:
+        finishes = _load_custom_finishes()
+        return jsonify(finishes)
+    except Exception as e:
+        logger.error(f"[custom-finishes] Error: {e}")
+        return jsonify([])
+
+
+@app.route('/api/health', methods=['GET'])
+def api_health():
+    """Server health check endpoint."""
+    try:
+        import time as _t
+        uptime = _t.time() - getattr(app, '_start_time', _t.time())
+        base_count = len(getattr(engine, 'BASE_REGISTRY', {})) if engine else 0
+        pattern_count = len(getattr(engine, 'PATTERN_REGISTRY', {})) if engine else 0
+        mono_count = len(getattr(engine, 'MONOLITHIC_REGISTRY', {})) if engine else 0
+        return jsonify({"status": "ok", "uptime_seconds": round(uptime, 1),
+                        "registries": {"bases": base_count, "patterns": pattern_count, "monolithics": mono_count},
+                        "version": "6.2.0"})
+    except Exception as e:
+        return jsonify({"status": "error", "error": str(e)}), 500
+
+
+@app.route('/api/delete-custom-finish', methods=['POST'])
+def api_delete_custom_finish():
+    """Delete a saved custom finish by ID."""
+    try:
+        data = request.get_json(force=True)
+        delete_id = data.get('id', '').strip()
+        if not delete_id:
+            return jsonify({"error": "id is required"}), 400
+        finishes = _load_custom_finishes()
+        original_count = len(finishes)
+        finishes = [f for f in finishes if f.get('id') != delete_id]
+        if len(finishes) == original_count:
+            return jsonify({"error": f"Custom finish '{delete_id}' not found"}), 404
+        _save_custom_finishes(finishes)
+        return jsonify({"success": True, "deleted": delete_id})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/mix-paint-preview', methods=['POST'])
+def api_mix_paint_preview():
+    """Generate a SPLIT preview: paint (left) + spec (right), like the main render output.
+    Detects base vs monolithic per component. Uses actual swatch colors."""
+    try:
+        data = request.get_json(force=True)
+        finish_ids = data.get('finish_ids', [])
+        weights = data.get('weights', [])
+        seed = int(data.get('seed', 51))
+        color_hex = str(data.get('color', '888888')).replace('#', '').strip()
+        # Validate hex color — must be 6 hex chars
+        import re
+        if not re.match(r'^[0-9a-fA-F]{6}$', color_hex):
+            logger.warning(f"[mix-preview] Invalid color_hex '{color_hex}', defaulting to 888888")
+            color_hex = '888888'
+        if len(finish_ids) < 2 or len(finish_ids) != len(weights):
+            return jsonify({"error": "Need 2-3 matching finish_ids and weights"}), 400
+
+        import numpy as np
+        from PIL import Image
+
+        size = 128
+        w_sum = sum(weights)
+        if w_sum > 0:
+            weights = [w / w_sum for w in weights]
+        else:
+            weights = [1.0 / len(weights)] * len(weights)
+
+        # Determine type per component: base or monolithic
+        _base_reg = getattr(engine, 'BASE_REGISTRY', {})
+        _mono_reg = getattr(engine, 'MONOLITHIC_REGISTRY', {})
+
+        # --- PAINT SIDE: blend swatch images ---
+        paint_blend = np.zeros((size, size, 3), dtype=np.float32)
+        for fid, wt in zip(finish_ids, weights):
+            swatch_bytes = None
+            # Try monolithic first (these have colors), then base
+            if fid in _mono_reg:
+                try:
+                    swatch_bytes = _render_swatch_bytes('monolithic', fid, color_hex, size, seed)
+                except Exception:
+                    pass
+            if not swatch_bytes and fid in _base_reg:
+                try:
+                    swatch_bytes = _render_swatch_bytes('base', fid, color_hex, size, seed)
+                except Exception:
+                    pass
+            if not swatch_bytes:
+                # Last resort: try both types
+                for stype in ['monolithic', 'base']:
+                    try:
+                        swatch_bytes = _render_swatch_bytes(stype, fid, color_hex, size, seed)
+                        if swatch_bytes:
+                            break
+                    except Exception:
+                        pass
+            if swatch_bytes:
+                try:
+                    swatch_img = Image.open(io.BytesIO(swatch_bytes)).convert('RGB')
+                    swatch_arr = np.array(swatch_img).astype(np.float32) / 255.0
+                    paint_blend += swatch_arr * wt
+                except Exception:
+                    paint_blend += 0.5 * wt
+            else:
+                paint_blend += 0.5 * wt
+
+        paint_u8 = np.clip(paint_blend * 255, 0, 255).astype(np.uint8)
+
+        # --- SPEC SIDE: blend spec values and visualize ---
+        from engine.compose import mix_finishes
+        spec_shape = (size, size)
+        mask = np.ones(spec_shape, dtype=np.float32)
+        try:
+            spec = mix_finishes(spec_shape, mask, seed, 1.0, finish_ids, weights,
+                                monolithic_registry=_mono_reg)
+            # Visualize spec: R=Metallic(red), G=Roughness(green), B=Clearcoat(blue)
+            spec_vis = np.zeros((size, size, 3), dtype=np.uint8)
+            spec_vis[:, :, 0] = spec[:, :, 0]  # M → Red
+            spec_vis[:, :, 1] = spec[:, :, 1]  # R → Green
+            spec_vis[:, :, 2] = spec[:, :, 2]  # CC → Blue
+            spec_info = {"M_avg": round(float(np.mean(spec[:,:,0])), 1),
+                         "R_avg": round(float(np.mean(spec[:,:,1])), 1),
+                         "CC_avg": round(float(np.mean(spec[:,:,2])), 1)}
+        except Exception as e:
+            logger.warning(f"[mix-preview] spec blend failed: {e}")
+            spec_vis = np.full((size, size, 3), 40, dtype=np.uint8)
+            spec_info = {"M_avg": 0, "R_avg": 0, "CC_avg": 0}
+
+        # --- COMBINE: paint (left) | spec (right) side by side ---
+        combined = np.zeros((size, size * 2 + 4, 3), dtype=np.uint8)
+        combined[:, :size, :] = paint_u8
+        combined[:, size:size+4, :] = 60  # divider line
+        combined[:, size+4:, :] = spec_vis
+
+        img = Image.fromarray(combined, 'RGB')
+        buf = io.BytesIO()
+        img.save(buf, format='PNG', optimize=True)
+        b64 = base64.b64encode(buf.getvalue()).decode('ascii')
+
+        return jsonify({"image": f"data:image/png;base64,{b64}", "spec_summary": spec_info})
+    except Exception as e:
+        logger.error(f"[mix-paint-preview] Error: {e}")
+        logger.error(traceback.format_exc())
+        return jsonify({"error": str(e)}), 500
+
+
+# ================================================================
+# HARDENED UTILITY ENDPOINTS — added in v6.2 hardening pass.
+# Read-only diagnostics + safe maintenance. Prefixed /api/ so they
+# do not collide with any UI / static routes.
+# ================================================================
+
+@lru_cache(maxsize=4096)
+def _memo_finish_meta(finish_id):
+    """Memoised lookup: returns (kind, name, category) for a finish ID.
+    Cleared by /api/reload-engine to pick up hot-added finishes."""
+    if not isinstance(finish_id, str) or not finish_id:
+        return None
+    base_reg = getattr(engine, 'BASE_REGISTRY', {}) or {}
+    pat_reg  = getattr(engine, 'PATTERN_REGISTRY', {}) or {}
+    mono_reg = getattr(engine, 'MONOLITHIC_REGISTRY', {}) or {}
+    fus_reg  = getattr(engine, 'FUSION_REGISTRY', {}) or {}
+    if finish_id in base_reg:
+        return ("base", _id_to_display_name(finish_id), "base")
+    if finish_id in pat_reg:
+        return ("pattern", _id_to_display_name(finish_id), "pattern")
+    if finish_id in mono_reg:
+        return ("monolithic", _id_to_display_name(finish_id), "monolithic")
+    if finish_id in fus_reg:
+        return ("fusion", _id_to_display_name(finish_id), "fusion")
+    return None
+
+
+def _normalize_spec_result_to_rgba(spec_result, shape, default_m=5, default_r=100, default_cc=16):
+    """Normalize spec outputs from all engine contracts to HxWx4 float32.
+
+    Monolithic/spec helpers are not perfectly consistent: some return RGBA,
+    some return RGB, and several pattern-driven finishes return an (M, R, CC)
+    tuple. The render and swatch routes must not treat tuple specs as failures.
+    """
+    import numpy as _np
+
+    h, w = shape[:2]
+
+    def _plane(value, fallback):
+        if value is None:
+            return _np.full((h, w), float(fallback), dtype=_np.float32)
+        arr = _np.asarray(value, dtype=_np.float32)
+        if arr.ndim == 0:
+            return _np.full((h, w), float(arr), dtype=_np.float32)
+        if arr.shape != (h, w):
+            try:
+                arr = _np.resize(arr, (h, w)).astype(_np.float32)
+            except Exception:
+                return _np.full((h, w), float(fallback), dtype=_np.float32)
+        return arr
+
+    if isinstance(spec_result, dict):
+        for key in ("spec", "rgba", "result"):
+            if key in spec_result:
+                return _normalize_spec_result_to_rgba(
+                    spec_result[key], shape, default_m, default_r, default_cc
+                )
+        if any(k in spec_result for k in ("M", "R", "CC")):
+            m = _plane(spec_result.get("M"), default_m)
+            r = _plane(spec_result.get("R"), default_r)
+            cc = _plane(spec_result.get("CC"), default_cc)
+            out = _np.empty((h, w, 4), dtype=_np.float32)
+            out[:, :, 0] = _np.clip(m, 0, 255)
+            out[:, :, 1] = _np.clip(r, 0, 255)
+            out[:, :, 2] = _np.clip(cc, 0, 255)
+            out[:, :, 3] = 255
+            return out
+        return None
+
+    if isinstance(spec_result, (tuple, list)) and len(spec_result) >= 2:
+        m = _plane(spec_result[0], default_m)
+        r = _plane(spec_result[1], default_r)
+        cc = _plane(spec_result[2] if len(spec_result) >= 3 else None, default_cc)
+        out = _np.empty((h, w, 4), dtype=_np.float32)
+        out[:, :, 0] = _np.clip(m, 0, 255)
+        out[:, :, 1] = _np.clip(r, 0, 255)
+        out[:, :, 2] = _np.clip(cc, 0, 255)
+        out[:, :, 3] = 255
+        return out
+
+    if spec_result is None:
+        return None
+
+    arr = _np.asarray(spec_result, dtype=_np.float32)
+    if arr.ndim == 3 and arr.shape[0] in (3, 4) and arr.shape[1:3] == (h, w):
+        arr = _np.moveaxis(arr, 0, -1)
+    if arr.ndim == 2:
+        out = _np.empty((h, w, 4), dtype=_np.float32)
+        out[:, :, 0] = _np.clip(_plane(arr, default_m), 0, 255)
+        out[:, :, 1] = default_r
+        out[:, :, 2] = default_cc
+        out[:, :, 3] = 255
+        return out
+    if arr.ndim == 3 and arr.shape[:2] == (h, w):
+        out = _np.empty((h, w, 4), dtype=_np.float32)
+        chans = arr.shape[2]
+        out[:, :, 0] = _np.clip(arr[:, :, 0], 0, 255)
+        out[:, :, 1] = _np.clip(arr[:, :, 1] if chans > 1 else default_r, 0, 255)
+        out[:, :, 2] = _np.clip(arr[:, :, 2] if chans > 2 else default_cc, 0, 255)
+        out[:, :, 3] = _np.clip(arr[:, :, 3] if chans > 3 else 255, 0, 255)
+        return out
+    return None
+
+
+@app.route('/api/finish-by-id/<finish_id>', methods=['GET'])
+def api_finish_by_id(finish_id):
+    """Return single-finish metadata: id, kind, display name, category, swatch URL."""
+    rid = getattr(g, '_rid', '-')
+    try:
+        meta = _memo_finish_meta(finish_id)
+        if not meta:
+            return jsonify({"error": "finish_not_found", "finish_id": finish_id, "rid": rid}), 404
+        kind, name, category = meta
+        return jsonify({
+            "id": finish_id,
+            "kind": kind,
+            "name": name,
+            "category": category,
+            "swatch_url": f"/api/swatch/{kind}/{finish_id}",
+            "rid": rid,
+        })
+    except Exception as e:
+        logger.error(f"[finish-by-id rid={rid}] {e}")
+        return jsonify({"error": str(e), "rid": rid}), 500
+
+
+@app.route('/api/validate-paint-file', methods=['POST'])
+def api_validate_paint_file():
+    """Validate a paint file path: existence, readability, dimensions.
+    Body: {"path": "E:/.../car_num_23371.tga", "expect_size": [2048, 2048]}"""
+    rid = getattr(g, '_rid', '-')
+    try:
+        data = request.get_json(silent=True) or {}
+        raw_path = data.get('path', '')
+        expect = data.get('expect_size')  # optional [W, H]
+        ok, normed, err = _validate_path_safe(raw_path)
+        if not ok:
+            return jsonify({"valid": False, "reason": err, "rid": rid}), 400
+        if not os.path.exists(normed):
+            return jsonify({"valid": False, "reason": "file_not_found",
+                            "path": normed, "rid": rid}), 404
+        if not os.path.isfile(normed):
+            return jsonify({"valid": False, "reason": "not_a_regular_file",
+                            "path": normed, "rid": rid}), 400
+        try:
+            size_bytes = os.path.getsize(normed)
+        except OSError as e:
+            return jsonify({"valid": False, "reason": f"stat_failed: {e}",
+                            "rid": rid}), 500
+        readable = os.access(normed, os.R_OK)
+        # Try to open with PIL to extract dimensions (cheap)
+        dims = None
+        try:
+            from PIL import Image as _PIL
+            with _PIL.open(normed) as img:
+                dims = [img.width, img.height]
+        except Exception as e:
+            return jsonify({"valid": False, "reason": f"unreadable_image: {e}",
+                            "path": normed, "rid": rid}), 400
+        ok_dims = True
+        if expect and isinstance(expect, list) and len(expect) == 2:
+            ok_dims = (dims and dims[0] == int(expect[0]) and dims[1] == int(expect[1]))
+        return jsonify({
+            "valid": readable and ok_dims,
+            "path": normed,
+            "size_bytes": size_bytes,
+            "dimensions": dims,
+            "readable": readable,
+            "matches_expected_size": ok_dims,
+            "rid": rid,
+        })
+    except Exception as e:
+        logger.error(f"[validate-paint-file rid={rid}] {e}")
+        return jsonify({"valid": False, "reason": str(e), "rid": rid}), 500
+
+
+@app.route('/api/stats', methods=['GET'])
+def api_stats():
+    """Comprehensive server stats: uptime, render count, cache hits, memory."""
+    rid = getattr(g, '_rid', '-')
+    try:
+        # Memory snapshot — best-effort, falls back to gc counts.
+        mem_mb = None
+        try:
+            import resource as _res  # POSIX only
+            mem_mb = round(_res.getrusage(_res.RUSAGE_SELF).ru_maxrss / 1024, 1)
+        except Exception:
+            try:
+                import psutil as _ps  # type: ignore
+                mem_mb = round(_ps.Process(os.getpid()).memory_info().rss / (1024 * 1024), 1)
+            except Exception:
+                pass
+
+        with _render_stats_lock:
+            renders = dict(_render_stats)
+        with _request_counter_lock:
+            req_count = _request_counter
+        with _recent_renders_lock:
+            recent_count = len(_recent_renders)
+        with _recent_errors_lock:
+            err_count = len(_recent_errors)
+
+        return jsonify({
+            "version": SPB_VERSION,
+            "engine": SPB_ENGINE_VERSION,
+            "build": SPB_BUILD_ID,
+            "uptime_s": int(time.time() - _server_start_time),
+            "request_count": req_count,
+            "total_renders": renders.get("total_renders", 0),
+            "total_render_time_s": round(renders.get("total_render_time", 0.0), 2),
+            "cache_hits": renders.get("cache_hits", 0),
+            "cache_misses": renders.get("cache_misses", 0),
+            "recent_renders_logged": recent_count,
+            "recent_errors_logged": err_count,
+            "memory_rss_mb": mem_mb,
+            "gc_objects": len(gc.get_objects()),
+            "registries": {
+                "bases": len(getattr(engine, 'BASE_REGISTRY', {})),
+                "patterns": len(getattr(engine, 'PATTERN_REGISTRY', {})),
+                "monolithics": len(getattr(engine, 'MONOLITHIC_REGISTRY', {})),
+                "fusions": len(getattr(engine, 'FUSION_REGISTRY', {})),
+            },
+            "gpu": gpu_info(),
+            "rid": rid,
+        })
+    except Exception as e:
+        logger.error(f"[stats rid={rid}] {e}")
+        return jsonify({"error": str(e), "rid": rid}), 500
+
+
+@app.route('/api/reload-engine', methods=['POST'])
+def api_reload_engine():
+    """Soft-reload the engine module — clears finish-meta cache + zone cache.
+    Use during dev when registries change at runtime. Does NOT re-import .py files."""
+    rid = getattr(g, '_rid', '-')
+    try:
+        global _FINISH_DATA_CACHE
+        _FINISH_DATA_CACHE = None
+        _memo_finish_meta.cache_clear()
+        cleared_zones = 0
+        try:
+            import shokker_engine_v2 as _eng
+            if hasattr(_eng.build_multi_zone, '_zone_cache'):
+                cleared_zones = len(_eng.build_multi_zone._zone_cache)
+                _eng.build_multi_zone._zone_cache.clear()
+        except Exception:
+            pass
+        with _SWATCH_CACHE_LOCK:
+            sw_count = len(_SWATCH_CACHE)
+            _SWATCH_CACHE.clear()
+        logger.info(f"[reload-engine rid={rid}] cleared {sw_count} swatches, {cleared_zones} zone cache entries")
+        return jsonify({
+            "ok": True,
+            "cleared": {"swatches": sw_count, "zones": cleared_zones,
+                        "finish_meta": True, "finish_data_cache": True},
+            "rid": rid,
+        })
+    except Exception as e:
+        logger.error(f"[reload-engine rid={rid}] {e}")
+        return jsonify({"error": str(e), "rid": rid}), 500
+
+
+@app.route('/api/recent-renders', methods=['GET'])
+def api_recent_renders():
+    """Return the last N renders (preview + full) with timestamps + elapsed.
+    Optional ?limit=N to cap response size (default 25, max 64)."""
+    rid = getattr(g, '_rid', '-')
+    limit = max(1, min(64, _safe_int(request.args.get('limit'), 25)))
+    with _recent_renders_lock:
+        items = list(_recent_renders)[:limit]
+    return jsonify({"count": len(items), "items": items, "rid": rid})
+
+
+@app.route('/api/clear-cache/<cache_name>', methods=['POST'])
+def api_clear_cache_named(cache_name):
+    """Granular cache clearing.  cache_name in:
+       swatch | finish_data | zone | spec_delta | psd | finish_meta | all"""
+    rid = getattr(g, '_rid', '-')
+    cleared = {}
+    try:
+        global _FINISH_DATA_CACHE, _prev_spec_cache
+        name = (cache_name or "").lower().strip()
+        if name in ("swatch", "swatches", "all"):
+            with _SWATCH_CACHE_LOCK:
+                cleared["swatch"] = len(_SWATCH_CACHE)
+                _SWATCH_CACHE.clear()
+        if name in ("finish_data", "finish-data", "all"):
+            cleared["finish_data"] = 1 if _FINISH_DATA_CACHE else 0
+            _FINISH_DATA_CACHE = None
+        if name in ("zone", "zones", "all"):
+            try:
+                import shokker_engine_v2 as _eng
+                if hasattr(_eng.build_multi_zone, '_zone_cache'):
+                    cleared["zone"] = len(_eng.build_multi_zone._zone_cache)
+                    _eng.build_multi_zone._zone_cache.clear()
+            except Exception:
+                cleared["zone"] = 0
+        if name in ("spec_delta", "spec-delta", "all"):
+            cleared["spec_delta"] = 1 if _prev_spec_cache is not None else 0
+            _prev_spec_cache = None
+        if name in ("psd", "all"):
+            cleared["psd"] = len(_psd_cache)
+            _psd_cache.clear()
+        if name in ("finish_meta", "finish-meta", "all"):
+            _memo_finish_meta.cache_clear()
+            cleared["finish_meta"] = 1
+        if not cleared:
+            return jsonify({"error": f"Unknown cache: {cache_name}",
+                            "valid": ["swatch", "finish_data", "zone",
+                                      "spec_delta", "psd", "finish_meta", "all"],
+                            "rid": rid}), 400
+        return jsonify({"ok": True, "cleared": cleared, "rid": rid})
+    except Exception as e:
+        logger.error(f"[clear-cache rid={rid}] {e}")
+        return jsonify({"error": str(e), "rid": rid}), 500
+
+
+@app.route('/api/zone-coverage-estimate', methods=['POST'])
+def api_zone_coverage_estimate():
+    """Estimate pixel coverage % for a zone config against a paint file.
+    Body: {"paint_file": "...", "zones": [...] }
+    Returns: {"coverage": [{"zone": "name", "pct": 12.5}, ...], "total_zones": N}"""
+    rid = getattr(g, '_rid', '-')
+    try:
+        data = request.get_json(silent=True) or {}
+        paint_file = data.get('paint_file', '')
+        zones = data.get('zones', [])
+        if not zones:
+            return jsonify({"error": "no_zones", "rid": rid}), 400
+        if len(zones) > MAX_ZONES_PER_REQUEST:
+            return jsonify({"error": "too_many_zones",
+                            "limit": MAX_ZONES_PER_REQUEST,
+                            "got": len(zones), "rid": rid}), 400
+        ok, normed, err = _validate_path_safe(paint_file)
+        if not ok or not os.path.exists(normed):
+            return jsonify({"error": err or "paint_file_missing", "rid": rid}), 404
+        try:
+            from PIL import Image as _PIL
+            import numpy as _np
+            with _PIL.open(normed) as img:
+                arr = _np.array(img.convert('RGBA'))
+        except Exception as e:
+            return jsonify({"error": f"image_open_failed: {e}", "rid": rid}), 400
+        total_px = arr.shape[0] * arr.shape[1]
+        # Quick estimate by colour-channel matching for "blue|red|green|black|white" zones.
+        # Region masks are ignored (they need engine rasterisation, too heavy).
+        result = []
+        for z in zones[:MAX_ZONES_PER_REQUEST]:
+            color = (z.get('color') or '').lower()
+            name = z.get('name') or color or 'unnamed'
+            pct = 0.0
+            if color == 'everything':
+                pct = 100.0
+            else:
+                # Threshold-based rough match.  Not exact — that's the point.
+                r, gch, b = arr[..., 0], arr[..., 1], arr[..., 2]
+                if color == 'red':
+                    m = (r > 150) & (gch < 100) & (b < 100)
+                elif color == 'green':
+                    m = (gch > 150) & (r < 100) & (b < 100)
+                elif color == 'blue':
+                    m = (b > 150) & (r < 100) & (gch < 100)
+                elif color == 'black':
+                    m = (r < 32) & (gch < 32) & (b < 32)
+                elif color == 'white':
+                    m = (r > 220) & (gch > 220) & (b > 220)
+                elif color == 'yellow':
+                    m = (r > 200) & (gch > 200) & (b < 100)
+                else:
+                    m = None
+                if m is not None:
+                    pct = round(100.0 * float(m.sum()) / total_px, 2)
+            result.append({"zone": name, "color": color, "pct": pct})
+        return jsonify({
+            "coverage": result,
+            "total_zones": len(zones),
+            "image_dims": [int(arr.shape[1]), int(arr.shape[0])],
+            "rid": rid,
+        })
+    except Exception as e:
+        logger.error(f"[zone-coverage rid={rid}] {e}")
+        return jsonify({"error": str(e), "rid": rid}), 500
+
+
+@app.route('/api/diagnostics', methods=['GET'])
+def api_diagnostics():
+    """Big diagnostics payload — Python version, packages, GPU, registries,
+    recent error log, available endpoints. Used for bug reports."""
+    rid = getattr(g, '_rid', '-')
+    pkg_versions = {}
+    for pkg in ("numpy", "Pillow", "flask", "flask_cors", "psd_tools"):
+        try:
+            mod = __import__(pkg if pkg != "Pillow" else "PIL")
+            pkg_versions[pkg] = getattr(mod, "__version__", "unknown")
+        except Exception:
+            pkg_versions[pkg] = None
+    endpoints = []
+    try:
+        for rule in app.url_map.iter_rules():
+            endpoints.append({
+                "rule": str(rule),
+                "methods": sorted(m for m in rule.methods if m not in ("HEAD", "OPTIONS")),
+            })
+    except Exception:
+        pass
+    with _recent_errors_lock:
+        recent_errs = list(_recent_errors)
+    return jsonify({
+        "version": SPB_VERSION,
+        "engine_version": SPB_ENGINE_VERSION,
+        "build_id": SPB_BUILD_ID,
+        "python": {
+            "version": sys.version.split()[0],
+            "implementation": platform.python_implementation(),
+            "executable": sys.executable,
+        },
+        "platform": {
+            "system": platform.system(),
+            "release": platform.release(),
+            "machine": platform.machine(),
+        },
+        "packages": pkg_versions,
+        "gpu": gpu_info(),
+        "registries": {
+            "bases": len(getattr(engine, 'BASE_REGISTRY', {})),
+            "patterns": len(getattr(engine, 'PATTERN_REGISTRY', {})),
+            "monolithics": len(getattr(engine, 'MONOLITHIC_REGISTRY', {})),
+            "fusions": len(getattr(engine, 'FUSION_REGISTRY', {})),
+        },
+        "endpoints_count": len(endpoints),
+        "endpoints": endpoints,
+        "recent_errors": recent_errs,
+        "uptime_s": int(time.time() - _server_start_time),
+        "rid": rid,
+    })
+
+
+@app.route('/api/server-info', methods=['GET'])
+def api_server_info():
+    """Lightweight server info — version, port, paths. Cheaper than /status."""
+    rid = getattr(g, '_rid', '-')
+    return jsonify({
+        "version": SPB_VERSION,
+        "engine": SPB_ENGINE_VERSION,
+        "build": SPB_BUILD_ID,
+        "pid": os.getpid(),
+        "port": int(os.environ.get('SHOKKER_PORT', 59876)),
+        "server_dir": SERVER_DIR,
+        "thumbnail_dir": THUMBNAIL_DIR,
+        "uptime_s": int(time.time() - _server_start_time),
+        "rid": rid,
+    })
+
+
+@app.route('/api/ping', methods=['GET'])
+def api_ping():
+    """Tiny health probe — returns plaintext 'pong' for fastest possible check."""
+    from flask import Response as _Resp
+    return _Resp("pong", mimetype='text/plain')
+
+
+@app.route('/api/echo', methods=['POST'])
+def api_echo():
+    """Debug echo — returns the JSON body and request headers verbatim.
+    Useful for client-side debugging of camelCase→snake_case conversion."""
+    rid = getattr(g, '_rid', '-')
+    try:
+        body = request.get_json(silent=True) or {}
+    except Exception:
+        body = {}
+    return jsonify({
+        "body": body,
+        "headers": dict(request.headers),
+        "method": request.method,
+        "remote_addr": request.remote_addr,
+        "rid": rid,
+    })
+
+
+# ----------------------------------------------------------------
+# BACKGROUND CLEANUP THREAD — runs every hour, deletes stale tmp
+# files and old job directories. Daemon thread so it dies with the
+# server process. Logs counts to the standard logger.
+# ----------------------------------------------------------------
+def _spb_background_janitor():
+    """Periodic cleanup of tmp files + old job dirs + memory stats log."""
+    interval_s = 60 * 60  # 1 hour
+    log = logging.getLogger('shokker.janitor')
+    while True:
+        try:
+            time.sleep(interval_s)
+        except Exception:
+            return
+        # 1) Old job dirs (>24h)
+        try:
+            now = time.time()
+            cleaned_jobs = 0
+            if os.path.isdir(OUTPUT_FOLDER):
+                for entry in os.listdir(OUTPUT_FOLDER):
+                    if not entry.startswith("job_"):
+                        continue
+                    p = os.path.join(OUTPUT_FOLDER, entry)
+                    try:
+                        if os.path.isdir(p) and (now - os.path.getmtime(p)) / 3600 > 24:
+                            shutil.rmtree(p, ignore_errors=True)
+                            cleaned_jobs += 1
+                    except OSError:
+                        pass
+            if cleaned_jobs:
+                log.info(f"janitor: removed {cleaned_jobs} stale job dirs")
+        except Exception as e:
+            log.warning(f"janitor job-cleanup failed: {e}")
+        # 2) Tmp files in OS temp matching shokker_* prefixes (>1 day old)
+        try:
+            import tempfile as _tf
+            tmp_root = _tf.gettempdir()
+            cleaned_tmp = 0
+            now = time.time()
+            for entry in os.listdir(tmp_root):
+                if not entry.startswith(("shokker_preview_", "shokker_render_", "shokker_decal_")):
+                    continue
+                p = os.path.join(tmp_root, entry)
+                try:
+                    if (now - os.path.getmtime(p)) > 86400:
+                        if os.path.isdir(p):
+                            shutil.rmtree(p, ignore_errors=True)
+                        else:
+                            os.remove(p)
+                        cleaned_tmp += 1
+                except OSError:
+                    pass
+            if cleaned_tmp:
+                log.info(f"janitor: removed {cleaned_tmp} stale tmp files")
+        except Exception as e:
+            log.warning(f"janitor tmp-cleanup failed: {e}")
+        # 3) Periodic memory stats — dropped at INFO so they show up in log review.
+        try:
+            obj_count = len(gc.get_objects())
+            with _render_stats_lock:
+                renders = _render_stats.get("total_renders", 0)
+            log.info(f"janitor stats: gc_objects={obj_count} total_renders={renders}")
+            # Auto-restart hint after 1000 renders (memory drift mitigation)
+            if renders > 0 and renders % 1000 == 0:
+                log.warning(f"janitor: {renders} renders served — consider restarting "
+                            f"the server to reclaim memory.")
+        except Exception:
+            pass
+
+# Kick off the janitor — daemon so it never blocks shutdown.
+threading.Thread(target=_spb_background_janitor, daemon=True, name='spb-janitor').start()
+
+
 if __name__ == '__main__':
     import socket
 
@@ -4917,9 +7602,28 @@ if __name__ == '__main__':
     with open(port_file, 'w') as f:
         f.write(str(port))
 
+    # ----------------------------------------------------------------
+    # Pre-flight: warn about missing optional dependencies BEFORE we
+    # bind the socket — easier for users to spot in the console log.
+    # ----------------------------------------------------------------
+    _missing_deps = []
+    for _dep, _hint in (("psd_tools", "PSD import will be disabled"),
+                        ("psutil",    "memory stats fall back to gc")):
+        try:
+            __import__(_dep)
+        except ImportError:
+            _missing_deps.append((_dep, _hint))
+
+    # GPU + diagnostics one-liner (caches the call so banner == /api/stats)
+    _gpu = gpu_info()
+    _gpu_label = f"{_gpu.get('icon', '?')} {_gpu.get('name', 'CPU')}"
+    if _gpu.get('vram_mb'):
+        _gpu_label += f" ({_gpu.get('vram_mb')} MB)"
+
     print("=" * 60)
-    print("  SHOKKER PAINT BOOTH AG - Build 29")
-    print("  Powered by Shokker Engine v4.0 PRO - 24K Arsenal")
+    print(f"  SHOKKER PAINT BOOTH — {SPB_VERSION}")
+    print(f"  Engine: {SPB_ENGINE_VERSION}  |  Build: {SPB_BUILD_ID}")
+    print(f"  GPU: {_gpu_label}  |  Accelerated: {_gpu.get('accelerated', False)}")
     if has_expansion:
         print(f"  24K Arsenal LOADED - {bases} bases / {patterns} patterns / {monos} monolithics")
     else:
@@ -4931,8 +7635,20 @@ if __name__ == '__main__':
         print(f"  Live Link: {cfg['active_car']} => {car_path}")
     else:
         print("  Live Link: not configured")
+    if _missing_deps:
+        print("  Optional deps missing:")
+        for _dep, _hint in _missing_deps:
+            print(f"    - {_dep}: {_hint}")
     print(f"  Listening on http://localhost:{port}")
+    print(f"  Open this URL in your browser:  http://localhost:{port}/")
     print("=" * 60)
+    # Pre-warm the finish-data cache so the very first /api/finish-data
+    # request doesn't pay the build cost. Wrapped to stay non-fatal.
+    try:
+        _FINISH_DATA_CACHE = _build_finish_data_payload()
+        logger.info(f"Pre-warmed finish-data cache: {_FINISH_DATA_CACHE['counts']['total']} entries")
+    except Exception as _e:
+        logger.warning(f"Pre-warm failed (non-fatal): {_e}")
 
 
     # Threaded WSGI server (handles concurrent requests)

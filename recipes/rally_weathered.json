@@ -1,0 +1,82 @@
+{
+  "name": "Rally Weathered",
+  "description": "Real-deal rally car finish: mud splatter, battle scars, and patina worn into the edges. Earned-not-given.",
+  "author": "Shokker Paint Booth",
+  "version": "6.2.0",
+  "compatible_with": "any chassis, optimized for rally / rallycross / off-road",
+  "notes": "Use the global wearLevel slider on import to dial weathering up (70-100) or down (20-40). Mud splatter reads best on light body colors.",
+  "zones": [
+    {
+      "name": "Body",
+      "color": "everything",
+      "base": "enamel",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "special",
+      "baseColor": "#c8412a",
+      "baseColorMode": "solid",
+      "baseStrength": 1,
+      "baseSpecStrength": 1,
+      "wear": 35
+    },
+    {
+      "name": "Mud Splatter",
+      "color": "remaining",
+      "base": "rally_mud",
+      "pattern": "none",
+      "intensity": "80",
+      "colorMode": "special",
+      "baseColor": "#5a3820",
+      "baseColorMode": "solid",
+      "baseStrength": 0.85
+    },
+    {
+      "name": "Battle Scars",
+      "color": "dark",
+      "base": "desert_worn",
+      "pattern": "road_rash",
+      "intensity": "90",
+      "colorMode": "quick",
+      "pickerColor": "#332222",
+      "pickerTolerance": 40,
+      "patternIntensity": "75",
+      "wear": 60
+    },
+    {
+      "name": "Patina Edges",
+      "color": "gray",
+      "base": "barn_find",
+      "pattern": "rust_bloom",
+      "intensity": "85",
+      "colorMode": "quick",
+      "pickerColor": "#888888",
+      "pickerTolerance": 35,
+      "patternIntensity": "60"
+    },
+    {
+      "name": "Rally Numbers",
+      "color": "yellow",
+      "base": "gloss",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#ffcc00",
+      "pickerTolerance": 35,
+      "baseColor": "#ffffff",
+      "baseColorMode": "solid",
+      "wear": 25
+    },
+    {
+      "name": "Sponsor Panels",
+      "color": "white",
+      "base": "satin",
+      "pattern": "peeling_paint",
+      "intensity": "90",
+      "colorMode": "quick",
+      "pickerColor": "#ffffff",
+      "pickerTolerance": 25,
+      "patternIntensity": "50",
+      "wear": 30
+    }
+  ]
+}

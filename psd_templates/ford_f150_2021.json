@@ -1,0 +1,67 @@
+{
+  "id": "ford_f150_2021",
+  "name": "Ford F-150 2021",
+  "category": "NASCAR Truck",
+  "canvas_size": [2048, 2048],
+  "color_space": "sRGB",
+  "alpha_required": true,
+  "iracing_folder": "trucks/f1502021",
+  "schema_version": "1.0.0",
+  "layer_tree": [
+    {"name": "Wire", "type": "raster", "purpose": "Wireframe placement reference.", "default_visibility": true, "export_visibility": false},
+    {"name": "Mask", "type": "mask", "purpose": "Paintable region constraint.", "default_visibility": true, "export_visibility": true},
+    {
+      "name": "Paintable Area",
+      "type": "group",
+      "purpose": "User-editable paint and decals.",
+      "children": ["Car_Paint", "Numbers", "Sponsors", "Tape", "Color Change Logos"]
+    },
+    {"name": "Car_Paint", "type": "raster", "purpose": "SPB-generated paint output.", "default_visibility": true, "export_visibility": true},
+    {"name": "Numbers", "type": "smart_object", "purpose": "Driver number panels.", "default_visibility": true, "export_visibility": true},
+    {"name": "Sponsors", "type": "group", "purpose": "Sponsor logos with primary/associate/contingency subgroups.", "default_visibility": true, "export_visibility": true},
+    {"name": "Tape", "type": "raster", "purpose": "Tape stripe overlays.", "default_visibility": true, "export_visibility": true},
+    {"name": "Pitbox Colors", "type": "raster", "purpose": "Pit stall signage color.", "default_visibility": false, "export_visibility": true},
+    {"name": "Color Change Logos", "type": "raster", "purpose": "Ford manufacturer logos that recolor.", "default_visibility": true, "export_visibility": true},
+    {"name": "Windshield Banner", "type": "raster", "purpose": "Top-of-windshield driver name.", "default_visibility": true, "export_visibility": true},
+    {"name": "Grille Mesh", "type": "raster", "purpose": "F-150 grille mesh detail — keep paint minimal here.", "default_visibility": true, "export_visibility": true},
+    {"name": "Turn Off Before Exporting TGA", "type": "group", "purpose": "Reference layers to hide before export.", "children": ["Wire", "Guides"], "default_visibility": true, "export_visibility": false}
+  ],
+  "uv_safe_areas": [
+    {"name": "left_door_panel", "bbox_uv": [0.10, 0.40, 0.30, 0.62], "use": "primary sponsor / driver number"},
+    {"name": "right_door_panel", "bbox_uv": [0.55, 0.40, 0.75, 0.62], "use": "primary sponsor / driver number (mirror)"},
+    {"name": "hood", "bbox_uv": [0.28, 0.05, 0.62, 0.32], "use": "primary sponsor — wider than Silverado/Tundra"},
+    {"name": "roof", "bbox_uv": [0.32, 0.62, 0.55, 0.80], "use": "spotter number / large secondary sponsor"},
+    {"name": "front_fender_left", "bbox_uv": [0.05, 0.32, 0.18, 0.42], "use": "associate sponsor"},
+    {"name": "front_fender_right", "bbox_uv": [0.62, 0.32, 0.75, 0.42], "use": "associate sponsor"},
+    {"name": "rear_quarter_left", "bbox_uv": [0.05, 0.62, 0.18, 0.78], "use": "contingency stack"},
+    {"name": "rear_quarter_right", "bbox_uv": [0.62, 0.62, 0.75, 0.78], "use": "contingency stack"},
+    {"name": "tailgate", "bbox_uv": [0.78, 0.40, 0.95, 0.62], "use": "secondary sponsor / class branding"}
+  ],
+  "number_panels": [
+    {"id": "door_left", "bbox_uv": [0.16, 0.45, 0.26, 0.58]},
+    {"id": "door_right", "bbox_uv": [0.59, 0.45, 0.69, 0.58]},
+    {"id": "roof", "bbox_uv": [0.36, 0.66, 0.50, 0.76]}
+  ],
+  "windshield_banner": {
+    "bbox_uv": [0.30, 0.86, 0.60, 0.92],
+    "max_chars": 18,
+    "default_height_px": 96
+  },
+  "recommended_zones": [
+    {"id": "hood_zone", "label": "Hood", "default_finish": "metallic_standard", "default_color": "#003478"},
+    {"id": "doors_zone", "label": "Doors", "default_finish": "metallic_flake", "default_color": "#FFFFFF"},
+    {"id": "roof_zone", "label": "Roof", "default_finish": "matte_basic", "default_color": "#0A0A0A"},
+    {"id": "fenders_zone", "label": "Fenders", "default_finish": "candy_special", "default_color": "#9B0000"},
+    {"id": "rear_quarter_zone", "label": "Rear Quarters", "default_finish": "carbon_composite", "default_color": "#1A1A1A"}
+  ],
+  "warnings": [
+    "F-150 grille mesh has its own layer — painting it solid will create a jarring 'plate' look on render.",
+    "Hood UV is wider; sponsors migrated from Silverado will appear stretched ~10%.",
+    "Color Change Logos for Ford uses a slightly desaturated palette — verify oval logo color in preview."
+  ],
+  "tips": [
+    "Use the wider hood as a billboard for primary sponsor — fits a horizontal lockup nicely.",
+    "Pair carbon rear quarters with metallic doors for a modern Mustang-inspired look.",
+    "Front fender on F-150 is the cleanest associate-sponsor real estate among the three trucks."
+  ]
+}

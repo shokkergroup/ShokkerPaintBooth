@@ -343,6 +343,80 @@ def _build_registries():
     except Exception as ex:
         print(f"[V5 Registry] Warning: SHOKK patterns load failed: {ex}")
 
+    # ================================================================
+    # DUAL COLOR SHIFT > COLORSHOXX (angle-dependent color shifting)
+    # Now registers under cx_* IDs with dualshift_* backward compat
+    # ================================================================
+    try:
+        from engine.dual_color_shift import DUAL_SHIFT_MONOLITHICS
+        _ds_added = 0
+        for k, v in DUAL_SHIFT_MONOLITHICS.items():
+            if k not in mono_reg:
+                mono_reg[k] = v
+                _ds_added += 1
+        if _ds_added:
+            print(f"[V5 Registry] Dual Shift > COLORSHOXX: {_ds_added} monolithics registered")
+    except Exception as ex:
+        print(f"[V5 Registry] Warning: Dual Color Shift load failed: {ex}")
+
+    # ================================================================
+    # CS DUO > MICRO-FLAKE CONVERSION (replaces old flat-gradient duos)
+    # ================================================================
+    try:
+        from engine.micro_flake_shift import CS_DUO_MICRO_MONOLITHICS
+        _csd_added = 0
+        for k, v in CS_DUO_MICRO_MONOLITHICS.items():
+            mono_reg[k] = v  # Overwrite old CS Duo entries with micro-flake versions
+            _csd_added += 1
+        if _csd_added:
+            print(f"[V5 Registry] CS Duo to Micro-Flake: {_csd_added} monolithics upgraded")
+    except Exception as ex:
+        print(f"[V5 Registry] Warning: CS Duo micro-flake conversion failed: {ex}")
+
+    # ================================================================
+    # MICRO-FLAKE COLOR SHIFT — per-flake micro shimmer (now part of COLORSHOXX)
+    # ================================================================
+    try:
+        from engine.micro_flake_shift import MICRO_SHIFT_MONOLITHICS
+        _ms_added = 0
+        for k, v in MICRO_SHIFT_MONOLITHICS.items():
+            if k not in mono_reg:
+                mono_reg[k] = v
+                _ms_added += 1
+        if _ms_added:
+            print(f"[V5 Registry] Micro-Flake > COLORSHOXX: {_ms_added} monolithics registered")
+    except Exception as ex:
+        print(f"[V5 Registry] Warning: Micro-Flake Shift load failed: {ex}")
+
+    # ================================================================
+    # COLORSHOXX WAVE 4 — New multi-color flake shifts
+    # ================================================================
+    try:
+        from engine.micro_flake_shift import CX_WAVE4_MONOLITHICS
+        _w4_added = 0
+        for k, v in CX_WAVE4_MONOLITHICS.items():
+            if k not in mono_reg:
+                mono_reg[k] = v
+                _w4_added += 1
+        if _w4_added:
+            print(f"[V5 Registry] COLORSHOXX Wave 4: {_w4_added} new finishes registered")
+    except Exception as ex:
+        print(f"[V5 Registry] Warning: COLORSHOXX Wave 4 load failed: {ex}")
+
+    # ================================================================
+    # COLORSHOXX HYPERFLIP — perceptual opponent-pixel color flip
+    # ================================================================
+    try:
+        from engine.perceptual_color_shift import HYPERFLIP_MONOLITHICS
+        _hf_added = 0
+        for k, v in HYPERFLIP_MONOLITHICS.items():
+            mono_reg[k] = v
+            _hf_added += 1
+        if _hf_added:
+            print(f"[V5 Registry] COLORSHOXX HyperFlip: {_hf_added} perceptual flip finishes registered")
+    except Exception as ex:
+        print(f"[V5 Registry] Warning: COLORSHOXX HyperFlip load failed: {ex}")
+
     return base_reg, pattern_reg, mono_reg, finish_reg, fusion_reg
 
 

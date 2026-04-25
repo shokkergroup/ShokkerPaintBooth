@@ -1,0 +1,189 @@
+{
+  "version": "6.2.0",
+  "description": "Standard number panel presets for racing liveries — placement and styling hints used by Shokker Paint Booth to suggest sizes, strokes, and shadows for the Numbers PSD layer.",
+  "schema": {
+    "id": "string — unique key",
+    "name": "string — human label",
+    "category": "string — racing class family",
+    "description": "string — what the preset is for",
+    "size": "small|medium|large|xlarge",
+    "typical_dimensions_uv": "[width, height] in UV space (0..1)",
+    "stroke": "{ width: px, color: hex } — outline around digits",
+    "drop_shadow": "{ dx, dy, blur, color, opacity } — soft drop shadow",
+    "font_recommendation": "string — comma-separated stack",
+    "good_for": "array of placement hints",
+    "tips": "array of practical advice"
+  },
+  "panels": [
+    {
+      "id": "nascar_door_panel",
+      "name": "NASCAR Door Panel",
+      "category": "stock_car",
+      "description": "Standard NASCAR-style door number panel — bold 2-3 digit number rendered large enough to read from grandstand cameras.",
+      "size": "large",
+      "typical_dimensions_uv": [0.15, 0.15],
+      "stroke": { "width": 8, "color": "#000000" },
+      "drop_shadow": { "dx": 4, "dy": 4, "blur": 0, "color": "#000000", "opacity": 0.5 },
+      "font_recommendation": "Impact, Arial Black, Helvetica Neue Black",
+      "good_for": ["Door panels", "Roof", "Hood"],
+      "tips": [
+        "Use high contrast against body color",
+        "Maintain 8px stroke for TV readability",
+        "Center the number in the door cavity, biased slightly forward"
+      ]
+    },
+    {
+      "id": "nascar_roof_panel",
+      "name": "NASCAR Roof Number",
+      "category": "stock_car",
+      "description": "Mirror-flipped roof number used by spotters and aerial cameras. Always rotated 90 degrees relative to door.",
+      "size": "xlarge",
+      "typical_dimensions_uv": [0.22, 0.22],
+      "stroke": { "width": 10, "color": "#000000" },
+      "drop_shadow": { "dx": 0, "dy": 0, "blur": 0, "color": "#000000", "opacity": 0 },
+      "font_recommendation": "Impact, Arial Black",
+      "good_for": ["Roof"],
+      "tips": [
+        "Orient so spotters in the stands read upright as the car points away from them",
+        "No drop shadow — roof contour casts its own shading",
+        "Match door panel digit shape exactly"
+      ]
+    },
+    {
+      "id": "gt3_door_panel",
+      "name": "GT3 Door Panel",
+      "category": "sports_car",
+      "description": "FIA GT3 door number — rectangular panel with mandatory white background underlay in some series.",
+      "size": "large",
+      "typical_dimensions_uv": [0.13, 0.13],
+      "stroke": { "width": 4, "color": "#000000" },
+      "drop_shadow": { "dx": 2, "dy": 2, "blur": 0, "color": "#000000", "opacity": 0.35 },
+      "font_recommendation": "Helvetica Bold, Univers 75",
+      "good_for": ["Door panels", "Hood corner"],
+      "tips": [
+        "Many GT3 series mandate a contrasting underlay rectangle",
+        "Keep 30mm clear-zone around the digits",
+        "Class color may be required behind the number"
+      ]
+    },
+    {
+      "id": "gt3_roundel",
+      "name": "GT3 Roundel",
+      "category": "sports_car",
+      "description": "Circular number roundel popular in IMSA and SRO series — number sits inside a class-colored disc.",
+      "size": "large",
+      "typical_dimensions_uv": [0.14, 0.14],
+      "stroke": { "width": 3, "color": "#000000" },
+      "drop_shadow": { "dx": 0, "dy": 0, "blur": 4, "color": "#000000", "opacity": 0.25 },
+      "font_recommendation": "Helvetica Bold",
+      "good_for": ["Door panels", "Front fender"],
+      "tips": [
+        "Disc fill color encodes class (e.g. yellow for GTD, red for GTP)",
+        "Number must be vertically centered — descenders not allowed",
+        "Use a 1px white inner ring for added pop"
+      ]
+    },
+    {
+      "id": "f1_nose_panel",
+      "name": "F1 Nose Number",
+      "category": "open_wheel",
+      "description": "Modern Formula 1 nose number — small, stylized, often colored to match the team livery.",
+      "size": "small",
+      "typical_dimensions_uv": [0.05, 0.05],
+      "stroke": { "width": 1, "color": "#FFFFFF" },
+      "drop_shadow": { "dx": 0, "dy": 0, "blur": 0, "color": "#000000", "opacity": 0 },
+      "font_recommendation": "Custom — drivers may use personal logos",
+      "good_for": ["Nose cone", "Front wing endplate"],
+      "tips": [
+        "F1 numbers are stylistic — drivers often use a custom font",
+        "Stroke is optional; team livery usually provides contrast",
+        "Avoid drop shadows — surface is too small"
+      ]
+    },
+    {
+      "id": "f1_tail_panel",
+      "name": "F1 Engine Cover Number",
+      "category": "open_wheel",
+      "description": "Larger number on the engine cover or airbox visible from above and behind for camera identification.",
+      "size": "medium",
+      "typical_dimensions_uv": [0.09, 0.09],
+      "stroke": { "width": 2, "color": "#FFFFFF" },
+      "drop_shadow": { "dx": 0, "dy": 0, "blur": 0, "color": "#000000", "opacity": 0 },
+      "font_recommendation": "Custom — usually team-styled",
+      "good_for": ["Engine cover", "T-cam fairing"],
+      "tips": [
+        "Place high on the engine cover so helicam can read it",
+        "Mirror on both sides if asymmetrical livery",
+        "Number must fit within FIA-mandated bounding box"
+      ]
+    },
+    {
+      "id": "lmp_class_panel",
+      "name": "LMP Class Panel",
+      "category": "prototype",
+      "description": "Le Mans Prototype number panel with mandatory class indicator (P1, P2, LMP3, Hypercar). Rectangular with class abbreviation above number.",
+      "size": "large",
+      "typical_dimensions_uv": [0.12, 0.16],
+      "stroke": { "width": 5, "color": "#000000" },
+      "drop_shadow": { "dx": 2, "dy": 2, "blur": 0, "color": "#000000", "opacity": 0.4 },
+      "font_recommendation": "Helvetica Bold, Eurostile",
+      "good_for": ["Front splitter", "Door region", "Rear wing endplate"],
+      "tips": [
+        "Class abbreviation sits in a colored bar above the number",
+        "Hypercar uses red, LMP2 uses blue, LMP3 uses orange (varies by series)",
+        "Panel must be visible from all four cardinal angles"
+      ]
+    },
+    {
+      "id": "indy_door_panel",
+      "name": "IndyCar Sidepod Number",
+      "category": "open_wheel",
+      "description": "Number placed on the sidepod intake area for IndyCar — large, high-contrast, often with team-color outline.",
+      "size": "large",
+      "typical_dimensions_uv": [0.14, 0.14],
+      "stroke": { "width": 6, "color": "#000000" },
+      "drop_shadow": { "dx": 3, "dy": 3, "blur": 0, "color": "#000000", "opacity": 0.45 },
+      "font_recommendation": "Impact, Arial Black, Bank Gothic",
+      "good_for": ["Sidepod", "Airbox", "Nose"],
+      "tips": [
+        "Mirror on both sidepods",
+        "Airbox number is mandatory for top-down camera identification",
+        "Series logo often sits adjacent — leave breathing room"
+      ]
+    },
+    {
+      "id": "dirt_late_model_door",
+      "name": "Dirt Late Model Door",
+      "category": "dirt_oval",
+      "description": "Massive door number spanning nearly the full door panel, classic Saturday-night-short-track style.",
+      "size": "xlarge",
+      "typical_dimensions_uv": [0.22, 0.22],
+      "stroke": { "width": 10, "color": "#000000" },
+      "drop_shadow": { "dx": 6, "dy": 6, "blur": 2, "color": "#000000", "opacity": 0.6 },
+      "font_recommendation": "Impact, Compacta, custom hand-script",
+      "good_for": ["Door panels", "Roof"],
+      "tips": [
+        "Bigger is better — readability through dust matters",
+        "Heavy drop shadow gives depth from grandstand distance",
+        "Many drivers use a stylized custom-cut number for brand identity"
+      ]
+    },
+    {
+      "id": "vintage_roundel",
+      "name": "Vintage Roundel",
+      "category": "vintage",
+      "description": "Pre-1970s circular number disc — white background, black digits, era-appropriate sans-serif.",
+      "size": "medium",
+      "typical_dimensions_uv": [0.11, 0.11],
+      "stroke": { "width": 2, "color": "#000000" },
+      "drop_shadow": { "dx": 0, "dy": 0, "blur": 0, "color": "#000000", "opacity": 0 },
+      "font_recommendation": "Futura, Gill Sans, hand-painted block",
+      "good_for": ["Door panels", "Hood", "Trunk lid"],
+      "tips": [
+        "Use a slightly off-white (cream) background for period authenticity",
+        "Avoid drop shadows — wasn't done back then",
+        "Keep the disc thick enough that the number isn't lost in body curvature"
+      ]
+    }
+  ]
+}

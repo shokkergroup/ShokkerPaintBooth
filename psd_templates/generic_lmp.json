@@ -1,0 +1,66 @@
+{
+  "id": "generic_lmp",
+  "name": "Generic LMP Prototype",
+  "category": "Prototype",
+  "canvas_size": [2048, 2048],
+  "color_space": "sRGB",
+  "alpha_required": true,
+  "iracing_folder": "lmp",
+  "schema_version": "1.0.0",
+  "description": "Generic baseline for Le Mans Prototype class cars (LMP2, LMP3, Hypercar). Closed-cockpit prototypes with large engine cover and sidepod real estate. Class Lights are mandatory and must remain readable.",
+  "layer_tree": [
+    {"name": "Wire", "type": "raster", "purpose": "Wireframe placement reference.", "default_visibility": true, "export_visibility": false},
+    {"name": "Mask", "type": "mask", "purpose": "Paintable region constraint.", "default_visibility": true, "export_visibility": true},
+    {
+      "name": "Paintable Area",
+      "type": "group",
+      "purpose": "User-editable paint and decals.",
+      "children": ["Car_Paint", "Numbers", "Sponsors", "Aero", "Color Change Logos"]
+    },
+    {"name": "Car_Paint", "type": "raster", "purpose": "SPB-generated paint output.", "default_visibility": true, "export_visibility": true},
+    {"name": "Numbers", "type": "smart_object", "purpose": "Sidepod numbers + nose + roof.", "default_visibility": true, "export_visibility": true},
+    {"name": "Sponsors", "type": "group", "purpose": "Endurance sponsor layout (multi-class friendly).", "default_visibility": true, "export_visibility": true},
+    {"name": "Aero", "type": "raster", "purpose": "Front splitter, rear wing, diffuser, fins.", "default_visibility": true, "export_visibility": true},
+    {"name": "Color Change Logos", "type": "raster", "purpose": "Manufacturer/series logos that recolor.", "default_visibility": true, "export_visibility": true},
+    {"name": "Class Lights", "type": "raster", "purpose": "Mandatory front + rear class identifier lights. DO NOT paint over.", "default_visibility": true, "export_visibility": true, "locked": true},
+    {"name": "Driver Names", "type": "raster", "purpose": "Sidepod or canopy driver name strips (endurance teams swap drivers).", "default_visibility": true, "export_visibility": true},
+    {"name": "Turn Off Before Exporting TGA", "type": "group", "purpose": "Reference layers to hide before export.", "children": ["Wire", "Guides"], "default_visibility": true, "export_visibility": false}
+  ],
+  "uv_safe_areas": [
+    {"name": "engine_cover", "bbox_uv": [0.30, 0.10, 0.60, 0.40], "use": "primary sponsor — most visible from above"},
+    {"name": "sidepod_left", "bbox_uv": [0.05, 0.45, 0.25, 0.65], "use": "co-primary sponsor + driver number"},
+    {"name": "sidepod_right", "bbox_uv": [0.55, 0.45, 0.75, 0.65], "use": "co-primary sponsor + driver number"},
+    {"name": "nose", "bbox_uv": [0.35, 0.02, 0.55, 0.10], "use": "manufacturer / class branding"},
+    {"name": "rear_wing_main", "bbox_uv": [0.30, 0.78, 0.60, 0.86], "use": "wing-mounted sponsor (highly visible)"},
+    {"name": "rear_wing_endplate_left", "bbox_uv": [0.05, 0.78, 0.18, 0.92], "use": "associate sponsor"},
+    {"name": "rear_wing_endplate_right", "bbox_uv": [0.62, 0.78, 0.75, 0.92], "use": "associate sponsor"},
+    {"name": "canopy_top", "bbox_uv": [0.36, 0.40, 0.50, 0.50], "use": "spotter number (above canopy)"}
+  ],
+  "number_panels": [
+    {"id": "sidepod_left", "bbox_uv": [0.10, 0.50, 0.20, 0.62], "shape": "rectangle"},
+    {"id": "sidepod_right", "bbox_uv": [0.60, 0.50, 0.70, 0.62], "shape": "rectangle"},
+    {"id": "nose", "bbox_uv": [0.40, 0.04, 0.50, 0.10], "shape": "rectangle"},
+    {"id": "roof", "bbox_uv": [0.38, 0.42, 0.48, 0.50], "shape": "rectangle"}
+  ],
+  "windshield_banner": {
+    "bbox_uv": [0.32, 0.90, 0.58, 0.96],
+    "max_chars": 12,
+    "default_height_px": 80
+  },
+  "recommended_zones": [
+    {"id": "main_body", "label": "Main Body / Engine Cover", "default_finish": "candy_special", "default_color": "#000A2E"},
+    {"id": "aero_kit", "label": "Aero Kit", "default_finish": "carbon_composite", "default_color": "#1A1A1A"},
+    {"id": "sidepod_zone", "label": "Sidepod Accent", "default_finish": "metallic_flake", "default_color": "#E10600"},
+    {"id": "wing_zone", "label": "Rear Wing", "default_finish": "matte_basic", "default_color": "#FFFFFF"}
+  ],
+  "warnings": [
+    "Class Lights layer is LOCKED — overpainting it will fail iRacing class verification.",
+    "Sidepod UV stretches significantly toward the rear; logos may need pre-distortion correction.",
+    "Engine cover seams are not perfectly aligned in UV — use a single image rather than stitched logos."
+  ],
+  "tips": [
+    "Engine cover is the LMP equivalent of a NASCAR hood — your primary brand belongs here.",
+    "Wing-mounted sponsors are the highest-CPM real estate in motorsport. Prioritize highest-paying brand here.",
+    "Reserve sidepod numbers area + 16 px padding; series scrutineers reject overlapping decals."
+  ]
+}

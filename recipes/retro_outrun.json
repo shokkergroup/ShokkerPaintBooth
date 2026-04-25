@@ -1,0 +1,94 @@
+{
+  "name": "Retro Outrun",
+  "description": "Full synthwave 80s neon aesthetic — gradient pink-to-purple body, chrome accents, neon grid overlay, and glowing pinstripes. Pure vaporwave vibes.",
+  "author": "Shokker Paint Booth",
+  "version": "6.2.0",
+  "compatible_with": "any chassis, reads best on smooth GT / supercar bodies",
+  "notes": "The Grid Overlay zone is what sells the retro look — don't disable it. For extra Miami vibes, push Body baseColor slightly hotter pink (#ff3d7e). Works great paired with sunset-lit tracks.",
+  "zones": [
+    {
+      "name": "Neon Body",
+      "color": "everything",
+      "base": "gloss",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "special",
+      "baseColor": "#ff1e8c",
+      "baseColorMode": "solid",
+      "baseStrength": 1,
+      "baseSpecStrength": 1
+    },
+    {
+      "name": "Gradient Upper",
+      "color": "remaining",
+      "base": "candy_apple",
+      "pattern": "none",
+      "intensity": "75",
+      "colorMode": "special",
+      "baseColor": "#7a1fb8",
+      "baseColorMode": "solid",
+      "baseStrength": 0.75,
+      "baseSpecStrength": 1
+    },
+    {
+      "name": "Grid Overlay",
+      "color": "blue",
+      "base": "neon_electric_blue",
+      "pattern": "racing_stripe",
+      "intensity": "95",
+      "colorMode": "quick",
+      "pickerColor": "#00f0ff",
+      "pickerTolerance": 40,
+      "baseColor": "#00e5ff",
+      "baseColorMode": "solid",
+      "patternIntensity": "100"
+    },
+    {
+      "name": "Chrome Accents",
+      "color": "gray",
+      "base": "chrome",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#cccccc",
+      "pickerTolerance": 30,
+      "baseColorMode": "source"
+    },
+    {
+      "name": "Neon Pink Stripe",
+      "color": "red",
+      "base": "neon_pink_blaze",
+      "pattern": "pinstripe",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#cc2222",
+      "pickerTolerance": 35,
+      "baseColor": "#ff2fb8",
+      "baseColorMode": "solid",
+      "patternIntensity": "100"
+    },
+    {
+      "name": "Numbers Retro",
+      "base": "chrome",
+      "color": "white",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#ffffff",
+      "pickerTolerance": 25,
+      "baseColorMode": "source"
+    },
+    {
+      "name": "Sunset Trim",
+      "color": "yellow",
+      "base": "pearl",
+      "pattern": "none",
+      "intensity": "90",
+      "colorMode": "quick",
+      "pickerColor": "#ffcc00",
+      "pickerTolerance": 30,
+      "baseColor": "#ff9a3d",
+      "baseColorMode": "solid"
+    }
+  ]
+}

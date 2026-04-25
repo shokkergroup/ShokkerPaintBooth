@@ -1,0 +1,85 @@
+{
+  "name": "Modern Stealth Fighter",
+  "description": "Inspired by F-22/F-35 stealth liveries — deep matte charcoal body with angular red accents, low-sheen tactical feel. Aggressive, minimalist, and understated.",
+  "author": "Shokker Paint Booth",
+  "version": "6.2.0",
+  "compatible_with": "any chassis, looks most menacing on wedge / wide-body shapes",
+  "notes": "Keep baseSpecStrength LOW (0.3-0.5) on the body zone to preserve the radar-absorbent matte look. Red accents are the only glossy element — that contrast is the point.",
+  "zones": [
+    {
+      "name": "Stealth Body",
+      "color": "everything",
+      "base": "matte",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "special",
+      "baseColor": "#1f2226",
+      "baseColorMode": "solid",
+      "baseStrength": 1,
+      "baseSpecStrength": 0.4
+    },
+    {
+      "name": "Panel Lines",
+      "color": "dark",
+      "base": "flat_black",
+      "pattern": "none",
+      "intensity": "85",
+      "colorMode": "quick",
+      "pickerColor": "#111111",
+      "pickerTolerance": 30,
+      "baseColor": "#0a0a0c",
+      "baseColorMode": "solid",
+      "baseSpecStrength": 0.3
+    },
+    {
+      "name": "Tactical Red Accent",
+      "color": "red",
+      "base": "gloss",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#cc2222",
+      "pickerTolerance": 35,
+      "baseColor": "#a01414",
+      "baseColorMode": "solid",
+      "baseSpecStrength": 1
+    },
+    {
+      "name": "Squadron Numbers",
+      "color": "white",
+      "base": "semi_gloss",
+      "pattern": "none",
+      "intensity": "90",
+      "colorMode": "quick",
+      "pickerColor": "#ffffff",
+      "pickerTolerance": 25,
+      "baseColor": "#b8b8b8",
+      "baseColorMode": "solid"
+    },
+    {
+      "name": "Carbon Intake",
+      "color": "gray",
+      "base": "carbon_base",
+      "pattern": "carbon_fiber",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#333333",
+      "pickerTolerance": 35,
+      "patternIntensity": "95",
+      "scale": 0.85
+    },
+    {
+      "name": "Warning Chevrons",
+      "color": "yellow",
+      "base": "semi_gloss",
+      "pattern": "racing_stripe",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#ffcc00",
+      "pickerTolerance": 30,
+      "baseColor": "#d9a400",
+      "baseColorMode": "solid",
+      "patternIntensity": "90"
+    }
+  ]
+}

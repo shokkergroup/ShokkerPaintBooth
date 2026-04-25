@@ -320,10 +320,10 @@ def _generic_cs_spec(shape, mask, seed, sm):
 def _generic_solid_spec_fn(shape, mask, seed, sm, mat_key):
     """Generic solid spec based on material key extracted from finish ID."""
     MATS = {
-        'gloss': (5, 20, 16), 'matte': (5, 180, 0),
-        'satin': (15, 90, 8), 'metallic': (200, 50, 16),
+        'gloss': (5, 20, 16), 'matte': (5, 180, 200),
+        'satin': (15, 90, 40), 'metallic': (200, 50, 16),
         'pearl': (120, 35, 16), 'candy': (200, 15, 16),
-        'chrome': (250, 3, 0), 'flat': (0, 230, 0),
+        'chrome': (250, 3, 16), 'flat': (0, 230, 220),
     }
     M, R, CC = MATS.get(mat_key, (5, 20, 16))
     spec = np.zeros((shape[0], shape[1], 4), dtype=np.uint8)
@@ -336,6 +336,7 @@ def _generic_solid_spec_fn(shape, mask, seed, sm, mat_key):
 
 def _apply_generic_gradient(paint, shape, mask, c1, c2, direction, seed, pm, bb, mirror=False, rotation=0):
     """Apply a 2-color gradient to paint. Zone-aware: maps gradient to zone bbox."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     blend = 0.85 * pm
     y, x = np.mgrid[0:h, 0:w]
@@ -386,6 +387,7 @@ def _apply_generic_gradient(paint, shape, mask, c1, c2, direction, seed, pm, bb,
 
 def _apply_generic_3color_gradient(paint, shape, mask, c1, c2, c3, direction, seed, pm, bb, rotation=0):
     """Apply a 3-color gradient (c1 -> c2 -> c3). Zone-aware: maps to zone bbox."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     blend = 0.85 * pm
     y, x = np.mgrid[0:h, 0:w]
@@ -432,6 +434,7 @@ def _apply_generic_3color_gradient(paint, shape, mask, c1, c2, c3, direction, se
 
 def _apply_generic_colorshift(paint, shape, mask, c1, c2, seed, pm, bb):
     """Apply angle-dependent color shift. Zone-aware: centers on zone bbox."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     blend = 0.85 * pm
     y, x = np.mgrid[0:h, 0:w]
@@ -463,6 +466,7 @@ def _apply_generic_colorshift(paint, shape, mask, c1, c2, seed, pm, bb):
 
 def _apply_generic_solid(paint, shape, mask, c1, seed, pm, bb):
     """Apply a flat solid color."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     blend = 0.85 * pm
     r, g, b = c1[0] + bb, c1[1] + bb, c1[2] + bb
     paint[:, :, 0] = np.clip(paint[:, :, 0] * (1 - mask * blend) + r * mask * blend, 0, 1)

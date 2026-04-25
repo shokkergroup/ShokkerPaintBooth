@@ -1,0 +1,93 @@
+{
+  "version": "6.2.0",
+  "description": "Helmet template metadata for SPB",
+  "templates": [
+    {
+      "id": "iracing_default",
+      "name": "iRacing Default Helmet",
+      "canvas_size": [1024, 1024],
+      "uv_zones": ["top", "left", "right", "back", "front", "visor", "chinbar"],
+      "iracing_folder": "helmets",
+      "filename_convention": "helmet_<iracing_id>.tga",
+      "spec_filename": "helmet_spec_<iracing_id>.tga",
+      "default_dpi": 96,
+      "supports_spec_map": true,
+      "alpha_supported": false,
+      "notes": "Standard iRacing helmet template with 7 UV zones. Spec map governs metallic/roughness/clearcoat. Visor is a separate UV island and supports chrome/mirror finishes."
+    },
+    {
+      "id": "iracing_hd_helmet",
+      "name": "iRacing HD Helmet (2048)",
+      "canvas_size": [2048, 2048],
+      "uv_zones": ["top", "left", "right", "back", "front", "visor", "chinbar", "neck_skirt"],
+      "iracing_folder": "helmets",
+      "filename_convention": "helmet_<iracing_id>.tga",
+      "spec_filename": "helmet_spec_<iracing_id>.tga",
+      "default_dpi": 192,
+      "supports_spec_map": true,
+      "alpha_supported": false,
+      "notes": "Higher-resolution helmet template for premium displays. 4x texel density vs default. Same UV layout plus an optional neck skirt zone."
+    },
+    {
+      "id": "openface_classic",
+      "name": "Open-Face Classic Helmet",
+      "canvas_size": [1024, 1024],
+      "uv_zones": ["top", "left", "right", "back", "earcup_left", "earcup_right"],
+      "iracing_folder": "helmets",
+      "filename_convention": "helmet_<iracing_id>.tga",
+      "spec_filename": "helmet_spec_<iracing_id>.tga",
+      "default_dpi": 96,
+      "supports_spec_map": true,
+      "alpha_supported": false,
+      "notes": "Vintage open-face helmet template (no visor zone). Used for historic/oval and vintage road series."
+    },
+    {
+      "id": "fullface_aero",
+      "name": "Full-Face Aero Helmet",
+      "canvas_size": [2048, 2048],
+      "uv_zones": ["top", "left", "right", "back", "front", "visor", "chinbar", "tearoff_strip", "duct_left", "duct_right"],
+      "iracing_folder": "helmets",
+      "filename_convention": "helmet_<iracing_id>.tga",
+      "spec_filename": "helmet_spec_<iracing_id>.tga",
+      "default_dpi": 192,
+      "supports_spec_map": true,
+      "alpha_supported": false,
+      "notes": "Modern full-face aerodynamic shell with explicit duct UVs and tearoff lane on the visor. Recommended for premium open-wheel paints."
+    },
+    {
+      "id": "spb_native_2k",
+      "name": "SPB Native Helmet 2K",
+      "canvas_size": [2048, 2048],
+      "uv_zones": ["shell_top", "shell_sides", "shell_back", "front_brow", "visor", "chinbar", "interior", "name_strip"],
+      "iracing_folder": "helmets",
+      "filename_convention": "spb_helmet_<slug>.tga",
+      "spec_filename": "spb_helmet_<slug>_spec.tga",
+      "default_dpi": 192,
+      "supports_spec_map": true,
+      "alpha_supported": true,
+      "notes": "SPB-native helmet template optimized for our zone editor. Adds a dedicated name_strip zone for driver name placement and an interior zone for liner tints."
+    }
+  ],
+  "default_template": "iracing_default",
+  "uv_zone_descriptions": {
+    "top": "Crown of the helmet, most visible from above",
+    "left": "Left side panel, sponsor placement zone",
+    "right": "Right side panel, sponsor placement zone",
+    "back": "Rear panel, often used for driver name or country flag",
+    "front": "Forehead/brow above visor",
+    "visor": "Visor surface, supports chrome/mirror/tinted finishes",
+    "chinbar": "Lower chin section below visor",
+    "neck_skirt": "Optional neck protection skirt",
+    "earcup_left": "Open-face left ear cup",
+    "earcup_right": "Open-face right ear cup",
+    "tearoff_strip": "Aerodynamic tearoff lane across visor edge",
+    "duct_left": "Left aero duct",
+    "duct_right": "Right aero duct",
+    "shell_top": "SPB native top shell zone",
+    "shell_sides": "SPB native combined side shell",
+    "shell_back": "SPB native rear shell",
+    "front_brow": "SPB native brow zone",
+    "interior": "SPB native interior liner",
+    "name_strip": "SPB native driver-name strip"
+  }
+}

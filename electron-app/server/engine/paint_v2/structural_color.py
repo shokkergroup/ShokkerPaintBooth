@@ -34,7 +34,7 @@ def _colorshoxx_field(shape, seed, flow_scale=0.04, complexity=3):
 
 def _colorshoxx_micro(shape, seed):
     """Fine micro-flake variation — per-flake shimmer within zones."""
-    micro = multi_scale_noise(shape, [2, 4, 8], [0.5, 0.3, 0.2], seed + 200)
+    micro = multi_scale_noise(shape, [16, 32, 64], [0.5, 0.3, 0.2], seed + 200)
     return np.clip(micro * 0.5 + 0.5, 0, 1).astype(np.float32)
 
 
@@ -46,6 +46,7 @@ def paint_colorshoxx_inferno(paint, shape, mask, seed, pm, bb):
     """Inferno Flip — crimson red zones + midnight blue zones.
     At specular angle the red BLAZES. At normal incidence the blue dominates.
     Fine-detail field (4/8/16px cells) + ultra-micro flake shimmer."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     return _cx_paint_2color(paint, shape, mask, seed, pm,
         np.array([0.82, 0.06, 0.04], dtype=np.float32),   # vivid crimson — pushed redder
         np.array([0.04, 0.06, 0.58], dtype=np.float32),    # deep midnight blue — pushed bluer
@@ -54,11 +55,16 @@ def paint_colorshoxx_inferno(paint, shape, mask, seed, pm, bb):
 
 def spec_colorshoxx_inferno(shape, seed, sm, base_m, base_r):
     """Inferno Flip spec — MARRIED to paint via identical _cx_fine_field seed.
-    Red zones: M=238, R=15 (chrome flash at specular).
-    Blue zones: M=75, R=80 (matte-dark at normal incidence).
-    Extreme ΔM=163 for maximum zone contrast."""
+    Red zones: M=240, R=15 (chrome flash at specular).
+    Blue zones: M=30, R=120 (deep matte absorb).
+    ΔM=210 — bumped from 163 in HARDMODE-CX-7 to bring Inferno up to
+    Venom/Phantom-tier swing. The blue zones now genuinely absorb
+    instead of half-glossing, so the red flash reads more dramatic."""
+    # 2026-04-20 HEENAN HARDMODE-CX-7 (Bockwinkel/Animal logic) — Inferno
+    # was the weakest dM in the original 5 heroes. Pushing m_lo 75->30
+    # and r_lo 80->120 widens the contrast without retuning the kernel.
     return _cx_spec_2color(shape, seed, sm, 9001,
-        m_hi=238, m_lo=75, r_hi=15, r_lo=80, cc_hi=16, cc_lo=48)
+        m_hi=240, m_lo=30, r_hi=15, r_lo=120, cc_hi=16, cc_lo=80)
 
 
 # ============================================================
@@ -69,6 +75,7 @@ def paint_colorshoxx_arctic(paint, shape, mask, seed, pm, bb):
     """Arctic Mirage — bright ice silver zones + deep teal zones.
     Fine-detail field (4/8/16px cells) + ultra-micro per-flake shimmer.
     Silver flashes brilliantly at specular. Teal holds steady at normal."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     return _cx_paint_2color(paint, shape, mask, seed, pm,
         np.array([0.78, 0.82, 0.88], dtype=np.float32),   # brighter ice silver
         np.array([0.02, 0.38, 0.42], dtype=np.float32),    # richer deep teal
@@ -77,11 +84,16 @@ def paint_colorshoxx_arctic(paint, shape, mask, seed, pm, bb):
 
 def spec_colorshoxx_arctic(shape, seed, sm, base_m, base_r):
     """Arctic Mirage spec — MARRIED via identical _cx_fine_field seed.
-    Silver zones: M=242, R=15 (chrome mirror flash).
-    Teal zones: M=65, R=85 (matte steady at normal incidence).
-    ΔM=177 — ice-cold chrome to deep matte shift."""
+    Silver zones: M=245, R=15 (chrome mirror flash).
+    Teal zones: M=25, R=130 (deep absorb at normal incidence).
+    ΔM=220 — bumped from 177 in HARDMODE-CX-8. Silver no longer fights
+    the teal for brightness; teal now genuinely darkens so the silver
+    pop reads as ice flashing on dark water."""
+    # 2026-04-20 HEENAN HARDMODE-CX-8 (Bockwinkel/Animal logic) — second
+    # weakest dM in the original 5 heroes; same widening prescription as
+    # Inferno. Together these two now match Venom/Phantom contrast tier.
     return _cx_spec_2color(shape, seed, sm, 9002,
-        m_hi=242, m_lo=65, r_hi=15, r_lo=85, cc_hi=16, cc_lo=50)
+        m_hi=245, m_lo=25, r_hi=15, r_lo=130, cc_hi=16, cc_lo=85)
 
 
 # ============================================================
@@ -92,6 +104,7 @@ def paint_colorshoxx_venom(paint, shape, mask, seed, pm, bb):
     """Venom Shift — toxic neon green zones + deep black-purple zones.
     Fine-detail field (4/8/16px cells) + ultra-micro flake shimmer.
     Green zones flash with metallic pop. Purple zones stay dark and menacing."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     return _cx_paint_2color(paint, shape, mask, seed, pm,
         np.array([0.18, 0.82, 0.08], dtype=np.float32),   # hotter neon green
         np.array([0.12, 0.02, 0.28], dtype=np.float32),    # deeper black-purple
@@ -115,6 +128,7 @@ def paint_colorshoxx_solar(paint, shape, mask, seed, pm, bb):
     """Solar Flare — warm gold zones + deep copper-red zones.
     Fine-detail field (4/8/16px cells) + ultra-micro flake shimmer.
     Gold zones flash like liquid metal. Copper zones glow warmly."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     return _cx_paint_2color(paint, shape, mask, seed, pm,
         np.array([0.88, 0.72, 0.12], dtype=np.float32),   # richer 24k gold
         np.array([0.52, 0.08, 0.12], dtype=np.float32),    # deep burgundy-copper — pushed away from gold hue
@@ -138,6 +152,7 @@ def paint_colorshoxx_phantom(paint, shape, mask, seed, pm, bb):
     """Phantom Violet — electric violet zones + cold gunmetal zones.
     Fine-detail field (4/8/16px cells) + ultra-micro flake shimmer.
     Violet zones pop with vivid metallic flash. Gunmetal zones stay cold and steely."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     return _cx_paint_2color(paint, shape, mask, seed, pm,
         np.array([0.55, 0.08, 0.80], dtype=np.float32),   # hotter electric violet
         np.array([0.20, 0.22, 0.26], dtype=np.float32),    # colder gunmetal
@@ -172,22 +187,53 @@ def _cx_fine_field(shape, seed):
     wy = np.clip((yy + warp_y * h * 0.08).astype(np.int32), 0, h - 1)
     wx = np.clip((xx + warp_x * w * 0.08).astype(np.int32), 0, w - 1)
     # Sample a structured noise at warped positions
-    base_noise = multi_scale_noise((h, w), [4, 8, 16], [0.4, 0.35, 0.25], seed)
+    base_noise = multi_scale_noise((h, w), [16, 32, 64], [0.4, 0.35, 0.25], seed)
     warped = base_noise[wy, wx]
     # Add fine detail for micro-texture within zones
-    fine = multi_scale_noise((h, w), [2, 4], [0.6, 0.4], seed + 50)
+    fine = multi_scale_noise((h, w), [32, 64], [0.6, 0.4], seed + 50)
     # Combine: warped structure (70%) + fine detail (20%) + slight large-scale bias (10%)
     large = multi_scale_noise((h, w), [64, 128], [0.5, 0.5], seed + 80)
     field = np.clip(warped * 0.70 + fine * 0.20 + large * 0.10, -1, 1)
     # SHARPEN: push values toward 0 and 1 (not smooth middle)
     normalized = (field + 1.0) * 0.5
-    sharpened = np.clip((normalized - 0.5) * 1.8 + 0.5, 0, 1)
+    sharpened = np.clip((normalized - 0.5) * 2.4 + 0.5, 0, 1)  # B06: stronger sharpening for defined zone boundaries
     return sharpened.astype(np.float32)
 
 def _cx_ultra_micro(shape, seed):
     """Ultra-fine per-flake — scale 1-2px for individual metallic particle shimmer."""
     m = multi_scale_noise(shape, [1, 2, 3], [0.5, 0.3, 0.2], seed + 300)
     return np.clip(m * 0.5 + 0.5, 0, 1).astype(np.float32)
+
+# 2026-04-24: rebuild COLORSHOXX carriers for 2048-aware detail. These
+# override the legacy helpers above so every existing cx_* factory keeps its
+# ID/palette but uses smaller paint/spec-aligned cells.
+def _cx_fine_field(shape, seed):
+    h, w = shape
+    yy = np.arange(h, dtype=np.float32).reshape(h, 1) * np.ones((1, w), dtype=np.float32)
+    xx = np.arange(w, dtype=np.float32).reshape(1, w) * np.ones((h, 1), dtype=np.float32)
+    warp_x = multi_scale_noise((h, w), [8, 16, 32], [0.46, 0.34, 0.20], seed + 10)
+    warp_y = multi_scale_noise((h, w), [8, 16, 32], [0.46, 0.34, 0.20], seed + 20)
+    wy = np.clip((yy + warp_y * h * 0.025).astype(np.int32), 0, h - 1)
+    wx = np.clip((xx + warp_x * w * 0.025).astype(np.int32), 0, w - 1)
+    base = multi_scale_noise((h, w), [4, 8, 16, 32], [0.34, 0.30, 0.22, 0.14], seed)
+    fine = multi_scale_noise((h, w), [1, 2, 3, 5], [0.34, 0.30, 0.22, 0.14], seed + 50)
+    stripe = np.sin((xx * 1.73 + yy * 0.41 + warp_x * 6.0) * np.pi)
+    large = multi_scale_noise((h, w), [32, 64, 128], [0.42, 0.34, 0.24], seed + 80)
+    field = np.clip(base[wy, wx] * 0.36 + fine * 0.44 + stripe * 0.12 + large * 0.08, -1, 1)
+    return np.clip(((field + 1.0) * 0.5 - 0.5) * 2.9 + 0.5, 0, 1).astype(np.float32)
+
+
+def _cx_ultra_micro(shape, seed):
+    m = multi_scale_noise(shape, [1, 2, 3, 5], [0.40, 0.30, 0.20, 0.10], seed + 300)
+    return np.clip(m * 0.5 + 0.5, 0, 1).astype(np.float32)
+
+
+def _cx_mist(shape, seed, density=0.34):
+    micro = _cx_ultra_micro(shape, seed + 701)
+    carrier = multi_scale_noise(shape, [1, 2, 4], [0.45, 0.35, 0.20], seed + 707)
+    carrier = np.clip((carrier + 1.0) * 0.5 * 0.55 + micro * 0.45, 0, 1)
+    return (carrier > (1.0 - float(density))).astype(np.float32), carrier
+
 
 def _cx_3zone(field):
     """Split 0-1 field into 3 zones: low (0-0.33), mid (0.33-0.66), high (0.66-1)."""
@@ -207,6 +253,7 @@ def _cx_4zone(field):
 
 def _cx_paint_2color(paint, shape, mask, seed, pm, c1, c2, seed_off):
     """Generic 2-color COLORSHOXX paint with fine detail."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape[:2] if len(shape) > 2 else shape
     field = _cx_fine_field((h, w), seed + seed_off)
     micro = _cx_ultra_micro((h, w), seed + seed_off)
@@ -235,6 +282,7 @@ def _cx_spec_2color(shape, seed, sm, seed_off, m_hi=240, m_lo=80, r_hi=15, r_lo=
 
 def paint_cx_chrome_void(paint, shape, mask, seed, pm, bb):
     """Chrome Void — pure mirror chrome ↔ absolute matte black. Maximum contrast."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     return _cx_paint_2color(paint, shape, mask, seed, pm,
         np.array([0.85, 0.88, 0.92], dtype=np.float32),
         np.array([0.02, 0.02, 0.03], dtype=np.float32), 9010)
@@ -245,6 +293,7 @@ def spec_cx_chrome_void(shape, seed, sm, base_m, base_r):
 
 def paint_cx_blood_mercury(paint, shape, mask, seed, pm, bb):
     """Blood Mercury — warm liquid mercury chrome ↔ deep arterial crimson."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     return _cx_paint_2color(paint, shape, mask, seed, pm,
         np.array([0.88, 0.86, 0.82], dtype=np.float32),   # warm mercury — gold-tinted chrome, distinct from Chrome Void
         np.array([0.55, 0.02, 0.04], dtype=np.float32), 9011)
@@ -254,6 +303,7 @@ def spec_cx_blood_mercury(shape, seed, sm, base_m, base_r):
 
 def paint_cx_neon_abyss(paint, shape, mask, seed, pm, bb):
     """Neon Abyss — electric hot pink ↔ abyssal black-green."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     return _cx_paint_2color(paint, shape, mask, seed, pm,
         np.array([0.95, 0.10, 0.55], dtype=np.float32),
         np.array([0.02, 0.10, 0.06], dtype=np.float32), 9012)
@@ -263,6 +313,7 @@ def spec_cx_neon_abyss(shape, seed, sm, base_m, base_r):
 
 def paint_cx_glacier_fire(paint, shape, mask, seed, pm, bb):
     """Glacier Fire — icy white-blue chrome ↔ molten orange-red matte."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     return _cx_paint_2color(paint, shape, mask, seed, pm,
         np.array([0.80, 0.88, 0.95], dtype=np.float32),
         np.array([0.85, 0.25, 0.03], dtype=np.float32), 9013)
@@ -272,6 +323,7 @@ def spec_cx_glacier_fire(shape, seed, sm, base_m, base_r):
 
 def paint_cx_obsidian_gold(paint, shape, mask, seed, pm, bb):
     """Obsidian Gold — liquid 24k gold chrome ↔ volcanic obsidian matte black."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     return _cx_paint_2color(paint, shape, mask, seed, pm,
         np.array([0.90, 0.75, 0.20], dtype=np.float32),
         np.array([0.03, 0.02, 0.04], dtype=np.float32), 9014)
@@ -281,6 +333,7 @@ def spec_cx_obsidian_gold(shape, seed, sm, base_m, base_r):
 
 def paint_cx_electric_storm(paint, shape, mask, seed, pm, bb):
     """Electric Storm — crackling electric blue chrome ↔ thundercloud dark gray matte."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     return _cx_paint_2color(paint, shape, mask, seed, pm,
         np.array([0.15, 0.45, 0.95], dtype=np.float32),
         np.array([0.12, 0.13, 0.15], dtype=np.float32), 9015)
@@ -290,6 +343,7 @@ def spec_cx_electric_storm(shape, seed, sm, base_m, base_r):
 
 def paint_cx_rose_chrome(paint, shape, mask, seed, pm, bb):
     """Rose Chrome — rose gold chrome mirror ↔ deep burgundy velvet matte."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     return _cx_paint_2color(paint, shape, mask, seed, pm,
         np.array([0.88, 0.65, 0.58], dtype=np.float32),
         np.array([0.30, 0.04, 0.08], dtype=np.float32), 9016)
@@ -299,6 +353,7 @@ def spec_cx_rose_chrome(shape, seed, sm, base_m, base_r):
 
 def paint_cx_toxic_chrome(paint, shape, mask, seed, pm, bb):
     """Toxic Chrome — acid green chrome ↔ chemical waste matte brown-black."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     return _cx_paint_2color(paint, shape, mask, seed, pm,
         np.array([0.40, 0.90, 0.15], dtype=np.float32),
         np.array([0.12, 0.08, 0.03], dtype=np.float32), 9017)
@@ -308,6 +363,7 @@ def spec_cx_toxic_chrome(shape, seed, sm, base_m, base_r):
 
 def paint_cx_midnight_chrome(paint, shape, mask, seed, pm, bb):
     """Midnight Chrome — vivid blue chrome mirror ↔ pure flat black void."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     return _cx_paint_2color(paint, shape, mask, seed, pm,
         np.array([0.22, 0.35, 0.88], dtype=np.float32),   # brighter vivid blue — visible at non-specular angles
         np.array([0.01, 0.01, 0.02], dtype=np.float32), 9018)
@@ -317,6 +373,7 @@ def spec_cx_midnight_chrome(shape, seed, sm, base_m, base_r):
 
 def paint_cx_white_lightning(paint, shape, mask, seed, pm, bb):
     """White Lightning — warm white-gold chrome ↔ cool blue-charcoal matte."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     return _cx_paint_2color(paint, shape, mask, seed, pm,
         np.array([0.98, 0.94, 0.82], dtype=np.float32),   # warm white-gold — distinct from Chrome Void's cool chrome
         np.array([0.08, 0.10, 0.18], dtype=np.float32),   # cool blue-charcoal — distinct from Chrome Void's pure black
@@ -329,6 +386,7 @@ def spec_cx_white_lightning(shape, seed, sm, base_m, base_r):
 # ── 5 THREE-COLOR (16-20) ──
 
 def _cx_paint_3color(paint, shape, mask, seed, pm, c1, c2, c3, seed_off):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape[:2] if len(shape) > 2 else shape
     field = _cx_fine_field((h, w), seed + seed_off)
     micro = _cx_ultra_micro((h, w), seed + seed_off)
@@ -356,17 +414,24 @@ def _cx_spec_3color(shape, seed, sm, seed_off, m_vals, r_vals, cc_vals):
 
 def paint_cx_aurora_borealis(paint, shape, mask, seed, pm, bb):
     """Aurora Borealis — electric green + deep teal + violet purple."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     return _cx_paint_3color(paint, shape, mask, seed, pm,
         np.array([0.20, 0.90, 0.30], dtype=np.float32),
         np.array([0.05, 0.40, 0.45], dtype=np.float32),
         np.array([0.40, 0.08, 0.60], dtype=np.float32), 9020)
 
 def spec_cx_aurora_borealis(shape, seed, sm, base_m, base_r):
+    # 2026-04-20 HEENAN HARDMODE-CX-9 (Bockwinkel R2) — original (235,140,60)
+    # had a 175-point swing with mid at 140 muddying the aurora-flash to
+    # void transition. Push to (255,100,20) for 235-point swing matching
+    # Venom/Phantom tier; aurora curtains now flash chrome against deep
+    # cosmic absorb instead of fighting a mid-grey layer.
     return _cx_spec_3color(shape, seed, sm, 9020,
-        m_vals=(235, 140, 60), r_vals=(15, 40, 100), cc_vals=(16, 28, 55))
+        m_vals=(255, 100, 20), r_vals=(15, 40, 100), cc_vals=(16, 28, 55))
 
 def paint_cx_dragon_scale(paint, shape, mask, seed, pm, bb):
     """Dragon Scale — chrome gold + ember red + charcoal black."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     return _cx_paint_3color(paint, shape, mask, seed, pm,
         np.array([0.90, 0.78, 0.22], dtype=np.float32),
         np.array([0.92, 0.20, 0.02], dtype=np.float32),   # pushed redder — more ember, bigger hue gap from gold
@@ -378,17 +443,22 @@ def spec_cx_dragon_scale(shape, seed, sm, base_m, base_r):
 
 def paint_cx_frozen_nebula(paint, shape, mask, seed, pm, bb):
     """Frozen Nebula — ice white chrome + cosmic blue + deep purple void."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     return _cx_paint_3color(paint, shape, mask, seed, pm,
         np.array([0.90, 0.92, 0.98], dtype=np.float32),
         np.array([0.08, 0.25, 0.75], dtype=np.float32),
         np.array([0.20, 0.02, 0.35], dtype=np.float32), 9022)
 
 def spec_cx_frozen_nebula(shape, seed, sm, base_m, base_r):
+    # 2026-04-20 HEENAN HARDMODE-CX-10 (Bockwinkel R2) — mid m_val 160 was
+    # too warm for "cosmic void". Drop mid 160->120 so the ice flash and
+    # deep purple void contrast more sharply (220->235 swing).
     return _cx_spec_3color(shape, seed, sm, 9022,
-        m_vals=(250, 160, 30), r_vals=(15, 35, 150), cc_vals=(16, 25, 120))
+        m_vals=(250, 120, 15), r_vals=(15, 35, 150), cc_vals=(16, 25, 120))
 
 def paint_cx_hellfire(paint, shape, mask, seed, pm, bb):
     """Hellfire — white-hot chrome + lava orange + scorched black."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     return _cx_paint_3color(paint, shape, mask, seed, pm,
         np.array([0.98, 0.95, 0.85], dtype=np.float32),
         np.array([0.92, 0.40, 0.02], dtype=np.float32),
@@ -400,6 +470,7 @@ def spec_cx_hellfire(shape, seed, sm, base_m, base_r):
 
 def paint_cx_ocean_trench(paint, shape, mask, seed, pm, bb):
     """Ocean Trench — bioluminescent teal + deep navy + abyssal black."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     return _cx_paint_3color(paint, shape, mask, seed, pm,
         np.array([0.10, 0.85, 0.70], dtype=np.float32),
         np.array([0.06, 0.18, 0.58], dtype=np.float32),   # brighter navy — more visible separation from abyss
@@ -413,6 +484,7 @@ def spec_cx_ocean_trench(shape, seed, sm, base_m, base_r):
 # ── 5 FOUR-COLOR (21-25) ──
 
 def _cx_paint_4color(paint, shape, mask, seed, pm, c1, c2, c3, c4, seed_off):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape[:2] if len(shape) > 2 else shape
     field = _cx_fine_field((h, w), seed + seed_off)
     micro = _cx_ultra_micro((h, w), seed + seed_off)
@@ -440,6 +512,7 @@ def _cx_spec_4color(shape, seed, sm, seed_off, m_vals, r_vals, cc_vals):
 
 def paint_cx_supernova(paint, shape, mask, seed, pm, bb):
     """Supernova — white-hot chrome + electric blue + magenta + void black. Four-stage stellar explosion."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     return _cx_paint_4color(paint, shape, mask, seed, pm,
         np.array([0.98, 0.96, 0.90], dtype=np.float32),
         np.array([0.15, 0.40, 0.95], dtype=np.float32),
@@ -452,6 +525,7 @@ def spec_cx_supernova(shape, seed, sm, base_m, base_r):
 
 def paint_cx_prism_shatter(paint, shape, mask, seed, pm, bb):
     """Prism Shatter — chrome red + gold + teal + indigo. Shattered light spectrum."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     return _cx_paint_4color(paint, shape, mask, seed, pm,
         np.array([0.85, 0.10, 0.08], dtype=np.float32),
         np.array([0.90, 0.75, 0.15], dtype=np.float32),
@@ -459,11 +533,15 @@ def paint_cx_prism_shatter(paint, shape, mask, seed, pm, bb):
         np.array([0.15, 0.08, 0.50], dtype=np.float32), 9026)
 
 def spec_cx_prism_shatter(shape, seed, sm, base_m, base_r):
+    # 2026-04-20 HEENAN HARDMODE-CX-11 (Bockwinkel R2) — m_vals stages had
+    # uneven gaps (78/85/67). Rebalance to (250,160,70,10) for cleaner
+    # 90/90/60 spacing — improves shattered-light spectrum legibility.
     return _cx_spec_4color(shape, seed, sm, 9026,
-        m_vals=(248, 170, 85, 18), r_vals=(15, 35, 80, 160), cc_vals=(16, 22, 50, 130))
+        m_vals=(250, 160, 70, 10), r_vals=(15, 35, 80, 160), cc_vals=(16, 22, 50, 130))
 
 def paint_cx_acid_rain(paint, shape, mask, seed, pm, bb):
     """Acid Rain — toxic yellow chrome + sick green + bruise purple + ash gray matte."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     return _cx_paint_4color(paint, shape, mask, seed, pm,
         np.array([0.92, 0.88, 0.10], dtype=np.float32),
         np.array([0.30, 0.78, 0.12], dtype=np.float32),
@@ -471,11 +549,16 @@ def paint_cx_acid_rain(paint, shape, mask, seed, pm, bb):
         np.array([0.18, 0.18, 0.20], dtype=np.float32), 9027)
 
 def spec_cx_acid_rain(shape, seed, sm, base_m, base_r):
+    # 2026-04-20 HEENAN HARDMODE-CX-12 (Bockwinkel R2) — third zone (15)
+    # wasted headroom; final stage (toxic-bruise-ash) should reach near-0
+    # absorb. Push m_lo 15->5 and tighten the gap so the toxic chrome
+    # peaks read more sharply against the bruise/ash zones.
     return _cx_spec_4color(shape, seed, sm, 9027,
-        m_vals=(245, 180, 60, 15), r_vals=(15, 25, 80, 180), cc_vals=(16, 20, 50, 150))
+        m_vals=(245, 170, 50, 5), r_vals=(15, 25, 80, 180), cc_vals=(16, 20, 50, 150))
 
 def paint_cx_royal_spectrum(paint, shape, mask, seed, pm, bb):
     """Royal Spectrum — chrome silver + sapphire blue + ruby red + emerald green. Crown jewels."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     return _cx_paint_4color(paint, shape, mask, seed, pm,
         np.array([0.85, 0.88, 0.92], dtype=np.float32),
         np.array([0.10, 0.15, 0.70], dtype=np.float32),
@@ -483,11 +566,16 @@ def paint_cx_royal_spectrum(paint, shape, mask, seed, pm, bb):
         np.array([0.08, 0.55, 0.18], dtype=np.float32), 9028)
 
 def spec_cx_royal_spectrum(shape, seed, sm, base_m, base_r):
+    # 2026-04-20 HEENAN HARDMODE-CX-13 (Bockwinkel R2) — Crown jewels need
+    # crisp stage boundaries. Tighten mid-zones (165->160, 55->45) and
+    # push absorb (12->5) so silver/sapphire/ruby/emerald each hold their
+    # own material identity instead of softening into each other.
     return _cx_spec_4color(shape, seed, sm, 9028,
-        m_vals=(250, 165, 55, 12), r_vals=(15, 40, 110, 200), cc_vals=(16, 25, 70, 170))
+        m_vals=(250, 160, 45, 5), r_vals=(15, 40, 110, 200), cc_vals=(16, 25, 70, 170))
 
 def paint_cx_apocalypse(paint, shape, mask, seed, pm, bb):
     """Apocalypse — scorching white chrome + blood red + rust orange + dead black. End times."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     return _cx_paint_4color(paint, shape, mask, seed, pm,
         np.array([0.98, 0.95, 0.88], dtype=np.float32),
         np.array([0.58, 0.02, 0.10], dtype=np.float32),   # cooler blood red — more distinct from rust
@@ -497,3 +585,101 @@ def paint_cx_apocalypse(paint, shape, mask, seed, pm, bb):
 def spec_cx_apocalypse(shape, seed, sm, base_m, base_r):
     return _cx_spec_4color(shape, seed, sm, 9029,
         m_vals=(252, 160, 65, 0), r_vals=(15, 30, 90, 252), cc_vals=(16, 22, 65, 252))
+
+
+# Final helper overrides: keep all public cx_* finish functions above, but route
+# their global helper calls through the aligned two-layer flake model.
+def _cx_paint_2color(paint, shape, mask, seed, pm, c1, c2, seed_off):
+    if paint.ndim == 3 and paint.shape[2] > 3:
+        paint = paint[:, :, :3].copy()
+    h, w = shape[:2] if len(shape) > 2 else shape
+    field = _cx_fine_field((h, w), seed + seed_off)
+    micro = _cx_ultra_micro((h, w), seed + seed_off)
+    mist, carrier = _cx_mist((h, w), seed + seed_off, 0.36)
+    driver = np.clip(field * 0.62 + micro * 0.28 + carrier * 0.10, 0, 1)
+    color = c1[np.newaxis, np.newaxis, :] * driver[:, :, np.newaxis] + c2[np.newaxis, np.newaxis, :] * (1 - driver[:, :, np.newaxis])
+    flake = c1[np.newaxis, np.newaxis, :] * (0.70 + carrier[:, :, np.newaxis] * 0.20)
+    color = color * (1.0 - mist[:, :, np.newaxis] * 0.28) + flake * (mist[:, :, np.newaxis] * 0.28)
+    color = np.clip(color + (micro[:, :, np.newaxis] - 0.5) * 0.055, 0, 1)
+    m3 = mask[:, :, np.newaxis]
+    bl = np.clip(pm * 0.92, 0, 1)
+    paint[:, :, :3] = paint[:, :, :3] * (1 - m3 * bl) + color * m3 * bl
+    return np.clip(paint, 0, 1).astype(np.float32)
+
+
+def _cx_spec_2color(shape, seed, sm, seed_off, m_hi=240, m_lo=80, r_hi=15, r_lo=70, cc_hi=16, cc_lo=50):
+    h, w = shape[:2] if len(shape) > 2 else shape
+    field = _cx_fine_field((h, w), seed + seed_off)
+    mist, carrier = _cx_mist((h, w), seed + seed_off, 0.36)
+    driver = np.clip(field * 0.72 + carrier * 0.20 + mist * 0.08, 0, 1)
+    M = float(m_lo) + driver * float(m_hi - m_lo) * sm + mist * 22.0 * sm
+    R = float(r_lo) - driver * float(r_lo - r_hi) * sm + (1.0 - mist) * 4.0 * sm
+    CC = float(cc_lo) - driver * float(cc_lo - cc_hi) + mist * 3.0
+    return (np.clip(M, 0, 255).astype(np.float32),
+            np.clip(R, 15, 255).astype(np.float32),
+            np.clip(CC, 16, 255).astype(np.float32))
+
+
+def _cx_paint_3color(paint, shape, mask, seed, pm, c1, c2, c3, seed_off):
+    if paint.ndim == 3 and paint.shape[2] > 3:
+        paint = paint[:, :, :3].copy()
+    h, w = shape[:2] if len(shape) > 2 else shape
+    field = _cx_fine_field((h, w), seed + seed_off)
+    micro = _cx_ultra_micro((h, w), seed + seed_off)
+    mist, carrier = _cx_mist((h, w), seed + seed_off, 0.34)
+    z_lo, z_mid, z_hi = _cx_3zone(np.clip(field * 0.64 + micro * 0.26 + carrier * 0.10, 0, 1))
+    color = (c1[np.newaxis, np.newaxis, :] * z_hi[:, :, np.newaxis] +
+             c2[np.newaxis, np.newaxis, :] * z_mid[:, :, np.newaxis] +
+             c3[np.newaxis, np.newaxis, :] * z_lo[:, :, np.newaxis])
+    color = color * (1.0 - mist[:, :, np.newaxis] * 0.20) + c1[np.newaxis, np.newaxis, :] * (mist[:, :, np.newaxis] * 0.20)
+    color = np.clip(color + (micro[:, :, np.newaxis] - 0.5) * 0.045, 0, 1)
+    m3 = mask[:, :, np.newaxis]
+    bl = np.clip(pm * 0.92, 0, 1)
+    paint[:, :, :3] = paint[:, :, :3] * (1 - m3 * bl) + color * m3 * bl
+    return np.clip(paint, 0, 1).astype(np.float32)
+
+
+def _cx_spec_3color(shape, seed, sm, seed_off, m_vals, r_vals, cc_vals):
+    h, w = shape[:2] if len(shape) > 2 else shape
+    field = _cx_fine_field((h, w), seed + seed_off)
+    mist, carrier = _cx_mist((h, w), seed + seed_off, 0.34)
+    z_lo, z_mid, z_hi = _cx_3zone(np.clip(field * 0.72 + carrier * 0.20 + mist * 0.08, 0, 1))
+    M = m_vals[0] * z_hi + m_vals[1] * z_mid + m_vals[2] * z_lo + mist * 18.0 * sm
+    R = r_vals[0] * z_hi + r_vals[1] * z_mid + r_vals[2] * z_lo + (1.0 - mist) * 4.0 * sm
+    CC = cc_vals[0] * z_hi + cc_vals[1] * z_mid + cc_vals[2] * z_lo + mist * 3.0
+    return (np.clip(M, 0, 255).astype(np.float32),
+            np.clip(R, 15, 255).astype(np.float32),
+            np.clip(CC, 16, 255).astype(np.float32))
+
+
+def _cx_paint_4color(paint, shape, mask, seed, pm, c1, c2, c3, c4, seed_off):
+    if paint.ndim == 3 and paint.shape[2] > 3:
+        paint = paint[:, :, :3].copy()
+    h, w = shape[:2] if len(shape) > 2 else shape
+    field = _cx_fine_field((h, w), seed + seed_off)
+    micro = _cx_ultra_micro((h, w), seed + seed_off)
+    mist, carrier = _cx_mist((h, w), seed + seed_off, 0.32)
+    z1, z2, z3, z4 = _cx_4zone(np.clip(field * 0.62 + micro * 0.28 + carrier * 0.10, 0, 1))
+    color = (c1[np.newaxis, np.newaxis, :] * z1[:, :, np.newaxis] +
+             c2[np.newaxis, np.newaxis, :] * z2[:, :, np.newaxis] +
+             c3[np.newaxis, np.newaxis, :] * z3[:, :, np.newaxis] +
+             c4[np.newaxis, np.newaxis, :] * z4[:, :, np.newaxis])
+    color = color * (1.0 - mist[:, :, np.newaxis] * 0.18) + c1[np.newaxis, np.newaxis, :] * (mist[:, :, np.newaxis] * 0.18)
+    color = np.clip(color + (micro[:, :, np.newaxis] - 0.5) * 0.040, 0, 1)
+    m3 = mask[:, :, np.newaxis]
+    bl = np.clip(pm * 0.93, 0, 1)
+    paint[:, :, :3] = paint[:, :, :3] * (1 - m3 * bl) + color * m3 * bl
+    return np.clip(paint, 0, 1).astype(np.float32)
+
+
+def _cx_spec_4color(shape, seed, sm, seed_off, m_vals, r_vals, cc_vals):
+    h, w = shape[:2] if len(shape) > 2 else shape
+    field = _cx_fine_field((h, w), seed + seed_off)
+    mist, carrier = _cx_mist((h, w), seed + seed_off, 0.32)
+    z1, z2, z3, z4 = _cx_4zone(np.clip(field * 0.72 + carrier * 0.20 + mist * 0.08, 0, 1))
+    M = m_vals[0] * z1 + m_vals[1] * z2 + m_vals[2] * z3 + m_vals[3] * z4 + mist * 16.0 * sm
+    R = r_vals[0] * z1 + r_vals[1] * z2 + r_vals[2] * z3 + r_vals[3] * z4 + (1.0 - mist) * 4.0 * sm
+    CC = cc_vals[0] * z1 + cc_vals[1] * z2 + cc_vals[2] * z3 + cc_vals[3] * z4 + mist * 3.0
+    return (np.clip(M, 0, 255).astype(np.float32),
+            np.clip(R, 15, 255).astype(np.float32),
+            np.clip(CC, 16, 255).astype(np.float32))

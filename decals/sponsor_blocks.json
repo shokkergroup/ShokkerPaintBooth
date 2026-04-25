@@ -1,0 +1,128 @@
+{
+  "version": "6.2.0",
+  "description": "Common sponsor block layout presets — the rectangular zones reserved on a livery for primary sponsor branding. SPB uses these to suggest aspect ratios and placement bounds.",
+  "schema": {
+    "id": "string — unique key",
+    "name": "string — human label",
+    "tier": "primary|secondary|associate|contingency",
+    "size_hint_uv": "[width, height] in UV space (0..1)",
+    "aspect_ratio": "string — typical W:H ratio of placed art",
+    "background_required": "boolean — does this slot need a contrasting block fill",
+    "good_for": "array of placement zones",
+    "tips": "array of practical advice"
+  },
+  "blocks": [
+    {
+      "id": "primary_hood_block",
+      "name": "Primary Hood Block",
+      "tier": "primary",
+      "size_hint_uv": [0.45, 0.18],
+      "aspect_ratio": "5:2",
+      "background_required": false,
+      "good_for": ["Hood center", "Hood scoop area"],
+      "tips": [
+        "Reserve the hood for the title sponsor — it is the largest single uninterrupted canvas on the car",
+        "Avoid placing across hood pin lines or shutline breaks",
+        "If the hood has a center scoop, split the logo into two halves or use a wordmark that flows around it"
+      ]
+    },
+    {
+      "id": "secondary_quarter_block",
+      "name": "Secondary Quarter Panel Block",
+      "tier": "secondary",
+      "size_hint_uv": [0.22, 0.10],
+      "aspect_ratio": "11:5",
+      "background_required": false,
+      "good_for": ["Quarter panel", "Rear deck side"],
+      "tips": [
+        "Mid-tier sponsor placement — visible from the rear three-quarter angle",
+        "Mirror across both sides of the car",
+        "Avoid the wheel-arch curve; keep logo above the fender flare line"
+      ]
+    },
+    {
+      "id": "contingency_b_pillar",
+      "name": "Contingency B-Pillar Block",
+      "tier": "contingency",
+      "size_hint_uv": [0.05, 0.20],
+      "aspect_ratio": "1:4",
+      "background_required": false,
+      "good_for": ["B-pillar", "C-pillar"],
+      "tips": [
+        "Reserved for the contingency sponsor stack",
+        "See contingency_stacks.json for the matching layout presets",
+        "Keep clear of the door handle and roof flag if applicable"
+      ]
+    },
+    {
+      "id": "windshield_banner_top",
+      "name": "Windshield Top Banner",
+      "tier": "primary",
+      "size_hint_uv": [0.60, 0.04],
+      "aspect_ratio": "15:1",
+      "background_required": true,
+      "good_for": ["Windshield top edge"],
+      "tips": [
+        "Mandatory series identifier zone in most stock car series",
+        "Background fill is usually the team's secondary color",
+        "Wide aspect ratio — wordmarks work better than square logos"
+      ]
+    },
+    {
+      "id": "rear_spoiler_block",
+      "name": "Rear Spoiler / Wing Block",
+      "tier": "secondary",
+      "size_hint_uv": [0.50, 0.06],
+      "aspect_ratio": "8:1",
+      "background_required": false,
+      "good_for": ["Rear spoiler", "Rear wing main plane"],
+      "tips": [
+        "High visibility from cars following — ideal for sponsor ID during racing footage",
+        "Mirror on the underside if the spoiler is double-sided",
+        "Curve allowance — wing camber distorts long wordmarks; pre-warp the art"
+      ]
+    },
+    {
+      "id": "door_panel_associate",
+      "name": "Door Panel Associate Block",
+      "tier": "associate",
+      "size_hint_uv": [0.10, 0.06],
+      "aspect_ratio": "5:3",
+      "background_required": false,
+      "good_for": ["Lower door", "Door panel below number"],
+      "tips": [
+        "Smaller associate sponsor placement adjacent to the primary number panel",
+        "Common location for fuel, tire, and oil supplier logos",
+        "Maintain at least a 20px gap from the number panel stroke"
+      ]
+    },
+    {
+      "id": "bumper_block",
+      "name": "Front Bumper Block",
+      "tier": "secondary",
+      "size_hint_uv": [0.30, 0.06],
+      "aspect_ratio": "5:1",
+      "background_required": false,
+      "good_for": ["Front bumper", "Front splitter top"],
+      "tips": [
+        "Visible in front-on broadcast shots and pit-lane photography",
+        "Avoid overlapping headlight cutouts",
+        "Wide horizontal — best for wordmark-style sponsors"
+      ]
+    },
+    {
+      "id": "nose_block",
+      "name": "Nose Block",
+      "tier": "associate",
+      "size_hint_uv": [0.08, 0.08],
+      "aspect_ratio": "1:1",
+      "background_required": false,
+      "good_for": ["Nose tip", "Hood leading edge"],
+      "tips": [
+        "Square aspect ratio — ideal for badge-style logos",
+        "Often paired with team manufacturer mark on opposite side",
+        "Keep clear of grille and badge mounting cutouts"
+      ]
+    }
+  ]
+}

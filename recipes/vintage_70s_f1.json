@@ -1,0 +1,83 @@
+{
+  "name": "Vintage 70s F1",
+  "description": "Gulf-style powder blue paired with marigold orange racing stripe, old-school matte clear, and an honest layer of weathered patina.",
+  "author": "Shokker Paint Booth",
+  "version": "6.2.0",
+  "compatible_with": "any formula / open-wheel chassis, vintage prototypes",
+  "notes": "The iconic Gulf palette. Orange stripe width depends on car geometry - nudge pickerColor and tolerance on the Orange Stripe zone if it bleeds into other surfaces.",
+  "zones": [
+    {
+      "name": "Body",
+      "color": "everything",
+      "base": "enamel",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "special",
+      "baseColor": "#6ab5cc",
+      "baseColorMode": "solid",
+      "baseStrength": 1,
+      "baseSpecStrength": 1,
+      "wear": 20
+    },
+    {
+      "name": "Orange Stripe",
+      "color": "yellow",
+      "base": "stock_car_enamel",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#ffaa00",
+      "pickerTolerance": 40,
+      "baseColor": "#f47722",
+      "baseColorMode": "solid",
+      "wear": 15
+    },
+    {
+      "name": "Matte Clear Finish",
+      "color": "remaining",
+      "base": "clear_matte",
+      "pattern": "none",
+      "intensity": "70",
+      "colorMode": "special",
+      "baseColorMode": "source",
+      "baseStrength": 0.7
+    },
+    {
+      "name": "Weathered Patina",
+      "color": "dark",
+      "base": "patina_bronze",
+      "pattern": "rust_bloom",
+      "intensity": "60",
+      "colorMode": "quick",
+      "pickerColor": "#332222",
+      "pickerTolerance": 40,
+      "patternIntensity": "45",
+      "wear": 55
+    },
+    {
+      "name": "Race Numbers",
+      "color": "white",
+      "base": "gloss",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#ffffff",
+      "pickerTolerance": 25,
+      "baseColor": "#0a0a0a",
+      "baseColorMode": "solid",
+      "wear": 20
+    },
+    {
+      "name": "Chrome Accents",
+      "color": "gray",
+      "base": "vintage_chrome",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#aaaaaa",
+      "pickerTolerance": 30,
+      "baseColorMode": "source",
+      "wear": 40
+    }
+  ]
+}

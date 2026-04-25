@@ -17,7 +17,13 @@ from scipy.ndimage import gaussian_filter, zoom as _scipy_zoom
 # INTERNAL NOISE HELPER
 # ---------------------------------------------------------------------------
 def _msn(shape, scales, weights, seed):
-    """Multi-scale Perlin-like noise, returns float32 -1..1."""
+    """Multi-scale noise — delegates to cached core.multi_scale_noise."""
+    try:
+        from engine.core import multi_scale_noise as _cached
+        return _cached(shape, scales, weights, seed)
+    except ImportError:
+        pass
+    # Fallback
     h, w = shape
     rng = np.random.RandomState(seed & 0x7FFFFFFF)
     out = np.zeros((h, w), dtype=np.float32)
@@ -34,9 +40,10 @@ def _msn(shape, scales, weights, seed):
 
 
 def _mgrid(shape):
-    h, w = shape
-    y, x = np.mgrid[0:h, 0:w]
-    return y.astype(np.float32), x.astype(np.float32)
+    """Returns (y, x) as float32 — wraps cached core.get_mgrid."""
+    from engine.core import get_mgrid
+    g = get_mgrid(shape)
+    return g[0].astype(np.float32), g[1].astype(np.float32)
 
 
 # ===========================================================================
@@ -49,19 +56,20 @@ def spec_cursed(shape, mask, seed, sm):
     h, w = shape
     spec = np.zeros((h, w, 4), dtype=np.uint8)
     n1 = _msn(shape, [4, 8, 16, 32], [0.2, 0.3, 0.3, 0.2], seed + 2100)
-    n2 = _msn(shape, [2, 4, 8], [0.4, 0.35, 0.25], seed + 2101)
+    n2 = _msn(shape, [16, 32, 64], [0.4, 0.35, 0.25], seed + 2101)
     veins = np.where(np.abs(n1) < 0.07, 1.0, 0.0).astype(np.float32)
     veins_s = gaussian_filter(veins, sigma=max(1, h * 0.003))
     M = np.clip(80 + veins_s * 120 + n2 * 20 * sm, 0, 255)
     R = np.clip(160 - veins_s * 140 + n2 * 15 * sm, 15, 255)
     spec[:, :, 0] = np.clip(M * mask, 0, 255).astype(np.uint8)
     spec[:, :, 1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
-    spec[:, :, 2] = np.clip(veins_s * 12 * mask, 0, 16).astype(np.uint8)
+    spec[:, :, 2] = np.clip(veins_s * 12 * mask, 16, 255).astype(np.uint8)
     spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
 
 def paint_cursed(paint, shape, mask, seed, pm, bb):
     """Cursed - acid-veined chrome: corrosion channels glow toxic green on dark base."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     n = _msn(shape, [4, 8, 16, 32], [0.2, 0.3, 0.3, 0.2], seed + 2102)
     veins = np.where(np.abs(n) < 0.07, 1.0, 0.0).astype(np.float32)
@@ -89,12 +97,13 @@ def spec_eclipse(shape, mask, seed, sm):
     R = np.clip(200 - corona * 195, 15, 255)
     spec[:, :, 0] = np.clip(M * mask, 0, 255).astype(np.uint8)
     spec[:, :, 1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
-    spec[:, :, 2] = np.clip(corona * 14 * mask, 0, 16).astype(np.uint8)
+    spec[:, :, 2] = np.clip(corona * 14 * mask, 16, 255).astype(np.uint8)
     spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
 
 def paint_eclipse(paint, shape, mask, seed, pm, bb):
     """Eclipse - near-vantablack disc with blazing gold-white corona ring."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     y, x = _mgrid(shape)
     cy, cx = h * 0.5, w * 0.5
@@ -114,20 +123,21 @@ def paint_eclipse(paint, shape, mask, seed, pm, bb):
 def spec_nightmare(shape, mask, seed, sm):
     h, w = shape
     spec = np.zeros((h, w, 4), dtype=np.uint8)
-    n = _msn(shape, [4, 8, 16], [0.3, 0.4, 0.3], seed + 2200)
+    n = _msn(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + 2200)
     shards = np.floor(n * 4) / 4
     M = np.clip(200 + shards * 40 + n * 15 * sm, 0, 255)
     R = np.clip(30 + np.abs(shards) * 80 + n * 10 * sm, 15, 255)
     spec[:, :, 0] = np.clip(M * mask, 0, 255).astype(np.uint8)
     spec[:, :, 1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
-    spec[:, :, 2] = np.clip(10 * mask, 0, 16).astype(np.uint8)
+    spec[:, :, 2] = np.clip(10 * mask, 16, 255).astype(np.uint8)
     spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
 
 def paint_nightmare(paint, shape, mask, seed, pm, bb):
     """Nightmare - fractured chrome mirror, each shard a different dark hue."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
-    n = _msn(shape, [4, 8, 16], [0.3, 0.4, 0.3], seed + 2201)
+    n = _msn(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + 2201)
     shards = np.floor(n * 5) / 5
     # Each shard zone gets a different dark tint
     r_tint = np.sin(shards * np.pi * 3) * 0.15
@@ -154,12 +164,13 @@ def spec_possessed(shape, mask, seed, sm):
     R = np.clip(220 - puls * 210 + n * 8 * sm, 15, 255)
     spec[:, :, 0] = np.clip(M * mask, 0, 255).astype(np.uint8)
     spec[:, :, 1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
-    spec[:, :, 2] = np.clip(puls * 8 * mask, 0, 16).astype(np.uint8)
+    spec[:, :, 2] = np.clip(puls * 8 * mask, 16, 255).astype(np.uint8)
     spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
 
 def paint_possessed(paint, shape, mask, seed, pm, bb):
     """Possessed - surface alive with pulsing red-black oscillations, eye-sockets glowing."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     n = _msn(shape, [8, 16, 32, 64], [0.2, 0.3, 0.3, 0.2], seed + 2301)
     puls = np.sin(n * np.pi * 6) * 0.5 + 0.5
@@ -180,16 +191,17 @@ def spec_reaper(shape, mask, seed, sm):
     y, x = _mgrid(shape)
     diag = (y / h + x / w)
     slash = np.abs(np.sin(diag * np.pi * 8)) ** 3
-    M = np.clip(30 + slash * 200 + _msn(shape, [4, 8], [0.5, 0.5], seed + 2400) * 10 * sm, 0, 255)
+    M = np.clip(30 + slash * 200 + _msn(shape, [16, 32], [0.5, 0.5], seed + 2400) * 10 * sm, 0, 255)
     R = np.clip(200 - slash * 195, 15, 255)
     spec[:, :, 0] = np.clip(M * mask, 0, 255).astype(np.uint8)
     spec[:, :, 1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
-    spec[:, :, 2] = np.clip(slash * 14 * mask, 0, 16).astype(np.uint8)
+    spec[:, :, 2] = np.clip(slash * 14 * mask, 16, 255).astype(np.uint8)
     spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
 
 def paint_reaper(paint, shape, mask, seed, pm, bb):
     """Reaper - diagonal scythe slashes: chrome cuts through absolute darkness."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     y, x = _mgrid(shape)
     diag = (y / h + x / w)
@@ -220,12 +232,13 @@ def spec_voodoo(shape, mask, seed, sm):
     R = np.clip(200 - pin_s * 195, 15, 255)
     spec[:, :, 0] = np.clip(M * mask, 0, 255).astype(np.uint8)
     spec[:, :, 1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
-    spec[:, :, 2] = np.clip(pin_s * 12 * mask, 0, 16).astype(np.uint8)
+    spec[:, :, 2] = np.clip(pin_s * 12 * mask, 16, 255).astype(np.uint8)
     spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
 
 def paint_voodoo(paint, shape, mask, seed, pm, bb):
     """Voodoo - swamp-dark base with hot pin-prick ritual needle glows."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     rng = np.random.RandomState(seed + 2501)
     pin_layer = np.zeros((h, w), dtype=np.float32)
@@ -263,12 +276,13 @@ def spec_wraith(shape, mask, seed, sm):
     R = np.clip(210 - warp * 200, 15, 255)
     spec[:, :, 0] = np.clip(M * mask, 0, 255).astype(np.uint8)
     spec[:, :, 1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
-    spec[:, :, 2] = np.clip(warp * 12 * mask, 0, 16).astype(np.uint8)
+    spec[:, :, 2] = np.clip(warp * 12 * mask, 16, 255).astype(np.uint8)
     spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
 
 def paint_wraith(paint, shape, mask, seed, pm, bb):
     """Wraith - near-invisible void core with shimmering ethereal cyan-purple edge aura."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     y, x = _mgrid(shape)
     cy, cx = h * 0.5, w * 0.5
@@ -302,13 +316,14 @@ def spec_depth_map(shape, mask, seed, sm):
     M = np.clip(20 + field * 140 + n * 10 * sm, 0, 255)
     R = np.clip(120 - field * 100 + n * 8 * sm, 15, 255)
     spec[:, :, 0] = np.clip(M * mask, 0, 255).astype(np.uint8)
-    spec[:, :, 1] = np.clip(R * mask + 60 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:, :, 2] = np.clip(field * 14 * mask, 0, 16).astype(np.uint8)
+    spec[:, :, 1] = np.clip(R * mask + 60 * (1 - mask), 15, 255).astype(np.uint8)
+    spec[:, :, 2] = np.clip(field * 14 * mask, 16, 255).astype(np.uint8)
     spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
 
 def paint_depth_map(paint, shape, mask, seed, pm, bb):
     """Depth Map - grayscale depth encoded as near=white, far=black, warm-tinted."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     gray = paint[:, :, 0] * 0.299 + paint[:, :, 1] * 0.587 + paint[:, :, 2] * 0.114
     # Near objects warm, far objects cool
@@ -333,13 +348,14 @@ def spec_double_exposure(shape, mask, seed, sm):
     M = np.clip(80 + blend * 60 + n1 * 15 * sm, 0, 255)
     R = np.clip(50 + blend * 40 + n2 * 10 * sm, 15, 255)
     spec[:, :, 0] = np.clip(M * mask, 0, 255).astype(np.uint8)
-    spec[:, :, 1] = np.clip(R * mask + 50 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:, :, 2] = np.clip(12 * mask, 0, 16).astype(np.uint8)
+    spec[:, :, 1] = np.clip(R * mask + 50 * (1 - mask), 15, 255).astype(np.uint8)
+    spec[:, :, 2] = np.clip(12 * mask, 16, 255).astype(np.uint8)
     spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
 
 def paint_double_exposure(paint, shape, mask, seed, pm, bb):
     """Double Exposure - ghost of shifted image overlaid on desaturated base."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     shift_y = int(h * 0.07)
     shift_x = int(w * 0.09)
@@ -348,8 +364,8 @@ def paint_double_exposure(paint, shape, mask, seed, pm, bb):
     desat = paint * 0.3 + gray * 0.7
     blend = 0.45 * pm
     merged = np.clip(desat * 0.6 + ghost * 0.4, 0, 1)
-    for c in range(3):
-        paint[:, :, c] = np.clip(paint[:, :, c] * (1 - blend * mask) + merged[:, :, c] * blend * mask, 0, 1)
+    m3 = (blend * mask)[:, :, np.newaxis]
+    paint[:, :, :3] = np.clip(paint[:, :, :3] * (1 - m3) + merged[:, :, :3] * m3, 0, 1)
     return np.clip(paint + bb * 0.3 * mask[:, :, None], 0, 1)
 
 
@@ -361,13 +377,14 @@ def spec_infrared(shape, mask, seed, sm):
     M = np.clip(60 + n * 30 * sm, 0, 255)
     R = np.clip(80 + n * 20 * sm, 15, 255)
     spec[:, :, 0] = np.clip(M * mask, 0, 255).astype(np.uint8)
-    spec[:, :, 1] = np.clip(R * mask + 60 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:, :, 2] = np.clip(10 * mask, 0, 16).astype(np.uint8)
+    spec[:, :, 1] = np.clip(R * mask + 60 * (1 - mask), 15, 255).astype(np.uint8)
+    spec[:, :, 2] = np.clip(10 * mask, 16, 255).astype(np.uint8)
     spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
 
 def paint_infrared(paint, shape, mask, seed, pm, bb):
     """Infrared - warm sources glow white-pink, cool areas shift to black-purple false-color."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     # Luminance = "heat source"
     lum = paint[:, :, 0] * 0.299 + paint[:, :, 1] * 0.587 + paint[:, :, 2] * 0.114
@@ -393,13 +410,14 @@ def spec_polarized(shape, mask, seed, sm):
     M = np.clip(60 + polar * 130 + _msn(shape, [8, 16], [0.5, 0.5], seed + 3300) * 10 * sm, 0, 255)
     R = np.clip(80 - polar * 65, 15, 255)
     spec[:, :, 0] = np.clip(M * mask, 0, 255).astype(np.uint8)
-    spec[:, :, 1] = np.clip(R * mask + 60 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:, :, 2] = np.clip(polar * 14 * mask, 0, 16).astype(np.uint8)
+    spec[:, :, 1] = np.clip(R * mask + 60 * (1 - mask), 15, 255).astype(np.uint8)
+    spec[:, :, 2] = np.clip(polar * 14 * mask, 16, 255).astype(np.uint8)
     spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
 
 def paint_polarized(paint, shape, mask, seed, pm, bb):
     """Polarized - birefringent stress pattern: Maltese cross extinction bands + spectral fringes."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     y, x = _mgrid(shape)
     cy, cx = h * 0.5, w * 0.5
@@ -423,20 +441,21 @@ def paint_polarized(paint, shape, mask, seed, pm, bb):
 def spec_uv_blacklight(shape, mask, seed, sm):
     h, w = shape
     spec = np.zeros((h, w, 4), dtype=np.uint8)
-    n = _msn(shape, [4, 8, 16], [0.3, 0.4, 0.3], seed + 3400)
+    n = _msn(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + 3400)
     hot = np.where(n > 0.5, (n - 0.5) * 2, 0).astype(np.float32)
     M = np.clip(100 + hot * 100 + n * 15 * sm, 0, 255)
     R = np.clip(20 + (1 - hot) * 20, 15, 255)
     spec[:, :, 0] = np.clip(M * mask, 0, 255).astype(np.uint8)
-    spec[:, :, 1] = np.clip(R * mask + 40 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:, :, 2] = np.clip(16 * mask, 0, 16).astype(np.uint8)
+    spec[:, :, 1] = np.clip(R * mask + 40 * (1 - mask), 15, 255).astype(np.uint8)
+    spec[:, :, 2] = np.clip(16 * mask, 16, 255).astype(np.uint8)
     spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
 
 def paint_uv_blacklight(paint, shape, mask, seed, pm, bb):
     """UV Blacklight - near-black base with explosive vivid neon UV florals blooming."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
-    n = _msn(shape, [4, 8, 16], [0.3, 0.4, 0.3], seed + 3401)
+    n = _msn(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + 3401)
     uv_hot = np.where(n > 0.45, (n - 0.45) / 0.55, 0).astype(np.float32)
     uv_glow = gaussian_filter(uv_hot, sigma=max(2, h * 0.012))
     # Massive base darkening - UV room = black
@@ -464,12 +483,13 @@ def spec_x_ray(shape, mask, seed, sm):
     R = np.clip(160 - dense * 155, 15, 255)
     spec[:, :, 0] = np.clip(M * mask, 0, 255).astype(np.uint8)
     spec[:, :, 1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
-    spec[:, :, 2] = np.clip(dense * 10 * mask, 0, 16).astype(np.uint8)
+    spec[:, :, 2] = np.clip(dense * 10 * mask, 16, 255).astype(np.uint8)
     spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
 
 def paint_x_ray(paint, shape, mask, seed, pm, bb):
     """X-Ray - eerie blue-white radiograph: dense structures glow, tissue vanishes."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     n = _msn(shape, [4, 8, 16, 32], [0.2, 0.3, 0.3, 0.2], seed + 3501)
     dense = np.clip(n * 0.5 + 0.5, 0, 1) ** 2
@@ -502,8 +522,8 @@ def spec_chromatic_aberration_v2(shape, mask, seed, sm):
     M = np.clip(60 + fringe * 60 + _msn(shape, [8, 16], [0.5, 0.5], seed + 4000) * 10 * sm, 0, 255)
     R = np.clip(40 - fringe * 20, 15, 255)
     spec[:, :, 0] = np.clip(M * mask, 0, 255).astype(np.uint8)
-    spec[:, :, 1] = np.clip(R * mask + 40 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:, :, 2] = np.clip(14 * mask, 0, 16).astype(np.uint8)
+    spec[:, :, 1] = np.clip(R * mask + 40 * (1 - mask), 15, 255).astype(np.uint8)
+    spec[:, :, 2] = np.clip(14 * mask, 16, 255).astype(np.uint8)
     spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
 
@@ -520,8 +540,8 @@ def spec_halftone_v2(shape, mask, seed, sm):
     M = np.clip(30 + dot * 80, 0, 255)
     R = np.clip(120 - dot * 100, 15, 255)
     spec[:, :, 0] = np.clip(M * mask, 0, 255).astype(np.uint8)
-    spec[:, :, 1] = np.clip(R * mask + 80 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:, :, 2] = np.clip(dot * 10 * mask, 0, 16).astype(np.uint8)
+    spec[:, :, 1] = np.clip(R * mask + 80 * (1 - mask), 15, 255).astype(np.uint8)
+    spec[:, :, 2] = np.clip(dot * 10 * mask, 16, 255).astype(np.uint8)
     spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
 
@@ -534,8 +554,8 @@ def spec_negative_v2(shape, mask, seed, sm):
     M = np.clip(20 + inv * 180, 0, 255)
     R = np.clip(180 - inv * 170, 15, 255)
     spec[:, :, 0] = np.clip(M * mask, 0, 255).astype(np.uint8)
-    spec[:, :, 1] = np.clip(R * mask + 80 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:, :, 2] = np.clip(inv * 12 * mask, 0, 16).astype(np.uint8)
+    spec[:, :, 1] = np.clip(R * mask + 80 * (1 - mask), 15, 255).astype(np.uint8)
+    spec[:, :, 2] = np.clip(inv * 12 * mask, 16, 255).astype(np.uint8)
     spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
 
@@ -549,8 +569,8 @@ def spec_solarization_v2(shape, mask, seed, sm):
     M = np.clip(80 + solar * 140, 0, 255)
     R = np.clip(20 + (1 - solar) * 20, 15, 255)
     spec[:, :, 0] = np.clip(M * mask, 0, 255).astype(np.uint8)
-    spec[:, :, 1] = np.clip(R * mask + 20 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:, :, 2] = np.clip(solar * 14 * mask, 0, 16).astype(np.uint8)
+    spec[:, :, 1] = np.clip(R * mask + 20 * (1 - mask), 15, 255).astype(np.uint8)
+    spec[:, :, 2] = np.clip(solar * 14 * mask, 16, 255).astype(np.uint8)
     spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
 
@@ -558,14 +578,14 @@ def spec_embossed_v2(shape, mask, seed, sm):
     """Embossed spec: directional relief - illuminated ridges high-metallic, shadow=rough."""
     h, w = shape
     spec = np.zeros((h, w, 4), dtype=np.uint8)
-    n = _msn(shape, [4, 8, 16], [0.3, 0.4, 0.3], seed + 4400)
+    n = _msn(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + 4400)
     shifted = np.roll(np.roll(n, 2, axis=0), 2, axis=1)
     relief = np.clip((n - shifted) * 3.0 + 0.5, 0, 1)
     M = np.clip(60 + relief * 140, 0, 255)
     R = np.clip(160 - relief * 150, 15, 255)
     spec[:, :, 0] = np.clip(M * mask, 0, 255).astype(np.uint8)
-    spec[:, :, 1] = np.clip(R * mask + 80 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:, :, 2] = np.clip(relief * 12 * mask, 0, 16).astype(np.uint8)
+    spec[:, :, 1] = np.clip(R * mask + 80 * (1 - mask), 15, 255).astype(np.uint8)
+    spec[:, :, 2] = np.clip(relief * 12 * mask, 16, 255).astype(np.uint8)
     spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
 
@@ -577,22 +597,23 @@ def spec_embossed_v2(shape, mask, seed, sm):
 def spec_cyber_punk(shape, mask, seed, sm):
     h, w = shape
     spec = np.zeros((h, w, 4), dtype=np.uint8)
-    n = _msn(shape, [4, 8, 16], [0.3, 0.4, 0.3], seed + 5000)
+    n = _msn(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + 5000)
     grid_y = np.abs(np.sin(np.linspace(0, np.pi * 20, h))).reshape(h, 1)
     grid_x = np.abs(np.sin(np.linspace(0, np.pi * 30, w))).reshape(1, w)
     grid = np.clip(grid_y * grid_x + n * 0.2, 0, 1).astype(np.float32)
     M = np.clip(180 + grid * 60 + n * 10 * sm, 0, 255)
     R = np.clip(20 - grid * 15, 15, 255)
     spec[:, :, 0] = np.clip(M * mask, 0, 255).astype(np.uint8)
-    spec[:, :, 1] = np.clip(R * mask + 10 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:, :, 2] = np.clip(16 * mask, 0, 16).astype(np.uint8)
+    spec[:, :, 1] = np.clip(R * mask + 10 * (1 - mask), 15, 255).astype(np.uint8)
+    spec[:, :, 2] = np.clip(16 * mask, 16, 255).astype(np.uint8)
     spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
 
 def paint_cyber_punk(paint, shape, mask, seed, pm, bb):
     """Cyberpunk - dark chrome city grid with neon magenta/cyan line glow."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
-    n = _msn(shape, [4, 8, 16], [0.3, 0.4, 0.3], seed + 5001)
+    n = _msn(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + 5001)
     grid_y = np.abs(np.sin(np.linspace(0, np.pi * 20, h))).reshape(h, 1)
     grid_x = np.abs(np.sin(np.linspace(0, np.pi * 30, w))).reshape(1, w)
     grid = np.clip(grid_y * grid_x + n * 0.2, 0, 1).astype(np.float32)
@@ -623,13 +644,14 @@ def spec_firefly(shape, mask, seed, sm):
     M = np.clip(80 + fl_g * 160, 0, 255)
     R = np.clip(120 - fl_g * 110, 15, 255)
     spec[:, :, 0] = np.clip(M * mask, 0, 255).astype(np.uint8)
-    spec[:, :, 1] = np.clip(R * mask + 80 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:, :, 2] = np.clip(fl_g * 14 * mask, 0, 16).astype(np.uint8)
+    spec[:, :, 1] = np.clip(R * mask + 80 * (1 - mask), 15, 255).astype(np.uint8)
+    spec[:, :, 2] = np.clip(fl_g * 14 * mask, 16, 255).astype(np.uint8)
     spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
 
 def paint_firefly(paint, shape, mask, seed, pm, bb):
     """Firefly - warm dark night with scattered warm-white yellow-green glow orbs."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     rng = np.random.RandomState(seed + 5101)
     fl = np.zeros((h, w), dtype=np.float32)
@@ -660,13 +682,14 @@ def spec_laser_grid(shape, mask, seed, sm):
     M = np.clip(180 + grid_s * 70, 0, 255)
     R = np.clip(15 - grid_s * 12, 15, 255)
     spec[:, :, 0] = np.clip(M * mask, 0, 255).astype(np.uint8)
-    spec[:, :, 1] = np.clip(R * mask + 10 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:, :, 2] = np.clip(14 * mask, 0, 16).astype(np.uint8)
+    spec[:, :, 1] = np.clip(R * mask + 10 * (1 - mask), 15, 255).astype(np.uint8)
+    spec[:, :, 2] = np.clip(14 * mask, 16, 255).astype(np.uint8)
     spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
 
 def paint_laser_grid(paint, shape, mask, seed, pm, bb):
     """Laser Grid - deep black surface with precise brilliant red/green laser line grid."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     y, x = _mgrid(shape)
     grid_h = max(8, h // 30)
@@ -693,13 +716,14 @@ def spec_led_matrix(shape, mask, seed, sm):
     M = np.clip(200 * dot + 20, 0, 255)
     R = np.clip(10 + (1 - dot) * 20, 15, 255)
     spec[:, :, 0] = np.clip(M * mask, 0, 255).astype(np.uint8)
-    spec[:, :, 1] = np.clip(R * mask + 10 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:, :, 2] = np.clip(dot * 16 * mask, 0, 16).astype(np.uint8)
+    spec[:, :, 1] = np.clip(R * mask + 10 * (1 - mask), 15, 255).astype(np.uint8)
+    spec[:, :, 2] = np.clip(dot * 16 * mask, 16, 255).astype(np.uint8)
     spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
 
 def paint_led_matrix(paint, shape, mask, seed, pm, bb):
     """LED Matrix - pixel-perfect RGB dot grid, each dot a vivid primary color."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     y, x = _mgrid(shape)
     cell = max(6, min(h, w) // 50)
@@ -727,15 +751,16 @@ def spec_neon_vegas(shape, mask, seed, sm):
     M = np.clip(100 + tubes * 140 + n * 15 * sm, 0, 255)
     R = np.clip(15 + (1 - tubes) * 15, 15, 255)
     spec[:, :, 0] = np.clip(M * mask, 0, 255).astype(np.uint8)
-    spec[:, :, 1] = np.clip(R * mask + 10 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:, :, 2] = np.clip(tubes * 16 * mask, 0, 16).astype(np.uint8)
+    spec[:, :, 1] = np.clip(R * mask + 10 * (1 - mask), 15, 255).astype(np.uint8)
+    spec[:, :, 2] = np.clip(tubes * 16 * mask, 16, 255).astype(np.uint8)
     spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
 
 def paint_neon_vegas(paint, shape, mask, seed, pm, bb):
     """Neon Vegas - horizontal sign tubes cycling hot pink/orange/yellow in black."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
-    n = _msn(shape, [4, 8, 16], [0.3, 0.4, 0.3], seed + 5401)
+    n = _msn(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + 5401)
     y = np.linspace(0, 1, h).reshape(h, 1)
     tubes = np.abs(np.sin(y * np.pi * 12 + n * 2)) ** 4
     tube_g = gaussian_filter(tubes, sigma=max(1, h * 0.008))
@@ -757,24 +782,25 @@ def spec_plasma_globe(shape, mask, seed, sm):
     y, x = _mgrid(shape)
     cy, cx = h * 0.5, w * 0.5
     r = np.sqrt((y - cy)**2 + (x - cx)**2) / max(h, w)
-    n = _msn(shape, [4, 8, 16], [0.3, 0.4, 0.3], seed + 5500)
+    n = _msn(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + 5500)
     tendrils = np.clip(np.abs(n) - 0.3, 0, 1) * 1.4
     globe = np.clip(1.0 - r * 2.5, 0, 1) * tendrils
     M = np.clip(180 + globe * 70 + n * 10 * sm, 0, 255)
     R = np.clip(10 + (1 - globe) * 15, 15, 255)
     spec[:, :, 0] = np.clip(M * mask, 0, 255).astype(np.uint8)
-    spec[:, :, 1] = np.clip(R * mask + 8 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:, :, 2] = np.clip(globe * 16 * mask, 0, 16).astype(np.uint8)
+    spec[:, :, 1] = np.clip(R * mask + 8 * (1 - mask), 15, 255).astype(np.uint8)
+    spec[:, :, 2] = np.clip(globe * 16 * mask, 16, 255).astype(np.uint8)
     spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
 
 def paint_plasma_globe(paint, shape, mask, seed, pm, bb):
     """Plasma Globe - crackling purple-white lightning tendrils from glowing center point."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     y, x = _mgrid(shape)
     cy, cx = h * 0.5, w * 0.5
     r = np.sqrt((y - cy)**2 + (x - cx)**2) / max(h, w)
-    n = _msn(shape, [4, 8, 16], [0.3, 0.4, 0.3], seed + 5501)
+    n = _msn(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + 5501)
     tendrils = np.clip(np.abs(n) - 0.35, 0, 1) * 1.5
     globe_fade = np.clip(1.0 - r * 2.2, 0, 1)
     lightning = tendrils * globe_fade
@@ -800,13 +826,14 @@ def spec_desert_mirage(shape, mask, seed, sm):
     M = np.clip(80 + heat * 100 + n * 15 * sm, 0, 255)
     R = np.clip(50 + (1 - heat) * 60 + n * 10 * sm, 15, 255)
     spec[:, :, 0] = np.clip(M * mask, 0, 255).astype(np.uint8)
-    spec[:, :, 1] = np.clip(R * mask + 60 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:, :, 2] = np.clip(heat * 12 * mask, 0, 16).astype(np.uint8)
+    spec[:, :, 1] = np.clip(R * mask + 60 * (1 - mask), 15, 255).astype(np.uint8)
+    spec[:, :, 2] = np.clip(heat * 12 * mask, 16, 255).astype(np.uint8)
     spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
 
 def paint_desert_mirage(paint, shape, mask, seed, pm, bb):
     """Desert Mirage - shimmering heat distortion horizon bands, pale golden refraction."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     n = _msn(shape, [8, 16, 32], [0.3, 0.4, 0.3], seed + 6001)
     y = np.linspace(0, 1, h).reshape(h, 1)
@@ -830,13 +857,14 @@ def spec_frozen_lake(shape, mask, seed, sm):
     M = np.clip(40 + crack_s * 60, 0, 255)
     R = np.clip(12 + crack_s * 8, 15, 255)
     spec[:, :, 0] = np.clip(M * mask, 0, 255).astype(np.uint8)
-    spec[:, :, 1] = np.clip(R * mask + 8 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:, :, 2] = np.clip(16 * mask, 0, 16).astype(np.uint8)
+    spec[:, :, 1] = np.clip(R * mask + 8 * (1 - mask), 15, 255).astype(np.uint8)
+    spec[:, :, 2] = np.clip(16 * mask, 16, 255).astype(np.uint8)
     spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
 
 def paint_frozen_lake(paint, shape, mask, seed, pm, bb):
     """Frozen Lake - near-perfect ice mirror with dark trapped bubble cracks below."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     n = _msn(shape, [8, 16, 32, 64], [0.15, 0.25, 0.35, 0.25], seed + 6101)
     crack = np.where(np.abs(n) < 0.08, 1.0, 0.0).astype(np.float32)
@@ -868,12 +896,13 @@ def spec_meteor_shower(shape, mask, seed, sm):
     R = np.clip(180 - meteor_s * 175, 15, 255)
     spec[:, :, 0] = np.clip(M * mask, 0, 255).astype(np.uint8)
     spec[:, :, 1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
-    spec[:, :, 2] = np.clip(meteor_s * 12 * mask, 0, 16).astype(np.uint8)
+    spec[:, :, 2] = np.clip(meteor_s * 12 * mask, 16, 255).astype(np.uint8)
     spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
 
 def paint_meteor_shower(paint, shape, mask, seed, pm, bb):
     """Meteor Shower - deep space black with blazing streak trails of white-hot meteors."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     rng = np.random.RandomState(seed + 6201)
     meteor = np.zeros((h, w), dtype=np.float32)
@@ -903,13 +932,14 @@ def spec_ocean_floor(shape, mask, seed, sm):
     M = np.clip(30 + caustic * 60 + n * 10 * sm, 0, 255)
     R = np.clip(80 + caustic * 40 + n * 8 * sm, 15, 255)
     spec[:, :, 0] = np.clip(M * mask, 0, 255).astype(np.uint8)
-    spec[:, :, 1] = np.clip(R * mask + 60 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:, :, 2] = np.clip(caustic * 10 * mask, 0, 16).astype(np.uint8)
+    spec[:, :, 1] = np.clip(R * mask + 60 * (1 - mask), 15, 255).astype(np.uint8)
+    spec[:, :, 2] = np.clip(caustic * 10 * mask, 16, 255).astype(np.uint8)
     spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
 
 def paint_ocean_floor(paint, shape, mask, seed, pm, bb):
     """Ocean Floor - deep blue pressure dark with dancing caustic light patterns above."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     n = _msn(shape, [8, 16, 32, 64], [0.2, 0.3, 0.3, 0.2], seed + 6301)
     caustic = np.sin((n + 1) * np.pi * 8) * 0.5 + 0.5
@@ -933,16 +963,17 @@ def spec_tornado_alley(shape, mask, seed, sm):
     spiral = np.sin(theta * 3 + r * 30) * 0.5 + 0.5
     cone = np.clip(1.0 - r * 2.0, 0, 1)
     vortex = spiral * cone
-    M = np.clip(30 + vortex * 80 + _msn(shape, [4, 8], [0.5, 0.5], seed + 6400) * 10 * sm, 0, 255)
+    M = np.clip(30 + vortex * 80 + _msn(shape, [16, 32], [0.5, 0.5], seed + 6400) * 10 * sm, 0, 255)
     R = np.clip(100 + (1 - vortex) * 80, 15, 255)
     spec[:, :, 0] = np.clip(M * mask, 0, 255).astype(np.uint8)
-    spec[:, :, 1] = np.clip(R * mask + 80 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:, :, 2] = np.clip(vortex * 8 * mask, 0, 16).astype(np.uint8)
+    spec[:, :, 1] = np.clip(R * mask + 80 * (1 - mask), 15, 255).astype(np.uint8)
+    spec[:, :, 2] = np.clip(vortex * 8 * mask, 16, 255).astype(np.uint8)
     spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
 
 def paint_tornado_alley(paint, shape, mask, seed, pm, bb):
     """Tornado Alley - dark rotating funnel: debris-filled gray spiral with sickly green sky."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     y, x = _mgrid(shape)
     cy, cx = h * 0.55, w * 0.5
@@ -968,13 +999,14 @@ def spec_volcanic_glass(shape, mask, seed, sm):
     M = np.clip(180 + obsidian * 70, 0, 255)
     R = np.clip(8 + obsidian * 6, 15, 255)
     spec[:, :, 0] = np.clip(M * mask, 0, 255).astype(np.uint8)
-    spec[:, :, 1] = np.clip(R * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:, :, 2] = np.clip(obsidian * 16 * mask, 0, 16).astype(np.uint8)
+    spec[:, :, 1] = np.clip(R * mask + 5 * (1 - mask), 15, 255).astype(np.uint8)
+    spec[:, :, 2] = np.clip(obsidian * 16 * mask, 16, 255).astype(np.uint8)
     spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
 
 def paint_volcanic_glass(paint, shape, mask, seed, pm, bb):
     """Volcanic Glass - obsidian mirror: near-black with deep reflective conchoidal fracture."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     n = _msn(shape, [4, 8, 16, 32], [0.2, 0.3, 0.3, 0.2], seed + 6501)
     obsidian = np.clip(n * 0.5 + 0.5, 0, 1) ** 3

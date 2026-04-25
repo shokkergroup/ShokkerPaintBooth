@@ -7,17 +7,35 @@
 //   - Open SHOKK (load zone config + locked baked spec)
 //   - Export spec channels for Photoshop (4 separate PNGs)
 //   - Blank Canvas mode (start fresh without a car paint TGA)
+//
+// Cross-file deps:
+//   - paint-booth-5-api-render.js defines PS_EXPORT_FOLDER_KEY (MUST load first)
+//   - paint-booth-2-state-zones.js provides zones, assignFinish helpers
+//   - paint-booth-3-canvas.js provides paintImageData / regionCanvas
+//   - Requires window.electronAPI for native dialogs (falls back to HTML pickers
+//     in browser mode).
+// Version: 2026-04-17
 // ============================================================
 
-// ─── STATE ────────────────────────────────────────────────────────────────────
+// --- STATE -------------------------------------------------------------------
 
+/** @type {Array<{path: string, name: string, [k: string]: any}>} Rows returned from /api/shokk-library. */
 let _shokkLibraryData = [];
+/** @type {string} Last-known path to the active library folder. */
 let _shokkLibraryPath = '';
 
-// ─── OPEN SHOKK LIBRARY ───────────────────────────────────────────────────────
-// PS_EXPORT_FOLDER_KEY is defined in paint-booth-5-api-render.js (script loads first). Do not redeclare.
+// --- OPEN SHOKK LIBRARY ------------------------------------------------------
+// NOTE: PS_EXPORT_FOLDER_KEY is defined in paint-booth-5-api-render.js
+// (it loads first). Do NOT redeclare here.
 
-/** Open a folder picker and set the PS Export folder input. Works in Electron (full path); in browser user may need to paste path. */
+/**
+ * Opens a folder picker and writes the chosen path into the specified input.
+ * Uses Electron's native dialog when available for a true absolute path;
+ * falls back to webkitdirectory in browser mode, which may only expose a
+ * relative path.
+ * @param {string} inputId - ID of the <input> to populate.
+ * @returns {void}
+ */
 function browsePsExportFolder(inputId) {
     const input = document.getElementById(inputId);
     if (!input) return;
@@ -67,6 +85,10 @@ function browsePsExportFolder(inputId) {
     el.click();
 }
 
+/**
+ * Opens the SHOKK Library modal and triggers an initial content fetch.
+ * @returns {void}
+ */
 function openShokkLibrary() {
     try {
         const modal = document.getElementById('shokkLibraryModal');
@@ -84,11 +106,20 @@ function openShokkLibrary() {
     }
 }
 
+/**
+ * Hides the SHOKK Library modal.
+ * @returns {void}
+ */
 function closeShokkLibrary() {
     const modal = document.getElementById('shokkLibraryModal');
     if (modal) modal.style.display = 'none';
 }
 
+/**
+ * Resolves the HTTP base URL used for SHOKK API calls. Prefers an explicit
+ * ShokkerAPI.baseUrl (configured elsewhere); falls back to window.location.
+ * @returns {string}
+ */
 function _shokkApiBase() {
     if (typeof ShokkerAPI !== 'undefined' && ShokkerAPI.baseUrl) return ShokkerAPI.baseUrl;
     // Fallback when page is served by server (e.g. same origin)
@@ -96,6 +127,13 @@ function _shokkApiBase() {
     return '';
 }
 
+/**
+ * Updates the "SPEC: loaded/missing/none" status chip + banner shown when a
+ * SHOKK file is active. Defensive: tolerates missing DOM elements.
+ * @param {'loaded'|'missing'|'none'} state
+ * @param {string} [label] optional tooltip / banner override.
+ * @returns {void}
+ */
 function _setShokkSpecUiState(state, label) {
     const chip = document.getElementById('shokkSpecStateChip');
     const specBanner = document.getElementById('specFromShokkBanner');
@@ -140,6 +178,11 @@ function _setShokkSpecUiState(state, label) {
     }
 }
 
+/**
+ * Fetches the SHOKK library listing from the server and renders it as a
+ * thumbnail grid. Also caches the library path for "Open in folder" buttons.
+ * @returns {Promise<void>}
+ */
 async function _loadShokkLibraryContents() {
     const grid = document.getElementById('shokkLibraryGrid');
     const status = document.getElementById('shokkLibraryStatus');
@@ -170,6 +213,13 @@ async function _loadShokkLibraryContents() {
     }
 }
 
+/**
+ * Renders the SHOKK library grid. Optional `filter` substring is matched
+ * case-insensitively against file names.
+ * @param {Array<object>} entries
+ * @param {string} [filter='']
+ * @returns {void}
+ */
 function _renderShokkGrid(entries, filter = '') {
     const grid = document.getElementById('shokkLibraryGrid');
     if (!grid) return;
@@ -211,6 +261,11 @@ function _renderShokkGrid(entries, filter = '') {
 
 let _selectedShokkPath = '';
 
+/**
+ * Builds the HTML for a single SHOKK card in the library grid.
+ * @param {object} e - library entry { path, name, modified, ... }
+ * @returns {string} HTML fragment
+ */
 function _shokkCard(e) {
     const tags = (e.tags || []).map(t => `<span class="shokk-tag">${t}</span>`).join('');
     const meta = [
@@ -249,6 +304,12 @@ function _shokkCard(e) {
 </div>`;
 }
 
+/**
+ * Marks the given SHOKK card as selected in the grid UI.
+ * @param {string} path
+ * @param {HTMLElement} el
+ * @returns {void}
+ */
 function selectShokkCard(path, el) {
     _selectedShokkPath = path;
     // Highlight selected card
@@ -259,6 +320,11 @@ function selectShokkCard(path, el) {
     if (psBtn) psBtn.disabled = false;
 }
 
+/**
+ * Re-renders the SHOKK grid filtered by a substring query.
+ * @param {string} val
+ * @returns {void}
+ */
 function filterShokkLibrary(val) {
     _renderShokkGrid(_shokkLibraryData, val);
 }
@@ -269,6 +335,12 @@ function filterShokkLibrary(val) {
 //   'full'           = Restore everything: spec + zones + paint (original behavior)
 //   'spec_only'      = Import ONLY the spec map as background canvas (keeps current paint + zones)
 //   'spec_and_zones' = Import spec + zones but keep current paint
+/**
+ * Loads a SHOKK file from disk and applies its contents to the current session.
+ * @param {string} shokkPath - absolute path to the .shokk file.
+ * @param {'full'|'zones-only'|'spec-only'} [mode='full'] - which payload slices to apply.
+ * @returns {Promise<void>}
+ */
 async function loadShokkFile(shokkPath, mode = 'full') {
     const base = _shokkApiBase();
     try {
@@ -586,6 +658,11 @@ function closeSaveShokkModal() {
     if (modal) modal.style.display = 'none';
 }
 
+/**
+ * Submits the Save SHOKK dialog: bakes the current session + spec map + paint
+ * into a single .shokk file on disk.
+ * @returns {Promise<void>}
+ */
 async function confirmSaveShokk() {
     try {
         const name = document.getElementById('shokkSaveName').value.trim();
@@ -708,6 +785,12 @@ async function openShokkLibraryFolder() {
 
 // ─── EXPORT SPEC CHANNELS (PHOTOSHOP) ────────────────────────────────────────
 
+/**
+ * Exports the 4 spec map channels (R/G/B/A) as separate PNGs for Photoshop.
+ * @param {boolean} [fromLibrary] - when true, exports the currently selected
+ *   library entry; when false/undefined, exports the live session's spec.
+ * @returns {Promise<void>}
+ */
 async function exportSpecChannels(fromLibrary) {
     try {
         const body = {};
@@ -754,9 +837,20 @@ async function exportSpecChannels(fromLibrary) {
 
 // ─── BLANK CANVAS MODE ────────────────────────────────────────────────────────
 
+/**
+ * Initializes the paint preview with a solid-color blank canvas so the user
+ * can paint without a car TGA loaded. Useful for mockups and swatch testing.
+ * @param {number} [width=2048]
+ * @param {number} [height=2048]
+ * @param {string} [color='ffffff'] - hex without '#'.
+ * @returns {Promise<void>}
+ */
 async function loadBlankCanvas(width = 2048, height = 2048, color = 'ffffff') {
     try {
-        showToast('Creating blank canvas…', 1500);
+        // 2026-04-19 TRUE FIVE-HOUR (TF17d) — same wrong-signature fix as TF17c.
+        // The 1500 was being treated as truthy isError, styling a benign progress
+        // toast as a red error. showToast has no duration arg; drop it.
+        showToast('Creating blank canvas…');
         // Download the blank TGA and trigger load as if user picked a file
         const base = _shokkApiBase();
         const url = base + `/api/blank-canvas?width=${width}&height=${height}&color=${color}`;

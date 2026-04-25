@@ -3,13 +3,34 @@ engine/spec_paint.py - Standard spec_ and paint_ functions (bases + effects).
 Extracted from shokker_engine_v2 for easier editing.
 """
 import numpy as np
+import cv2
 from PIL import Image, ImageFilter
 from scipy.spatial import cKDTree
 from engine.core import multi_scale_noise, get_mgrid, hsv_to_rgb_vec, rgb_to_hsv_array
-from engine.utils import perlin_multi_octave, generate_perlin_noise_2d
 
 # Alias for legacy carbon/ceramic/glass sections that use _noise shorthand
 _noise = multi_scale_noise
+
+
+def _ensure_3ch(paint):
+    """Ensure paint is 3-channel (RGB) for paint_fn operations.
+    The compose pipeline may pass 4-channel (RGBA) paint arrays.
+    Paint functions only modify RGB — alpha is handled by compose."""
+    if paint.ndim == 3 and paint.shape[2] > 3:
+        return paint[:, :, :3].copy()
+    return paint
+
+
+def _ensure_bb_2d(bb, shape):
+    """Normalize bb to 2D (h,w) array. bb can be scalar, 2D, or 3D."""
+    if np.isscalar(bb) or (hasattr(bb, 'ndim') and bb.ndim == 0):
+        return np.full(shape[:2], float(bb), dtype=np.float32)
+    arr = np.asarray(bb, dtype=np.float32)
+    if arr.ndim == 3:
+        return np.mean(arr[:, :, :3], axis=2)
+    if arr.ndim == 2:
+        return arr
+    return np.full(shape[:2], float(np.mean(arr)), dtype=np.float32)
 
 
 def clamp_cc(cc_array):
@@ -43,7 +64,7 @@ def spec_matte(shape, mask, seed, sm):
     # R: matte roughness 220-255 spatially varied — heavy diffuse scatter
     spec[:,:,1] = np.clip((220.0 + rough_fbm * 35.0) * mask + 180.0 * (1 - mask), 0, 255).astype(np.uint8)
     # CC: near-flat (200-230) with slight noise variation
-    cc_noise    = multi_scale_noise(shape, [4, 8, 16], [0.4, 0.35, 0.25], seed + 4101)
+    cc_noise    = multi_scale_noise(shape, [16, 32, 64], [0.4, 0.35, 0.25], seed + 4101)
     cc_val      = np.clip(200.0 + cc_noise * 30.0, 160, 255)
     spec[:,:,2] = np.clip(cc_val * mask + 180.0 * (1 - mask), 0, 255).astype(np.uint8)
     spec[:,:,3] = 255
@@ -55,15 +76,15 @@ def spec_satin(shape, mask, seed, sm):
     R=100*mask+100*(1-mask) evaluated identically everywhere — now uses genuine spatial noise."""
     spec = np.zeros((shape[0], shape[1], 4), dtype=np.uint8)
     # 2-octave FBM for subtle satin sheen variation
-    sheen_coarse = multi_scale_noise(shape, [8, 16], [0.55, 0.45], seed + 3800)
-    sheen_fine   = multi_scale_noise(shape, [2,  4],  [0.6,  0.4], seed + 3801)
+    sheen_coarse = multi_scale_noise(shape, [16, 32], [0.55, 0.45], seed + 3800)
+    sheen_fine   = multi_scale_noise(shape, [32, 64],  [0.6,  0.4], seed + 3801)
     sheen_fbm    = sheen_coarse * 0.7 + sheen_fine * 0.3  # 0..1
     # M: near-zero but with micro-variation for subtle satin sheen (range 0-18)
     spec[:,:,0] = np.clip(sheen_fbm * 18.0 * sm * mask, 0, 255).astype(np.uint8)
     # R: satin roughness 80-140 with spatial noise — distinctly between gloss and matte
     spec[:,:,1] = np.clip((80.0 + sheen_fbm * 60.0 * sm) * mask + 110.0 * (1 - mask), 0, 255).astype(np.uint8)
     # CC: satin clearcoat 40-90 with slight noise variation (moderately glossy)
-    cc_noise     = multi_scale_noise(shape, [4, 8], [0.5, 0.5], seed + 3802)
+    cc_noise     = multi_scale_noise(shape, [16, 32], [0.5, 0.5], seed + 3802)
     spec[:,:,2]  = np.clip(40.0 + cc_noise * 50.0, 16, 255).astype(np.uint8)
     spec[:,:,3] = 255
     return spec
@@ -71,7 +92,7 @@ def spec_satin(shape, mask, seed, sm):
 def spec_metallic(shape, mask, seed, sm):
     """Metallic -- standard metallic paint with visible micro-flake. M=200, R=50, visible flake texture."""
     spec = np.zeros((shape[0], shape[1], 4), dtype=np.uint8)
-    mn = multi_scale_noise(shape, [4, 8, 16], [0.2, 0.4, 0.4], seed+100)  # Visible flake scales
+    mn = multi_scale_noise(shape, [16, 32, 64], [0.2, 0.4, 0.4], seed+100)  # Visible flake scales
     spec[:,:,0] = np.clip(200 * mask + 5 * (1-mask) + mn * 40 * sm * mask, 0, 255).astype(np.uint8)  # M=200
     spec[:,:,1] = np.clip(50 * mask + 100 * (1-mask) + mn * 18 * sm * mask, 0, 255).astype(np.uint8)  # R=50
     spec[:,:,2] = 16; spec[:,:,3] = 255
@@ -109,9 +130,9 @@ def spec_pearlescent_white(shape, mask, seed, sm):
     Top clearcoat: seed+199 (gloss variation). M range ~120-220, R range 15-55."""
     spec = np.zeros((shape[0], shape[1], 4), dtype=np.uint8)
     # Base coat layer (metallic silver base) — coarse scale, seed=11
-    base_metal = multi_scale_noise(shape, [4, 8], [0.55, 0.45], seed + 11)
+    base_metal = multi_scale_noise(shape, [16, 32], [0.55, 0.45], seed + 11)
     # Pearl mid-coat layer (interference pigment) — medium scale, seed=73
-    pearl_mid = multi_scale_noise(shape, [20, 40], [0.55, 0.45], seed + 73)
+    pearl_mid = multi_scale_noise(shape, [32, 64], [0.55, 0.45], seed + 73)
     # Top clearcoat layer (gloss variation) — fine scale, seed=199
     clear_top = multi_scale_noise(shape, [40, 80], [0.55, 0.45], seed + 199)
     # Combined M = 120 + base_metal*60 + pearl_mid*40 (range ~120-220)
@@ -155,9 +176,9 @@ def spec_pearlescent_white_base(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
     sh = (h, w)
     # Base coat layer (metallic silver base) — coarse scale, seed+11
-    base_metal = multi_scale_noise(sh, [4, 8], [0.55, 0.45], seed + 11)
+    base_metal = multi_scale_noise(sh, [16, 32], [0.55, 0.45], seed + 11)
     # Pearl mid-coat layer (interference pigment) — medium scale, seed+73
-    pearl_mid = multi_scale_noise(sh, [20, 40], [0.55, 0.45], seed + 73)
+    pearl_mid = multi_scale_noise(sh, [32, 64], [0.55, 0.45], seed + 73)
     # Top clearcoat layer (gloss variation) — fine scale, seed+199
     clear_top = multi_scale_noise(sh, [40, 80], [0.55, 0.45], seed + 199)
     # M = 120 + base_metal*60 + pearl_mid*40 (range ~120-220)
@@ -193,7 +214,7 @@ def spec_metal_flake(shape, mask, seed, sm):
     """Metal flake -- heavy metallic with coarse visible flake sparkle. Like classic hot rod paint."""
     spec = np.zeros((shape[0], shape[1], 4), dtype=np.uint8)
     mf = multi_scale_noise(shape, [4, 8, 16, 32], [0.1, 0.2, 0.35, 0.35], seed+100)  # Visible flake
-    rf = multi_scale_noise(shape, [4, 8, 16], [0.3, 0.4, 0.3], seed+200)
+    rf = multi_scale_noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed+200)
     spec[:,:,0] = np.clip(240 * mask + 5 * (1-mask) + mf * 50 * sm * mask, 0, 255).astype(np.uint8)
     spec[:,:,1] = np.clip(15 * mask + 100 * (1-mask) + rf * 40 * sm * mask, 15, 255).astype(np.uint8)
     spec[:,:,2] = 16; spec[:,:,3] = 255
@@ -263,7 +284,7 @@ def spec_brushed_titanium(shape, mask, seed, sm):
     spec[:,:,0] = np.clip(180 * mask + 5 * (1-mask) + row_grain * 25 * sm * mask, 0, 255).astype(np.uint8)
     # Roughness dominated by grain direction: visible streaks of smooth/rough
     spec[:,:,1] = np.clip(70 * mask + 100 * (1-mask) + row_grain * 45 * sm * mask, 0, 255).astype(np.uint8)
-    spec[:,:,2] = 0; spec[:,:,3] = 255  # no clearcoat = raw metal look
+    spec[:,:,2] = 16; spec[:,:,3] = 255  # CC>=16, full alpha
     return spec
 
 def spec_anodized(shape, mask, seed, sm):
@@ -272,12 +293,12 @@ def spec_anodized(shape, mask, seed, sm):
     spec = np.zeros((shape[0], shape[1], 4), dtype=np.uint8)
     h, w = shape
     # Visible industrial grain texture
-    grain = multi_scale_noise(shape, [4, 8, 16], [0.3, 0.4, 0.3], seed+100)
+    grain = multi_scale_noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed+100)
     # Medium metallic: enough to reflect but not mirror-chrome
     spec[:,:,0] = np.clip(170 * mask + 5 * (1-mask) + grain * 20 * sm * mask, 0, 255).astype(np.uint8)
     # HIGH roughness base (80) with grain variation: gritty matte surface
     spec[:,:,1] = np.clip(80 * mask + 100 * (1-mask) + grain * 25 * sm * mask, 0, 255).astype(np.uint8)
-    spec[:,:,2] = 0; spec[:,:,3] = 255  # NO clearcoat = raw anodized look
+    spec[:,:,2] = 16; spec[:,:,3] = 255  # CC>=16, full alpha
     return spec
 
 def spec_hex_mesh(shape, mask, seed, sm):
@@ -316,7 +337,7 @@ def spec_frozen(shape, mask, seed, sm):
     mn = multi_scale_noise(shape, [8, 16, 32], [0.3, 0.4, 0.3], seed+100)  # Visible frost patches
     spec[:,:,0] = np.clip(225 * mask + 5 * (1-mask) + mn * 30 * sm * mask, 0, 255).astype(np.uint8)
     spec[:,:,1] = np.clip(140 * mask + 100 * (1-mask) + mn * 30 * sm * mask, 0, 255).astype(np.uint8)
-    spec[:,:,2] = 0; spec[:,:,3] = 255
+    spec[:,:,2] = 16; spec[:,:,3] = 255  # CC>=16, full alpha
     return spec
 
 def spec_carbon_fiber(shape, mask, seed, sm):
@@ -408,13 +429,11 @@ def spec_hammered(shape, mask, seed, sm):
         dimple_small[y_lo:y_hi, x_lo:x_hi] = np.maximum(
             dimple_small[y_lo:y_hi, x_lo:x_hi], dimple)
     # Upsample
-    dimple_img = Image.fromarray((dimple_small * 255).astype(np.uint8))
-    dimple_img = dimple_img.resize((w, h), Image.BILINEAR)
-    dimple_map = np.array(dimple_img).astype(np.float32) / 255.0
+    dimple_map = cv2.resize(dimple_small.astype(np.float32), (w, h), interpolation=cv2.INTER_LINEAR)
     # Dimple centers: smooth mirror. Flat areas between: matte rough
     spec[:,:,0] = np.clip((245 * dimple_map + 150 * (1-dimple_map)) * mask + 5 * (1-mask), 0, 255).astype(np.uint8)
     spec[:,:,1] = np.clip((8 * dimple_map + 120 * (1-dimple_map)) * mask + 100 * (1-mask), 0, 255).astype(np.uint8)
-    spec[:,:,2] = 0; spec[:,:,3] = 255  # no clearcoat = raw hammered metal
+    spec[:,:,2] = 16; spec[:,:,3] = 255  # CC>=16, full alpha  # no clearcoat = raw hammered metal
     return spec
 
 def spec_lightning(shape, mask, seed, sm):
@@ -462,10 +481,8 @@ def spec_lightning(shape, mask, seed, sm):
                     fx_hi = min(w, fork_px + fork_thick + 1)
                     bolt_map[fy_lo:fy_hi, fx_lo:fx_hi] = np.maximum(
                         bolt_map[fy_lo:fy_hi, fx_lo:fx_hi], 0.7)
-    # Slight blur to soften bolt edges (using PIL, no scipy dependency)
-    bolt_pil = Image.fromarray((bolt_map * 255).astype(np.uint8), 'L')
-    bolt_pil = bolt_pil.filter(ImageFilter.GaussianBlur(radius=1.5))
-    bolt_map = np.array(bolt_pil).astype(np.float32) / 255.0
+    # Slight blur to soften bolt edges (cv2 is 10x faster than PIL at 2048x2048)
+    bolt_map = cv2.GaussianBlur(bolt_map.astype(np.float32), (5, 5), 1.5)
     bolt_map = np.clip(bolt_map, 0, 1)
     # Background: dark matte. Bolts: chrome mirror = extreme contrast
     spec[:,:,0] = np.clip((255 * bolt_map + 80 * (1-bolt_map)) * mask + 5 * (1-mask), 0, 255).astype(np.uint8)
@@ -481,7 +498,8 @@ def spec_frost_bite(shape, mask, seed, sm):
     rn = multi_scale_noise(shape, [8, 16, 24], [0.3, 0.4, 0.3], seed+200)
     spec[:,:,0] = np.clip(230 * mask + 5 * (1-mask) + mn * 35 * sm * mask, 0, 255).astype(np.uint8)
     spec[:,:,1] = np.clip(160 * mask + 100 * (1-mask) + rn * 40 * sm * mask, 0, 255).astype(np.uint8)  # R=160 rougher than frozen
-    spec[:,:,2] = 0; spec[:,:,3] = 255  # CC=0 raw frozen metal, no clearcoat
+    spec[:,:,2] = 16  # CC>=16 raw frozen metal
+    spec[:,:,3] = 255  # Alpha = full spec mask
     return spec
 
 
@@ -502,8 +520,8 @@ def spec_battle_worn(shape, mask, seed, sm):
     spec[:,:,0] = np.clip(200 * mask + 5 * (1-mask) + mn * 30 * sm * mask + scratch_noise * 20 * sm * mask, 0, 255).astype(np.uint8)
     spec[:,:,1] = np.clip(50 * mask + 100 * (1-mask) + scratch_noise * 80 * sm * mask + mn * 40 * sm * mask, 0, 255).astype(np.uint8)
     # VARIABLE clearcoat: 0-16 based on scratch damage
-    cc_noise = np.clip((mn + 0.5) * 16, 0, 16)
-    spec[:,:,2] = np.clip(cc_noise * mask, 0, 16).astype(np.uint8)
+    cc_noise = np.clip((mn + 0.5) * 16, 16, 255)
+    spec[:,:,2] = np.clip(cc_noise * mask, 16, 255).astype(np.uint8)
     spec[:,:,3] = 255
     return spec
 
@@ -519,7 +537,7 @@ def spec_diamond_plate(shape, mask, seed, sm):
     # Diamonds are smooth mirror, flat areas are rough = huge visual contrast
     spec[:,:,0] = np.clip((240 * diamond + 180 * (1-diamond)) * mask + 5 * (1-mask), 0, 255).astype(np.uint8)
     spec[:,:,1] = np.clip((8 * diamond + 140 * (1 - diamond)) * mask + 100 * (1-mask), 0, 255).astype(np.uint8)
-    spec[:,:,2] = 0; spec[:,:,3] = 255  # no clearcoat, raw metal
+    spec[:,:,2] = 16; spec[:,:,3] = 255  # CC>=16, full alpha  # no clearcoat, raw metal
     return spec
 
 def spec_dragon_scale(shape, mask, seed, sm):
@@ -543,15 +561,18 @@ def spec_dragon_scale(shape, mask, seed, sm):
 def spec_worn_chrome(shape, mask, seed, sm):
     """Patchy chrome with worn areas -- all 3 channels variable."""
     spec = np.zeros((shape[0], shape[1], 4), dtype=np.uint8)
-    mn = multi_scale_noise(shape, [4, 8, 16], [0.2, 0.4, 0.4], seed+100)
+    mn = multi_scale_noise(shape, [16, 32, 64], [0.2, 0.4, 0.4], seed+100)
     wear = np.clip((mn + 0.3) * 1.5, 0, 1)  # patchy wear map
     # Chrome patches: high R, low G. Worn patches: lower R, higher G
     spec[:,:,0] = np.clip((255 * (1-wear) + 100 * wear) * mask + 5 * (1-mask), 0, 255).astype(np.uint8)
     spec[:,:,1] = np.clip((2 * (1-wear) + 120 * wear) * mask + 100 * (1-mask), 0, 255).astype(np.uint8)
     # Clearcoat worn through in damaged spots
-    cc = np.clip(16 * (1-wear), 0, 16)
-    spec[:,:,2] = np.clip(cc * mask, 0, 16).astype(np.uint8)
+    cc = np.clip(16 * (1-wear), 16, 255)
+    spec[:,:,2] = np.clip(cc * mask, 16, 255).astype(np.uint8)
     spec[:,:,3] = 255
+    # R≥15 roughness floor only where non-chrome (M<240)
+    non_chrome = spec[:,:,0] < 240
+    spec[:,:,1] = np.where(non_chrome, np.maximum(spec[:,:,1], 15), spec[:,:,1])
     return spec
 
 def spec_liquid_metal(shape, mask, seed, sm):
@@ -563,13 +584,14 @@ def spec_liquid_metal(shape, mask, seed, sm):
     spec[:,:,0] = np.clip(255 * mask + 5 * (1-mask), 0, 255).astype(np.uint8)
     pool = np.clip((wave + 0.5) * 1.3, 0, 1)
     spec[:,:,1] = np.clip((2 * (1-pool) + 50 * pool) * mask + 100 * (1-mask), 0, 255).astype(np.uint8)
-    spec[:,:,2] = 0; spec[:,:,3] = 255  # CC=0 raw liquid metal, no clearcoat
+    spec[:,:,2] = 16  # CC>=16 raw liquid metal
+    spec[:,:,3] = 255  # Alpha = full spec mask
     return spec
 
 def spec_plasma(shape, mask, seed, sm):
     """Electric plasma -- branching vein pattern visible as roughness contrast."""
     spec = np.zeros((shape[0], shape[1], 4), dtype=np.uint8)
-    n1 = multi_scale_noise(shape, [2, 4, 8, 16], [0.15, 0.25, 0.35, 0.25], seed+100)
+    n1 = multi_scale_noise(shape, [16, 32, 64, 128], [0.15, 0.25, 0.35, 0.25], seed+100)
     n2 = multi_scale_noise(shape, [1, 3, 6, 12], [0.2, 0.3, 0.3, 0.2], seed+200)
     veins = np.abs(n1 + n2 * 0.5)
     vein_mask_f = np.clip(1.0 - veins * 3.0, 0, 1) ** 2  # thin bright lines
@@ -584,10 +606,13 @@ def spec_ember_glow(shape, mask, seed, sm):
     spec = np.zeros((shape[0], shape[1], 4), dtype=np.uint8)
     mn = multi_scale_noise(shape, [8, 16, 32], [0.3, 0.4, 0.3], seed+100)
     hot_mask = np.clip((mn + 0.2) * 2.0, 0, 1)
-    spec[:,:,0] = np.clip((180 + hot_mask * 40) * mask + 5 * (1-mask), 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(40 * mask + 100 * (1-mask) + mn * 20 * sm * mask, 0, 255).astype(np.uint8)
-    spec[:,:,2] = 16  # Full clearcoat (iRacing: 0-15=OFF, 16=ON)
-    spec[:,:,3] = 255
+    M_val = np.clip((180 + hot_mask * 40) * mask + 5 * (1-mask), 0, 255)
+    R_val = np.clip(40 * mask + 100 * (1-mask) + mn * 20 * sm * mask, 0, 255)
+    # Iron rule: R >= 15 for non-chrome
+    R_val = np.where((M_val < 240) & (mask > 0.5), np.maximum(R_val, 15), R_val)
+    spec[:,:,0] = M_val.astype(np.uint8)
+    spec[:,:,1] = R_val.astype(np.uint8)
+    spec[:,:,2] = 16; spec[:,:,3] = 255
     return spec
 
 def spec_acid_wash(shape, mask, seed, sm):
@@ -598,8 +623,8 @@ def spec_acid_wash(shape, mask, seed, sm):
     spec[:,:,1] = np.clip(60 * mask + 100 * (1-mask) + etch * 60 * sm * mask, 0, 255).astype(np.uint8)
     # Clearcoat eaten away in heavily etched areas
     etch_depth = np.clip(np.abs(etch) * 2, 0, 1)
-    cc = np.clip(16 * (1 - etch_depth * 0.8), 0, 16)
-    spec[:,:,2] = np.clip(cc * mask, 0, 16).astype(np.uint8)
+    cc = np.clip(16 * (1 - etch_depth * 0.8), 16, 255)
+    spec[:,:,2] = np.clip(cc * mask, 16, 255).astype(np.uint8)
     spec[:,:,3] = 255
     return spec
 
@@ -641,18 +666,15 @@ def _forged_carbon_chunks(shape, seed):
     # Layer 1: large smooth blobs (the main chunk shapes) - tighter for realistic forged CF
     s1h, s1w = max(1, h // 24), max(1, w // 24)
     raw1 = rng.randn(s1h, s1w).astype(np.float32)
-    img1 = Image.fromarray(((raw1 + 3) / 6 * 255).clip(0, 255).astype(np.uint8))
-    n1 = np.array(img1.resize((int(w), int(h)), Image.BILINEAR)).astype(np.float32) / 255.0
+    n1 = cv2.resize(np.clip((raw1 + 3) / 6, 0, 1).astype(np.float32), (int(w), int(h)), interpolation=cv2.INTER_LINEAR)
     # Layer 2: medium detail (breaks up the blobs into angular sub-chunks)
     s2h, s2w = max(1, h // 12), max(1, w // 12)
     raw2 = rng.randn(s2h, s2w).astype(np.float32)
-    img2 = Image.fromarray(((raw2 + 3) / 6 * 255).clip(0, 255).astype(np.uint8))
-    n2 = np.array(img2.resize((int(w), int(h)), Image.BILINEAR)).astype(np.float32) / 255.0
+    n2 = cv2.resize(np.clip((raw2 + 3) / 6, 0, 1).astype(np.float32), (int(w), int(h)), interpolation=cv2.INTER_LINEAR)
     # Layer 3: fine grain for surface texture within chunks
     s3h, s3w = max(1, h // 4), max(1, w // 4)
     raw3 = rng.randn(s3h, s3w).astype(np.float32)
-    img3 = Image.fromarray(((raw3 + 3) / 6 * 255).clip(0, 255).astype(np.uint8))
-    n3 = np.array(img3.resize((w, h), Image.BILINEAR)).astype(np.float32) / 255.0
+    n3 = cv2.resize(np.clip((raw3 + 3) / 6, 0, 1).astype(np.float32), (w, h), interpolation=cv2.INTER_LINEAR)
     # Combine: large shapes dominate, medium adds sub-structure, fine adds grain
     combined = n1 * 0.55 + n2 * 0.35 + n3 * 0.10
     # Quantise into ~8-12 discrete chunk levels for sharp boundaries
@@ -687,7 +709,7 @@ def spec_cracked_ice(shape, mask, seed, sm):
     spec = np.zeros((shape[0], shape[1], 4), dtype=np.uint8)
     h, w = shape
     # Simplified crack pattern using noise zero-crossings
-    n1 = multi_scale_noise(shape, [4, 8, 16], [0.3, 0.4, 0.3], seed+100)
+    n1 = multi_scale_noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed+100)
     n2 = multi_scale_noise(shape, [3, 6, 12], [0.3, 0.4, 0.3], seed+200)
     # Cracks where noise is near zero
     crack1 = np.exp(-n1**2 * 20)
@@ -711,19 +733,27 @@ def spec_phantom(shape, mask, seed, sm):
     peek = multi_scale_noise(shape, [8, 16, 32], [0.3, 0.4, 0.3], seed+100)
     peek_map = np.clip((peek + 0.3) * 0.8, 0, 1)  # mostly mirrored, some peek spots
     # R = very high metallic everywhere (mirror behavior)
-    spec[:,:,0] = np.clip((245 - peek_map * 30 * sm) * mask + 5 * (1-mask), 0, 255).astype(np.uint8)
-    # G = the key: ultra-low roughness makes the color vanish into reflections
-    # Near 0 = perfect mirror (color invisible), 15-25 = slight diffuse (color peeks through)
-    spec[:,:,1] = np.clip((2 + peek_map * 20 * sm) * mask + 100 * (1-mask), 0, 255).astype(np.uint8)
+    M_raw = np.clip((245 - peek_map * 30 * sm), 0, 255)
+    R_raw = np.clip((2 + peek_map * 20 * sm), 0, 255)
+    # Enforce R≥15 for non-chrome pixels
+    R_raw = np.where(M_raw < 240, np.maximum(R_raw, 15), R_raw)
+    spec[:,:,0] = np.clip(M_raw * mask + 5 * (1-mask), 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.where(mask > 0.01, R_raw, 100).astype(np.uint8)
     # B = max clearcoat for glossy wet look
     spec[:,:,2] = 16
     spec[:,:,3] = 255
+    # R≥15 roughness floor only where non-chrome (M<240)
+    non_chrome = spec[:,:,0] < 240
+    spec[:,:,1] = np.where(non_chrome, np.maximum(spec[:,:,1], 15), spec[:,:,1])
     return spec
 
 def paint_phantom_fade(paint, shape, mask, seed, pm, bb):
     """Phantom paint -- slightly desaturate and brighten to enhance the mirror vanishing effect.
     The paint color becomes more 'ghostly' so when it does peek through reflections,
     it looks ethereal rather than solid."""
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     # Slight desaturation: push toward silver/white to enhance mirror
     gray = paint.mean(axis=2, keepdims=True)
@@ -732,7 +762,7 @@ def paint_phantom_fade(paint, shape, mask, seed, pm, bb):
     # Brighten slightly so the color reads cleaner when it peeks through
     paint = np.clip(paint + bb * 1.5 * pm * mask[:,:,np.newaxis], 0, 1)
     # Subtle noise shimmer
-    shimmer = multi_scale_noise(shape, [2, 4], [0.5, 0.5], seed + 500)
+    shimmer = multi_scale_noise(shape, [32, 64], [0.5, 0.5], seed + 500)
     paint = np.clip(paint + shimmer[:,:,np.newaxis] * 0.05 * pm * mask[:,:,np.newaxis], 0, 1)
     return paint
 
@@ -741,7 +771,7 @@ def spec_blackout(shape, mask, seed, sm):
     spec = np.zeros((shape[0], shape[1], 4), dtype=np.uint8)
     spec[:,:,0] = np.clip(30 * mask + 5 * (1-mask), 0, 255).astype(np.uint8)  # M=30 near-zero
     spec[:,:,1] = np.clip(220 * mask + 100 * (1-mask), 0, 255).astype(np.uint8)  # R=220 very rough
-    spec[:,:,2] = 0  # No clearcoat
+    spec[:,:,2] = 16  # CC>=16  # No clearcoat
     spec[:,:,3] = 255  # Full spec authority (A=255)
     return spec
 
@@ -751,6 +781,7 @@ def spec_blackout(shape, mask, seed, sm):
 # ================================================================
 
 def paint_none(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     return paint
 
 
@@ -762,10 +793,11 @@ def paint_infinite_warp(paint, shape, mask, seed, pm, bb):
     Physics: multi-octave domain-warped FBM drives brightness + saturation inversions.
     Topology: self-similar fractal warp — distinct from singularity (radial rings)
     and quantum_foam (pure noise, no paint mod)."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape[:2] if len(shape) > 2 else shape
     rng = np.random.RandomState(seed + 7741)
     # 5-octave FBM with domain warping for fractal recursion
-    n1 = multi_scale_noise((h, w), [2, 4, 8, 16, 32], [0.3, 0.25, 0.2, 0.15, 0.1], seed + 111)
+    n1 = multi_scale_noise((h, w), [16, 32, 64, 128, 256], [0.3, 0.25, 0.2, 0.15, 0.1], seed + 111)
     n2 = multi_scale_noise((h, w), [3, 6, 12, 24], [0.35, 0.3, 0.2, 0.15], seed + 222)
     # Domain warp: use n1 to warp coordinates for n2 — creates recursive self-similarity
     warp_strength = np.float32(0.12) * pm
@@ -792,6 +824,7 @@ def paint_infinite_warp(paint, shape, mask, seed, pm, bb):
 def paint_matte_flat(paint, shape, mask, seed, pm, bb):
     """Matte paint modifier: ~12% desaturation + slight darkening to produce chalky matte undertone.
     ADDED for WEAK-010: gives matte finish visually distinct chalky character vs gloss/satin."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     gray = paint.mean(axis=2, keepdims=True)
     # ~12% desaturation toward gray
     desat = paint * 0.88 + gray * 0.12
@@ -804,12 +837,13 @@ def paint_scuffed_satin_fn(paint, shape, mask, seed, pm, bb):
     """Scuffed satin paint modifier: slight desaturation + micro-abrasion darkening effect.
     ADDED for WEAK-015 FIX: scuffed surface should read duller/rougher than clean satin.
     Scuffing removes surface clarity — slight desaturation and random micro-dark spots."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape[:2] if len(shape) > 2 else shape
     gray = paint.mean(axis=2, keepdims=True)
     # ~8% desaturation — scuffing removes some color vibrancy
     desat = paint * 0.92 + gray * 0.08
     # Micro-abrasion spots: fine noise adds subtle darker scratch texture
-    micro_abrasion = multi_scale_noise((h, w), [2, 4, 8], [0.5, 0.3, 0.2], seed + 5900)
+    micro_abrasion = multi_scale_noise((h, w), [16, 32, 64], [0.5, 0.3, 0.2], seed + 5900)
     # Slight darkening at abrasion peaks (0-4% darkening) to simulate wear marks
     abrasion_darken = 1.0 - micro_abrasion * 0.04 * pm
     scuffed = np.clip(desat * abrasion_darken[:, :, np.newaxis], 0, 1)
@@ -821,9 +855,10 @@ def paint_liquid_wrap_fn(paint, shape, mask, seed, pm, bb):
     ADDED for WEAK-016 FIX: distinct from satin_wrap — rubber has fine Perlin micro-texture
     + slight darkening at 'stretch points' (simulated by noise gradient peaks).
     Satin_wrap: 85-90% saturation, directional sheen. Liquid_wrap: rubbery, no directional sheen."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape[:2] if len(shape) > 2 else shape
     # Fine Perlin noise for rubber compound particle variation texture
-    rubber_grain = multi_scale_noise((h, w), [2, 4, 8], [0.45, 0.35, 0.2], seed + 6300)
+    rubber_grain = multi_scale_noise((h, w), [16, 32, 64], [0.45, 0.35, 0.2], seed + 6300)
     # High-freq gradient noise to simulate stretch point darkening
     stretch_pts = multi_scale_noise((h, w), [1, 2, 3], [0.5, 0.3, 0.2], seed + 6301)
     # Slight darkening at stretch peaks (high curvature): 0-5% darker at gradient peaks
@@ -839,6 +874,9 @@ def paint_liquid_wrap_fn(paint, shape, mask, seed, pm, bb):
 
 def paint_subtle_flake(paint, shape, mask, seed, pm, bb):
     """Fine metallic flake -- visible sparkle texture on the base paint."""
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     for c in range(3):
         flake = multi_scale_noise(shape, [1, 2, 4], [0.4, 0.35, 0.25], seed + c * 17)
         paint[:,:,c] = np.clip(paint[:,:,c] + flake * 0.10 * pm * mask, 0, 1)
@@ -847,13 +885,16 @@ def paint_subtle_flake(paint, shape, mask, seed, pm, bb):
 
 def paint_fine_sparkle(paint, shape, mask, seed, pm, bb):
     """Fine sparkle points -- candy/pearl glitter effect."""
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     flake = multi_scale_noise(shape, [1], [1.0], seed + 50)
     h, w = shape
     rng = np.random.RandomState(seed + 77)
     sparkle = rng.random((h, w)).astype(np.float32)
     sparkle = np.where(sparkle > 0.93, sparkle * 0.15 * pm, 0)  # More visible sparkle dots
-    for c in range(3):
-        paint[:,:,c] = np.clip(paint[:,:,c] + flake * 0.08 * pm * mask + sparkle * mask, 0, 1)
+    add_val = (flake * 0.08 * pm * mask + sparkle * mask)[:, :, np.newaxis]
+    paint[:, :, :3] = np.clip(paint[:, :, :3] + add_val, 0, 1)
     paint = np.clip(paint + bb * 0.8 * mask[:,:,np.newaxis], 0, 1)
     return paint
 
@@ -864,6 +905,7 @@ def paint_pearlescent_white_fn(paint, shape, mask, seed, pm, bb):
     1. Pushes base color slightly toward white (value +0.05-0.08).
     2. Uses pearl_mid noise (seed+73) to add blue-green HSV hue rotation shimmer.
     3. Small hue shift (<=30 deg) since this is WHITE pearl -- keeps it white, not rainbow."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     if pm == 0.0:
         return paint
     h, w = shape[:2] if len(shape) > 2 else shape
@@ -893,8 +935,13 @@ def paint_pearlescent_white_fn(paint, shape, mask, seed, pm, bb):
     new_rgb = np.stack(hsv_to_rgb_vec(new_hue, sat, val), axis=2)
     blend = np.clip(pm * 0.55, 0, 1)
     result = paint_white * (1.0 - mask3 * blend) + new_rgb * (mask3 * blend)
-    result = np.clip(result + bb[:,:,np.newaxis] * 0.20 * pm * mask3 if hasattr(bb, 'ndim') and bb.ndim == 2
-                     else result + float(bb) * 0.20 * pm * mask3, 0, 1)
+    if hasattr(bb, 'ndim') and bb.ndim == 3:
+        bb_val = np.mean(bb[:,:,:3], axis=2)
+        result = np.clip(result + bb_val[:,:,np.newaxis] * 0.20 * pm * mask3, 0, 1)
+    elif hasattr(bb, 'ndim') and bb.ndim == 2:
+        result = np.clip(result + bb[:,:,np.newaxis] * 0.20 * pm * mask3, 0, 1)
+    else:
+        result = np.clip(result + float(np.mean(bb)) * 0.20 * pm * mask3, 0, 1)
     return result.astype(np.float32)
 
 
@@ -902,10 +949,14 @@ def paint_coarse_flake(paint, shape, mask, seed, pm, bb):
     """Coarse metallic flake -- holographic/prismatic color shift visible in paint.
     Visible flake sparkle that adds metallic character to the base paint.
     The spec map handles the real metallic/flake appearance."""
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
+    paint = _ensure_3ch(paint)
     h, w = shape
-    r_flake = multi_scale_noise(shape, [2, 4, 8], [0.3, 0.4, 0.3], seed+11)
-    g_flake = multi_scale_noise(shape, [2, 4, 8], [0.3, 0.4, 0.3], seed+22)
-    b_flake = multi_scale_noise(shape, [2, 4, 8], [0.3, 0.4, 0.3], seed+33)
+    r_flake = multi_scale_noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed+11)
+    g_flake = multi_scale_noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed+22)
+    b_flake = multi_scale_noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed+33)
     strength = 0.12 * pm  # Visible flake - this IS the "heavy visible" base
     paint[:,:,0] = np.clip(paint[:,:,0] + r_flake * strength * mask, 0, 1)
     paint[:,:,1] = np.clip(paint[:,:,1] + g_flake * strength * mask, 0, 1)
@@ -920,41 +971,43 @@ def paint_coarse_flake(paint, shape, mask, seed, pm, bb):
 
 def paint_carbon_darken(paint, shape, mask, seed, pm, bb):
     """Carbon fiber weave -- visible crosshatch darkening matching the spec pattern.
-    Uses same 6px weave_size as texture_carbon_fiber for alignment."""
+    weave_size=20 matches texture_carbon_fiber for alignment."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     y, x = get_mgrid((h, w))
-    weave_size = 6  # Must match texture_carbon_fiber
-    # Same 2x2 twill pattern as spec function
+    weave_size = 20  # Must match texture_carbon_fiber
+    # Same 2x2 twill pattern as spec/texture functions
     tow_x = (x % (weave_size * 2)) / (weave_size * 2)
     tow_y = (y % (weave_size * 2)) / (weave_size * 2)
     horiz = np.sin(tow_x * np.pi * 2) * 0.5 + 0.5
     vert = np.sin(tow_y * np.pi * 2) * 0.5 + 0.5
     twill_cell = ((x // weave_size + y // weave_size) % 2).astype(np.float32)
     cf = twill_cell * horiz + (1 - twill_cell) * vert
-    cf = np.clip(cf * 1.3 - 0.15, 0, 1)
+    cf = np.clip(cf * 1.5 - 0.25, 0, 1)  # Boosted contrast for visibility
     # Adaptive: dark paint gets lightened weave, light paint gets darkened weave
     brightness = paint[:,:,0]*0.299 + paint[:,:,1]*0.587 + paint[:,:,2]*0.114
     is_dark = np.clip((0.2 - brightness) / 0.15, 0, 1)  # smooth transition
-    darken_strength = 0.10 * pm
-    lighten_strength = 0.07 * pm
+    darken_strength = 0.18 * pm  # Boosted from 0.10 for visible weave
+    lighten_strength = 0.12 * pm  # Boosted from 0.07
     for c in range(3):
         paint[:,:,c] = np.clip(paint[:,:,c]
             - cf * darken_strength * (1 - is_dark) * mask
             + cf * lighten_strength * is_dark * mask, 0, 1)
-    # Weave peak sheen - subtle glossy highlight on raised threads
-    sheen = np.clip(cf - 0.4, 0, 0.6) / 0.6
-    paint = np.clip(paint + sheen[:,:,np.newaxis] * 0.05 * pm * mask[:,:,np.newaxis], 0, 1)
+    # Weave peak sheen - glossy highlight on raised threads
+    sheen = np.clip(cf - 0.3, 0, 0.7) / 0.7
+    paint = np.clip(paint + sheen[:,:,np.newaxis] * 0.08 * pm * mask[:,:,np.newaxis], 0, 1)
     return paint
 
 def paint_chrome_brighten(paint, shape, mask, seed, pm, bb):
     """Chrome mirror effect -- pushes paint toward bright reflective silver.
     SUBTLER than before: adds a chrome sheen without destroying the base paint.
     The spec map does the heavy lifting for chrome appearance."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     blend = 0.22 * pm  # Bumped from 0.15 - PBR research: metallic albedo needs brighter for chrome to read correctly
     for c in range(3):
         paint[:,:,c] = paint[:,:,c] * (1 - mask * blend) + 0.92 * mask * blend
     h, w = shape
-    reflection = multi_scale_noise(shape, [4, 8, 16], [0.3, 0.4, 0.3], seed + 150)
+    reflection = multi_scale_noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + 150)
     paint = np.clip(paint + reflection[:,:,np.newaxis] * 0.04 * pm * mask[:,:,np.newaxis], 0, 1)
     return paint
 
@@ -969,6 +1022,7 @@ def paint_chrome_brighten(paint, shape, mask, seed, pm, bb):
 
 def paint_scratch_marks(paint, shape, mask, seed, pm, bb):
     """Battle-worn scratches -- directional linear marks across the surface."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     rng = np.random.RandomState(seed + 300)
     scratches = np.zeros((h, w), dtype=np.float32)
@@ -999,6 +1053,10 @@ def paint_scratch_marks(paint, shape, mask, seed, pm, bb):
 
 def paint_diamond_emboss(paint, shape, mask, seed, pm, bb):
     """Diamond plate -- geometric raised diamond shapes visible on paint."""
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
+    paint = _ensure_3ch(paint)
     h, w = shape
     y, x = get_mgrid((h, w))
     diamond_size = 16
@@ -1015,6 +1073,10 @@ def paint_diamond_emboss(paint, shape, mask, seed, pm, bb):
 
 def paint_scale_pattern(paint, shape, mask, seed, pm, bb):
     """Dragon scales -- overlapping hexagonal scale pattern with per-scale color shift."""
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
+    paint = _ensure_3ch(paint)
     h, w = shape
     scale_size = 24
     y, x = get_mgrid((h, w))
@@ -1029,7 +1091,7 @@ def paint_scale_pattern(paint, shape, mask, seed, pm, bb):
     # Per-scale color variation (visible shimmer)
     color_shift = np.zeros((h, w, 3), dtype=np.float32)
     for c in range(3):
-        noise = multi_scale_noise(shape, [4, 8], [0.5, 0.5], seed + 401 + c)
+        noise = multi_scale_noise(shape, [16, 32], [0.5, 0.5], seed + 401 + c)
         color_shift[:,:,c] = noise * 0.08 * pm
     # Scale centers shimmer bright, edges are darker grooves
     center_boost = (1 - dist) * 0.12 * pm
@@ -1043,22 +1105,33 @@ def paint_scale_pattern(paint, shape, mask, seed, pm, bb):
     return paint
 
 def paint_patina(paint, shape, mask, seed, pm, bb):
-    """Worn chrome patina -- greenish/brownish oxidation in rough areas."""
+    """Worn chrome patina -- chrome islands, oxidation blooms, and hairline wear."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
-    # Generate patchy oxidation map
-    patina_map = multi_scale_noise(shape, [4, 8, 16], [0.2, 0.4, 0.4], seed + 500)
-    patina_mask = np.clip((patina_map + 0.3) * 1.5, 0, 1)  # biased toward more patina
-    # Patina tint: greenish-brown (oxidized copper/chrome)
-    tint_r = -0.04 * pm  # less red
-    tint_g = 0.02 * pm   # slight green
-    tint_b = -0.03 * pm  # less blue
-    paint[:,:,0] = np.clip(paint[:,:,0] + tint_r * patina_mask * mask, 0, 1)
-    paint[:,:,1] = np.clip(paint[:,:,1] + tint_g * patina_mask * mask, 0, 1)
-    paint[:,:,2] = np.clip(paint[:,:,2] + tint_b * patina_mask * mask, 0, 1)
+    y, x = get_mgrid(shape)
+    patina_map = multi_scale_noise(shape, [8, 16, 32, 64], [0.18, 0.27, 0.32, 0.23], seed + 500)
+    patina_mask = np.clip((patina_map + 0.18) * 1.65, 0, 1)
+    rng = np.random.RandomState(seed + 503)
+    micro = rng.random(shape).astype(np.float32)
+    scratch_wave = np.abs(np.sin((x / max(w, 1) + patina_map * 0.025) * np.pi * 165.0))
+    scratches = np.clip(1.0 - scratch_wave / 0.045, 0, 1) ** 2
+    chrome_flecks = np.where(micro > 0.90, (micro - 0.90) * 10.0, 0.0).astype(np.float32)
+    oxide_dust = np.where(micro < 0.14, (0.14 - micro) / 0.14, 0.0).astype(np.float32)
+
+    gray = paint.mean(axis=2, keepdims=True)
+    paint = paint * (1 - 0.22 * pm * mask[:, :, np.newaxis]) + gray * 0.22 * pm * mask[:, :, np.newaxis]
+    # Brown/green oxide in worn areas, plus silver flecks where chrome survives.
+    paint[:, :, 0] = np.clip(paint[:, :, 0] + (-0.055 * patina_mask + 0.12 * chrome_flecks + 0.035 * oxide_dust) * pm * mask, 0, 1)
+    paint[:, :, 1] = np.clip(paint[:, :, 1] + (0.085 * patina_mask + 0.12 * chrome_flecks + 0.030 * oxide_dust) * pm * mask, 0, 1)
+    paint[:, :, 2] = np.clip(paint[:, :, 2] + (-0.045 * patina_mask + 0.13 * chrome_flecks - 0.035 * oxide_dust) * pm * mask, 0, 1)
+    paint = np.clip(paint + (scratches * 0.075 + chrome_flecks * 0.045 - oxide_dust * 0.025)[:, :, np.newaxis] * pm * mask[:, :, np.newaxis], 0, 1)
     return paint
 
 def paint_liquid_reflect(paint, shape, mask, seed, pm, bb):
     """Liquid metal -- large flowing wave reflections like mercury."""
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     wave1 = multi_scale_noise(shape, [16, 32], [0.4, 0.6], seed + 600)
     wave2 = multi_scale_noise(shape, [24, 48], [0.5, 0.5], seed + 601)
@@ -1074,8 +1147,9 @@ def paint_liquid_reflect(paint, shape, mask, seed, pm, bb):
 
 def paint_plasma_veins(paint, shape, mask, seed, pm, bb):
     """Plasma veins -- branching lightning/vein patterns that glow."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
-    n1 = multi_scale_noise(shape, [2, 4, 8, 16], [0.15, 0.25, 0.35, 0.25], seed + 700)
+    n1 = multi_scale_noise(shape, [16, 32, 64, 128], [0.15, 0.25, 0.35, 0.25], seed + 700)
     n2 = multi_scale_noise(shape, [1, 3, 6, 12], [0.2, 0.3, 0.3, 0.2], seed + 701)
     veins = np.abs(n1 + n2 * 0.5)
     vein_mask = np.clip(1.0 - veins * 3.0, 0, 1)
@@ -1090,6 +1164,7 @@ def paint_plasma_veins(paint, shape, mask, seed, pm, bb):
 
 def paint_ember_glow(paint, shape, mask, seed, pm, bb):
     """Ember glow -- hot spots where paint appears to glow from within."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     # Generate hot spot map
     hotspots = multi_scale_noise(shape, [8, 16, 32], [0.3, 0.4, 0.3], seed + 800)
@@ -1109,6 +1184,7 @@ def paint_ember_glow(paint, shape, mask, seed, pm, bb):
 
 def paint_acid_etch(paint, shape, mask, seed, pm, bb):
     """Acid wash -- corroded erosion patterns with desaturation."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     # Heavy splotchy erosion pattern
     etch = multi_scale_noise(shape, [4, 8, 16, 32], [0.15, 0.25, 0.35, 0.25], seed + 900)
@@ -1124,6 +1200,10 @@ def paint_acid_etch(paint, shape, mask, seed, pm, bb):
 def paint_hologram_lines(paint, shape, mask, seed, pm, bb):
     """Hologram scanlines -- horizontal line pattern with chromatic aberration.
     Scanline thickness scales with resolution for visibility at 2048+."""
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
+    paint = _ensure_3ch(paint)
     h, w = shape
     y = np.arange(h)
     # Scale scanline period to match texture_hologram (~80 bands)
@@ -1146,6 +1226,7 @@ def paint_hologram_lines(paint, shape, mask, seed, pm, bb):
 
 def paint_interference_shift(paint, shape, mask, seed, pm, bb):
     """Thin-film interference -- actual hue rotation creating rainbow bands."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     y, x = get_mgrid((h, w))
     # Large-scale sine waves for rainbow band direction
@@ -1184,6 +1265,7 @@ def paint_interference_shift(paint, shape, mask, seed, pm, bb):
 def paint_forged_carbon(paint, shape, mask, seed, pm, bb):
     """Forged carbon - darkens toward carbon black with per-chunk brightness variation.
     Real forged carbon is almost black with subtle tonal shifts between fiber chunks."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     chunks, fine = _forged_carbon_chunks(shape, seed + 1000)
     mask3 = mask[:,:,np.newaxis]
@@ -1195,8 +1277,7 @@ def paint_forged_carbon(paint, shape, mask, seed, pm, bb):
     # Step 2: Per-chunk tonal variation - some chunks slightly lighter/warmer
     # This creates the distinctive forged carbon "swirl" look
     chunk_brightness = (chunks - 0.5) * 0.04 * pm  # subtle +-0.04 brightness shift
-    for c in range(3):
-        paint[:,:,c] = np.clip(paint[:,:,c] + chunk_brightness * mask, 0, 1)
+    paint[:, :, :3] = np.clip(paint[:, :, :3] + (chunk_brightness * mask)[:, :, np.newaxis], 0, 1)
     # Step 3: Very subtle warm/cool shift per chunk (some chunks slightly blue, some warm)
     warm_shift = (chunks > 0.5).astype(np.float32) * 0.008 * pm
     cool_shift = (chunks <= 0.5).astype(np.float32) * 0.005 * pm
@@ -1206,6 +1287,7 @@ def paint_forged_carbon(paint, shape, mask, seed, pm, bb):
 
 def paint_ice_cracks(paint, shape, mask, seed, pm, bb):
     """Cracked ice -- Voronoi crack network with blue tint."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     rng = np.random.RandomState(seed + 1100)
     # Generate Voronoi seed points
@@ -1227,9 +1309,7 @@ def paint_ice_cracks(paint, shape, mask, seed, pm, bb):
     # Crack = where dist1 ~ dist2 (boundary between cells)
     crack_raw = np.clip(1.0 - (dist2 - dist1) / 8.0, 0, 1)
     # Upsample back to full resolution
-    crack_img = Image.fromarray((crack_raw * 255).astype(np.uint8))
-    crack_img = crack_img.resize((w, h), Image.BILINEAR)
-    cracks = np.array(crack_img).astype(np.float32) / 255.0
+    cracks = cv2.resize(crack_raw.astype(np.float32), (w, h), interpolation=cv2.INTER_LINEAR)
     # Dark crack lines
     paint = np.clip(paint - cracks[:,:,np.newaxis] * 0.1 * pm * mask[:,:,np.newaxis], 0, 1)
     # Blue tint on ice surfaces (non-crack areas)
@@ -1241,20 +1321,27 @@ def paint_ice_cracks(paint, shape, mask, seed, pm, bb):
 
 def paint_stardust_sparkle(paint, shape, mask, seed, pm, bb):
     """Stardust -- scattered bright pinpoint sparkles across the paint surface."""
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
+    paint = _ensure_3ch(paint)
     h, w = shape
     rng = np.random.RandomState(seed + 1200)
     sparkles = rng.random((h, w)).astype(np.float32)
     # Sparse bright pinpoints (matching the star density in spec)
     star_mask = (sparkles > (1.0 - 0.02)).astype(np.float32)
     # Stars brighten the paint dramatically at their point
-    for c in range(3):
-        paint[:,:,c] = np.clip(paint[:,:,c] + star_mask * 0.35 * pm * mask, 0, 1)
+    paint[:, :, :3] = np.clip(paint[:, :, :3] + (star_mask * 0.35 * pm * mask)[:, :, np.newaxis], 0, 1)
     # General subtle brightness boost
     paint = np.clip(paint + bb * 1.0 * mask[:,:,np.newaxis], 0, 1)
     return paint
 
 def paint_hex_emboss(paint, shape, mask, seed, pm, bb):
     """Hex mesh -- honeycomb wire pattern visible in the paint with light/shadow."""
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
+    paint = _ensure_3ch(paint)
     h, w = shape
     y, x = get_mgrid((h, w))
     hex_size = 24
@@ -1278,6 +1365,10 @@ def paint_hex_emboss(paint, shape, mask, seed, pm, bb):
 
 def paint_ripple_reflect(paint, shape, mask, seed, pm, bb):
     """Ripple -- concentric ring reflections like water surface."""
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
+    paint = _ensure_3ch(paint)
     h, w = shape
     y, x = get_mgrid((h, w))
     rng = np.random.RandomState(seed + 1300)
@@ -1303,6 +1394,10 @@ def paint_ripple_reflect(paint, shape, mask, seed, pm, bb):
 
 def paint_hammered_dimples(paint, shape, mask, seed, pm, bb):
     """Hammered -- dimple indentation pattern visible in the paint."""
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
+    paint = _ensure_3ch(paint)
     h, w = shape
     rng = np.random.RandomState(seed + 1400)
     num_dimples = 400
@@ -1329,9 +1424,7 @@ def paint_hammered_dimples(paint, shape, mask, seed, pm, bb):
         dimple = np.clip(1.0 - dist / dr, 0, 1) ** 2
         dimple_small[y_lo:y_hi, x_lo:x_hi] = np.maximum(
             dimple_small[y_lo:y_hi, x_lo:x_hi], dimple)
-    dimple_img = Image.fromarray((dimple_small * 255).astype(np.uint8))
-    dimple_img = dimple_img.resize((w, h), Image.BILINEAR)
-    dimple_map = np.array(dimple_img).astype(np.float32) / 255.0
+    dimple_map = cv2.resize(dimple_small.astype(np.float32), (w, h), interpolation=cv2.INTER_LINEAR)
     # Dimple centers catch light, edges are dark grooves
     for c in range(3):
         paint[:,:,c] = np.clip(paint[:,:,c]
@@ -1342,6 +1435,7 @@ def paint_hammered_dimples(paint, shape, mask, seed, pm, bb):
 
 def paint_lightning_glow(paint, shape, mask, seed, pm, bb):
     """Lightning -- bolt paths glow bright white/blue against the paint."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     rng = np.random.RandomState(seed + 1500)
     bolt_map = np.zeros((h, w), dtype=np.float32)
@@ -1382,6 +1476,9 @@ def paint_lightning_glow(paint, shape, mask, seed, pm, bb):
 
 def paint_brushed_grain(paint, shape, mask, seed, pm, bb):
     """Brushed titanium -- horizontal grain lines visible in the paint."""
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     rng = np.random.RandomState(seed + 1600)
     row_grain = rng.randn(h, 1).astype(np.float32) * 0.7
@@ -1400,16 +1497,17 @@ def paint_brushed_grain(paint, shape, mask, seed, pm, bb):
 
 def paint_ceramic_gloss(paint, shape, mask, seed, pm, bb):
     """Ceramic coating - ultra-deep wet gloss effect."""
-    # Saturate colors slightly and add very smooth reflection
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
+    bb_2d = np.mean(bb[:,:,:3], axis=2) if hasattr(bb, 'ndim') and bb.ndim == 3 else (bb if hasattr(bb, 'ndim') and bb.ndim == 2 else np.full(paint.shape[:2], float(np.mean(bb)) if not np.isscalar(bb) else float(bb), dtype=np.float32))
     brightness = paint[:,:,0]*0.299 + paint[:,:,1]*0.587 + paint[:,:,2]*0.114
     for c in range(3):
-        # Boost saturation relative to luminance
         diff = paint[:,:,c] - brightness
-        paint[:,:,c] = np.clip(brightness + diff * (1.0 + 0.15 * pm) + bb * 1.5, 0, 1) * mask[:,:] + paint[:,:,c] * (1 - mask)
+        paint[:,:,c] = np.clip(brightness + diff * (1.0 + 0.15 * pm) + bb_2d * 1.5, 0, 1) * mask[:,:] + paint[:,:,c] * (1 - mask)
     return paint
 
 def paint_satin_wrap(paint, shape, mask, seed, pm, bb):
     """Satin vinyl wrap - slightly desaturated, uniform matte sheen."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     brightness = paint[:,:,0]*0.299 + paint[:,:,1]*0.587 + paint[:,:,2]*0.114
     for c in range(3):
         diff = paint[:,:,c] - brightness
@@ -1418,6 +1516,7 @@ def paint_satin_wrap(paint, shape, mask, seed, pm, bb):
 
 def paint_primer_flat(paint, shape, mask, seed, pm, bb):
     """Primer - desaturate and push toward flat gray."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     brightness = paint[:,:,0]*0.299 + paint[:,:,1]*0.587 + paint[:,:,2]*0.114
     gray_blend = 0.5 * pm
     for c in range(3):
@@ -1431,6 +1530,9 @@ def paint_primer_flat(paint, shape, mask, seed, pm, bb):
 
 def paint_warm_metal(paint, shape, mask, seed, pm, bb):
     """Warm metallic shift - push toward copper/gold tones."""
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     for c in range(3):
         shift = [0.06, 0.02, -0.03][c]  # warm: more red/green, less blue
         flake = multi_scale_noise(shape, [1, 2, 4], [0.4, 0.35, 0.25], seed + c * 17)
@@ -1440,6 +1542,9 @@ def paint_warm_metal(paint, shape, mask, seed, pm, bb):
 
 def paint_chameleon_shift(paint, shape, mask, seed, pm, bb):
     """Chameleon color-shift - visible smooth color bands rotating hue across surface."""
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     y, x = get_mgrid((h, w))
     # Spatial angle field - pm controls BLEND STRENGTH, not frequency
@@ -1467,6 +1572,7 @@ def paint_tricolore_shift(paint, shape, mask, seed, pm, bb):
     Uses bb to create three angular zones with smooth transitions between them,
     giving the appearance of a paint that shows three distinct colors depending
     on the viewing angle. Ultra-premium feel."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     if pm == 0.0:
         return paint
     h, w = shape
@@ -1522,6 +1628,7 @@ def paint_carbon_weave(paint, shape, mask, seed, pm, bb):
     """Carbon Weave -- visible diagonal twill weave pattern in the paint channel.
     Creates the distinctive 2x2 twill carbon fiber pattern with alternating
     over/under thread bundles at +45/-45 degrees. Subtle but clearly identifiable."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     if pm == 0.0:
         return paint
     h, w = shape
@@ -1563,7 +1670,7 @@ def paint_carbon_weave(paint, shape, mask, seed, pm, bb):
     )
 
     # Add fine noise within threads for fiber texture
-    fiber_noise = multi_scale_noise(shape, [2, 4], [0.6, 0.4], seed + 8900)
+    fiber_noise = multi_scale_noise(shape, [32, 64], [0.6, 0.4], seed + 8900)
     fiber_texture = np.clip(fiber_noise * 0.5 + 0.5, 0, 1) * 0.08
 
     # Combine into weave pattern
@@ -1589,6 +1696,7 @@ def paint_carbon_weave(paint, shape, mask, seed, pm, bb):
 
 def paint_pinstripe(paint, shape, mask, seed, pm, bb):
     """Pinstripe - thin regular lines lighten/darken paint."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     y, x = get_mgrid((h, w))
     stripe = ((y % 16) < 2).astype(np.float32)
@@ -1598,12 +1706,12 @@ def paint_pinstripe(paint, shape, mask, seed, pm, bb):
 
 def paint_camo_pattern(paint, shape, mask, seed, pm, bb):
     """Camo - splinter blocks shift paint toward green/tan/brown."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     rng = np.random.RandomState(seed + 700)
     h, w = shape
     block_h, block_w = max(1, h // 16), max(1, w // 16)
     raw = rng.randint(0, 3, (block_h, block_w)).astype(np.float32)
-    img = Image.fromarray((raw * 127).astype(np.uint8))
-    blocks = np.array(img.resize((w, h), Image.NEAREST)).astype(np.float32) / 254.0
+    blocks = cv2.resize((raw * 127.0 / 254.0).astype(np.float32), (w, h), interpolation=cv2.INTER_NEAREST)
     # 3 camo tones: dark, medium, light
     for c in range(3):
         tone_shift = [[-0.1, 0.0, 0.05], [-0.05, 0.04, 0.06], [-0.08, -0.02, 0.0]][c]
@@ -1613,6 +1721,7 @@ def paint_camo_pattern(paint, shape, mask, seed, pm, bb):
 
 def paint_wood_grain(paint, shape, mask, seed, pm, bb):
     """Wood grain - warm directional streaks."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     rng = np.random.RandomState(seed + 800)
     # Horizontal flowing grain
@@ -1628,6 +1737,7 @@ def paint_wood_grain(paint, shape, mask, seed, pm, bb):
 
 def paint_snake_emboss(paint, shape, mask, seed, pm, bb):
     """Snake skin - elongated scale edge darkening."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     y, x = get_mgrid((h, w))
     scale_w, scale_h = 12, 18
@@ -1643,6 +1753,7 @@ def paint_snake_emboss(paint, shape, mask, seed, pm, bb):
 
 def paint_tread_darken(paint, shape, mask, seed, pm, bb):
     """Tire tread - V-groove darkening in directional pattern."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     y, x = get_mgrid((h, w))
     groove_period = 20
@@ -1654,6 +1765,7 @@ def paint_tread_darken(paint, shape, mask, seed, pm, bb):
 
 def paint_circuit_glow(paint, shape, mask, seed, pm, bb):
     """Circuit board - trace lines glow slightly."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     y, x = get_mgrid((h, w))
     # Orthogonal grid lines
@@ -1667,6 +1779,7 @@ def paint_circuit_glow(paint, shape, mask, seed, pm, bb):
 
 def paint_mosaic_tint(paint, shape, mask, seed, pm, bb):
     """Mosaic - Voronoi cells get slight random tint shifts."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     rng = np.random.RandomState(seed + 900)
     num_cells = 80
@@ -1685,8 +1798,7 @@ def paint_mosaic_tint(paint, shape, mask, seed, pm, bb):
                                   np.broadcast_to(xg, (sh, sw)).ravel()])
     _, nearest_flat = tree.query(query_pts, k=1)
     nearest = nearest_flat.reshape(sh, sw).astype(np.uint8)
-    nearest_img = Image.fromarray(nearest)
-    nearest_full = np.array(nearest_img.resize((w, h), Image.NEAREST))
+    nearest_full = cv2.resize(nearest, (w, h), interpolation=cv2.INTER_NEAREST)
     for c in range(3):
         shift = tints[nearest_full, c]
         paint[:,:,c] = np.clip(paint[:,:,c] + shift * mask, 0, 1)
@@ -1694,7 +1806,8 @@ def paint_mosaic_tint(paint, shape, mask, seed, pm, bb):
 
 def paint_lava_glow(paint, shape, mask, seed, pm, bb):
     """Lava flow - hot cracks glow orange/red."""
-    mn = multi_scale_noise(shape, [4, 8, 16], [0.3, 0.4, 0.3], seed+100)
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
+    mn = multi_scale_noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed+100)
     cracks = np.exp(-mn**2 * 15)
     hot = np.clip(cracks * 2, 0, 1)
     paint[:,:,0] = np.clip(paint[:,:,0] + hot * 0.15 * pm * mask, 0, 1)  # red glow
@@ -1704,24 +1817,30 @@ def paint_lava_glow(paint, shape, mask, seed, pm, bb):
 
 def paint_rain_droplets(paint, shape, mask, seed, pm, bb):
     """Rain drops - tiny bright circular highlights scattered on surface."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     rng = np.random.RandomState(seed + 1100)
-    num_drops = int(200 * pm)
+    dim = min(h, w)
+    num_drops = int(max(300, dim * dim // 300) * pm)  # Scale with canvas size
     for _ in range(num_drops):
-        dy, dx, dr = rng.randint(0, h), rng.randint(0, w), rng.randint(2, 5)
+        dy, dx = rng.randint(0, h), rng.randint(0, w)
+        dr = rng.randint(max(2, dim // 400), max(4, dim // 200))  # Scale drop size
         y_lo = max(0, dy - dr); y_hi = min(h, dy + dr + 1)
         x_lo = max(0, dx - dr); x_hi = min(w, dx + dr + 1)
+        if y_hi <= y_lo or x_hi <= x_lo: continue
         yg, xg = np.mgrid[y_lo:y_hi, x_lo:x_hi]
-        dist = np.sqrt((yg - dy)**2 + (xg - dx)**2)
+        dist = np.sqrt((yg - dy)**2 + (xg - dx)**2).astype(np.float32)
         drop = np.clip(1.0 - dist / dr, 0, 1) ** 2
+        bright = rng.uniform(0.15, 0.30)  # Stronger highlight (was 0.08)
         for c in range(3):
             region = paint[y_lo:y_hi, x_lo:x_hi, c]
             m = mask[y_lo:y_hi, x_lo:x_hi]
-            paint[y_lo:y_hi, x_lo:x_hi, c] = np.clip(region + drop * 0.08 * m, 0, 1)
+            paint[y_lo:y_hi, x_lo:x_hi, c] = np.clip(region + drop * bright * m, 0, 1)
     return paint
 
 def paint_barbed_scratch(paint, shape, mask, seed, pm, bb):
     """Barbed wire - sharp scratch marks at regular intervals."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     y, x = get_mgrid((h, w))
     # Diagonal slash marks
@@ -1734,6 +1853,7 @@ def paint_barbed_scratch(paint, shape, mask, seed, pm, bb):
 
 def paint_chainmail_emboss(paint, shape, mask, seed, pm, bb):
     """Chainmail - interlocking ring edge shadows."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     y, x = get_mgrid((h, w))
     ring_size = 10
@@ -1752,6 +1872,7 @@ def paint_chainmail_emboss(paint, shape, mask, seed, pm, bb):
 
 def paint_brick_mortar(paint, shape, mask, seed, pm, bb):
     """Brick - mortar line darkening between blocks."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     y, x = get_mgrid((h, w))
     brick_h, brick_w = 12, 24
@@ -1765,6 +1886,7 @@ def paint_brick_mortar(paint, shape, mask, seed, pm, bb):
 
 def paint_leopard_spots(paint, shape, mask, seed, pm, bb):
     """Leopard - organic rosette spot darkening."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     rng = np.random.RandomState(seed + 1200)
     num_spots = int(120 * pm)
@@ -1785,6 +1907,7 @@ def paint_leopard_spots(paint, shape, mask, seed, pm, bb):
 
 def paint_razor_slash(paint, shape, mask, seed, pm, bb):
     """Razor - diagonal slash mark brightening."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     y, x = get_mgrid((h, w))
     dim = min(h, w)
@@ -1798,6 +1921,7 @@ def paint_razor_slash(paint, shape, mask, seed, pm, bb):
 
 def paint_oil_slick(paint, shape, mask, seed, pm, bb):
     """Oil slick - rainbow color pools on surface."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     y, x = get_mgrid((h, w))
     n1 = multi_scale_noise(shape, [8, 16, 32], [0.3, 0.4, 0.3], seed+100)
@@ -1816,6 +1940,7 @@ def paint_galaxy_nebula(paint, shape, mask, seed, pm, bb):
     - LCG hash star field: ~0.3% of pixels become white/blue-white/yellow-white star points
     - Stars get Gaussian-dot brightening (radius 1-2px) not noise smear
     - Nebula blends at 40% weight, base livery at 60% so base color still shows"""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     # Large-scale FBM to divide canvas into nebula color regions
     region_field = multi_scale_noise(shape, [64, 128, 256], [0.4, 0.35, 0.25], seed + 100)
@@ -1864,16 +1989,10 @@ def paint_galaxy_nebula(paint, shape, mask, seed, pm, bb):
     star_b = np.where(star_mask, np.where(star_type == 1, 1.0,  np.where(star_type == 2, 0.70, 0.95)), 0.0).astype(np.float32)
 
     # Gaussian dot spread for stars (radius ~1.5px via small blur)
-    _blur_r = 1.5
-    for _ch, _sarr in enumerate([star_r, star_g, star_b]):
-        _img = Image.fromarray(np.clip(_sarr * 255, 0, 255).astype(np.uint8), mode='L')
-        _blurred = np.array(_img.filter(ImageFilter.GaussianBlur(radius=_blur_r))).astype(np.float32) / 255.0
-        if _ch == 0:
-            star_r_spread = _blurred
-        elif _ch == 1:
-            star_g_spread = _blurred
-        else:
-            star_b_spread = _blurred
+    # Blur star channels (cv2 is 10x faster than PIL loop)
+    star_r_spread = cv2.GaussianBlur(star_r.astype(np.float32), (5, 5), 1.5)
+    star_g_spread = cv2.GaussianBlur(star_g.astype(np.float32), (5, 5), 1.5)
+    star_b_spread = cv2.GaussianBlur(star_b.astype(np.float32), (5, 5), 1.5)
 
     # Combine: base * 0.60 + nebula * 0.40, then overlay star points
     blend_neb = 0.40 * pm
@@ -1886,6 +2005,7 @@ def paint_galaxy_nebula(paint, shape, mask, seed, pm, bb):
 
 def paint_rust_corrosion(paint, shape, mask, seed, pm, bb):
     """Rust - orange/brown oxidation patches eating through paint."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     if pm == 0.0:
         return paint
     mn = multi_scale_noise(shape, [4, 8, 16, 32], [0.15, 0.25, 0.35, 0.25], seed+100)
@@ -1900,16 +2020,17 @@ def paint_neon_edge(paint, shape, mask, seed, pm, bb):
     """Neon glow - MASK EDGES glow bright fluorescent + large-scale glow blobs.
     v3: Uses mask gradient (zone boundaries) as edge source instead of paint
     brightness edges, which are zero on uniformly-painted cars."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     rng = np.random.RandomState(seed)
 
     # === PRIMARY: Mask edge glow (zone boundary edges) ===
     mask_img = Image.fromarray((mask * 255).astype(np.uint8))
     mask_edges_raw = np.array(mask_img.filter(ImageFilter.FIND_EDGES)).astype(np.float32) / 255.0
-    # Dilate edges for wider glow band
-    edge_dilated = Image.fromarray((np.clip(mask_edges_raw * 3, 0, 1) * 255).astype(np.uint8))
-    edge_dilated = edge_dilated.filter(ImageFilter.GaussianBlur(radius=max(3, min(h, w) // 80)))
-    mask_edges = np.array(edge_dilated).astype(np.float32) / 255.0
+    # Dilate edges for wider glow band (cv2 blur, 10x faster than PIL)
+    _edge_r = max(3, min(h, w) // 80)
+    _edge_k = _edge_r * 2 + 1
+    mask_edges = cv2.GaussianBlur(np.clip(mask_edges_raw * 3, 0, 1).astype(np.float32), (_edge_k, _edge_k), 0)
 
     # === SECONDARY: Large-scale noise glow blobs (fills interior) ===
     noise = multi_scale_noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + 200)
@@ -1931,13 +2052,31 @@ def paint_neon_edge(paint, shape, mask, seed, pm, bb):
     return paint
 
 def paint_weathered_peel(paint, shape, mask, seed, pm, bb):
-    """Weathered paint - patches fade toward primer gray."""
-    mn = multi_scale_noise(shape, [8, 16, 32], [0.3, 0.4, 0.3], seed+100)
-    peel = np.clip((mn + 0.1) * 1.5, 0, 1)
-    peel_strength = 0.25 * pm
-    gray = 0.45  # primer gray
-    for c in range(3):
-        paint[:,:,c] = paint[:,:,c] * (1 - peel * peel_strength * mask) + gray * peel * peel_strength * mask
+    """Weathered paint - faded topcoat, primer freckles, scratches, and rust pinholes."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
+    h, w = shape
+    y, x = get_mgrid(shape)
+    mn = multi_scale_noise(shape, [6, 12, 24, 48], [0.18, 0.28, 0.32, 0.22], seed + 100)
+    peel = np.clip((mn + 0.08) * 1.65, 0, 1)
+    rng = np.random.RandomState(seed + 107)
+    micro = rng.random(shape).astype(np.float32)
+    chips = np.where(micro > 0.88, (micro - 0.88) / 0.12, 0.0).astype(np.float32)
+    rust = np.where(micro < 0.10, (0.10 - micro) / 0.10, 0.0).astype(np.float32) * peel
+    scratch_wave = np.abs(np.sin((x / max(w, 1) - y / max(h, 1) * 0.12 + mn * 0.02) * np.pi * 130.0))
+    scratches = np.clip(1.0 - scratch_wave / 0.05, 0, 1) ** 2
+
+    peel_strength = 0.34 * pm
+    primer = np.dstack([
+        np.full(shape, 0.48, dtype=np.float32),
+        np.full(shape, 0.43, dtype=np.float32),
+        np.full(shape, 0.36, dtype=np.float32),
+    ])
+    blend = np.clip((peel * 0.75 + chips * 0.65) * peel_strength * mask, 0, 1)
+    paint = paint * (1 - blend[:, :, np.newaxis]) + primer * blend[:, :, np.newaxis]
+    paint[:, :, 0] = np.clip(paint[:, :, 0] + rust * 0.18 * pm * mask, 0, 1)
+    paint[:, :, 1] = np.clip(paint[:, :, 1] + rust * 0.055 * pm * mask, 0, 1)
+    paint[:, :, 2] = np.clip(paint[:, :, 2] - rust * 0.070 * pm * mask, 0, 1)
+    paint = np.clip(paint + (scratches * 0.055 - chips * 0.035 + micro * 0.018)[:, :, np.newaxis] * pm * mask[:, :, np.newaxis], 0, 1)
     return paint
 
 
@@ -1947,6 +2086,9 @@ def paint_weathered_peel(paint, shape, mask, seed, pm, bb):
 
 def paint_spectraflame(paint, shape, mask, seed, pm, bb):
     """Spectraflame - Hot Wheels candy-over-chrome: deep saturated color + dense sparkle."""
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     rng = np.random.RandomState(seed + 800)
     # Dense visible sparkle layer (Hot Wheels signature)
@@ -1967,6 +2109,9 @@ def paint_spectraflame(paint, shape, mask, seed, pm, bb):
 
 def paint_rose_gold_tint(paint, shape, mask, seed, pm, bb):
     """Rose Gold - shifts paint toward pink-gold tint."""
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     # Rose gold = warm pink-gold tone
     tint_r, tint_g, tint_b = 0.85, 0.62, 0.58
     blend = 0.20 * pm
@@ -1983,6 +2128,7 @@ def paint_rose_gold_tint(paint, shape, mask, seed, pm, bb):
 
 def paint_tactical_flat(paint, shape, mask, seed, pm, bb):
     """Tactical flat - Cerakote/Duracoat: desaturates + flattens toward olive-gray."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     # Slight desaturation for military/tactical look
     mean_c = (paint[:,:,0] + paint[:,:,1] + paint[:,:,2]) / 3.0
     desat = 0.25 * pm
@@ -1998,6 +2144,7 @@ def paint_tactical_flat(paint, shape, mask, seed, pm, bb):
 def paint_desert_worn(paint, shape, mask, seed, pm, bb):
     """Desert worn — sand-blasted UV-hammered surface. UV bleach toward warm sandy pale with
     coarse grit texture (visibly grittier than tactical_flat / volcanic_ash)."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     np.random.seed(seed + 8341)
     mean_c = (paint[:,:,0] + paint[:,:,1] + paint[:,:,2]) / 3.0
@@ -2021,6 +2168,9 @@ def paint_desert_worn(paint, shape, mask, seed, pm, bb):
 def paint_wet_gloss(paint, shape, mask, seed, pm, bb):
     """Wet look - deepens color toward black, adds slight reflection brightening.
     FIX: bb reflection was 0.01 (invisible). Raised to 0.08 for visible wet sheen."""
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     darken = 0.08 * pm
     paint = np.clip(paint * (1 - darken * mask[:,:,np.newaxis]) + bb * 0.08 * pm * mask[:,:,np.newaxis], 0, 1)
     return paint
@@ -2028,6 +2178,7 @@ def paint_wet_gloss(paint, shape, mask, seed, pm, bb):
 def paint_silk_sheen(paint, shape, mask, seed, pm, bb):
     """Silk finish - directional brightening like light on silk fabric.
     FIX: amplitude was 0.02 (invisible). Raised to 0.08 for visible silk bands."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     np.random.seed(seed + 900)
     h, w = shape
     y_grad = np.linspace(0, 1, h).reshape(h, 1).astype(np.float32)
@@ -2037,6 +2188,7 @@ def paint_silk_sheen(paint, shape, mask, seed, pm, bb):
 
 def paint_patina_green(paint, shape, mask, seed, pm, bb):
     """Aged patina - shifts toward green/teal oxidation."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     np.random.seed(seed + 910)
     noise = np.random.randn(*shape).astype(np.float32) * 0.3
     patina_mask = np.clip(noise + 0.2, 0, 1) * mask * pm * 0.12
@@ -2051,6 +2203,7 @@ def paint_iridescent_shift(paint, shape, mask, seed, pm, bb):
     FIXED WEAK-020: replaced lazy RGB channel add with proper HSV hue rotation modeled
     after paint_interference_shift. 8 cycles across canvas (was ~2), blend=0.55 (was 0.25).
     Uses FBM at seed=17 offset for position-based full rainbow rotation."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     # FBM-driven position field at 8 cycles across canvas (was ~2 cycles, ~4pi)
     t = multi_scale_noise(shape, [8, 16], [0.6, 0.4], seed + 17)
@@ -2086,6 +2239,7 @@ def paint_singularity_v2(paint, shape, mask, seed, pm, bb):
     Topology: concentric rings + 3-petal angular warp — distinct from paint_iridescent_shift
     (FBM blob field) and paint_holographic_base (linear diagonal bands).
     LAZY-ANGLE-001 FIX: replaces paint_iridescent_shift on singularity BASE entry."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape[:2] if len(shape) > 2 else shape
     cy, cx = np.float32(h) * 0.5, np.float32(w) * 0.5
     y, x = get_mgrid((h, w))
@@ -2100,7 +2254,7 @@ def paint_singularity_v2(paint, shape, mask, seed, pm, bb):
     # Radial hue rings (8 cycles) with angular warp -> concentric + twisted character
     hue_field = (np.sin((dist + angular_warp) * np.float32(8.0) * np.pi) * 0.5 + 0.5).astype(np.float32)
     # Light FBM perturbation for organic ring edges
-    perturb = multi_scale_noise((h, w), [4, 8], [0.6, 0.4], seed + 2371) * np.float32(0.08)
+    perturb = multi_scale_noise((h, w), [16, 32], [0.6, 0.4], seed + 2371) * np.float32(0.08)
     hue_field = np.clip(hue_field + perturb, 0, 1)
     # Full HSV hue rotation (same mechanism as paint_iridescent_shift, different field topology)
     r, g, b = paint[:,:,0].copy(), paint[:,:,1].copy(), paint[:,:,2].copy()
@@ -2126,6 +2280,7 @@ def paint_singularity_v2(paint, shape, mask, seed, pm, bb):
 
 def paint_raw_aluminum(paint, shape, mask, seed, pm, bb):
     """Raw aluminum - desaturates heavily, adds fine grain."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     mean_c = (paint[:,:,0] + paint[:,:,1] + paint[:,:,2]) / 3.0
     desat = 0.35 * pm
     for c in range(3):
@@ -2137,6 +2292,7 @@ def paint_raw_aluminum(paint, shape, mask, seed, pm, bb):
 
 def paint_tinted_clearcoat(paint, shape, mask, seed, pm, bb):
     """Tinted clear - deep saturated transparent color coat, darkens + richens."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     # Strong saturation boost (colored glass over paint)
     gray = (paint[:,:,0] + paint[:,:,1] + paint[:,:,2]) / 3.0
     for c in range(3):
@@ -2153,10 +2309,11 @@ def paint_tinted_clearcoat(paint, shape, mask, seed, pm, bb):
 
 def paint_galvanized_speckle(paint, shape, mask, seed, pm, bb):
     """Galvanized zinc - speckled crystalline grain pattern."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     np.random.seed(seed + 940)
     h, w = shape
     grain = np.random.randn(h // 2, w // 2).astype(np.float32) * 0.4
-    grain = np.array(Image.fromarray(((grain + 2) * 64).clip(0, 255).astype(np.uint8)).resize((w, h), Image.BILINEAR)).astype(np.float32) / 255.0 - 0.5
+    grain = cv2.resize(np.clip((grain + 2) / 4, 0, 1).astype(np.float32), (w, h), interpolation=cv2.INTER_LINEAR) - 0.5
     paint = np.clip(paint + (grain * 0.025 * pm)[:,:,np.newaxis] * mask[:,:,np.newaxis], 0, 1)
     return paint
 
@@ -2167,6 +2324,7 @@ def paint_heat_tint(paint, shape, mask, seed, pm, bb):
     gradient ± FBM edge wavering) rather than the organic gradient of exhaust headers.
     4-stop steel oxide progression: straw → bronze → peacock blue → dark blue (muted S).
     Blend at 0.60 — clearly visible while showing base livery color."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     # Sharp step-function gradient (tool steel = controlled uniform heat, not organic exhaust)
     # Use coarse linear ramp along the vertical axis with slight FBM edge wavering
@@ -2212,6 +2370,7 @@ def paint_heat_tint(paint, shape, mask, seed, pm, bb):
 
 def paint_smoked_darken(paint, shape, mask, seed, pm, bb):
     """Smoked tinted glass — cool spectral shift, noise-modulated density, subtle edge vignette."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     base_darken = 0.15 * pm
 
@@ -2235,6 +2394,7 @@ def paint_smoked_darken(paint, shape, mask, seed, pm, bb):
 
 def paint_diamond_sparkle(paint, shape, mask, seed, pm, bb):
     """Diamond dust - extremely fine ultra-bright point sparkles."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     np.random.seed(seed + 960)
     h, w = shape
     sparkle = (np.random.rand(h, w).astype(np.float32) > 0.997).astype(np.float32) * 0.08 * pm
@@ -2248,6 +2408,7 @@ def paint_plasma_shift(paint, shape, mask, seed, pm, bb):
     - FBM + sin(fbm*8) creates branching glowing plasma vein shapes
     - Vein pixels push toward electric blue/magenta (H=220-270, S=0.85) at high saturation
     - Blend at 0.50 weight — dramatic and clearly visible plasma finish"""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     # FBM field as plasma base
     fbm = multi_scale_noise(shape, [8, 16, 32], [0.4, 0.35, 0.25], seed + 5551)
@@ -2280,6 +2441,7 @@ def paint_burnt_metal(paint, shape, mask, seed, pm, bb):
     FIXED WEAK-023: Full 6-stop titanium oxide progression (silver→straw→amber→purple→blue→gray-blue)
     using FBM-warped linear heat gradient. Blend at 0.65 so base livery color shows through.
     Heat progression matches real titanium oxide bands from temperature increase."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     # FBM-warped linear gradient simulating temperature field (high heat at left/top edge)
     base_grad = np.linspace(1.0, 0.0, w, dtype=np.float32)[np.newaxis, :]  # horizontal gradient
@@ -2325,11 +2487,12 @@ def paint_burnt_metal(paint, shape, mask, seed, pm, bb):
 
 def paint_mercury_pool(paint, shape, mask, seed, pm, bb):
     """Mercury - liquid metal pooling effect, heavy desaturation with bright caustics."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     mean_c = (paint[:,:,0] + paint[:,:,1] + paint[:,:,2]) / 3.0
     desat = 0.5 * pm
     for c in range(3):
         paint[:,:,c] = np.clip(paint[:,:,c] * (1 - desat * mask) + mean_c * desat * mask, 0, 1)
-    caustic = multi_scale_noise(shape, [4, 8, 16], [0.3, 0.4, 0.3], seed + 5571)
+    caustic = multi_scale_noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + 5571)
     bright = np.clip(caustic, 0, 1) * 0.10 * pm  # FIX: was 0.03 (invisible caustics)
     paint = np.clip(paint + bright[:,:,np.newaxis] * mask[:,:,np.newaxis], 0, 1)
     return paint
@@ -2338,6 +2501,7 @@ def paint_mercury_pool(paint, shape, mask, seed, pm, bb):
 def paint_electric_blue_tint(paint, shape, mask, seed, pm, bb):
     """Electric blue tint - icy blue metallic color push.
     FIX: shift was 0.03 (1.5% blue, invisible). Raised to 0.12 for visible icy tint."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     shift = 0.12 * pm
     paint[:,:,0] = np.clip(paint[:,:,0] - shift * 0.3 * mask, 0, 1)
     paint[:,:,1] = np.clip(paint[:,:,1] + shift * 0.2 * mask, 0, 1)
@@ -2347,6 +2511,7 @@ def paint_electric_blue_tint(paint, shape, mask, seed, pm, bb):
 
 def paint_volcanic_ash(paint, shape, mask, seed, pm, bb):
     """Volcanic ash - desaturates and darkens with gritty fine grain."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     mean_c = (paint[:,:,0] + paint[:,:,1] + paint[:,:,2]) / 3.0
     desat = 0.3 * pm
     darken = 0.06 * pm
@@ -2367,6 +2532,7 @@ def paint_moonstone_adularescence(paint, shape, mask, seed, pm, bb):
     """Moonstone - internal adularescence: soft floating blue-white glow from within.
     Real moonstone has a diffuse internal scattered light (schiller effect) that
     moves as a glowing cloud beneath the surface. Not sparkle - smooth and milky."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     # Large-scale smooth noise for the internal glow 'cloud'
     glow = multi_scale_noise(shape, [32, 64, 128], [0.3, 0.4, 0.3], seed + 6001)
@@ -2389,6 +2555,7 @@ def paint_opal_fire(paint, shape, mask, seed, pm, bb):
     """Stellar Dust / Nebula -- cosmic dust field with deep-space nebula colors,
     fine metallic micro-sparkle at grazing angles, and star-like point highlights.
     Purple-blue-pink nebula clouds with scattered bright star points."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     if pm == 0.0:
         return paint
     h, w = shape
@@ -2412,7 +2579,7 @@ def paint_opal_fire(paint, shape, mask, seed, pm, bb):
 
     # --- Layer 2: Fine metallic micro-sparkle at grazing angles ---
     # Use bb as angle proxy: sparkle appears more at grazing angles (low bb)
-    sparkle_noise = multi_scale_noise(shape, [2, 4], [0.5, 0.5], seed + 6104)
+    sparkle_noise = multi_scale_noise(shape, [32, 64], [0.5, 0.5], seed + 6104)
     grazing = np.clip(1.0 - bb, 0, 1)  # high at edges/grazing angles
     micro_sparkle = np.clip(sparkle_noise * 2.0, 0, 1) ** 3.0  # sharp sparkle peaks
     sparkle_intensity = micro_sparkle * grazing * 0.25
@@ -2452,6 +2619,7 @@ def paint_obsidian_depth(paint, shape, mask, seed, pm, bb):
     """Obsidian - volcanic glass depth effect. Pushes paint toward absolute black with
     a subtle blue-violet edge scatter, like the way obsidian flashes colour at angles
     while reading as near-void at normal incidence."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     # Step 1: Strong darkening - obsidian is very dark
     darken = 0.50 * pm
     paint = np.clip(paint * (1.0 - darken * mask[:,:,np.newaxis]), 0, 1)
@@ -2468,6 +2636,7 @@ def paint_antique_patina(paint, shape, mask, seed, pm, bb):
     """Antique chrome patina - aged warm brown/gold oxidation, NOT green.
     Real chrome ages to warm tarnish (sulfur compounds), not the green of copper.
     Creates irregular warm patina patches with a slight dulling of the mirror."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     n = multi_scale_noise(shape, [8, 16, 32], [0.3, 0.4, 0.3], seed + 6301)
     patina = np.clip(n * 0.5 + 0.5, 0, 1) * mask * pm
     age_blend = patina * 0.35
@@ -2488,6 +2657,7 @@ def paint_glass_tint(paint, shape, mask, seed, pm, bb):
     """Tempered glass - iron-green desaturated tint of real float/tempered glass.
     Real glass has residual iron content giving a cool green tint most visible at
     edges and thick sections. Very subtle - just enough to read as 'glass' not 'clear'."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     # Step 1: Strong desaturation (glass mutes the colour behind it)
     mean_c = (paint[:,:,0] + paint[:,:,1] + paint[:,:,2]) / 3.0
     desat = 0.55 * pm
@@ -2505,6 +2675,7 @@ def paint_aramid_fiber(paint, shape, mask, seed, pm, bb):
     """Aramid / Kevlar - warm golden-tan push with subtle cross-woven grain.
     Kevlar and aramid are warm amber-gold, NOT dark like carbon. The woven
     texture should show as directional warm/cool alternation, not darkening."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     y, x = get_mgrid((h, w))
     # Woven grid - horizontal and diagonal threads
@@ -2526,6 +2697,7 @@ def paint_graphene_mono(paint, shape, mask, seed, pm, bb):
     """Graphene - near-neutral dark gray monochrome. Kills warm/cool casts.
     Real graphene is a perfect grayscale material - it doesn't brighten toward
     silver (like chrome_brighten would), it just becomes a very neutral dark mirror."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     # Full desaturation to neutral gray
     mean_c = (paint[:,:,0] + paint[:,:,1] + paint[:,:,2]) / 3.0
     desat = 0.85 * pm
@@ -2535,7 +2707,7 @@ def paint_graphene_mono(paint, shape, mask, seed, pm, bb):
     darken = 0.12 * pm
     paint = np.clip(paint * (1.0 - darken * mask[:,:,np.newaxis]), 0, 1)
     # Very faint atomic lattice shimmer (nearly invisible at render scale)
-    n = multi_scale_noise(shape, [2, 4], [0.5, 0.5], seed + 6601)
+    n = multi_scale_noise(shape, [32, 64], [0.5, 0.5], seed + 6601)
     grain = np.clip(n * 0.5 + 0.5, 0, 1) * mask * pm * 0.015
     paint = np.clip(paint + grain[:,:,np.newaxis], 0, 1)
     return paint
@@ -2546,6 +2718,7 @@ def paint_rubber_absorb(paint, shape, mask, seed, pm, bb):
     Anechoic rubber tiles eat light - no sparkle, no caustics, just a matte void.
     The surface reads darker than flat_black because it actively suppresses any
     residual brightness variation."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     # Aggressive darkening
     darken = 0.55 * pm
     paint = np.clip(paint * (1.0 - darken * mask[:,:,np.newaxis]), 0, 1)
@@ -2566,6 +2739,7 @@ def paint_tri_coat_depth(paint, shape, mask, seed, pm, bb):
     Unlike fine_sparkle (random scatter), tri-coat pearl has DIRECTIONAL depth:
     the middle pearl layer catches light at specific angles, creating a wave-like
     glow that moves across the surface. Stronger and more directional than pearl."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     y, x = get_mgrid((h, w))
     # Layer 1: base saturation boost (the underlying metallic base coat)
@@ -2594,17 +2768,22 @@ def paint_tri_coat_depth(paint, shape, mask, seed, pm, bb):
 # ================================================================
 
 def paint_f_clear_matte(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     # Solid matte clearcoat — diffuse only, no pattern
     diffuse = np.clip(paint + 0.04 * pm * mask[:,:,np.newaxis], 0, 1)
     return np.clip((diffuse - 0.5) * 0.85 + 0.5, 0, 1) * mask[:,:,np.newaxis] + paint * (1 - mask[:,:,np.newaxis])
 
 def paint_f_eggshell(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     # Solid eggshell — low luster, no grain. Slight desat only.
     gray = paint.mean(axis=2, keepdims=True)
     desat = np.clip(paint * 0.92 + gray * 0.08, 0, 1)
     return desat * mask[:,:,np.newaxis] + paint * (1 - mask[:,:,np.newaxis])
 
 def paint_f_flat_black(paint, shape, mask, seed, pm, bb):
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     # Solid dead flat black — no pattern
     black = np.zeros_like(paint)
     edge = bb * 0.06 * mask
@@ -2614,39 +2793,48 @@ def paint_f_flat_black(paint, shape, mask, seed, pm, bb):
     return black * mask[:,:,np.newaxis] + paint * (1 - mask[:,:,np.newaxis])
 
 def paint_f_gloss(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     # Solid gloss — subtle contrast, very subtle spec hint (no visible stripes/ping)
     contrasted = np.clip((paint - 0.5) * 1.04 + 0.5, 0, 1)
     ping = np.clip(bb - 0.9, 0, 1) * 0.15 * pm
     return np.clip(contrasted + (ping * np.ones_like(mask))[:,:,np.newaxis] * mask[:,:,np.newaxis], 0, 1)
 
 def paint_f_matte(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     # Solid flat matte — no pattern
     darken = np.clip(paint * 0.85, 0, 1)
     flat = np.clip((darken - 0.5) * 0.7 + 0.5, 0, 1)
     return flat * mask[:,:,np.newaxis] + paint * (1 - mask[:,:,np.newaxis])
 
 def paint_f_primer(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     # Solid primer grey — no grain
     gray = np.full_like(paint, 0.42)
     primer = np.clip(paint * 0.25 + gray * 0.75, 0, 1)
     return primer * mask[:,:,np.newaxis] + paint * (1 - mask[:,:,np.newaxis])
 
 def paint_f_satin(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     # Solid satin — no pattern
     soft = np.clip(paint * 0.97 + 0.02, 0, 1)
     return soft * mask[:,:,np.newaxis] + paint * (1 - mask[:,:,np.newaxis])
 
 def paint_f_semi_gloss(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     # Solid semi-gloss — no pattern
     contrasted = np.clip((paint - 0.5) * 1.02 + 0.5, 0, 1)
     return contrasted * mask[:,:,np.newaxis] + paint * (1 - mask[:,:,np.newaxis])
 
 def paint_f_silk(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     # Solid silk — no bands or pattern, just soft lift
     soft = np.clip(paint + 0.03 * pm * mask[:,:,np.newaxis], 0, 1)
     return soft * mask[:,:,np.newaxis] + paint * (1 - mask[:,:,np.newaxis])
 
 def paint_f_wet_look(paint, shape, mask, seed, pm, bb):
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     # Solid wet look — subtle depth, no aggressive ping
     wet = np.clip(paint ** 1.1, 0, 1)
     wet = np.clip(wet + ((bb**2) * np.ones_like(mask))[:,:,np.newaxis] * 0.12 * mask[:,:,np.newaxis] * pm, 0, 1)
@@ -2656,6 +2844,7 @@ def paint_f_scuffed_satin(paint, shape, mask, seed, pm, bb):
     """Scuffed satin: WEAK-015 FIX — physically corrected to be rougher/duller than clean satin.
     Scuffing removes surface gloss: slight desaturation (~8%) + micro-abrasion darkening texture.
     Previously was paint * 0.96 + 0.03 (actually BRIGHTER than satin — physically wrong)."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape[:2] if len(shape) > 2 else shape
     gray = paint.mean(axis=2, keepdims=True)
     # ~8% desaturation: scuffing removes vibrancy
@@ -2663,23 +2852,26 @@ def paint_f_scuffed_satin(paint, shape, mask, seed, pm, bb):
     # Slight darkening (~3%) for wear absorption
     darkened = np.clip(desat * 0.97, 0, 1)
     # Fine micro-abrasion noise: very subtle darker scratch marks
-    micro = multi_scale_noise((h, w), [2, 4, 8], [0.5, 0.3, 0.2], seed + 5901)
+    micro = multi_scale_noise((h, w), [16, 32, 64], [0.5, 0.3, 0.2], seed + 5901)
     darkened = np.clip(darkened * (1.0 - micro[:, :, np.newaxis] * 0.04 * pm), 0, 1)
     return darkened * mask[:, :, np.newaxis] + paint * (1 - mask[:, :, np.newaxis])
 
 def paint_f_living_matte(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     # Solid organic matte — no Perlin variation
     darken = np.clip(paint * 0.88, 0, 1)
     flat = np.clip((darken - 0.5) * 0.75 + 0.5, 0, 1)
     return flat * mask[:,:,np.newaxis] + paint * (1 - mask[:,:,np.newaxis])
 
 def paint_f_chalky_base(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     # Solid chalky flat — no texture
     gray = np.full_like(paint, 0.48)
     chalk = np.clip(paint * 0.3 + gray * 0.7, 0, 1)
     return chalk * mask[:,:,np.newaxis] + paint * (1 - mask[:,:,np.newaxis])
 
 def paint_f_pure_white(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     # Solid near-white foundation — no texture, slight brighten
     bright = np.clip(paint + 0.06 * pm * mask[:,:,np.newaxis], 0, 1)
     return bright * mask[:,:,np.newaxis] + paint * (1 - mask[:,:,np.newaxis])
@@ -2690,6 +2882,9 @@ def paint_f_pure_white(paint, shape, mask, seed, pm, bb):
 # ================================================================
 
 def paint_cp_candy_burgundy(paint, shape, mask, seed, pm, bb):
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     # Deep red translucent tint over a silver metallic base
     h, w = shape
     rng = np.random.RandomState(seed + 201)
@@ -2709,6 +2904,9 @@ def paint_cp_candy_burgundy(paint, shape, mask, seed, pm, bb):
     return mix * mask[:,:,np.newaxis] + paint * (1 - mask[:,:,np.newaxis])
 
 def paint_cp_candy_cobalt(paint, shape, mask, seed, pm, bb):
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     # Deep blue oceanic tint
     h, w = shape
     rng = np.random.RandomState(seed + 202)
@@ -2725,6 +2923,9 @@ def paint_cp_candy_cobalt(paint, shape, mask, seed, pm, bb):
     return mix * mask[:,:,np.newaxis] + paint * (1 - mask[:,:,np.newaxis])
 
 def paint_cp_candy_emerald(paint, shape, mask, seed, pm, bb):
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     # Deep green tint
     h, w = shape
     rng = np.random.RandomState(seed + 203)
@@ -2745,6 +2946,7 @@ def paint_cp_chameleon(paint, shape, mask, seed, pm, bb):
     BONUS FIX: upgraded from lazy RGB ±0.25 add to proper HSV hue rotation.
     Uses bb (body brightness) as viewing-angle proxy. Shadow areas shift hue one direction,
     highlights shift hue the other, creating the genuine two-tone chameleon flip effect."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     if pm == 0.0:
         return paint
     h, w = shape
@@ -2752,7 +2954,8 @@ def paint_cp_chameleon(paint, shape, mask, seed, pm, bb):
 
     # Spatial noise to prevent perfectly uniform shift (moderate frequency ~16 cycles)
     n = multi_scale_noise(shape, [16, 32], [0.5, 0.5], seed + 7700)
-    angle_field = np.clip(bb + n * 0.15, 0, 1)
+    bb_2d = _ensure_bb_2d(bb, shape)
+    angle_field = np.clip(bb_2d + n * 0.15, 0, 1)
 
     # Smooth cubic interpolation (smoothstep) for premium feel
     t = angle_field * angle_field * (3.0 - 2.0 * angle_field)
@@ -2793,6 +2996,7 @@ def paint_cp_chameleon(paint, shape, mask, seed, pm, bb):
     return np.clip(paint, 0, 1).astype(np.float32)
 
 def paint_cp_iridescent(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     # Multidimensional rainbow lattice that shifts continuously
     h, w = shape
     y, x = np.mgrid[0:h, 0:w]
@@ -2811,6 +3015,9 @@ def paint_cp_iridescent(paint, shape, mask, seed, pm, bb):
     return rainbow * mask[:,:,np.newaxis] + paint * (1 - mask[:,:,np.newaxis])
 
 def paint_cp_moonstone(paint, shape, mask, seed, pm, bb):
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     # Soft milky translucent shimmer. Blue-white adularescence that glows
     moon = np.clip(paint * 0.8 + 0.1, 0, 1)
     
@@ -2823,12 +3030,13 @@ def paint_cp_moonstone(paint, shape, mask, seed, pm, bb):
     return moon * mask[:,:,np.newaxis] + paint * (1 - mask[:,:,np.newaxis])
 
 def paint_cp_opal(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     # Multi-colored large flakes under clearcoat
     h, w = shape
     rng = np.random.RandomState(seed + 207)
     # Generate chunky noise
     small = rng.rand(h // 16, w // 16).astype(np.float32) * 3.0
-    big = np.array(Image.fromarray(small).resize((w, h), Image.NEAREST))
+    big = cv2.resize(small, (w, h), interpolation=cv2.INTER_NEAREST)
     
     r_flake = np.sin(big) * 0.5 + 0.5
     g_flake = np.sin(big + 2.094) * 0.5 + 0.5
@@ -2847,6 +3055,7 @@ def paint_cp_opal(paint, shape, mask, seed, pm, bb):
     )
 
 def paint_cp_spectraflame(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     # Transparent color over high-polish chrome.
     # We turn the base color into a highly saturated, highly contrasted glass coat
     # Add fake bright chrome reflections underneath
@@ -2863,6 +3072,7 @@ def paint_cp_spectraflame(paint, shape, mask, seed, pm, bb):
     return mix * mask[:,:,np.newaxis] + paint * (1 - mask[:,:,np.newaxis])
 
 def paint_cp_tinted_clear(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     # Deep tinted clearcoat tracking the base color explicitly
     # Very dark off-angles, high color transmission in highlights
     intensity = np.clip(bb + 0.2, 0, 1) * pm
@@ -2875,16 +3085,24 @@ def paint_cp_tinted_clear(paint, shape, mask, seed, pm, bb):
     return tinted * mask[:,:,np.newaxis] + paint * (1 - mask[:,:,np.newaxis])
 
 def paint_cp_tri_coat_pearl(paint, shape, mask, seed, pm, bb):
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     # 3-stage pearl. Adds a pearlescent mica layer (usually gold/silver/blue tint) over base.
     # Then clears.
     h, w = shape
     rng = np.random.RandomState(seed + 210)
-    mica = rng.randn(h, w).astype(np.float32) * 0.12 * pm
+    mica = rng.randn(h, w).astype(np.float32) * 0.10 * pm
+    y, x = np.mgrid[0:h, 0:w]
+    wave = multi_scale_noise((h, w), [6, 12, 24], [0.36, 0.34, 0.30], seed + 211)
+    platelet = multi_scale_noise((h, w), [2, 4, 8], [0.42, 0.35, 0.23], seed + 212)
+    nacre = np.sin(x * 0.18 + y * 0.055 + wave * 3.8) * 0.5 + 0.5
+    platelet_flash = np.clip((platelet - 0.10) * 1.7, 0, 1) * pm
     
     # White/Gold mica shift
-    shift_r = mica * 1.5
-    shift_g = mica * 1.3
-    shift_b = mica * 0.9
+    shift_r = mica * 1.20 + nacre * 0.050 * pm + platelet_flash * 0.120
+    shift_g = mica * 1.00 + (1.0 - nacre) * 0.040 * pm + platelet_flash * 0.095
+    shift_b = mica * 0.74 + nacre * 0.060 * pm + platelet_flash * 0.145
     
     tri = np.zeros_like(paint)
     tri[:,:,0] = np.clip(paint[:,:,0] + shift_r * mask, 0, 1)
@@ -2905,6 +3123,9 @@ def paint_cp_tri_coat_pearl(paint, shape, mask, seed, pm, bb):
 
 # --- PAINT MODIFIERS ---
 def paint_cc_carbon(paint, shape, mask, seed, pm, bb):
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     y, x = np.mgrid[0:h, 0:w]
     # Simple 2x2 Twill Weave math
@@ -2919,6 +3140,9 @@ def paint_cc_carbon(paint, shape, mask, seed, pm, bb):
     return mix * mask[:, :, np.newaxis] + paint * (1 - mask[:, :, np.newaxis])
 
 def paint_cc_forged(paint, shape, mask, seed, pm, bb):
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     rng = np.random.RandomState(seed + 301)
     # Voronoi/cellular noise approximation for chopped geometric chunks
@@ -2933,6 +3157,9 @@ def paint_cc_forged(paint, shape, mask, seed, pm, bb):
     return mix * mask[:, :, np.newaxis] + paint * (1 - mask[:, :, np.newaxis])
 
 def paint_cc_fiberglass(paint, shape, mask, seed, pm, bb):
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     # Chopped strand mat
     strands = _noise(shape, [8, 16, 32], [0.6, 0.3, 0.1], seed + 304)
@@ -2942,6 +3169,7 @@ def paint_cc_fiberglass(paint, shape, mask, seed, pm, bb):
     return np.clip(resin + glow[:, :, np.newaxis], 0, 1) * mask[:, :, np.newaxis] + paint * (1 - mask[:, :, np.newaxis])
 
 def paint_cc_aramid(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     y, x = np.mgrid[0:h, 0:w]
     # Tight Kevlar/Aramid weave
@@ -2958,6 +3186,9 @@ def paint_cc_aramid(paint, shape, mask, seed, pm, bb):
     return mix * mask[:, :, np.newaxis] + paint * (1 - mask[:, :, np.newaxis])
 
 def paint_cc_graphene(paint, shape, mask, seed, pm, bb):
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     y, x = np.mgrid[0:h, 0:w]
     # Hexagonal atomic grid representation
@@ -2987,7 +3218,7 @@ def spec_cc_carbon(shape, seed, sm, base_m, base_r):
 
 def spec_cc_carbon_ceramic(shape, seed, sm, base_m, base_r):
     h, w = shape
-    noise = _noise(shape, [4, 8, 16], [0.5, 0.3, 0.2], seed + 310)
+    noise = _noise(shape, [16, 32, 64], [0.5, 0.3, 0.2], seed + 310)
     # Porous, metallic-flake embedded raw rotor material
     M_arr = np.full(shape, 120.0, dtype=np.float32) + noise * 60.0 * sm
     R_arr = np.clip(np.full(shape, 25.0, dtype=np.float32) + noise * 150.0 * sm, 15, 255)  # GGX floor: R>=15
@@ -3012,6 +3243,9 @@ def spec_cc_forged(shape, seed, sm, base_m, base_r):
 
 # --- PAINT MODIFIERS ---
 def paint_cg_obsidian(paint, shape, mask, seed, pm, bb):
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     # Volcanic glass with sharp chipped conchoidal fractures
     n1 = _noise(shape, [32, 64], [0.7, 0.3], seed + 401)
@@ -3030,6 +3264,9 @@ def paint_cg_obsidian(paint, shape, mask, seed, pm, bb):
     return mix * mask[:, :, np.newaxis] + paint * (1 - mask[:, :, np.newaxis])
 
 def paint_cg_crystal(paint, shape, mask, seed, pm, bb):
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     # Perfect clear optical transmission, enhances user paint saturation heavily
     sat_paint = paint / (paint.max(axis=2, keepdims=True) + 1e-8)
     crystal = np.clip(sat_paint * 0.8 + paint * 0.4, 0, 1)
@@ -3040,6 +3277,7 @@ def paint_cg_crystal(paint, shape, mask, seed, pm, bb):
     return crystal * mask[:, :, np.newaxis] + paint * (1 - mask[:, :, np.newaxis])
 
 def paint_cg_porcelain(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     # Milky ceramic with microscopic crackle
     crackle = np.clip(1.0 - np.abs(_noise(shape, [16, 32], [0.5, 0.5], seed + 402) - 0.5) * 50.0, 0, 1)
@@ -3088,7 +3326,10 @@ def spec_cg_glass(shape, seed, sm, base_m, base_r):
 # ======================================================================
 
 def paint_liquid_metal_flow_v2(paint, shape, mask, seed, pm, bb):
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
 
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape[:2] if len(shape) > 2 else shape
     y, x = get_mgrid(shape)
     flow = np.sin(x * 0.15 + np.sin(y * 0.08) * 3.0) * 0.5 + 0.5
@@ -3110,13 +3351,16 @@ def spec_exotic_metal(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
     y, x = get_mgrid(shape)
     flow = np.sin(x * 0.15 + np.sin(y * 0.08) * 3.0) * 0.5 + 0.5
-    grain = multi_scale_noise(shape, [2, 4], [0.5, 0.5], seed)
+    grain = multi_scale_noise(shape, [32, 64], [0.5, 0.5], seed)
     M = np.clip(180 + flow * 75.0, 0, 255).astype(np.float32)
     R = np.clip(15 + grain * 25.0, 15, 255).astype(np.float32)
     return M, R, np.full(shape, 16.0, dtype=np.float32)  # CC=16 max clearcoat for exotic metals
 
 def paint_tungsten_heavy(paint, shape, mask, seed, pm, bb):
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
 
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     base = paint.copy()
     gray = base.mean(axis=2, keepdims=True)
     target = base.copy()
@@ -3129,13 +3373,16 @@ def paint_tungsten_heavy(paint, shape, mask, seed, pm, bb):
         target * (mask[:, :, np.newaxis] * blend),
         0, 1
     )
-    flake = multi_scale_noise(shape, [2, 4], [0.5, 0.5], seed)
+    flake = multi_scale_noise(shape, [32, 64], [0.5, 0.5], seed)
     return np.clip(paint + flake[:,:,np.newaxis] * 0.08 * blend * mask[:,:,np.newaxis] + bb * 0.3, 0, 1)
 
 def paint_oem_metallic_v2(paint, shape, mask, seed, pm, bb):
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
 
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     flake1 = multi_scale_noise(shape, [1, 2], [0.6, 0.4], seed+1)
-    flake2 = multi_scale_noise(shape, [2, 4], [0.5, 0.5], seed+5)
+    flake2 = multi_scale_noise(shape, [32, 64], [0.5, 0.5], seed+5)
     pearl = np.clip((flake1 * 0.7 + flake2 * 0.3), 0, 1)
     paint[:,:,0] = np.clip(paint[:,:,0] + pearl * 0.08 * pm * mask, 0, 1)
     paint[:,:,1] = np.clip(paint[:,:,1] + pearl * 0.08 * pm * mask, 0, 1)
@@ -3152,16 +3399,8 @@ def spec_oem_automotive(shape, seed, sm, base_m, base_r):
     CC = np.clip(16.0 + peel * 8.0, 16, 255).astype(np.float32)  # max gloss with slight peel variation
     return M, R, CC
 
-def paint_mil_spec_od_v2(paint, shape, mask, seed, pm, bb):
-
-    gray = paint.mean(axis=2, keepdims=True)
-    paint = paint * 0.4 + gray * 0.4
-    paint[:,:,0] = np.clip(paint[:,:,0] + 0.15*pm*mask, 0, 1)
-    paint[:,:,1] = np.clip(paint[:,:,1] + 0.16*pm*mask, 0, 1)
-    paint[:,:,2] = np.clip(paint[:,:,2] + 0.05*pm*mask, 0, 1)
-    grime = multi_scale_noise(shape, [8, 16], [0.6, 0.4], seed)
-    paint = np.clip(paint - grime[:,:,np.newaxis]*0.05*pm*mask[:,:,np.newaxis], 0, 1)
-    return np.clip(paint + bb * 0.2, 0, 1)
+# paint_mil_spec_od_v2: canonical version in engine/paint_v2/military_tactical.py
+from engine.paint_v2.military_tactical import paint_mil_spec_od_v2
 
 def spec_industrial_tactical(shape, seed, sm, base_m, base_r):
 
@@ -3170,36 +3409,14 @@ def spec_industrial_tactical(shape, seed, sm, base_m, base_r):
     R = np.clip(170 + grit * 85.0, 15, 255)
     return M, R, np.full(shape, 180.0, dtype=np.float32)  # CC=180 dead flat military/tactical
 
-def paint_matte_wrap_v2(paint, shape, mask, seed, pm, bb):
-    from scipy.ndimage import gaussian_filter
-    base = paint.copy()
-    smoothed = gaussian_filter(base, sigma=[2, 2, 0])
-    target = base * 0.2 + smoothed * 0.8
-    blend = np.clip(pm, 0.0, 1.0)
-    paint = base * (1.0 - mask[:, :, np.newaxis] * blend) + target * (mask[:, :, np.newaxis] * blend)
-    return np.clip(paint + bb * 0.15, 0, 1)
+# paint_matte_wrap_v2: canonical version in engine/paint_v2/wrap_vinyl.py
+from engine.paint_v2.wrap_vinyl import paint_matte_wrap_v2
 
-def spec_satin_wrap(shape, seed, sm, base_m, base_r):
+# spec_satin_wrap: canonical version in engine/paint_v2/wrap_vinyl.py
+from engine.paint_v2.wrap_vinyl import spec_satin_wrap
 
-    ripple = multi_scale_noise(shape, [32, 64], [0.5, 0.5], seed)
-    M = np.clip(10 + ripple * 5.0, 0, 255).astype(np.float32)
-    R = np.clip(120 + ripple * 20.0, 15, 255)
-    return M, R, np.full(shape, 60.0, dtype=np.float32)  # CC=60 satin wrap coating
-
-def paint_sun_fade_v2(paint, shape, mask, seed, pm, bb):
-
-    base = paint.copy()
-    damage = multi_scale_noise(shape, [16,32,64], [0.4, 0.4, 0.2], seed)
-    pre = np.clip(base + damage[:,:,np.newaxis] * 0.15, 0, 1)
-    gray = pre.mean(axis=2, keepdims=True)
-    target = np.clip(pre * 0.6 + gray * 0.4, 0, 1)
-    blend = np.clip(pm, 0.0, 1.0)
-    paint = np.clip(
-        base * (1.0 - mask[:, :, np.newaxis] * blend) +
-        target * (mask[:, :, np.newaxis] * blend),
-        0, 1
-    )
-    return np.clip(paint + bb * 0.2, 0, 1)
+# paint_sun_fade_v2: canonical version in engine/paint_v2/weathered_worn.py
+from engine.paint_v2.weathered_worn import paint_sun_fade_v2
 
 def spec_weathered_aged(shape, seed, sm, base_m, base_r):
 
@@ -3211,38 +3428,21 @@ def spec_weathered_aged(shape, seed, sm, base_m, base_r):
     CC = np.where(rot < 0.4, 24.0, 130.0).astype(np.float32)
     return M, R, CC
 
-def paint_race_day_gloss_v2(paint, shape, mask, seed, pm, bb):
-
-    paint = np.clip(paint * 1.1, 0, 1)
-    dust = multi_scale_noise(shape, [2,4,8], [0.5, 0.3, 0.2], seed+1)
-    dust_mask = np.where(dust > 0.8, 1, 0).astype(np.float32)
-    paint = np.clip(paint - dust_mask[:,:,np.newaxis]*0.3*mask[:,:,np.newaxis]*pm, 0, 1)
-    return np.clip(paint + bb * 0.7, 0, 1)
+# paint_race_day_gloss_v2: canonical version in engine/paint_v2/racing_heritage.py
+from engine.paint_v2.racing_heritage import paint_race_day_gloss_v2
 
 def spec_racing_heritage(shape, seed, sm, base_m, base_r):
     """Racing Heritage — uses base_m/base_r as anchors with scuff variation.
     FIX: Was hardcoded M=100/R=15 ignoring base values. Now show-car bases
     (high M, low R) stay glossy and worn bases (low M, high R) stay rough."""
-    scuff = multi_scale_noise(shape, [2, 4, 8], [0.4, 0.4, 0.2], seed)
+    scuff = multi_scale_noise(shape, [16, 32, 64], [0.4, 0.4, 0.2], seed)
     M = np.clip(base_m + scuff * 20.0 * sm, 0, 255).astype(np.float32)
     R = np.clip(base_r + scuff * 25.0 * sm, 15, 255).astype(np.float32)
     CC = np.clip(16.0 + scuff * 10.0, 16, 255).astype(np.float32)
     return M, R, CC
 
-def paint_quantum_black_v2(paint, shape, mask, seed, pm, bb):
-
-    base = paint.copy()
-    dark_target = np.clip(base * 0.02, 0, 1)
-    blend = np.clip(pm, 0.0, 1.0)
-    paint = np.clip(
-        base * (1.0 - mask[:, :, np.newaxis] * blend) +
-        dark_target * (mask[:, :, np.newaxis] * blend),
-        0, 1
-    )
-    flux = multi_scale_noise(shape, [1, 2], [0.5, 0.5], seed)
-    glow = np.where(flux > 0.95, 1, 0).astype(np.float32)
-    paint[:,:,2] = np.clip(paint[:,:,2] + glow * 0.4 * blend * mask, 0, 1)
-    return np.clip(paint + bb * 0.05, 0, 1)
+# paint_quantum_black_v2: canonical version in engine/paint_v2/paradigm_scifi.py
+from engine.paint_v2.paradigm_scifi import paint_quantum_black_v2
 
 def spec_extreme_experimental(shape, seed, sm, base_m, base_r):
 
@@ -3252,22 +3452,8 @@ def spec_extreme_experimental(shape, seed, sm, base_m, base_r):
     CC = np.where(void > 0.95, 255.0, 0.0).astype(np.float32)
     return M, R, CC
 
-def paint_bentley_silver_v2(paint, shape, mask, seed, pm, bb):
-
-    base = paint.copy()
-    gray = base.mean(axis=2, keepdims=True)
-    target = gray * 0.10 + 0.90
-    silver = base.copy()
-    for c in range(3):
-        silver[:,:,c] = np.clip(base[:,:,c] * 0.5 + target[:,:,0] * 0.5, 0, 1)
-    blend = np.clip(pm, 0.0, 1.0)
-    paint = np.clip(
-        base * (1.0 - mask[:, :, np.newaxis] * blend) +
-        silver * (mask[:, :, np.newaxis] * blend),
-        0, 1
-    )
-    flake = multi_scale_noise(shape, [1,2], [0.7,0.3], seed)
-    return np.clip(paint + flake[:,:,np.newaxis]*0.05*mask[:,:,np.newaxis]*blend + bb*0.8, 0, 1)
+# paint_bentley_silver_v2: canonical version in engine/paint_v2/premium_luxury.py
+from engine.paint_v2.premium_luxury import paint_bentley_silver_v2
 
 def spec_premium_luxury(shape, seed, sm, base_m, base_r):
     """Premium Luxury — ultra-fine flake with maximum gloss clearcoat.
@@ -3366,7 +3552,7 @@ def spec_tungsten_metal(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
     
     # Extremely heavy, ultra-dense coarse granular grain - NO wavy shapes
-    grain = multi_scale_noise((h, w), [2, 4], [0.6, 0.4], seed + 201)
+    grain = multi_scale_noise((h, w), [32, 64], [0.6, 0.4], seed + 201)
     
     pits = multi_scale_noise((h, w), [16, 32], [0.5, 0.5], seed + 202)
     pitting = np.where(pits > 0.8, (pits - 0.8) * 5.0, 0.0)
@@ -3396,6 +3582,7 @@ def spec_platinum_metal(shape, seed, sm, base_m, base_r):
 
 def paint_bioluminescent(paint, shape, mask, seed, pm, bb):
 
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     n = multi_scale_noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + 501)
     cells = np.clip(1.0 - np.abs(n), 0, 1) ** 3.0
     gray = paint.mean(axis=2, keepdims=True)
@@ -3414,7 +3601,10 @@ def spec_bioluminescent(shape, seed, sm, base_m, base_r):
     return M, R, np.full(shape, 16.0, dtype=np.float32)
 
 def paint_dark_matter(paint, shape, mask, seed, pm, bb):
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
 
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape[:2] if len(shape) > 2 else shape
     y, x = get_mgrid((h, w))
     base = paint.copy()
@@ -3445,7 +3635,10 @@ def spec_dark_matter(shape, seed, sm, base_m, base_r):
     return M, R, np.full(shape, 220.0, dtype=np.float32)  # CC=220 dull dark swirl (was 0=mirror)
 
 def paint_black_hole_accretion(paint, shape, mask, seed, pm, bb):
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
 
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     n = multi_scale_noise(shape, [8, 16], [0.5, 0.5], seed + 701)
     base = paint.copy()
     core = np.zeros_like(base)
@@ -3489,6 +3682,7 @@ def spec_black_hole_accretion(shape, seed, sm, base_m, base_r):
 
 def paint_quantum_black(paint, shape, mask, seed, pm, bb):
 
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     base = paint.copy()
     void = np.zeros_like(base)
     sparkle = (multi_scale_noise(shape, [1, 2], [0.5, 0.5], seed + 801) > 0.98).astype(np.float32)
@@ -3512,9 +3706,12 @@ def spec_quantum_black(shape, seed, sm, base_m, base_r):
     return M, R, np.full(shape, 240.0, dtype=np.float32)  # CC=240 void dull (was 0=mirror)
 
 def paint_absolute_zero(paint, shape, mask, seed, pm, bb):
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
 
-    n1 = multi_scale_noise(shape, [4, 8], [0.6, 0.4], seed + 901)
-    n2 = multi_scale_noise(shape, [2, 4], [0.5, 0.5], seed + 902)
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
+    n1 = multi_scale_noise(shape, [16, 32], [0.6, 0.4], seed + 901)
+    n2 = multi_scale_noise(shape, [32, 64], [0.5, 0.5], seed + 902)
     frost = np.clip(np.abs(np.sin(n1 * 20.0) + np.cos(n2 * 20.0)), 0, 1)
     base = paint.copy()
     mean_c = base.mean(axis=2, keepdims=True)
@@ -3533,8 +3730,8 @@ def paint_absolute_zero(paint, shape, mask, seed, pm, bb):
 
 def spec_absolute_zero(shape, seed, sm, base_m, base_r):
 
-    n1 = multi_scale_noise(shape, [4, 8], [0.6, 0.4], seed + 901)
-    n2 = multi_scale_noise(shape, [2, 4], [0.5, 0.5], seed + 902)
+    n1 = multi_scale_noise(shape, [16, 32], [0.6, 0.4], seed + 901)
+    n2 = multi_scale_noise(shape, [32, 64], [0.5, 0.5], seed + 902)
     frost = np.clip(np.abs(np.sin(n1 * 20.0) + np.cos(n2 * 20.0)), 0, 1)
     M = np.clip(base_m + frost * 100.0 * sm, 0, 255).astype(np.float32)
     R = np.clip(base_r - frost * 80.0 * sm, 15, 255)
@@ -3546,6 +3743,7 @@ def spec_absolute_zero(shape, seed, sm, base_m, base_r):
 
 def paint_solar_panel(paint, shape, mask, seed, pm, bb):
 
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     blend = np.clip(pm, 0.0, 1.0)
@@ -3589,6 +3787,7 @@ def spec_solar_panel(shape, seed, sm, base_m, base_r):
 
 def paint_holographic_base(paint, shape, mask, seed, pm, bb):
 
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape[:2] if len(shape) > 2 else shape
     y, x = get_mgrid((h, w))
 
@@ -3613,7 +3812,7 @@ def spec_holographic_base(shape, seed, sm, base_m, base_r):
 
     h, w = shape[:2] if len(shape) > 2 else shape
     # Foil-like grain
-    grain = multi_scale_noise((h, w), [2, 4], [0.5, 0.5], seed + 3001)
+    grain = multi_scale_noise((h, w), [32, 64], [0.5, 0.5], seed + 3001)
     grain = np.clip(grain, 0, 1)
     
     M = np.clip(200.0 + grain * 55.0 * sm, 0, 255).astype(np.float32)
@@ -3623,6 +3822,7 @@ def spec_holographic_base(shape, seed, sm, base_m, base_r):
 
 def paint_plasma_core(paint, shape, mask, seed, pm, bb):
 
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape[:2] if len(shape) > 2 else shape
     
     base = paint.copy()
@@ -3672,7 +3872,10 @@ def spec_plasma_core(shape, seed, sm, base_m, base_r):
 # ======================================================================
 
 def paint_armor_plate_v2(paint, shape, mask, seed, pm, bb):
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
 
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape[:2] if len(shape) > 2 else shape
     # Make it dark heavy steel
     base = paint.copy()
@@ -3707,7 +3910,10 @@ def spec_armor_plate_v2(shape, seed, sm, base_m, base_r):
     return M, R, np.full((h, w), 130.0, dtype=np.float32)  # CC=130 worn military plate
 
 def paint_battleship_gray_v2(paint, shape, mask, seed, pm, bb):
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
 
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape[:2] if len(shape) > 2 else shape
     
     # Force to naval haze gray but preserve a hint of the user's color
@@ -3726,7 +3932,7 @@ def paint_battleship_gray_v2(paint, shape, mask, seed, pm, bb):
     # Salt spray and vertical streaking from seawater
     y, x = get_mgrid((h,w))
     streaks = np.sin(x * 0.1 + multi_scale_noise((h,w), [16], [1.0], seed) * 2.0) * 0.5 + 0.5
-    salt = multi_scale_noise((h, w), [2, 4], [0.5, 0.5], seed + 10)
+    salt = multi_scale_noise((h, w), [32, 64], [0.5, 0.5], seed + 10)
     weathering = (streaks * 0.6 + salt * 0.4)
     
     paint = np.clip(paint + (weathering - 0.5)[:,:,np.newaxis] * 0.1 * mask[:,:,np.newaxis] * blend, 0, 1)
@@ -3746,6 +3952,7 @@ def spec_battleship_gray_v2(shape, seed, sm, base_m, base_r):
 
 def paint_gunship_gray_v2(paint, shape, mask, seed, pm, bb):
 
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape[:2] if len(shape) > 2 else shape
     
     # Darker, flatter radar-absorbent material look
@@ -3779,7 +3986,10 @@ def spec_gunship_gray_v2(shape, seed, sm, base_m, base_r):
     return M, R, np.full((h, w), 190.0, dtype=np.float32)  # CC=190 near-flat RAM
 
 def paint_mil_spec_od_v3(paint, shape, mask, seed, pm, bb):
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
 
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape[:2] if len(shape) > 2 else shape
     
     # Force OD Green
@@ -3813,7 +4023,10 @@ def spec_mil_spec_od_v3(shape, seed, sm, base_m, base_r):
     return M, R, np.full((h, w), 195.0, dtype=np.float32)  # CC=195 dead flat military
 
 def paint_mil_spec_tan_v2(paint, shape, mask, seed, pm, bb):
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
 
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape[:2] if len(shape) > 2 else shape
     
     # Force Desert Tan
@@ -3830,14 +4043,14 @@ def paint_mil_spec_tan_v2(paint, shape, mask, seed, pm, bb):
     )
     
     # Dust accumulation
-    dust = multi_scale_noise((h, w), [4, 8], [0.6, 0.4], seed + 200)
+    dust = multi_scale_noise((h, w), [16, 32], [0.6, 0.4], seed + 200)
     paint = np.clip(paint + dust[:,:,np.newaxis] * 0.1 * mask[:,:,np.newaxis] * blend, 0, 1)
     return np.clip(paint + bb * 0.08, 0, 1)
 
 def spec_mil_spec_tan_v2(shape, seed, sm, base_m, base_r):
 
     h, w = shape[:2] if len(shape) > 2 else shape
-    dust = multi_scale_noise((h, w), [4, 8], [0.6, 0.4], seed + 200)
+    dust = multi_scale_noise((h, w), [16, 32], [0.6, 0.4], seed + 200)
     
     M = np.full((h, w), 0.0, dtype=np.float32)
     R = np.clip(200.0 + dust * 55.0 * sm, 15, 255)
@@ -3846,6 +4059,7 @@ def spec_mil_spec_tan_v2(shape, seed, sm, base_m, base_r):
 
 def paint_submarine_black_v2(paint, shape, mask, seed, pm, bb):
 
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape[:2] if len(shape) > 2 else shape
     
     # Submarine hulls are ultra-dark rubbery/resin
@@ -3869,7 +4083,7 @@ def paint_submarine_black_v2(paint, shape, mask, seed, pm, bb):
     paint[:,:,2] = np.clip(paint[:,:,2] + grid * 0.08 * mask * blend, 0, 1)
     
     # Heavy rubber grain
-    rubber_grain = multi_scale_noise((h, w), [2, 4], [0.6, 0.4], seed + 500)
+    rubber_grain = multi_scale_noise((h, w), [32, 64], [0.6, 0.4], seed + 500)
     paint = np.clip(paint + rubber_grain[:,:,np.newaxis] * 0.03 * mask[:,:,np.newaxis] * blend, 0, 1)
     
     # Absolutely no bb highlight boost on anechoic rubber
@@ -3882,7 +4096,7 @@ def spec_submarine_black_v2(shape, seed, sm, base_m, base_r):
     tile_size = 32
     y, x = np.mgrid[0:h, 0:w]
     grid = ((y % tile_size < 2) | (x % tile_size < 2)).astype(np.float32)
-    rubber_grain = multi_scale_noise((h, w), [2, 4], [0.6, 0.4], seed + 500)
+    rubber_grain = multi_scale_noise((h, w), [32, 64], [0.6, 0.4], seed + 500)
     
     # Rubber is highly dielectric and extremely rough
     M = np.full((h, w), 0.0, dtype=np.float32)
@@ -3898,7 +4112,10 @@ def spec_submarine_black_v2(shape, seed, sm, base_m, base_r):
 # ======================================================================
 
 def paint_blackout_v2(paint, shape, mask, seed, pm, bb):
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
 
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape[:2] if len(shape) > 2 else shape
     # Stealth murdered-out matte wrap style
     base = paint.copy()
@@ -3926,7 +4143,10 @@ def spec_blackout_v2(shape, seed, sm, base_m, base_r):
 
 
 def paint_cerakote_v2(paint, shape, mask, seed, pm, bb):
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
 
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape[:2] if len(shape) > 2 else shape
     # Ceramic mil-spec coating - flattens out color and heavily desaturates
     base = paint.copy()
@@ -3956,7 +4176,10 @@ def spec_cerakote_v2(shape, seed, sm, base_m, base_r):
 
 
 def paint_duracoat_v2(paint, shape, mask, seed, pm, bb):
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
 
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape[:2] if len(shape) > 2 else shape
     # Epoxy air-dried paint. Maintains color better than cerakote but gets muddy
     base = paint.copy()
@@ -3986,6 +4209,7 @@ def spec_duracoat_v2(shape, seed, sm, base_m, base_r):
 
 def paint_martian_regolith(paint, shape, mask, seed, pm, bb):
 
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape[:2] if len(shape) > 2 else shape
     
     # OVERWRITE into iron-oxide rusty red Martian dirt
@@ -4025,6 +4249,9 @@ def spec_martian_regolith(shape, seed, sm, base_m, base_r):
 
 
 def paint_powder_coat_v2(paint, shape, mask, seed, pm, bb):
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     # Very solid, thick color layer. Saturates and darkens slightly.
     paint = np.clip(paint * 1.1, 0, 1)
     # The major defining feature of powder coat is the specular orange-peel, so base is relatively clean
@@ -4040,12 +4267,15 @@ def spec_powder_coat_v2(shape, seed, sm, base_m, base_r):
     M = np.full((h, w), 10.0, dtype=np.float32)
     R = np.clip(90.0 + peel * 70.0 * sm, 15, 255)
     # Give it a thick clearcoat property to emulate baked finish
-    CC = np.clip(50.0 - peel * 20.0 * sm, 0, 255).astype(np.float32)
+    CC = np.clip(50.0 - peel * 20.0 * sm, 16, 255).astype(np.float32)
     return M, R, CC
 
 
 def paint_sandblasted_v2(paint, shape, mask, seed, pm, bb):
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
 
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape[:2] if len(shape) > 2 else shape
     
     # Stripped metal. It totally destroys the user saturation, leaving it light grey/metallic
@@ -4088,8 +4318,8 @@ def spec_chromaflair_base(shape, seed, sm, base_m, base_r):
     Signature: (shape, seed, sm, base_m, base_r) -> (M_arr, R_arr, CC_arr)."""
     h, w = shape[:2] if len(shape) > 2 else shape
     sh = (h, w)
-    flake_field = multi_scale_noise(sh, [4, 8, 16], [0.4, 0.35, 0.25], seed + 300)
-    flake2      = multi_scale_noise(sh, [2, 4],     [0.6, 0.4],         seed + 301)
+    flake_field = multi_scale_noise(sh, [16, 32, 64], [0.4, 0.35, 0.25], seed + 300)
+    flake2      = multi_scale_noise(sh, [32, 64],     [0.6, 0.4],         seed + 301)
     flake_combined = flake_field * 0.65 + flake2 * 0.35
     M_arr  = np.clip(180.0 + flake_combined * 60.0 * sm, 0, 255).astype(np.float32)
     R_arr  = np.clip(  8.0 + flake_combined * 12.0 * sm, 15, 255).astype(np.float32)  # GGX floor: R>=15
@@ -4103,12 +4333,13 @@ def paint_chromaflair(paint, shape, mask, seed, pm, bb):
     Low angle (<0.33): base color unchanged.
     Mid angle (0.33-0.66): interpolate toward hue+120 deg.
     High angle (>0.66): interpolate toward hue+240 deg."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     # Angle proxy: large-scale FBM
     angle_proxy = multi_scale_noise((h, w), [32, 64, 128], [0.5, 0.3, 0.2], seed + 310)
     angle_proxy = np.clip(angle_proxy * 0.5 + 0.5, 0, 1)  # 0-1
     # Flake density drives blend strength
-    flake_dens = multi_scale_noise((h, w), [4, 8, 16], [0.4, 0.35, 0.25], seed + 311)
+    flake_dens = multi_scale_noise((h, w), [16, 32, 64], [0.4, 0.35, 0.25], seed + 311)
     flake_dens = np.clip(flake_dens * 0.5 + 0.5, 0, 1)
 
     # Per-pixel HSV of current paint
@@ -4170,6 +4401,7 @@ def paint_xirallic(paint, shape, mask, seed, pm, bb):
     """Xirallic crystal flake - iron oxide blue-silver interference on flake areas.
     Flake areas: push toward blue-silver (H~210, S=0.3, high V).
     Inter-flake: slight desaturation + darkening (depth effect)."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     flake_coarse = multi_scale_noise((h, w), [32, 64], [0.6, 0.4], seed + 320)
     flake_coarse_n = np.clip(flake_coarse * 0.5 + 0.5, 0, 1)
@@ -4198,7 +4430,7 @@ def spec_anodized_exotic_base(shape, seed, sm, base_m, base_r):
     Signature: (shape, seed, sm, base_m, base_r) -> (M_arr, R_arr, CC_arr)."""
     h, w = shape[:2] if len(shape) > 2 else shape
     sh = (h, w)
-    base_noise = multi_scale_noise(sh, [4, 8, 16], [0.3, 0.4, 0.3], seed + 330)
+    base_noise = multi_scale_noise(sh, [16, 32, 64], [0.3, 0.4, 0.3], seed + 330)
     base_n = np.clip(base_noise * 0.5 + 0.5, 0, 1)
 
     # Fine hex pore grid at tiny scale (~8px cells)
@@ -4224,6 +4456,7 @@ def paint_anodized_exotic(paint, shape, mask, seed, pm, bb):
     WEAK-035 FIX: hex pore grid (same 8px cell geometry as spec_anodized_exotic_base)
     echoed into paint layer. Pore rims catch light (+4.2% at pm=1); pore centers dim
     slightly (-1.8%). Gives the paint spatial depth matching the spec channel."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape[:2] if len(shape) > 2 else shape
     gray = paint.mean(axis=2, keepdims=True)
     desat = 0.12 * pm
@@ -4272,6 +4505,7 @@ def paint_oil_slick_full(paint, shape, mask, seed, pm, bb):
     Dark base: desaturate + darken input.
     Thin-film: FBM film thickness drives full 360 hue rotation at S=0.9.
     Blend: 0.7 thin-film + 0.3 dark base."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     # Dark base
     gray = paint.mean(axis=2)
@@ -4324,6 +4558,7 @@ def paint_thermal_titanium(paint, shape, mask, seed, pm, bb):
     """Thermal Titanium full monolithic paint: FBM-warped gradient heat color ramp.
     Color sequence: silver -> straw -> amber/gold -> purple -> deep blue -> gray-blue.
     No base color used — this IS the color."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     heat = multi_scale_noise((h, w), [16, 32, 64], [0.4, 0.35, 0.25], seed + 500)
     warp = multi_scale_noise((h, w), [8, 16], [0.6, 0.4], seed + 501)
@@ -4374,8 +4609,7 @@ def spec_galaxy_nebula_base(shape, mask, seed, sm):
     flat_idx = np.arange(h * w, dtype=np.uint32)
     lcg = ((flat_idx * 1664525 + (seed & 0xFFFF)) * 22695477 + 1013904223) & 0xFFFFFFFF
     stars = (lcg % 1000 < 4).reshape(h, w).astype(np.float32)
-    _simg = Image.fromarray(np.clip(stars * 255, 0, 255).astype(np.uint8), mode='L')
-    stars_spread = np.array(_simg.filter(ImageFilter.GaussianBlur(radius=1.5))).astype(np.float32) / 255.0
+    stars_spread = cv2.GaussianBlur(stars.astype(np.float32), (5, 5), 1.5)
 
     M_nebula = 80.0 + nebula_val * 70.0
     M_stars   = np.clip(stars_spread * 255.0 * 1.3, 0, 255)
@@ -4396,6 +4630,7 @@ def paint_galaxy_nebula_full(paint, shape, mask, seed, pm, bb):
     """Galaxy Nebula full monolithic paint: near-black base + 4-region nebula colors + LCG star field.
     50% nebula color, 30% star contribution, 20% near-black void.
     5 nebula palette colors (blue, violet, rose, teal, gold) cycling through regions."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     # Near-black base
     gray = paint.mean(axis=2)
@@ -4443,12 +4678,9 @@ def paint_galaxy_nebula_full(paint, shape, mask, seed, pm, bb):
     star_g = np.where(star_mask_arr, np.where(star_type == 1, 0.82, np.where(star_type == 2, 0.95, 0.95)), 0.0).astype(np.float32)
     star_b = np.where(star_mask_arr, np.where(star_type == 1, 1.0,  np.where(star_type == 2, 0.70, 0.95)), 0.0).astype(np.float32)
 
-    for _ch, _sarr in enumerate([star_r, star_g, star_b]):
-        _img = Image.fromarray(np.clip(_sarr * 255, 0, 255).astype(np.uint8), mode='L')
-        _bl = np.array(_img.filter(ImageFilter.GaussianBlur(radius=1.5))).astype(np.float32) / 255.0
-        if _ch == 0: star_r_s = _bl
-        elif _ch == 1: star_g_s = _bl
-        else: star_b_s = _bl
+    star_r_s = cv2.GaussianBlur(star_r.astype(np.float32), (5, 5), 1.5)
+    star_g_s = cv2.GaussianBlur(star_g.astype(np.float32), (5, 5), 1.5)
+    star_b_s = cv2.GaussianBlur(star_b.astype(np.float32), (5, 5), 1.5)
 
     # Blend: 50% nebula + 30% stars + 20% void
     blend_neb  = 0.50 * pm * mask
@@ -4478,20 +4710,32 @@ def spec_alubeam_base(shape, seed, sm, base_m, base_r):
     """Alubeam / Liquid Mirror base spec: ultra-fine oriented aluminum flake — fills the
     'blurry chrome' zone between mirror and standard metallic.
     R=248 near-max metallic, G=15-25 tight-but-not-perfect blur, CC=16-18 max gloss.
-    DISTINCT from chrome (G=2) and metallic (G=50): occupies the coherent-blur window."""
+    DISTINCT from chrome (G=2) and metallic (G=50): occupies the coherent-blur window.
+
+    FIVE-HOUR SHIFT Win A4 (Animal-flagged SPEC_FLAT identity violator):
+    pre-fix the (flake_x*0.6 + flake_y*0.4)*0.5+0.5 collapse produced
+    very small `liquid_flow` variation — measured R_std ≈ 0.8 in the
+    audit, well under the 4.0 SPEC_FLAT threshold. "Liquid mirror" name
+    promised flowing reflection, painter saw flat metallic. Now adds a
+    stronger directional brush stripe so the meniscus reads visibly.
+    """
     h, w = shape[:2] if len(shape) > 2 else shape
     sh = (h, w)
     # Oriented flake: single-scale flake noise with directional character
-    flake_x = multi_scale_noise(sh, [4, 8], [0.6, 0.4], seed + 701)
-    flake_y = multi_scale_noise(sh, [4, 8], [0.6, 0.4], seed + 702)
+    flake_x = multi_scale_noise(sh, [16, 32], [0.6, 0.4], seed + 701)
+    flake_y = multi_scale_noise(sh, [16, 32], [0.6, 0.4], seed + 702)
     # Mercury-like coherent flow: combine axes for liquid appearance
     liquid_flow = np.clip((flake_x * 0.6 + flake_y * 0.4) * 0.5 + 0.5, 0, 1)
-    # M: 240-250 (near-max, ultra-fine aluminum — not full chrome)
-    M_arr = np.clip(240.0 + liquid_flow * 10.0 * sm, 0, 255).astype(np.float32)
-    # R: 15-25 (tight blur — NOT zero, not standard metallic; the liquid mirror zone)
-    R_arr = np.clip(15.0 + liquid_flow * 10.0 * sm, 2, 255).astype(np.float32)
+    # NEW (Win A4): strong directional brush-stripe noise to fake
+    # meniscus surface tension lines — a real liquid metal surface shows
+    # micro-flow patterns even when "flat".
+    stripe = multi_scale_noise(sh, [3, 64], [0.55, 0.45], seed + 703)
+    # M: 240-255 (near-max, ultra-fine aluminum — not full chrome)
+    M_arr = np.clip(240.0 + liquid_flow * 10.0 * sm + stripe * 8.0 * sm, 0, 255).astype(np.float32)
+    # R: 15-30 (was 15-25 with weak variation; widen to give visible roughness band)
+    R_arr = np.clip(15.0 + liquid_flow * 8.0 * sm + np.abs(stripe) * 12.0 * sm, 15, 255).astype(np.float32)
     # CC: 16-18 (maximum gloss, slight pooling variation)
-    CC_arr = np.clip(16.0 + liquid_flow * 2.0, 16, 255).astype(np.float32)
+    CC_arr = np.clip(16.0 + liquid_flow * 2.0 + np.abs(stripe) * 1.5, 16, 255).astype(np.float32)
     return M_arr, R_arr, CC_arr
 
 
@@ -4499,9 +4743,10 @@ def paint_alubeam(paint, shape, mask, seed, pm, bb):
     """Alubeam / Liquid Mirror paint: near-white albedo with flowing silver tint.
     Oriented aluminum flakes produce a coherent silver-white liquid appearance.
     Preserves base hue but strongly desaturates toward silver-white."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
-    flake_x = multi_scale_noise((h, w), [4, 8], [0.6, 0.4], seed + 701)
-    flake_y = multi_scale_noise((h, w), [4, 8], [0.6, 0.4], seed + 702)
+    flake_x = multi_scale_noise((h, w), [16, 32], [0.6, 0.4], seed + 701)
+    flake_y = multi_scale_noise((h, w), [16, 32], [0.6, 0.4], seed + 702)
     flow = np.clip((flake_x * 0.6 + flake_y * 0.4) * 0.5 + 0.5, 0, 1)
     # Near-white silver: target albedo ~(230-250, 230-250, 235-252)
     silver_r = np.clip(0.90 + flow * 0.08, 0, 1)
@@ -4526,10 +4771,10 @@ def spec_satin_candy_base(shape, seed, sm, base_m, base_r):
     satin_fbm = multi_scale_noise(sh, [8, 16, 32], [0.5, 0.3, 0.2], seed + 710)
     M_arr = np.zeros((h, w), dtype=np.float32)  # R=0: non-metallic candy
     # G: 160-180 satin roughness — locked into the satin range, not gloss candy
-    R_arr = np.clip(160.0 + satin_fbm * 20.0 * sm, 2, 255).astype(np.float32)
+    R_arr = np.clip(160.0 + satin_fbm * 20.0 * sm, 15, 255).astype(np.float32)
     # CC: 0-12 — explicitly below the 16 gloss threshold (satin clear behavior)
     # NOTE: Intentional dead-zone use — satin clear effectively kills gloss response
-    CC_arr = np.clip(satin_fbm * 12.0, 0, 12).astype(np.float32)
+    CC_arr = np.clip(16.0 + satin_fbm * 12.0, 16, 255).astype(np.float32)
     return M_arr, R_arr, CC_arr
 
 
@@ -4537,6 +4782,7 @@ def paint_satin_candy(paint, shape, mask, seed, pm, bb):
     """Satin Candy paint: boosts color saturation to vivid max — the color IS everything.
     Converts paint albedo to HSV, locks S=0.95-1.0, preserves hue and value.
     The 'glowing coal' visual: color saturates under overcast, zero reflection."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     satin_fbm = multi_scale_noise((h, w), [8, 16], [0.6, 0.4], seed + 711)
     # Convert each pixel to saturated color — pull S to near-max
@@ -4562,20 +4808,21 @@ def spec_velvet_floc_base(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
     sh = (h, w)
     # Micro flock variation — flock pile has some height variation (narrow range)
-    flock_fbm = multi_scale_noise(sh, [2, 4], [0.6, 0.4], seed + 720)
+    flock_fbm = multi_scale_noise(sh, [32, 64], [0.6, 0.4], seed + 720)
     M_arr = np.zeros((h, w), dtype=np.float32)  # No metallic — pure light absorption
     # G: 245-255 — far above even deep matte, eliminates all specular
-    R_arr = np.clip(245.0 + flock_fbm * 10.0, 2, 255).astype(np.float32)
-    # CC: 0 — zero clearcoat (no coat on flock pile)
-    CC_arr = np.zeros((h, w), dtype=np.float32)
+    R_arr = np.clip(245.0 + flock_fbm * 10.0, 15, 255).astype(np.float32)
+    # CC: 16 minimum (iRacing GGX floor — 0 causes rendering artifacts)
+    CC_arr = np.full((h, w), 16.0, dtype=np.float32)
     return M_arr, R_arr, CC_arr
 
 
 def paint_velvet_floc(paint, shape, mask, seed, pm, bb):
     """Velvet paint: forces albedo to deep black (5-10 range) — the car is a shadow.
     Desaturates and darkens to near-black. Micro flock pile texture via fine noise."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
-    flock_fbm = multi_scale_noise((h, w), [2, 4], [0.6, 0.4], seed + 720)
+    flock_fbm = multi_scale_noise((h, w), [32, 64], [0.6, 0.4], seed + 720)
     # Target: near-black (5-12 in 0-255 range = 0.020-0.047 float)
     black_r = np.clip(0.022 + flock_fbm * 0.018, 0, 1)
     black_g = np.clip(0.018 + flock_fbm * 0.018, 0, 1)
@@ -4599,17 +4846,19 @@ def spec_deep_pearl_base(shape, seed, sm, base_m, base_r):
     base_coat   = multi_scale_noise(sh, [8,  16], [0.55, 0.45], seed + 730)   # metallic silver base
     pearl_mid   = multi_scale_noise(sh, [20, 40], [0.55, 0.45], seed + 731)   # interference mica
     clear_top   = multi_scale_noise(sh, [32, 64], [0.55, 0.45], seed + 732)   # gloss clearcoat
+    platelet    = multi_scale_noise(sh, [2, 4, 8], [0.42, 0.35, 0.23], seed + 733)
+    platelet01  = np.clip((platelet + 1.0) * 0.5, 0, 1)
     # Edge weighting: simulate flop angle shift (smooth gradient across surface)
     y_pos = np.linspace(0, 1, h, dtype=np.float32)
     x_pos = np.linspace(0, 1, w, dtype=np.float32)
     yy, xx = np.meshgrid(y_pos, x_pos, indexing='ij')
     edge_weight = np.clip(np.sin(yy * np.pi) * np.sin(xx * np.pi), 0, 1)
     # M: 80-100 with edge-weighted flop (face=80, edge=100)
-    M_arr = np.clip(80.0 + edge_weight * 20.0 + pearl_mid * 15.0 * sm, 0, 255).astype(np.float32)
+    M_arr = np.clip(80.0 + edge_weight * 18.0 + pearl_mid * 12.0 * sm + platelet01 * 34.0 * sm, 0, 255).astype(np.float32)
     # R: 50-70 (pearl surface micro-roughness — distinctly rougher than standard pearl)
-    R_arr = np.clip(50.0 + pearl_mid * 20.0 * sm + base_coat * 10.0, 2, 255).astype(np.float32)
+    R_arr = np.clip(48.0 + pearl_mid * 16.0 * sm + base_coat * 8.0 + (1.0 - platelet01) * 24.0 * sm, 15, 255).astype(np.float32)
     # CC: 16-20 (glossy tri-coat clear with slight pooling)
-    CC_arr = np.clip(16.0 + clear_top * 4.0, 16, 255).astype(np.float32)
+    CC_arr = np.clip(16.0 + clear_top * 4.0 + platelet01 * 14.0 * sm, 16, 255).astype(np.float32)
     return M_arr, R_arr, CC_arr
 
 
@@ -4617,18 +4866,22 @@ def paint_deep_pearl(paint, shape, mask, seed, pm, bb):
     """Deep Pearl type-III paint: near-white/pastel albedo with warm/cool flop hint.
     Edge-weighted hue shift adds secondary color flop (gold, pink, or blue tint at angles).
     Preserves base color but pushes lightness toward pearl range."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     pearl_mid = multi_scale_noise((h, w), [20, 40], [0.55, 0.45], seed + 731)
     clear_top  = multi_scale_noise((h, w), [32, 64], [0.55, 0.45], seed + 732)
+    platelet = multi_scale_noise((h, w), [2, 4, 8], [0.42, 0.35, 0.23], seed + 733)
     # Edge-weighted flop: warm gold hint at raking angles
     y_pos = np.linspace(0, 1, h, dtype=np.float32)
     x_pos = np.linspace(0, 1, w, dtype=np.float32)
     yy, xx = np.meshgrid(y_pos, x_pos, indexing='ij')
     edge_w = np.clip(1.0 - np.sin(yy * np.pi) * np.sin(xx * np.pi), 0, 1)
+    nacre = np.sin(xx * w * 0.16 + yy * h * 0.055 + pearl_mid * 3.5) * 0.5 + 0.5
+    platelet_flash = np.clip((platelet - 0.08) * 1.8, 0, 1)
     # Gold flop color: (0.75, 0.60, 0.16)
-    flop_r = 0.75 * edge_w * pearl_mid + 0.1
-    flop_g = 0.60 * edge_w * pearl_mid + 0.1
-    flop_b = 0.16 * edge_w * pearl_mid + 0.1
+    flop_r = 0.58 * edge_w * pearl_mid + 0.1 + platelet_flash * 0.115 + nacre * 0.055
+    flop_g = 0.46 * edge_w * pearl_mid + 0.1 + platelet_flash * 0.088 + (1.0 - nacre) * 0.044
+    flop_b = 0.12 * edge_w * pearl_mid + 0.1 + platelet_flash * 0.135 + nacre * 0.070
     # Lighten base toward pearl-white
     white_lift = np.clip(clear_top * 0.3, 0, 0.3)
     blend_flop  = pm * 0.25 * mask
@@ -4639,6 +4892,9 @@ def paint_deep_pearl(paint, shape, mask, seed, pm, bb):
                               + flop_g * blend_flop + (paint[:, :, 1] + white_lift) * blend_white, 0, 1)
     paint[:, :, 2] = np.clip(paint[:, :, 2] * (1 - blend_flop - blend_white)
                               + flop_b * blend_flop + (paint[:, :, 2] + white_lift) * blend_white, 0, 1)
+    paint[:, :, 0] = np.clip(paint[:, :, 0] + platelet_flash * mask * pm * 0.085 + nacre * mask * pm * 0.035, 0, 1)
+    paint[:, :, 1] = np.clip(paint[:, :, 1] + platelet_flash * mask * pm * 0.066 + (1.0 - nacre) * mask * pm * 0.028, 0, 1)
+    paint[:, :, 2] = np.clip(paint[:, :, 2] + platelet_flash * mask * pm * 0.110 + nacre * mask * pm * 0.042, 0, 1)
     return paint
 
 
@@ -4657,7 +4913,7 @@ def spec_gunmetal_satin_base(shape, seed, sm, base_m, base_r):
     # M: 190-220 (high but not chrome — raw machined metal)
     M_arr = np.clip(190.0 + combined * 30.0 * sm, 0, 255).astype(np.float32)
     # R: 130-160 (moderate roughness — machined surface, not brushed)
-    R_arr = np.clip(130.0 + combined * 30.0 * sm, 2, 255).astype(np.float32)
+    R_arr = np.clip(130.0 + combined * 30.0 * sm, 15, 255).astype(np.float32)
     # CC: 20-40 (slight clearcoat — thin industrial coat)
     CC_arr = np.clip(20.0 + combined * 20.0, 16, 255).astype(np.float32)
     return M_arr, R_arr, CC_arr
@@ -4667,8 +4923,9 @@ def paint_gunmetal_satin(paint, shape, mask, seed, pm, bb):
     """Gunmetal Satin paint: dark grey desaturation with industrial metallic cast.
     Pushes color toward dark grey (40-70 range), preserves a subtle metallic sheen.
     Feels raw-machined, not painted."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
-    grain = multi_scale_noise((h, w), [4, 8, 16], [0.4, 0.35, 0.25], seed + 741)
+    grain = multi_scale_noise((h, w), [16, 32, 64], [0.4, 0.35, 0.25], seed + 741)
     # Target dark grey: (0.22-0.28)
     dark_grey_r = np.clip(0.22 + grain * 0.06, 0, 1)
     dark_grey_g = np.clip(0.22 + grain * 0.06, 0, 1)
@@ -4699,12 +4956,12 @@ def spec_forged_carbon_vis_base(shape, seed, sm, base_m, base_r):
     fiber2 = np.sin((x * np.cos(angle2) + y * np.sin(angle2)) * 0.12) * 0.5 + 0.5
     fiber3 = np.sin((x * np.cos(angle3) + y * np.sin(angle3)) * 0.18) * 0.5 + 0.5
     # Random scatter noise to break up regularity
-    scatter = multi_scale_noise(sh, [4, 8, 16], [0.3, 0.4, 0.3], seed + 751)
+    scatter = multi_scale_noise(sh, [16, 32, 64], [0.3, 0.4, 0.3], seed + 751)
     forged = np.clip(fiber1 * 0.35 + fiber2 * 0.30 + fiber3 * 0.20 + scatter * 0.15, 0, 1)
     # M: 20-40 (low metallic, carbon is dielectric but has surface sheen variation)
     M_arr = np.clip(20.0 + forged * 20.0 * sm, 0, 255).astype(np.float32)
     # R: 25-50 (varies with weave — rib tops smoother, recesses rougher)
-    R_arr = np.clip(25.0 + forged * 25.0 * sm, 2, 255).astype(np.float32)
+    R_arr = np.clip(25.0 + forged * 25.0 * sm, 15, 255).astype(np.float32)
     # CC: 16-24 (glossy clearcoat pooling over random weave)
     CC_arr = np.clip(16.0 + forged * 8.0, 16, 255).astype(np.float32)
     return M_arr, R_arr, CC_arr
@@ -4714,6 +4971,7 @@ def paint_forged_carbon_vis(paint, shape, mask, seed, pm, bb):
     """Forged Carbon Visible Weave paint: charcoal base with organic random-strand depth.
     Non-repeating dark charcoal with organic fiber flow character (not aligned twill).
     Deep wet clearcoat appearance simulated via color value modulation."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     rng = np.random.RandomState(seed + 750)
     angle1 = rng.uniform(0, np.pi)
@@ -4721,7 +4979,7 @@ def paint_forged_carbon_vis(paint, shape, mask, seed, pm, bb):
     y, x = np.mgrid[0:h, 0:w].astype(np.float32)
     fiber1 = np.sin((x * np.cos(angle1) + y * np.sin(angle1)) * 0.15) * 0.5 + 0.5
     fiber2 = np.sin((x * np.cos(angle2) + y * np.sin(angle2)) * 0.12) * 0.5 + 0.5
-    scatter = multi_scale_noise((h, w), [4, 8, 16], [0.3, 0.4, 0.3], seed + 751)
+    scatter = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.4, 0.3], seed + 751)
     forged = np.clip(fiber1 * 0.45 + fiber2 * 0.35 + scatter * 0.20, 0, 1)
     # Charcoal base: dark (0.08-0.18) with organic brightness variation
     char_r = np.clip(0.08 + forged * 0.10, 0, 1)
@@ -4739,17 +4997,27 @@ def spec_electroplated_gold_base(shape, seed, sm, base_m, base_r):
     """Electroplated Gold / Rose Gold base spec: M=245-255, R=5-18, CC=16.
     Chrome physics with warm-colored albedo — the 'warm mirror' zone.
     DISTINCT from chrome (neutral silver albedo): electroplated gold = warm tinted mirror.
-    Rolls-Royce Bespoke Gold / Porsche 911 Turbo S Exclusive reference."""
+    Rolls-Royce Bespoke Gold / Porsche 911 Turbo S Exclusive reference.
+
+    FIVE-HOUR SHIFT Win A5 (Animal-flagged SPEC_FLAT identity violator):
+    pre-fix CC was a constant np.full() (CC_std=0.0) — the plating
+    crystal grain was visible only in M and R bands and the audit
+    flagged it as flat. Adds a finer-grain plating-crystal field so
+    the spec map reads as "plated metal" rather than "smooth mirror".
+    """
     h, w = shape[:2] if len(shape) > 2 else shape
     sh = (h, w)
     # Crystal-grain micro noise for plating surface character
-    crystal = multi_scale_noise(sh, [2, 4], [0.6, 0.4], seed + 760)
+    crystal = multi_scale_noise(sh, [32, 64], [0.6, 0.4], seed + 760)
+    # NEW (Win A5): finer plating-crystal grain at higher frequency for
+    # micro-character. Real electroplating leaves visible crystal facets.
+    fine_grain = multi_scale_noise(sh, [4, 12], [0.6, 0.4], seed + 761)
     # M: 245-255 (near-max metallic — electroplated surface)
-    M_arr = np.clip(245.0 + crystal * 10.0 * sm, 0, 255).astype(np.float32)
-    # R: 5-18 (very low roughness — tight mirror-like reflection, warmer than chrome)
-    R_arr = np.clip(5.0 + crystal * 13.0 * sm, 2, 255).astype(np.float32)
-    # CC: 16 (max gloss — no clearcoat degradation)
-    CC_arr = np.full((h, w), 16.0, dtype=np.float32)
+    M_arr = np.clip(245.0 + crystal * 8.0 * sm + fine_grain * 6.0 * sm, 0, 255).astype(np.float32)
+    # R: 5-25 (was 5-18 with weak variation; lift the band so polished crystal facets show)
+    R_arr = np.clip(5.0 + crystal * 12.0 * sm + np.abs(fine_grain) * 8.0 * sm, 5, 255).astype(np.float32)
+    # CC: was np.full → flat. Add subtle clearcoat variation from grain.
+    CC_arr = np.clip(16.0 + np.abs(fine_grain) * 4.0 * sm, 16, 22).astype(np.float32)
     return M_arr, R_arr, CC_arr
 
 
@@ -4757,8 +5025,9 @@ def paint_electroplated_gold(paint, shape, mask, seed, pm, bb):
     """Electroplated Gold paint: warm gold/rose albedo — near-white with strong warm tint.
     Target: warm gold (190,150,40)/255 or rose gold (210,140,120)/255 depending on base hue.
     Detects warm vs. rose intent from paint color and biases accordingly."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
-    crystal = multi_scale_noise((h, w), [2, 4], [0.6, 0.4], seed + 761)
+    crystal = multi_scale_noise((h, w), [32, 64], [0.6, 0.4], seed + 761)
     # Warm gold target: (0.745, 0.588, 0.157)
     gold_r = np.clip(0.745 + crystal * 0.04, 0, 1)
     gold_g = np.clip(0.588 + crystal * 0.04, 0, 1)
@@ -4790,15 +5059,15 @@ def spec_cerakote_pvd_base(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
     sh = (h, w)
     # Hard coat surface: fine micro-texture from deposition process
-    deposit_fine = multi_scale_noise(sh, [4, 8],   [0.55, 0.45], seed + 770)
+    deposit_fine = multi_scale_noise(sh, [16, 32],   [0.55, 0.45], seed + 770)
     deposit_med  = multi_scale_noise(sh, [16, 32],  [0.55, 0.45], seed + 771)
     combined = deposit_fine * 0.5 + deposit_med * 0.5
     # M: 160-200 (moderate-high metallic — harder/more metallic than polymer Cerakote)
     M_arr = np.clip(160.0 + combined * 40.0 * sm, 0, 255).astype(np.float32)
     # R: 160-190 (moderate-high roughness — flat PVD surface, no gloss)
-    R_arr = np.clip(160.0 + combined * 30.0 * sm, 2, 255).astype(np.float32)
+    R_arr = np.clip(160.0 + combined * 30.0 * sm, 15, 255).astype(np.float32)
     # CC: 0-10 (zero clearcoat — PVD IS the finish, no topcoat)
-    CC_arr = np.clip(combined * 10.0, 0, 10).astype(np.float32)
+    CC_arr = np.clip(16.0 + combined * 10.0, 16, 255).astype(np.float32)
     return M_arr, R_arr, CC_arr
 
 
@@ -4806,8 +5075,9 @@ def paint_cerakote_pvd(paint, shape, mask, seed, pm, bb):
     """Cerakote PVD paint: desaturates toward deep muted industrial color.
     Preserves hue but crushes saturation to industrial flat (S≈0.3-0.5).
     Darkens toward the deep muted range — black, OD, tan, bronze."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
-    deposit = multi_scale_noise((h, w), [4, 8, 16], [0.4, 0.35, 0.25], seed + 771)
+    deposit = multi_scale_noise((h, w), [16, 32, 64], [0.4, 0.35, 0.25], seed + 771)
     # Desaturate toward muted industrial: blend toward grey at 45-50%
     gray = paint[:, :, 0] * 0.299 + paint[:, :, 1] * 0.587 + paint[:, :, 2] * 0.114
     # Target: reduced saturation + slight value crush
@@ -4847,7 +5117,7 @@ def spec_hypershift_spectral_base(shape, seed, sm, base_m, base_r):
     # M: 200-240 (high metallic — the spectral pigment carrier)
     M_arr = np.clip(200.0 + combined * 40.0 * sm, 0, 255).astype(np.float32)
     # R: 20-50 (low-moderate roughness — spectral pigment needs some blur for color reading)
-    R_arr = np.clip(20.0 + combined * 30.0 * sm, 2, 255).astype(np.float32)
+    R_arr = np.clip(20.0 + combined * 30.0 * sm, 15, 255).astype(np.float32)
     # CC: 16-24 (max gloss range — spectral pigments need clearcoat depth)
     CC_arr = np.clip(16.0 + combined * 8.0, 16, 255).astype(np.float32)
     return M_arr, R_arr, CC_arr
@@ -4860,6 +5130,7 @@ def paint_hypershift_spectral(paint, shape, mask, seed, pm, bb):
     the first anchor (Red). Now properly normalizes the combined noise to [0, 1]
     so ALL 6 anchors get equal representation = true full-spectrum sweep.
     Anchors: Red(0°)→Orange(29°)→Yellow-Green(86°)→Blue(230°)→Purple(281°)→Red(360°)."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     shift_coarse = multi_scale_noise((h, w), [32, 64, 128], [0.4, 0.35, 0.25], seed + 780)
     shift_fine   = multi_scale_noise((h, w), [8, 16],        [0.6, 0.4],        seed + 781)
@@ -4929,6 +5200,7 @@ def paint_iridescent_fog(paint, shape, mask, seed, pm, bb):
     """Iridescent Fog paint: thin oil-film haze — warm/cool tone shift with angle without
     changing underlying color character. Additive semi-transparent iridescent overlay.
     FBM film thickness drives 180° partial hue rotation at low saturation (S=0.35)."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     fog = multi_scale_noise((h, w), [16, 32, 64], [0.4, 0.35, 0.25], seed + 790)
     fog_n = np.clip(fog * 0.5 + 0.5, 0, 1)
@@ -4972,6 +5244,7 @@ def spec_chrome_delete_edge(shape, mask, seed, sm):
 def paint_chrome_delete_edge(paint, shape, mask, seed, pm, bb):
     """Chrome Delete Edge paint: brightens edge band toward near-white for chrome appearance.
     Interior paint color preserved. Edge band pushed toward chrome white (0.9-0.95)."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     mask_img = Image.fromarray(np.clip(mask * 255, 0, 255).astype(np.uint8), mode='L')
     edge_raw = np.array(mask_img.filter(ImageFilter.FIND_EDGES())).astype(np.float32) / 255.0
@@ -5015,6 +5288,7 @@ def spec_carbon_clearcoat_phaselock(shape, mask, seed, sm):
 def paint_carbon_clearcoat_phaselock(paint, shape, mask, seed, pm, bb):
     """Carbon Weave Clearcoat Phase-Lock paint: darkens toward carbon base + gloss depth.
     The clearcoat pooling gives the 3D depth; paint darkens to reveal it."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     y, x = np.mgrid[0:h, 0:w].astype(np.float32)
     weave_size = 8.0
@@ -5066,6 +5340,7 @@ def spec_racing_scratch(shape, mask, seed, sm):
 def paint_racing_scratch(paint, shape, mask, seed, pm, bb):
     """Racing Scratch paint: subtle scratch brightening where metal exposed + slight dulling.
     Directional micro-scratch brightening (exposed base metal) at nose area."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     rng = np.random.RandomState(seed + 800)
     scratch_h = rng.randn(h, 1).astype(np.float32) * 0.6
@@ -5114,6 +5389,7 @@ def paint_pearlescent_flip(paint, shape, mask, seed, pm, bb):
     """Pearlescent Flip Coat paint: adds secondary color flop to any base finish.
     At edges/grazing angles, a secondary hint of gold flop appears.
     Low-opacity additive — doesn't replace base color, just adds the angle reveal."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     platelet = multi_scale_noise((h, w), [8, 16, 32], [0.4, 0.35, 0.25], seed + 810)
     platelet_n = np.clip(platelet * 0.5 + 0.5, 0, 1)
@@ -5175,6 +5451,7 @@ def paint_frost_crystal(paint, shape, mask, seed, pm, bb):
     """Frost Crystal paint: ice-white crystal overlay with semi-transparent interior.
     Crystal interiors: blue-tinted white (frost). Boundaries: near-clear sparkle.
     Underlying color visible through frost interior."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     rng = np.random.RandomState(seed + 820)
     n_cells = max(20, int(50 * pm))
@@ -5226,6 +5503,7 @@ def paint_satin_wax(paint, shape, mask, seed, pm, bb):
     """Satin Wax: hand-wax swirl character — depth lift, saturation warmth, micro-buffing texture.
     WEAK-026 FIX: amplitude raised 5%→15%, +10% saturation push in swirl peaks, fine
     micro-buff FBM octave blended at 25% for hand-work scratch texture."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     swirl_scale = max(4, int(w * 0.30 / 8))
 
@@ -5265,7 +5543,7 @@ def spec_uv_night_accent(shape, mask, seed, sm):
     # R: UV zones = near max (230-255), inactive = low (20-40)
     spec[:, :, 0] = np.clip((20.0 + uv_active * 215.0) * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
     # G: UV zones = near zero (2-5), inactive = moderate (80-120)
-    spec[:, :, 1] = np.clip((80.0 - uv_active * 78.0) * mask + 100 * (1 - mask), 2, 255).astype(np.uint8)
+    spec[:, :, 1] = np.clip((80.0 - uv_active * 78.0) * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     # B (clearcoat): UV zones = 16 (max gloss), inactive = base value
     spec[:, :, 2] = np.clip((16.0 + (1.0 - uv_active) * 60.0) * mask + 80 * (1 - mask), 16, 255).astype(np.uint8)
     spec[:, :, 3] = 255
@@ -5276,6 +5554,7 @@ def paint_uv_night_accent(paint, shape, mask, seed, pm, bb):
     """UV Night Accent paint: subtle brightening of UV-active zones.
     In daylight: slight increase in brightness (barely visible).
     At night (IBL low): the high-specular creates visible bright hot-spots."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     uv_pattern = multi_scale_noise((h, w), [8, 16, 32], [0.4, 0.35, 0.25], seed + 840)
     uv_n = np.clip(uv_pattern * 0.5 + 0.5, 0, 1)
@@ -5312,7 +5591,7 @@ def spec_aurora_borealis_mono(shape, mask, seed, sm):
     density_n = np.clip(density * 0.5 + 0.5, 0, 1)
     combined = curtain * 0.65 + density_n * 0.35
     M = np.clip(230.0 + combined * 25.0, 0, 255)
-    R = np.clip( 30.0 + combined * 50.0, 2, 255)
+    R = np.clip( 30.0 + combined * 50.0, 15, 255)
     spec[:, :, 0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
     spec[:, :, 1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:, :, 2] = 16
@@ -5324,6 +5603,7 @@ def paint_aurora_borealis_mono(paint, shape, mask, seed, pm, bb):
     """Aurora Borealis monolithic paint: near-black base + flowing curtain color bands.
     Color: green → teal → cyan → violet (aurora palette) flowing vertically.
     Curtain structure = broad flowing zones, not point-source sparkle."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     warp = multi_scale_noise((h, w), [32, 64], [0.6, 0.4], seed + 850)
     warp_n = np.clip(warp * 0.5 + 0.5, 0, 1)
@@ -5384,11 +5664,10 @@ def spec_deep_space_void(shape, mask, seed, sm):
     # Very sparse star field: 0.15% = 1.5 per 1000 pixels
     lcg = ((flat_idx * 1664525 + (seed & 0xFFFF)) * 22695477 + 1013904223) & 0xFFFFFFFF
     stars = (lcg % 10000 < 15).reshape(h, w).astype(np.float32)  # ~0.15% density
-    _simg = Image.fromarray(np.clip(stars * 255, 0, 255).astype(np.uint8), mode='L')
-    stars_spread = np.array(_simg.filter(ImageFilter.GaussianBlur(radius=1.0))).astype(np.float32) / 255.0
+    stars_spread = cv2.GaussianBlur(stars.astype(np.float32), (3, 3), 1.0)
 
     M = np.clip(stars_spread * 255.0 * 1.5, 0, 255)
-    R = np.clip(255.0 - stars_spread * 260.0, 2, 255)
+    R = np.clip(255.0 - stars_spread * 260.0, 15, 255)
     spec[:, :, 0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
     spec[:, :, 1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:, :, 2] = 16
@@ -5400,6 +5679,7 @@ def paint_deep_space_void(paint, shape, mask, seed, pm, bb):
     """Deep Space Void monolithic paint: near-absolute black with white star pinpoints.
     Albedo locked: background (5,5,8), stars (white-blue).
     The car nearly disappears — only star collection visible."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     flat_idx = np.arange(h * w, dtype=np.uint32)
     lcg = ((flat_idx * 1664525 + (seed & 0xFFFF)) * 22695477 + 1013904223) & 0xFFFFFFFF
@@ -5410,14 +5690,11 @@ def paint_deep_space_void(paint, shape, mask, seed, pm, bb):
     star_r = np.where(star_mask_arr, np.where(star_type == 0, 1.0, np.where(star_type == 1, 0.85, 0.95)), 0.0).astype(np.float32)
     star_g = np.where(star_mask_arr, np.where(star_type == 0, 1.0, np.where(star_type == 1, 0.90, 0.95)), 0.0).astype(np.float32)
     star_b = np.where(star_mask_arr, np.where(star_type == 0, 0.90, np.where(star_type == 1, 1.0,  0.95)), 0.0).astype(np.float32)
-    for _ch, _sarr in enumerate([star_r, star_g, star_b]):
-        _img = Image.fromarray(np.clip(_sarr * 255, 0, 255).astype(np.uint8), mode='L')
-        _bl = np.array(_img.filter(ImageFilter.GaussianBlur(radius=1.0))).astype(np.float32) / 255.0
-        if _ch == 0: star_r_s = _bl
-        elif _ch == 1: star_g_s = _bl
-        else: star_b_s = _bl
+    star_r_s = cv2.GaussianBlur(star_r.astype(np.float32), (3, 3), 1.0)
+    star_g_s = cv2.GaussianBlur(star_g.astype(np.float32), (3, 3), 1.0)
+    star_b_s = cv2.GaussianBlur(star_b.astype(np.float32), (3, 3), 1.0)
     # Near-black void
-    void_v = 0.020 + multi_scale_noise((h, w), [4, 8], [0.6, 0.4], seed + 861) * 0.008
+    void_v = 0.020 + multi_scale_noise((h, w), [16, 32], [0.6, 0.4], seed + 861) * 0.008
     void_r = np.clip(void_v * 0.90, 0, 1).astype(np.float32)
     void_g = np.clip(void_v * 0.90, 0, 1).astype(np.float32)
     void_b = np.clip(void_v * 1.10, 0, 1).astype(np.float32)  # Slight blue bias (space)
@@ -5439,12 +5716,12 @@ def spec_polished_obsidian_mono(shape, mask, seed, sm):
     spec = np.zeros((shape[0], shape[1], 4), dtype=np.uint8)
     h, w = shape[0], shape[1]
     # Very slight surface variation (volcanic glass is near-perfect but not absolute)
-    micro = multi_scale_noise((h, w), [2, 4], [0.6, 0.4], seed + 870)
+    micro = multi_scale_noise((h, w), [32, 64], [0.6, 0.4], seed + 870)
     micro_n = np.clip(micro * 0.5 + 0.5, 0, 1)
     # R (metallic): 0 — pure dielectric. ANY metallic shifts to silver and ruins the look.
     spec[:, :, 0] = np.clip(0 * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
     # G (roughness): 0-5 (near-perfect mirror surface — volcanic glass is smooth)
-    spec[:, :, 1] = np.clip((2.0 + micro_n * 3.0) * mask + 100 * (1 - mask), 2, 255).astype(np.uint8)
+    spec[:, :, 1] = np.clip((2.0 + micro_n * 3.0) * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     # B (clearcoat): 16 — maximum gloss, no degradation
     spec[:, :, 2] = 16
     spec[:, :, 3] = 255
@@ -5454,8 +5731,9 @@ def spec_polished_obsidian_mono(shape, mask, seed, sm):
 def paint_polished_obsidian_mono(paint, shape, mask, seed, pm, bb):
     """Polished Obsidian paint: near-black albedo (8,8,10) — deep black volcanic glass.
     Color is locked to near-absolute black. The finish IS the reflection, not the color."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
-    micro = multi_scale_noise((h, w), [2, 4], [0.6, 0.4], seed + 870)
+    micro = multi_scale_noise((h, w), [32, 64], [0.6, 0.4], seed + 870)
     micro_n = np.clip(micro * 0.5 + 0.5, 0, 1)
     # Near-black: (8,8,10)/255 = (0.031, 0.031, 0.039) float
     obs_r = np.clip(0.031 + micro_n * 0.008, 0, 1)
@@ -5509,6 +5787,7 @@ def paint_patinated_bronze(paint, shape, mask, seed, pm, bb):
     """Patinated Bronze monolithic paint: warm dark bronze base + turquoise-green patina zones.
     Bronze: HSV approx (0.10, 0.65, 0.45). Patina: (0.51, 0.70, 0.42) (verdigris turquoise).
     Same Perlin heightmap drives both color and spec for physical consistency."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     height = multi_scale_noise((h, w), [16, 32, 64], [0.4, 0.35, 0.25], seed + 880)
     height_n = np.clip(height * 0.5 + 0.5, 0, 1)
@@ -5549,8 +5828,8 @@ def spec_reactive_plasma(shape, mask, seed, sm):
     spec = np.zeros((shape[0], shape[1], 4), dtype=np.uint8)
     h, w = shape[0], shape[1]
     # Multi-scale noise at high contrast for electric tendril structure
-    plasma1 = multi_scale_noise((h, w), [4, 8, 16], [0.3, 0.4, 0.3], seed + 890)
-    plasma2 = multi_scale_noise((h, w), [2, 4],     [0.6, 0.4],       seed + 891)
+    plasma1 = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.4, 0.3], seed + 890)
+    plasma2 = multi_scale_noise((h, w), [32, 64],     [0.6, 0.4],       seed + 891)
     # Sharpen via high gamma (emphasize bright peaks = plasma discharge)
     combined = np.clip(plasma1 * 0.6 + plasma2 * 0.4, 0, 1)
     sharp = np.power(combined, 0.25)  # Gamma compress: pulls brights, darkens background
@@ -5559,9 +5838,9 @@ def spec_reactive_plasma(shape, mask, seed, sm):
     # R (metallic): tendrils=240-255, background=0
     M = np.clip(tendril * 255.0, 0, 255)
     # G (roughness): tendrils=0-10, background=200
-    R = np.clip(200.0 - tendril * 195.0, 2, 255)
+    R = np.clip(200.0 - tendril * 195.0, 15, 255)
     spec[:, :, 0] = np.clip(M * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:, :, 1] = np.clip(R * mask + 100 * (1 - mask), 2, 255).astype(np.uint8)
+    spec[:, :, 1] = np.clip(R * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:, :, 2] = 16
     spec[:, :, 3] = 255
     return spec
@@ -5571,9 +5850,10 @@ def paint_reactive_plasma(paint, shape, mask, seed, pm, bb):
     """Reactive Plasma monolithic paint: plasma tendrils = vivid electric white/blue/violet.
     Background = deep near-black (10,5,20)/255.
     Same noise drives color AND spec — physical consistency (tendrils = bright + mirror)."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
-    plasma1 = multi_scale_noise((h, w), [4, 8, 16], [0.3, 0.4, 0.3], seed + 890)
-    plasma2 = multi_scale_noise((h, w), [2, 4],     [0.6, 0.4],       seed + 891)
+    plasma1 = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.4, 0.3], seed + 890)
+    plasma2 = multi_scale_noise((h, w), [32, 64],     [0.6, 0.4],       seed + 891)
     combined = np.clip(plasma1 * 0.6 + plasma2 * 0.4, 0, 1)
     sharp = np.power(combined, 0.25)
     tendril = np.clip((sharp - 0.55) / 0.45, 0, 1)
@@ -5622,11 +5902,11 @@ def spec_molten_metal(shape, mask, seed, sm):
     # Hot zone spec: M=230-255, G=20-40, CC=20-30
     # Cool zone spec: M=160-190, G=80-120, CC=30-50
     M  = np.clip(160.0 + heat * 70.0,  0, 255)
-    R  = np.clip(120.0 - heat * 100.0, 2, 255)  # Hot=20, Cool=120
+    R  = np.clip(120.0 - heat * 100.0, 15, 255)  # Hot=20, Cool=120
     CC = np.clip( 50.0 - heat * 20.0,  16, 255)  # Hot=30, Cool=50
 
     spec[:, :, 0] = np.clip(M  * mask + 5 * (1 - mask), 0, 255).astype(np.uint8)
-    spec[:, :, 1] = np.clip(R  * mask + 100 * (1 - mask), 2, 255).astype(np.uint8)
+    spec[:, :, 1] = np.clip(R  * mask + 100 * (1 - mask), 15, 255).astype(np.uint8)
     spec[:, :, 2] = np.clip(CC * mask + 80 * (1 - mask), 16, 255).astype(np.uint8)
     spec[:, :, 3] = 255
     return spec
@@ -5637,6 +5917,7 @@ def paint_molten_metal(paint, shape, mask, seed, pm, bb):
     dark bronze-grey at cool zones. Same heat gradient as spec for physical consistency.
     Hot: bright orange-gold (H=0.09, S=0.90, V=0.88).
     Cool: dark bronze-grey (H=0.08, S=0.35, V=0.32)."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     x_pos = np.tile(np.linspace(0, 1, w, dtype=np.float32), (h, 1))
     heat_noise = multi_scale_noise((h, w), [16, 32, 64], [0.4, 0.35, 0.25], seed + 900)
@@ -5711,10 +5992,11 @@ def _load_v2_base_upgrades():
 def paint_morpho_blue(paint, shape, mask, seed, pm, bb):
     """Morpho Blue — V2: rich saturated blue always visible.
     Spec controls the flash/darken via M/R, not the paint function."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape[:2] if len(shape) > 2 else shape
     lobe = multi_scale_noise((h, w), [32, 64, 128], [0.3, 0.4, 0.3], seed + 8801)
     lobe_n = np.clip(lobe * 0.5 + 0.5, 0, 1).astype(np.float32)
-    micro = multi_scale_noise((h, w), [2, 4, 8], [0.5, 0.3, 0.2], seed + 8802)
+    micro = multi_scale_noise((h, w), [16, 32, 64], [0.5, 0.3, 0.2], seed + 8802)
     micro_n = np.clip(micro * 0.12 + 0.88, 0.75, 1.0).astype(np.float32)
     deep = np.array([0.04, 0.08, 0.45], dtype=np.float32)
     bright = np.array([0.10, 0.30, 0.85], dtype=np.float32)
@@ -5733,7 +6015,7 @@ def spec_morpho_blue(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
     lobe = multi_scale_noise((h, w), [32, 64, 128], [0.3, 0.4, 0.3], seed + 8801)
     lobe_n = np.clip(lobe * 0.5 + 0.5, 0, 1).astype(np.float32)
-    micro = multi_scale_noise((h, w), [2, 4, 8], [0.5, 0.3, 0.2], seed + 8802)
+    micro = multi_scale_noise((h, w), [16, 32, 64], [0.5, 0.3, 0.2], seed + 8802)
     micro_n = np.clip(micro * 0.5 + 0.5, 0, 1).astype(np.float32)
     M = 190.0 + lobe_n * 20.0 * sm + micro_n * 5.0 * sm
     R = 20.0 + (1.0 - lobe_n) * 8.0 * sm + micro_n * 4.0 * sm
@@ -5749,6 +6031,7 @@ def paint_labradorite_flash(paint, shape, mask, seed, pm, bb):
     One region BLAZES with color when you hit the right angle.
     The flash zone position is noise-driven (organic, not geometric).
     Real reference: Labradorite feldspar gemstone."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape[:2] if len(shape) > 2 else shape
 
     # Flash zone: large-scale noise defines WHERE the labradorescence lives
@@ -5773,7 +6056,7 @@ def paint_labradorite_flash(paint, shape, mask, seed, pm, bb):
     gray = paint[:,:,:3].mean(axis=2, keepdims=True)
     stone_color = np.clip(gray * 0.35, 0, 0.10)
     # Fine grain texture for stone feel
-    grain = multi_scale_noise((h, w), [2, 4], [0.5, 0.5], seed + 8812)
+    grain = multi_scale_noise((h, w), [32, 64], [0.5, 0.5], seed + 8812)
     stone_color = np.clip(stone_color + grain[:,:,np.newaxis] * 0.015 * pm, 0, 1)
 
     # Compose: stone everywhere, flash color in flash zones modulated by angle
@@ -5798,7 +6081,7 @@ def spec_labradorite_flash(shape, seed, sm, base_m, base_r):
     flash_zone = np.clip((zone_noise - 0.2) * 3.0, 0, 1).astype(np.float32)
 
     # Stone grain for texture variation
-    grain = multi_scale_noise((h, w), [2, 4, 8], [0.4, 0.3, 0.3], seed + 8812)
+    grain = multi_scale_noise((h, w), [16, 32, 64], [0.4, 0.3, 0.3], seed + 8812)
     grain_n = np.clip(grain * 0.5 + 0.5, 0, 1).astype(np.float32)
 
     # M: dark stone = 20-40, flash zone = 180-220
@@ -5819,10 +6102,11 @@ def paint_hummingbird_gorget(paint, shape, mask, seed, pm, bb):
     magenta-red-orange flash. Like a strobe hitting the car at one angle.
     Real reference: Ruby-throated Hummingbird gorget feathers.
     Uses bb (angle proxy) with a sharp Gaussian gate for the narrow flash cone."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape[:2] if len(shape) > 2 else shape
 
     # Feather-scale texture: fine cells that individually catch light
-    cell_noise = multi_scale_noise((h, w), [4, 8, 16], [0.3, 0.4, 0.3], seed + 8820)
+    cell_noise = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.4, 0.3], seed + 8820)
     cells = np.clip(cell_noise * 0.5 + 0.5, 0, 1).astype(np.float32)
 
     # NARROW flash cone: only fires when bb is in a tight range (0.35-0.55)
@@ -5844,7 +6128,7 @@ def paint_hummingbird_gorget(paint, shape, mask, seed, pm, bb):
 
     # Dark base: nearly black with faint warm undertone
     dark_base = np.clip(paint[:,:,:3] * 0.08 + 0.02, 0, 0.10)
-    grain = multi_scale_noise((h, w), [2, 4], [0.5, 0.5], seed + 8822)
+    grain = multi_scale_noise((h, w), [32, 64], [0.5, 0.5], seed + 8822)
     dark_base = np.clip(dark_base + grain[:,:,np.newaxis] * 0.008, 0, 0.12)
 
     # Compose: dark everywhere, flash color ONLY in the narrow cone
@@ -5866,7 +6150,7 @@ def spec_hummingbird_gorget(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
 
     # SAME cell texture as paint — married by seed
-    cell_noise = multi_scale_noise((h, w), [4, 8, 16], [0.3, 0.4, 0.3], seed + 8820)
+    cell_noise = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.4, 0.3], seed + 8820)
     cells = np.clip(cell_noise * 0.5 + 0.5, 0, 1).astype(np.float32)
 
     # Cell-level M variation: each barbule has slightly different metallic character

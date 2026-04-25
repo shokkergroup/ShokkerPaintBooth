@@ -26,6 +26,7 @@ def paint_bioluminescent_v2(paint, shape, mask, seed, pm, bb):
     Bioluminescence simulated via interference of standing waves with 
     exponential decay regions. Creates pulsing organic glow patterns.
     """
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape[:2] if len(shape) > 2 else shape
     y, x = get_mgrid((h, w))
     
@@ -40,7 +41,7 @@ def paint_bioluminescent_v2(paint, shape, mask, seed, pm, bb):
     decay = np.exp(-dist / (h * 0.3))
     
     # Multi-scale turbulence for organic variation
-    turb = multi_scale_noise((h, w), [2, 4, 8], [0.5, 0.3, 0.2], seed + 2000)
+    turb = multi_scale_noise((h, w), [16, 32, 64], [0.5, 0.3, 0.2], seed + 2000)
     
     # Combine: interference modulated by decay and turbulence
     base_glow = np.abs(interference) * decay * (0.5 + turb * 0.5)
@@ -81,6 +82,7 @@ def paint_dark_matter_v2(paint, shape, mask, seed, pm, bb):
     Dark matter via radial distortion field simulating gravity lensing.
     Creates inward-pulling vortex patterns with event horizon falloff.
     """
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape[:2] if len(shape) > 2 else shape
     y, x = get_mgrid((h, w))
     
@@ -96,7 +98,7 @@ def paint_dark_matter_v2(paint, shape, mask, seed, pm, bb):
     swirl = np.sin(theta * 3 + distortion * 2 * np.pi)
     
     # Multi-scale perturbation
-    pert = multi_scale_noise((h, w), [4, 8, 16], [0.4, 0.35, 0.25], seed + 2002)
+    pert = multi_scale_noise((h, w), [16, 32, 64], [0.4, 0.35, 0.25], seed + 2002)
     
     # Combine: swirl modulated by inverse-square falloff
     dark_pattern = np.abs(swirl) * (1.0 - distortion) * (0.3 + pert * 0.7)
@@ -116,7 +118,7 @@ def paint_dark_matter_v2(paint, shape, mask, seed, pm, bb):
 def spec_dark_matter(shape, seed, sm, base_m, base_r):
     """Dark matter: extreme absorption with gravitational lensing distortion zones."""
     h, w = shape
-    absorp = multi_scale_noise((h, w), [2, 4, 8], [0.4, 0.35, 0.25], seed + 2003)
+    absorp = multi_scale_noise((h, w), [16, 32, 64], [0.4, 0.35, 0.25], seed + 2003)
     lens = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.4, 0.3], seed + 2010)
     # Gravitational lensing zones — bright ring-like structures
     ring = np.clip(1.0 - np.abs(lens - 0.5) * 3.0, 0, 1)
@@ -138,6 +140,7 @@ def paint_holographic_base_v2(paint, shape, mask, seed, pm, bb):
     Holographic effect via modulated diffraction gratings.
     Creates iridescent rainbow shifts using phase-space lattice interference.
     """
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape[:2] if len(shape) > 2 else shape
     y, x = get_mgrid((h, w))
     
@@ -194,6 +197,7 @@ def paint_neutron_star_v2(paint, shape, mask, seed, pm, bb):
     Neutron star surface via Voronoi-like compression cells with
     intense pressure ridges and quantum shell structure.
     """
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape[:2] if len(shape) > 2 else shape
     y, x = get_mgrid((h, w))
     
@@ -231,7 +235,7 @@ def spec_neutron_star(shape, seed, sm, base_m, base_r):
     producing M≈1-14 instead of ≈242-255); wire base_m/base_r params; fix shape unpack.
     """
     h, w = shape[:2] if len(shape) > 2 else shape
-    friction = multi_scale_noise((h, w), [4, 8], [0.7, 0.3], seed + 2006)
+    friction = multi_scale_noise((h, w), [16, 32], [0.7, 0.3], seed + 2006)
 
     # Degenerate electron gas: near-perfect metallic reflection modulated by surface friction
     # base_m is ALREADY 0-255 — do NOT multiply by 255 again
@@ -252,6 +256,7 @@ def paint_plasma_core_v2(paint, shape, mask, seed, pm, bb):
     Reactor core plasma: intense blue-white center with electric arcs radiating
     outward, surrounded by purple-blue plasma glow and magnetic confinement rings.
     """
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     if pm == 0.0:
         return paint
     h, w = shape[:2] if len(shape) > 2 else shape
@@ -275,31 +280,37 @@ def paint_plasma_core_v2(paint, shape, mask, seed, pm, bb):
         arc_angle = rng.uniform(0, 2 * np.pi)
         arc_width = rng.uniform(0.08, 0.15)
         # Arc follows a wiggly path from center outward
-        wiggle = multi_scale_noise((h, w), [4, 8], [0.6, 0.4], seed + 2007 + i * 10)
+        wiggle = multi_scale_noise((h, w), [16, 32], [0.6, 0.4], seed + 2007 + i * 10)
         angular_dist = np.abs(np.sin((theta - arc_angle + wiggle * 0.3) * 0.5))
         arc = np.exp(-(angular_dist / arc_width) ** 2) * np.exp(-r_norm * 1.2)
         arc_base += arc
     arc_base = np.clip(arc_base, 0, 1)
 
     # Plasma glow field (purple-blue, turbulent)
-    turb1 = multi_scale_noise((h, w), [4, 8, 16], [0.3, 0.4, 0.3], seed + 2008)
-    turb2 = multi_scale_noise((h, w), [2, 4], [0.6, 0.4], seed + 2009)
+    turb1 = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.4, 0.3], seed + 2008)
+    turb2 = multi_scale_noise((h, w), [32, 64], [0.6, 0.4], seed + 2009)
     glow = np.clip((turb1 * 0.5 + 0.5) * np.exp(-r_norm * 0.8), 0, 1)
 
     # Magnetic confinement rings
     ring1 = np.exp(-((r_norm - 0.35) / 0.04) ** 2) * 0.5
     ring2 = np.exp(-((r_norm - 0.6) / 0.05) ** 2) * 0.3
+    filament_noise = multi_scale_noise((h, w), [2, 4, 8], [0.44, 0.34, 0.22], seed + 2011)
+    filament = np.power(
+        np.clip(1.0 - np.abs(np.sin(theta * 9.0 + r_norm * 38.0 + filament_noise * 4.0)), 0, 1),
+        8,
+    ) * np.exp(-r_norm * 0.65)
+    spark = np.clip((filament_noise - 0.34) * 2.2, 0, 1) * (0.35 + arc_base * 0.65)
 
     # Color mapping: core=white-blue, arcs=electric blue, glow=purple-blue
     result = paint.copy()
     blend = mask[:, :] * pm * 0.85
     # Core: intense blue-white
     result[:, :, 0] = np.clip(paint[:, :, 0] * (1 - blend) +
-                               blend * (core_intensity * 0.9 + arc_base * 0.5 + glow * 0.15 + ring1 * 0.3 + ring2 * 0.2), 0, 1)
+                               blend * (core_intensity * 0.9 + arc_base * 0.5 + glow * 0.15 + ring1 * 0.3 + ring2 * 0.2 + filament * 0.32 + spark * 0.18), 0, 1)
     result[:, :, 1] = np.clip(paint[:, :, 1] * (1 - blend) +
-                               blend * (core_intensity * 0.85 + arc_base * 0.6 + glow * 0.1 + ring1 * 0.35 + ring2 * 0.25), 0, 1)
+                               blend * (core_intensity * 0.85 + arc_base * 0.6 + glow * 0.1 + ring1 * 0.35 + ring2 * 0.25 + filament * 0.42 + spark * 0.24), 0, 1)
     result[:, :, 2] = np.clip(paint[:, :, 2] * (1 - blend) +
-                               blend * (core_intensity * 0.95 + arc_base * 0.9 + glow * 0.45 + ring1 * 0.6 + ring2 * 0.5), 0, 1)
+                               blend * (core_intensity * 0.95 + arc_base * 0.9 + glow * 0.45 + ring1 * 0.6 + ring2 * 0.5 + filament * 0.58 + spark * 0.30), 0, 1)
 
     return result.astype(np.float32)
 
@@ -315,16 +326,22 @@ def spec_plasma_core(shape, seed, sm, base_m, base_r):
     r = np.sqrt((y - cy) ** 2 + (x - cx) ** 2) + 1e-8
     r_norm = r / np.sqrt(cy ** 2 + cx ** 2)
     core = np.exp(-(r_norm / 0.15) ** 2)
-    turb = multi_scale_noise((h, w), [2, 4, 8], [0.4, 0.3, 0.3], seed + 2008)
+    turb = multi_scale_noise((h, w), [16, 32, 64], [0.4, 0.3, 0.3], seed + 2008)
     arc_noise = multi_scale_noise((h, w), [1, 2], [0.6, 0.4], seed + 2010)
     arc_spots = np.clip((arc_noise - 0.5) * 3.0, 0, 1)
+    theta = np.arctan2(y - cy, x - cx)
+    filament_noise = multi_scale_noise((h, w), [2, 4, 8], [0.44, 0.34, 0.22], seed + 2011)
+    filament = np.power(
+        np.clip(1.0 - np.abs(np.sin(theta * 9.0 + r_norm * 38.0 + filament_noise * 4.0)), 0, 1),
+        8,
+    ) * np.exp(-r_norm * 0.65)
 
     # M: core is dielectric (glowing), arcs are metallic, plasma is moderate
-    M = np.clip(core * 40.0 + (1.0 - core) * 180.0 * sm + arc_spots * 75.0 * sm, 0, 255).astype(np.float32)
+    M = np.clip(core * 40.0 + (1.0 - core) * 180.0 * sm + arc_spots * 75.0 * sm + filament * 72.0 * sm, 0, 255).astype(np.float32)
     # R: core is very smooth (hot), outer is turbulent/rough
-    R = np.clip(3.0 + (1.0 - core) * 60.0 * sm + turb * 25.0 * sm - arc_spots * 20.0, 15, 255).astype(np.float32)
+    R = np.clip(3.0 + (1.0 - core) * 60.0 * sm + turb * 25.0 * sm - arc_spots * 20.0 - filament * 24.0 * sm, 15, 255).astype(np.float32)
     # CC: core is glossy, outer plasma has more diffusion
-    CC = np.clip(16.0 + (1.0 - core) * 40.0 * sm + turb * 15.0 * sm, 16, 255).astype(np.float32)
+    CC = np.clip(16.0 + (1.0 - core) * 40.0 * sm + turb * 15.0 * sm + filament * 38.0 * sm, 16, 255).astype(np.float32)
 
     return M, R, CC
 
@@ -338,6 +355,7 @@ def paint_quantum_black_v2(paint, shape, mask, seed, pm, bb):
     Quantum black via Schrödinger probability wave interference.
     Creates interference fringe patterns with quantum tunneling dropout regions.
     """
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape[:2] if len(shape) > 2 else shape
     y, x = get_mgrid((h, w))
     
@@ -356,18 +374,21 @@ def paint_quantum_black_v2(paint, shape, mask, seed, pm, bb):
     
     # Multi-scale quantum fluctuations
     quantum = multi_scale_noise((h, w), [1, 2, 4], [0.5, 0.3, 0.2], seed + 2009)
+    micro = multi_scale_noise((h, w), [1, 2, 3], [0.48, 0.34, 0.18], seed + 2012)
+    fringe = np.power(np.clip(1.0 - np.abs(np.sin(x * 0.47 - y * 0.31 + micro * 3.5)), 0, 1), 10)
     
     # Combine: interference modulated by tunneling and quantum noise
-    pattern = interference * tunnel * (0.7 + quantum * 0.3)
+    pattern = np.clip(interference * tunnel * (0.7 + quantum * 0.3), 0, 1)
+    probability_spark = np.clip((micro - 0.04) * 2.4, 0, 1) * 0.58 + fringe * 0.62
     
     result = paint.copy()
     blend = mask[:, :] * pm * 0.9
     result[:, :, 0] = np.clip(paint[:, :, 0] * (1 - blend) + 
-                               pattern * blend * 0.1, 0, 1)
+                               pattern * blend * 0.040 + probability_spark * blend * 0.145, 0, 1)
     result[:, :, 1] = np.clip(paint[:, :, 1] * (1 - blend) + 
-                               pattern * blend * 0.08, 0, 1)
+                               pattern * blend * 0.032 + probability_spark * blend * 0.120, 0, 1)
     result[:, :, 2] = np.clip(paint[:, :, 2] * (1 - blend) + 
-                               pattern * blend * 0.15, 0, 1)
+                               pattern * blend * 0.060 + probability_spark * blend * 0.210, 0, 1)
     
     return result.astype(np.float32)
 
@@ -378,11 +399,13 @@ def spec_quantum_black(shape, seed, sm, base_m, base_r):
     high roughness (quantum noise), zero clearcoat (event absorption).
     """
     h, w = shape
-    fluct = multi_scale_noise((h, w), [2, 4], [0.6, 0.4], seed + 2010)
+    fluct = multi_scale_noise((h, w), [32, 64], [0.6, 0.4], seed + 2010)
+    micro = multi_scale_noise((h, w), [1, 2, 3], [0.48, 0.34, 0.18], seed + 2012)
+    micro01 = np.clip((micro + 1.0) * 0.5, 0, 1)
     
-    M = np.clip(5.0 + fluct * 8.0 * sm, 0, 255)
-    R = np.clip(191.0 + fluct * 50.0 * sm, 15, 255)
-    CC = np.full((h, w), 240.0)  # CC=240 dead flat quantum black
+    M = np.clip(5.0 + fluct * 8.0 * sm + micro01 * 34.0 * sm, 0, 255)
+    R = np.clip(184.0 + fluct * 38.0 * sm + (1.0 - micro01) * 58.0 * sm, 15, 255)
+    CC = np.clip(206.0 + micro01 * 44.0 * sm, 16, 255)
 
     return M.astype(np.float32), R.astype(np.float32), CC.astype(np.float32)
 
@@ -396,6 +419,7 @@ def paint_solar_panel_v2(paint, shape, mask, seed, pm, bb):
     Solar panel via regular grid of photovoltaic cells with
     silicon wafer interference colors and micro-etching.
     """
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape[:2] if len(shape) > 2 else shape
     
     # Grid pattern: photovoltaic cells
@@ -413,7 +437,7 @@ def paint_solar_panel_v2(paint, shape, mask, seed, pm, bb):
     scratch = 1.0 - np.abs(scratch) * 0.3
     
     # Iridescence from thin film interference (SiO2 layer)
-    interference = multi_scale_noise((h, w), [2, 4], [0.6, 0.4], seed + 2012)
+    interference = multi_scale_noise((h, w), [32, 64], [0.6, 0.4], seed + 2012)
     
     # Combine: grid × wafer × interference
     panel = cell_boundary * scratch * (0.85 + interference * 0.15)
@@ -436,7 +460,7 @@ def spec_solar_panel(shape, seed, sm, base_m, base_r):
     low roughness (glass coating), high clearcoat (protective glass).
     """
     h, w = shape
-    texture = multi_scale_noise((h, w), [4, 8, 16], [0.4, 0.3, 0.3], seed + 2013)
+    texture = multi_scale_noise((h, w), [16, 32, 64], [0.4, 0.3, 0.3], seed + 2013)
     
     M = np.clip(115.0 + texture * 38.0 * sm, 0, 255)
     R = np.clip(5.0 + texture * 20.0 * sm, 15, 255)
@@ -454,6 +478,7 @@ def paint_superconductor_v2(paint, shape, mask, seed, pm, bb):
     Superconductor via magnetic flux lines being expelled (Meissner effect).
     Creates concentric repulsion patterns with field line discontinuities.
     """
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape[:2] if len(shape) > 2 else shape
     y, x = get_mgrid((h, w))
     
@@ -470,7 +495,7 @@ def paint_superconductor_v2(paint, shape, mask, seed, pm, bb):
     expulsion = np.heaviside(critical_radius - r, 0.5)
     
     # Cooper pair coherence: long-range order
-    coherence = multi_scale_noise((h, w), [4, 8], [0.6, 0.4], seed + 2014)
+    coherence = multi_scale_noise((h, w), [16, 32], [0.6, 0.4], seed + 2014)
     
     # Pattern: field lines × expulsion boundary × coherence
     pattern = np.abs(field_lines) * (1.0 - expulsion * 0.7) * (0.5 + coherence * 0.5)
@@ -493,7 +518,7 @@ def spec_superconductor(shape, seed, sm, base_m, base_r):
     very low roughness (perfect crystal lattice), medium clearcoat.
     """
     h, w = shape
-    lattice = multi_scale_noise((h, w), [2, 4], [0.7, 0.3], seed + 2015)
+    lattice = multi_scale_noise((h, w), [32, 64], [0.7, 0.3], seed + 2015)
     
     M = np.clip(230.0 + lattice * 25.0 * sm, 0, 255)
     R = np.clip(3.0 + lattice * 10.0 * sm, 15, 255)
@@ -511,6 +536,7 @@ def paint_singularity_v2(paint, shape, mask, seed, pm, bb):
     Singularity via redshift gradient approaching event horizon.
     Colors shift from blue (far field) to red (at horizon) via relativistic Doppler.
     """
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape[:2] if len(shape) > 2 else shape
     y, x = get_mgrid((h, w))
     
@@ -528,7 +554,7 @@ def paint_singularity_v2(paint, shape, mask, seed, pm, bb):
     
     # Gravitational lensing blur (higher near horizon)
     blur = 1.0 / (1.0 + r / r_s)
-    blur_noise = multi_scale_noise((h, w), [2, 4], [0.6, 0.4], seed + 2016)
+    blur_noise = multi_scale_noise((h, w), [32, 64], [0.6, 0.4], seed + 2016)
     
     # Redshift effect: shift colors toward red as r decreases
     pattern = np.abs(spiral) * redshift * (0.5 + blur_noise * 0.5)
@@ -569,6 +595,7 @@ def paint_liquid_obsidian_v2(paint, shape, mask, seed, pm, bb):
     Liquid obsidian via conchoidal fracture propagation and glass flow.
     Creates wave-like fracture rings with flow lines underneath.
     """
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape[:2] if len(shape) > 2 else shape
     y, x = get_mgrid((h, w))
     
@@ -586,7 +613,7 @@ def paint_liquid_obsidian_v2(paint, shape, mask, seed, pm, bb):
     flow = flow1 * flow2
     
     # Volcanic glass internal structure (Poisson structure)
-    structure = multi_scale_noise((h, w), [2, 4, 8], [0.5, 0.3, 0.2], seed + 2018)
+    structure = multi_scale_noise((h, w), [16, 32, 64], [0.5, 0.3, 0.2], seed + 2018)
     
     # Combine: conchoidal rings + flow + structure
     pattern = np.abs(conchoidal) * (0.6 + flow * 0.3) * (0.8 + structure * 0.2)
@@ -609,7 +636,7 @@ def spec_liquid_obsidian(shape, seed, sm, base_m, base_r):
     low roughness (smooth glass), very high clearcoat (glass shine).
     """
     h, w = shape
-    sheen = multi_scale_noise((h, w), [4, 8], [0.6, 0.4], seed + 2019)
+    sheen = multi_scale_noise((h, w), [16, 32], [0.6, 0.4], seed + 2019)
     
     M = np.clip(179.0 + sheen * 51.0 * sm, 0, 255)
     R = np.clip(3.0 + sheen * 15.0 * sm, 15, 255)
@@ -627,6 +654,7 @@ def paint_prismatic_v2(paint, shape, mask, seed, pm, bb):
     Prismatic effect via triangular prism light refraction.
     Creates spectral bands separated by dispersion angle.
     """
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape[:2] if len(shape) > 2 else shape
     y, x = get_mgrid((h, w))
     
@@ -651,7 +679,7 @@ def paint_prismatic_v2(paint, shape, mask, seed, pm, bb):
     blue_disperse = np.abs(e3_norm) * 1.1
     
     # Intensity modulation
-    intensity = multi_scale_noise((h, w), [4, 8], [0.6, 0.4], seed + 2020)
+    intensity = multi_scale_noise((h, w), [16, 32], [0.6, 0.4], seed + 2020)
     
     result = paint.copy()
     blend = mask[:, :] * pm * 0.75
@@ -671,7 +699,7 @@ def spec_prismatic(shape, seed, sm, base_m, base_r):
     very low roughness (polished prism faces), extreme clearcoat.
     """
     h, w = shape
-    clarity = multi_scale_noise((h, w), [2, 4], [0.7, 0.3], seed + 2021)
+    clarity = multi_scale_noise((h, w), [32, 64], [0.7, 0.3], seed + 2021)
     
     M = np.clip(204.0 + clarity * 38.0 * sm, 0, 255)
     R = np.clip(3.0 + clarity * 12.0 * sm, 15, 255)
@@ -689,6 +717,7 @@ def paint_p_phantom_v2(paint, shape, mask, seed, pm, bb):
     Phantom effect via phase-shifting transparency waves.
     Creates ghostly partially-visible regions with phase coherence patterns.
     """
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape[:2] if len(shape) > 2 else shape
     y, x = get_mgrid((h, w))
     
@@ -709,7 +738,7 @@ def paint_p_phantom_v2(paint, shape, mask, seed, pm, bb):
     phase_shift = (phase_shift + 1.0) * 0.5  # Normalize to [0, 1]
     
     # Multi-scale interference for detail
-    detail = multi_scale_noise((h, w), [2, 4, 8], [0.4, 0.3, 0.3], seed + 2022)
+    detail = multi_scale_noise((h, w), [16, 32, 64], [0.4, 0.3, 0.3], seed + 2022)
     
     # Combine: phase shift + detail
     transparency = phase_shift * (0.7 + detail * 0.3)
@@ -731,7 +760,7 @@ def spec_p_phantom(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
     # Ghostly wisps — slow drifting fog-like structures
     fog = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.4, 0.3], seed + 4000)
-    fine = multi_scale_noise((h, w), [2, 4, 8], [0.4, 0.35, 0.25], seed + 4005)
+    fine = multi_scale_noise((h, w), [16, 32, 64], [0.4, 0.35, 0.25], seed + 4005)
     wisp = np.clip((fog - 0.3) * 2.0, 0, 1)  # fog tendrils
     # M: mostly dielectric but ghostly shimmer in wisp zones
     M = np.clip(wisp * 140.0 + fine * 20.0, 0, 255).astype(np.float32)
@@ -743,64 +772,105 @@ def spec_p_phantom(shape, seed, sm, base_m, base_r):
 
 
 # ============================================================================
-# P_VOLCANIC: Magma convection cell pattern
+# P_VOLCANIC: Fine lava filament network
 # ============================================================================
+
+def _norm01(v):
+    v = np.asarray(v, dtype=np.float32)
+    lo = float(np.min(v))
+    hi = float(np.max(v))
+    if hi - lo < 1e-6:
+        return np.zeros_like(v, dtype=np.float32)
+    return np.clip((v - lo) / (hi - lo), 0.0, 1.0).astype(np.float32)
+
+
+def _periodic_ridge(coord, period, width):
+    phase = np.mod(coord / max(period, 1e-6) + 0.5, 1.0) - 0.5
+    dist = np.abs(phase) * period
+    return np.clip(1.0 - dist / max(width, 1e-6), 0.0, 1.0).astype(np.float32)
+
+
+def _volcanic_filament_field(shape, seed):
+    """Returns fine molten fissures, glow halos, rock grain, and ember dust."""
+    h, w = shape[:2] if len(shape) > 2 else shape
+    y, x = get_mgrid((h, w))
+    yf = y.astype(np.float32)
+    xf = x.astype(np.float32)
+    size_scale = max(0.5, min(h, w) / 512.0)
+    px2048 = max(0.75, min(h, w) / 2048.0)
+
+    drift_a = (_norm01(multi_scale_noise((h, w), [32, 64, 128], [0.40, 0.35, 0.25], seed + 6101)) - 0.5)
+    drift_b = (_norm01(multi_scale_noise((h, w), [24, 48, 96], [0.45, 0.35, 0.20], seed + 6102)) - 0.5)
+    micro = _norm01(multi_scale_noise((h, w), [4, 8, 16, 32], [0.40, 0.30, 0.20, 0.10], seed + 6103))
+
+    core = np.zeros((h, w), dtype=np.float32)
+    glow = np.zeros((h, w), dtype=np.float32)
+    angles = (-0.92, -0.43, 0.18, 0.73, 1.21, 1.84)
+    periods = (29.0, 37.0, 53.0, 71.0, 89.0, 113.0)
+    weights = (0.92, 0.75, 0.68, 0.58, 0.48, 0.38)
+    for i, (angle, period, weight) in enumerate(zip(angles, periods, weights)):
+        c = np.cos(angle)
+        s = np.sin(angle)
+        coord = (
+            xf * c + yf * s
+            + drift_a * (18.0 + i * 4.0) * size_scale
+            + np.sin((xf * -s + yf * c) / max(11.0 * size_scale, 1.0) + i) * 2.2 * size_scale
+        )
+        ridge = _periodic_ridge(coord, period * size_scale, 0.95 * px2048)
+        halo = _periodic_ridge(coord, period * size_scale, 4.2 * px2048)
+        gate = np.clip(0.35 + drift_b * 1.1 + micro * 0.7, 0.0, 1.0)
+        core = np.maximum(core, (ridge ** 2.8) * gate * weight)
+        glow = np.maximum(glow, (halo ** 1.35) * gate * weight)
+
+    branch_coord = xf * 0.77 - yf * 0.64 + drift_b * 24.0 * size_scale
+    branch = _periodic_ridge(branch_coord, 17.0 * size_scale, 0.72 * px2048)
+    branch_gate = np.clip(glow * 1.35 + micro * 0.45 - 0.28, 0.0, 1.0)
+    core = np.maximum(core, (branch ** 3.0) * branch_gate * 0.85)
+    glow = np.maximum(glow, (branch ** 1.25) * branch_gate * 0.55)
+
+    ember_noise = _norm01(multi_scale_noise((h, w), [3, 6, 12], [0.55, 0.30, 0.15], seed + 6104))
+    embers = np.clip((ember_noise - 0.76) * 5.2, 0.0, 1.0) * np.clip(glow + 0.15, 0.0, 1.0)
+    rock_grain = _norm01(multi_scale_noise((h, w), [5, 11, 23, 47], [0.35, 0.30, 0.22, 0.13], seed + 6105))
+    core = np.clip(core + embers * 0.28, 0.0, 1.0).astype(np.float32)
+    glow = np.clip(np.maximum(glow, core * 0.85), 0.0, 1.0).astype(np.float32)
+    return core, glow, rock_grain.astype(np.float32), embers.astype(np.float32)
 
 def paint_p_volcanic_v2(paint, shape, mask, seed, pm, bb):
     """
-    Volcanic lava via Rayleigh-Bénard convection cells.
-    Creates hexagonal cellular convection patterns with hot/cold contrast.
+    Volcanic lava as hairline fissures, ember dust, and hot subsurface glow.
+    Avoids broad convection blobs so it reads with detail on 2048 canvases.
     """
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape[:2] if len(shape) > 2 else shape
-    
-    # Hexagonal convection grid (Bénard cells)
-    hex_size = 24
-    hex_y = (np.arange(h) % hex_size) / float(hex_size)
-    hex_x = (np.arange(w) % hex_size) / float(hex_size)
-    hex_y, hex_x = np.meshgrid(hex_y, hex_x, indexing='ij')
-    
-    # Cell center position (create hexagon alternation)
-    hex_offset = (np.arange(h) // hex_size) % 2
-    offset_x = hex_offset[:, np.newaxis] * 0.5
-    hex_x_offset = hex_x + offset_x
-    
-    # Distance to nearest cell center (creates cellular pattern)
-    cell_dist = np.minimum(
-        np.minimum(hex_y, hex_x_offset),
-        np.minimum(1.0 - hex_y, 1.0 - hex_x_offset)
-    )
-    
-    # Hot updraft (center of cell = lava veins) vs cold (rock). Keep 0-1.
-    updraft = np.clip(1.0 - cell_dist * 2.0, 0, 1)
-    turbulence = multi_scale_noise((h, w), [8, 16, 32], [0.5, 0.3, 0.2], seed + 2024)
-    lava = updraft * (0.6 + turbulence * 0.4)  # 0-1
-    result = paint.copy()
-    blend = np.clip(mask[:, :] * pm * 0.8, 0, 1)
-    result[:, :, 0] = np.clip(paint[:, :, 0] * (1 - blend) + (0.85 * lava + 0.1) * blend, 0, 1)
-    result[:, :, 1] = np.clip(paint[:, :, 1] * (1 - blend) + (0.25 * lava + 0.05) * blend, 0, 1)
-    result[:, :, 2] = np.clip(paint[:, :, 2] * (1 - blend) + (0.05 * lava) * blend, 0, 1)
-    
+    core, glow, grain, embers = _volcanic_filament_field((h, w), seed)
+
+    basalt = np.empty((h, w, 3), dtype=np.float32)
+    basalt[:, :, 0] = 0.030 + grain * 0.065 + glow * 0.050
+    basalt[:, :, 1] = 0.024 + grain * 0.038 + glow * 0.018
+    basalt[:, :, 2] = 0.020 + grain * 0.030
+
+    molten = np.empty((h, w, 3), dtype=np.float32)
+    molten[:, :, 0] = 0.34 + glow * 0.44 + core * 0.30 + embers * 0.16
+    molten[:, :, 1] = 0.060 + glow * 0.20 + core * 0.52 + embers * 0.18
+    molten[:, :, 2] = 0.012 + core * 0.080
+    heat = np.clip(glow[:, :, np.newaxis] * 0.78 + core[:, :, np.newaxis] * 0.95, 0.0, 1.0)
+    lava = np.clip(basalt + molten * heat, 0.0, 1.0)
+
+    blend = np.clip(mask[:, :] * pm * 0.88, 0, 1)[:, :, np.newaxis]
+    result = np.clip(paint * (1.0 - blend) + lava * blend, 0.0, 1.0)
     return result.astype(np.float32)
 
 
 def spec_p_volcanic(shape, seed, sm, base_m, base_r):
-    """Volcanic: spec driven by same vein structure as paint. Veins = low R, high M; rock = high R, low M."""
+    """Volcanic: molten hairline cores are glossy/metallic; basalt is rough and dead."""
     h, w = shape[:2] if len(shape) > 2 else shape
-    hex_size = 24
-    hex_y = (np.arange(h) % (hex_size * 2)) / float(hex_size)
-    hex_x = (np.arange(w) % (hex_size * 2)) / float(hex_size)
-    hex_y, hex_x = np.meshgrid(hex_y, hex_x, indexing='ij')
-    hex_offset = (np.arange(h) // hex_size) % 2
-    offset_x = hex_offset[:, np.newaxis] * 0.5
-    hex_x_offset = hex_x + offset_x
-    cell_dist = np.minimum(
-        np.minimum(hex_y, hex_x_offset),
-        np.minimum(1.0 - hex_y, 1.0 - hex_x_offset)
-    )
-    updraft = np.clip(1.0 - cell_dist * 2.0, 0, 1)  # 1 = vein center, 0 = rock
-    M = np.clip((0.15 + updraft * 0.80) * 255.0, 0, 255).astype(np.float32)
-    R = np.clip((0.20 + (1.0 - updraft) * 0.70) * 255.0, 15, 255).astype(np.float32)
-    CC = np.where(updraft > 0.5, 16.0, 120.0).astype(np.float32)  # gloss on veins, dull on rock
+    core, glow, grain, embers = _volcanic_filament_field((h, w), seed)
+    strength = np.clip(sm, 0.25, 2.0)
+    hot = np.clip(core * strength + embers * 0.38, 0.0, 1.0)
+    warm = np.clip(glow * strength, 0.0, 1.0)
+    M = np.clip(float(base_m) * 0.08 + 24.0 + warm * 82.0 + hot * 170.0 + embers * 42.0, 0, 255).astype(np.float32)
+    R = np.clip(float(base_r) * 0.10 + 214.0 - warm * 74.0 - hot * 168.0 + grain * 28.0, 15, 255).astype(np.float32)
+    CC = np.clip(176.0 - warm * 82.0 - hot * 138.0 + grain * 18.0, 16, 235).astype(np.float32)
     return M, R, _cc_clamp(CC)
 
 
@@ -810,6 +880,7 @@ def spec_p_volcanic(shape, seed, sm, base_m, base_r):
 
 def paint_arctic_ice_v2(paint, shape, mask, seed, pm, bb):
     """Arctic ice: cold blue-white, subtle crystalline variation, no heavy pattern."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
@@ -834,7 +905,7 @@ def spec_arctic_ice(shape, seed, sm, base_m, base_r):
     crack_noise = multi_scale_noise((h, w), [8, 16, 32], [0.3, 0.4, 0.3], seed + 4100)
     cracks = np.clip(1.0 - np.abs(crack_noise - 0.5) * 4.0, 0, 1)  # thin crack lines
     # Frozen bubble clusters
-    bubbles = multi_scale_noise((h, w), [2, 4, 8], [0.4, 0.35, 0.25], seed + 4105)
+    bubbles = multi_scale_noise((h, w), [16, 32, 64], [0.4, 0.35, 0.25], seed + 4105)
     bubble_spots = np.clip((bubbles - 0.6) * 4.0, 0, 1)
     # Frost variation (large smooth zones)
     frost = multi_scale_noise((h, w), [32, 64], [0.5, 0.5], seed + 4110)
@@ -856,6 +927,7 @@ def paint_carbon_weave_v2(paint, shape, mask, seed, pm, bb):
     Carbon weave via 2x2 twill interference pattern.
     Creates diagonal interlocking fiber pattern with depth from angle variation.
     """
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape[:2] if len(shape) > 2 else shape
     
     weave_period = 8
@@ -878,7 +950,7 @@ def paint_carbon_weave_v2(paint, shape, mask, seed, pm, bb):
     fiber_angle2 = np.sin(np.arange(w)[np.newaxis, :] * 0.05) * 0.5 + 0.5
     
     # Fine detail texture
-    texture = multi_scale_noise((h, w), [4, 8, 16], [0.4, 0.3, 0.3], seed + 2028)
+    texture = multi_scale_noise((h, w), [16, 32, 64], [0.4, 0.3, 0.3], seed + 2028)
     
     # Combine: twill × fiber angle × texture
     weave = twill_pattern * (0.7 + fiber_angle1 * 0.3) * (0.8 + texture * 0.2)
@@ -925,6 +997,7 @@ def paint_nebula_v2(paint, shape, mask, seed, pm, bb):
     Cosmic nebula with fine metallic sparkle (stellar dust), wisps of colored gas,
     scattered star-like flakes, and deep color variation. Much more sparkle and depth.
     """
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     if pm == 0.0:
         return paint
     h, w = shape[:2] if len(shape) > 2 else shape
@@ -958,7 +1031,7 @@ def paint_nebula_v2(paint, shape, mask, seed, pm, bb):
     neb_b = np.clip(0.5 * np.sin(t * np.pi * 2.0 + 4.2) ** 2 + wisps * 0.3 + stars * 0.9, 0, 1)
 
     # Depth darkening in dust lanes
-    dust = multi_scale_noise((h, w), [4, 8], [0.6, 0.4], seed + 2034)
+    dust = multi_scale_noise((h, w), [16, 32], [0.6, 0.4], seed + 2034)
     dust_lane = np.clip((dust - 0.55) * 3.0, 0, 1) * 0.4
 
     result = paint.copy()
@@ -975,7 +1048,7 @@ def spec_nebula(shape, seed, sm, base_m, base_r):
     # Gas cloud density — large billowing structures
     gas = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.4, 0.3], seed + 4200)
     # Dust lane structures — darker filaments threading through
-    dust = multi_scale_noise((h, w), [4, 8, 16], [0.4, 0.35, 0.25], seed + 4210)
+    dust = multi_scale_noise((h, w), [16, 32, 64], [0.4, 0.35, 0.25], seed + 4210)
     dust_lane = np.clip((dust - 0.4) * 3.0, 0, 1)
     # Star-birth hot spots — tiny bright metallic points (cosmic dust sparkle)
     stars_coarse = multi_scale_noise((h, w), [1, 2], [0.6, 0.4], seed + 4215)
@@ -1007,7 +1080,7 @@ def spec_p_superfluid(shape, seed, sm, base_m, base_r):
     ripple2 = np.sin(x * 0.05 - y * 0.09) * np.cos(x * 0.07)
     ripples = np.clip((ripple1 + ripple2) * 0.5 + 0.5, 0, 1)
     # Quantized vortex cores — small intense spots
-    vortex_noise = multi_scale_noise((h, w), [2, 4, 8], [0.4, 0.35, 0.25], seed + 4300)
+    vortex_noise = multi_scale_noise((h, w), [16, 32, 64], [0.4, 0.35, 0.25], seed + 4300)
     vortex = np.clip((vortex_noise - 0.8) * 6.0, 0, 1)
     # Surface tension field — smooth large-scale
     tension = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.4, 0.3], seed + 4305)
@@ -1030,10 +1103,10 @@ def spec_p_coronal(shape, seed, sm, base_m, base_r):
     arc2 = np.cos(x * 0.05 + np.cos(y * 0.04) * 2.0) * 0.5 + 0.5
     loops = np.clip(arc1 * 0.6 + arc2 * 0.4, 0, 1)
     # Solar flare bursts — high-energy eruption zones
-    flare = multi_scale_noise((h, w), [4, 8, 16], [0.4, 0.35, 0.25], seed + 4400)
+    flare = multi_scale_noise((h, w), [16, 32, 64], [0.4, 0.35, 0.25], seed + 4400)
     eruption = np.clip((flare - 0.6) * 4.0, 0, 1)
     # Fine plasma turbulence
-    turb = multi_scale_noise((h, w), [2, 4], [0.5, 0.5], seed + 4410)
+    turb = multi_scale_noise((h, w), [32, 64], [0.5, 0.5], seed + 4410)
     # M: high metallic in eruption zones, moderate in loops, low in quiet regions
     M = np.clip(80.0 + loops * 100.0 * s + eruption * 75.0 * s + turb * 20.0 * s, 0, 255).astype(np.float32)
     # R: smooth in active zones, rougher in quiet corona
@@ -1060,7 +1133,7 @@ def spec_p_hypercane(shape, seed, sm, base_m, base_r):
     # Large swirling storm turbulence (cloud structure)
     storm_base = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.4, 0.3], seed + 3001)
     # Fine chaotic detail (rain sheets / micro-turbulence)
-    chaos = multi_scale_noise((h, w), [2, 4, 8], [0.4, 0.35, 0.25], seed + 3010)
+    chaos = multi_scale_noise((h, w), [16, 32, 64], [0.4, 0.35, 0.25], seed + 3010)
     # Lightning filaments — very narrow bright threads where storm peaks
     bolt = np.clip(1.0 - np.abs(storm_base - 0.92) * 18.0, 0, 1)
     bolt2 = np.clip(1.0 - np.abs(chaos - 0.95) * 25.0, 0, 1)  # secondary branches
@@ -1091,7 +1164,7 @@ def spec_p_geomagnetic(shape, seed, sm, base_m, base_r):
     curtain3 = (np.sin(band_y * np.pi * 14.0 + 3.1) * 0.5 + 0.5)
     aurora = np.clip(curtain1 * 0.5 + curtain2 * 0.3 + curtain3 * 0.2, 0, 1)
     # Fine shimmer within the bright bands
-    shimmer = multi_scale_noise((h, w), [2, 4, 8], [0.4, 0.35, 0.25], seed + 3055)
+    shimmer = multi_scale_noise((h, w), [16, 32, 64], [0.4, 0.35, 0.25], seed + 3055)
     # M: bright aurora bands = high metallic (200-250), dark gaps = void (0-30)
     M = np.clip(aurora * 220.0 + shimmer * 30.0 * aurora, 0, 255).astype(np.float32)
     # R: shimmer variation within bands, rougher in dark gaps
@@ -1119,7 +1192,7 @@ def spec_p_non_euclidean(shape, seed, sm, base_m, base_r):
     sector = np.floor((theta + np.pi) / (2.0 * np.pi / 5.0)).astype(np.int32) % 2
     face = ((ring + sector) % 2).astype(np.float32)
     # Edge distortion at hyperbolic tile boundaries
-    edge_noise = multi_scale_noise((h, w), [2, 4], [0.5, 0.5], seed + 4700)
+    edge_noise = multi_scale_noise((h, w), [32, 64], [0.5, 0.5], seed + 4700)
     M = np.where(face > 0.5, 220.0 + edge_noise * 25.0, 30.0 + edge_noise * 40.0).astype(np.float32)
     M = np.clip(M, 0, 255).astype(np.float32)
     R = np.where(face > 0.5, 15.0 + edge_noise * 12.0, 175.0 + edge_noise * 45.0).astype(np.float32)
@@ -1159,7 +1232,7 @@ def spec_p_programmable(shape, seed, sm, base_m, base_r):
     # Fine dither noise for boundary transitions (halftone effect)
     dither = multi_scale_noise((h, w), [1, 2, 4], [0.5, 0.3, 0.2], seed + 3008)
     # Medium-scale cell structure for nanobot swarm clusters
-    cell = multi_scale_noise((h, w), [4, 8], [0.5, 0.5], seed + 3012)
+    cell = multi_scale_noise((h, w), [16, 32], [0.5, 0.5], seed + 3012)
     # Binary threshold with noise-driven boundary: sharp but organic edges
     threshold = 0.50 + (dither - 0.5) * 0.35  # threshold varies per pixel (dithered)
     mirror_mask = (zone > threshold).astype(np.float32)
@@ -1187,7 +1260,7 @@ def spec_p_erised(shape, seed, sm, base_m, base_r):
     warp2 = np.cos(y * 0.04 + np.cos(x * 0.03) * 2.5) * 0.5 + 0.5
     mirror_field = np.clip(warp1 * 0.6 + warp2 * 0.4, 0, 1)
     # Ripple edges where mirror distorts
-    ripple = multi_scale_noise((h, w), [2, 4, 8], [0.4, 0.35, 0.25], seed + 4600)
+    ripple = multi_scale_noise((h, w), [16, 32, 64], [0.4, 0.35, 0.25], seed + 4600)
     edge = np.clip(1.0 - np.abs(mirror_field - 0.5) * 3.5, 0, 1)  # transition zones
     # Deep reflection pools
     pool = multi_scale_noise((h, w), [16, 32], [0.5, 0.5], seed + 4610)
@@ -1245,6 +1318,7 @@ def spec_infinite_finish(shape, seed, sm, base_m, base_r):
 
 def paint_quantum_foam_v2(paint, shape, mask, seed, pm, bb):
     """Neutral base so the spec is the star — subtle cool gray."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     gray = np.clip(base.mean(axis=2, keepdims=True) * 0.5 + 0.35, 0, 1)
@@ -1256,6 +1330,7 @@ def paint_quantum_foam_v2(paint, shape, mask, seed, pm, bb):
 
 def paint_infinite_finish_v2(paint, shape, mask, seed, pm, bb):
     """Neutral base — very slight warm tint so it pairs differently with Quantum Foam."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     gray = np.clip(base.mean(axis=2) * 0.5 + 0.38, 0, 1)
@@ -1263,3 +1338,71 @@ def paint_infinite_finish_v2(paint, shape, mask, seed, pm, bb):
     blend = np.clip(mask[:, :, np.newaxis] * pm, 0, 1)
     result = np.clip(base * (1.0 - blend) + np.clip(warm, 0, 1) * blend, 0, 1)
     return result.astype(np.float32)
+
+
+# ============================================================================
+# 2026-04-24 regular-base rebuild override: holographic foil
+# ============================================================================
+
+def _ps_norm01(arr):
+    arr = np.asarray(arr, dtype=np.float32)
+    span = float(arr.max() - arr.min())
+    if span < 1e-7:
+        return np.zeros_like(arr, dtype=np.float32)
+    return ((arr - float(arr.min())) / span).astype(np.float32)
+
+
+def _ps_micro(shape, seed, density):
+    h, w = shape[:2] if len(shape) > 2 else shape
+    rng = np.random.default_rng(seed)
+    n = min(int(h * w * density), 150000)
+    out = np.zeros((h, w), dtype=np.float32)
+    if n > 0:
+        yy = rng.integers(0, h, n)
+        xx = rng.integers(0, w, n)
+        vals = rng.uniform(0.2, 1.0, n).astype(np.float32)
+        np.maximum.at(out, (yy, xx), vals)
+    return np.maximum.reduce([
+        out,
+        np.roll(out, 1, axis=0) * 0.36,
+        np.roll(out, -1, axis=1) * 0.36,
+    ]).astype(np.float32)
+
+
+def paint_holographic_base_v2(paint, shape, mask, seed, pm, bb):
+    """Fine holographic foil: micro-diffraction grain, not candy-cane stripes."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
+    bb = ensure_bb_2d(bb, shape)
+    h, w = shape[:2] if len(shape) > 2 else shape
+    base = paint.copy()
+    y, x = get_mgrid((h, w))
+    xn = x / max(w - 1, 1)
+    yn = y / max(h - 1, 1)
+    warp = multi_scale_noise((h, w), [8, 19, 47], [0.42, 0.36, 0.22], seed + 2004)
+    theta = xn * 0.38 + yn * 0.31 + warp * 0.34
+    g1 = np.sin(x * 0.86 + y * 0.05 + theta * 5.0)
+    g2 = np.sin(x * -0.41 + y * 0.74 + theta * 4.3)
+    g3 = np.sin((x + y) * 1.57 + warp * 3.0)
+    diffraction = _ps_norm01(g1 * 0.46 + g2 * 0.37 + g3 * 0.17)
+    micro = _ps_micro((h, w), seed + 2005, 0.046)
+    phase = np.mod(theta + diffraction * 0.16 + micro * 0.08, 1.0) * np.pi * 2.0
+    holo = np.stack([
+        0.46 + 0.38 * np.cos(phase),
+        0.46 + 0.38 * np.cos(phase - 2.094),
+        0.50 + 0.40 * np.cos(phase + 2.094),
+    ], axis=-1).astype(np.float32)
+    foil = np.clip(base.mean(axis=2, keepdims=True) * 0.28 + holo * (0.62 + diffraction[:, :, None] * 0.18), 0, 1)
+    foil = np.clip(foil + micro[:, :, None] * holo * 0.18, 0, 1)
+    blend = np.clip(pm, 0.0, 1.0) * mask[:, :, None]
+    return np.clip(base * (1.0 - blend) + foil * blend + bb[:, :, None] * 0.15 * blend, 0, 1).astype(np.float32)
+
+
+def spec_holographic_base(shape, seed, sm, base_m, base_r):
+    h, w = shape[:2] if len(shape) > 2 else shape
+    grain = _ps_norm01(multi_scale_noise((h, w), [2, 5, 11, 26], [0.34, 0.30, 0.22, 0.14], seed + 2004))
+    micro = _ps_micro((h, w), seed + 2005, 0.046)
+    field = np.clip(grain * 0.58 + micro * 0.62, 0, 1)
+    M = np.clip(170.0 + field * 74.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(15.0 + (1.0 - micro) * 34.0 * sm + grain * 10.0 * sm, 15, 255).astype(np.float32)
+    CC = np.clip(16.0 + field * 16.0 * sm, 16, 255).astype(np.float32)
+    return M, R, _cc_clamp(CC)

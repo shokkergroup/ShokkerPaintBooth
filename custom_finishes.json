@@ -1,0 +1,133 @@
+[
+  {
+    "id": "custom_001",
+    "name": "Satans Prime Chrome",
+    "finish_ids": [
+      "primer",
+      "candy_apple",
+      "chrome"
+    ],
+    "weights": [
+      0.2294,
+      0.5963,
+      0.1743
+    ],
+    "created": "2026-04-03T17:51:11.803348"
+  },
+  {
+    "id": "custom_002",
+    "name": "Matte Metallic",
+    "finish_ids": [
+      "matte",
+      "metallic"
+    ],
+    "weights": [
+      0.5,
+      0.5
+    ],
+    "created": "2026-04-09T00:26:06.812582"
+  },
+  {
+    "id": "custom_003",
+    "name": "Metallic Bioluminescent Matte",
+    "finish_ids": [
+      "matte",
+      "metallic",
+      "bioluminescent"
+    ],
+    "weights": [
+      0.15,
+      0.5,
+      0.35
+    ],
+    "created": "2026-04-09T00:28:06.568120"
+  },
+  {
+    "id": "custom_004",
+    "name": "Diamond Coat + Coagulated Blood + Carbon Base",
+    "finish_ids": [
+      "diamond_coat",
+      "candy_burgundy",
+      "carbon_base"
+    ],
+    "weights": [
+      0.2,
+      0.25,
+      0.55
+    ],
+    "created": "2026-04-09T14:24:23.988140"
+  },
+  {
+    "id": "custom_005",
+    "name": "Diamond Blood Carbon",
+    "finish_ids": [
+      "custom_004",
+      "candy_burgundy",
+      "carbon_base"
+    ],
+    "weights": [
+      0.2,
+      0.25,
+      0.55
+    ],
+    "created": "2026-04-09T14:25:28.009369"
+  },
+  {
+    "id": "custom_006",
+    "name": "Quilt Candy Tiles + hydrographic + TriZone Pearl/Carbon/Gold",
+    "finish_ids": [
+      "quilt_candy_tiles",
+      "hydrographic",
+      "trizone_pearl_carbon_gold"
+    ],
+    "weights": [
+      0.3902,
+      0.3415,
+      0.2683
+    ],
+    "created": "2026-04-09T17:38:30.536715"
+  },
+  {
+    "id": "custom_007",
+    "name": "QuiltHydro",
+    "finish_ids": [
+      "custom_006",
+      "hydrographic",
+      "trizone_pearl_carbon_gold"
+    ],
+    "weights": [
+      0.3902,
+      0.3415,
+      0.2683
+    ],
+    "created": "2026-04-09T17:39:14.176336"
+  },
+  {
+    "id": "custom_008",
+    "name": "Wet Look + Holographic Base",
+    "finish_ids": [
+      "wet_look",
+      "holographic_base"
+    ],
+    "weights": [
+      0.5,
+      0.5
+    ],
+    "mix_mode": "both",
+    "created": "2026-04-09T18:03:36.022482"
+  },
+  {
+    "id": "custom_009",
+    "name": "Chameleon Arctic + Coagulated Blood",
+    "finish_ids": [
+      "chameleon_arctic",
+      "candy_burgundy"
+    ],
+    "weights": [
+      0.3137,
+      0.6863
+    ],
+    "mix_mode": "both",
+    "created": "2026-04-09T19:02:28.304686"
+  }
+]

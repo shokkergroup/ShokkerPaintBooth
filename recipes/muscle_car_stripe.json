@@ -1,0 +1,80 @@
+{
+  "name": "Muscle Car Stripe",
+  "description": "Deep gloss body with twin matte-black over-the-top stripes and chrome trim. The classic American musclecar look.",
+  "author": "Shokker Paint Booth",
+  "version": "6.2.0",
+  "compatible_with": "any chassis, best on coupes and fastbacks",
+  "notes": "Pairs Shelby/Mach-1 style stripes with deep gloss. For Plymouth/Mopar vibe swap Body baseColor to #0f6a2b (sublime green) or #ff6b00 (hemi orange).",
+  "zones": [
+    {
+      "name": "Body",
+      "color": "everything",
+      "base": "drag_strip_gloss",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "special",
+      "baseColor": "#0a1a4a",
+      "baseColorMode": "solid",
+      "baseStrength": 1,
+      "baseSpecStrength": 1
+    },
+    {
+      "name": "Twin Stripes",
+      "color": "white",
+      "base": "matte",
+      "pattern": "racing_stripe",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#ffffff",
+      "pickerTolerance": 25,
+      "baseColor": "#0a0a0a",
+      "baseColorMode": "solid",
+      "patternIntensity": "100"
+    },
+    {
+      "name": "Chrome Trim",
+      "color": "gray",
+      "base": "chrome",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#aaaaaa",
+      "pickerTolerance": 30,
+      "baseColorMode": "source"
+    },
+    {
+      "name": "Hood Scoop",
+      "color": "dark",
+      "base": "satin",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#222222",
+      "pickerTolerance": 35,
+      "baseColor": "#1a1a1a",
+      "baseColorMode": "solid"
+    },
+    {
+      "name": "Muscle Badge Accent",
+      "color": "red",
+      "base": "candy_apple",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#cc2222",
+      "pickerTolerance": 35,
+      "baseColor": "#cc0020",
+      "baseColorMode": "solid"
+    },
+    {
+      "name": "Dark Lower",
+      "color": "remaining",
+      "base": "semi_gloss",
+      "pattern": "none",
+      "intensity": "80",
+      "colorMode": "special",
+      "baseColor": "#0a0a0a",
+      "baseColorMode": "solid"
+    }
+  ]
+}

@@ -17,12 +17,13 @@ def paint_chrome_wrap_v2(paint, shape, mask, seed, pm, bb):
     Chrome wrap with elastic stretch distortion using advection-like flow.
     Creates directional chrome sheen with constraint-based warping.
     """
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     
     # Laminar flow field — subtle stretch only (smoother chrome wrap base)
     y, x = get_mgrid((h, w))
-    flow_base = multi_scale_noise((h, w), [4, 8, 16], [0.35, 0.35, 0.3], seed + 2500)
+    flow_base = multi_scale_noise((h, w), [16, 32, 64], [0.35, 0.35, 0.3], seed + 2500)
     flow_perp = multi_scale_noise((h, w), [6, 12, 24], [0.3, 0.4, 0.3], seed + 2501)
     
     flow_mag = np.sqrt(flow_base**2 + flow_perp**2) + 1e-6
@@ -47,16 +48,18 @@ def spec_chrome_wrap(shape, seed, sm, base_m, base_r):
     """
     h, w = shape
     
-    direction = multi_scale_noise((h, w), [2, 4], [0.5, 0.5], seed + 2500)
+    direction = multi_scale_noise((h, w), [32, 64], [0.5, 0.5], seed + 2500)
     metallic = 0.85 + 0.15 * multi_scale_noise((h, w), [1, 2, 4], [0.4, 0.35, 0.25], seed + 2503)
     roughness = 0.02 + 0.02 * multi_scale_noise((h, w), [1, 3], [0.6, 0.4], seed + 2504)
     # CC 16 = full clearcoat; mirror chrome vinyl = full gloss
     cc = np.full((h, w), 16.0, dtype=np.float32)
     
     # metallic is ALREADY 0.85-1.0 (i.e. 0-1 range) — scale to 0-255
-    return (np.clip(metallic * 255.0, 0, 255).astype(np.float32),
-            np.clip(roughness * 255.0, 0, 255).astype(np.float32),
-            cc)
+    M_arr = np.clip(metallic * 255.0, 0, 255).astype(np.float32)
+    R_arr = np.clip(roughness * 255.0, 0, 255).astype(np.float32)
+    # Per-pixel GGX floor: R>=15 only where M<240
+    R_arr = np.where(M_arr < 240, np.maximum(R_arr, 15), R_arr)
+    return M_arr, R_arr, cc
 
 
 # =============================================================================
@@ -69,6 +72,7 @@ def paint_color_flip_v2(paint, shape, mask, seed, pm, bb):
     Like a chrome that flips between two color states with dramatic wrap transition.
     Dichroic-style — not just rainbow iridescence, but a FLIP between two distinct colors.
     """
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = ensure_bb_2d(bb, shape)
     if pm == 0.0:
         return paint
@@ -78,7 +82,7 @@ def paint_color_flip_v2(paint, shape, mask, seed, pm, bb):
 
     # Noise-based viewing angle simulation (simulates body curvature)
     angle_noise = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.35, 0.35], seed + 2505)
-    fine_noise = multi_scale_noise((h, w), [4, 8], [0.6, 0.4], seed + 2506)
+    fine_noise = multi_scale_noise((h, w), [16, 32], [0.6, 0.4], seed + 2506)
 
     # Viewing angle parameter: combines position + body noise
     y_norm = y / max(h - 1, 1)
@@ -135,7 +139,7 @@ def spec_color_flip(shape, seed, sm, base_m, base_r):
 
     # Angle simulation noise
     angle_noise = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.35, 0.35], seed + 2505)
-    fine = multi_scale_noise((h, w), [2, 4, 8], [0.4, 0.35, 0.25], seed + 2507)
+    fine = multi_scale_noise((h, w), [16, 32, 64], [0.4, 0.35, 0.25], seed + 2507)
     y, x = get_mgrid((h, w))
     angle_param = np.clip(y / max(h - 1, 1) * 0.3 + x / max(w - 1, 1) * 0.25 + angle_noise * 0.3, 0, 1)
 
@@ -161,6 +165,7 @@ def paint_gloss_wrap_v2(paint, shape, mask, seed, pm, bb):
     Gloss wrap using Fresnel-like edge brightening with calendering waves.
     Creates mirror-like finish with soft radial falloff.
     """
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     
@@ -178,7 +183,7 @@ def paint_gloss_wrap_v2(paint, shape, mask, seed, pm, bb):
     calendar_x = 0.5 + 0.5 * np.sin(3 * np.pi * x / max(w, 1))
     calendar = calendar_y * calendar_x
     
-    gloss_noise = multi_scale_noise((h, w), [4, 8], [0.5, 0.5], seed + 2509)
+    gloss_noise = multi_scale_noise((h, w), [16, 32], [0.5, 0.5], seed + 2509)
     gloss_effect = (0.88 + 0.1 * gloss_noise) * (fresnel_pow + calendar * 0.06)
     gloss_effect = np.stack([gloss_effect, gloss_effect, gloss_effect], axis=-1)
     
@@ -211,10 +216,11 @@ def paint_liquid_wrap_v2(paint, shape, mask, seed, pm, bb):
     """Liquid rubber/vinyl peel coat: WEAK-016 FIX — stretchy rubber/vinyl character.
     Distinct from satin_wrap: fine Perlin micro-texture + slight darkening at stretch points.
     Previously simulated liquid-metal pooling — wrong material character for rubber peel coat."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     # Fine rubber compound particle variation texture
-    rubber_grain = multi_scale_noise((h, w), [2, 4, 8], [0.45, 0.35, 0.2], seed + 2512)
+    rubber_grain = multi_scale_noise((h, w), [16, 32, 64], [0.45, 0.35, 0.2], seed + 2512)
     # Stretch point simulation: gradient noise for high-curvature area darkening
     stretch_pts  = multi_scale_noise((h, w), [1, 2, 3], [0.5, 0.3, 0.2], seed + 2513)
     # Slight darkening at stretch peaks (0-5% darker where rubber stretches)
@@ -236,11 +242,11 @@ def spec_liquid_wrap(shape, seed, sm, base_m, base_r):
     Previously: R=22-37 (too smooth), CC=50-58 — nearly identical range to satin_wrap."""
     h, w = shape
     # Fine Perlin texture for rubber compound surface variation
-    rubber_tex = multi_scale_noise((h, w), [2, 4, 8], [0.45, 0.35, 0.2], seed + 2516)
+    rubber_tex = multi_scale_noise((h, w), [16, 32, 64], [0.45, 0.35, 0.2], seed + 2516)
     # M: near zero — rubber/vinyl is dielectric, no metallic character
     metallic  = np.clip(0.0 + rubber_tex * 3.0 * sm, 0, 255).astype(np.float32)
     # R: 60-100 range — slightly rougher than satin (satin ~35-55), rubber is not as smooth
-    roughness = np.clip(60.0 + rubber_tex * 40.0 * sm, 0, 255).astype(np.float32)
+    roughness = np.clip(60.0 + rubber_tex * 40.0 * sm, 15, 255).astype(np.float32)  # R≥15
     # CC: same satin-ish range (40-58) — rubber self-seals like vinyl
     cc        = np.clip(40.0 + rubber_tex * 18.0, 16, 255).astype(np.float32)
     return (metallic, roughness, cc)
@@ -255,6 +261,7 @@ def paint_matte_wrap_v2(paint, shape, mask, seed, pm, bb):
     Matte wrap using Lambertian diffusion with micro-texture pattern.
     Creates non-directional light scatter using isotropic Perlin-like noise.
     """
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     
@@ -289,7 +296,7 @@ def spec_matte_wrap(shape, seed, sm, base_m, base_r):
     metallic = np.zeros((h, w), dtype=np.float32)
 
     # High roughness for matte diffusion
-    rough_base = multi_scale_noise((h, w), [2, 4, 8], [0.35, 0.35, 0.3], seed + 2519)
+    rough_base = multi_scale_noise((h, w), [16, 32, 64], [0.35, 0.35, 0.3], seed + 2519)
     roughness = np.clip(166.0 + rough_base * 51.0 * sm, 15, 255).astype(np.float32)
 
     # Dead flat = max dull clearcoat (CC 255); 0-15 invalid per spec map ref
@@ -307,13 +314,14 @@ def paint_satin_wrap_v2(paint, shape, mask, seed, pm, bb):
     Satin wrap using Gabor-like directional texture with soft directional highlights.
     Creates woven appearance with slight directionality.
     """
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     
     y, x = get_mgrid((h, w))
     
     # Directional texture (aligned waves)
-    direction = 0.3 * np.pi + 0.2 * np.pi * multi_scale_noise((h, w), [2, 4], [0.6, 0.4], seed + 2520)
+    direction = 0.3 * np.pi + 0.2 * np.pi * multi_scale_noise((h, w), [32, 64], [0.6, 0.4], seed + 2520)
     aligned = np.cos(8 * (x * np.cos(direction) + y * np.sin(direction)) / w)
     
     # Texture amplitude modulation
@@ -355,12 +363,13 @@ def paint_stealth_wrap_v2(paint, shape, mask, seed, pm, bb):
     Stealth wrap using fractal decomposition for low-RCS appearance.
     Creates absorption pattern that minimizes reflectivity.
     """
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     
     # Multi-scale fractal for RCS reduction (absorptive random roughness)
     fractal_1 = multi_scale_noise((h, w), [1, 2, 4], [0.4, 0.35, 0.25], seed + 2525)
-    fractal_2 = multi_scale_noise((h, w), [2, 4, 8], [0.35, 0.35, 0.3], seed + 2526)
+    fractal_2 = multi_scale_noise((h, w), [16, 32, 64], [0.35, 0.35, 0.3], seed + 2526)
     
     # Combine fractals for self-similar absorption
     rcs_pattern = np.clip(0.6 * fractal_1 + 0.4 * fractal_2, 0, 1)
@@ -391,7 +400,7 @@ def spec_stealth_wrap(shape, seed, sm, base_m, base_r):
     metallic = np.clip(13.0 + absorb * 25.0 * sm, 0, 255).astype(np.float32)
 
     # Very high roughness for absorptive scattering
-    rough_noise = multi_scale_noise((h, w), [2, 4, 8], [0.35, 0.35, 0.3], seed + 2528)
+    rough_noise = multi_scale_noise((h, w), [16, 32, 64], [0.35, 0.35, 0.3], seed + 2528)
     roughness = np.clip(191.0 + rough_noise * 51.0 * sm, 15, 255).astype(np.float32)
 
     # Minimal clearcoat for stealth — base_m is ALREADY 0-255, no *255 needed
@@ -408,12 +417,13 @@ def paint_textured_wrap_v2(paint, shape, mask, seed, pm, bb):
     """Orange-peel embossed vinyl wrap. Applies raised-dimple surface texture to the
     user's base paint color — preserves any chosen color, adds 3D emboss character
     via bump modulation (peaks lighter, valleys darker). No hardcoded color."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     # Coarse bump map: large dimples characteristic of orange-peel vinyl texture
     bump_coarse = multi_scale_noise((h, w), [8, 16], [0.55, 0.45], seed + 2529)
     # Fine surface grain: micro-texture variation on vinyl film surface
-    bump_fine = multi_scale_noise((h, w), [2, 4], [0.5, 0.5], seed + 2530)
+    bump_fine = multi_scale_noise((h, w), [32, 64], [0.5, 0.5], seed + 2530)
     # Combine into orange-peel pattern (75% coarse dimples, 25% fine grain)
     texture = np.clip(0.75 * bump_coarse + 0.25 * bump_fine, 0, 1)
     # Brightness modulation: peaks +14%, valleys -14% (light on bumps, shadow in dimples)
@@ -431,7 +441,7 @@ def spec_textured_wrap(shape, seed, sm, base_m, base_r):
     """
     h, w = shape
     
-    tex = multi_scale_noise((h, w), [2, 4], [0.6, 0.4], seed + 2530)
+    tex = multi_scale_noise((h, w), [32, 64], [0.6, 0.4], seed + 2530)
     weave_rough = multi_scale_noise((h, w), [3, 6, 12], [0.4, 0.35, 0.25], seed + 2531)
     metallic = np.clip(38.0 + tex * 38.0 * sm, 0, 255).astype(np.float32)
     roughness = np.clip(77.0 + weave_rough * 51.0 * sm, 15, 255).astype(np.float32)
@@ -449,6 +459,7 @@ def paint_brushed_wrap_v2(paint, shape, mask, seed, pm, bb):
     Brushed metal vinyl: directional horizontal grain lines with
     localized brightness variation from machining-pattern print.
     """
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()

@@ -48,6 +48,7 @@ def _apply_clash_gradient(paint, shape, mask, center_rgb, edge_rgb, seed, pm, bb
     """Apply center-dominant, edge-contrasting L-R gradient to paint.
     PM Identity Contract: pm=0 returns paint unchanged.
     """
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     if pm == 0.0:
         return paint
 
@@ -61,24 +62,31 @@ def _apply_clash_gradient(paint, shape, mask, center_rgb, edge_rgb, seed, pm, bb
             0, 1
         )
 
-    # Apply base brightness boost
-    paint = np.clip(paint + bb * 0.5 * mask[:, :, np.newaxis], 0, 1)
+    # Apply base brightness boost — normalize bb to 2D
+    bb_2d = np.mean(bb[:,:,:3], axis=2) if hasattr(bb, 'ndim') and bb.ndim == 3 else (bb if hasattr(bb, 'ndim') and bb.ndim == 2 else np.full(paint.shape[:2], float(np.mean(bb)), dtype=np.float32))
+    paint = np.clip(paint + bb_2d[:, :, np.newaxis] * 0.5 * mask[:, :, np.newaxis], 0, 1)
     return paint
 
 
 def _uniform_spec(shape, mask, sm, roughness, metallic, specular=16):
-    """Build a uniform spec map with given roughness/metallic values."""
+    """Build a uniform spec map with given roughness/metallic values.
+    iRacing channel order: 0=Metallic, 1=Roughness, 2=Clearcoat, 3=SpecMask."""
     h, w = shape[:2]
     spec = np.zeros((h, w, 4), dtype=np.uint8)
-    spec[:, :, 0] = np.clip(roughness * mask * sm, 0, 255).astype(np.uint8)
-    spec[:, :, 1] = np.clip(metallic * mask * sm, 0, 255).astype(np.uint8)
-    spec[:, :, 2] = specular
+    M_arr = np.clip(metallic * mask * sm, 0, 255)
+    R_arr = np.clip(roughness * mask * sm, 0, 255)
+    # Iron rule: R >= 15 for non-chrome (M < 240), CC >= 16
+    R_arr = np.where((M_arr < 240) & (mask > 0.5), np.maximum(R_arr, 15), R_arr)
+    spec[:, :, 0] = M_arr.astype(np.uint8)    # M = channel 0
+    spec[:, :, 1] = R_arr.astype(np.uint8)    # R = channel 1
+    spec[:, :, 2] = max(int(specular) if np.isscalar(specular) else 16, 16)
     spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
 
 
 def _gradient_spec(shape, mask, sm, r_center, m_center, r_edge, m_edge, specular=16):
-    """Build a spec map that varies from center to edges (L-R)."""
+    """Build a spec map that varies from center to edges (L-R).
+    iRacing: 0=Metallic, 1=Roughness, 2=Clearcoat, 3=SpecMask."""
     h, w = shape[:2]
     cw = _center_weight(shape)
     ew = _edge_weight(shape)
@@ -87,9 +95,13 @@ def _gradient_spec(shape, mask, sm, r_center, m_center, r_edge, m_edge, specular
     metallic = cw * m_center + ew * m_edge
 
     spec = np.zeros((h, w, 4), dtype=np.uint8)
-    spec[:, :, 0] = np.clip(roughness * mask * sm, 0, 255).astype(np.uint8)
-    spec[:, :, 1] = np.clip(metallic * mask * sm, 0, 255).astype(np.uint8)
-    spec[:, :, 2] = specular
+    M_arr = np.clip(metallic * mask * sm, 0, 255)
+    R_arr = np.clip(roughness * mask * sm, 0, 255)
+    # Iron rule: R >= 15 for non-chrome (M < 240), CC >= 16
+    R_arr = np.where((M_arr < 240) & (mask > 0.5), np.maximum(R_arr, 15), R_arr)
+    spec[:, :, 0] = M_arr.astype(np.uint8)    # M = channel 0
+    spec[:, :, 1] = R_arr.astype(np.uint8)    # R = channel 1
+    spec[:, :, 2] = max(int(specular) if np.isscalar(specular) else 16, 16)
     spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
 
@@ -126,19 +138,26 @@ def _multizone_spec(shape, mask, sm, zones, specular=16):
     metallic = np.tile(m_interp, (h, 1))
 
     spec = np.zeros((h, w, 4), dtype=np.uint8)
-    spec[:, :, 0] = np.clip(roughness * mask * sm, 0, 255).astype(np.uint8)
-    spec[:, :, 1] = np.clip(metallic * mask * sm, 0, 255).astype(np.uint8)
-    spec[:, :, 2] = specular
+    M_arr = np.clip(metallic * mask * sm, 0, 255)
+    R_arr = np.clip(roughness * mask * sm, 0, 255)
+    # Iron rule: R >= 15 for non-chrome (M < 240), CC >= 16
+    R_arr = np.where((M_arr < 240) & (mask > 0.5), np.maximum(R_arr, 15), R_arr)
+    spec[:, :, 0] = M_arr.astype(np.uint8)    # M = channel 0
+    spec[:, :, 1] = R_arr.astype(np.uint8)    # R = channel 1
+    spec[:, :, 2] = max(int(specular) if np.isscalar(specular) else 16, 16)
     spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
 
 
 def _add_noise_to_spec(spec, shape, seed, intensity=8):
-    """Add subtle noise to spec for realism."""
+    """Add subtle noise to spec for realism. Enforces R>=15 for non-chrome."""
     rng = np.random.RandomState(seed)
     noise = rng.randint(-intensity, intensity + 1, size=(shape[0], shape[1]), dtype=np.int16)
     for ch in range(2):  # roughness and metallic only
         spec[:, :, ch] = np.clip(spec[:, :, ch].astype(np.int16) + noise, 0, 255).astype(np.uint8)
+    # GGX floor: R>=15 for non-chrome (M<240)
+    non_chrome = spec[:, :, 0] < 240
+    spec[:, :, 1] = np.where(non_chrome, np.maximum(spec[:, :, 1], 15), spec[:, :, 1]).astype(np.uint8)
     return spec
 
 
@@ -151,6 +170,7 @@ def spec_cc_neon_bruise(shape, mask, seed, sm):
     return _add_noise_to_spec(spec, shape, seed, 5)
 
 def paint_cc_neon_bruise(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     return _apply_clash_gradient(paint, shape, mask,
                                   center_rgb=(0.55, 0.0, 0.85),   # electric purple
                                   edge_rgb=(0.2, 0.95, 0.1),      # toxic green
@@ -163,9 +183,12 @@ def paint_cc_neon_bruise(paint, shape, mask, seed, pm, bb):
 
 def spec_cc_acid_burn(shape, mask, seed, sm):
     spec = _uniform_spec(shape, mask, sm, roughness=220, metallic=15)
-    return _add_noise_to_spec(spec, shape, seed, 6)
+    spec = _add_noise_to_spec(spec, shape, seed, 6)
+    spec[:,:,1] = np.maximum(spec[:,:,1], 15)  # R≥15 roughness floor (non-chrome)
+    return spec
 
 def paint_cc_acid_burn(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     return _apply_clash_gradient(paint, shape, mask,
                                   center_rgb=(0.95, 0.95, 0.0),   # acid yellow
                                   edge_rgb=(0.25, 0.0, 0.5),      # deep purple
@@ -181,6 +204,7 @@ def spec_cc_blood_orange(shape, mask, seed, sm):
     return _add_noise_to_spec(spec, shape, seed, 6)
 
 def paint_cc_blood_orange(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     return _apply_clash_gradient(paint, shape, mask,
                                   center_rgb=(0.7, 0.05, 0.0),    # blood red
                                   edge_rgb=(0.0, 0.3, 0.95),      # electric blue
@@ -198,6 +222,7 @@ def spec_cc_toxic_sunset(shape, mask, seed, sm):
     return _add_noise_to_spec(spec, shape, seed, 5)
 
 def paint_cc_toxic_sunset(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     return _apply_clash_gradient(paint, shape, mask,
                                   center_rgb=(1.0, 0.1, 0.55),    # hot pink
                                   edge_rgb=(0.3, 0.95, 0.05),     # acid green
@@ -213,6 +238,7 @@ def spec_cc_electric_conflict(shape, mask, seed, sm):
     return _add_noise_to_spec(spec, shape, seed, 4)
 
 def paint_cc_electric_conflict(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     return _apply_clash_gradient(paint, shape, mask,
                                   center_rgb=(0.0, 0.9, 0.95),    # cyan
                                   edge_rgb=(0.9, 0.0, 0.7),       # magenta
@@ -228,6 +254,7 @@ def spec_cc_nuclear_dawn(shape, mask, seed, sm):
     return _add_noise_to_spec(spec, shape, seed, 8)
 
 def paint_cc_nuclear_dawn(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     return _apply_clash_gradient(paint, shape, mask,
                                   center_rgb=(0.15, 0.95, 0.0),   # nuclear green
                                   edge_rgb=(0.7, 0.0, 0.05),      # crimson
@@ -245,6 +272,7 @@ def spec_cc_voltage_split(shape, mask, seed, sm):
     return _add_noise_to_spec(spec, shape, seed, 5)
 
 def paint_cc_voltage_split(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     return _apply_clash_gradient(paint, shape, mask,
                                   center_rgb=(1.0, 0.95, 0.0),    # electric yellow
                                   edge_rgb=(0.0, 0.05, 0.3),      # deep navy
@@ -260,6 +288,7 @@ def spec_cc_coral_venom(shape, mask, seed, sm):
     return _add_noise_to_spec(spec, shape, seed, 6)
 
 def paint_cc_coral_venom(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     return _apply_clash_gradient(paint, shape, mask,
                                   center_rgb=(1.0, 0.4, 0.3),     # coral
                                   edge_rgb=(0.0, 0.6, 0.1),       # viper green
@@ -275,6 +304,7 @@ def spec_cc_ultraviolet_burn(shape, mask, seed, sm):
     return _add_noise_to_spec(spec, shape, seed, 5)
 
 def paint_cc_ultraviolet_burn(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     return _apply_clash_gradient(paint, shape, mask,
                                   center_rgb=(0.4, 0.0, 0.9),     # UV purple
                                   edge_rgb=(1.0, 0.5, 0.0),       # safety orange
@@ -292,6 +322,7 @@ def spec_cc_rust_vs_ice(shape, mask, seed, sm):
     return _add_noise_to_spec(spec, shape, seed, 7)
 
 def paint_cc_rust_vs_ice(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     return _apply_clash_gradient(paint, shape, mask,
                                   center_rgb=(0.7, 0.3, 0.05),    # rust orange
                                   edge_rgb=(0.7, 0.85, 0.95),     # ice blue
@@ -315,6 +346,7 @@ def spec_cc_magma_freeze(shape, mask, seed, sm):
     return _add_noise_to_spec(spec, shape, seed, 6)
 
 def paint_cc_magma_freeze(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     return _apply_clash_gradient(paint, shape, mask,
                                   center_rgb=(0.9, 0.15, 0.0),    # molten red
                                   edge_rgb=(0.92, 0.95, 1.0),     # arctic white
@@ -335,6 +367,7 @@ def spec_cc_punk_static(shape, mask, seed, sm):
     return spec
 
 def paint_cc_punk_static(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     if pm == 0.0:
         return paint
     cw = _center_weight(shape)
@@ -351,7 +384,8 @@ def paint_cc_punk_static(paint, shape, mask, seed, pm, bb):
         paint[:, :, ch] = np.clip(
             paint[:, :, ch] * (1.0 - pm * mask * ew) + static * pm * mask * ew,
             0, 1)
-    paint = np.clip(paint + bb * 0.5 * mask[:, :, np.newaxis], 0, 1)
+    bb_2d = np.mean(bb[:,:,:3], axis=2) if hasattr(bb, 'ndim') and bb.ndim == 3 else (bb if hasattr(bb, 'ndim') and bb.ndim == 2 else np.full(paint.shape[:2], float(np.mean(bb)), dtype=np.float32))
+    paint = np.clip(paint + bb_2d[:, :, np.newaxis] * 0.5 * mask[:, :, np.newaxis], 0, 1)
     return paint
 
 
@@ -364,6 +398,7 @@ def spec_cc_radioactive(shape, mask, seed, sm):
     return _add_noise_to_spec(spec, shape, seed, 4)
 
 def paint_cc_radioactive(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     return _apply_clash_gradient(paint, shape, mask,
                                   center_rgb=(0.1, 1.0, 0.05),    # neon green
                                   edge_rgb=(0.35, 0.0, 0.05),     # deep maroon
@@ -381,6 +416,7 @@ def spec_cc_bruised_sky(shape, mask, seed, sm):
     return _add_noise_to_spec(spec, shape, seed, 6)
 
 def paint_cc_bruised_sky(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     return _apply_clash_gradient(paint, shape, mask,
                                   center_rgb=(0.3, 0.0, 0.55),    # deep purple
                                   edge_rgb=(0.85, 0.85, 0.2),     # sickly yellow
@@ -396,6 +432,7 @@ def spec_cc_chemical_spill(shape, mask, seed, sm):
     return _add_noise_to_spec(spec, shape, seed, 5)
 
 def paint_cc_chemical_spill(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     return _apply_clash_gradient(paint, shape, mask,
                                   center_rgb=(0.4, 0.95, 0.0),    # lime green
                                   edge_rgb=(1.0, 0.45, 0.0),      # chemical orange
@@ -415,6 +452,7 @@ def spec_cc_deep_friction(shape, mask, seed, sm):
     return spec
 
 def paint_cc_deep_friction(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     return _apply_clash_gradient(paint, shape, mask,
                                   center_rgb=(0.55, 0.0, 0.0),    # deep red
                                   edge_rgb=(0.0, 0.85, 0.75),     # electric teal
@@ -430,6 +468,7 @@ def spec_cc_plasma_edge(shape, mask, seed, sm):
     return _add_noise_to_spec(spec, shape, seed, 3)
 
 def paint_cc_plasma_edge(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     return _apply_clash_gradient(paint, shape, mask,
                                   center_rgb=(1.0, 0.98, 0.9),    # white-hot
                                   edge_rgb=(0.1, 0.2, 0.95),      # plasma blue
@@ -447,6 +486,7 @@ def spec_cc_candy_poison(shape, mask, seed, sm):
     return _add_noise_to_spec(spec, shape, seed, 5)
 
 def paint_cc_candy_poison(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     return _apply_clash_gradient(paint, shape, mask,
                                   center_rgb=(1.0, 0.4, 0.65),    # candy pink
                                   edge_rgb=(0.05, 0.15, 0.05),    # poison black-green
@@ -464,6 +504,7 @@ def spec_cc_solar_clash(shape, mask, seed, sm):
     return _add_noise_to_spec(spec, shape, seed, 5)
 
 def paint_cc_solar_clash(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     return _apply_clash_gradient(paint, shape, mask,
                                   center_rgb=(1.0, 0.8, 0.1),     # solar gold
                                   edge_rgb=(0.02, 0.02, 0.02),    # void black
@@ -483,9 +524,12 @@ def spec_cc_fever_dream(shape, mask, seed, sm):
         (230, 50),   # rough (right edge)
     ]
     spec = _multizone_spec(shape, mask, sm, zones)
-    return _add_noise_to_spec(spec, shape, seed, 7)
+    spec = _add_noise_to_spec(spec, shape, seed, 7)
+    spec[:,:,1] = np.maximum(spec[:,:,1], 15)  # R≥15 roughness floor (non-chrome)
+    return spec
 
 def paint_cc_fever_dream(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     return _apply_clash_gradient(paint, shape, mask,
                                   center_rgb=(0.9, 0.1, 0.05),    # fever red
                                   edge_rgb=(0.5, 0.0, 0.75),      # hallucination purple
@@ -501,6 +545,7 @@ def spec_cc_digital_rot(shape, mask, seed, sm):
     return _add_noise_to_spec(spec, shape, seed, 6)
 
 def paint_cc_digital_rot(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     return _apply_clash_gradient(paint, shape, mask,
                                   center_rgb=(0.0, 0.9, 0.9),     # digital cyan
                                   edge_rgb=(0.4, 0.2, 0.05),      # rot brown
@@ -518,6 +563,7 @@ def spec_cc_flash_burn(shape, mask, seed, sm):
     return _add_noise_to_spec(spec, shape, seed, 6)
 
 def paint_cc_flash_burn(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     return _apply_clash_gradient(paint, shape, mask,
                                   center_rgb=(1.0, 1.0, 0.95),    # flash white
                                   edge_rgb=(0.9, 0.3, 0.0),       # burn orange-red
@@ -533,6 +579,7 @@ def spec_cc_venom_strike(shape, mask, seed, sm):
     return _add_noise_to_spec(spec, shape, seed, 4)
 
 def paint_cc_venom_strike(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     return _apply_clash_gradient(paint, shape, mask,
                                   center_rgb=(0.15, 0.85, 0.0),   # venom green
                                   edge_rgb=(0.02, 0.02, 0.02),    # black
@@ -548,6 +595,7 @@ def spec_cc_neon_war(shape, mask, seed, sm):
     return _add_noise_to_spec(spec, shape, seed, 4)
 
 def paint_cc_neon_war(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     return _apply_clash_gradient(paint, shape, mask,
                                   center_rgb=(1.0, 0.4, 0.0),     # neon orange
                                   edge_rgb=(0.0, 0.3, 1.0),       # neon blue
@@ -570,10 +618,13 @@ def spec_cc_chaos_theory(shape, mask, seed, sm):
         (230, 15),   # rough matte (right edge)
     ]
     spec = _multizone_spec(shape, mask, sm, zones)
-    return _add_noise_to_spec(spec, shape, seed, 8)
+    spec = _add_noise_to_spec(spec, shape, seed, 8)
+    spec[:,:,1] = np.maximum(spec[:,:,1], 15)  # R≥15 roughness floor (non-chrome)
+    return spec
 
 def paint_cc_chaos_theory(paint, shape, mask, seed, pm, bb):
     """Rainbow center with black edges — uses multi-band color injection."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     if pm == 0.0:
         return paint
 
@@ -595,7 +646,8 @@ def paint_cc_chaos_theory(paint, shape, mask, seed, pm, bb):
             paint[:, :, ch] * (1.0 - pm * mask) + target * pm * mask,
             0, 1)
 
-    paint = np.clip(paint + bb * 0.5 * mask[:, :, np.newaxis], 0, 1)
+    bb_2d = np.mean(bb[:,:,:3], axis=2) if hasattr(bb, 'ndim') and bb.ndim == 3 else (bb if hasattr(bb, 'ndim') and bb.ndim == 2 else np.full(paint.shape[:2], float(np.mean(bb)), dtype=np.float32))
+    paint = np.clip(paint + bb_2d[:, :, np.newaxis] * 0.5 * mask[:, :, np.newaxis], 0, 1)
     return paint
 
 

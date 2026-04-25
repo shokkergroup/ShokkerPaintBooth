@@ -29,6 +29,7 @@ from engine.paint_v2 import ensure_bb_2d
 # ==================================================================
 def paint_asphalt_grind_v2(paint, shape, mask, seed, pm, bb):
     """Asphalt grind: erosion hash noise with directional scratch channels."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
@@ -37,7 +38,7 @@ def paint_asphalt_grind_v2(paint, shape, mask, seed, pm, bb):
     scratch_base = multi_scale_noise((h, w), [1, 2, 4], [0.3, 0.35, 0.35], seed + 1001)
     y, x = get_mgrid((h, w))
     # Directional hash: stretch noise in X direction
-    stretch_noise = multi_scale_noise((h, w), [2, 4, 8], [0.3, 0.4, 0.3], seed + 1002)
+    stretch_noise = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.4, 0.3], seed + 1002)
     scratch = np.clip((scratch_base - 0.55) * 6.0, 0, 1)  # thresholded scratch lines
     # Erosion darkening
     erode = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.4, 0.3], seed + 1003)
@@ -65,6 +66,7 @@ def spec_asphalt_grind(shape, seed, sm, base_m, base_r):
 # ==================================================================
 def paint_bullseye_chrome_rh(paint, shape, mask, seed, pm, bb):
     """Bullseye chrome with concentric Airy diffraction ring pattern."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
@@ -103,6 +105,7 @@ def spec_bullseye_chrome_rh(shape, seed, sm, base_m, base_r):
 # ==================================================================
 def paint_checkered_chrome_rh(paint, shape, mask, seed, pm, bb):
     """Checkered flag via XOR modular arithmetic with chrome Fresnel on white squares."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
@@ -139,6 +142,7 @@ def spec_checkered_chrome_rh(shape, seed, sm, base_m, base_r):
 # ==================================================================
 def paint_dirt_track_satin_v2(paint, shape, mask, seed, pm, bb):
     """Dirt track satin with particle deposition splatter and embedded grit."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
@@ -176,6 +180,7 @@ def spec_dirt_track_satin(shape, seed, sm, base_m, base_r):
 # ==================================================================
 def paint_drag_strip_gloss_v2(paint, shape, mask, seed, pm, bb):
     """Drag strip deep pour resin with meniscus reflection and Fresnel highlights."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
@@ -206,11 +211,12 @@ def spec_drag_strip_gloss(shape, seed, sm, base_m, base_r):
 # ==================================================================
 def paint_endurance_ceramic_v2(paint, shape, mask, seed, pm, bb):
     """Endurance ceramic with thermal fatigue micro-craze network and heat discoloration."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     # Craze network from thermal cycling: Voronoi-like crack pattern
-    craze = multi_scale_noise((h, w), [4, 8, 16], [0.3, 0.35, 0.35], seed + 1051)
+    craze = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.35, 0.35], seed + 1051)
     # Crack detection via gradient magnitude (edges of noise cells = cracks)
     gy = np.gradient(craze, axis=0)
     gx = np.gradient(craze, axis=1)
@@ -228,7 +234,7 @@ def paint_endurance_ceramic_v2(paint, shape, mask, seed, pm, bb):
 
 def spec_endurance_ceramic(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
-    craze = multi_scale_noise((h, w), [4, 8, 16], [0.3, 0.35, 0.35], seed + 1051)
+    craze = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.35, 0.35], seed + 1051)
     crack = np.sqrt(np.gradient(craze, axis=0)**2 + np.gradient(craze, axis=1)**2)
     crack = np.clip(crack / (crack.max() + 1e-8) * 3.0, 0, 1)
     M = np.clip(15.0 + crack * 10.0 * sm, 0, 255).astype(np.float32)
@@ -242,6 +248,7 @@ def spec_endurance_ceramic(shape, seed, sm, base_m, base_r):
 # ==================================================================
 def paint_heat_shield_v2(paint, shape, mask, seed, pm, bb):
     """Heat shield titanium thermal gradient with Stefan-Boltzmann heat tint coloring."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
@@ -275,12 +282,13 @@ def spec_heat_shield(shape, seed, sm, base_m, base_r):
 # ==================================================================
 def paint_pace_car_pearl_v2(paint, shape, mask, seed, pm, bb):
     """Pace car pearl tri-coat with multi-bounce optical path saturation depth."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     # Tri-coat: base -> pearl mid -> clear. Longer optical path = more color
     path_var = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.4, 0.3], seed + 1071)
-    mica = multi_scale_noise((h, w), [2, 4, 8], [0.3, 0.35, 0.35], seed + 1072)
+    mica = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.35, 0.35], seed + 1072)
     # Multi-bounce adds saturation and depth
     optical_path = 1.0 + path_var * 0.5
     pearl_shift = mica * 0.06 * optical_path
@@ -297,7 +305,7 @@ def paint_pace_car_pearl_v2(paint, shape, mask, seed, pm, bb):
 
 def spec_pace_car_pearl(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
-    mica = multi_scale_noise((h, w), [2, 4, 8], [0.3, 0.35, 0.35], seed + 1072)
+    mica = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.35, 0.35], seed + 1072)
     M = np.clip(100.0 + mica * 60.0 * sm, 0, 255).astype(np.float32)
     R = np.clip(4.0 + mica * 8.0 * sm, 15, 255).astype(np.float32)
     CC = np.clip(16.0 + mica * 6.0, 16, 255).astype(np.float32)
@@ -308,6 +316,7 @@ def spec_pace_car_pearl(shape, seed, sm, base_m, base_r):
 # ==================================================================
 def paint_pit_lane_matte_v2(paint, shape, mask, seed, pm, bb):
     """Pit lane industrial matte with rubber transfer contact scuff marks."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
@@ -317,7 +326,7 @@ def paint_pit_lane_matte_v2(paint, shape, mask, seed, pm, bb):
     matte_base = np.clip(gray * 0.2 + 0.22, 0, 1)
     # Rubber transfer marks (tire scuffs from pit stops)
     # Elongated smears in random directions
-    rubber_noise = multi_scale_noise((h, w), [4, 8, 16], [0.3, 0.35, 0.35], seed + 1081)
+    rubber_noise = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.35, 0.35], seed + 1081)
     rubber_marks = np.clip((rubber_noise - 0.6) * 4.0, 0, 1) * 0.08
     # Scuff darkening from rubber
     effect = np.clip(np.stack([matte_base - rubber_marks]*3, axis=-1), 0, 1).astype(np.float32)
@@ -327,7 +336,7 @@ def paint_pit_lane_matte_v2(paint, shape, mask, seed, pm, bb):
 
 def spec_pit_lane_matte(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
-    rubber = multi_scale_noise((h, w), [4, 8, 16], [0.3, 0.35, 0.35], seed + 1081)
+    rubber = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.35, 0.35], seed + 1081)
     marks = np.clip((rubber - 0.6) * 4.0, 0, 1)
     M = np.clip(8.0 + rubber * 10.0 * sm, 0, 255).astype(np.float32)
     R = np.clip(120.0 + marks * 60.0 * sm, 15, 255).astype(np.float32)
@@ -339,6 +348,7 @@ def spec_pit_lane_matte(shape, seed, sm, base_m, base_r):
 # ==================================================================
 def paint_race_day_gloss_v2(paint, shape, mask, seed, pm, bb):
     """Race day ultra-deep wet-look gloss with saturation boost from total internal reflection."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
@@ -367,6 +377,7 @@ def spec_race_day_gloss(shape, seed, sm, base_m, base_r):
 # ==================================================================
 def paint_rally_mud_v2(paint, shape, mask, seed, pm, bb):
     """Rally mud stochastic ballistic splatter with dried texture and opacity variation."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
@@ -384,7 +395,7 @@ def paint_rally_mud_v2(paint, shape, mask, seed, pm, bb):
         opacity = rng.rand() * 0.3 + 0.1
         splat_map[y0:y1, x0:x1] = np.maximum(splat_map[y0:y1, x0:x1], opacity)
     # Dried mud texture
-    dried = multi_scale_noise((h, w), [2, 4, 8], [0.3, 0.35, 0.35], seed + 1101)
+    dried = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.35, 0.35], seed + 1101)
     mud_r = 0.35 + dried * 0.08
     mud_g = 0.28 + dried * 0.06
     mud_b = 0.18 + dried * 0.03
@@ -401,7 +412,7 @@ def paint_rally_mud_v2(paint, shape, mask, seed, pm, bb):
 
 def spec_rally_mud(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
-    dried = multi_scale_noise((h, w), [2, 4, 8], [0.3, 0.35, 0.35], seed + 1101)
+    dried = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.35, 0.35], seed + 1101)
     splat_approx = multi_scale_noise((h, w), [8, 16], [0.5, 0.5], seed + 1102)
     M = np.clip(15.0 + dried * 15.0 * sm, 0, 255).astype(np.float32)
     R = np.clip(160.0 + splat_approx * 40.0 * sm, 15, 255).astype(np.float32)
@@ -413,6 +424,7 @@ def spec_rally_mud(shape, seed, sm, base_m, base_r):
 # ==================================================================
 def paint_rat_rod_primer_v2(paint, shape, mask, seed, pm, bb):
     """Rat rod hand-sprayed primer with uneven coverage and drip runs."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
@@ -451,14 +463,15 @@ def spec_rat_rod_primer(shape, seed, sm, base_m, base_r):
 # ==================================================================
 def paint_stock_car_enamel_v2(paint, shape, mask, seed, pm, bb):
     """Stock car enamel with orange peel rheology from Rayleigh-Benard convection."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     # Enamel viscosity creates orange peel texture during cure
     # Rayleigh-Benard convection cells during drying
-    convection = multi_scale_noise((h, w), [4, 8], [0.5, 0.5], seed + 1121)
+    convection = multi_scale_noise((h, w), [16, 32], [0.5, 0.5], seed + 1121)
     # Orange peel: gentle undulation from surface tension vs viscosity
-    peel = multi_scale_noise((h, w), [2, 4, 8], [0.3, 0.35, 0.35], seed + 1122)
+    peel = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.35, 0.35], seed + 1122)
     peel_height = peel * 0.025  # subtle surface undulation
     # Thick enamel: good coverage, moderate gloss
     gray = base.mean(axis=2)
@@ -476,7 +489,7 @@ def paint_stock_car_enamel_v2(paint, shape, mask, seed, pm, bb):
 
 def spec_stock_car_enamel(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
-    peel = multi_scale_noise((h, w), [2, 4, 8], [0.3, 0.35, 0.35], seed + 1122)
+    peel = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.35, 0.35], seed + 1122)
     M = np.clip(6.0 + peel * 8.0 * sm, 0, 255).astype(np.float32)
     R = np.clip(15.0 + peel * 18.0 * sm, 15, 255).astype(np.float32)
     CC = np.clip(16.0 + peel * 6.0, 16, 255).astype(np.float32)
@@ -487,6 +500,7 @@ def spec_stock_car_enamel(shape, seed, sm, base_m, base_r):
 # ==================================================================
 def paint_victory_lane_v2(paint, shape, mask, seed, pm, bb):
     """Victory lane celebratory gloss with confetti sparkle via Poisson point process."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()

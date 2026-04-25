@@ -28,11 +28,15 @@ from engine.paint_v2 import ensure_bb_2d
 # CANDY APPLE - Beer-Lambert double-pass candy absorption
 # ==================================================================
 def paint_candy_apple_v2(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
-    reflect = multi_scale_noise((h, w), [2, 4, 8], [0.3, 0.4, 0.3], seed + 701)
+    reflect = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.4, 0.3], seed + 701)
     thickness = multi_scale_noise((h, w), [16, 32], [0.5, 0.5], seed + 702)
+    micro = multi_scale_noise((h, w), [1, 2, 4, 8], [0.34, 0.30, 0.22, 0.14], seed + 703)
+    micro = (micro - float(micro.min())) / (float(micro.max() - micro.min()) + 1e-6)
+    ruby_flake = np.clip((micro - 0.63) * 3.0, 0, 1)
     thick = 0.7 + thickness * 0.6
     # Beer-Lambert: red passes, green/blue absorbed (double pass)
     t_r = np.exp(-0.2 * thick * 2.0)
@@ -44,6 +48,12 @@ def paint_candy_apple_v2(paint, shape, mask, seed, pm, bb):
         np.clip(base_r * t_g * 0.5, 0, 1),
         np.clip(base_r * t_b * 0.3, 0, 1)
     ], axis=-1).astype(np.float32)
+    effect = np.clip(
+        effect
+        + (micro[:, :, None] - 0.5) * np.array([0.155, 0.030, 0.020], dtype=np.float32)
+        + ruby_flake[:, :, None] * np.array([0.18, 0.035, 0.018], dtype=np.float32),
+        0, 1
+    )
     blend = np.clip(pm, 0.0, 1.0)
     result = np.clip(base * (1.0 - mask[:,:,np.newaxis] * blend) + effect * (mask[:,:,np.newaxis] * blend), 0, 1)
     return np.clip(result + bb[:,:,np.newaxis] * 0.40 * pm * mask[:,:,np.newaxis], 0, 1).astype(np.float32)
@@ -51,9 +61,11 @@ def paint_candy_apple_v2(paint, shape, mask, seed, pm, bb):
 def spec_candy_apple(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
     thick = multi_scale_noise((h, w), [16, 32], [0.5, 0.5], seed + 702)
-    M = np.clip(130.0 + thick * 50.0 * sm, 0, 255).astype(np.float32)
-    R = np.clip(4.0 + thick * 7.0 * sm, 15, 255).astype(np.float32)
-    CC = np.clip(20.0 + thick * 6.0, 0, 255).astype(np.float32)
+    micro = multi_scale_noise((h, w), [1, 2, 4, 8], [0.34, 0.30, 0.22, 0.14], seed + 703)
+    micro = (micro - float(micro.min())) / (float(micro.max() - micro.min()) + 1e-6)
+    M = np.clip(130.0 + thick * 44.0 * sm + micro * 42.0 * sm, 0, 255).astype(np.float32)
+    R = np.clip(15.0 + (1.0 - micro) * 24.0 * sm + thick * 5.0 * sm, 15, 255).astype(np.float32)
+    CC = np.clip(20.0 + thick * 6.0 + micro * 10.0 * sm, 16, 255).astype(np.float32)
     return M, R, CC
 
 
@@ -61,12 +73,13 @@ def spec_candy_apple(shape, seed, sm, base_m, base_r):
 # CHAMPAGNE METALLIC - Oriented gold-mica flake with warm bias
 # ==================================================================
 def paint_champagne_metallic_v2(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     y, x = get_mgrid((h, w))
     # Gold mica flake orientation (spray-aligned)
-    orient = multi_scale_noise((h, w), [2, 4, 8], [0.3, 0.35, 0.35], seed + 711)
+    orient = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.35, 0.35], seed + 711)
     spray = np.sin(y * 0.015 + orient * 1.8) * 0.5 + 0.5
     flake_bright = orient * spray
     gray = base.mean(axis=2)
@@ -81,16 +94,17 @@ def paint_champagne_metallic_v2(paint, shape, mask, seed, pm, bb):
 
 def spec_champagne_metallic(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
-    orient = multi_scale_noise((h, w), [2, 4, 8], [0.3, 0.35, 0.35], seed + 711)
+    orient = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.35, 0.35], seed + 711)
     M = np.clip(150.0 + orient * 60.0 * sm, 0, 255).astype(np.float32)
     R = np.clip(8.0 + orient * 10.0 * sm, 15, 255).astype(np.float32)
-    CC = np.clip(14.0 + orient * 5.0, 0, 255).astype(np.float32)
+    CC = np.clip(16.0 + orient * 5.0, 16, 255).astype(np.float32)
     return M, R, CC
 
 # ==================================================================
 # METAL FLAKE BASE - Large aluminum flake Voronoi scatter
 # ==================================================================
 def paint_metal_flake_base_v2(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
@@ -120,7 +134,7 @@ def spec_metal_flake_base(shape, seed, sm, base_m, base_r):
     flake = multi_scale_noise((h, w), [1, 2, 4], [0.3, 0.4, 0.3], seed + 721)
     M = np.clip(190.0 + flake * 50.0 * sm, 0, 255).astype(np.float32)
     R = np.clip(6.0 + flake * 12.0 * sm, 15, 255).astype(np.float32)
-    CC = np.clip(12.0 + flake * 5.0, 0, 255).astype(np.float32)
+    CC = np.clip(16.0 + flake * 5.0, 16, 255).astype(np.float32)
     return M, R, CC
 
 
@@ -128,12 +142,13 @@ def spec_metal_flake_base(shape, seed, sm, base_m, base_r):
 # ORIGINAL METAL FLAKE - 1960s mega-flake prismatic refraction
 # ==================================================================
 def paint_original_metal_flake_v2(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     rng = np.random.RandomState(seed + 730)
     # Huge flakes (~20px each) with prismatic color from thickness variation
-    flake_coarse = multi_scale_noise((h, w), [4, 8], [0.5, 0.5], seed + 731)
+    flake_coarse = multi_scale_noise((h, w), [16, 32], [0.5, 0.5], seed + 731)
     # Prismatic refraction: flake thickness -> color split
     prism_phase = flake_coarse * np.pi * 3.0
     prism_r = np.clip(0.5 + 0.3 * np.cos(prism_phase), 0, 1)
@@ -154,10 +169,10 @@ def paint_original_metal_flake_v2(paint, shape, mask, seed, pm, bb):
 
 def spec_original_metal_flake(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
-    flake = multi_scale_noise((h, w), [4, 8], [0.5, 0.5], seed + 731)
+    flake = multi_scale_noise((h, w), [16, 32], [0.5, 0.5], seed + 731)
     M = np.clip(200.0 + flake * 50.0 * sm, 0, 255).astype(np.float32)
     R = np.clip(5.0 + flake * 15.0 * sm, 15, 255).astype(np.float32)
-    CC = np.clip(10.0 + flake * 6.0, 0, 255).astype(np.float32)
+    CC = np.clip(16.0 + flake * 6.0, 16, 255).astype(np.float32)
     return M, R, CC
 
 
@@ -165,6 +180,7 @@ def spec_original_metal_flake(shape, seed, sm, base_m, base_r):
 # CHAMPAGNE FLAKE - Gold-coated aluminum flake specular map
 # ==================================================================
 def paint_champagne_flake_v2(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
@@ -188,13 +204,14 @@ def spec_champagne_flake(shape, seed, sm, base_m, base_r):
     flake = multi_scale_noise((h, w), [1, 2, 4], [0.3, 0.35, 0.35], seed + 741)
     M = np.clip(165.0 + flake * 55.0 * sm, 0, 255).astype(np.float32)
     R = np.clip(7.0 + flake * 10.0 * sm, 15, 255).astype(np.float32)
-    CC = np.clip(14.0 + flake * 5.0, 0, 255).astype(np.float32)
+    CC = np.clip(16.0 + flake * 5.0, 16, 255).astype(np.float32)
     return M, R, CC
 
 # ==================================================================
 # FINE SILVER FLAKE - Micro-diamond particle Mie scattering
 # ==================================================================
 def paint_fine_silver_flake_v2(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
@@ -220,13 +237,14 @@ def spec_fine_silver_flake(shape, seed, sm, base_m, base_r):
     particle = multi_scale_noise((h, w), [1, 2], [0.5, 0.5], seed + 751)
     M = np.clip(185.0 + particle * 55.0 * sm, 0, 255).astype(np.float32)
     R = np.clip(4.0 + particle * 8.0 * sm, 15, 255).astype(np.float32)
-    CC = np.clip(15.0 + particle * 5.0, 0, 255).astype(np.float32)
+    CC = np.clip(16.0 + particle * 5.0, 16, 255).astype(np.float32)
     return M, R, CC
 
 # ==================================================================
 # BLUE ICE FLAKE - Frozen crystal dendritic growth pattern
 # ==================================================================
 def paint_blue_ice_flake_v2(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
@@ -235,7 +253,7 @@ def paint_blue_ice_flake_v2(paint, shape, mask, seed, pm, bb):
     angle = np.arctan2(y - h/2, x - w/2)
     radius = np.sqrt((y - h/2)**2 + (x - w/2)**2) / max(h, w)
     hex_sym = np.cos(6.0 * angle) * 0.5 + 0.5  # 6-fold
-    crystal = multi_scale_noise((h, w), [4, 8, 16], [0.3, 0.35, 0.35], seed + 761)
+    crystal = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.35, 0.35], seed + 761)
     dendrite = hex_sym * crystal * 0.06
     # Ice blue base
     ice_r = 0.52 + crystal * 0.04
@@ -255,10 +273,10 @@ def paint_blue_ice_flake_v2(paint, shape, mask, seed, pm, bb):
 
 def spec_blue_ice_flake(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
-    crystal = multi_scale_noise((h, w), [4, 8, 16], [0.3, 0.35, 0.35], seed + 761)
+    crystal = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.35, 0.35], seed + 761)
     M = np.clip(140.0 + crystal * 60.0 * sm, 0, 255).astype(np.float32)
     R = np.clip(6.0 + crystal * 10.0 * sm, 15, 255).astype(np.float32)
-    CC = np.clip(16.0 + crystal * 5.0, 0, 255).astype(np.float32)
+    CC = np.clip(16.0 + crystal * 5.0, 16, 255).astype(np.float32)
     return M, R, CC
 
 
@@ -266,6 +284,7 @@ def spec_blue_ice_flake(shape, seed, sm, base_m, base_r):
 # BRONZE FLAKE - Copper-tin alloy oxidation gradient
 # ==================================================================
 def paint_bronze_flake_v2(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
@@ -294,7 +313,7 @@ def spec_bronze_flake(shape, seed, sm, base_m, base_r):
     oxide = multi_scale_noise((h, w), [16, 32, 64], [0.35, 0.35, 0.3], seed + 772)
     M = np.clip(160.0 + alloy * 50.0 * sm - oxide * 30.0, 0, 255).astype(np.float32)
     R = np.clip(10.0 + oxide * 20.0 * sm, 15, 255).astype(np.float32)
-    CC = np.clip(10.0 + (1.0 - oxide) * 6.0, 0, 255).astype(np.float32)
+    CC = np.clip(16.0 + (1.0 - oxide) * 6.0, 16, 255).astype(np.float32)
     return M, R, CC
 
 
@@ -302,6 +321,7 @@ def spec_bronze_flake(shape, seed, sm, base_m, base_r):
 # GUNMETAL FLAKE - Chameleon-shift multi-angle interference
 # ==================================================================
 def paint_gunmetal_flake_v2(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
@@ -329,7 +349,7 @@ def spec_gunmetal_flake(shape, seed, sm, base_m, base_r):
     angle = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.4, 0.3], seed + 781)
     M = np.clip(145.0 + angle * 60.0 * sm, 0, 255).astype(np.float32)
     R = np.clip(8.0 + angle * 10.0 * sm, 15, 255).astype(np.float32)
-    CC = np.clip(14.0 + angle * 5.0, 0, 255).astype(np.float32)
+    CC = np.clip(16.0 + angle * 5.0, 16, 255).astype(np.float32)
     return M, R, CC
 
 
@@ -337,6 +357,7 @@ def spec_gunmetal_flake(shape, seed, sm, base_m, base_r):
 # GREEN FLAKE - Dichroic glass flake color-split
 # ==================================================================
 def paint_green_flake_v2(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
@@ -361,13 +382,14 @@ def spec_green_flake(shape, seed, sm, base_m, base_r):
     flake = multi_scale_noise((h, w), [1, 2, 4], [0.3, 0.35, 0.35], seed + 791)
     M = np.clip(130.0 + flake * 55.0 * sm, 0, 255).astype(np.float32)
     R = np.clip(7.0 + flake * 10.0 * sm, 15, 255).astype(np.float32)
-    CC = np.clip(14.0 + flake * 5.0, 0, 255).astype(np.float32)
+    CC = np.clip(16.0 + flake * 5.0, 16, 255).astype(np.float32)
     return M, R, CC
 
 # ==================================================================
 # FIRE FLAKE - Thermal gradient blackbody emission color
 # ==================================================================
 def paint_fire_flake_v2(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
@@ -395,20 +417,21 @@ def spec_fire_flake(shape, seed, sm, base_m, base_r):
     temp = multi_scale_noise((h, w), [8, 16, 32], [0.3, 0.4, 0.3], seed + 801)
     M = np.clip(140.0 + temp * 60.0 * sm, 0, 255).astype(np.float32)
     R = np.clip(6.0 + temp * 10.0 * sm, 15, 255).astype(np.float32)
-    CC = np.clip(12.0 + temp * 6.0, 0, 255).astype(np.float32)
+    CC = np.clip(16.0 + temp * 6.0, 16, 255).astype(np.float32)
     return M, R, CC
 
 # ==================================================================
 # MIDNIGHT PEARL - Deep-base mica with Rayleigh blue scatter
 # ==================================================================
 def paint_midnight_pearl_v2(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     # Rayleigh scatter: intensity ~ 1/lambda^4, so blue scatters most
     # In deep black base, scattered blue light creates subtle blue pearl
     depth = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.4, 0.3], seed + 811)
-    mica = multi_scale_noise((h, w), [2, 4, 8], [0.3, 0.35, 0.35], seed + 812)
+    mica = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.35, 0.35], seed + 812)
     # Rayleigh: blue scatters 16x more than red (ratio of (700/400)^4)
     scatter_r = mica * 0.005  # minimal red scatter
     scatter_g = mica * 0.012  # some green scatter
@@ -426,23 +449,24 @@ def paint_midnight_pearl_v2(paint, shape, mask, seed, pm, bb):
 
 def spec_midnight_pearl(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
-    mica = multi_scale_noise((h, w), [2, 4, 8], [0.3, 0.35, 0.35], seed + 812)
+    mica = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.35, 0.35], seed + 812)
     M = np.clip(70.0 + mica * 50.0 * sm, 0, 255).astype(np.float32)
     R = np.clip(5.0 + mica * 8.0 * sm, 15, 255).astype(np.float32)
-    CC = np.clip(16.0 + mica * 5.0, 0, 255).astype(np.float32)
+    CC = np.clip(16.0 + mica * 5.0, 16, 255).astype(np.float32)
     return M, R, CC
 
 # ==================================================================
 # PEARLESCENT WHITE - Multi-mica rainbow interference stack
 # ==================================================================
 def paint_pearlescent_white_v2(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     # Multi-mica layers: each mica type has different thickness -> different color
-    mica1 = multi_scale_noise((h, w), [2, 4, 8], [0.3, 0.35, 0.35], seed + 821)
-    mica2 = multi_scale_noise((h, w), [4, 8, 16], [0.3, 0.35, 0.35], seed + 822)
-    mica3 = multi_scale_noise((h, w), [2, 4], [0.5, 0.5], seed + 823)
+    mica1 = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.35, 0.35], seed + 821)
+    mica2 = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.35, 0.35], seed + 822)
+    mica3 = multi_scale_noise((h, w), [32, 64], [0.5, 0.5], seed + 823)
     # Each mica shifts a different color channel
     rainbow_r = mica1 * 0.04
     rainbow_g = mica2 * 0.04
@@ -461,16 +485,17 @@ def paint_pearlescent_white_v2(paint, shape, mask, seed, pm, bb):
 
 def spec_pearlescent_white(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
-    mica = multi_scale_noise((h, w), [2, 4, 8], [0.3, 0.35, 0.35], seed + 821)
+    mica = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.35, 0.35], seed + 821)
     M = np.clip(85.0 + mica * 50.0 * sm, 0, 255).astype(np.float32)
     R = np.clip(5.0 + mica * 7.0 * sm, 15, 255).astype(np.float32)
-    CC = np.clip(16.0 + mica * 5.0, 0, 255).astype(np.float32)
+    CC = np.clip(16.0 + mica * 5.0, 16, 255).astype(np.float32)
     return M, R, CC
 
 # ==================================================================
 # PEWTER - Tin-lead alloy grain boundary diffusion
 # ==================================================================
 def paint_pewter_v2(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
@@ -505,5 +530,5 @@ def spec_pewter(shape, seed, sm, base_m, base_r):
     # Pewter: moderate metallic, boundaries rougher
     M = np.clip(120.0 + grain * 40.0 * sm, 0, 255).astype(np.float32)
     R = np.clip(14.0 + boundary * 20.0 * sm, 15, 255).astype(np.float32)
-    CC = np.clip(10.0 + (1.0 - boundary) * 6.0, 0, 255).astype(np.float32)
+    CC = np.clip(16.0 + (1.0 - boundary) * 6.0, 16, 255).astype(np.float32)
     return M, R, CC

@@ -1,0 +1,91 @@
+{
+  "name": "LMP Prototype",
+  "description": "Le Mans prototype aesthetic: brushed aluminum body, carbon aerodynamics, and fluorescent hi-viz accents for top-class visibility.",
+  "author": "Shokker Paint Booth",
+  "version": "6.2.0",
+  "compatible_with": "any LMP-style chassis, endurance prototypes",
+  "notes": "Hi-viz zones are intentionally bold for TV/stream legibility. Drop Accent intensity to 70 if hit too hard for your taste.",
+  "zones": [
+    {
+      "name": "Body Shell",
+      "color": "everything",
+      "base": "brushed_aluminum",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "special",
+      "baseColor": "#c0c0c0",
+      "baseColorMode": "source",
+      "baseStrength": 1,
+      "baseSpecStrength": 1
+    },
+    {
+      "name": "Carbon Aero",
+      "color": "dark",
+      "base": "carbon_base",
+      "pattern": "carbon_4x4",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#1a1a1a",
+      "pickerTolerance": 40,
+      "patternIntensity": "100"
+    },
+    {
+      "name": "Hi-Viz Accent",
+      "color": "yellow",
+      "base": "race_day_gloss",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#ffcc00",
+      "pickerTolerance": 35,
+      "baseColor": "#c4ff00",
+      "baseColorMode": "solid"
+    },
+    {
+      "name": "Class Marker Stripe",
+      "color": "red",
+      "base": "gloss",
+      "pattern": "podium_stripe",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#cc2222",
+      "pickerTolerance": 35,
+      "baseColor": "#ff2a1c",
+      "baseColorMode": "solid",
+      "patternIntensity": "100"
+    },
+    {
+      "name": "Sponsors",
+      "color": "white",
+      "base": "gloss",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#ffffff",
+      "pickerTolerance": 25,
+      "baseColorMode": "source"
+    },
+    {
+      "name": "Car Number Plate",
+      "color": "blue",
+      "base": "semi_gloss",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#3366ff",
+      "pickerTolerance": 35,
+      "baseColor": "#0a1a3a",
+      "baseColorMode": "solid"
+    },
+    {
+      "name": "Floor / Diffuser",
+      "color": "remaining",
+      "base": "flat_black",
+      "pattern": "none",
+      "intensity": "80",
+      "colorMode": "special",
+      "baseColor": "#0a0a0a",
+      "baseColorMode": "solid"
+    }
+  ]
+}

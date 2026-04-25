@@ -1,0 +1,64 @@
+{
+  "name": "Team Logo Text",
+  "description": "Stylized team name used as a logo mark. Heavier weight, tighter tracking, more aggressive stroke. This is the brand identity text for the racing team itself, not a sponsor — usually placed on the nose, C-pillar, or as a repeated accent across the livery.",
+  "category": "Branding",
+  "version": "6.2.0",
+  "template": {
+    "text": "SHOKKER RACING",
+    "font_family": "Impact, Arial Black, sans-serif",
+    "font_weight": 900,
+    "font_size": 72,
+    "italic": true,
+    "color": "#ffffff",
+    "stroke_color": "#c00000",
+    "stroke_width": 4,
+    "shadow": {
+      "color": "#000000",
+      "opacity": 0.55,
+      "dx": 3,
+      "dy": 3,
+      "blur": 2
+    },
+    "alignment": "center",
+    "letter_spacing": -1,
+    "line_height": 0.95,
+    "rotation": 0,
+    "anchor_x": 0.5,
+    "anchor_y": 0.5
+  },
+  "placement_hints": {
+    "recommended_zones": ["nose_cone", "c_pillar", "rear_bumper", "roof_forward"],
+    "min_size_px": 50,
+    "max_size_px": 120,
+    "safe_area_padding_px": 12
+  },
+  "variants": [
+    {
+      "name": "Chrome + Red",
+      "overrides": {
+        "color": "#e8e8e8",
+        "stroke_color": "#c00000",
+        "stroke_width": 5
+      }
+    },
+    {
+      "name": "Gold Prestige",
+      "overrides": {
+        "color": "#d4af37",
+        "stroke_color": "#000000",
+        "stroke_width": 3
+      }
+    },
+    {
+      "name": "Monochrome Minimal",
+      "overrides": {
+        "color": "#ffffff",
+        "stroke_color": "#ffffff",
+        "stroke_width": 0,
+        "shadow": { "color": "#000000", "opacity": 0.3, "dx": 1, "dy": 1, "blur": 0 }
+      }
+    }
+  ],
+  "compatible_finishes": ["gloss", "satin", "matte", "metallic_flake", "chrome_mirror"],
+  "notes": "Team logo text works best as part of a locked-up mark (text + icon). If using solo, treat as the livery's identity anchor — it should appear in at least two places on the car for brand reinforcement. Tight negative tracking (-1 to -2) is what sells the 'logo' feel over plain text."
+}

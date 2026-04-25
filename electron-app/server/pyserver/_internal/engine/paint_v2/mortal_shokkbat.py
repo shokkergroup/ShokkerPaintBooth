@@ -67,7 +67,7 @@ def _fracture_field(shape, seed, n_layers=3):
     strengths = rng.uniform(0.5, 1.0, n_layers)
     for i in range(n_layers):
         rot = xf * np.cos(angles[i]) + yf * np.sin(angles[i])
-        warp = multi_scale_noise((h, w), [4, 8, 16], [0.3, 0.4, 0.3], seed + i * 7)
+        warp = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.4, 0.3], seed + i * 7)
         line = np.abs(np.sin((rot + warp * 25.0) * freqs[i] + phases[i]))
         cracks = np.maximum(cracks, np.clip((0.06 - line) * 25.0, 0, 1) * strengths[i])
     return cracks.astype(np.float32)
@@ -79,9 +79,10 @@ def _fracture_field(shape, seed, n_layers=3):
 
 def paint_ms_frozen_fury(paint, shape, mask, seed, pm, bb):
     """Frozen Fury: multi-directional ice fracture lines. 3 fast noise layers."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape[:2] if len(shape) > 2 else shape
     cracks = _fracture_field((h, w), seed + 9100, n_layers=3)
-    frost = multi_scale_noise((h, w), [2, 4, 8], [0.4, 0.35, 0.25], seed + 9101)
+    frost = multi_scale_noise((h, w), [16, 32, 64], [0.4, 0.35, 0.25], seed + 9101)
     frost_n = np.clip(frost * 0.4 + 0.5, 0, 1).astype(np.float32)
     ice_blue = np.array([0.10, 0.35, 0.68], dtype=np.float32)
     deep_blue = np.array([0.03, 0.10, 0.40], dtype=np.float32)
@@ -112,6 +113,7 @@ def spec_ms_frozen_fury(shape, seed, sm, base_m, base_r):
 # ════════════════════════════════════════════════════════════════════
 
 def paint_ms_venom_strike(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape[:2] if len(shape) > 2 else shape
     yy, xx = np.mgrid[0:h, 0:w]
     yf, xf = yy.astype(np.float32), xx.astype(np.float32)
@@ -170,7 +172,7 @@ def _lightning_field(shape, seed):
     ey = sobel(base, axis=0).astype(np.float32)
     edge = np.sqrt(ex**2 + ey**2)
     # Second layer at different scale for finer branches
-    fine = multi_scale_noise((h, w), [4, 8, 16], [0.3, 0.4, 0.3], seed + 50)
+    fine = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.4, 0.3], seed + 50)
     fx = sobel(fine, axis=1).astype(np.float32)
     fy = sobel(fine, axis=0).astype(np.float32)
     fine_edge = np.sqrt(fx**2 + fy**2)
@@ -186,6 +188,7 @@ def _lightning_field(shape, seed):
 
 def paint_ms_thunder_lord(paint, shape, mask, seed, pm, bb):
     """Thunder Lord: branching lightning networks on dark storm."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape[:2] if len(shape) > 2 else shape
     bolts, glow = _lightning_field((h, w), seed + 9102)
     storm = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.4, 0.3], seed + 9104)
@@ -218,6 +221,7 @@ def spec_ms_thunder_lord(shape, seed, sm, base_m, base_r):
 # ════════════════════════════════════════════════════════════════════
 
 def paint_ms_chrome_cage(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape[:2] if len(shape) > 2 else shape
     bs = max(8, min(h, w) // 100)
     yy, xx = np.mgrid[0:h, 0:w]
@@ -250,6 +254,7 @@ def spec_ms_chrome_cage(shape, seed, sm, base_m, base_r):
 # ════════════════════════════════════════════════════════════════════
 
 def paint_ms_dragon_flame(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape[:2] if len(shape) > 2 else shape
     y_g = np.linspace(0,1,h,dtype=np.float32).reshape(h,1)
     hw = multi_scale_noise((h,w),[4,8,16,32],[0.2,0.3,0.3,0.2],seed+9108)
@@ -288,12 +293,13 @@ def _damascus_field(shape, seed, n_layers=3):
         angle = i * np.pi / 3 + rng.uniform(-0.2, 0.2)
         freq = 0.15 + i * 0.10
         rot = xf * np.cos(angle) + yf * np.sin(angle)
-        warp = multi_scale_noise((h, w), [4, 8, 16], [0.35, 0.4, 0.25], seed + i * 11)
+        warp = multi_scale_noise((h, w), [16, 32, 64], [0.35, 0.4, 0.25], seed + i * 11)
         damascus += (np.sin((rot + warp * 20.0) * freq) * 0.5 + 0.5) * (0.40 - i * 0.08)
     return np.clip(damascus, 0, 1).astype(np.float32)
 
 
 def paint_ms_royal_edge(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape[:2] if len(shape) > 2 else shape
     damascus = _damascus_field((h, w), seed + 9110, n_layers=3)
     grain = np.clip(multi_scale_noise((h,w),[1,2,4],[0.4,0.35,0.25],seed+9111)*0.15+0.5, 0.3, 0.7).astype(np.float32)
@@ -324,7 +330,7 @@ def _slash_field(shape, seed):
     # Diagonal coordinate (45° rotation)
     diag = (xf - yf) * 0.7071
     # Domain warp for organic slash shapes
-    warp = multi_scale_noise((h, w), [4, 8, 16], [0.3, 0.4, 0.3], seed)
+    warp = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.4, 0.3], seed)
     warped_diag = diag + warp * 30.0
     # Fine slash lines (high frequency along diagonal)
     slash_raw = np.abs(np.sin(warped_diag * 0.25))
@@ -334,7 +340,7 @@ def _slash_field(shape, seed):
     group_mask = np.clip(group_noise * 2.0 + 0.3, 0, 1).astype(np.float32)
     slashes = slash_lines * group_mask
     # Drip: vertical streaks from slash areas
-    drip_seed = multi_scale_noise((h, w), [2, 4], [0.6, 0.4], seed + 40)
+    drip_seed = multi_scale_noise((h, w), [32, 64], [0.6, 0.4], seed + 40)
     drip_trigger = (slashes > 0.3).astype(np.float32)
     # Cumulative sum downward for drip effect
     drip_raw = np.cumsum(drip_trigger, axis=0).astype(np.float32)
@@ -345,6 +351,7 @@ def _slash_field(shape, seed):
 
 def paint_ms_feral_grin(paint, shape, mask, seed, pm, bb):
     """Feral Grin: diagonal claw slashes on venomous purple. Toxic green drips."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape[:2] if len(shape) > 2 else shape
     slashes, drip = _slash_field((h, w), seed + 9112)
     bg = np.clip(multi_scale_noise((h,w),[4,8,16],[0.3,0.4,0.3],seed+9113)*0.15+0.5, 0.3, 0.7).astype(np.float32)
@@ -370,6 +377,7 @@ def spec_ms_feral_grin(shape, seed, sm, base_m, base_r):
 # ════════════════════════════════════════════════════════════════════
 
 def paint_ms_acid_scale(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape[:2] if len(shape) > 2 else shape
     cell_id, d1, edge_dist, n_pts, rng = _fast_voronoi((h,w), 1200, seed+9113, jittered_grid=True)
     eg = np.clip(1.0-edge_dist/(np.percentile(edge_dist,90)+1e-8)*5.0, 0, 1).astype(np.float32)
@@ -416,6 +424,7 @@ def _spiral_field(shape, seed, n_arms=12, tightness=14.0):
 
 
 def paint_ms_soul_drain(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape[:2] if len(shape) > 2 else shape
     spiral, core_dark, radius = _spiral_field((h, w), seed + 9114)
     rng = np.random.RandomState(seed + 9114)
@@ -473,6 +482,7 @@ def _ray_field(shape, seed, n_rays=80):
 
 
 def paint_ms_emerald_shadow(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape[:2] if len(shape) > 2 else shape
     rays = _ray_field((h, w), seed + 9115)
     dapple = np.clip(multi_scale_noise((h,w),[4,8,16],[0.3,0.4,0.3],seed+9116)*0.5+0.3, 0, 0.7).astype(np.float32)
@@ -496,6 +506,7 @@ def spec_ms_emerald_shadow(shape, seed, sm, base_m, base_r):
 # ════════════════════════════════════════════════════════════════════
 
 def paint_ms_void_walker(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape[:2] if len(shape) > 2 else shape
     cy, cx = h*0.45, w*0.55
     yy,xx = np.mgrid[0:h,0:w]; yf,xf = yy.astype(np.float32)-cy, xx.astype(np.float32)-cx
@@ -531,6 +542,7 @@ def spec_ms_void_walker(shape, seed, sm, base_m, base_r):
 # ════════════════════════════════════════════════════════════════════
 
 def paint_ms_ghost_vapor(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape[:2] if len(shape) > 2 else shape
     s1 = np.clip(multi_scale_noise((h,w),[8,16,32],[0.3,0.4,0.3],seed+9118)*0.5+0.5, 0, 1).astype(np.float32)
     s2 = np.clip(multi_scale_noise((h,w),[4,8,16],[0.4,0.35,0.25],seed+9119)*0.5+0.5, 0, 1).astype(np.float32)
@@ -557,6 +569,7 @@ def spec_ms_ghost_vapor(shape, seed, sm, base_m, base_r):
 # ════════════════════════════════════════════════════════════════════
 
 def paint_ms_shape_shift(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape[:2] if len(shape) > 2 else shape
     cell_id,d1,ed,n_pts,rng = _fast_voronoi((h,w), 1600, seed+9121)
     eg = np.clip(1.0-ed/(np.percentile(ed,85)+1e-8)*5.5, 0, 1).astype(np.float32)
@@ -610,6 +623,7 @@ def _crater_field(shape, seed, n_craters=350):
 
 
 def paint_ms_titan_bronze(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape[:2] if len(shape) > 2 else shape
     crater, rim = _crater_field((h, w), seed + 9122, n_craters=350)
     patina = np.clip(multi_scale_noise((h,w),[2,4,8,16],[0.2,0.3,0.3,0.2],seed+9123)*0.3+0.5, 0, 1).astype(np.float32)
@@ -634,6 +648,7 @@ def spec_ms_titan_bronze(shape, seed, sm, base_m, base_r):
 
 def paint_ms_war_hammer(paint, shape, mask, seed, pm, bb):
     """War Hammer: geometric crack network with blood lava. NOT Voronoi."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape[:2] if len(shape) > 2 else shape
     # Main cracks via fracture_field (3 layers)
     cracks = _fracture_field((h, w), seed + 9124, n_layers=3)
@@ -642,7 +657,7 @@ def paint_ms_war_hammer(paint, shape, mask, seed, pm, bb):
     micro_c = np.clip((np.abs(micro) - 0.3) * -8.0, 0, 0.3).astype(np.float32)
     cracks = np.clip(cracks + micro_c, 0, 1)
     vein_hot = np.clip(cracks - 0.4, 0, 0.6) / 0.6
-    damage = multi_scale_noise((h, w), [2, 4, 8], [0.3, 0.4, 0.3], seed + 9126)
+    damage = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.4, 0.3], seed + 9126)
     scratches = np.clip(damage * 0.15, -0.08, 0.08).astype(np.float32)
     plate_var = np.clip(damage * 0.3 + 0.5, 0, 1).astype(np.float32)
     ad=np.array([0.07,0.05,0.05]); am=np.array([0.14,0.11,0.11]); br=np.array([0.72,0.05,0.03]); hc=np.array([0.95,0.28,0.05])

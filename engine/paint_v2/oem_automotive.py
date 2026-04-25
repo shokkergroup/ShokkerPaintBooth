@@ -28,6 +28,7 @@ from engine.paint_v2 import ensure_bb_2d
 
 def paint_ambulance_white_v2(paint, shape, mask, seed, pm, bb):
     """Ambulance high-vis white with microprismatic retro-reflective glass bead simulation."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
@@ -60,7 +61,7 @@ def spec_ambulance_white(shape, seed, sm, base_m, base_r):
     # White paint: zero metallic, low roughness, retro-reflective beads add specular
     M = np.clip(5.0 + bead * 15.0 * sm, 0, 255).astype(np.float32)
     R = np.clip(8.0 + bead * 4.0 * sm, 15, 255).astype(np.float32)
-    CC = np.clip(14.0 + bead * 3.0, 0, 255).astype(np.float32)
+    CC = np.clip(16.0 + bead * 3.0, 16, 255).astype(np.float32)
     return M, R, CC
 
 
@@ -74,6 +75,7 @@ def spec_ambulance_white(shape, seed, sm, base_m, base_r):
 
 def paint_dealer_pearl_v2(paint, shape, mask, seed, pm, bb):
     """Dealer tri-coat pearl: basecoat + mica flake interference + deep clearcoat."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
@@ -83,7 +85,7 @@ def paint_dealer_pearl_v2(paint, shape, mask, seed, pm, bb):
     basecoat = base * 0.7 + gray * 0.3  # reduce saturation slightly
 
     # Layer 2: Mica flake interference
-    mica_orient = multi_scale_noise((h, w), [2, 4, 8], [0.3, 0.4, 0.3], seed + 611)
+    mica_orient = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.4, 0.3], seed + 611)
     mica_density = multi_scale_noise((h, w), [8, 16], [0.5, 0.5], seed + 612)
     # Interference shift — mica flakes at different orientations shift color
     shift_amount = mica_orient * 0.08 * mica_density
@@ -106,11 +108,11 @@ def paint_dealer_pearl_v2(paint, shape, mask, seed, pm, bb):
 
 def spec_dealer_pearl(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
-    mica = multi_scale_noise((h, w), [2, 4, 8], [0.3, 0.4, 0.3], seed + 611)
+    mica = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.4, 0.3], seed + 611)
     depth = multi_scale_noise((h, w), [32, 64, 128], [0.3, 0.4, 0.3], seed + 613)
     M = np.clip(80.0 + mica * 60.0 * sm, 0, 255).astype(np.float32)
     R = np.clip(5.0 + depth * 8.0 * sm, 15, 255).astype(np.float32)
-    CC = np.clip(18.0 + depth * 6.0, 0, 255).astype(np.float32)
+    CC = np.clip(18.0 + depth * 6.0, 16, 255).astype(np.float32)
     return M, R, CC
 
 # ==================================================================
@@ -122,6 +124,7 @@ def spec_dealer_pearl(shape, seed, sm, base_m, base_r):
 
 def paint_factory_basecoat_v2(paint, shape, mask, seed, pm, bb):
     """Factory electrostatic bell-cup spray deposition with radial overlap bands."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
@@ -158,7 +161,7 @@ def spec_factory_basecoat(shape, seed, sm, base_m, base_r):
     # Factory basecoat: moderate metallic, controlled roughness
     M = np.clip(110.0 + overlap * 30.0 * sm, 0, 255).astype(np.float32)
     R = np.clip(12.0 + overlap * 8.0 * sm, 15, 255).astype(np.float32)
-    CC = np.clip(14.0 + overlap * 4.0, 0, 255).astype(np.float32)
+    CC = np.clip(16.0 + overlap * 4.0, 16, 255).astype(np.float32)
     return M, R, CC
 
 # ==================================================================
@@ -170,12 +173,13 @@ def spec_factory_basecoat(shape, seed, sm, base_m, base_r):
 
 def paint_fire_engine_v2(paint, shape, mask, seed, pm, bb):
     """Fire engine red: high-chroma cadmium pigment with forward scattering model."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
 
     # Pigment particle scatter map (cadmium red particles vary in size)
-    scatter = multi_scale_noise((h, w), [4, 8, 16], [0.3, 0.35, 0.35], seed + 631)
+    scatter = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.35, 0.35], seed + 631)
     # Forward scattering: larger particles scatter more red
     red_scatter = 0.88 + scatter * 0.10  # strong red
     # Absorption: green and blue heavily absorbed by pigment
@@ -198,11 +202,11 @@ def paint_fire_engine_v2(paint, shape, mask, seed, pm, bb):
 
 def spec_fire_engine(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
-    scatter = multi_scale_noise((h, w), [4, 8, 16], [0.3, 0.35, 0.35], seed + 631)
+    scatter = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.35, 0.35], seed + 631)
     # Fire engine: no metallic (solid pigment), very low roughness (high gloss)
     M = np.clip(8.0 + scatter * 10.0 * sm, 0, 255).astype(np.float32)
     R = np.clip(3.0 + scatter * 6.0 * sm, 15, 255).astype(np.float32)
-    CC = np.clip(18.0 + scatter * 5.0, 0, 255).astype(np.float32)
+    CC = np.clip(18.0 + scatter * 5.0, 16, 255).astype(np.float32)
     return M, R, CC
 
 # ==================================================================
@@ -214,6 +218,7 @@ def spec_fire_engine(shape, seed, sm, base_m, base_r):
 
 def paint_fleet_white_v2(paint, shape, mask, seed, pm, bb):
     """Fleet white crosslinked polyurethane with cure-temperature sheen variation."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
@@ -241,7 +246,7 @@ def spec_fleet_white(shape, seed, sm, base_m, base_r):
     # Fleet white: zero metallic, moderate roughness (not showroom gloss)
     M = np.clip(2.0 + crosslink * 4.0 * sm, 0, 255).astype(np.float32)
     R = np.clip(18.0 + crosslink * 12.0 * sm, 15, 255).astype(np.float32)
-    CC = np.clip(10.0 + crosslink * 4.0, 0, 255).astype(np.float32)
+    CC = np.clip(16.0 + crosslink * 4.0, 16, 255).astype(np.float32)
     return M, R, CC
 
 # ==================================================================
@@ -253,6 +258,7 @@ def spec_fleet_white(shape, seed, sm, base_m, base_r):
 
 def paint_police_black_v2(paint, shape, mask, seed, pm, bb):
     """Police interceptor carbon black nanoparticle absorption with stealth gloss."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
@@ -283,7 +289,7 @@ def spec_police_black(shape, seed, sm, base_m, base_r):
     # Police black: zero metallic, moderate roughness (subdued stealth gloss)
     M = np.clip(3.0 + particle * 6.0 * sm, 0, 255).astype(np.float32)
     R = np.clip(12.0 + particle * 10.0 * sm, 15, 255).astype(np.float32)
-    CC = np.clip(12.0 + particle * 4.0, 0, 255).astype(np.float32)
+    CC = np.clip(16.0 + particle * 4.0, 16, 255).astype(np.float32)
     return M, R, CC
 
 # ==================================================================
@@ -295,6 +301,7 @@ def spec_police_black(shape, seed, sm, base_m, base_r):
 
 def paint_school_bus_v2(paint, shape, mask, seed, pm, bb):
     """School bus chrome yellow pigment with HALS UV stabilizer matte haze."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
@@ -325,7 +332,7 @@ def spec_school_bus(shape, seed, sm, base_m, base_r):
     # School bus: no metallic, moderate roughness from UV stabilizer haze
     M = np.clip(4.0 + hals * 6.0 * sm, 0, 255).astype(np.float32)
     R = np.clip(15.0 + hals * 12.0 * sm, 15, 255).astype(np.float32)
-    CC = np.clip(10.0 + hals * 4.0, 0, 255).astype(np.float32)
+    CC = np.clip(16.0 + hals * 4.0, 16, 255).astype(np.float32)
     return M, R, CC
 
 # ==================================================================
@@ -337,6 +344,7 @@ def spec_school_bus(shape, seed, sm, base_m, base_r):
 
 def paint_showroom_clear_v2(paint, shape, mask, seed, pm, bb):
     """Showroom multi-layer clearcoat Fresnel reflection stack with wet-look depth."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
@@ -371,7 +379,7 @@ def spec_showroom_clear(shape, seed, sm, base_m, base_r):
     # Showroom: preserves base metallic, ultra-low roughness (mirror clear)
     M = np.clip(base_m * 0.8 + depth * 20.0 * sm, 0, 255).astype(np.float32)
     R = np.clip(2.0 + depth * 4.0 * sm, 15, 255).astype(np.float32)
-    CC = np.clip(22.0 + depth * 6.0, 0, 255).astype(np.float32)
+    CC = np.clip(22.0 + depth * 6.0, 16, 255).astype(np.float32)
     return M, R, CC
 
 # ==================================================================
@@ -383,6 +391,7 @@ def spec_showroom_clear(shape, seed, sm, base_m, base_r):
 
 def paint_taxi_yellow_v2(paint, shape, mask, seed, pm, bb):
     """Taxi yellow with UV photodegradation yellowing, chalking, and wear zones."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
@@ -398,9 +407,9 @@ def paint_taxi_yellow_v2(paint, shape, mask, seed, pm, bb):
     taxi_b = 0.04 - chromophore * 0.02  # blue drops further
 
     # Mechanical wear zones (door handles, edges, high-contact areas)
-    wear = multi_scale_noise((h, w), [4, 8, 16], [0.3, 0.35, 0.35], seed + 682)
+    wear = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.35, 0.35], seed + 682)
     # Chalking from UV (surface becomes matte/powdery)
-    chalk = multi_scale_noise((h, w), [2, 4], [0.5, 0.5], seed + 683)
+    chalk = multi_scale_noise((h, w), [32, 64], [0.5, 0.5], seed + 683)
     chalk_whiten = chalk * chromophore * 0.06
 
     effect = np.stack([
@@ -416,10 +425,10 @@ def paint_taxi_yellow_v2(paint, shape, mask, seed, pm, bb):
 def spec_taxi_yellow(shape, seed, sm, base_m, base_r):
     h, w = shape[:2] if len(shape) > 2 else shape
     uv = multi_scale_noise((h, w), [32, 64, 128], [0.3, 0.35, 0.35], seed + 681)
-    chalk = multi_scale_noise((h, w), [2, 4], [0.5, 0.5], seed + 683)
+    chalk = multi_scale_noise((h, w), [32, 64], [0.5, 0.5], seed + 683)
     chromophore = 1.0 - np.exp(-2.5 * np.clip(uv, 0, 1))
     # Worn taxi: zero metallic, high roughness from chalking
     M = np.clip(3.0 + chalk * 5.0 * sm, 0, 255).astype(np.float32)
     R = np.clip(25.0 + chromophore * 40.0 * sm, 15, 255).astype(np.float32)
-    CC = np.clip(4.0 + (1.0 - chromophore) * 8.0, 0, 255).astype(np.float32)
+    CC = np.clip(16.0 + (1.0 - chromophore) * 8.0, 16, 255).astype(np.float32)
     return M, R, CC

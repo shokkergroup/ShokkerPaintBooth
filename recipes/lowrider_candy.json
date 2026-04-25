@@ -1,0 +1,105 @@
+{
+  "name": "Lowrider Candy",
+  "description": "East-LA style candy lowrider. Deep candy apple base with candy cobalt panels, heavy gold leaf scrollwork, chrome trim all over, piano black roof, pearl fades, and a celtic-knot etched accent. Rolling sculpture.",
+  "author": "Shokker Paint Booth",
+  "version": "6.2.0",
+  "compatible_with": "impala, cutlass, monte_carlo, g-body lowriders, custom builds",
+  "notes": "This is a dense recipe — the gold leaf pinstripe pattern is intentionally heavy. If the picker catches too much body, tighten yellow tolerance to 22. Candy bases wash out under low light; preview with bright sun setting.",
+  "zones": [
+    {
+      "name": "Candy Apple Body",
+      "color": "everything",
+      "base": "candy_apple",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "special",
+      "baseColor": "#8a001f",
+      "baseColorMode": "solid",
+      "baseStrength": 1,
+      "baseSpecStrength": 1
+    },
+    {
+      "name": "Candy Cobalt Panels",
+      "color": "blue",
+      "base": "candy_cobalt",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#2244cc",
+      "pickerTolerance": 35,
+      "baseColor": "#1530a5",
+      "baseColorMode": "solid"
+    },
+    {
+      "name": "Gold Leaf Scrollwork",
+      "color": "yellow",
+      "base": "mirror_gold",
+      "pattern": "celtic_knot",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#ffcc00",
+      "pickerTolerance": 28,
+      "baseColorMode": "source",
+      "patternIntensity": "100"
+    },
+    {
+      "name": "Chrome Trim",
+      "color": "gray",
+      "base": "chrome",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#cccccc",
+      "pickerTolerance": 30,
+      "baseColorMode": "source"
+    },
+    {
+      "name": "Piano Black Roof",
+      "color": "dark",
+      "base": "piano_black",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#161616",
+      "pickerTolerance": 30,
+      "baseColor": "#060606",
+      "baseColorMode": "solid"
+    },
+    {
+      "name": "Pearl Fade Accent",
+      "color": "white",
+      "base": "pearl",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#f5efe0",
+      "pickerTolerance": 25,
+      "baseColor": "#fff4d8",
+      "baseColorMode": "solid"
+    },
+    {
+      "name": "Candy Emerald Detail",
+      "color": "green",
+      "base": "candy_emerald",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#22aa44",
+      "pickerTolerance": 32,
+      "baseColor": "#0e6a2a",
+      "baseColorMode": "solid"
+    },
+    {
+      "name": "Gold Pinstripe Line",
+      "color": "orange",
+      "base": "mirror_gold",
+      "pattern": "pinstripe",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#ff9933",
+      "pickerTolerance": 30,
+      "baseColorMode": "source",
+      "patternIntensity": "100"
+    }
+  ]
+}

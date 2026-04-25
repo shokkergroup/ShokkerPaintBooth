@@ -1,0 +1,168 @@
+{
+  "version": "6.2.0",
+  "schema_version": "1.0.0",
+  "generated": "2026-04-17",
+  "description": "Master catalog of PSD templates Shokker Paint Booth recognizes. Each entry describes a template that SPB can identify by layer signature and provides metadata about layout, zones, and sponsor placement without needing to load the PSD itself.",
+  "maintainer": "ricky@shokkergroup.com",
+  "conventions": {
+    "canvas_size_default": [2048, 2048],
+    "color_space": "sRGB",
+    "alpha_required": true,
+    "uv_space": "0..1 with origin top-left"
+  },
+  "templates": [
+    {
+      "id": "chevy_silverado_2019",
+      "name": "Chevy Silverado 2019",
+      "category": "NASCAR Truck",
+      "canvas_size": [2048, 2048],
+      "standard_layers": [
+        "Wire",
+        "Mask",
+        "Car_Paint",
+        "Numbers",
+        "Sponsors",
+        "Tape",
+        "Pitbox Colors",
+        "Color Change Logos",
+        "Windshield Banner"
+      ],
+      "recommended_zones": 5,
+      "safe_areas": ["front fender", "rear fender", "doors", "hood", "roof"],
+      "iracing_folder": "trucks/silverado2019",
+      "metadata_file": "chevy_silverado_2019.json",
+      "notes": "Default first-run template. Canonical SPB reference layout."
+    },
+    {
+      "id": "toyota_tundra_2022",
+      "name": "Toyota Tundra 2022",
+      "category": "NASCAR Truck",
+      "canvas_size": [2048, 2048],
+      "standard_layers": [
+        "Wire",
+        "Mask",
+        "Car_Paint",
+        "Numbers",
+        "Sponsors",
+        "Tape",
+        "Pitbox Colors",
+        "Color Change Logos",
+        "Windshield Banner"
+      ],
+      "recommended_zones": 5,
+      "safe_areas": ["front fender", "rear fender", "doors", "hood", "roof", "tailgate"],
+      "iracing_folder": "trucks/tundra2022",
+      "metadata_file": "toyota_tundra_2022.json",
+      "notes": "Tundra has a distinct tailgate band treatment. Front fender shoulders taper sharper than Silverado."
+    },
+    {
+      "id": "ford_f150_2021",
+      "name": "Ford F-150 2021",
+      "category": "NASCAR Truck",
+      "canvas_size": [2048, 2048],
+      "standard_layers": [
+        "Wire",
+        "Mask",
+        "Car_Paint",
+        "Numbers",
+        "Sponsors",
+        "Tape",
+        "Pitbox Colors",
+        "Color Change Logos",
+        "Windshield Banner"
+      ],
+      "recommended_zones": 5,
+      "safe_areas": ["front fender", "rear fender", "doors", "hood", "roof", "tailgate"],
+      "iracing_folder": "trucks/f1502021",
+      "metadata_file": "ford_f150_2021.json",
+      "notes": "F-150 grille area is UV-mapped wider than Silverado. Double-check front band alignment."
+    },
+    {
+      "id": "generic_gt3",
+      "name": "Generic GT3 Class",
+      "category": "GT3 Sportscar",
+      "canvas_size": [2048, 2048],
+      "standard_layers": [
+        "Wire",
+        "Mask",
+        "Car_Paint",
+        "Numbers",
+        "Sponsors",
+        "Windshield Banner",
+        "Aero",
+        "Color Change Logos"
+      ],
+      "recommended_zones": 4,
+      "safe_areas": ["doors", "hood", "rear quarter", "sidepod"],
+      "iracing_folder": "gt3",
+      "metadata_file": "generic_gt3.json",
+      "notes": "GT3 cars have large door-number roundels. Keep sponsors outside the door circle safe zone."
+    },
+    {
+      "id": "generic_lmp",
+      "name": "Generic LMP Prototype",
+      "category": "Prototype",
+      "canvas_size": [2048, 2048],
+      "standard_layers": [
+        "Wire",
+        "Mask",
+        "Car_Paint",
+        "Numbers",
+        "Sponsors",
+        "Aero",
+        "Color Change Logos",
+        "Class Lights"
+      ],
+      "recommended_zones": 3,
+      "safe_areas": ["engine cover", "sidepod", "nose", "rear wing endplate"],
+      "iracing_folder": "lmp",
+      "metadata_file": "generic_lmp.json",
+      "notes": "Class Lights layer must remain visible. Do not paint over front/rear class-light windows."
+    },
+    {
+      "id": "generic_stock_car",
+      "name": "Generic Stock Car (Next Gen)",
+      "category": "NASCAR Cup",
+      "canvas_size": [2048, 2048],
+      "standard_layers": [
+        "Wire",
+        "Mask",
+        "Car_Paint",
+        "Numbers",
+        "Sponsors",
+        "Tape",
+        "Pitbox Colors",
+        "Color Change Logos",
+        "Windshield Banner",
+        "TV Panel"
+      ],
+      "recommended_zones": 5,
+      "safe_areas": ["hood", "roof", "doors", "TV panel", "rear quarter"],
+      "iracing_folder": "stockcars/nextgen",
+      "metadata_file": "generic_stock_car.json",
+      "notes": "TV Panel above driver door is primary sponsor real estate. Contingency row lives at rear quarter."
+    }
+  ],
+  "categories": [
+    {
+      "id": "NASCAR Truck",
+      "display": "NASCAR Craftsman Truck Series",
+      "template_count": 3
+    },
+    {
+      "id": "NASCAR Cup",
+      "display": "NASCAR Cup Series",
+      "template_count": 1
+    },
+    {
+      "id": "GT3 Sportscar",
+      "display": "GT3 Class Sportscars",
+      "template_count": 1
+    },
+    {
+      "id": "Prototype",
+      "display": "Le Mans Prototype (LMP)",
+      "template_count": 1
+    }
+  ]
+}

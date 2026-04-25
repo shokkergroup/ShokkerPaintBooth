@@ -1,0 +1,95 @@
+{
+  "name": "Sports Car Touring",
+  "description": "Modern touring car livery — pearl metallic body, subtle carbon accent hood, conservative sponsor-style blue and red graphic bands, chrome window surrounds, piano black rockers. Think WTCR / modern GT4 class.",
+  "author": "Shokker Paint Booth",
+  "version": "6.2.0",
+  "compatible_with": "BMW M touring, audi RS, civic type r touring, modern TCR/GT4 builds",
+  "notes": "This is a restrained recipe — touring class liveries aren't loud, they're organized. Keep all graphic tolerances at 28-32 to prevent bleed into body. baseSpecStrength can come down to 0.9 for a softer showroom read.",
+  "zones": [
+    {
+      "name": "Pearl Metallic Body",
+      "color": "everything",
+      "base": "pearl",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "special",
+      "baseColor": "#e8e4dc",
+      "baseColorMode": "solid",
+      "baseStrength": 1,
+      "baseSpecStrength": 0.95
+    },
+    {
+      "name": "Carbon Accent Hood",
+      "color": "dark",
+      "base": "carbon_base",
+      "pattern": "carbon_fiber",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#1c1c1c",
+      "pickerTolerance": 30,
+      "baseColor": "#101010",
+      "baseColorMode": "solid",
+      "patternIntensity": "95"
+    },
+    {
+      "name": "Sponsor Blue Band",
+      "color": "blue",
+      "base": "gloss",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#1a4aa8",
+      "pickerTolerance": 30,
+      "baseColor": "#103c9a",
+      "baseColorMode": "solid"
+    },
+    {
+      "name": "Sponsor Red Band",
+      "color": "red",
+      "base": "gloss",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#c02020",
+      "pickerTolerance": 30,
+      "baseColor": "#aa1818",
+      "baseColorMode": "solid"
+    },
+    {
+      "name": "Chrome Window Surrounds",
+      "color": "gray",
+      "base": "chrome",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#c8c8c8",
+      "pickerTolerance": 28,
+      "baseColorMode": "source"
+    },
+    {
+      "name": "Piano Black Rockers",
+      "color": "white",
+      "base": "piano_black",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#2a2a2a",
+      "pickerTolerance": 28,
+      "baseColor": "#080808",
+      "baseColorMode": "solid"
+    },
+    {
+      "name": "Yellow Caution Stripe",
+      "color": "yellow",
+      "base": "gloss",
+      "pattern": "pinstripe",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#f0c418",
+      "pickerTolerance": 28,
+      "baseColor": "#e4b410",
+      "baseColorMode": "solid",
+      "patternIntensity": "80"
+    }
+  ]
+}

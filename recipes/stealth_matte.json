@@ -1,0 +1,70 @@
+{
+  "name": "Stealth Matte",
+  "description": "All-matte-black murdered-out build with a satin accent stripe and tinted numbers. Low reflectivity, high menace.",
+  "author": "Shokker Paint Booth",
+  "version": "6.2.0",
+  "compatible_with": "any chassis",
+  "notes": "Intentionally dark. If you lose detail in night sessions, raise nightBoost on export or swap the Accent Stripe to satin_chrome for a visible ghost line.",
+  "zones": [
+    {
+      "name": "Body",
+      "color": "everything",
+      "base": "matte",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "special",
+      "baseColor": "#0a0a0a",
+      "baseColorMode": "solid",
+      "baseStrength": 1,
+      "baseSpecStrength": 1
+    },
+    {
+      "name": "Accent Stripe",
+      "color": "red",
+      "base": "satin",
+      "pattern": "racing_stripe",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#cc2222",
+      "pickerTolerance": 35,
+      "baseColor": "#1c1c1c",
+      "baseColorMode": "solid",
+      "patternIntensity": "70"
+    },
+    {
+      "name": "Tinted Numbers",
+      "color": "yellow",
+      "base": "smoked",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#ffcc00",
+      "pickerTolerance": 35,
+      "baseColor": "#2a2a2a",
+      "baseColorMode": "solid"
+    },
+    {
+      "name": "Piano Black Trim",
+      "color": "dark",
+      "base": "piano_black",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#222222",
+      "pickerTolerance": 35,
+      "baseColorMode": "source"
+    },
+    {
+      "name": "Sponsors / Logos",
+      "color": "white",
+      "base": "clear_matte",
+      "pattern": "none",
+      "intensity": "70",
+      "colorMode": "quick",
+      "pickerColor": "#ffffff",
+      "pickerTolerance": 25,
+      "baseColor": "#3a3a3a",
+      "baseColorMode": "solid"
+    }
+  ]
+}

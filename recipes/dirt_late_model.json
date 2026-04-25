@@ -1,0 +1,96 @@
+{
+  "name": "Dirt Late Model",
+  "description": "Dirt track late model with gloss color body, reflective numbers, heavy mud spatter pattern, and tread-marked lower panels. Has the authentic Saturday-night-short-track look.",
+  "author": "Shokker Paint Booth",
+  "version": "6.2.0",
+  "compatible_with": "dirt_late_model, street_stock, modified",
+  "notes": "Mud pattern intensity can be turned way down (40-60) for a cleaner 'hot lap' look or cranked up (100) for mid-race carnage. Numbers zone uses chrome for that classic vinyl-on-dirt reflectivity.",
+  "zones": [
+    {
+      "name": "Body Color",
+      "color": "everything",
+      "base": "gloss",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "special",
+      "baseColor": "#18c44a",
+      "baseColorMode": "solid",
+      "baseStrength": 1,
+      "baseSpecStrength": 1
+    },
+    {
+      "name": "Mud Spatter Upper",
+      "color": "remaining",
+      "base": "rally_mud",
+      "pattern": "none",
+      "intensity": "70",
+      "colorMode": "special",
+      "baseColor": "#5a3a1c",
+      "baseColorMode": "solid",
+      "baseStrength": 0.7,
+      "baseSpecStrength": 0.5
+    },
+    {
+      "name": "Heavy Mud Lower",
+      "color": "dark",
+      "base": "rally_mud",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#3a2714",
+      "pickerTolerance": 40,
+      "baseColor": "#3a2714",
+      "baseColorMode": "solid",
+      "baseStrength": 1,
+      "baseSpecStrength": 0.3
+    },
+    {
+      "name": "Reflective Numbers",
+      "color": "white",
+      "base": "chrome",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#ffffff",
+      "pickerTolerance": 25,
+      "baseColorMode": "source"
+    },
+    {
+      "name": "Sponsor Vinyl",
+      "color": "yellow",
+      "base": "gloss",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#ffcc00",
+      "pickerTolerance": 30,
+      "baseColor": "#ffd400",
+      "baseColorMode": "solid"
+    },
+    {
+      "name": "Racing Stripe",
+      "color": "red",
+      "base": "gloss",
+      "pattern": "racing_stripe",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#cc2222",
+      "pickerTolerance": 35,
+      "baseColor": "#d01018",
+      "baseColorMode": "solid",
+      "patternIntensity": "95"
+    },
+    {
+      "name": "Matte Hood Blackout",
+      "color": "gray",
+      "base": "matte",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#444444",
+      "pickerTolerance": 35,
+      "baseColor": "#1a1a1a",
+      "baseColorMode": "solid"
+    }
+  ]
+}

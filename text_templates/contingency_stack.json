@@ -1,0 +1,64 @@
+{
+  "name": "Contingency Stack",
+  "description": "Stacked list of small associate-level sponsors. The row of tiny logos/text names along the rocker panel, rear quarter, or around the wheel arches. Contingency decals are required-size per racing series — keep them legible but compact, stacked vertically or inline horizontally.",
+  "category": "Sponsor",
+  "version": "6.2.0",
+  "template": {
+    "text": "SPONSOR A\nSPONSOR B\nSPONSOR C\nSPONSOR D",
+    "font_family": "Helvetica Neue, Arial, sans-serif",
+    "font_weight": 600,
+    "font_size": 22,
+    "italic": false,
+    "color": "#ffffff",
+    "stroke_color": "#000000",
+    "stroke_width": 1,
+    "shadow": {
+      "color": "#000000",
+      "opacity": 0.4,
+      "dx": 1,
+      "dy": 1,
+      "blur": 0
+    },
+    "alignment": "left",
+    "letter_spacing": 1,
+    "line_height": 1.4,
+    "rotation": 0,
+    "anchor_x": 0.0,
+    "anchor_y": 0.0
+  },
+  "placement_hints": {
+    "recommended_zones": ["rocker_panel", "rear_quarter_lower", "front_splitter", "wheel_arch"],
+    "min_size_px": 16,
+    "max_size_px": 32,
+    "safe_area_padding_px": 8
+  },
+  "variants": [
+    {
+      "name": "Horizontal Strip",
+      "overrides": {
+        "text": "SPONSOR A  •  SPONSOR B  •  SPONSOR C  •  SPONSOR D",
+        "alignment": "left",
+        "line_height": 1.0
+      }
+    },
+    {
+      "name": "Condensed Stack",
+      "overrides": {
+        "font_family": "Oswald, Bebas Neue, sans-serif",
+        "font_weight": 500,
+        "letter_spacing": 0,
+        "font_size": 24
+      }
+    },
+    {
+      "name": "Dark Base",
+      "overrides": {
+        "color": "#000000",
+        "stroke_color": "#ffffff",
+        "stroke_width": 1
+      }
+    }
+  ],
+  "compatible_finishes": ["gloss", "satin", "matte"],
+  "notes": "Contingency text is the smallest legible text on the car — anti-aliasing matters. Avoid italic at this size (it fuzzes at TV distance). Keep line_height at 1.3-1.5 for stacked lists so sponsors don't visually bleed together. Most real-world contingency decals are 2-3 inches tall on the physical car; translate to ~18-28px in SPB's canvas space."
+}

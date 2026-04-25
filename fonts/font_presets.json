@@ -1,0 +1,347 @@
+{
+  "version": "6.2.0",
+  "description": "Font presets for SPB text tool — racing, sponsor, and decorative fonts tuned for iRacing liveries and car graphics.",
+  "updated": "2026-04-17",
+  "categories": {
+    "Racing Numbers": [
+      {
+        "name": "Bold Racing",
+        "family": "Impact, Arial Black, sans-serif",
+        "weight": 900,
+        "italic": false,
+        "letter_spacing": 0,
+        "good_for": "Main car numbers — 2-3 digits, doors and roof. TV-readable at 200m."
+      },
+      {
+        "name": "Speed Italic",
+        "family": "Impact, sans-serif",
+        "weight": 900,
+        "italic": true,
+        "letter_spacing": -1,
+        "good_for": "Dynamic action-feel numbers. Classic NASCAR slant."
+      },
+      {
+        "name": "Stencil Number",
+        "family": "Stencil Std, Stencil, sans-serif",
+        "weight": 900,
+        "italic": false,
+        "letter_spacing": 2,
+        "good_for": "Military/tactical number plates, rally car doors."
+      },
+      {
+        "name": "Condensed Racer",
+        "family": "Oswald, Impact, sans-serif",
+        "weight": 800,
+        "italic": false,
+        "letter_spacing": -2,
+        "good_for": "Tall narrow car doors, 3-digit numbers, IMSA prototypes."
+      },
+      {
+        "name": "Block Fat",
+        "family": "Arial Black, Helvetica Black, sans-serif",
+        "weight": 900,
+        "italic": false,
+        "letter_spacing": -3,
+        "good_for": "Super-heavy numbers, max contrast on chrome/mirror bases."
+      },
+      {
+        "name": "Geometric Zero",
+        "family": "Eurostile, Microgramma, sans-serif",
+        "weight": 700,
+        "italic": false,
+        "letter_spacing": 0,
+        "good_for": "Sci-fi / Formula E aesthetic, modern LMP numbers."
+      },
+      {
+        "name": "Retro Round",
+        "family": "Cooper Black, Cooper Std, serif",
+        "weight": 900,
+        "italic": false,
+        "letter_spacing": 0,
+        "good_for": "Vintage 60s-70s Trans-Am, Gulf livery style."
+      },
+      {
+        "name": "Varsity Plate",
+        "family": "Collegiate, Varsity, sans-serif",
+        "weight": 900,
+        "italic": false,
+        "letter_spacing": 3,
+        "good_for": "American muscle, varsity racing, Camaro/Mustang schemes."
+      }
+    ],
+    "Sponsor Block": [
+      {
+        "name": "Clean Sans",
+        "family": "Helvetica Neue, Helvetica, Arial, sans-serif",
+        "weight": 700,
+        "italic": false,
+        "letter_spacing": 1,
+        "good_for": "Standard corporate sponsor block, legible at 100m."
+      },
+      {
+        "name": "Tech Sans",
+        "family": "Roboto, Arial, sans-serif",
+        "weight": 500,
+        "italic": false,
+        "letter_spacing": 0,
+        "good_for": "Technology partner sponsors, automotive brand names."
+      },
+      {
+        "name": "Corporate Bold",
+        "family": "Futura, Century Gothic, sans-serif",
+        "weight": 700,
+        "italic": false,
+        "letter_spacing": 2,
+        "good_for": "Logo-style sponsor marks, retro corporate feel."
+      },
+      {
+        "name": "Condensed Block",
+        "family": "Bebas Neue, Oswald, Impact, sans-serif",
+        "weight": 400,
+        "italic": false,
+        "letter_spacing": 2,
+        "good_for": "Tall narrow sponsor bars, rocker panels, side skirts."
+      },
+      {
+        "name": "Industrial Sans",
+        "family": "DIN, DIN Next, Arial Narrow, sans-serif",
+        "weight": 700,
+        "italic": false,
+        "letter_spacing": 1,
+        "good_for": "Engineering / industrial sponsors, German manufacturer feel."
+      },
+      {
+        "name": "Humanist Sans",
+        "family": "Myriad Pro, Open Sans, sans-serif",
+        "weight": 600,
+        "italic": false,
+        "letter_spacing": 0,
+        "good_for": "Friendly consumer-brand sponsors, hospitality, food & beverage."
+      },
+      {
+        "name": "Square Grotesk",
+        "family": "Eurostile Extended, Square 721, sans-serif",
+        "weight": 700,
+        "italic": false,
+        "letter_spacing": 1,
+        "good_for": "Tech/gaming sponsors, esports cross-over livery."
+      }
+    ],
+    "Driver Name": [
+      {
+        "name": "Script Italic",
+        "family": "Brush Script Std, Lucida Handwriting, cursive",
+        "weight": 700,
+        "italic": true,
+        "letter_spacing": 0,
+        "good_for": "Classic driver signature under roof window."
+      },
+      {
+        "name": "Name Plate Italic",
+        "family": "Helvetica Neue, Arial, sans-serif",
+        "weight": 700,
+        "italic": true,
+        "letter_spacing": 1,
+        "good_for": "Modern driver nameplate above door, NASCAR style."
+      },
+      {
+        "name": "Condensed Name",
+        "family": "Oswald, Bebas Neue, sans-serif",
+        "weight": 600,
+        "italic": true,
+        "letter_spacing": 2,
+        "good_for": "Tight name space on A-pillar or rear quarter."
+      },
+      {
+        "name": "Classic Serif",
+        "family": "Times New Roman, Georgia, serif",
+        "weight": 700,
+        "italic": true,
+        "letter_spacing": 0,
+        "good_for": "Traditional LeMans-era driver credit, vintage F1."
+      },
+      {
+        "name": "Modern Geometric",
+        "family": "Montserrat, Futura, sans-serif",
+        "weight": 600,
+        "italic": false,
+        "letter_spacing": 2,
+        "good_for": "Contemporary clean driver name, Formula E / esports."
+      },
+      {
+        "name": "Hand Script",
+        "family": "Pacifico, Brush Script, cursive",
+        "weight": 400,
+        "italic": true,
+        "letter_spacing": 0,
+        "good_for": "Driver signature recreation, fan-style autograph."
+      },
+      {
+        "name": "Bold Italic Display",
+        "family": "Impact, Arial Black, sans-serif",
+        "weight": 900,
+        "italic": true,
+        "letter_spacing": -1,
+        "good_for": "High-impact name above door, short surnames."
+      }
+    ],
+    "Technical/Engineering": [
+      {
+        "name": "Mono Tech",
+        "family": "Courier New, Consolas, monospace",
+        "weight": 700,
+        "italic": false,
+        "letter_spacing": 0,
+        "good_for": "Tech specs, VIN placards, scrutineering labels."
+      },
+      {
+        "name": "Industrial DIN",
+        "family": "DIN 1451, DIN Alternate, sans-serif",
+        "weight": 700,
+        "italic": false,
+        "letter_spacing": 1,
+        "good_for": "German automotive engineering labels, license plate style."
+      },
+      {
+        "name": "Data Display",
+        "family": "Eurostile Extended, OCR A, sans-serif",
+        "weight": 500,
+        "italic": false,
+        "letter_spacing": 2,
+        "good_for": "Telemetry overlays, sensor labels, dashboard decals."
+      },
+      {
+        "name": "Mil Spec",
+        "family": "Stencil, DIN, sans-serif",
+        "weight": 700,
+        "italic": false,
+        "letter_spacing": 3,
+        "good_for": "Military-inspired weight markings, fuel cap callouts."
+      },
+      {
+        "name": "Engineering Blueprint",
+        "family": "Architect Hand, Courier New, monospace",
+        "weight": 400,
+        "italic": true,
+        "letter_spacing": 1,
+        "good_for": "Blueprint-style callouts, technical drawing annotations."
+      },
+      {
+        "name": "Terminal Mono",
+        "family": "Source Code Pro, Menlo, monospace",
+        "weight": 500,
+        "italic": false,
+        "letter_spacing": 0,
+        "good_for": "Modern data labels, QR/barcode captions, tech sponsor."
+      }
+    ],
+    "Decorative Racing": [
+      {
+        "name": "Flame Display",
+        "family": "Firestarter, Impact, sans-serif",
+        "weight": 900,
+        "italic": true,
+        "letter_spacing": -1,
+        "good_for": "Hot rod team names, flame-scheme liveries."
+      },
+      {
+        "name": "Chrome Slab",
+        "family": "Rockwell, Memphis, serif",
+        "weight": 700,
+        "italic": false,
+        "letter_spacing": 1,
+        "good_for": "Slab-serif display for team logos, bold masthead feel."
+      },
+      {
+        "name": "Graffiti Street",
+        "family": "Impact, Arial Black, sans-serif",
+        "weight": 900,
+        "italic": true,
+        "letter_spacing": -2,
+        "good_for": "Drift/street/tuner car lettering, JDM culture."
+      },
+      {
+        "name": "Chopper Script",
+        "family": "Monotype Corsiva, Lucida Handwriting, cursive",
+        "weight": 700,
+        "italic": true,
+        "letter_spacing": 2,
+        "good_for": "Motorcycle team, custom shop signatures."
+      },
+      {
+        "name": "Gothic Blackletter",
+        "family": "Old English Text MT, UnifrakturMaguntia, serif",
+        "weight": 700,
+        "italic": false,
+        "letter_spacing": 0,
+        "good_for": "Heavy metal team names, classic custom culture."
+      },
+      {
+        "name": "Futurist Display",
+        "family": "Bank Gothic, Handel Gothic, sans-serif",
+        "weight": 700,
+        "italic": false,
+        "letter_spacing": 3,
+        "good_for": "Sci-fi racing, Formula E, cyberpunk team branding."
+      },
+      {
+        "name": "Western Slab",
+        "family": "Playbill, Rockwell, serif",
+        "weight": 900,
+        "italic": false,
+        "letter_spacing": 2,
+        "good_for": "Americana, western-themed liveries, country sponsor."
+      }
+    ],
+    "Vintage Era": [
+      {
+        "name": "60s Le Mans",
+        "family": "Futura, Century Gothic, sans-serif",
+        "weight": 700,
+        "italic": true,
+        "letter_spacing": 2,
+        "good_for": "1960s endurance racing, Ford GT40, Gulf liveries."
+      },
+      {
+        "name": "70s Formula",
+        "family": "Helvetica, Arial, sans-serif",
+        "weight": 700,
+        "italic": true,
+        "letter_spacing": 1,
+        "good_for": "1970s F1 style, Lotus/Tyrrell/McLaren era."
+      },
+      {
+        "name": "80s Retro Wave",
+        "family": "Bank Gothic, Eurostile, sans-serif",
+        "weight": 700,
+        "italic": true,
+        "letter_spacing": 4,
+        "good_for": "1980s Group B rally, IMSA GTP, retrowave aesthetic."
+      },
+      {
+        "name": "90s Bold Sans",
+        "family": "Arial Black, Helvetica Black, sans-serif",
+        "weight": 900,
+        "italic": false,
+        "letter_spacing": 0,
+        "good_for": "1990s touring car, DTM golden era, BTCC."
+      },
+      {
+        "name": "Art Deco",
+        "family": "Broadway, Poiret One, serif",
+        "weight": 700,
+        "italic": false,
+        "letter_spacing": 4,
+        "good_for": "Pre-war Grand Prix, 1920s-30s land speed record cars."
+      },
+      {
+        "name": "50s Diner Script",
+        "family": "Lobster, Pacifico, cursive",
+        "weight": 400,
+        "italic": true,
+        "letter_spacing": 1,
+        "good_for": "1950s NASCAR, diner/garage sponsor throwback."
+      }
+    ]
+  }
+}

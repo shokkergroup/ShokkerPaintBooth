@@ -1,0 +1,94 @@
+{
+  "name": "IndyCar GP",
+  "description": "Classic IndyCar grand prix livery with vertical sponsor stripes, gloss body, chrome numbers, and a clean aero-focused look. Suited for open-wheel and prototype chassis.",
+  "author": "Shokker Paint Booth",
+  "version": "6.2.0",
+  "compatible_with": "dallara_ir18, generic_indycar, open_wheel_prototype",
+  "notes": "Vertical stripes hit hardest when the car is in motion — pair with slight chamfer on stripe edges via patternIntensity 90. Keep sponsor zone white for max contrast in broadcast cameras.",
+  "zones": [
+    {
+      "name": "Primary Body",
+      "color": "everything",
+      "base": "gloss",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "special",
+      "baseColor": "#d4141c",
+      "baseColorMode": "solid",
+      "baseStrength": 1,
+      "baseSpecStrength": 1
+    },
+    {
+      "name": "Secondary Stripe",
+      "color": "white",
+      "base": "gloss",
+      "pattern": "racing_stripe",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#ffffff",
+      "pickerTolerance": 25,
+      "baseColor": "#ffffff",
+      "baseColorMode": "solid",
+      "patternIntensity": "90"
+    },
+    {
+      "name": "Accent Stripe",
+      "color": "blue",
+      "base": "gloss",
+      "pattern": "racing_stripe",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#3366ff",
+      "pickerTolerance": 35,
+      "baseColor": "#0a2fa6",
+      "baseColorMode": "solid",
+      "patternIntensity": "100"
+    },
+    {
+      "name": "Car Numbers",
+      "color": "yellow",
+      "base": "chrome",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#ffcc00",
+      "pickerTolerance": 30,
+      "baseColorMode": "source"
+    },
+    {
+      "name": "Carbon Floor",
+      "color": "dark",
+      "base": "carbon_base",
+      "pattern": "carbon_fiber",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#1a1a1a",
+      "pickerTolerance": 35,
+      "patternIntensity": "100",
+      "scale": 0.9
+    },
+    {
+      "name": "Sponsor Panels",
+      "color": "gray",
+      "base": "semi_gloss",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#aaaaaa",
+      "pickerTolerance": 30,
+      "baseColor": "#f4f4f4",
+      "baseColorMode": "solid"
+    },
+    {
+      "name": "Livery Pinstripe",
+      "color": "remaining",
+      "base": "enamel",
+      "pattern": "pinstripe",
+      "intensity": "80",
+      "colorMode": "special",
+      "baseColor": "#ffd400",
+      "baseColorMode": "solid",
+      "patternIntensity": "85"
+    }
+  ]
+}

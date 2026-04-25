@@ -1,0 +1,70 @@
+{
+  "name": "Formula Vee Classic",
+  "description": "1960s open-wheel Formula Vee style. Weathered enamel white body, hand-painted dark blue roundel, simple #00 number, and faded chrome trim. Period-correct grassroots racer.",
+  "author": "Shokker Paint Booth",
+  "version": "6.2.0",
+  "compatible_with": "formula vee, period open-wheel, vintage sports racers",
+  "notes": "Enamel base gives that slight orange-peel vintage read. Keep tolerance tight on the blue so the roundel stays clean. #00 on the nose should be hand-painted feel — don't over-decal.",
+  "zones": [
+    {
+      "name": "Enamel White Body",
+      "color": "everything",
+      "base": "enamel",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "special",
+      "baseColor": "#ece6d8",
+      "baseColorMode": "solid",
+      "baseStrength": 0.9,
+      "baseSpecStrength": 0.75
+    },
+    {
+      "name": "Roundel Dark Blue",
+      "color": "blue",
+      "base": "enamel",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#1a3a8a",
+      "pickerTolerance": 28,
+      "baseColor": "#14306e",
+      "baseColorMode": "solid"
+    },
+    {
+      "name": "Faded Chrome Trim",
+      "color": "gray",
+      "base": "dark_chrome",
+      "pattern": "none",
+      "intensity": "95",
+      "colorMode": "quick",
+      "pickerColor": "#b0b0b0",
+      "pickerTolerance": 28,
+      "baseColorMode": "source"
+    },
+    {
+      "name": "Hand-Painted Number",
+      "color": "dark",
+      "base": "semi_gloss",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#181818",
+      "pickerTolerance": 30,
+      "baseColor": "#0d0d0d",
+      "baseColorMode": "solid"
+    },
+    {
+      "name": "Period Red Pinstripe",
+      "color": "red",
+      "base": "enamel",
+      "pattern": "pinstripe",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#b22222",
+      "pickerTolerance": 30,
+      "baseColor": "#9a1f1f",
+      "baseColorMode": "solid",
+      "patternIntensity": "100"
+    }
+  ]
+}

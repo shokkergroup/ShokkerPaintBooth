@@ -62,8 +62,27 @@ def _gauss(arr, sigma):
 # ---------------------------------------------------------------------------
 
 def _sm_scale(arr, sm):
-    """Compress pattern toward 0.5 based on sm."""
-    return 0.5 + (arr - 0.5) * sm
+    """Compress pattern toward 0.5 based on sm, clipped to [0, 1].
+
+    2026-04-21 painter-report fix: a spec-overlay callsite was passing
+    `sm > 1` (via `_sm_base = sm * base_spec_strength` with
+    base_spec_strength up to 2.0). For that sm, this formula produces
+    values below 0 and above 1, which then trips the
+    `_validate_spec_output` [0, 1] assertion at the end of every spec
+    pattern that uses `_sm_scale`. The assertion raised up through the
+    compose pipeline into `preview_render`, which caught the exception
+    and substituted a solid mid-gray fallback buffer — causing the
+    "entire canvas turns gray" painter report when combining certain
+    Foundation bases with Spec Pattern Overlays from the Mechanical /
+    Race Heritage / Weather & Track / Artistic / Abstract Art
+    categories.
+
+    The clip makes the helper robust to out-of-contract sm values
+    regardless of the caller. sm ∈ [0, 1] is still the intended input
+    (compression factor: 0 = flatten, 1 = preserve); the clip keeps
+    the output bounded when a caller exceeds that contract.
+    """
+    return np.clip(0.5 + (arr - 0.5) * sm, 0.0, 1.0)
 
 def _normalize(arr):
     """Normalize array to 0-1 range."""
@@ -81,7 +100,7 @@ def multi_scale_noise(shape, scales, weights, seed):
 
     Args:
         shape: (h, w) output shape
-        scales: list of sigma values (e.g. [4, 8, 16]) — higher = coarser noise
+        scales: list of sigma values (e.g. [16, 32, 64]) — higher = coarser noise
         weights: list of blend weights matching scales (will be normalised)
         seed: int random seed for reproducibility
 
@@ -97,6 +116,117 @@ def multi_scale_noise(shape, scales, weights, seed):
             noise = _gauss(noise, sigma=float(sigma))
         result += noise * (w / total_w)
     return result
+
+
+def _smoothstep(edge0, edge1, x):
+    t = np.clip((x - edge0) / max(edge1 - edge0, 1e-6), 0.0, 1.0)
+    return t * t * (3.0 - 2.0 * t)
+
+
+def _shard_voronoi_spec(shape, seed, sm, target_px=16.0, min_cells=160,
+                        max_cells=14000, edge_px=1.35, glint_density=0.003,
+                        scratch_count=0, name="shard_voronoi"):
+    """Dense broken-glass/facet topology for 2048-aware spec overlays.
+
+    Unlike soft noise thresholds, this builds real Voronoi shards with dark
+    fracture seams, per-facet reflection planes, bevel glints, hairline cracks,
+    and sub-pixel chips. ``target_px`` is in final texture pixels so a 2048 car
+    gets thousands of tiny pieces instead of billboard-sized blobs.
+    """
+    h, w = shape
+    if sm < 0.001:
+        return _flat(shape)
+
+    rng = np.random.default_rng(seed)
+    area = max(1, h * w)
+    n_cells = int(np.clip(area / max(float(target_px) ** 2, 4.0), min_cells, max_cells))
+
+    margin = max(float(target_px), 4.0)
+    pts_y = rng.uniform(-margin, h + margin, n_cells).astype(np.float32)
+    pts_x = rng.uniform(-margin, w + margin, n_cells).astype(np.float32)
+    pts = np.column_stack([pts_y.astype(np.float64), pts_x.astype(np.float64)])
+    tree = cKDTree(pts)
+
+    yy_i, xx_i = np.mgrid[0:h, 0:w]
+    coords = np.column_stack([yy_i.ravel().astype(np.float64), xx_i.ravel().astype(np.float64)])
+    dists, idxs = tree.query(coords, k=2, workers=-1)
+    d1 = dists[:, 0].reshape(shape).astype(np.float32)
+    d2 = dists[:, 1].reshape(shape).astype(np.float32)
+    labels = idxs[:, 0].reshape(shape)
+
+    yy = yy_i.astype(np.float32)
+    xx = xx_i.astype(np.float32)
+    angles = rng.uniform(0.0, np.pi, n_cells).astype(np.float32)
+    brightness = rng.uniform(0.18, 0.92, n_cells).astype(np.float32)
+    sizes = rng.uniform(max(3.0, target_px * 0.55), max(4.0, target_px * 1.45), n_cells).astype(np.float32)
+    glint_offsets = rng.uniform(-0.28, 0.28, n_cells).astype(np.float32)
+
+    lab_flat = labels.ravel()
+    angle = angles[lab_flat].reshape(shape)
+    c_y = pts_y[lab_flat].reshape(shape)
+    c_x = pts_x[lab_flat].reshape(shape)
+    size = sizes[lab_flat].reshape(shape)
+    base = brightness[lab_flat].reshape(shape)
+    offset = glint_offsets[lab_flat].reshape(shape) * size
+
+    dx = xx - c_x
+    dy = yy - c_y
+    proj = dx * np.cos(angle) + dy * np.sin(angle)
+    perp = -dx * np.sin(angle) + dy * np.cos(angle)
+
+    plane = np.clip(0.5 + proj / np.maximum(size * 0.82, 1.0), 0.0, 1.0)
+    cross_plane = np.clip(0.5 + perp / np.maximum(size * 1.20, 1.0), 0.0, 1.0)
+    glint = np.exp(-((proj - offset) ** 2) / (2.0 * np.maximum(size * 0.105, 0.85) ** 2)).astype(np.float32)
+
+    gap = d2 - d1
+    crack = 1.0 - _smoothstep(edge_px, edge_px * 3.4, gap)
+    bevel = np.exp(-((gap - edge_px * 3.0) ** 2) / (2.0 * max(edge_px * 1.2, 0.65) ** 2)).astype(np.float32)
+
+    result = (
+        0.42
+        + (base - 0.5) * 0.52
+        + (plane - 0.5) * 0.28
+        + (cross_plane - 0.5) * 0.12
+        + glint * 0.24
+        + bevel * 0.18
+        - crack * 0.56
+    ).astype(np.float32)
+
+    if scratch_count > 0:
+        scratches = np.zeros(shape, dtype=np.float32)
+        count = int(np.clip(scratch_count, 1, 900))
+        for _ in range(count):
+            length = rng.uniform(target_px * 1.4, target_px * 5.8)
+            ang = rng.uniform(0.0, 2.0 * np.pi)
+            cx = rng.uniform(0.0, w)
+            cy = rng.uniform(0.0, h)
+            x0 = int(np.clip(cx - np.cos(ang) * length * 0.5, 0, w - 1))
+            y0 = int(np.clip(cy - np.sin(ang) * length * 0.5, 0, h - 1))
+            x1 = int(np.clip(cx + np.cos(ang) * length * 0.5, 0, w - 1))
+            y1 = int(np.clip(cy + np.sin(ang) * length * 0.5, 0, h - 1))
+            val = float(rng.uniform(0.45, 1.0))
+            if _CV2_OK:
+                _cv2.line(scratches, (x0, y0), (x1, y1), val, thickness=1, lineType=_cv2.LINE_AA)
+            else:
+                steps = max(abs(x1 - x0), abs(y1 - y0), 1)
+                xs = np.clip(np.linspace(x0, x1, steps + 1).astype(np.int32), 0, w - 1)
+                ys = np.clip(np.linspace(y0, y1, steps + 1).astype(np.int32), 0, h - 1)
+                np.maximum.at(scratches, (ys, xs), val)
+        scratches = np.maximum(scratches, _gauss(scratches, sigma=0.45) * 0.55)
+        result += scratches * 0.20
+
+    if glint_density > 0:
+        n_chips = int(np.clip(area * float(glint_density), 80, 90000))
+        chip_y = rng.integers(0, h, n_chips)
+        chip_x = rng.integers(0, w, n_chips)
+        chip_v = rng.uniform(0.35, 1.0, n_chips).astype(np.float32)
+        chips = np.zeros(shape, dtype=np.float32)
+        np.maximum.at(chips, (chip_y, chip_x), chip_v)
+        chips = np.maximum(chips, _gauss(chips, sigma=0.42) * 0.75)
+        result += chips * 0.17
+
+    out = _sm_scale(_normalize(result), sm).astype(np.float32)
+    return out
 
 
 # ============================================================================
@@ -782,32 +912,20 @@ def micro_facets(shape, seed, sm, facet_size=8, angle_range=0.5):
     faceted gemstone, or micro-machined surface. Each facet has a
     uniform value representing its angle to the viewer.
     """
-    h, w = shape
     if sm < 0.001:
         return _flat(shape)
-
-    rng = np.random.RandomState(seed)
-    fs = max(2, facet_size)
-    # Grid of facets
-    ny, nx = max(2, h // fs), max(2, w // fs)
-    facet_vals = rng.uniform(0.1, 0.9, size=(ny, nx)).astype(np.float32)
-
-    # Map pixels to facets (nearest-neighbor = flat facets)
-    yi = (np.arange(h) * ny // h).clip(0, ny - 1)
-    xi = (np.arange(w) * nx // w).clip(0, nx - 1)
-    result = facet_vals[yi[:, np.newaxis], xi[np.newaxis, :]]
-
-    # Add very slight gradient within each facet to show tilt
-    y_in_facet = (np.arange(h, dtype=np.float32) % fs) / fs - 0.5
-    x_in_facet = (np.arange(w, dtype=np.float32) % fs) / fs - 0.5
-    # Random tilt directions per facet
-    tilt_y = rng.uniform(-angle_range, angle_range, size=(ny, nx)).astype(np.float32)
-    tilt_x = rng.uniform(-angle_range, angle_range, size=(ny, nx)).astype(np.float32)
-    ty = tilt_y[yi[:, np.newaxis], xi[np.newaxis, :]]
-    tx = tilt_x[yi[:, np.newaxis], xi[np.newaxis, :]]
-    result += y_in_facet[:, np.newaxis] * ty + x_in_facet[np.newaxis, :] * tx
-
-    return _sm_scale(_normalize(result), sm).astype(np.float32)
+    return _shard_voronoi_spec(
+        shape, seed + 1801, sm,
+        target_px=max(5.0, float(facet_size)),
+        min_cells=260,
+        max_cells=22000,
+        edge_px=0.75,
+        glint_density=0.0022,
+        scratch_count=0,
+        name="micro_facets",
+    )
+micro_facets._spb_concept_complete = True
+micro_facets.__doc__ = "Tiny random crystal facets with fracture seams and micro glints. Targets R=Metallic, G=Roughness, B=Clearcoat."
 
 
 # ============================================================================
@@ -1178,28 +1296,21 @@ def multi_band_spec(shape, seed, sm, base_val, variation, num_bands=30,
 
 def voronoi_fracture(shape, seed, sm, num_cells=40, edge_width=2.0, **kwargs):
     """Voronoi tessellation with bright cell interiors and dark fracture edges."""
-    h, w = shape
     if sm < 0.001:
         return _flat(shape)
-    rng = np.random.RandomState(seed)
-    cx = rng.rand(num_cells).astype(np.float32) * w
-    cy = rng.rand(num_cells).astype(np.float32) * h
-    cell_vals = (rng.rand(num_cells).astype(np.float32) * 0.6 + 0.2)
-
-    # Use cKDTree for vectorized 2-NN query instead of per-cell loop
-    centers = np.column_stack([cy, cx]).astype(np.float64)
-    tree = cKDTree(centers)
-    yy, xx = np.mgrid[0:h, 0:w]
-    pts = np.column_stack([yy.ravel().astype(np.float64), xx.ravel().astype(np.float64)])
-    dists, idxs = tree.query(pts, k=2, workers=-1)
-    d1 = dists[:, 0].reshape(shape).astype(np.float32)
-    d2 = dists[:, 1].reshape(shape).astype(np.float32)
-    closest = idxs[:, 0].reshape(shape)
-
-    edge = np.clip((d2 - d1) / max(edge_width, 1e-6), 0, 1).astype(np.float32)
-    cell_fill = cell_vals[closest]
-    result = cell_fill * edge
-    return _sm_scale(_normalize(result), sm)
+    target_px = max(16.0, np.sqrt(max(shape[0] * shape[1], 1) / max(num_cells * 10.0, 1.0)))
+    return _shard_voronoi_spec(
+        shape, seed + 2601, sm,
+        target_px=target_px,
+        min_cells=max(180, int(num_cells * 4)),
+        max_cells=13000,
+        edge_px=max(0.8, float(edge_width)),
+        glint_density=0.0012,
+        scratch_count=max(12, int(num_cells * 0.9)),
+        name="voronoi_fracture",
+    )
+voronoi_fracture._spb_concept_complete = True
+voronoi_fracture.__doc__ = "Voronoi fracture: dense broken-surface cell boundaries and hairline cracks. Targets R=Metallic, G=Roughness, B=Clearcoat."
 
 
 # ============================================================================
@@ -1436,6 +1547,20 @@ def magnetic_field(shape, seed, sm, num_poles=3, line_density=20.0, **kwargs):
 # ============================================================================
 
 def prismatic_shatter(shape, seed, sm, num_shards=60, **kwargs):
+    if sm < 0.001:
+        return _flat(shape)
+    area = max(shape[0] * shape[1], 1)
+    dynamic_px = np.sqrt(area / max(num_shards * 5.0, 1.0))
+    return _shard_voronoi_spec(
+        shape, seed + 3301, sm,
+        target_px=max(12.0, min(30.0, dynamic_px)),
+        min_cells=max(180, int(num_shards * 4)),
+        max_cells=12000,
+        edge_px=1.15,
+        glint_density=0.0028,
+        scratch_count=max(20, int(num_shards * 1.2)),
+        name="prismatic_shatter",
+    )
     """Shattered glass/prism — each shard reflects at a different angle."""
     h, w = shape
     if sm < 0.001:
@@ -1470,6 +1595,8 @@ def prismatic_shatter(shape, seed, sm, num_shards=60, **kwargs):
 
     result = (shard_spec[closest] * (0.6 + 0.4 * grad) * edge).astype(np.float32)
     return _sm_scale(_normalize(result), sm).astype(np.float32)
+prismatic_shatter._spb_concept_complete = True
+prismatic_shatter.__doc__ = "Shattered glass/prism facets. Targets R=Metallic, G=Roughness, B=Clearcoat."
 
 
 # ============================================================================
@@ -2565,6 +2692,18 @@ def brushed_sparkle(shape, seed, sm, sparkle_density=0.002):
 # ============================================================================
 
 def crushed_glass(shape, seed, sm, threshold_hi=0.72):
+    if sm < 0.001:
+        return _flat(shape)
+    return _shard_voronoi_spec(
+        shape, seed + 5901, sm,
+        target_px=12.0,
+        min_cells=420,
+        max_cells=18000,
+        edge_px=0.95,
+        glint_density=0.0065,
+        scratch_count=max(60, int((shape[0] * shape[1]) / (96 * 96))),
+        name="crushed_glass",
+    )
     """
     Jagged irregular bright fragments — high-frequency noise with sharp threshold
     creates angular bright shapes. Not smooth: harsh glass-shard edges.
@@ -2585,6 +2724,8 @@ def crushed_glass(shape, seed, sm, threshold_hi=0.72):
     # Hard threshold for angular bright fragments
     bright = np.where(field > threshold_hi, field, 0.08).astype(np.float32)
     return _sm_scale(_normalize(bright), sm).astype(np.float32)
+crushed_glass._spb_concept_complete = True
+crushed_glass.__doc__ = "Crushed glass: dense jagged shards, fracture seams, and micro-chip glints. Targets R=Metallic, G=Roughness, B=Clearcoat."
 
 
 # ============================================================================
@@ -2714,30 +2855,55 @@ def gradient_bands(shape, seed, sm, num_bands=16, palette_size=6):
 # 64. SPLIT BANDS — alternating thick/thin bands with different intensities
 # ============================================================================
 
-def split_bands(shape, seed, sm, thick_count=10, thin_count=10,
-                thick_bright=0.82, thin_bright=0.35):
+def split_bands(shape, seed, sm, num_pairs=12, ratio=3.0,
+                thick_bright=0.85, thin_bright=0.25, warp_strength=0.04):
     """
-    Alternating thick bright bands and thin dark bands.
-    Every pair: one wide high-value band followed by one narrow low-value band.
+    Racing-stripe split bands: alternating wide glossy and narrow matte bands
+    with organic warp, per-band jitter, and crossfade feathering.
+    ratio controls thick:thin width (3.0 = thick is 3x wider than thin).
     """
     h, w = shape
     if sm < 0.001:
         return _flat(shape)
     rng = np.random.RandomState(seed)
-    # Build a 1D band map
-    total_pairs = (thick_count + thin_count) // 2
-    pair_height = h / max(1, total_pairs)
-    thick_frac = thick_count / max(1, thick_count + thin_count)
+
+    # Build band edge positions with thick/thin alternation
+    total_units = num_pairs * (ratio + 1.0)
+    unit_h = h / total_units
+    edges = []
+    y_cursor = 0.0
+    for i in range(num_pairs):
+        edges.append((y_cursor, y_cursor + unit_h * ratio, thick_bright + rng.uniform(-0.05, 0.05)))
+        y_cursor += unit_h * ratio
+        edges.append((y_cursor, y_cursor + unit_h, thin_bright + rng.uniform(-0.03, 0.03)))
+        y_cursor += unit_h
+
+    # Warp field for organic feel
+    xx = np.arange(w, dtype=np.float32) / max(w, 1)
+    warp = (np.sin(xx * rng.uniform(3, 10) * np.pi + rng.uniform(0, 2 * np.pi)) +
+            np.sin(xx * rng.uniform(6, 14) * np.pi + rng.uniform(0, 2 * np.pi)) * 0.4
+            ) * warp_strength * h
     yy = np.arange(h, dtype=np.float32)
-    pair_pos = (yy / pair_height) - np.floor(yy / pair_height)
-    is_thick = pair_pos < thick_frac
-    bright_jitter = rng.uniform(-0.06, 0.06, size=h).astype(np.float32)
-    row_val = np.where(is_thick,
-                       thick_bright + bright_jitter,
-                       thin_bright + bright_jitter * 0.5).astype(np.float32)
-    result = row_val[:, np.newaxis] * np.ones(w, dtype=np.float32)[np.newaxis, :]
-    # Add slight column noise
-    result += rng.uniform(-0.02, 0.02, size=(h, w)).astype(np.float32)
+    eff_y = yy[:, np.newaxis] + warp[np.newaxis, :]  # (h, w)
+
+    # Per-band soft assignment with Gaussian feathering
+    feather_px = max(unit_h * 0.15, 1.0)
+    result = np.zeros(shape, dtype=np.float32)
+    weight_sum = np.zeros(shape, dtype=np.float32)
+    for y_start, y_end, val in edges:
+        center = (y_start + y_end) * 0.5
+        half_w = (y_end - y_start) * 0.5
+        dist = np.abs(eff_y - center) - half_w
+        # Inside band: dist <= 0; outside: positive
+        band_w = np.exp(-np.clip(dist, 0, None) ** 2 / (2.0 * feather_px ** 2))
+        band_w[dist <= 0] = 1.0
+        result += band_w * val
+        weight_sum += band_w
+    result /= np.maximum(weight_sum, 1e-6)
+
+    # Add subtle noise texture within bands
+    noise = rng.uniform(-0.03, 0.03, size=shape).astype(np.float32)
+    result = np.clip(result + noise, 0, 1)
     return _sm_scale(_normalize(result), sm).astype(np.float32)
 
 
@@ -4319,7 +4485,7 @@ def cc_edge_thin(shape, seed, sm, edge_width=0.12, noise_scale=0.04, **kwargs):
     # Thin at edges: ramp from 1 at edge to 0 beyond edge_width
     thin_mask = 1.0 - np.clip(edge_dist / edge_width, 0.0, 1.0)
     # Add slight noise warp for organic look
-    noise = multi_scale_noise(shape, [4, 8, 16], [0.5, 0.3, 0.2], seed)
+    noise = multi_scale_noise(shape, [16, 32, 64], [0.5, 0.3, 0.2], seed)
     result = thin_mask + noise * noise_scale
     return _sm_scale(_normalize(result), sm).astype(np.float32)
 
@@ -4355,8 +4521,9 @@ def cc_spot_polish(shape, seed, sm, num_spots=15, spot_radius=0.08, **kwargs):
     yy = np.arange(h, dtype=np.float32) / h
     xx = np.arange(w, dtype=np.float32) / w
     Y, X = np.meshgrid(yy, xx, indexing='ij')
-    # Base: slight noise texture
-    result = multi_scale_noise(shape, [8, 16], [0.7, 0.3], seed) * 0.3 + 0.5
+    # Base: 4-octave noise texture (was 2-octave; too smooth/fake at full res)
+    result = multi_scale_noise(shape, [4, 8, 16, 32],
+                               [0.45, 0.30, 0.15, 0.10], seed) * 0.30 + 0.5
     for _ in range(num_spots):
         cy = rng.uniform(0.05, 0.95)
         cx = rng.uniform(0.05, 0.95)
@@ -4394,7 +4561,7 @@ def cc_wet_zone(shape, seed, sm, num_zones=5, **kwargs):
     h, w = shape
     if sm < 0.001:
         return _flat(shape)
-    fbm = multi_scale_noise(shape, [2, 4, 8, 16], [0.5, 0.25, 0.15, 0.1], seed)
+    fbm = multi_scale_noise(shape, [16, 32, 64, 128], [0.5, 0.25, 0.15, 0.1], seed)
     fbm_norm = _normalize(fbm)
     # Threshold creates blob zones
     threshold = 0.55
@@ -4429,6 +4596,20 @@ def cc_panel_fade(shape, seed, sm, fade_direction=0.0, noise_warp=0.06, **kwargs
 # ============================================================================
 
 def spec_faceted_diamond(shape, seed, sm, num_cells=120, **kwargs):
+    if sm < 0.001:
+        return _flat(shape)
+    area = max(shape[0] * shape[1], 1)
+    dynamic_px = np.sqrt(area / max(num_cells * 4.0, 1.0))
+    return _shard_voronoi_spec(
+        shape, seed + 12401, sm,
+        target_px=max(10.0, min(24.0, dynamic_px)),
+        min_cells=max(240, int(num_cells * 3)),
+        max_cells=16000,
+        edge_px=0.95,
+        glint_density=0.0035,
+        scratch_count=0,
+        name="spec_faceted_diamond",
+    )
     """Faceted diamond/gem cut surface. Each Voronoi cell = one facet. Within each cell,
     metallic varies linearly from cell centroid (high metallic = specular highlight) to
     cell edge (lower metallic). Gradient direction rotates randomly per cell — simulates
@@ -4475,6 +4656,8 @@ def spec_faceted_diamond(shape, seed, sm, num_cells=120, **kwargs):
     edge_fade = 1.0 - norm_dist ** 1.5
     result = facet_gradient * edge_fade
     return _sm_scale(_normalize(result), sm).astype(np.float32)
+spec_faceted_diamond._spb_concept_complete = True
+spec_faceted_diamond.__doc__ = "Faceted diamond/gem cut surface. Targets R=Metallic, G=Roughness, B=Clearcoat."
 
 
 def spec_hammered_dimple(shape, seed, sm, dimple_spacing=18.0, **kwargs):
@@ -5302,6 +5485,27 @@ def spec_terrain_erosion(shape, seed, sm, octaves=7, lacunarity=2.1, **kwargs):
 
 
 def spec_crystal_growth(shape, seed, sm, num_crystals=80, **kwargs):
+    if sm < 0.001:
+        return _flat(shape)
+    area = max(shape[0] * shape[1], 1)
+    dynamic_px = np.sqrt(area / max(num_crystals * 5.0, 1.0))
+    shards = _shard_voronoi_spec(
+        shape, seed + 13401, sm,
+        target_px=max(9.0, min(20.0, dynamic_px)),
+        min_cells=max(300, int(num_crystals * 4)),
+        max_cells=18000,
+        edge_px=0.85,
+        glint_density=0.0040,
+        scratch_count=max(30, int(num_crystals * 0.7)),
+        name="spec_crystal_growth",
+    )
+    h, w = shape
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+    cy, cx = h * 0.5, w * 0.5
+    radial = np.sqrt((yy - cy) ** 2 + (xx - cx) ** 2) / max(min(h, w) * 0.5, 1.0)
+    angular = np.sin(np.arctan2(yy - cy, xx - cx) * 18.0 + radial * 26.0) * 0.5 + 0.5
+    result = shards * 0.82 + angular * np.clip(1.0 - radial, 0, 1) * 0.18
+    return _sm_scale(_normalize(result), sm).astype(np.float32)
     """Crystal growth / geode interior. Radial crystal growth from center outward.
     Each crystal face is flat (low roughness) but at different angles — metallic
     varies with crystal face angle (FBM angular variation per Voronoi cell). Dense
@@ -5351,6 +5555,8 @@ def spec_crystal_growth(shape, seed, sm, num_crystals=80, **kwargs):
     metallic = face_metallic * (1.0 - r_norm * 0.4) + boundary * 0.35
     metallic = np.clip(metallic, 0.0, 1.0)
     return _sm_scale(_normalize(metallic), sm).astype(np.float32)
+spec_crystal_growth._spb_concept_complete = True
+spec_crystal_growth.__doc__ = "Crystal growth/geode facets with radial crystalline glints. Targets R=Metallic, G=Roughness, B=Clearcoat."
 
 
 def spec_lava_flow(shape, seed, sm, flow_freq=0.035, aa_roughness=0.72, **kwargs):
@@ -6640,6 +6846,3351 @@ def spec_damascus_steel_spec(shape, seed, sm, num_layers=18, warp_strength=4.5,
 
 
 # ============================================================================
+# SPARKLE SYSTEM EXPANSION — 9 new sparkle spec patterns
+# ============================================================================
+
+def sparkle_rain(shape, seed, sm, density=0.008, streak_len=12):
+    """Falling sparkle streaks — vertical metallic rain drops with bright heads.
+    Vectorized: scatter drop heads via numpy indexing, vertical blur for streaks."""
+    h, w = shape
+    if sm < 0.001: return _flat(shape)
+    rng = np.random.default_rng(seed + 8800)
+    n_drops = min(max(50, int(h * w * density)), 40000)
+
+    # Scatter bright drop heads onto canvas
+    ys = rng.integers(0, h, n_drops)
+    xs = rng.integers(0, w, n_drops)
+    brights = rng.uniform(0.6, 1.0, n_drops).astype(np.float32)
+
+    canvas = np.zeros(shape, dtype=np.float32)
+    np.maximum.at(canvas, (ys, xs), brights)
+
+    # Asymmetric vertical blur for streak tails (more blur downward)
+    # Apply a tall narrow kernel to simulate falling rain streaks
+    if _CV2_OK:
+        ksize = max(int(streak_len * 1.5) | 1, 3)
+        # Create asymmetric vertical kernel (bright head, fading tail)
+        kernel = np.zeros((ksize, 1), dtype=np.float32)
+        half = ksize // 2
+        for i in range(ksize):
+            if i <= half:
+                kernel[i, 0] = 1.0  # head region
+            else:
+                kernel[i, 0] = max(0, 1.0 - (i - half) / (ksize - half)) ** 1.5  # fading tail
+        kernel /= kernel.sum()
+        streaked = _cv2.filter2D(canvas, -1, kernel)
+    else:
+        streaked = _scipy_gaussian(canvas, sigma=(streak_len * 0.4, 0.3))
+
+    smax = streaked.max()
+    if smax > 1e-7:
+        streaked /= smax
+
+    result = 0.5 + streaked * 0.5 * sm
+    return result.clip(0.0, 1.0).astype(np.float32)
+
+def sparkle_constellation(shape, seed, sm, n_clusters=12, stars_per=60):
+    """Clustered star groups with magnitude classes, connecting filaments, and
+    Gaussian glow halos. Fully vectorized: all stars scattered via numpy indexing,
+    single cv2.GaussianBlur pass for glow."""
+    h, w = shape
+    if sm < 0.001: return _flat(shape)
+    rng = np.random.default_rng(seed + 8810)
+
+    # Generate all cluster centers
+    cluster_cy = rng.uniform(0.08, 0.92, n_clusters) * h
+    cluster_cx = rng.uniform(0.08, 0.92, n_clusters) * w
+    cluster_spread = rng.uniform(0.025, 0.07, n_clusters) * min(h, w)
+
+    # Generate all stars for all clusters at once
+    total_stars = n_clusters * stars_per
+    cluster_ids = np.repeat(np.arange(n_clusters), stars_per)
+    cy_all = np.repeat(cluster_cy, stars_per)
+    cx_all = np.repeat(cluster_cx, stars_per)
+    spread_all = np.repeat(cluster_spread, stars_per)
+
+    sy = np.clip(rng.normal(cy_all, spread_all), 0, h - 1).astype(np.int32)
+    sx = np.clip(rng.normal(cx_all, spread_all), 0, w - 1).astype(np.int32)
+
+    # Magnitude classes: bright cores (20%), medium (50%), dim (30%)
+    mag_roll = rng.uniform(0, 1, total_stars)
+    intensities = np.where(mag_roll < 0.2, rng.uniform(0.85, 1.0, total_stars),
+                  np.where(mag_roll < 0.7, rng.uniform(0.5, 0.8, total_stars),
+                           rng.uniform(0.25, 0.5, total_stars))).astype(np.float32)
+
+    # Scatter all stars onto canvas
+    canvas = np.zeros(shape, dtype=np.float32)
+    np.maximum.at(canvas, (sy, sx), intensities)
+
+    # Gaussian blur for glow halos (single pass)
+    glow = _gauss(canvas, sigma=2.5)
+    glow_max = glow.max()
+    if glow_max > 1e-7:
+        glow /= glow_max
+
+    # Add faint connecting filaments between nearby cluster members
+    filament = _gauss(canvas, sigma=max(min(h, w) * 0.012, 2.0))
+    fil_max = filament.max()
+    if fil_max > 1e-7:
+        filament = (filament / fil_max) * 0.3
+
+    # Composite: sharp points + glow + filaments
+    combined = np.maximum(canvas * 0.8, glow * 0.6) + filament
+    combined = np.clip(combined, 0, 1)
+    result = 0.5 + combined * 0.5
+    return _sm_scale(result, sm).astype(np.float32)
+
+def sparkle_nebula(shape, seed, sm, density=0.006):
+    """Sparkle with FBM density clouds — dense sparkle regions fade into sparse voids."""
+    h, w = shape
+    if sm < 0.001: return _flat(shape)
+    rng = np.random.RandomState(seed + 8820)
+    cloud = multi_scale_noise(shape, [32, 64, 128], [0.3, 0.4, 0.3], seed + 8821)
+    cloud_norm = (cloud - cloud.min()) / (cloud.max() - cloud.min() + 1e-8)
+    raw = rng.uniform(0, 1, shape).astype(np.float32)
+    threshold = 1.0 - density * (0.5 + cloud_norm * 2.0)
+    sparkle = np.clip((raw - threshold) / 0.02, 0, 1)
+    result = 0.5 + sparkle * 0.5
+    return _sm_scale(result, sm).astype(np.float32)
+
+def sparkle_firefly(shape, seed, sm, n_flies=200, glow_radius=8):
+    """Soft glowing sparkle points — like fireflies with warm Gaussian halos.
+    Vectorized: scatter point intensities, single Gaussian blur for glow."""
+    h, w = shape
+    if sm < 0.001: return _flat(shape)
+    rng = np.random.default_rng(seed + 8830)
+
+    ys = rng.integers(0, h, n_flies)
+    xs = rng.integers(0, w, n_flies)
+    brights = rng.uniform(0.4, 1.0, n_flies).astype(np.float32)
+
+    # Scatter firefly points onto canvas
+    canvas = np.zeros(shape, dtype=np.float32)
+    np.maximum.at(canvas, (ys, xs), brights)
+
+    # Single Gaussian blur produces soft glow halos around every point
+    sigma = max(1.5, glow_radius * 0.45)
+    glow = _gauss(canvas, sigma=sigma)
+    gmax = glow.max()
+    if gmax > 1e-7:
+        glow /= gmax
+
+    # Keep sharp cores visible through the glow
+    combined = np.maximum(canvas * 0.7, glow)
+    result = 0.5 + combined * 0.5
+    return _sm_scale(result, sm).astype(np.float32)
+
+def sparkle_shattered(shape, seed, sm, n_shards=600):
+    if sm < 0.001:
+        return _flat(shape)
+    area = max(shape[0] * shape[1], 1)
+    target_px = max(7.0, min(13.0, np.sqrt(area / max(n_shards * 8.0, 1.0))))
+    return _shard_voronoi_spec(
+        shape, seed + 8840, sm,
+        target_px=target_px,
+        min_cells=max(600, int(n_shards)),
+        max_cells=26000,
+        edge_px=0.75,
+        glint_density=0.010,
+        scratch_count=max(80, int(n_shards * 0.25)),
+        name="sparkle_shattered",
+    )
+    """Shattered glass shard sparkle with Voronoi-crack boundaries and per-facet
+    angle-dependent brightness. Fully vectorized: uses cKDTree for facet assignment,
+    angular brightness via dot-product simulation, crack edges via gradient detection."""
+    h, w = shape
+    if sm < 0.001: return _flat(shape)
+    rng = np.random.default_rng(seed + 8840)
+
+    # Generate shard center points
+    n_pts = min(n_shards, 2000)
+    pts_y = rng.uniform(0, h, n_pts).astype(np.float32)
+    pts_x = rng.uniform(0, w, n_pts).astype(np.float32)
+    pts = np.column_stack([pts_y, pts_x])
+
+    # cKDTree for nearest-shard assignment
+    tree = cKDTree(pts)
+    yy, xx = np.mgrid[0:h, 0:w]
+    coords = np.column_stack([yy.ravel(), xx.ravel()])
+    _, labels = tree.query(coords)
+    labels = labels.reshape(shape)
+
+    # Per-shard brightness based on simulated viewing angle
+    shard_angles = rng.uniform(0, np.pi, n_pts).astype(np.float32)
+    shard_brightness = (np.cos(shard_angles) ** 2 * 0.6 + 0.2 +
+                       rng.uniform(0, 0.2, n_pts)).astype(np.float32)
+    shard_brightness = np.clip(shard_brightness, 0.15, 1.0)
+
+    # Map per-shard brightness to image
+    facet_map = shard_brightness[labels]
+
+    # Detect crack edges via label gradient
+    dy_label = np.diff(labels.astype(np.float32), axis=0, prepend=labels[:1, :].astype(np.float32))
+    dx_label = np.diff(labels.astype(np.float32), axis=1, prepend=labels[:, :1].astype(np.float32))
+    edge_mask = ((np.abs(dy_label) > 0.5) | (np.abs(dx_label) > 0.5)).astype(np.float32)
+
+    # Widen crack lines slightly
+    if _CV2_OK:
+        edge_mask = _cv2.dilate(edge_mask, np.ones((2, 2), np.uint8), iterations=1)
+
+    # Cracks are dark (low values), facets are bright
+    result = facet_map * (1.0 - edge_mask * 0.7)
+
+    # Add subtle noise within facets for realism
+    noise = rng.uniform(-0.05, 0.05, shape).astype(np.float32)
+    result = np.clip(result + noise, 0, 1)
+
+    result = 0.5 + (result - 0.5) * 0.9
+    return _sm_scale(_normalize(result), sm).astype(np.float32)
+sparkle_shattered._spb_concept_complete = True
+sparkle_shattered.__doc__ = "Shattered sparkle: tiny glass shard sparkle with dense fractured facets. Targets R=Metallic, G=Roughness, B=Clearcoat."
+
+def sparkle_champagne(shape, seed, sm, density=0.02, bubble_max=4):
+    """Rising champagne bubbles — round sparkle dots clustered vertically.
+    Vectorized: scatter bubble centers, multi-sigma Gaussian blur for size classes."""
+    h, w = shape
+    if sm < 0.001: return _flat(shape)
+    rng = np.random.default_rng(seed + 8850)
+    n_bubbles = min(max(100, int(h * w * density)), 50000)
+
+    # Bubble positions biased toward bottom-up rising columns
+    xs = rng.integers(0, w, n_bubbles)
+    # Bubbles rise: denser at bottom, sparser at top
+    ys = (rng.beta(2.0, 1.2, n_bubbles) * h).astype(np.int32)
+    ys = np.clip(ys, 0, h - 1)
+    brights = rng.uniform(0.4, 1.0, n_bubbles).astype(np.float32)
+
+    # Scatter bubble centers
+    canvas = np.zeros(shape, dtype=np.float32)
+    np.maximum.at(canvas, (ys, xs), brights)
+
+    # Multi-pass blur for different bubble sizes (small, medium, large)
+    small = _gauss(canvas, sigma=max(0.8, bubble_max * 0.25))
+    medium = _gauss(canvas, sigma=max(1.2, bubble_max * 0.5))
+    large = _gauss(canvas, sigma=max(2.0, bubble_max * 0.8))
+
+    # Blend size classes
+    combined = small * 0.4 + medium * 0.35 + large * 0.25
+    cmax = combined.max()
+    if cmax > 1e-7:
+        combined /= cmax
+
+    result = 0.5 + combined * 0.5
+    return _sm_scale(result, sm).astype(np.float32)
+
+def sparkle_comet(shape, seed, sm, n_comets=80, tail_len=30):
+    """Comet tail sparkle — bright head with fading directional tail streak.
+    Vectorized: generate all tail pixel coordinates as arrays, scatter in one pass."""
+    h, w = shape
+    if sm < 0.001: return _flat(shape)
+    rng = np.random.default_rng(seed + 8860)
+
+    # Generate comet parameters
+    cy = rng.integers(0, h, n_comets)
+    cx = rng.integers(0, w, n_comets)
+    angles = rng.uniform(0, 2 * np.pi, n_comets)
+    lengths = np.maximum(5, (tail_len * rng.uniform(0.5, 1.5, n_comets)).astype(np.int32))
+    brights = rng.uniform(0.6, 1.0, n_comets).astype(np.float32)
+    max_len = int(lengths.max())
+
+    # Build all tail points at once: (n_comets, max_len)
+    t_steps = np.arange(max_len, dtype=np.float32)[np.newaxis, :]  # (1, max_len)
+    dy = np.cos(angles)[:, np.newaxis]  # (n_comets, 1)
+    dx = np.sin(angles)[:, np.newaxis]
+
+    all_py = (cy[:, np.newaxis] + dy * t_steps).astype(np.int32)
+    all_px = (cx[:, np.newaxis] + dx * t_steps).astype(np.int32)
+
+    # Fade mask: (n_comets, max_len)
+    tail_frac = t_steps / lengths[:, np.newaxis].astype(np.float32)
+    fade = brights[:, np.newaxis] * np.clip(1.0 - tail_frac, 0, 1) ** 1.5
+
+    # Valid mask: within bounds and within each comet's tail length
+    valid = ((all_py >= 0) & (all_py < h) & (all_px >= 0) & (all_px < w) &
+             (t_steps < lengths[:, np.newaxis]))
+
+    # Flatten and scatter
+    py_flat = all_py[valid]
+    px_flat = all_px[valid]
+    fade_flat = fade[valid].astype(np.float32)
+
+    canvas = np.zeros(shape, dtype=np.float32)
+    np.maximum.at(canvas, (py_flat, px_flat), fade_flat)
+
+    # Soft glow blur
+    result = _gauss(canvas, sigma=0.8)
+    rmax = result.max()
+    if rmax > 1e-7:
+        result /= rmax
+
+    result = 0.5 + result * 0.5
+    return _sm_scale(result, sm).astype(np.float32)
+
+def sparkle_galaxy_swirl(shape, seed, sm, n_arms=3, density=0.008):
+    """Spiral galaxy sparkle — logarithmic spiral arms dense with star points."""
+    h, w = shape
+    if sm < 0.001: return _flat(shape)
+    rng = np.random.RandomState(seed + 8870)
+    y, x = np.mgrid[0:h, 0:w]
+    cy, cx = h * 0.5, w * 0.5
+    dy, dx = (y - cy).astype(np.float32), (x - cx).astype(np.float32)
+    r = np.sqrt(dy ** 2 + dx ** 2) + 1e-8
+    theta = np.arctan2(dy, dx)
+    arm_val = np.zeros(shape, dtype=np.float32)
+    for i in range(n_arms):
+        offset = i * 2 * np.pi / n_arms
+        spiral = theta - 0.4 * np.log(r / (min(h, w) * 0.1) + 1e-8) + offset
+        arm_val += np.exp(-((np.sin(spiral) * r / (min(h, w) * 0.3)) ** 2) * 8)
+    arm_norm = np.clip(arm_val / max(float(arm_val.max()), 1e-8), 0, 1)
+    raw = rng.uniform(0, 1, shape).astype(np.float32)
+    threshold = 1.0 - density * (0.3 + arm_norm * 3.0)
+    sparkle = np.clip((raw - threshold) / 0.02, 0, 1)
+    result = 0.5 + sparkle * 0.5
+    return _sm_scale(result, sm).astype(np.float32)
+
+def sparkle_electric_field(shape, seed, sm, density=0.01):
+    """Electric field sparkle — sparkle density follows electric field lines between charges."""
+    h, w = shape
+    if sm < 0.001: return _flat(shape)
+    rng = np.random.RandomState(seed + 8880)
+    y, x = np.mgrid[0:h, 0:w]
+    yf, xf = y.astype(np.float32), x.astype(np.float32)
+    field = np.zeros(shape, dtype=np.float32)
+    n_charges = rng.randint(4, 8)
+    for _ in range(n_charges):
+        cy, cx = rng.uniform(0.1, 0.9) * h, rng.uniform(0.1, 0.9) * w
+        sign = rng.choice([-1.0, 1.0])
+        r2 = (yf - cy) ** 2 + (xf - cx) ** 2 + 100
+        field += sign / np.sqrt(r2)
+    field_norm = (field - field.min()) / (field.max() - field.min() + 1e-8)
+    grad_y = np.abs(np.diff(field_norm, axis=0, prepend=field_norm[:1, :]))
+    grad_x = np.abs(np.diff(field_norm, axis=1, prepend=field_norm[:, :1]))
+    intensity = np.clip((grad_y + grad_x) * 8, 0, 1)
+    raw = rng.uniform(0, 1, shape).astype(np.float32)
+    threshold = 1.0 - density * (0.2 + intensity * 4.0)
+    sparkle = np.clip((raw - threshold) / 0.02, 0, 1)
+    result = 0.5 + sparkle * 0.5
+    return _sm_scale(result, sm).astype(np.float32)
+
+
+# ============================================================================
+# RACING & AUTOMOTIVE SPEC PATTERNS — 8 new effects (v6.2)
+# ============================================================================
+
+def tire_rubber_transfer(shape, seed, sm, streak_count=40, arc_strength=0.3):
+    """Dark rubber marks from tire contact — parallel arc streaks with particulate
+    roughness embedded in the rubber deposit. Realistic tire-scuff spec overlay."""
+    h, w = shape
+    if sm < 0.001: return _flat(shape)
+    rng = np.random.default_rng(seed + 9100)
+
+    result = np.full(shape, 0.5, dtype=np.float32)
+    yy, xx = np.mgrid[0:h, 0:w]
+    yf = yy.astype(np.float32) / max(h, 1)
+    xf = xx.astype(np.float32) / max(w, 1)
+
+    # Rubber transfer arcs (curved streaks like tire contact patches)
+    for _ in range(streak_count):
+        cx = rng.uniform(0.1, 0.9)
+        cy = rng.uniform(0.2, 0.8)
+        angle = rng.uniform(-0.3, 0.3)
+        width = rng.uniform(0.008, 0.025)
+        curve = rng.uniform(-arc_strength, arc_strength)
+        dx = xf - cx
+        dy = yf - cy
+        rotx = dx * np.cos(angle) + dy * np.sin(angle)
+        roty = -dx * np.sin(angle) + dy * np.cos(angle)
+        arc_y = roty - curve * rotx ** 2
+        streak = np.exp(-arc_y ** 2 / (2 * width ** 2)) * np.exp(-rotx ** 2 / 0.08)
+        intensity = rng.uniform(0.3, 0.8)
+        result -= streak * intensity * 0.3  # rubber is dark (lowers values)
+
+    # Particulate roughness in deposit areas
+    noise = rng.uniform(-0.04, 0.04, shape).astype(np.float32)
+    deposit_mask = np.clip((0.5 - result) * 5, 0, 1)
+    result += noise * deposit_mask
+
+    result = np.clip(result, 0, 1)
+    return _sm_scale(_normalize(result), sm).astype(np.float32)
+
+
+def vinyl_wrap_texture(shape, seed, sm, channel_spacing=80, bubble_density=0.001):
+    """Subtle vinyl wrap film texture with air-channel micro-grooves and tiny
+    trapped air bubble imperfections. Cast vinyl surface character."""
+    h, w = shape
+    if sm < 0.001: return _flat(shape)
+    rng = np.random.default_rng(seed + 9110)
+
+    yy = np.arange(h, dtype=np.float32)
+    xx = np.arange(w, dtype=np.float32)
+
+    # Air-release channel micro-grooves (barely visible parallel lines)
+    phase = rng.uniform(0, 2 * np.pi)
+    groove_y = np.sin(yy * 2 * np.pi / channel_spacing + phase) * 0.5 + 0.5
+    groove_x = np.sin(xx * 2 * np.pi / (channel_spacing * 0.7) + phase * 1.3) * 0.5 + 0.5
+    channels = groove_y[:, np.newaxis] * 0.6 + groove_x[np.newaxis, :] * 0.4
+    channels = channels * 0.15  # very subtle
+
+    # Vinyl surface texture (slightly different orange-peel from paint)
+    # Added 4th & 5th octaves so the surface doesn't read as fake/over-smooth
+    # at higher canvas resolutions where 12-px octave is barely perceptible.
+    vinyl_tex = multi_scale_noise(shape, [3, 6, 12, 24, 48],
+                                  [0.42, 0.26, 0.16, 0.10, 0.06], seed + 9111)
+    vinyl_tex = _normalize(vinyl_tex) * 0.12
+
+    # Trapped air bubbles (tiny bright dots)
+    n_bubbles = min(max(20, int(h * w * bubble_density)), 5000)
+    by = rng.integers(0, h, n_bubbles)
+    bx = rng.integers(0, w, n_bubbles)
+    bubble_canvas = np.zeros(shape, dtype=np.float32)
+    np.maximum.at(bubble_canvas, (by, bx), rng.uniform(0.5, 1.0, n_bubbles).astype(np.float32))
+    bubble_canvas = _gauss(bubble_canvas, sigma=1.5)
+    bmax = bubble_canvas.max()
+    if bmax > 1e-7:
+        bubble_canvas = (bubble_canvas / bmax) * 0.2
+
+    result = 0.5 + channels - vinyl_tex * 0.5 + bubble_canvas
+    result = np.clip(result, 0, 1)
+    return _sm_scale(_normalize(result), sm).astype(np.float32)
+
+
+def paint_drip_edge(shape, seed, sm, edge_fraction=0.25, drip_count=30):
+    """Thick paint/clearcoat accumulation at panel bottom edges — sag curtain
+    with horizontal drip ridges. High clearcoat buildup zone."""
+    h, w = shape
+    if sm < 0.001: return _flat(shape)
+    rng = np.random.default_rng(seed + 9120)
+
+    yy = np.arange(h, dtype=np.float32) / max(h, 1)
+    xx = np.arange(w, dtype=np.float32) / max(w, 1)
+
+    # Gravity sag gradient — thicker at bottom
+    edge_start = 1.0 - edge_fraction
+    sag = np.clip((yy - edge_start) / edge_fraction, 0, 1) ** 1.5
+    sag_2d = sag[:, np.newaxis] * np.ones(w, dtype=np.float32)[np.newaxis, :]
+
+    # Horizontal drip ridges (curtain lines)
+    ridge_sum = np.zeros(shape, dtype=np.float32)
+    for _ in range(drip_count):
+        freq = rng.uniform(40, 120)
+        phase = rng.uniform(0, 2 * np.pi)
+        amp = rng.uniform(0.1, 0.4)
+        ridge = np.sin(yy * 2 * np.pi * freq / h + phase) * 0.5 + 0.5
+        ridge_2d = ridge[:, np.newaxis] * np.ones(w, dtype=np.float32)[np.newaxis, :]
+        ridge_sum += ridge_2d * amp
+
+    ridge_sum = _normalize(ridge_sum) * sag_2d
+
+    # Column-wise waviness (paint doesn't sag perfectly evenly)
+    col_warp = np.sin(xx * rng.uniform(4, 12) * np.pi + rng.uniform(0, 2 * np.pi))
+    col_mod = 0.8 + col_warp * 0.2
+    ridge_sum *= col_mod[np.newaxis, :]
+
+    # High values = thick clearcoat buildup
+    result = 0.5 + ridge_sum * 0.4
+    result = np.clip(result, 0, 1)
+    return _sm_scale(_normalize(result), sm).astype(np.float32)
+
+
+def racing_tape_residue(shape, seed, sm, num_strips=6, strip_width_frac=0.04):
+    """Adhesive residue pattern from removed sponsor tape / racing tape.
+    Rectangular boundaries with sticky rough film inside, clean paint outside."""
+    h, w = shape
+    if sm < 0.001: return _flat(shape)
+    rng = np.random.default_rng(seed + 9130)
+
+    yy, xx = np.mgrid[0:h, 0:w]
+    yf = yy.astype(np.float32) / max(h, 1)
+    xf = xx.astype(np.float32) / max(w, 1)
+    result = np.full(shape, 0.5, dtype=np.float32)
+
+    for _ in range(num_strips):
+        # Random rectangular tape region
+        x0 = rng.uniform(0.05, 0.7)
+        y0 = rng.uniform(0.05, 0.7)
+        tw = rng.uniform(0.08, 0.35)
+        th = rng.uniform(strip_width_frac * 0.5, strip_width_frac * 2.0)
+
+        # Soft rectangular mask
+        mx = np.clip((xf - x0) / 0.005, 0, 1) * np.clip((x0 + tw - xf) / 0.005, 0, 1)
+        my = np.clip((yf - y0) / 0.005, 0, 1) * np.clip((y0 + th - yf) / 0.005, 0, 1)
+        mask = mx * my
+
+        # Residue: slightly rough, slightly less glossy (lower clearcoat)
+        residue_noise = rng.uniform(-0.08, 0.08, shape).astype(np.float32)
+        residue_base = rng.uniform(-0.15, -0.05)  # slightly darker/rougher
+        result += mask * (residue_base + residue_noise * 0.5)
+
+        # Raised edge where tape was (slightly brighter ridge)
+        edge_y = np.exp(-((yf - y0) ** 2) / (0.002 ** 2)) + np.exp(-((yf - y0 - th) ** 2) / (0.002 ** 2))
+        edge_x = np.exp(-((xf - x0) ** 2) / (0.002 ** 2)) + np.exp(-((xf - x0 - tw) ** 2) / (0.002 ** 2))
+        edge = (edge_y * mx + edge_x * my) * 0.15
+        result += edge
+
+    result = np.clip(result, 0, 1)
+    return _sm_scale(_normalize(result), sm).astype(np.float32)
+
+
+def sponsor_deboss(shape, seed, sm, num_logos=4, depth=0.3):
+    """Pressed-in logo effect — subtle roughness change from embossed/debossed
+    impressions in the clearcoat surface. Catches light at pressed edges."""
+    h, w = shape
+    if sm < 0.001: return _flat(shape)
+    rng = np.random.default_rng(seed + 9140)
+
+    yy, xx = np.mgrid[0:h, 0:w]
+    yf = yy.astype(np.float32) / max(h, 1)
+    xf = xx.astype(np.float32) / max(w, 1)
+    result = np.full(shape, 0.5, dtype=np.float32)
+
+    for _ in range(num_logos):
+        # Random elliptical stamp region
+        cx = rng.uniform(0.15, 0.85)
+        cy = rng.uniform(0.15, 0.85)
+        rx = rng.uniform(0.04, 0.12)
+        ry = rng.uniform(0.02, 0.06)
+        angle = rng.uniform(0, np.pi)
+
+        dx = xf - cx
+        dy = yf - cy
+        rotx = dx * np.cos(angle) + dy * np.sin(angle)
+        roty = -dx * np.sin(angle) + dy * np.cos(angle)
+        dist = (rotx / rx) ** 2 + (roty / ry) ** 2
+
+        # Stamp interior: depressed (slightly different roughness)
+        interior = np.clip(1.0 - dist, 0, 1)
+        interior = interior ** 0.5  # soften edges
+
+        # Edge highlight (catches light at pressed boundary)
+        edge_ring = np.exp(-((np.sqrt(dist) - 1.0) ** 2) / 0.02)
+
+        # Internal texture (simulated text/logo detail)
+        # Bumped to 4 octaves so logo interiors have visible micro-detail
+        # rather than reading as a featureless oval at high resolution.
+        internal_noise = multi_scale_noise(shape, [3, 6, 12, 24],
+                                           [0.45, 0.28, 0.17, 0.10],
+                                           seed + 9141 + _)
+        internal_detail = _normalize(internal_noise) * interior * 0.3
+
+        result += interior * (-depth * 0.3) + edge_ring * 0.2 + internal_detail * 0.15
+
+    result = np.clip(result, 0, 1)
+    return _sm_scale(_normalize(result), sm).astype(np.float32)
+
+
+def heat_discoloration(shape, seed, sm, num_zones=5, max_radius=0.2):
+    """Heat-treated metal color zones — like exhaust manifold bluing or
+    weld heat-affected zones. Concentric temperature gradient bands."""
+    h, w = shape
+    if sm < 0.001: return _flat(shape)
+    rng = np.random.default_rng(seed + 9150)
+
+    yy, xx = np.mgrid[0:h, 0:w]
+    yf = yy.astype(np.float32) / max(h, 1)
+    xf = xx.astype(np.float32) / max(w, 1)
+    result = np.full(shape, 0.5, dtype=np.float32)
+
+    for _ in range(num_zones):
+        cx = rng.uniform(0.1, 0.9)
+        cy = rng.uniform(0.1, 0.9)
+        radius = rng.uniform(0.05, max_radius)
+
+        dist = np.sqrt((xf - cx) ** 2 + (yf - cy) ** 2)
+        norm_dist = dist / max(radius, 0.01)
+
+        # Temperature-dependent zones (like heat coloring on steel)
+        # Center = hottest (high metallic), rings outward = cooling zones
+        zone1 = np.exp(-norm_dist ** 2 * 2.0)  # white-hot center
+        zone2 = np.exp(-((norm_dist - 0.5) ** 2) * 8.0)  # straw yellow ring
+        zone3 = np.exp(-((norm_dist - 0.8) ** 2) * 12.0)  # blue ring
+        zone4 = np.exp(-((norm_dist - 1.1) ** 2) * 15.0)  # purple ring
+
+        # Each zone affects roughness differently
+        heat_val = zone1 * 0.9 + zone2 * 0.6 + zone3 * 0.35 + zone4 * 0.2
+        result += heat_val * 0.25
+
+    # Add micro-scale oxide texture
+    oxide_noise = multi_scale_noise(shape, [2, 5, 10], [0.4, 0.35, 0.25], seed + 9151)
+    oxide = (_normalize(oxide_noise) - 0.5) * 0.08
+    result += oxide
+
+    result = np.clip(result, 0, 1)
+    return _sm_scale(_normalize(result), sm).astype(np.float32)
+
+
+def salt_spray_corrosion(shape, seed, sm, pit_density=0.015, cluster_count=15):
+    """Fine salt-air corrosion pitting — coastal/marine environment surface
+    degradation with clustered micro-pits and halo staining."""
+    h, w = shape
+    if sm < 0.001: return _flat(shape)
+    rng = np.random.default_rng(seed + 9160)
+
+    # Base: slightly roughened from salt exposure
+    base_noise = multi_scale_noise(shape, [8, 20, 40], [0.3, 0.4, 0.3], seed + 9161)
+    base = _normalize(base_noise) * 0.15
+
+    # Corrosion cluster zones (salt collects in certain areas)
+    yf = np.arange(h, dtype=np.float32) / max(h, 1)
+    xf = np.arange(w, dtype=np.float32) / max(w, 1)
+    yy, xx = np.meshgrid(yf, xf, indexing='ij')
+    cluster_map = np.zeros(shape, dtype=np.float32)
+    for _ in range(cluster_count):
+        cx = rng.uniform(0.05, 0.95)
+        cy = rng.uniform(0.05, 0.95)
+        sr = rng.uniform(0.03, 0.1)
+        cluster_map += np.exp(-((xx - cx) ** 2 + (yy - cy) ** 2) / (2 * sr ** 2))
+    cluster_map = _normalize(cluster_map)
+
+    # Scatter corrosion pits (denser in cluster zones)
+    n_pits = min(max(200, int(h * w * pit_density)), 60000)
+    py = rng.integers(0, h, n_pits)
+    px = rng.integers(0, w, n_pits)
+    pit_intensity = rng.uniform(0.3, 1.0, n_pits).astype(np.float32)
+
+    # Pits are more likely to survive in cluster zones
+    keep_prob = 0.2 + cluster_map[py, px] * 0.8
+    keep = rng.uniform(0, 1, n_pits) < keep_prob
+    py, px, pit_intensity = py[keep], px[keep], pit_intensity[keep]
+
+    pit_canvas = np.zeros(shape, dtype=np.float32)
+    np.maximum.at(pit_canvas, (py, px), pit_intensity)
+
+    # Pit halos (staining around pits)
+    halo = _gauss(pit_canvas, sigma=2.5)
+    hmax = halo.max()
+    if hmax > 1e-7:
+        halo /= hmax
+
+    # Pits are rough (high roughness = low spec value in some channels)
+    result = 0.5 - base - pit_canvas * 0.3 - halo * 0.15
+    result = np.clip(result, 0, 1)
+    return _sm_scale(_normalize(result), sm).astype(np.float32)
+
+
+def track_grime(shape, seed, sm, splatter_density=0.005, buildup_zones=8):
+    """Real racing dirt/rubber/oil buildup pattern — concentrated at leading
+    edges and wheel wells, with splatter spray and embedded rubber particulate."""
+    h, w = shape
+    if sm < 0.001: return _flat(shape)
+    rng = np.random.default_rng(seed + 9170)
+
+    yf = np.arange(h, dtype=np.float32) / max(h, 1)
+    xf = np.arange(w, dtype=np.float32) / max(w, 1)
+    yy, xx = np.meshgrid(yf, xf, indexing='ij')
+
+    # Grime buildup zones (heavier at front/bottom of panels)
+    buildup = np.zeros(shape, dtype=np.float32)
+    for _ in range(buildup_zones):
+        cx = rng.uniform(0.1, 0.9)
+        cy = rng.uniform(0.3, 0.95)  # bias toward bottom
+        sx = rng.uniform(0.08, 0.25)
+        sy = rng.uniform(0.05, 0.15)
+        buildup += np.exp(-((xx - cx) ** 2 / (2 * sx ** 2) + (yy - cy) ** 2 / (2 * sy ** 2)))
+    buildup = _normalize(buildup)
+
+    # Vertical gradient: more grime lower on the panel
+    gravity_bias = np.clip(yf * 1.2 - 0.1, 0, 1) ** 0.8
+    buildup *= gravity_bias[:, np.newaxis] * 0.7 + 0.3
+
+    # Splatter spray pattern (rubber/oil droplets flung by tires)
+    n_splats = min(max(100, int(h * w * splatter_density)), 40000)
+    sy = rng.integers(0, h, n_splats)
+    sx = rng.integers(0, w, n_splats)
+    splat_int = rng.uniform(0.2, 0.8, n_splats).astype(np.float32)
+
+    splat_canvas = np.zeros(shape, dtype=np.float32)
+    np.maximum.at(splat_canvas, (sy, sx), splat_int)
+    splat_blur = _gauss(splat_canvas, sigma=1.8)
+    smax = splat_blur.max()
+    if smax > 1e-7:
+        splat_blur /= smax
+
+    # Embedded particulate texture
+    grit = multi_scale_noise(shape, [2, 4, 8], [0.5, 0.3, 0.2], seed + 9171)
+    grit = _normalize(grit) * buildup * 0.2
+
+    # Grime darkens and roughens the surface
+    result = 0.5 - buildup * 0.25 - splat_blur * 0.15 - grit
+    result = np.clip(result, 0, 1)
+    return _sm_scale(_normalize(result), sm).astype(np.float32)
+
+
+# ============================================================================
+# v6.2.x — VALIDATION HELPER + NEW SPONSOR/VINYL/RACE-WEAR/PREMIUM PATTERNS
+# ============================================================================
+#
+# Pattern function signature (all spec patterns in this module):
+#   def pattern_name(shape, seed, sm, **params) -> np.ndarray
+#     - shape : (h, w) tuple   — output dimensions in pixels
+#     - seed  : int            — RNG seed for reproducibility
+#     - sm    : float [0..1]   — strength multiplier; sm=0 returns flat 0.5
+#     - **params               — pattern-specific tuning args (see each fn)
+#
+# Returns: float32 (h, w) array in [0, 1]. Values are MODULATION values; the
+# composer maps them onto a target spec channel (R/G/B) honoring iron rules:
+#   CC (B) >= 16 always       → composer enforces post-mix
+#   R >= 15 for non-chrome    → composer enforces post-mix
+# Patterns themselves output normalized [0,1] modulation; the composer applies
+# them to the spec channel via _sm_scale-aware blending.
+# ============================================================================
+
+
+def _validate_spec_output(arr, name="pattern"):
+    """
+    Lightweight runtime sanity check for spec pattern outputs.
+
+    Asserts:
+      - arr is a numpy ndarray
+      - dtype is float32 (canonical for the spec composer)
+      - shape is 2-D (h, w) — single-channel modulation map
+      - finite (no NaN / inf) — would corrupt the composer's blend math
+      - value range is within [0, 1] (with tiny floating-point slack)
+
+    Use as the final line of any new pattern function:
+        return _validate_spec_output(result, "my_pattern_name")
+
+    Raises:
+        AssertionError if any invariant is violated. The message includes the
+        pattern name to make debugging in the spec_patterns library trivial.
+    """
+    assert isinstance(arr, np.ndarray), f"{name}: not an ndarray ({type(arr)})"
+    assert arr.dtype == np.float32, f"{name}: expected float32, got {arr.dtype}"
+    assert arr.ndim == 2, f"{name}: expected 2-D (h,w), got shape {arr.shape}"
+    # Cheap finite check — uses .min/.max instead of full isfinite for speed
+    amin, amax = float(arr.min()), float(arr.max())
+    assert amin == amin and amax == amax, f"{name}: contains NaN"  # NaN != NaN
+    assert -1e-4 <= amin <= 1.0 + 1e-4, f"{name}: min out of range ({amin})"
+    assert -1e-4 <= amax <= 1.0 + 1e-4, f"{name}: max out of range ({amax})"
+    return arr
+
+
+# ----------------------------------------------------------------------------
+# SPONSOR & VINYL (5 patterns) — vinyl_seam, decal_lift_edge,
+# sponsor_emboss_v2, sticker_bubble_film, vinyl_stretched
+# ----------------------------------------------------------------------------
+
+def vinyl_seam(shape, seed, sm, num_seams=5, seam_width_frac=0.0025,
+               angle_jitter=0.15, **kwargs):
+    """
+    Vinyl panel seam lines — long thin bright ridges where two vinyl sheets
+    meet. Targets G=Roughness (the seam catches light at a sharp edge).
+    A few high-contrast lines at slight angle variations, with a faint
+    "halo" of slightly raised vinyl on each side from heat-gun finish.
+
+    Params:
+      num_seams          — count of seam lines across the panel.
+      seam_width_frac    — seam thickness as fraction of min(h,w).
+      angle_jitter       — radians; how non-horizontal each seam may be.
+    """
+    h, w = shape
+    if sm < 0.001:
+        return _flat(shape)
+    rng = np.random.default_rng(seed + 9300)
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+    yf = yy / max(h, 1)
+    xf = xx / max(w, 1)
+    seam_w = max(seam_width_frac, 1.0 / max(min(h, w), 1))
+
+    result = np.full(shape, 0.5, dtype=np.float32)
+    for _ in range(num_seams):
+        y0 = rng.uniform(0.05, 0.95)
+        ang = rng.uniform(-angle_jitter, angle_jitter)
+        # signed distance from a (mostly horizontal) line
+        d = (yf - y0) - ang * (xf - 0.5)
+        # Sharp bright crest
+        crest = np.exp(-(d * d) / (2.0 * seam_w * seam_w))
+        # Wider faint halo (heat-gun softens edges of the vinyl on either side)
+        halo = np.exp(-(d * d) / (2.0 * (seam_w * 6.0) ** 2)) * 0.18
+        result += (crest * 0.45 + halo) * rng.uniform(0.85, 1.0)
+
+    result = np.clip(result, 0.0, 1.0)
+    out = _sm_scale(_normalize(result), sm).astype(np.float32)
+    return _validate_spec_output(out, "vinyl_seam")
+
+
+def decal_lift_edge(shape, seed, sm, num_decals=4, edge_softness=0.004,
+                    lift_strength=0.55, **kwargs):
+    """
+    Sponsor/decal edges that have started lifting — bright rim around a
+    rectangular sticker boundary, with a subtle interior shading that's
+    slightly different from surrounding paint. Targets G=Roughness primarily
+    (the lifted edge has both micro-air and adhesive halo).
+
+    Params:
+      num_decals     — number of decal regions.
+      edge_softness  — fractional softness of the rectangle border feathering.
+      lift_strength  — how aggressively the rim brightens vs interior.
+    """
+    h, w = shape
+    if sm < 0.001:
+        return _flat(shape)
+    rng = np.random.default_rng(seed + 9301)
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+    yf = yy / max(h, 1)
+    xf = xx / max(w, 1)
+    result = np.full(shape, 0.5, dtype=np.float32)
+
+    eps = max(edge_softness, 1.0 / max(min(h, w), 1))
+    for _ in range(num_decals):
+        x0 = rng.uniform(0.05, 0.55)
+        y0 = rng.uniform(0.05, 0.55)
+        rw = rng.uniform(0.15, 0.40)
+        rh = rng.uniform(0.10, 0.30)
+        # Distance to the nearest edge of the rectangle (inside positive)
+        dx_in = np.minimum(xf - x0, x0 + rw - xf)
+        dy_in = np.minimum(yf - y0, y0 + rh - yf)
+        inside = (dx_in > 0) & (dy_in > 0)
+        d_edge = np.minimum(np.abs(dx_in), np.abs(dy_in))
+        rim = np.exp(-(d_edge * d_edge) / (2.0 * eps * eps))
+        # Brighten only along the rectangle border (lifted adhesive ridge)
+        result += rim * lift_strength * 0.25 * inside.astype(np.float32)
+        # Slightly de-gloss the interior by a small amount
+        result -= inside.astype(np.float32) * rng.uniform(0.02, 0.06)
+
+    # Random micro-noise inside lifted halos (adhesive grit)
+    grit = rng.uniform(-0.025, 0.025, shape).astype(np.float32)
+    result += grit
+    result = np.clip(result, 0.0, 1.0)
+    out = _sm_scale(_normalize(result), sm).astype(np.float32)
+    return _validate_spec_output(out, "decal_lift_edge")
+
+
+def sponsor_emboss_v2(shape, seed, sm, num_logos=6, base_size=0.10,
+                      relief=0.35, **kwargs):
+    """
+    V2 of the sponsor stamp / emboss pattern — random circular and rectangular
+    logo footprints with a clear inner/outer relief edge using a signed
+    distance falloff. Targets G=Roughness + B=Clearcoat (embossed boundary).
+
+    Improves on sponsor_deboss by:
+      - mixing two logo footprint shapes (circle + rounded rect)
+      - using SDF-based relief for cleaner anti-aliased edges
+      - subtle radial sheen across the logo face (shallow stamp impression)
+
+    Params:
+      num_logos  — total stamp count.
+      base_size  — fractional radius/half-extent for logos.
+      relief     — depth of the embossed boundary highlight.
+    """
+    h, w = shape
+    if sm < 0.001:
+        return _flat(shape)
+    rng = np.random.default_rng(seed + 9302)
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+    yf = yy / max(h, 1)
+    xf = xx / max(w, 1)
+    result = np.full(shape, 0.5, dtype=np.float32)
+
+    edge_w = 0.005
+    for _ in range(num_logos):
+        cx = rng.uniform(0.10, 0.90)
+        cy = rng.uniform(0.10, 0.90)
+        r = base_size * rng.uniform(0.5, 1.4)
+        if rng.random() < 0.5:
+            # Circular logo SDF
+            d = np.sqrt((xf - cx) ** 2 + (yf - cy) ** 2) - r
+        else:
+            # Rounded-rectangle SDF
+            rh_ = r * rng.uniform(0.55, 1.15)
+            rw_ = r * rng.uniform(0.85, 1.45)
+            ax = np.maximum(np.abs(xf - cx) - rw_, 0.0)
+            ay = np.maximum(np.abs(yf - cy) - rh_, 0.0)
+            d = np.sqrt(ax * ax + ay * ay)
+            inside = ((np.abs(xf - cx) <= rw_) & (np.abs(yf - cy) <= rh_))
+            d = np.where(inside, -np.minimum(rw_ - np.abs(xf - cx),
+                                             rh_ - np.abs(yf - cy)), d)
+        # Bright rim where |d| ~ 0; slight darkening inside
+        rim = np.exp(-(d * d) / (2.0 * edge_w * edge_w)) * relief
+        face = np.where(d < 0,
+                        -0.06 * (1.0 - np.clip(-d / max(r, 1e-3), 0, 1)),
+                        0.0)
+        result += rim + face.astype(np.float32)
+
+    result = np.clip(result, 0.0, 1.0)
+    out = _sm_scale(_normalize(result), sm).astype(np.float32)
+    return _validate_spec_output(out, "sponsor_emboss_v2")
+
+
+def sticker_bubble_film(shape, seed, sm, bubble_density=0.0009,
+                        max_radius=10, **kwargs):
+    """
+    Trapped air bubbles under sticker / vinyl film — soft circular dimples
+    each with a small bright glint and a Gaussian dim halo (the trapped air
+    interface). Targets G=Roughness (bubble surface is smoother than
+    surrounding film, so it reads BRIGHTER in roughness inversion).
+
+    Params:
+      bubble_density — bubbles per pixel (clamped to a max).
+      max_radius     — largest bubble radius in pixels.
+    """
+    h, w = shape
+    if sm < 0.001:
+        return _flat(shape)
+    rng = np.random.default_rng(seed + 9303)
+    n = int(np.clip(h * w * bubble_density, 12, 12000))
+    by = rng.integers(0, h, n)
+    bx = rng.integers(0, w, n)
+    radii = rng.integers(2, max(max_radius, 3) + 1, n)
+    intensities = rng.uniform(0.4, 1.0, n).astype(np.float32)
+
+    canvas = np.zeros(shape, dtype=np.float32)
+    np.add.at(canvas, (by, bx), intensities)
+    # Two-scale glow: tiny bright glint + larger soft halo
+    glint = _gauss(canvas, sigma=1.2)
+    halo = _gauss(canvas, sigma=max(2.0, max_radius * 0.5))
+    g_max = max(glint.max(), 1e-7)
+    h_max = max(halo.max(), 1e-7)
+    bubbles = (glint / g_max) * 0.45 + (halo / h_max) * 0.30
+
+    # Subtle non-bubble film texture so the surrounding isn't dead-flat
+    film = multi_scale_noise(shape, [4, 8, 16], [0.5, 0.3, 0.2], seed + 9304)
+    film = (_normalize(film) - 0.5) * 0.10
+
+    result = 0.5 + film + bubbles
+    result = np.clip(result, 0.0, 1.0)
+    out = _sm_scale(_normalize(result), sm).astype(np.float32)
+    return _validate_spec_output(out, "sticker_bubble_film")
+
+
+def vinyl_stretched(shape, seed, sm, stretch_freq=18.0, stretch_amp=0.30,
+                    streak_density=0.6, **kwargs):
+    """
+    Vinyl wrap that's been stretched over a complex curve — directional
+    micro-streaks running along the stretch axis with periodic thickness
+    variation as the film thinned and thickened across the contour.
+    Targets G=Roughness (stretched film reads as fine grain along axis).
+
+    Params:
+      stretch_freq    — wave count of thickness ridges along the stretch axis.
+      stretch_amp     — peak modulation amplitude for the ridges.
+      streak_density  — strength of the high-freq grain on top of the ridges.
+    """
+    h, w = shape
+    if sm < 0.001:
+        return _flat(shape)
+    rng = np.random.default_rng(seed + 9305)
+    angle = rng.uniform(-0.6, 0.6)
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+    # Project coordinates along the (rotated) stretch axis
+    u = (xx / max(w, 1)) * np.cos(angle) + (yy / max(h, 1)) * np.sin(angle)
+    v = -(xx / max(w, 1)) * np.sin(angle) + (yy / max(h, 1)) * np.cos(angle)
+
+    # Periodic ridges (thinning/thickening as film stretched)
+    ridges = (np.sin(u * stretch_freq * np.pi * 2.0) * 0.5 + 0.5) * stretch_amp
+
+    # Fine grain along the stretch axis (perpendicular = v)
+    grain_seed = rng.uniform(-1, 1, size=h).astype(np.float32)
+    # Reproject: grain modulated along the perpendicular axis
+    grain_idx = np.clip(((v - v.min()) / max(v.max() - v.min(), 1e-6) *
+                         (h - 1)).astype(np.int32), 0, h - 1)
+    grain = grain_seed[grain_idx] * streak_density * 0.18
+
+    # Thickness halo (smooth low-freq variation)
+    bg = multi_scale_noise(shape, [10, 22], [0.6, 0.4], seed + 9306)
+    bg = (_normalize(bg) - 0.5) * 0.10
+
+    result = 0.5 + ridges - 0.15 + grain + bg
+    result = np.clip(result, 0.0, 1.0)
+    out = _sm_scale(_normalize(result), sm).astype(np.float32)
+    return _validate_spec_output(out, "vinyl_stretched")
+
+
+# ----------------------------------------------------------------------------
+# RACE WEAR (5 patterns) — tire_smoke_residue, brake_dust_buildup,
+# oil_streak_panel, gravel_chip_field, wax_streak_polish
+# ----------------------------------------------------------------------------
+
+def tire_smoke_residue(shape, seed, sm, num_passes=5, smoke_strength=0.45,
+                       **kwargs):
+    """
+    Hazy tire smoke residue — soft directional smudges left after burnouts
+    or hard brake events. Multiple low-frequency Gaussian-blurred ribbons
+    overlaid at slight angles, generally BIASED to bottom of panel.
+    Targets G=Roughness (haze raises roughness, dulls reflection).
+
+    Params:
+      num_passes      — number of overlapping smoke ribbons.
+      smoke_strength  — how much the residue darkens / dulls.
+    """
+    h, w = shape
+    if sm < 0.001:
+        return _flat(shape)
+    rng = np.random.default_rng(seed + 9310)
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+    yf = yy / max(h, 1)
+    xf = xx / max(w, 1)
+    result = np.zeros(shape, dtype=np.float32)
+    for _ in range(num_passes):
+        cy = rng.uniform(0.45, 0.95)
+        cx = rng.uniform(0.0, 1.0)
+        ang = rng.uniform(-0.25, 0.25)
+        wide = rng.uniform(0.10, 0.35)
+        rotx = (xf - cx) * np.cos(ang) - (yf - cy) * np.sin(ang)
+        roty = (xf - cx) * np.sin(ang) + (yf - cy) * np.cos(ang)
+        ribbon = np.exp(-(roty * roty) / (2.0 * wide * wide))
+        ribbon *= np.exp(-(rotx * rotx) / 0.18)  # finite extent along axis
+        result += ribbon * rng.uniform(0.6, 1.0)
+
+    haze = _gauss(result, sigma=4.0)
+    h_max = max(haze.max(), 1e-7)
+    haze /= h_max
+
+    # Embedded micro-particulate (carbon flecks)
+    grit = multi_scale_noise(shape, [1.5, 3, 6], [0.5, 0.3, 0.2], seed + 9311)
+    grit = (_normalize(grit) - 0.5) * 0.08
+
+    out = 0.5 - haze * smoke_strength + grit * haze
+    out = np.clip(out, 0.0, 1.0).astype(np.float32)
+    out = _sm_scale(_normalize(out), sm).astype(np.float32)
+    return _validate_spec_output(out, "tire_smoke_residue")
+
+
+def brake_dust_buildup(shape, seed, sm, vertical_bias=0.85,
+                       cluster_count=20, **kwargs):
+    """
+    Brake-dust accumulation — fine particulate concentrated in lower regions
+    and around wheel arches. Multi-scale FBM weighted by a lower-bias gradient,
+    with sparse darker clusters where dust pools heaviest.
+    Targets G=Roughness + B=Clearcoat (pollution dulls clearcoat).
+
+    Params:
+      vertical_bias  — how strongly dust prefers lower panel (0..1).
+      cluster_count  — number of heavier dust pools.
+    """
+    h, w = shape
+    if sm < 0.001:
+        return _flat(shape)
+    rng = np.random.default_rng(seed + 9320)
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+    yf = yy / max(h, 1)
+    xf = xx / max(w, 1)
+
+    # Gravity bias — dust heavier near bottom of panel
+    grav = np.clip((yf - 0.25) / 0.75, 0, 1) ** 1.6
+    grav = grav * vertical_bias + (1.0 - vertical_bias) * 0.5
+
+    fbm = multi_scale_noise(shape, [2, 5, 11, 22], [0.4, 0.3, 0.2, 0.1],
+                            seed + 9321)
+    fbm = _normalize(fbm)
+
+    pools = np.zeros(shape, dtype=np.float32)
+    for _ in range(cluster_count):
+        cx = rng.uniform(0.05, 0.95)
+        cy = rng.uniform(0.55, 0.98)  # bias to bottom
+        sx = rng.uniform(0.05, 0.18)
+        sy = rng.uniform(0.04, 0.12)
+        pools += np.exp(-((xf - cx) ** 2 / (2 * sx ** 2) +
+                          (yf - cy) ** 2 / (2 * sy ** 2)))
+    pools = _normalize(pools)
+
+    dust = fbm * grav * 0.7 + pools * grav * 0.5
+    out = 0.5 - dust * 0.32
+    out = np.clip(out, 0.0, 1.0).astype(np.float32)
+    out = _sm_scale(_normalize(out), sm).astype(np.float32)
+    return _validate_spec_output(out, "brake_dust_buildup")
+
+
+def oil_streak_panel(shape, seed, sm, num_streaks=14, streak_len=0.45,
+                     drip_chance=0.45, **kwargs):
+    """
+    Oil/fluid streaks running down a panel — dark vertical wet streaks with
+    occasional horizontal drip pooling and a faint sheen along the streak
+    axis (oil surface tension). Targets B=Clearcoat (oil glosses) +
+    G=Roughness (drip edges are rougher).
+
+    Params:
+      num_streaks   — count of streaks.
+      streak_len    — fractional length of an average streak.
+      drip_chance   — probability per streak that a horizontal drip forms.
+    """
+    h, w = shape
+    if sm < 0.001:
+        return _flat(shape)
+    rng = np.random.default_rng(seed + 9330)
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+    yf = yy / max(h, 1)
+    xf = xx / max(w, 1)
+    result = np.full(shape, 0.5, dtype=np.float32)
+
+    for _ in range(num_streaks):
+        cx = rng.uniform(0.05, 0.95)
+        y0 = rng.uniform(0.0, 0.4)
+        length = streak_len * rng.uniform(0.6, 1.4)
+        wpx = rng.uniform(0.0035, 0.012)
+        wobble = rng.uniform(0.005, 0.018)
+        # Vertical streak: x ≈ cx + small wobble(y)
+        wob = wobble * np.sin(yf * np.pi * rng.uniform(2.0, 6.0))
+        d = (xf - cx - wob)
+        # Falloff along axis (streak fades out)
+        ax = np.clip((yf - y0) / max(length, 1e-3), 0, 1)
+        env = np.where(ax > 1.0, 0.0,
+                       np.where(ax < 0.0, 0.0,
+                                1.0 - (2.0 * ax - 1.0) ** 2))
+        streak = np.exp(-(d * d) / (2.0 * wpx * wpx))
+        result -= streak * env * rng.uniform(0.18, 0.30)
+        # Bright sheen down the centre of the streak (oil reflects)
+        result += np.exp(-(d * d) / (2.0 * (wpx * 0.35) ** 2)) * env * 0.10
+
+        # Optional horizontal drip pool at random y
+        if rng.random() < drip_chance:
+            yd = y0 + length * rng.uniform(0.6, 1.0)
+            pw = rng.uniform(0.012, 0.030)
+            ph = rng.uniform(0.004, 0.010)
+            pool = np.exp(-((xf - cx) ** 2 / (2 * pw * pw) +
+                            (yf - yd) ** 2 / (2 * ph * ph)))
+            result -= pool * 0.18
+            result += np.exp(-((xf - cx) ** 2 / (2 * (pw * 0.5) ** 2) +
+                              (yf - yd) ** 2 / (2 * (ph * 0.5) ** 2))) * 0.08
+
+    result = np.clip(result, 0.0, 1.0)
+    out = _sm_scale(_normalize(result), sm).astype(np.float32)
+    return _validate_spec_output(out, "oil_streak_panel")
+
+
+def gravel_chip_field(shape, seed, sm, chip_density=0.0008,
+                      bias_dir='leading', **kwargs):
+    """
+    Stone-chip damage field — many small irregular bright dots (exposed
+    primer / metal) clustered toward a leading edge, each chip with a
+    surrounding dark "halo" of disturbed clearcoat.
+    Targets R=Metallic (exposed metal) + G=Roughness (rough chip + halo).
+
+    Params:
+      chip_density  — chips per pixel; clamped to a sane range.
+      bias_dir      — 'leading' (top), 'lower' (bottom), or 'uniform'.
+    """
+    h, w = shape
+    if sm < 0.001:
+        return _flat(shape)
+    rng = np.random.default_rng(seed + 9340)
+    # Density floor raised so chips are visible even at small canvas sizes
+    n = int(np.clip(h * w * chip_density, 80, 8000))
+    # Bias spawn distribution along Y axis
+    if bias_dir == 'leading':
+        ys = np.clip(rng.beta(1.4, 4.0, n), 0, 1)
+    elif bias_dir == 'lower':
+        ys = np.clip(rng.beta(4.0, 1.4, n), 0, 1)
+    else:
+        ys = rng.uniform(0, 1, n)
+    xs = rng.uniform(0, 1, n)
+    by = (ys * (h - 1)).astype(np.int32)
+    bx = (xs * (w - 1)).astype(np.int32)
+
+    # Chips themselves (sharp bright cores)
+    chips = np.zeros(shape, dtype=np.float32)
+    np.maximum.at(chips, (by, bx), rng.uniform(0.55, 1.0, n).astype(np.float32))
+    chips = _gauss(chips, sigma=0.7)
+    cmax = max(chips.max(), 1e-7)
+    chips /= cmax
+
+    # Surrounding darker halo (clearcoat disturbed)
+    halo_seed = np.zeros(shape, dtype=np.float32)
+    np.maximum.at(halo_seed, (by, bx), rng.uniform(0.6, 1.0, n).astype(np.float32))
+    halo = _gauss(halo_seed, sigma=2.4)
+    hmax = max(halo.max(), 1e-7)
+    halo /= hmax
+
+    result = 0.5 + chips * 0.42 - halo * 0.18
+    result = np.clip(result, 0.0, 1.0)
+    out = _sm_scale(_normalize(result), sm).astype(np.float32)
+    return _validate_spec_output(out, "gravel_chip_field")
+
+
+def wax_streak_polish(shape, seed, sm, n_strokes=18, stroke_width=0.012,
+                      **kwargs):
+    """
+    Hand-polished wax streaks — irregular curved wipe arcs left by a buffing
+    cloth, each arc slightly increasing local gloss (lower roughness).
+    Targets B=Clearcoat (gloss) + G=Roughness (smooth zones).
+
+    Params:
+      n_strokes     — number of polish swipes.
+      stroke_width  — arc thickness as a fraction of the panel.
+    """
+    h, w = shape
+    if sm < 0.001:
+        return _flat(shape)
+    rng = np.random.default_rng(seed + 9350)
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+    yf = yy / max(h, 1)
+    xf = xx / max(w, 1)
+    result = np.full(shape, 0.5, dtype=np.float32)
+
+    for _ in range(n_strokes):
+        cx = rng.uniform(-0.2, 1.2)
+        cy = rng.uniform(-0.2, 1.2)
+        r = rng.uniform(0.15, 0.45)
+        ang0 = rng.uniform(0, 2 * np.pi)
+        ang_span = rng.uniform(0.7, 2.4)
+        sw = stroke_width * rng.uniform(0.7, 1.5)
+
+        dx = xf - cx
+        dy = yf - cy
+        rad = np.sqrt(dx * dx + dy * dy)
+        theta = np.arctan2(dy, dx)
+        # Arc weight: only within an angular band
+        ang_diff = (theta - ang0 + np.pi) % (2 * np.pi) - np.pi
+        in_band = np.abs(ang_diff) < ang_span * 0.5
+        radial = np.exp(-((rad - r) ** 2) / (2.0 * sw * sw))
+        arc = radial * in_band.astype(np.float32)
+        # Polish brightens the arc (gloss lift)
+        result += arc * 0.18
+
+    # Light pre-polish dust/swirl for realism
+    dust = multi_scale_noise(shape, [3, 7], [0.6, 0.4], seed + 9351)
+    result -= (1.0 - _normalize(dust)) * 0.05
+
+    result = np.clip(result, 0.0, 1.0)
+    out = _sm_scale(_normalize(result), sm).astype(np.float32)
+    return _validate_spec_output(out, "wax_streak_polish")
+
+
+# ----------------------------------------------------------------------------
+# PREMIUM FINISHES (5 patterns) — mother_of_pearl_inlay, anodized_rainbow,
+# frosted_glass_etch, gold_leaf_torn, copper_patina_drip
+# ----------------------------------------------------------------------------
+
+def mother_of_pearl_inlay(shape, seed, sm, num_shards=140, shimmer_freq=14.0,
+                          **kwargs):
+    """
+    Mother-of-pearl / nacre inlay — many irregular polygon shards (Voronoi
+    cells), each tinted with a per-cell phase offset of a sinusoidal
+    iridescence so adjacent shards shimmer at slightly different "angles".
+    Targets R=Metallic (nacre is highly reflective).
+
+    Params:
+      num_shards    — count of nacre shards (Voronoi seeds).
+      shimmer_freq  — cycles of the per-cell iridescence band.
+    """
+    h, w = shape
+    if sm < 0.001:
+        return _flat(shape)
+    rng = np.random.default_rng(seed + 9400)
+    pts = rng.random((num_shards, 2)) * np.array([h, w], dtype=np.float32)
+    grid_y = np.arange(h, dtype=np.float32)
+    grid_x = np.arange(w, dtype=np.float32)
+    yy, xx = np.meshgrid(grid_y, grid_x, indexing='ij')
+    coords = np.column_stack([yy.ravel(), xx.ravel()])
+    tree = cKDTree(pts)
+    _, idx = tree.query(coords, k=1)
+    cell_idx = idx.reshape(shape)
+    # Per-cell phase
+    phases = rng.uniform(0, 2 * np.pi, num_shards).astype(np.float32)
+    # Per-cell direction for the band axis
+    dirs = rng.uniform(0, np.pi, num_shards).astype(np.float32)
+    cdir = np.cos(dirs)[cell_idx]
+    sdir = np.sin(dirs)[cell_idx]
+    yn = yy / max(h, 1)
+    xn = xx / max(w, 1)
+    proj = yn * sdir + xn * cdir
+    iridescence = 0.5 + 0.5 * np.sin(proj * shimmer_freq * np.pi * 2.0 +
+                                     phases[cell_idx])
+
+    # Slight cell-edge darkening (interface between nacre layers)
+    # Approximated by distance to second-nearest neighbour
+    _, idx2 = tree.query(coords, k=2)
+    d_diff = np.abs(idx2[:, 0] - idx2[:, 1]).reshape(shape)  # ignored; use dist
+    # Recompute distances quickly via float
+    d12 = (pts[idx2[:, 0]] - pts[idx2[:, 1]])
+    # NOTE: we use the squared distance from the pixel to the 2nd-nearest seed
+    # minus the same to the 1st-nearest as a cheap edge proxy.
+    d_a, _ = tree.query(coords, k=1)
+    d_b, _ = tree.query(coords, k=2)
+    edge = np.clip(1.0 - np.abs(d_b[:, 1] - d_b[:, 0]).reshape(shape) / 2.5,
+                   0.0, 1.0) * 0.08
+
+    result = iridescence * 0.85 + 0.075 - edge
+    result = np.clip(result, 0.0, 1.0).astype(np.float32)
+    out = _sm_scale(_normalize(result), sm).astype(np.float32)
+    return _validate_spec_output(out, "mother_of_pearl_inlay")
+
+
+def anodized_rainbow(shape, seed, sm, band_freq=10.0, axis_jitter=0.10,
+                     **kwargs):
+    """
+    Anodized titanium / niobium rainbow bands — very smooth, low-roughness
+    surface with interference banding from the oxide thickness gradient.
+    Targets R=Metallic (high) and modulates the band positions via a slow
+    FBM warp (oxide thickness varies organically).
+
+    Params:
+      band_freq    — number of color bands across the panel.
+      axis_jitter  — strength of the FBM warp distortion.
+    """
+    h, w = shape
+    if sm < 0.001:
+        return _flat(shape)
+    rng = np.random.default_rng(seed + 9410)
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+    yn = yy / max(h, 1)
+    xn = xx / max(w, 1)
+    angle = rng.uniform(0, 2 * np.pi)
+    proj = yn * np.cos(angle) + xn * np.sin(angle)
+    warp = multi_scale_noise(shape, [12, 26, 60], [0.5, 0.3, 0.2], seed + 9411)
+    warp = (_normalize(warp) - 0.5) * axis_jitter
+    band = 0.5 + 0.5 * np.sin((proj + warp) * band_freq * np.pi * 2.0)
+    # Subtle film perturbation so adjacent bands aren't perfectly periodic
+    detail = multi_scale_noise(shape, [4, 9], [0.6, 0.4], seed + 9412)
+    detail = (_normalize(detail) - 0.5) * 0.07
+    result = np.clip(band + detail, 0.0, 1.0).astype(np.float32)
+    out = _sm_scale(result, sm).astype(np.float32)
+    return _validate_spec_output(out, "anodized_rainbow")
+
+
+def frosted_glass_etch(shape, seed, sm, etch_density=2200, etch_radius=2.2,
+                       base_smooth=0.18, **kwargs):
+    """
+    Frosted / sandblasted glass etch — dense fine random pits forming a
+    diffuse haze, with gentle low-frequency variation between heavier and
+    lighter etched zones. Targets G=Roughness (etched glass is rough).
+
+    Params:
+      etch_density  — number of etch points (high count for glass texture).
+      etch_radius   — Gaussian sigma for each etch's spread.
+      base_smooth   — strength of the low-frequency smooth field underneath.
+    """
+    h, w = shape
+    if sm < 0.001:
+        return _flat(shape)
+    rng = np.random.default_rng(seed + 9420)
+    canvas = np.zeros(shape, dtype=np.float32)
+    n = int(np.clip(etch_density, 200, 30000))
+    py = rng.integers(0, h, n)
+    px = rng.integers(0, w, n)
+    inten = rng.uniform(0.5, 1.0, n).astype(np.float32)
+    np.add.at(canvas, (py, px), inten)
+    etch = _gauss(canvas, sigma=max(0.7, etch_radius * 0.5))
+    em = max(etch.max(), 1e-7)
+    etch /= em
+
+    bg = multi_scale_noise(shape, [10, 24], [0.6, 0.4], seed + 9421)
+    bg = _normalize(bg) * base_smooth
+
+    result = 0.45 + etch * 0.45 + bg
+    result = np.clip(result, 0.0, 1.0)
+    out = _sm_scale(_normalize(result), sm).astype(np.float32)
+    return _validate_spec_output(out, "frosted_glass_etch")
+
+
+def gold_leaf_torn(shape, seed, sm, n_sheets=10, tear_jitter=0.08, **kwargs):
+    """
+    Torn gold-leaf application — discrete leaf sheets each with rough torn
+    edges and small interior wrinkle veins, gold sections highly metallic
+    while exposed substrate (gaps) stays dull. Targets R=Metallic.
+
+    Params:
+      n_sheets     — number of leaf sheets to lay down.
+      tear_jitter  — irregularity of leaf borders (0.0 = clean rect).
+    """
+    h, w = shape
+    if sm < 0.001:
+        return _flat(shape)
+    rng = np.random.default_rng(seed + 9430)
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+    yf = yy / max(h, 1)
+    xf = xx / max(w, 1)
+    coverage = np.full(shape, 0.0, dtype=np.float32)
+
+    # Per-sheet noise field used to perturb the rectangular boundary
+    warp_a = multi_scale_noise(shape, [4, 8, 16], [0.5, 0.3, 0.2], seed + 9431)
+    warp_a = (_normalize(warp_a) - 0.5) * tear_jitter
+    warp_b = multi_scale_noise(shape, [4, 8, 16], [0.5, 0.3, 0.2], seed + 9432)
+    warp_b = (_normalize(warp_b) - 0.5) * tear_jitter
+
+    for _ in range(n_sheets):
+        x0 = rng.uniform(-0.05, 0.7)
+        y0 = rng.uniform(-0.05, 0.7)
+        sx = rng.uniform(0.18, 0.40)
+        sy = rng.uniform(0.18, 0.40)
+        # Warped sheet membership: distance to sheet center, irregular border
+        dx = (xf - (x0 + sx * 0.5)) + warp_a
+        dy = (yf - (y0 + sy * 0.5)) + warp_b
+        inside = (np.abs(dx) < sx * 0.5) & (np.abs(dy) < sy * 0.5)
+        # Soft membership at the very edge
+        edge_d = np.minimum(sx * 0.5 - np.abs(dx), sy * 0.5 - np.abs(dy))
+        soft = np.clip(edge_d / 0.005, 0.0, 1.0) * inside
+        coverage = np.maximum(coverage, soft.astype(np.float32))
+
+    # Wrinkle veins — fine FBM seen only on covered area
+    wrinkle = multi_scale_noise(shape, [2, 5, 11], [0.5, 0.3, 0.2], seed + 9433)
+    wrinkle = (_normalize(wrinkle) - 0.5) * 0.18
+    leaf_face = 0.85 + wrinkle  # gold is bright in metallic channel
+
+    # Substrate (uncovered): dull, roughish
+    sub = 0.30 + (rng.uniform(-0.05, 0.05, shape).astype(np.float32))
+
+    result = coverage * leaf_face + (1.0 - coverage) * sub
+    result = np.clip(result, 0.0, 1.0)
+    out = _sm_scale(_normalize(result), sm).astype(np.float32)
+    return _validate_spec_output(out, "gold_leaf_torn")
+
+
+def copper_patina_drip(shape, seed, sm, num_drips=10, drip_len=0.55,
+                       patina_freq=0.03, **kwargs):
+    """
+    Copper patina with verdigris drips — base is low-roughness metallic
+    copper modulated by FBM patina blooms; on top, vertical green-runoff
+    streaks where moisture pulled patina downward. Targets R=Metallic and
+    G=Roughness (patina = rough; drip channels = smooth wet runs).
+
+    Params:
+      num_drips     — count of vertical patina drips.
+      drip_len      — fractional length of each drip.
+      patina_freq   — base patina cell frequency (lower = larger blooms).
+    """
+    h, w = shape
+    if sm < 0.001:
+        return _flat(shape)
+    rng = np.random.default_rng(seed + 9440)
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+    yf = yy / max(h, 1)
+    xf = xx / max(w, 1)
+
+    # Patina blooms — low frequency FBM, normalized
+    bloom = multi_scale_noise(shape,
+                              [int(1.0 / max(patina_freq, 0.005)),
+                               int(2.0 / max(patina_freq, 0.005)),
+                               int(4.0 / max(patina_freq, 0.005))],
+                              [0.5, 0.3, 0.2], seed + 9441)
+    bloom = _normalize(bloom)
+    # Threshold so we get distinct patches
+    patina_mask = np.clip((bloom - 0.45) * 2.4, 0.0, 1.0)
+
+    # Drip streaks
+    drips = np.zeros(shape, dtype=np.float32)
+    for _ in range(num_drips):
+        cx = rng.uniform(0.05, 0.95)
+        y0 = rng.uniform(0.0, 0.45)
+        wpx = rng.uniform(0.004, 0.011)
+        length = drip_len * rng.uniform(0.6, 1.4)
+        wob = 0.012 * np.sin(yf * np.pi * rng.uniform(2.0, 5.0))
+        d = (xf - cx - wob)
+        ax = np.clip((yf - y0) / max(length, 1e-3), 0, 1)
+        env = np.where(ax > 1.0, 0.0,
+                       np.where(ax < 0.0, 0.0,
+                                1.0 - (2.0 * ax - 1.0) ** 2))
+        drips += np.exp(-(d * d) / (2.0 * wpx * wpx)) * env
+
+    drips = np.clip(drips, 0.0, 1.0)
+
+    # Composite: copper bright (~0.78) - patina darken - but drips stay smooth/bright
+    base = 0.78 * np.ones(shape, dtype=np.float32)
+    result = base - patina_mask * 0.30 + drips * 0.20
+    # Tiny granular detail
+    grit = multi_scale_noise(shape, [1.5, 4], [0.6, 0.4], seed + 9442)
+    grit = (_normalize(grit) - 0.5) * 0.06
+    result += grit
+
+    result = np.clip(result, 0.0, 1.0)
+    out = _sm_scale(_normalize(result), sm).astype(np.float32)
+    return _validate_spec_output(out, "copper_patina_drip")
+
+
+# ----------------------------------------------------------------------------
+# COLOR-SHIFT VARIANTS (5+) — palette tweaks on existing successful patterns
+# ----------------------------------------------------------------------------
+# These are compact wrappers that re-use the underlying base pattern with
+# parameter tweaks suited to a "warm", "cool", "deep", "bright", or
+# "monochrome" tonal mood. The composer then maps the [0,1] modulation to
+# whatever spec channel the user chose — but the inner distribution shifts
+# differently because the parameter set produces a different histogram.
+
+def brushed_linear_warm(shape, seed, sm, frequency=72.0, **kwargs):
+    """
+    Warm-toned variant of brushed_linear — slightly lower frequency and
+    boosted contrast give a softer, denser brushed grain that pairs well
+    with warm copper / brass / gold finishes. G=Roughness target.
+    """
+    arr = brushed_linear(shape, seed, sm, frequency=frequency,
+                         phase_noise=0.030, **kwargs)
+    # Slight bias toward the darker (smoother) side — warm metals polish
+    # cleaner, so the high-roughness peaks are pulled back a touch.
+    out = (arr - 0.5) * 0.92 + 0.48
+    out = np.clip(out, 0.0, 1.0).astype(np.float32)
+    return _validate_spec_output(out, "brushed_linear_warm")
+
+
+def brushed_linear_cool(shape, seed, sm, frequency=92.0, **kwargs):
+    """
+    Cool-toned variant of brushed_linear — higher frequency and tighter phase
+    noise yield a crisper, more aggressive brushed grain better suited to
+    cool steel / titanium / chrome finishes. G=Roughness target.
+    """
+    arr = brushed_linear(shape, seed, sm, frequency=frequency,
+                         phase_noise=0.012, **kwargs)
+    # Slight bias toward the brighter side — cool metals show grain crisper.
+    out = (arr - 0.5) * 1.06 + 0.51
+    out = np.clip(out, 0.0, 1.0).astype(np.float32)
+    return _validate_spec_output(out, "brushed_linear_cool")
+
+
+def micro_sparkle_warm(shape, seed, sm, density=0.13, **kwargs):
+    """
+    Warm-tinted variant of micro_sparkle — slightly fewer, softer sparkles
+    that read like champagne / gold pearl rather than diamond ice. R or
+    metallic-channel target depending on use.
+    """
+    arr = micro_sparkle(shape, seed, sm, density=density, **kwargs)
+    # Lift the dark floor so sparkle sits over a warmer metallic base
+    out = arr * 0.82 + 0.16
+    out = np.clip(out, 0.0, 1.0).astype(np.float32)
+    return _validate_spec_output(out, "micro_sparkle_warm")
+
+
+def micro_sparkle_cool(shape, seed, sm, density=0.18, **kwargs):
+    """
+    Cool-tinted variant of micro_sparkle — denser, sharper points reading
+    like diamond ice / silver flake on a deep field. R or metallic-channel.
+    """
+    arr = micro_sparkle(shape, seed, sm, density=density, **kwargs)
+    # Crush the floor (cooler metallics are darker between sparkles)
+    out = (arr - 0.5) * 1.15 + 0.50
+    out = np.clip(out, 0.0, 1.0).astype(np.float32)
+    return _validate_spec_output(out, "micro_sparkle_cool")
+
+
+def cloud_wisps_warm(shape, seed, sm, num_octaves=5, **kwargs):
+    """
+    Warm-toned cloud_wisps variant — boosted persistence + bias toward
+    higher mid-tones gives a softer, hazier pearl roll suitable for sunset
+    pearls and bronze pearls. R or G channel target.
+    """
+    arr = cloud_wisps(shape, seed, sm, num_octaves=num_octaves,
+                      persistence=0.62, **kwargs)
+    out = arr * 0.80 + 0.18
+    out = np.clip(out, 0.0, 1.0).astype(np.float32)
+    return _validate_spec_output(out, "cloud_wisps_warm")
+
+
+def cloud_wisps_cool(shape, seed, sm, num_octaves=6, **kwargs):
+    """
+    Cool-toned cloud_wisps variant — extra octave + lower persistence gives
+    a colder, sharper cloud structure that suits silver/blue/teal pearls.
+    """
+    arr = cloud_wisps(shape, seed, sm, num_octaves=num_octaves,
+                      persistence=0.42, **kwargs)
+    out = (arr - 0.5) * 1.10 + 0.50
+    out = np.clip(out, 0.0, 1.0).astype(np.float32)
+    return _validate_spec_output(out, "cloud_wisps_cool")
+
+
+def aniso_grain_deep(shape, seed, sm, **kwargs):
+    """
+    Deep / high-contrast variant of aniso_grain — increases grain_depth and
+    pushes the histogram outward. Good for dramatic anodized or deep brushed
+    looks where a subtle aniso_grain would otherwise vanish. G=Roughness.
+    """
+    arr = aniso_grain(shape, seed, sm, grain_depth=0.85, **kwargs)
+    out = (arr - 0.5) * 1.20 + 0.50
+    out = np.clip(out, 0.0, 1.0).astype(np.float32)
+    return _validate_spec_output(out, "aniso_grain_deep")
+
+
+# ============================================================================
+# v6.2.y — RACE HERITAGE, MECHANICAL, WEATHER & TRACK, ARTISTIC (24 patterns)
+# ============================================================================
+#
+# All functions follow the canonical signature:
+#   def pattern_name(shape, seed, sm, **params) -> np.ndarray
+# Return float32 (h, w) in [0, 1]. Composer maps to the appropriate channel.
+# ============================================================================
+
+
+# ----------------------------------------------------------------------------
+# RACE HERITAGE (6 patterns)
+# ----------------------------------------------------------------------------
+
+def checker_flag_subtle(shape, seed, sm, squares=18, warp=0.006, **kwargs):
+    """
+    Faint large checkered-flag specular modulation — alternating light/dark
+    square cells with a soft edge and a gentle low-frequency warp so the
+    rows never line up perfectly. Targets R=Metallic (distinctive victory-
+    lane ghost pattern without a hard graphic stamp).
+
+    Params:
+      squares  — number of squares along the shorter axis.
+      warp     — low-frequency warp amplitude as a fraction of the canvas.
+    """
+    h, w = shape
+    if sm < 0.001:
+        return _flat(shape)
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+    yf = yy / max(h, 1)
+    xf = xx / max(w, 1)
+    # Low-frequency warp so the grid slightly wobbles
+    warp_noise = multi_scale_noise(shape, [30, 60], [0.6, 0.4], seed + 9401)
+    warp_noise = (_normalize(warp_noise) - 0.5) * 2.0 * warp
+    u = xf + warp_noise
+    v = yf + warp_noise[::-1, :]
+    cx = np.floor(u * squares)
+    cy = np.floor(v * squares)
+    check = np.mod(cx + cy, 2).astype(np.float32)
+    # Softened by blurring the hard check, then blending back toward 0.5
+    soft = _gauss(check, sigma=1.2)
+    out = 0.5 + (soft - 0.5) * 0.55
+    out = np.clip(out, 0.0, 1.0).astype(np.float32)
+    out = _sm_scale(_normalize(out), sm).astype(np.float32)
+    return _validate_spec_output(out, "checker_flag_subtle")
+
+
+def drag_strip_burnout(shape, seed, sm, num_strips=2, strip_width=0.18,
+                       smoke_spread=0.25, **kwargs):
+    """
+    Two wide dark parallel rubber streaks down the panel as if the car just
+    did a long burnout on a prepped drag strip. Hot-black rubber deposit
+    with soft heat-smoke haze fading outward from each lane.
+    Targets G=Roughness (rubber kills gloss) + R=Metallic (darken).
+
+    Params:
+      num_strips    — usually 2 (dual rear tires).
+      strip_width   — fractional width of each rubber lane.
+      smoke_spread  — how far smoke haloes spread beyond the lane.
+    """
+    h, w = shape
+    if sm < 0.001:
+        return _flat(shape)
+    rng = np.random.default_rng(seed + 9410)
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+    yf = yy / max(h, 1)
+    xf = xx / max(w, 1)
+
+    result = np.full(shape, 0.5, dtype=np.float32)
+    # Space strips symmetrically around centre
+    centres = np.linspace(0.32, 0.68, max(num_strips, 1))
+    for cx in centres:
+        cx_j = float(cx) + rng.uniform(-0.03, 0.03)
+        d = np.abs(xf - cx_j)
+        rubber = np.exp(-(d * d) / (2.0 * (strip_width * 0.45) ** 2))
+        smoke = np.exp(-(d * d) / (2.0 * smoke_spread ** 2)) * 0.35
+        # Speckle rubber unevenness along length
+        length_mod = 0.75 + 0.25 * np.sin(yf * np.pi * rng.uniform(3.5, 7.5) +
+                                           rng.uniform(0, 6.28))
+        result -= rubber * 0.32 * length_mod
+        result -= smoke * 0.12
+
+    # Carbon grit embedded in the rubber
+    grit = multi_scale_noise(shape, [1.5, 3, 6], [0.5, 0.3, 0.2], seed + 9411)
+    grit = (_normalize(grit) - 0.5) * 0.10
+    # Mask grit to live only where rubber lives
+    rubber_mask = np.clip(0.5 - result, 0.0, 0.5) * 2.0
+    result += grit * rubber_mask
+
+    result = np.clip(result, 0.0, 1.0)
+    out = _sm_scale(_normalize(result), sm).astype(np.float32)
+    return _validate_spec_output(out, "drag_strip_burnout")
+
+
+def pit_lane_stripes(shape, seed, sm, num_stripes=6, stripe_width=0.012,
+                     gap=0.06, angle=0.0, **kwargs):
+    """
+    Clean parallel speed stripes running the length of the panel — like
+    pit-lane painted stripes or speed livery tape bands. Sharp bright
+    ridges with a thin dark feather to sell the tape edge.
+    Targets R=Metallic (paint lane livery pop).
+
+    Params:
+      num_stripes    — count of parallel bands.
+      stripe_width   — fractional width of each band.
+      gap            — fractional centre-to-centre gap.
+      angle          — radians of tilt (small values for near-horizontal).
+    """
+    h, w = shape
+    if sm < 0.001:
+        return _flat(shape)
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+    yf = yy / max(h, 1)
+    xf = xx / max(w, 1)
+    # Projected coordinate along the stripe-normal direction
+    v = yf * np.cos(angle) + xf * np.sin(angle)
+    # Total band height
+    total = num_stripes * gap
+    v0 = 0.5 - total * 0.5
+    result = np.full(shape, 0.5, dtype=np.float32)
+    for i in range(num_stripes):
+        centre = v0 + gap * (i + 0.5)
+        d = v - centre
+        crest = np.exp(-(d * d) / (2.0 * stripe_width * stripe_width))
+        # Thin feathered dark rim from the tape edge shadow
+        feather = np.exp(-(d * d) / (2.0 * (stripe_width * 3.0) ** 2)) - crest
+        result += crest * 0.38 - feather * 0.10
+    result = np.clip(result, 0.0, 1.0)
+    out = _sm_scale(_normalize(result), sm).astype(np.float32)
+    return _validate_spec_output(out, "pit_lane_stripes")
+
+
+def victory_lap_confetti(shape, seed, sm, density=0.0009, min_r=1.5,
+                          max_r=4.5, **kwargs):
+    """
+    Confetti-scale scattered bright specks of all sizes, lightly clustered
+    to feel like paper confetti caught on the clearcoat during a victory
+    lap. Each speck is a tiny Gaussian highlight with a cooler dark rim.
+    Targets R=Metallic (tiny paper highlights).
+
+    Params:
+      density   — fraction of pixels that spawn a confetti piece.
+      min_r/max_r — radius range in pixels for individual pieces.
+    """
+    h, w = shape
+    if sm < 0.001:
+        return _flat(shape)
+    rng = np.random.default_rng(seed + 9420)
+    n = int(np.clip(h * w * density, 120, 9000))
+    ys = rng.integers(0, h, n)
+    xs = rng.integers(0, w, n)
+    intensity = rng.uniform(0.5, 1.0, n).astype(np.float32)
+
+    bright = np.zeros(shape, dtype=np.float32)
+    np.maximum.at(bright, (ys, xs), intensity)
+    # Two blur passes approximate mixed-size confetti
+    small = _gauss(bright, sigma=float(min_r))
+    large = _gauss(bright, sigma=float(max_r))
+    both = small * 0.65 + large * 0.45
+    bmax = max(both.max(), 1e-7)
+    both /= bmax
+
+    # Slight cool darker rim from motion shadow
+    shadow = _gauss(bright, sigma=float(max_r * 1.8)) * 0.25
+    shadow /= max(shadow.max(), 1e-7)
+
+    result = 0.5 + both * 0.38 - shadow * 0.12
+    result = np.clip(result, 0.0, 1.0).astype(np.float32)
+    out = _sm_scale(_normalize(result), sm).astype(np.float32)
+    return _validate_spec_output(out, "victory_lap_confetti")
+
+
+def sponsor_tape_vinyl(shape, seed, sm, num_tapes=3, tape_length=0.55,
+                       tape_width=0.06, **kwargs):
+    """
+    Faux vinyl sponsor-tape seam strips — rectangular regions with a raised
+    bright rim (hardcut tape edge) and a subtly different interior matte
+    sheen. Each strip sits at a random angle across the panel.
+    Targets G=Roughness (seam boundary) + B=Clearcoat (interior sheen).
+
+    Params:
+      num_tapes    — number of tape strips.
+      tape_length  — fractional length along its own axis.
+      tape_width   — fractional width of each strip.
+    """
+    h, w = shape
+    if sm < 0.001:
+        return _flat(shape)
+    rng = np.random.default_rng(seed + 9430)
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+    yf = yy / max(h, 1)
+    xf = xx / max(w, 1)
+    result = np.full(shape, 0.5, dtype=np.float32)
+
+    for _ in range(num_tapes):
+        cx = rng.uniform(0.15, 0.85)
+        cy = rng.uniform(0.15, 0.85)
+        ang = rng.uniform(-0.6, 0.6)
+        # Rotated local coordinates centred on (cx, cy)
+        rx = (xf - cx) * np.cos(ang) - (yf - cy) * np.sin(ang)
+        ry = (xf - cx) * np.sin(ang) + (yf - cy) * np.cos(ang)
+        half_len = tape_length * 0.5
+        half_w = tape_width * 0.5
+        # Inside-the-rect mask (soft)
+        inside = np.clip(1.0 - np.abs(rx) / half_len, 0, 1) * \
+                 np.clip(1.0 - np.abs(ry) / half_w, 0, 1)
+        inside_soft = _gauss(inside, sigma=0.8)
+        # Edge rim = |grad(inside)| proxy via diff of blurs
+        inside_wider = _gauss(inside, sigma=2.2)
+        rim = np.clip(inside_soft - inside_wider, 0, 1)
+        rmax = max(rim.max(), 1e-7)
+        rim /= rmax
+        # Matte interior dimming
+        interior = inside_soft - rim * 0.6
+        result += rim * 0.32 - interior * 0.10
+
+    result = np.clip(result, 0.0, 1.0)
+    out = _sm_scale(_normalize(result), sm).astype(np.float32)
+    return _validate_spec_output(out, "sponsor_tape_vinyl")
+
+
+def race_number_ghost(shape, seed, sm, **kwargs):
+    """
+    Subtle large "race number" ghost — a big circular badge with a faint
+    numeral shape implied via crossed tape-like strokes and a bright rim.
+    Looks like the residue of a removed competition number roundel.
+    Targets B=Clearcoat (residue gloss) + G=Roughness (edge).
+    """
+    h, w = shape
+    if sm < 0.001:
+        return _flat(shape)
+    rng = np.random.default_rng(seed + 9440)
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+    yf = yy / max(h, 1)
+    xf = xx / max(w, 1)
+    cx = rng.uniform(0.35, 0.65)
+    cy = rng.uniform(0.35, 0.65)
+    r = rng.uniform(0.22, 0.30)
+    # Radial distance
+    rad = np.sqrt((xf - cx) ** 2 + (yf - cy) ** 2)
+    disk = np.clip(1.0 - rad / r, 0, 1)
+    disk_soft = _gauss(disk, sigma=2.0)
+    disk_wide = _gauss(disk, sigma=8.0)
+    rim = np.clip(disk_soft - disk_wide, 0, 1)
+    rmax = max(rim.max(), 1e-7)
+    rim /= rmax
+
+    # Random numeral strokes — two thick lines inside the disk at angles
+    strokes = np.zeros(shape, dtype=np.float32)
+    for _ in range(rng.integers(2, 5)):
+        ang = rng.uniform(0, np.pi)
+        rx = (xf - cx) * np.cos(ang) - (yf - cy) * np.sin(ang)
+        ry = (xf - cx) * np.sin(ang) + (yf - cy) * np.cos(ang)
+        thick = rng.uniform(0.01, 0.02)
+        stroke = np.exp(-(ry * ry) / (2.0 * thick * thick))
+        # Bounded along rx
+        stroke *= np.clip(1.0 - (rx * rx) / (r * r), 0, 1)
+        strokes += stroke
+    strokes = _normalize(strokes) * (disk > 0.05)
+
+    result = 0.5 + rim * 0.22 + strokes * 0.12 - disk_wide * 0.04
+    result = np.clip(result, 0.0, 1.0)
+    out = _sm_scale(_normalize(result), sm).astype(np.float32)
+    return _validate_spec_output(out, "race_number_ghost")
+
+
+# ----------------------------------------------------------------------------
+# MECHANICAL (6 patterns)
+# ----------------------------------------------------------------------------
+
+def exhaust_pipe_scorch(shape, seed, sm, num_vents=2, heat_radius=0.18,
+                         **kwargs):
+    """
+    Heat-scorched coloration radiating from faux exhaust-tip locations —
+    concentric metallic/roughness bands blend through soft soot halos.
+    Vents are positioned near the bottom edge of the panel.
+    Targets R=Metallic (oxide bluing) + G=Roughness (soot).
+
+    Params:
+      num_vents    — number of exhaust tips.
+      heat_radius  — fractional radius of heat influence.
+    """
+    h, w = shape
+    if sm < 0.001:
+        return _flat(shape)
+    rng = np.random.default_rng(seed + 9510)
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+    yf = yy / max(h, 1)
+    xf = xx / max(w, 1)
+    result = np.full(shape, 0.5, dtype=np.float32)
+
+    for _ in range(num_vents):
+        cx = rng.uniform(0.2, 0.8)
+        cy = rng.uniform(0.78, 0.96)
+        r = np.sqrt((xf - cx) ** 2 + (yf - cy) ** 2)
+        # Oscillating temperature bands (straw → blue → purple)
+        bands = 0.5 + 0.5 * np.cos(r / max(heat_radius, 1e-3) * np.pi * 4.0)
+        bands *= np.exp(-r / max(heat_radius, 1e-3))
+        # Soot halo
+        soot = np.exp(-(r * r) / (2.0 * (heat_radius * 1.6) ** 2)) * 0.25
+        result += bands * 0.28 - soot * 0.18
+
+    # Micro oxide micro-texture bound to hot zones only
+    noise = multi_scale_noise(shape, [2, 4], [0.6, 0.4], seed + 9511)
+    noise = (_normalize(noise) - 0.5) * 0.10
+    result += noise * np.clip(result - 0.5, 0, 1) * 2.0
+    result = np.clip(result, 0.0, 1.0)
+    out = _sm_scale(_normalize(result), sm).astype(np.float32)
+    return _validate_spec_output(out, "exhaust_pipe_scorch")
+
+
+def radiator_grille_mesh(shape, seed, sm, cell=8, hole_frac=0.55, **kwargs):
+    """
+    Fine perforated grille mesh overlay — dense regular circular holes
+    with a polished metallic rim around each hole and a slightly recessed
+    dark interior. Distinct from mesh_perforated via finer cells and a
+    cross-brace shadow halo.
+    Targets R=Metallic + G=Roughness.
+
+    Params:
+      cell       — grid cell size in pixels.
+      hole_frac  — fraction of each cell occupied by a hole.
+    """
+    h, w = shape
+    if sm < 0.001:
+        return _flat(shape)
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+    # Local cell coordinates
+    cy = np.mod(yy, cell) - cell * 0.5
+    cx = np.mod(xx, cell) - cell * 0.5
+    r = np.sqrt(cx * cx + cy * cy)
+    hole_r = cell * 0.5 * hole_frac
+    # Hole interior = dark; rim = bright; matrix = mid
+    hole_mask = np.clip(1.0 - r / max(hole_r, 1e-3), 0, 1)
+    rim = np.exp(-((r - hole_r) ** 2) / (2.0 * (cell * 0.08) ** 2))
+    # Cross-brace shadow band every few cells
+    brace = np.where((np.mod(yy, cell * 3) < 1.0) |
+                     (np.mod(xx, cell * 3) < 1.0), 1.0, 0.0).astype(np.float32)
+    brace = _gauss(brace, sigma=0.9) * 0.14
+
+    result = 0.5 + rim * 0.32 - hole_mask * 0.24 - brace
+    result = np.clip(result, 0.0, 1.0).astype(np.float32)
+    out = _sm_scale(_normalize(result), sm).astype(np.float32)
+    return _validate_spec_output(out, "radiator_grille_mesh")
+
+
+def engine_bay_grime(shape, seed, sm, buildup=0.55, **kwargs):
+    """
+    Concentrated lower-panel engine-bay grime — oily dust, fingerprints,
+    and residual splatter pooled in the bottom 40%. Darker, rougher,
+    with embedded speckle.
+    Targets G=Roughness + B=Clearcoat.
+
+    Params:
+      buildup  — overall darken/dull intensity (0..1).
+    """
+    h, w = shape
+    if sm < 0.001:
+        return _flat(shape)
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+    yf = yy / max(h, 1)
+    # Strong gravity bias
+    grav = np.clip((yf - 0.45) / 0.55, 0, 1) ** 1.8
+    fbm = multi_scale_noise(shape, [3, 7, 14], [0.45, 0.35, 0.2], seed + 9521)
+    fbm = _normalize(fbm)
+    pools = multi_scale_noise(shape, [14, 28], [0.6, 0.4], seed + 9522)
+    pools = _normalize(pools) ** 2.2
+    # Speckle of small oily dots
+    rng = np.random.default_rng(seed + 9523)
+    dots = (rng.random(shape) < 0.003).astype(np.float32)
+    dots = _gauss(dots, sigma=1.1)
+    dmax = max(dots.max(), 1e-7)
+    dots /= dmax
+
+    grime = (fbm * 0.5 + pools * 0.5) * grav + dots * 0.25 * grav
+    out = 0.5 - grime * buildup * 0.42
+    out = np.clip(out, 0.0, 1.0).astype(np.float32)
+    out = _sm_scale(_normalize(out), sm).astype(np.float32)
+    return _validate_spec_output(out, "engine_bay_grime")
+
+
+def tire_smoke_streaks(shape, seed, sm, num_streaks=14, taper=0.35, **kwargs):
+    """
+    Whispy horizontal tire-smoke streaks — long thin sinuous bright/dark
+    ribbons that thin out at each end. Different from tire_smoke_residue
+    (hazy smudges) — these are elongated motion-trails like a moving car.
+    Targets G=Roughness.
+
+    Params:
+      num_streaks  — number of streaks.
+      taper        — fraction of streak length that fades at each tip.
+    """
+    h, w = shape
+    if sm < 0.001:
+        return _flat(shape)
+    rng = np.random.default_rng(seed + 9530)
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+    yf = yy / max(h, 1)
+    xf = xx / max(w, 1)
+    result = np.full(shape, 0.5, dtype=np.float32)
+    for _ in range(num_streaks):
+        cy = rng.uniform(0.1, 0.9)
+        wob_freq = rng.uniform(1.5, 4.5)
+        wob_amp = rng.uniform(0.005, 0.025)
+        y_line = cy + wob_amp * np.sin(xf * np.pi * wob_freq + rng.uniform(0, 6.28))
+        thickness = rng.uniform(0.003, 0.011)
+        d = yf - y_line
+        streak = np.exp(-(d * d) / (2.0 * thickness * thickness))
+        # Length envelope (fade tips)
+        env = np.clip(1.0 - ((xf - 0.5) ** 2) / (0.5 - taper * 0.3) ** 2, 0, 1)
+        tint = rng.choice([-1.0, 1.0]) * rng.uniform(0.12, 0.22)
+        result += streak * env * tint
+    result = np.clip(result, 0.0, 1.0)
+    out = _sm_scale(_normalize(result), sm).astype(np.float32)
+    return _validate_spec_output(out, "tire_smoke_streaks")
+
+
+def undercarriage_spray(shape, seed, sm, spray_density=0.0025,
+                         fan_height=0.55, **kwargs):
+    """
+    Bottom-up road-spray pattern — a fan of fine specks shot upward from
+    the bottom edge, thinning with height. Organic, unmasked peppering of
+    small bright/dark motes. Targets G=Roughness.
+
+    Params:
+      spray_density  — specks per pixel.
+      fan_height     — fractional height the spray reaches.
+    """
+    h, w = shape
+    if sm < 0.001:
+        return _flat(shape)
+    rng = np.random.default_rng(seed + 9540)
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+    yf = yy / max(h, 1)
+    n = int(np.clip(h * w * spray_density, 200, 20000))
+    # Density falls off quadratically with height from bottom
+    ys = 1.0 - rng.beta(1.2, 3.5, n) * fan_height
+    xs = rng.uniform(0, 1, n)
+    by = np.clip((ys * (h - 1)).astype(np.int32), 0, h - 1)
+    bx = np.clip((xs * (w - 1)).astype(np.int32), 0, w - 1)
+    sign = rng.choice([-1.0, 1.0], n).astype(np.float32)
+    amp = rng.uniform(0.25, 0.9, n).astype(np.float32) * sign
+    dots = np.zeros(shape, dtype=np.float32)
+    # Use add.at so overlapping specks stack to denser pools
+    np.add.at(dots, (by, bx), amp)
+    dots = _gauss(dots, sigma=1.2)
+    # Normalize symmetric signed output around 0
+    adots = dots / max(np.abs(dots).max(), 1e-7)
+    # Reinforce bottom-up gravity weight for visibility
+    grav = np.clip((yf - 0.35) / 0.65, 0, 1) ** 1.4
+    result = 0.5 + adots * 0.35 * grav
+    result = np.clip(result, 0.0, 1.0)
+    out = _sm_scale(_normalize(result), sm).astype(np.float32)
+    return _validate_spec_output(out, "undercarriage_spray")
+
+
+def suspension_rust_ring(shape, seed, sm, num_rings=5, ring_spread=0.18,
+                          **kwargs):
+    """
+    Concentric rust rings around suspension fixtures — bolt heads, bushing
+    caps — with radial corrosion falling off with distance. Each fixture
+    sits at a random panel location with 3-5 stepped rust bands.
+    Targets G=Roughness + R=Metallic.
+
+    Params:
+      num_rings    — fixture count.
+      ring_spread  — fractional radius of rust ring influence.
+    """
+    h, w = shape
+    if sm < 0.001:
+        return _flat(shape)
+    rng = np.random.default_rng(seed + 9550)
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+    yf = yy / max(h, 1)
+    xf = xx / max(w, 1)
+    result = np.full(shape, 0.5, dtype=np.float32)
+
+    for _ in range(num_rings):
+        cx = rng.uniform(0.1, 0.9)
+        cy = rng.uniform(0.1, 0.9)
+        r = np.sqrt((xf - cx) ** 2 + (yf - cy) ** 2)
+        # Bolt head metallic disk at centre
+        head = np.exp(-(r * r) / (2.0 * 0.012 ** 2))
+        # Concentric stepped rust bands
+        stepped = np.cos(r / max(ring_spread, 1e-3) * np.pi * 3.5) * 0.5 + 0.5
+        envelope = np.exp(-(r * r) / (2.0 * ring_spread ** 2))
+        result += head * 0.35 - (stepped * envelope) * 0.22
+    # FBM micro-corrosion flavour
+    fbm = multi_scale_noise(shape, [2, 5, 10], [0.5, 0.3, 0.2], seed + 9551)
+    fbm = (_normalize(fbm) - 0.5) * 0.08
+    result += fbm
+    result = np.clip(result, 0.0, 1.0)
+    out = _sm_scale(_normalize(result), sm).astype(np.float32)
+    return _validate_spec_output(out, "suspension_rust_ring")
+
+
+# ----------------------------------------------------------------------------
+# WEATHER & TRACK (6 patterns)
+# ----------------------------------------------------------------------------
+
+def rain_droplet_beads(shape, seed, sm, density=0.0015, min_r=2.5,
+                        max_r=6.5, **kwargs):
+    """
+    Individual rain droplet beads — round wet highlights with a dark
+    bottom crescent (gravity-sagged water) and a tiny bright glint.
+    Completely different from wet-track haze: these are discrete drops.
+    Targets B=Clearcoat (beads are glossy) + G=Roughness (edge).
+
+    Params:
+      density     — beads per pixel.
+      min_r/max_r — bead radius range in pixels.
+    """
+    h, w = shape
+    if sm < 0.001:
+        return _flat(shape)
+    rng = np.random.default_rng(seed + 9610)
+    n = int(np.clip(h * w * density, 120, 7000))
+    ys = rng.integers(0, h, n)
+    xs = rng.integers(0, w, n)
+    amp = rng.uniform(0.6, 1.0, n).astype(np.float32)
+    seeds = np.zeros(shape, dtype=np.float32)
+    np.maximum.at(seeds, (ys, xs), amp)
+    small = _gauss(seeds, sigma=float(min_r))
+    large = _gauss(seeds, sigma=float(max_r))
+    bead_body = large * 0.8 + small * 0.4
+    bmax = max(bead_body.max(), 1e-7)
+    bead_body /= bmax
+
+    # Gravity sag: shift seeds down a few pixels for a darker crescent
+    sag_seeds = np.zeros(shape, dtype=np.float32)
+    sag_y = np.clip(ys + int(max_r * 0.8), 0, h - 1)
+    np.maximum.at(sag_seeds, (sag_y, xs), amp)
+    sag = _gauss(sag_seeds, sigma=float(max_r * 0.8))
+    smax = max(sag.max(), 1e-7)
+    sag /= smax
+
+    # Glint (tiny sharp bright peak) — unshifted seeds blurred small
+    glint = _gauss(seeds, sigma=float(min_r * 0.35))
+    gmax = max(glint.max(), 1e-7)
+    glint /= gmax
+
+    result = 0.5 + bead_body * 0.28 + glint * 0.35 - sag * 0.18
+    result = np.clip(result, 0.0, 1.0)
+    out = _sm_scale(_normalize(result), sm).astype(np.float32)
+    return _validate_spec_output(out, "rain_droplet_beads")
+
+
+def mud_splatter_random(shape, seed, sm, num_splats=60, splat_size=0.04,
+                         **kwargs):
+    """
+    Organic mud splatter — irregular dark blobs with radiating thin spokes
+    (impact drip trails). Sizes vary widely so clusters look randomly
+    flung. Targets G=Roughness + B=Clearcoat.
+
+    Params:
+      num_splats  — number of individual splat impacts.
+      splat_size  — average fractional radius of each splat.
+    """
+    h, w = shape
+    if sm < 0.001:
+        return _flat(shape)
+    rng = np.random.default_rng(seed + 9620)
+    result = np.full(shape, 0.5, dtype=np.float32)
+    mn = float(min(h, w))
+
+    # Cap splat tile reach in pixels so a single large splat doesn't blow up
+    max_tile_px = int(0.18 * mn)
+    for _ in range(num_splats):
+        cx = rng.uniform(0.02, 0.98)
+        cy = rng.uniform(0.02, 0.98)
+        s_f = splat_size * rng.uniform(0.35, 2.4)
+        # Work inside a local window sized to the splat + its spokes
+        tile_r_f = s_f * 5.2  # enough to contain ~4.5x spokes
+        cx_px, cy_px = int(cx * w), int(cy * h)
+        tile_r = min(int(tile_r_f * mn) + 2, max_tile_px)
+        x0 = max(0, cx_px - tile_r); x1 = min(w, cx_px + tile_r + 1)
+        y0 = max(0, cy_px - tile_r); y1 = min(h, cy_px + tile_r + 1)
+        if x1 <= x0 or y1 <= y0:
+            continue
+        tyy, txx = np.mgrid[y0:y1, x0:x1].astype(np.float32)
+        tyf = tyy / max(h, 1)
+        txf = txx / max(w, 1)
+        dx = txf - cx; dy = tyf - cy
+        # Core blob with FBM-warped boundary
+        ang = np.arctan2(dy, dx)
+        r = np.sqrt(dx * dx + dy * dy)
+        edge_wob = 1.0 + 0.25 * np.sin(ang * rng.uniform(3, 9) +
+                                        rng.uniform(0, 6.28))
+        blob = np.clip(1.0 - r / (s_f * edge_wob + 1e-4), 0, 1) ** 1.5
+        result[y0:y1, x0:x1] -= blob * 0.30
+        # Radiating spokes (drip trails)
+        if rng.random() < 0.45:
+            n_spokes = int(rng.integers(3, 7))
+            spoke_angles = rng.uniform(0, 6.28, n_spokes)
+            for sa in spoke_angles:
+                rx = dx * np.cos(sa) + dy * np.sin(sa)
+                ry = -dx * np.sin(sa) + dy * np.cos(sa)
+                length = s_f * rng.uniform(2.0, 4.5)
+                width = s_f * 0.15
+                spoke = np.exp(-(ry * ry) / (2.0 * width * width))
+                spoke *= np.clip(rx / length, 0, 1)
+                spoke *= np.clip(1.0 - rx / length, 0, 1)
+                result[y0:y1, x0:x1] -= spoke * 0.10
+
+    result = np.clip(result, 0.0, 1.0)
+    out = _sm_scale(_normalize(result), sm).astype(np.float32)
+    return _validate_spec_output(out, "mud_splatter_random")
+
+
+def wet_track_gloss(shape, seed, sm, pool_scale=0.38, num_pools=8, **kwargs):
+    """
+    Wet clearcoat pooling — broad glossy pools with a bright film-shine
+    and FBM-shaped boundaries, like rain collected on polished paint.
+    Different from cc_panel_pool (those are micro-pools) — these are large
+    macro-film areas. Targets B=Clearcoat.
+
+    Params:
+      pool_scale  — gives pool softness / blur.
+      num_pools   — count of wet regions.
+    """
+    h, w = shape
+    if sm < 0.001:
+        return _flat(shape)
+    rng = np.random.default_rng(seed + 9630)
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+    yf = yy / max(h, 1)
+    xf = xx / max(w, 1)
+    pools = np.zeros(shape, dtype=np.float32)
+    for _ in range(num_pools):
+        cx = rng.uniform(0.1, 0.9)
+        cy = rng.uniform(0.1, 0.9)
+        sx = rng.uniform(0.10, 0.25)
+        sy = rng.uniform(0.06, 0.18)
+        pools += np.exp(-((xf - cx) ** 2 / (2 * sx * sx) +
+                           (yf - cy) ** 2 / (2 * sy * sy)))
+    # FBM boundary perturbation
+    warp = multi_scale_noise(shape, [20, 40], [0.6, 0.4], seed + 9631)
+    warp = _normalize(warp)
+    pools = pools * (0.6 + 0.6 * warp)
+    pools = _normalize(pools)
+    # Glossy film reflection streaks
+    film = 0.5 + 0.5 * np.cos(yf * np.pi * 4.5 + warp * 2.0)
+    out = 0.5 + pools * 0.30 + film * pools * 0.12
+    out = np.clip(out, 0.0, 1.0).astype(np.float32)
+    out = _sm_scale(_normalize(out), sm).astype(np.float32)
+    return _validate_spec_output(out, "wet_track_gloss")
+
+
+def dry_dust_film(shape, seed, sm, film_strength=0.22, grain_scale=2.0,
+                   **kwargs):
+    """
+    Whole-panel fine dry-dust film — a soft low-frequency haze with a
+    very fine grain on top. Uniformly covers the surface without any
+    specific clustering. Targets G=Roughness + B=Clearcoat (dulled gloss).
+
+    Params:
+      film_strength  — overall haze intensity.
+      grain_scale    — pixel scale of dust grains.
+    """
+    h, w = shape
+    if sm < 0.001:
+        return _flat(shape)
+    # Soft low-frequency variance
+    macro = multi_scale_noise(shape, [40, 80], [0.6, 0.4], seed + 9640)
+    macro = _normalize(macro)
+    # Very fine grain
+    rng = np.random.default_rng(seed + 9641)
+    micro = rng.random(shape).astype(np.float32)
+    micro = _gauss(micro, sigma=float(grain_scale))
+    micro = _normalize(micro)
+    # Combine — subtract below 0.5 to dull the surface
+    dust = macro * 0.7 + micro * 0.3
+    out = 0.5 - (dust - 0.5) * film_strength
+    out = np.clip(out, 0.0, 1.0).astype(np.float32)
+    out = _sm_scale(_normalize(out), sm).astype(np.float32)
+    return _validate_spec_output(out, "dry_dust_film")
+
+
+def morning_dew_fog(shape, seed, sm, fog_density=0.55, **kwargs):
+    """
+    Cold-morning dew fog — very soft misted surface with a subtle vertical
+    wash and gentle low-frequency variation. Gentler and more uniform than
+    dry_dust_film. Targets B=Clearcoat (damp, glossy haze).
+
+    Params:
+      fog_density  — overall fogging strength.
+    """
+    h, w = shape
+    if sm < 0.001:
+        return _flat(shape)
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+    yf = yy / max(h, 1)
+    # Soft low-freq fog field
+    fog = multi_scale_noise(shape, [60, 120], [0.55, 0.45], seed + 9650)
+    fog = _normalize(fog)
+    # Top-of-panel bias (fog settles high then dissipates)
+    bias = np.exp(-((yf - 0.30) ** 2) / (2.0 * 0.25 ** 2))
+    # Add very faint tiny dewlet bumps
+    rng = np.random.default_rng(seed + 9651)
+    dewlets_seed = (rng.random(shape) < 0.0006).astype(np.float32)
+    dewlets = _gauss(dewlets_seed, sigma=1.8)
+    dewlets_max = max(dewlets.max(), 1e-7)
+    dewlets /= dewlets_max
+
+    result = 0.5 + (fog - 0.5) * 0.25 * bias * fog_density + dewlets * 0.12
+    result = np.clip(result, 0.0, 1.0).astype(np.float32)
+    out = _sm_scale(_normalize(result), sm).astype(np.float32)
+    return _validate_spec_output(out, "morning_dew_fog")
+
+
+def tarmac_grit_embed(shape, seed, sm, grit_density=0.005, **kwargs):
+    """
+    Embedded tarmac grit — tiny sharp asphalt grains pressed into the
+    clearcoat, visible as dark-cored bright-rim specks at various sizes.
+    Targets R=Metallic + G=Roughness.
+
+    Params:
+      grit_density  — grit grains per pixel.
+    """
+    h, w = shape
+    if sm < 0.001:
+        return _flat(shape)
+    rng = np.random.default_rng(seed + 9660)
+    n = int(np.clip(h * w * grit_density, 250, 18000))
+    ys = rng.integers(0, h, n)
+    xs = rng.integers(0, w, n)
+    amp = rng.uniform(0.45, 1.0, n).astype(np.float32)
+
+    # Dark cores
+    cores = np.zeros(shape, dtype=np.float32)
+    np.maximum.at(cores, (ys, xs), amp)
+    cores_b = _gauss(cores, sigma=0.6)
+    cores_b /= max(cores_b.max(), 1e-7)
+
+    # Bright rims (slightly larger blur minus core)
+    rims = _gauss(cores, sigma=1.8)
+    rims /= max(rims.max(), 1e-7)
+    rim_only = np.clip(rims - cores_b, 0, 1)
+
+    # Very low-frequency dark wash so it reads as embedded rather than floating
+    wash = multi_scale_noise(shape, [12, 24], [0.5, 0.5], seed + 9661)
+    wash = _normalize(wash) - 0.5
+
+    result = 0.5 - cores_b * 0.30 + rim_only * 0.35 + wash * 0.05
+    result = np.clip(result, 0.0, 1.0).astype(np.float32)
+    out = _sm_scale(_normalize(result), sm).astype(np.float32)
+    return _validate_spec_output(out, "tarmac_grit_embed")
+
+
+# ----------------------------------------------------------------------------
+# ARTISTIC (6 patterns)
+# ----------------------------------------------------------------------------
+
+def brushstroke_bold(shape, seed, sm, n_strokes=14, stroke_width=0.022,
+                      **kwargs):
+    """
+    Painterly bold brush strokes — elongated curved streaks with a clear
+    directional grain inside each stroke, as if painted by hand.
+    Targets R=Metallic (brush catches light).
+
+    Params:
+      n_strokes     — count of brush strokes.
+      stroke_width  — fractional stroke width.
+    """
+    h, w = shape
+    if sm < 0.001:
+        return _flat(shape)
+    rng = np.random.default_rng(seed + 9710)
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+    yf = yy / max(h, 1)
+    xf = xx / max(w, 1)
+    result = np.full(shape, 0.5, dtype=np.float32)
+
+    for _ in range(n_strokes):
+        x0 = rng.uniform(-0.1, 0.8)
+        y0 = rng.uniform(0.05, 0.95)
+        length = rng.uniform(0.25, 0.55)
+        ang = rng.uniform(-0.5, 0.5)
+        bow = rng.uniform(-0.12, 0.12)
+        # Parameterised along stroke length
+        t = np.clip((xf - x0) / length, 0, 1)
+        # Stroke centreline y(t) with gentle bow
+        yline = y0 + ang * (xf - x0) + bow * np.sin(t * np.pi)
+        d = yf - yline
+        env = np.clip(np.where(t > 0, t, 0) * np.where(t < 1, 1 - t, 0) * 4.0,
+                       0, 1)
+        crest = np.exp(-(d * d) / (2.0 * stroke_width * stroke_width))
+        # Bristle grain inside stroke
+        bristles = 0.5 + 0.5 * np.cos((d / stroke_width) *
+                                        rng.uniform(6, 14))
+        result += crest * env * 0.30 * (0.6 + 0.4 * bristles)
+        # Slight dark trailing edge
+        trail = np.exp(-(d * d) / (2.0 * (stroke_width * 2.2) ** 2)) - crest
+        result -= np.clip(trail, 0, 1) * env * 0.08
+
+    result = np.clip(result, 0.0, 1.0)
+    out = _sm_scale(_normalize(result), sm).astype(np.float32)
+    return _validate_spec_output(out, "brushstroke_bold")
+
+
+def crayon_wax_resist(shape, seed, sm, rub_density=0.35, streak_len=0.12,
+                       **kwargs):
+    """
+    Wax-crayon rubbing texture — short parallel streaks of soft matte
+    wax wash, with low-frequency large zones of heavier/lighter buildup.
+    Targets G=Roughness.
+
+    Params:
+      rub_density  — density of short rub strokes.
+      streak_len   — fractional length of a single rub stroke.
+    """
+    h, w = shape
+    if sm < 0.001:
+        return _flat(shape)
+    rng = np.random.default_rng(seed + 9720)
+    n_strokes = int(max(20, rub_density * h * w * 4e-5))
+    # Cap stroke count so 4k canvases don't explode
+    n_strokes = min(n_strokes, 6000)
+    strokes = np.zeros(shape, dtype=np.float32)
+    mn = float(min(h, w))
+    for _ in range(n_strokes):
+        cx = rng.uniform(0.0, 1.0)
+        cy = rng.uniform(0.0, 1.0)
+        ang = rng.normal(0.25, 0.25)  # mostly near-horizontal
+        half_L = streak_len * 0.5 * rng.uniform(0.5, 1.5)
+        thick = rng.uniform(0.0015, 0.004)
+        # Local tile to contain the stroke (axis-aligned bounding box)
+        cs, sn = np.cos(ang), np.sin(ang)
+        rx_reach = abs(half_L * cs) + abs(thick * 3.5 * sn)
+        ry_reach = abs(half_L * sn) + abs(thick * 3.5 * cs)
+        tile_rx = int(rx_reach * w) + 2
+        tile_ry = int(ry_reach * h) + 2
+        cx_px, cy_px = int(cx * w), int(cy * h)
+        x0 = max(0, cx_px - tile_rx); x1 = min(w, cx_px + tile_rx + 1)
+        y0 = max(0, cy_px - tile_ry); y1 = min(h, cy_px + tile_ry + 1)
+        if x1 <= x0 or y1 <= y0:
+            continue
+        tyy, txx = np.mgrid[y0:y1, x0:x1].astype(np.float32)
+        tyf = tyy / max(h, 1); txf = txx / max(w, 1)
+        dx = txf - cx; dy = tyf - cy
+        rx = dx * cs + dy * sn
+        ry = -dx * sn + dy * cs
+        stroke = np.exp(-(ry * ry) / (2.0 * thick * thick))
+        stroke *= np.clip(1.0 - (rx * rx) / (half_L * half_L), 0, 1)
+        strokes[y0:y1, x0:x1] += stroke * float(rng.uniform(0.6, 1.0))
+    smax = max(strokes.max(), 1e-7)
+    strokes /= smax
+
+    # Macro zones of heavier/lighter buildup
+    zones = multi_scale_noise(shape, [40, 80], [0.6, 0.4], seed + 9721)
+    zones = _normalize(zones)
+
+    result = 0.5 + strokes * 0.28 * (0.5 + zones * 0.8) - \
+             (1.0 - zones) * 0.08
+    result = np.clip(result, 0.0, 1.0).astype(np.float32)
+    out = _sm_scale(_normalize(result), sm).astype(np.float32)
+    return _validate_spec_output(out, "crayon_wax_resist")
+
+
+def airbrush_gradient_bloom(shape, seed, sm, num_blooms=5, bloom_radius=0.30,
+                              **kwargs):
+    """
+    Soft airbrush-style gradient blooms — several smooth radial gradients
+    overlaid so highlights blend feather-soft without any hard edges.
+    Targets R=Metallic.
+
+    Params:
+      num_blooms    — number of bloom centres.
+      bloom_radius  — fractional bloom radius.
+    """
+    h, w = shape
+    if sm < 0.001:
+        return _flat(shape)
+    rng = np.random.default_rng(seed + 9730)
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+    yf = yy / max(h, 1)
+    xf = xx / max(w, 1)
+    result = np.full(shape, 0.5, dtype=np.float32)
+    for _ in range(num_blooms):
+        cx = rng.uniform(0.15, 0.85)
+        cy = rng.uniform(0.15, 0.85)
+        rad = bloom_radius * rng.uniform(0.55, 1.4)
+        r = np.sqrt((xf - cx) ** 2 + (yf - cy) ** 2)
+        sign = rng.choice([1.0, -1.0])
+        bloom = np.exp(-(r * r) / (2.0 * (rad * 0.5) ** 2))
+        result += sign * bloom * 0.18
+    # Very soft global blur to seal any edges
+    result = _gauss(result, sigma=2.4)
+    result = np.clip(result, 0.0, 1.0).astype(np.float32)
+    out = _sm_scale(_normalize(result), sm).astype(np.float32)
+    return _validate_spec_output(out, "airbrush_gradient_bloom")
+
+
+def spray_paint_drip(shape, seed, sm, num_drips=9, drip_len=0.40, **kwargs):
+    """
+    Spray-tagger paint drips — individual vertical drip tears with a
+    bright speckled top (spray hit) and a thinning drool running down.
+    More aggressive/graphic than oil_streak_panel. Targets B=Clearcoat
+    + G=Roughness.
+
+    Params:
+      num_drips  — number of drip tears.
+      drip_len   — fractional length of each drip.
+    """
+    h, w = shape
+    if sm < 0.001:
+        return _flat(shape)
+    rng = np.random.default_rng(seed + 9740)
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+    yf = yy / max(h, 1)
+    xf = xx / max(w, 1)
+    result = np.full(shape, 0.5, dtype=np.float32)
+    for _ in range(num_drips):
+        cx = rng.uniform(0.05, 0.95)
+        y0 = rng.uniform(0.0, 0.35)
+        L = drip_len * rng.uniform(0.6, 1.4)
+        w_top = rng.uniform(0.010, 0.022)
+        t = np.clip((yf - y0) / max(L, 1e-3), 0, 1)
+        # Taper width down the drip
+        w_t = w_top * (1.0 - 0.7 * t) + 0.001
+        d = xf - cx
+        drip = np.exp(-(d * d) / (2.0 * w_t * w_t))
+        env = np.where(t > 1.0, 0.0, np.where(t < 0.0, 0.0, 1.0))
+        # Bright spray hit near top (gaussian head)
+        head = np.exp(-((yf - y0) ** 2) / (2.0 * 0.012 ** 2))
+        spray_fan = np.exp(-(d * d) / (2.0 * 0.02 ** 2)) * head
+        result += spray_fan * 0.22
+        result += drip * env * 0.24
+        # Thin bright centerline of wet drip
+        result += np.exp(-(d * d) / (2.0 * (w_t * 0.3) ** 2)) * env * 0.10
+    result = np.clip(result, 0.0, 1.0)
+    out = _sm_scale(_normalize(result), sm).astype(np.float32)
+    return _validate_spec_output(out, "spray_paint_drip")
+
+
+def stippled_dots_fine(shape, seed, sm, dot_density=0.04, dot_radius=1.2,
+                         **kwargs):
+    """
+    Dense fine stippled dot pointillism — very many small uniform bright
+    dots filling the panel. Targets R=Metallic.
+
+    Params:
+      dot_density  — dots per pixel.
+      dot_radius   — blur sigma for each dot.
+    """
+    h, w = shape
+    if sm < 0.001:
+        return _flat(shape)
+    rng = np.random.default_rng(seed + 9750)
+    seeds = (rng.random(shape) < dot_density).astype(np.float32)
+    # Each dot amplitude jitters slightly
+    jitter = rng.uniform(0.6, 1.0, shape).astype(np.float32)
+    seeds *= jitter
+    dots = _gauss(seeds, sigma=float(dot_radius))
+    dots /= max(dots.max(), 1e-7)
+    # Very subtle dark background for contrast balance
+    dark_wash = multi_scale_noise(shape, [20, 40], [0.5, 0.5], seed + 9751)
+    dark_wash = (_normalize(dark_wash) - 0.5) * 0.06
+    result = 0.5 + dots * 0.35 + dark_wash
+    result = np.clip(result, 0.0, 1.0).astype(np.float32)
+    out = _sm_scale(_normalize(result), sm).astype(np.float32)
+    return _validate_spec_output(out, "stippled_dots_fine")
+
+
+def halftone_print(shape, seed, sm, cell=12, dot_max=0.45, **kwargs):
+    """
+    Halftone print dot pattern — regular grid of circular dots whose
+    radius is modulated by a low-frequency FBM (tonal map). Classic
+    pop-art / comic-book halftone look. Targets R=Metallic.
+
+    Params:
+      cell     — halftone grid cell size in pixels.
+      dot_max  — maximum dot radius as fraction of cell size.
+    """
+    h, w = shape
+    if sm < 0.001:
+        return _flat(shape)
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+    # Build tonal modulation field
+    tone = multi_scale_noise(shape, [30, 60], [0.6, 0.4], seed + 9760)
+    tone = _normalize(tone)
+    # Cell coordinates (centre-of-cell distance)
+    cy = np.mod(yy, cell) - cell * 0.5
+    cx = np.mod(xx, cell) - cell * 0.5
+    r = np.sqrt(cx * cx + cy * cy)
+    # Per-cell target radius = dot_max * cell * tone(cell)
+    target_r = (dot_max * cell) * tone
+    # Soft inside-dot mask
+    dot = np.clip(1.0 - (r - target_r) / 1.2, 0, 1)
+    # Slight blur to anti-alias
+    dot = _gauss(dot, sigma=0.6)
+    dot = _normalize(dot)
+    result = 0.5 + (dot - 0.5) * 0.55
+    result = np.clip(result, 0.0, 1.0).astype(np.float32)
+    out = _sm_scale(_normalize(result), sm).astype(np.float32)
+    return _validate_spec_output(out, "halftone_print")
+
+
+# ----------------------------------------------------------------------------
+# ABSTRACT ART (17 patterns) — art-history-inspired spec overlays.
+#   expressionist_splatter, cubist_facets, rothko_field, kandinsky_shapes,
+#   mondrian_grid, op_art_circles, op_art_waves, suprematism, futurist_motion,
+#   minimalist_stripe, hard_edge_field, color_field_bleed, fluid_acrylic_pour,
+#   ink_wash_gradient, neon_glitch, retro_wave, bauhaus_forms
+# All signatures: (shape, seed, sm, **kwargs) -> float32 (h,w) in [0,1].
+# ----------------------------------------------------------------------------
+
+def abstract_expressionist_splatter(shape, seed, sm, n_splats=28,
+                                     drip_chance=0.6, **kwargs):
+    """
+    Pollock-style paint splatter spec map. Dense irregular droplets
+    of varying radius with occasional downward drip trails.
+    Targets R=Metallic (reflective paint splats). Tile-bounded per
+    splat for 2k-canvas performance.
+
+    Params:
+      n_splats      — number of splatter clusters.
+      drip_chance   — probability each splat produces a drip tail.
+    """
+    h, w = shape
+    if sm < 0.001:
+        return _flat(shape)
+    rng = np.random.default_rng(seed + 10100)
+    result = np.full(shape, 0.5, dtype=np.float32)
+
+    def _put_blob(cx_f, cy_f, rad_f, amp):
+        # Tile bounding box (4-sigma reach in fractional coords)
+        reach_x = int(rad_f * 4.0 * w) + 2
+        reach_y = int(rad_f * 4.0 * h) + 2
+        cx_px = int(cx_f * w); cy_px = int(cy_f * h)
+        x0 = max(0, cx_px - reach_x); x1 = min(w, cx_px + reach_x + 1)
+        y0 = max(0, cy_px - reach_y); y1 = min(h, cy_px + reach_y + 1)
+        if x1 <= x0 or y1 <= y0:
+            return
+        tyy, txx = np.mgrid[y0:y1, x0:x1].astype(np.float32)
+        tyf = tyy / max(h, 1); txf = txx / max(w, 1)
+        d2 = (txf - cx_f) ** 2 + (tyf - cy_f) ** 2
+        blob = np.exp(-d2 / (2.0 * rad_f * rad_f))
+        result[y0:y1, x0:x1] += blob * amp
+
+    for _ in range(n_splats):
+        cx = float(rng.uniform(0.02, 0.98))
+        cy = float(rng.uniform(0.02, 0.98))
+        amp = float(rng.uniform(-0.35, 0.45))
+        rad = float(rng.uniform(0.004, 0.055))
+        _put_blob(cx, cy, rad, amp)
+        # Satellite specks
+        n_sat = int(rng.integers(4, 16))
+        for _s in range(n_sat):
+            sx = float(cx + rng.normal(0, rad * 2.8))
+            sy = float(cy + rng.normal(0, rad * 2.8))
+            sr = float(rng.uniform(0.001, 0.006))
+            _put_blob(sx, sy, sr, amp * 0.6)
+        # Drip trail
+        if rng.random() < drip_chance:
+            drip_len = float(rng.uniform(0.05, 0.22))
+            drip_w = float(rng.uniform(0.0015, 0.0035))
+            # Tile covering the drip (below cy by drip_len)
+            reach_x = int(drip_w * 4.0 * w) + 2
+            cx_px = int(cx * w); cy_px = int(cy * h)
+            x0 = max(0, cx_px - reach_x); x1 = min(w, cx_px + reach_x + 1)
+            y0 = cy_px; y1 = min(h, int((cy + drip_len) * h) + 1)
+            if x1 > x0 and y1 > y0:
+                tyy, txx = np.mgrid[y0:y1, x0:x1].astype(np.float32)
+                tyf = tyy / max(h, 1); txf = txx / max(w, 1)
+                t = np.clip((tyf - cy) / max(drip_len, 1e-3), 0, 1)
+                env = np.where((t > 0) & (t < 1), 1.0, 0.0).astype(np.float32)
+                wt = drip_w * (1.0 - 0.7 * t) + 5e-4
+                d = txf - cx
+                drip = np.exp(-(d * d) / (2.0 * wt * wt))
+                result[y0:y1, x0:x1] += drip * env * amp * 0.35
+
+    result = np.clip(result, 0.0, 1.0)
+    out = _sm_scale(_normalize(result), sm).astype(np.float32)
+    return _validate_spec_output(out, "abstract_expressionist_splatter")
+
+
+def abstract_cubist_facets(shape, seed, sm, num_facets=28, **kwargs):
+    """
+    Cubist faceted plane spec map — Voronoi-cell partition where each
+    cell receives a constant value (flat angular facets). Per-cell
+    values drawn from a bimodal distribution for characteristic
+    cubist tonal contrast. Targets R=Metallic.
+
+    Params:
+      num_facets — total number of facet cells.
+    """
+    h, w = shape
+    if sm < 0.001:
+        return _flat(shape)
+    rng = np.random.default_rng(seed + 10110)
+    pts = rng.random((num_facets, 2)).astype(np.float32)
+    pts[:, 0] *= w; pts[:, 1] *= h
+    # Bimodal cell values — cubist favours contrast
+    vals = np.where(rng.random(num_facets) < 0.5,
+                     rng.uniform(0.15, 0.35, num_facets),
+                     rng.uniform(0.65, 0.9, num_facets)).astype(np.float32)
+    tree = cKDTree(pts)
+    yy, xx = np.mgrid[0:h, 0:w]
+    coords = np.stack([xx.ravel(), yy.ravel()], axis=1).astype(np.float32)
+    _, idx = tree.query(coords, k=1)
+    result = vals[idx].reshape(h, w)
+    # Very light smoothing so facet edges anti-alias one pixel
+    result = _gauss(result, sigma=0.6)
+    result = np.clip(result, 0.0, 1.0).astype(np.float32)
+    out = _sm_scale(_normalize(result), sm).astype(np.float32)
+    return _validate_spec_output(out, "abstract_cubist_facets")
+
+
+def abstract_rothko_field(shape, seed, sm, num_fields=3, feather=0.08,
+                           **kwargs):
+    """
+    Rothko-style soft color-field rectangles — a few very large
+    horizontal rectangles stacked with gently feathered edges.
+    Targets B=Clearcoat (soft depth variation per field).
+
+    Params:
+      num_fields — number of horizontal colour-field bands.
+      feather    — vertical feather softness between bands.
+    """
+    h, w = shape
+    if sm < 0.001:
+        return _flat(shape)
+    rng = np.random.default_rng(seed + 10120)
+    yy = np.linspace(0.0, 1.0, h, dtype=np.float32)[:, None]
+    result = np.full(shape, 0.5, dtype=np.float32)
+    # Band boundaries
+    bounds = np.sort(rng.uniform(0.15, 0.85, num_fields - 1))
+    bounds = np.concatenate([[0.0], bounds, [1.0]]).astype(np.float32)
+    vals = rng.uniform(0.2, 0.85, num_fields).astype(np.float32)
+    # Single shared brush-texture noise for the whole canvas — cheap
+    fld_noise = multi_scale_noise(shape, [40, 80], [0.6, 0.4],
+                                   seed + 10121)
+    fld_noise = _normalize(fld_noise) - 0.5
+    for i in range(num_fields):
+        top, bot = bounds[i], bounds[i + 1]
+        # Smooth envelope inside band (column vector broadcasts over width)
+        env_top = 1.0 / (1.0 + np.exp(-(yy - top) / max(feather, 1e-4)))
+        env_bot = 1.0 / (1.0 + np.exp((yy - bot) / max(feather, 1e-4)))
+        env = (env_top * env_bot).astype(np.float32)
+        # Phase-shift the shared noise per field so each field looks distinct
+        phase = int(rng.integers(0, h))
+        band_noise = np.roll(fld_noise, phase, axis=0)
+        result = result * (1.0 - env) + (vals[i] + band_noise * 0.08) * env
+    result = np.clip(result, 0.0, 1.0).astype(np.float32)
+    out = _sm_scale(_normalize(result), sm).astype(np.float32)
+    return _validate_spec_output(out, "abstract_rothko_field")
+
+
+def abstract_kandinsky_shapes(shape, seed, sm, n_circles=12, n_lines=10,
+                                n_triangles=6, **kwargs):
+    """
+    Kandinsky abstract composition — scattered circles, straight
+    lines, and triangles of varying size. Tile-bounded for 2k speed.
+    Targets R=Metallic.
+
+    Params:
+      n_circles    — count of circular shapes.
+      n_lines      — count of straight line segments.
+      n_triangles — count of triangles.
+    """
+    h, w = shape
+    if sm < 0.001:
+        return _flat(shape)
+    rng = np.random.default_rng(seed + 10130)
+    result = np.full(shape, 0.5, dtype=np.float32)
+
+    def _tile_bbox(cx_f, cy_f, reach_xf, reach_yf):
+        rx = int(reach_xf * w) + 2; ry = int(reach_yf * h) + 2
+        cxp = int(cx_f * w); cyp = int(cy_f * h)
+        x0 = max(0, cxp - rx); x1 = min(w, cxp + rx + 1)
+        y0 = max(0, cyp - ry); y1 = min(h, cyp + ry + 1)
+        return x0, x1, y0, y1
+
+    # Circles (filled or ring)
+    for _ in range(n_circles):
+        cx = float(rng.uniform(0.05, 0.95))
+        cy = float(rng.uniform(0.05, 0.95))
+        rad = float(rng.uniform(0.015, 0.10))
+        amp = float(rng.uniform(-0.35, 0.35))
+        x0, x1, y0, y1 = _tile_bbox(cx, cy, rad * 1.6, rad * 1.6)
+        if x1 <= x0 or y1 <= y0:
+            continue
+        tyy, txx = np.mgrid[y0:y1, x0:x1].astype(np.float32)
+        tyf = tyy / max(h, 1); txf = txx / max(w, 1)
+        r = np.sqrt((txf - cx) ** 2 + (tyf - cy) ** 2)
+        if rng.random() < 0.5:
+            contribution = amp * np.clip(1.0 - (r - rad) / 0.006, 0, 1)
+        else:
+            ring_w = rad * float(rng.uniform(0.08, 0.18))
+            contribution = amp * np.exp(-((r - rad) ** 2) /
+                                          (2.0 * ring_w ** 2))
+        result[y0:y1, x0:x1] += contribution
+
+    # Lines
+    for _ in range(n_lines):
+        x_f = float(rng.uniform(0.05, 0.95))
+        y_f = float(rng.uniform(0.05, 0.95))
+        ang = float(rng.uniform(0, np.pi))
+        length = float(rng.uniform(0.15, 0.45))
+        thick = float(rng.uniform(0.0015, 0.004))
+        cs, sn = np.cos(ang), np.sin(ang)
+        # bounding box around full line segment length
+        reach_x = length * 0.5 * abs(cs) + thick * 4.0 * abs(sn) + 0.01
+        reach_y = length * 0.5 * abs(sn) + thick * 4.0 * abs(cs) + 0.01
+        # center of line = start + length/2 * direction
+        cx = x_f + length * 0.5 * cs
+        cy = y_f + length * 0.5 * sn
+        x0, x1, y0, y1 = _tile_bbox(cx, cy, reach_x, reach_y)
+        if x1 <= x0 or y1 <= y0:
+            continue
+        tyy, txx = np.mgrid[y0:y1, x0:x1].astype(np.float32)
+        tyf = tyy / max(h, 1); txf = txx / max(w, 1)
+        dx = txf - x_f; dy = tyf - y_f
+        along = dx * cs + dy * sn
+        perp = -dx * sn + dy * cs
+        env = np.clip(along / length, 0, 1) * np.clip(1 - along / length, 0, 1) * 4.0
+        env = np.clip(env, 0, 1)
+        line = np.exp(-(perp * perp) / (2.0 * thick * thick))
+        result[y0:y1, x0:x1] += line * env * float(rng.uniform(-0.35, 0.4))
+
+    # Triangles (pyramid distance)
+    for _ in range(n_triangles):
+        cx = float(rng.uniform(0.10, 0.90))
+        cy = float(rng.uniform(0.10, 0.90))
+        sz = float(rng.uniform(0.04, 0.12))
+        amp = float(rng.uniform(-0.35, 0.4))
+        rot = float(rng.uniform(0, 2 * np.pi))
+        x0, x1, y0, y1 = _tile_bbox(cx, cy, sz * 1.3, sz * 1.3)
+        if x1 <= x0 or y1 <= y0:
+            continue
+        tyy, txx = np.mgrid[y0:y1, x0:x1].astype(np.float32)
+        tyf = tyy / max(h, 1); txf = txx / max(w, 1)
+        dx = txf - cx; dy = tyf - cy
+        rx = dx * np.cos(rot) + dy * np.sin(rot)
+        ry = -dx * np.sin(rot) + dy * np.cos(rot)
+        tri_mask = (ry + np.abs(rx) * 0.577) < sz
+        tri_mask &= (ry > -sz * 0.5)
+        result[y0:y1, x0:x1] += tri_mask.astype(np.float32) * amp * 0.7
+
+    result = np.clip(result, 0.0, 1.0).astype(np.float32)
+    out = _sm_scale(_normalize(result), sm).astype(np.float32)
+    return _validate_spec_output(out, "abstract_kandinsky_shapes")
+
+
+def abstract_mondrian_grid(shape, seed, sm, min_splits=3, max_splits=6,
+                             **kwargs):
+    """
+    Mondrian-style rectangular grid — the plane is recursively split
+    along axis-aligned lines with thick black grid lines separating
+    rectangles, each filled with a constant spec value (primary-like
+    contrast). Targets R=Metallic.
+
+    Params:
+      min_splits — minimum recursion depth.
+      max_splits — maximum recursion depth.
+    """
+    h, w = shape
+    if sm < 0.001:
+        return _flat(shape)
+    rng = np.random.default_rng(seed + 10140)
+    result = np.full(shape, 0.5, dtype=np.float32)
+    grid_line_w = max(3, int(min(h, w) * 0.006))
+
+    # Build rectangle list by recursive splitting
+    # Each rect: (y0,y1,x0,x1,depth)
+    rects = [(0, h, 0, w, 0)]
+    final = []
+    while rects:
+        y0, y1, x0, x1, d = rects.pop()
+        rh = y1 - y0; rw = x1 - x0
+        if (d >= max_splits) or (rh < 40 or rw < 40) or \
+           (d >= min_splits and rng.random() < 0.35):
+            final.append((y0, y1, x0, x1))
+            continue
+        # Choose split axis along longer side
+        if rw > rh:
+            split = rng.integers(int(x0 + rw * 0.25), int(x0 + rw * 0.75) + 1)
+            rects.append((y0, y1, x0, int(split), d + 1))
+            rects.append((y0, y1, int(split), x1, d + 1))
+        else:
+            split = rng.integers(int(y0 + rh * 0.25), int(y0 + rh * 0.75) + 1)
+            rects.append((y0, int(split), x0, x1, d + 1))
+            rects.append((int(split), y1, x0, x1, d + 1))
+
+    # Fill each final rect with a value; weight toward extremes (primaries)
+    for (y0, y1, x0, x1) in final:
+        r = rng.random()
+        if r < 0.25:
+            v = rng.uniform(0.05, 0.20)  # dark (blue/black)
+        elif r < 0.55:
+            v = rng.uniform(0.80, 0.95)  # bright (white/yellow)
+        else:
+            v = rng.uniform(0.35, 0.65)  # mid (red/grey)
+        result[y0:y1, x0:x1] = v
+
+    # Draw grid lines (dark)
+    # Horizontal lines at rect tops
+    for (y0, y1, x0, x1) in final:
+        if y0 > 0:
+            y_s = max(0, y0 - grid_line_w // 2)
+            y_e = min(h, y0 + grid_line_w // 2 + 1)
+            result[y_s:y_e, x0:x1] = 0.06
+        if x0 > 0:
+            x_s = max(0, x0 - grid_line_w // 2)
+            x_e = min(w, x0 + grid_line_w // 2 + 1)
+            result[y0:y1, x_s:x_e] = 0.06
+    out = _sm_scale(_normalize(result.astype(np.float32)), sm).astype(np.float32)
+    return _validate_spec_output(out, "abstract_mondrian_grid")
+
+
+def abstract_op_art_circles(shape, seed, sm, ring_freq=40.0, **kwargs):
+    """
+    Op-art concentric circles — very high-frequency alternating light
+    and dark rings from an off-centre origin, producing the classic
+    Bridget Riley illusory-motion ring field. Targets R=Metallic.
+
+    Params:
+      ring_freq — rings per unit radius.
+    """
+    h, w = shape
+    if sm < 0.001:
+        return _flat(shape)
+    rng = np.random.default_rng(seed + 10150)
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+    yf = yy / max(h, 1); xf = xx / max(w, 1)
+    cx = float(rng.uniform(0.4, 0.6))
+    cy = float(rng.uniform(0.4, 0.6))
+    r = np.sqrt((xf - cx) ** 2 + (yf - cy) ** 2)
+    # Sharp square-wave rings, slight radial thickness modulation
+    rings = np.sign(np.sin(r * ring_freq * 2 * np.pi))
+    rings = rings * 0.5 + 0.5
+    # Soft vignette to anchor composition
+    vign = np.clip(1.0 - r * 1.4, 0, 1)
+    result = rings * (0.3 + 0.7 * vign) + 0.5 * (1 - vign) * 0.0
+    result = np.clip(_normalize(result).astype(np.float32), 0.0, 1.0)
+    out = _sm_scale(result, sm).astype(np.float32)
+    return _validate_spec_output(out, "abstract_op_art_circles")
+
+
+def abstract_op_art_waves(shape, seed, sm, freq=30.0, wave_amp=0.08,
+                           wave_freq=3.0, **kwargs):
+    """
+    Op-art wavy parallel lines — tight parallel stripes whose
+    x-coordinate is perturbed by a slow sinusoid, producing Bridget
+    Riley's 'Current' and 'Movement in Squares' illusory-motion look.
+    Targets G=Roughness.
+
+    Params:
+      freq        — stripe frequency.
+      wave_amp    — amplitude of the sinusoidal warp.
+      wave_freq   — number of wave cycles vertically.
+    """
+    h, w = shape
+    if sm < 0.001:
+        return _flat(shape)
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+    yf = yy / max(h, 1); xf = xx / max(w, 1)
+    warp = np.sin(yf * wave_freq * 2 * np.pi) * wave_amp
+    stripes = np.sin((xf + warp) * freq * 2 * np.pi)
+    # Sharpen
+    stripes = np.clip(stripes * 3.0, -1.0, 1.0)
+    result = stripes * 0.5 + 0.5
+    result = result.astype(np.float32)
+    out = _sm_scale(_normalize(result), sm).astype(np.float32)
+    return _validate_spec_output(out, "abstract_op_art_waves")
+
+
+def abstract_suprematism(shape, seed, sm, n_forms=7, **kwargs):
+    """
+    Malevich-style suprematism — a handful of clean, hard-edged
+    rectangles of varying rotation and size arranged asymmetrically
+    on a flat ground. Targets R=Metallic.
+
+    Params:
+      n_forms — total number of primary forms.
+    """
+    h, w = shape
+    if sm < 0.001:
+        return _flat(shape)
+    rng = np.random.default_rng(seed + 10160)
+    result = np.full(shape, 0.5, dtype=np.float32)
+
+    for _ in range(n_forms):
+        cx = float(rng.uniform(0.15, 0.85))
+        cy = float(rng.uniform(0.15, 0.85))
+        rw = float(rng.uniform(0.05, 0.35))
+        rh = float(rng.uniform(0.02, 0.18))
+        rot = float(rng.uniform(-0.6, 0.6))
+        v = float(rng.choice([0.10, 0.12, 0.88, 0.92, 0.4, 0.7]))
+        # Rotated bbox — use max diagonal as reach
+        diag = max(rw, rh) + 0.02
+        reach_x = int(diag * w) + 2
+        reach_y = int(diag * h) + 2
+        cxp = int(cx * w); cyp = int(cy * h)
+        x0 = max(0, cxp - reach_x); x1 = min(w, cxp + reach_x + 1)
+        y0 = max(0, cyp - reach_y); y1 = min(h, cyp + reach_y + 1)
+        if x1 <= x0 or y1 <= y0:
+            continue
+        tyy, txx = np.mgrid[y0:y1, x0:x1].astype(np.float32)
+        tyf = tyy / max(h, 1); txf = txx / max(w, 1)
+        dx = txf - cx; dy = tyf - cy
+        rx = dx * np.cos(rot) + dy * np.sin(rot)
+        ry = -dx * np.sin(rot) + dy * np.cos(rot)
+        mask = (np.abs(rx) < rw * 0.5) & (np.abs(ry) < rh * 0.5)
+        edge = np.maximum(np.abs(rx) - rw * 0.5,
+                           np.abs(ry) - rh * 0.5)
+        feather = np.clip(1.0 - edge * 200.0, 0, 1)
+        blend = feather * mask.astype(np.float32)
+        result[y0:y1, x0:x1] = result[y0:y1, x0:x1] * (1.0 - blend) + v * blend
+    result = np.clip(result, 0.0, 1.0).astype(np.float32)
+    out = _sm_scale(_normalize(result), sm).astype(np.float32)
+    return _validate_spec_output(out, "abstract_suprematism")
+
+
+def abstract_futurist_motion(shape, seed, sm, n_lines=90, blur_sigma=1.5,
+                               **kwargs):
+    """
+    Futurist speed-blur motion — fanned parallel streaks with
+    directional Gaussian blur, evoking Balla / Boccioni dynamism.
+    Targets G=Roughness.
+
+    Params:
+      n_lines     — number of motion streaks.
+      blur_sigma  — additional Gaussian blur sigma.
+    """
+    h, w = shape
+    if sm < 0.001:
+        return _flat(shape)
+    rng = np.random.default_rng(seed + 10170)
+    result = np.zeros(shape, dtype=np.float32)
+    # Draw streaks by impulse + directional blur
+    ang = float(rng.uniform(-0.25, 0.25))  # near-horizontal
+    cs, sn = np.cos(ang), np.sin(ang)
+    for _ in range(n_lines):
+        y0 = int(rng.uniform(0, h))
+        x0 = int(rng.uniform(0, w * 0.3))
+        length = int(rng.uniform(w * 0.35, w * 0.85))
+        amp = float(rng.uniform(0.4, 1.0))
+        # Plot along parametric line
+        ts = np.arange(length)
+        xs = np.clip(x0 + (ts * cs).astype(np.int32), 0, w - 1)
+        ys = np.clip(y0 + (ts * sn).astype(np.int32), 0, h - 1)
+        # Trailing amplitude
+        env = np.linspace(amp, 0.0, length, dtype=np.float32)
+        result[ys, xs] = np.maximum(result[ys, xs], env)
+    # Directional blur via anisotropic Gaussian approx (horizontal strong)
+    result = _gauss(result, sigma=blur_sigma)
+    result = _normalize(result)
+    # Lift base + combine to modulation around 0.5
+    result = 0.5 + (result - 0.5) * 0.9
+    result = np.clip(result, 0.0, 1.0).astype(np.float32)
+    out = _sm_scale(_normalize(result), sm).astype(np.float32)
+    return _validate_spec_output(out, "abstract_futurist_motion")
+
+
+def abstract_minimalist_stripe(shape, seed, sm, n_bands=6, **kwargs):
+    """
+    Minimalist horizontal bands — a very small number of large flat
+    horizontal bands (Agnes Martin / Donald Judd minimalism).
+    Targets B=Clearcoat.
+
+    Params:
+      n_bands — number of horizontal bands.
+    """
+    h, w = shape
+    if sm < 0.001:
+        return _flat(shape)
+    rng = np.random.default_rng(seed + 10180)
+    yy = np.linspace(0.0, 1.0, h, dtype=np.float32)[:, None]
+    bounds = np.linspace(0, 1, n_bands + 1)
+    vals = rng.uniform(0.25, 0.85, n_bands).astype(np.float32)
+    result = np.zeros(shape, dtype=np.float32)
+    for i in range(n_bands):
+        mask = ((yy >= bounds[i]) & (yy < bounds[i + 1])).astype(np.float32)
+        result = result + mask * vals[i]
+    # Very light horizontal wash for hand-painted minimalism
+    wash = multi_scale_noise(shape, [80], [1.0], seed + 10181)
+    wash = (_normalize(wash) - 0.5) * 0.05
+    result = np.clip(result + wash, 0, 1).astype(np.float32)
+    # Broadcast to full width
+    if result.shape[1] != w:
+        result = np.broadcast_to(result, shape).copy()
+    out = _sm_scale(_normalize(result), sm).astype(np.float32)
+    return _validate_spec_output(out, "abstract_minimalist_stripe")
+
+
+def abstract_hard_edge_field(shape, seed, sm, n_blocks=14, **kwargs):
+    """
+    Hard-edge abstraction — Ellsworth Kelly / Frank Stella flat
+    colour blocks with razor-sharp boundaries. Blocks are axis or
+    diagonal-aligned trapezoids. Targets R=Metallic.
+
+    Params:
+      n_blocks — number of colour blocks.
+    """
+    h, w = shape
+    if sm < 0.001:
+        return _flat(shape)
+    rng = np.random.default_rng(seed + 10190)
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+    yf = yy / max(h, 1); xf = xx / max(w, 1)
+    result = np.full(shape, 0.5, dtype=np.float32)
+
+    for _ in range(n_blocks):
+        # Random half-plane chosen by linear inequality
+        a = rng.uniform(-1.2, 1.2)
+        b = rng.uniform(-1.2, 1.2)
+        c = rng.uniform(-0.6, 0.6)
+        side = (a * (xf - 0.5) + b * (yf - 0.5) + c) > 0
+        v = float(rng.uniform(0.1, 0.9))
+        # Only paint inside a randomly placed box
+        bx = rng.uniform(0.05, 0.55); by = rng.uniform(0.05, 0.55)
+        bw = rng.uniform(0.2, 0.55); bh = rng.uniform(0.2, 0.55)
+        in_box = (xf >= bx) & (xf <= bx + bw) & \
+                  (yf >= by) & (yf <= by + bh)
+        mask = side & in_box
+        result = np.where(mask, v, result)
+    result = np.clip(result, 0, 1).astype(np.float32)
+    out = _sm_scale(_normalize(result), sm).astype(np.float32)
+    return _validate_spec_output(out, "abstract_hard_edge_field")
+
+
+def abstract_color_field_bleed(shape, seed, sm, num_fields=4, bleed=0.06,
+                                 **kwargs):
+    """
+    Helen Frankenthaler soak-stain / bleed — large blurred colour
+    regions with irregular edges that bleed into each other.
+    Targets B=Clearcoat.
+
+    Params:
+      num_fields — number of soft colour fields.
+      bleed      — fractional bleed softness.
+    """
+    h, w = shape
+    if sm < 0.001:
+        return _flat(shape)
+    rng = np.random.default_rng(seed + 10200)
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+    yf = yy / max(h, 1); xf = xx / max(w, 1)
+    result = np.full(shape, 0.5, dtype=np.float32)
+    # One shared bleed noise map — cheap, re-phased per field
+    rim_noise_base = multi_scale_noise(shape, [30, 60], [0.6, 0.4],
+                                        seed + 10201)
+    rim_noise_base = (_normalize(rim_noise_base) - 0.5) * bleed
+    for i in range(num_fields):
+        cx = rng.uniform(0.05, 0.95); cy = rng.uniform(0.05, 0.95)
+        rx = rng.uniform(0.15, 0.5); ry = rng.uniform(0.15, 0.5)
+        v = float(rng.uniform(0.2, 0.85))
+        # Elliptical distance, then extremely soft falloff
+        d = np.sqrt(((xf - cx) / rx) ** 2 + ((yf - cy) / ry) ** 2)
+        falloff = np.exp(-(d ** 2) / (2.0 * 0.9 ** 2))
+        # Phase-shift shared rim-noise so each field's edge looks distinct
+        phase_y = int(rng.integers(0, h))
+        phase_x = int(rng.integers(0, w))
+        rim_noise = np.roll(np.roll(rim_noise_base, phase_y, axis=0),
+                             phase_x, axis=1)
+        falloff = np.clip(falloff + rim_noise * (1.0 - falloff), 0, 1)
+        result = result * (1.0 - falloff) + v * falloff
+    # Large gaussian to emulate soak (sigma bounded to avoid cv2 overhead)
+    soak_sigma = float(min(min(h, w) * 0.005 + 1.0, 10.0))
+    result = _gauss(result, sigma=soak_sigma)
+    result = np.clip(result, 0, 1).astype(np.float32)
+    out = _sm_scale(_normalize(result), sm).astype(np.float32)
+    return _validate_spec_output(out, "abstract_color_field_bleed")
+
+
+def abstract_fluid_acrylic_pour(shape, seed, sm, swirl_freq=6.0,
+                                  turb_scale=40.0, **kwargs):
+    """
+    Fluid-acrylic pour — swirling marbled cells produced by combining
+    a large-scale domain-warped noise with per-cell 'ring' banding,
+    evoking 'cells' in a gravity pour painting. Targets R=Metallic.
+
+    Params:
+      swirl_freq  — frequency of the swirl warp.
+      turb_scale  — base turbulence scale.
+    """
+    h, w = shape
+    if sm < 0.001:
+        return _flat(shape)
+    # Base low-frequency field
+    base = multi_scale_noise(shape, [turb_scale, turb_scale * 0.5],
+                              [0.6, 0.4], seed + 10210)
+    base = _normalize(base)
+    # Warp coordinates using the noise
+    warp_x = multi_scale_noise(shape, [turb_scale * 0.6], [1.0],
+                                seed + 10211)
+    warp_y = multi_scale_noise(shape, [turb_scale * 0.6], [1.0],
+                                seed + 10212)
+    warp_x = (_normalize(warp_x) - 0.5) * 0.15
+    warp_y = (_normalize(warp_y) - 0.5) * 0.15
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+    yf = yy / max(h, 1) + warp_y
+    xf = xx / max(w, 1) + warp_x
+    # Cell rings from distance from noise-defined centres
+    swirl = np.sin((base + yf * 0.5 + xf * 0.5) * swirl_freq * 2 * np.pi)
+    swirl = swirl * 0.5 + 0.5
+    # Overlay a second twist
+    swirl2 = np.sin((base * 1.7 - yf * 0.3 + xf * 0.7) *
+                     swirl_freq * 1.3 * 2 * np.pi)
+    swirl2 = swirl2 * 0.5 + 0.5
+    result = 0.55 * swirl + 0.45 * swirl2
+    result = _gauss(result.astype(np.float32), sigma=0.8)
+    result = np.clip(_normalize(result), 0, 1).astype(np.float32)
+    out = _sm_scale(result, sm).astype(np.float32)
+    return _validate_spec_output(out, "abstract_fluid_acrylic_pour")
+
+
+def abstract_ink_wash_gradient(shape, seed, sm, edge_bleeds=12, **kwargs):
+    """
+    Sumi-e ink wash — a large graded wash from bright to dark with
+    irregular bleed edges and small dark dropped ink blots near the
+    dark end. Targets G=Roughness.
+
+    Params:
+      edge_bleeds — number of bleed fingers along the gradient edge.
+    """
+    h, w = shape
+    if sm < 0.001:
+        return _flat(shape)
+    rng = np.random.default_rng(seed + 10220)
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+    yf = yy / max(h, 1); xf = xx / max(w, 1)
+    # Angled base gradient
+    ang = float(rng.uniform(-0.4, 0.4))
+    grad = yf * np.cos(ang) + xf * np.sin(ang)
+    grad = _normalize(grad.astype(np.float32))
+    # Irregular wash boundary: shift the gradient by a multi-scale noise
+    noise = multi_scale_noise(shape, [20, 40, 80], [0.4, 0.4, 0.2],
+                               seed + 10221)
+    noise = (_normalize(noise) - 0.5) * 0.25
+    wash = np.clip(grad + noise, 0, 1)
+    # Dark mid/low = rough; gamma-curve to emulate ink soaking
+    wash = np.power(wash, 1.8)
+    # Drop ink blots (small dark blobs) in the darker half
+    blots = np.zeros(shape, dtype=np.float32)
+    for _ in range(edge_bleeds):
+        # choose a point weighted toward the darker region
+        cx = rng.uniform(0.0, 1.0)
+        cy = rng.uniform(0.0, 1.0)
+        # only allow if dark
+        idx_y = int(np.clip(cy * h, 0, h - 1))
+        idx_x = int(np.clip(cx * w, 0, w - 1))
+        if wash[idx_y, idx_x] > 0.55:
+            continue
+        rad = rng.uniform(0.01, 0.04)
+        d2 = (xf - cx) ** 2 + (yf - cy) ** 2
+        blots += np.exp(-d2 / (2.0 * rad * rad)) * rng.uniform(0.3, 0.7)
+    blots = np.clip(blots, 0, 1)
+    result = np.clip(1.0 - wash + blots * 0.5, 0, 1).astype(np.float32)
+    out = _sm_scale(_normalize(result), sm).astype(np.float32)
+    return _validate_spec_output(out, "abstract_ink_wash_gradient")
+
+
+def abstract_neon_glitch(shape, seed, sm, n_slices=30, bar_density=0.08,
+                          **kwargs):
+    """
+    Digital glitch artefact — horizontal data-corruption slices,
+    scanline banding, and small rectangular RGB-shift blocks.
+    Targets R=Metallic with high contrast.
+
+    Params:
+      n_slices    — number of glitch slice bands.
+      bar_density — density of horizontal scanline bars.
+    """
+    h, w = shape
+    if sm < 0.001:
+        return _flat(shape)
+    rng = np.random.default_rng(seed + 10230)
+    result = np.full(shape, 0.5, dtype=np.float32)
+    # Scanline grid
+    yy = np.arange(h).reshape(-1, 1).astype(np.float32)
+    scan = 0.5 + 0.15 * np.sin(yy * (2 * np.pi / 2.0))
+    result = result * 0.5 + np.broadcast_to(scan, shape) * 0.5
+
+    # Slice offsets — horizontal bands shifted +/- some pixels
+    for _ in range(n_slices):
+        y0 = int(rng.uniform(0, h - 1))
+        y1 = int(min(h, y0 + rng.integers(1, max(2, int(h * 0.03)))))
+        shift = int(rng.integers(-int(w * 0.08), int(w * 0.08) + 1))
+        brightness = float(rng.uniform(-0.3, 0.35))
+        if shift == 0:
+            result[y0:y1, :] = np.clip(result[y0:y1, :] + brightness, 0, 1)
+        else:
+            result[y0:y1, :] = np.roll(result[y0:y1, :], shift, axis=1)
+            result[y0:y1, :] = np.clip(result[y0:y1, :] + brightness, 0, 1)
+
+    # Small rectangular glitch blocks (datamosh)
+    n_blocks = int(bar_density * 200)
+    for _ in range(n_blocks):
+        by = int(rng.uniform(0, h))
+        bx = int(rng.uniform(0, w))
+        bh = int(rng.integers(2, max(3, int(h * 0.02))))
+        bw = int(rng.integers(int(w * 0.02), int(w * 0.15)))
+        y0 = max(0, by); y1 = min(h, by + bh)
+        x0 = max(0, bx); x1 = min(w, bx + bw)
+        v = float(rng.choice([0.08, 0.92]))
+        result[y0:y1, x0:x1] = v
+    out = _sm_scale(_normalize(result.astype(np.float32)), sm).astype(np.float32)
+    return _validate_spec_output(out, "abstract_neon_glitch")
+
+
+def abstract_retro_wave(shape, seed, sm, horizon_frac=0.55,
+                          grid_freq_x=28.0, grid_freq_y=18.0, **kwargs):
+    """
+    Synthwave retro grid — perspective floor grid receding to a
+    horizon, with a soft sun gradient above. Iconic 80s
+    vapourwave aesthetic. Targets R=Metallic.
+
+    Params:
+      horizon_frac — fraction of height where horizon sits.
+      grid_freq_x  — horizontal line frequency.
+      grid_freq_y  — receding line frequency.
+    """
+    h, w = shape
+    if sm < 0.001:
+        return _flat(shape)
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+    yf = yy / max(h, 1); xf = xx / max(w, 1)
+    result = np.full(shape, 0.5, dtype=np.float32)
+
+    # Sun semi-circle above horizon
+    cx = 0.5; cy = horizon_frac
+    r_sun = 0.18
+    d = np.sqrt((xf - cx) ** 2 + (yf - cy) ** 2)
+    sun = np.clip(1.0 - d / r_sun, 0, 1)
+    sun = sun * (yf <= horizon_frac).astype(np.float32)
+    # Horizontal dark sun bands
+    sun *= 0.5 + 0.5 * np.sign(np.sin((yf - cy) * 80.0))
+    result += sun * 0.35
+
+    # Floor grid below horizon
+    below = (yf > horizon_frac).astype(np.float32)
+    # Perspective projection: v = (yf - horizon) / (1 - horizon)
+    v = np.clip((yf - horizon_frac) / max(1 - horizon_frac, 1e-3), 0, 1)
+    # Receding horizontal lines: density increases toward horizon
+    lines_y = np.abs(np.sin(np.power(v + 1e-3, 0.5) * grid_freq_y * np.pi))
+    # Converging vertical lines: u = (xf - 0.5) / v
+    u = (xf - 0.5) / np.clip(v, 0.05, 1.0)
+    lines_x = np.abs(np.sin(u * grid_freq_x * np.pi))
+    grid = np.maximum(1.0 - lines_y * 4.0, 1.0 - lines_x * 4.0)
+    grid = np.clip(grid, 0, 1)
+    result += grid * below * 0.35
+    # Darken sky above horizon
+    result -= (1.0 - below) * 0.10
+    result = np.clip(result, 0, 1).astype(np.float32)
+    out = _sm_scale(_normalize(result), sm).astype(np.float32)
+    return _validate_spec_output(out, "abstract_retro_wave")
+
+
+def abstract_bauhaus_forms(shape, seed, sm, n_primitives=9, **kwargs):
+    """
+    Bauhaus primary forms — circle, square, and triangle primitives
+    sized and placed according to Bauhaus design-school principles:
+    clear hierarchy, primary-colour tonality, balanced asymmetry.
+    Targets R=Metallic.
+
+    Params:
+      n_primitives — number of primary forms.
+    """
+    h, w = shape
+    if sm < 0.001:
+        return _flat(shape)
+    rng = np.random.default_rng(seed + 10250)
+    result = np.full(shape, 0.5, dtype=np.float32)
+
+    for _ in range(n_primitives):
+        cx = float(rng.uniform(0.12, 0.88))
+        cy = float(rng.uniform(0.12, 0.88))
+        sz = float(rng.uniform(0.05, 0.22))
+        kind = int(rng.integers(0, 3))
+        v = float(rng.choice([0.08, 0.92, 0.35, 0.70]))
+        reach = sz + 0.01
+        reach_x = int(reach * w) + 2
+        reach_y = int(reach * h) + 2
+        cxp = int(cx * w); cyp = int(cy * h)
+        x0 = max(0, cxp - reach_x); x1 = min(w, cxp + reach_x + 1)
+        y0 = max(0, cyp - reach_y); y1 = min(h, cyp + reach_y + 1)
+        if x1 <= x0 or y1 <= y0:
+            continue
+        tyy, txx = np.mgrid[y0:y1, x0:x1].astype(np.float32)
+        tyf = tyy / max(h, 1); txf = txx / max(w, 1)
+        if kind == 0:
+            d = np.sqrt((txf - cx) ** 2 + (tyf - cy) ** 2)
+            mask = np.clip(1.0 - (d - sz * 0.5) * 400.0, 0, 1)
+        elif kind == 1:
+            dx = np.abs(txf - cx); dy = np.abs(tyf - cy)
+            edge = np.maximum(dx - sz * 0.5, dy - sz * 0.5)
+            mask = np.clip(-edge * 400.0, 0, 1)
+        else:
+            dx = txf - cx; dy = tyf - cy
+            rot = float(rng.uniform(0, 2 * np.pi))
+            rx = dx * np.cos(rot) + dy * np.sin(rot)
+            ry = -dx * np.sin(rot) + dy * np.cos(rot)
+            tri_edge = np.maximum(ry + np.abs(rx) * 0.577 - sz * 0.45,
+                                    -ry - sz * 0.25)
+            mask = np.clip(-tri_edge * 400.0, 0, 1)
+        result[y0:y1, x0:x1] = result[y0:y1, x0:x1] * (1.0 - mask) + v * mask
+    result = np.clip(result, 0, 1).astype(np.float32)
+    out = _sm_scale(_normalize(result), sm).astype(np.float32)
+    return _validate_spec_output(out, "abstract_bauhaus_forms")
+
+
+# ============================================================================
 # PATTERN CATALOG — for programmatic access
 # ============================================================================
 
@@ -6706,6 +10257,16 @@ PATTERN_CATALOG = {
     "brushed_sparkle": brushed_sparkle,
     "crushed_glass": crushed_glass,
     "prismatic_dust": prismatic_dust,
+    # --- SPARKLE SYSTEM EXPANSION (9 new) ---
+    "sparkle_rain": sparkle_rain,
+    "sparkle_constellation": sparkle_constellation,
+    "sparkle_nebula": sparkle_nebula,
+    "sparkle_firefly": sparkle_firefly,
+    "sparkle_shattered": sparkle_shattered,
+    "sparkle_champagne": sparkle_champagne,
+    "sparkle_comet": sparkle_comet,
+    "sparkle_galaxy_swirl": sparkle_galaxy_swirl,
+    "sparkle_electric_field": sparkle_electric_field,
     "chevron_bands": chevron_bands,
     "wave_bands": wave_bands,
     "gradient_bands": gradient_bands,
@@ -6831,7 +10392,980 @@ PATTERN_CATALOG = {
     "spec_magnetic_ferrofluid": spec_magnetic_ferrofluid,
     "spec_aerogel_surface": spec_aerogel_surface,
     "spec_damascus_steel_spec": spec_damascus_steel_spec,
+    # --- RACING & AUTOMOTIVE (v6.2) ---
+    "tire_rubber_transfer": tire_rubber_transfer,
+    "vinyl_wrap_texture": vinyl_wrap_texture,
+    "paint_drip_edge": paint_drip_edge,
+    "racing_tape_residue": racing_tape_residue,
+    "sponsor_deboss": sponsor_deboss,
+    "heat_discoloration": heat_discoloration,
+    "salt_spray_corrosion": salt_spray_corrosion,
+    "track_grime": track_grime,
+    # --- v6.2.x SPONSOR & VINYL ---
+    "vinyl_seam": vinyl_seam,
+    "decal_lift_edge": decal_lift_edge,
+    "sponsor_emboss_v2": sponsor_emboss_v2,
+    "sticker_bubble_film": sticker_bubble_film,
+    "vinyl_stretched": vinyl_stretched,
+    # --- v6.2.x RACE WEAR ---
+    "tire_smoke_residue": tire_smoke_residue,
+    "brake_dust_buildup": brake_dust_buildup,
+    "oil_streak_panel": oil_streak_panel,
+    "gravel_chip_field": gravel_chip_field,
+    "wax_streak_polish": wax_streak_polish,
+    # --- v6.2.x PREMIUM FINISHES ---
+    "mother_of_pearl_inlay": mother_of_pearl_inlay,
+    "anodized_rainbow": anodized_rainbow,
+    "frosted_glass_etch": frosted_glass_etch,
+    "gold_leaf_torn": gold_leaf_torn,
+    "copper_patina_drip": copper_patina_drip,
+    # --- v6.2.x COLOR-SHIFT VARIANTS ---
+    "brushed_linear_warm": brushed_linear_warm,
+    "brushed_linear_cool": brushed_linear_cool,
+    "micro_sparkle_warm": micro_sparkle_warm,
+    "micro_sparkle_cool": micro_sparkle_cool,
+    "cloud_wisps_warm": cloud_wisps_warm,
+    "cloud_wisps_cool": cloud_wisps_cool,
+    "aniso_grain_deep": aniso_grain_deep,
+    # --- v6.2.y RACE HERITAGE ---
+    "checker_flag_subtle": checker_flag_subtle,
+    "drag_strip_burnout": drag_strip_burnout,
+    "pit_lane_stripes": pit_lane_stripes,
+    "victory_lap_confetti": victory_lap_confetti,
+    "sponsor_tape_vinyl": sponsor_tape_vinyl,
+    "race_number_ghost": race_number_ghost,
+    # --- v6.2.y MECHANICAL ---
+    "exhaust_pipe_scorch": exhaust_pipe_scorch,
+    "radiator_grille_mesh": radiator_grille_mesh,
+    "engine_bay_grime": engine_bay_grime,
+    "tire_smoke_streaks": tire_smoke_streaks,
+    "undercarriage_spray": undercarriage_spray,
+    "suspension_rust_ring": suspension_rust_ring,
+    # --- v6.2.y WEATHER & TRACK ---
+    "rain_droplet_beads": rain_droplet_beads,
+    "mud_splatter_random": mud_splatter_random,
+    "wet_track_gloss": wet_track_gloss,
+    "dry_dust_film": dry_dust_film,
+    "morning_dew_fog": morning_dew_fog,
+    "tarmac_grit_embed": tarmac_grit_embed,
+    # --- v6.2.y ARTISTIC ---
+    "brushstroke_bold": brushstroke_bold,
+    "crayon_wax_resist": crayon_wax_resist,
+    "airbrush_gradient_bloom": airbrush_gradient_bloom,
+    "spray_paint_drip": spray_paint_drip,
+    "stippled_dots_fine": stippled_dots_fine,
+    "halftone_print": halftone_print,
+    # --- ABSTRACT ART (17 patterns) ---
+    "abstract_expressionist_splatter": abstract_expressionist_splatter,
+    "abstract_cubist_facets": abstract_cubist_facets,
+    "abstract_rothko_field": abstract_rothko_field,
+    "abstract_kandinsky_shapes": abstract_kandinsky_shapes,
+    "abstract_mondrian_grid": abstract_mondrian_grid,
+    "abstract_op_art_circles": abstract_op_art_circles,
+    "abstract_op_art_waves": abstract_op_art_waves,
+    "abstract_suprematism": abstract_suprematism,
+    "abstract_futurist_motion": abstract_futurist_motion,
+    "abstract_minimalist_stripe": abstract_minimalist_stripe,
+    "abstract_hard_edge_field": abstract_hard_edge_field,
+    "abstract_color_field_bleed": abstract_color_field_bleed,
+    "abstract_fluid_acrylic_pour": abstract_fluid_acrylic_pour,
+    "abstract_ink_wash_gradient": abstract_ink_wash_gradient,
+    "abstract_neon_glitch": abstract_neon_glitch,
+    "abstract_retro_wave": abstract_retro_wave,
+    "abstract_bauhaus_forms": abstract_bauhaus_forms,
 }
+
+# 2026-04-21 HEENAN OVERNIGHT iter 3: HP2 / HP3 / H4HR-4..H4HR-8
+# cross-registry rename aliases. The JS side renamed these spec-pattern
+# IDs to disambiguate from colliding MONOLITHIC ids (HP2: carbon_weave,
+# HP3: diffraction_grating, H4HR-4..8: oil_slick/gravity_well/sparkle_*),
+# but PATTERN_CATALOG still uses the un-prefixed legacy keys. Without
+# this block, selecting the JS-canonical id results in
+# PATTERN_CATALOG.get(sp_name) → None → `continue` (silent no-render).
+#
+# Each alias points the JS-canonical id at the same function the old
+# key points at, so the painter gets identical render output.
+_HP_H4HR_SPEC_ALIASES = {
+    # HP2 — cross-registry rename to disambiguate from BASES/PATTERNS carbon_weave
+    "spec_carbon_weave":              "carbon_weave",
+    # HP3 — renamed to spec_diffraction_grating_cd (CC target via docstring)
+    "spec_diffraction_grating_cd":    "diffraction_grating",
+    # H4HR-4..H4HR-8 — 5 collisions vs MONOLITHICS
+    "spec_oil_slick":                 "oil_slick",
+    "spec_gravity_well":              "gravity_well",
+    "spec_sparkle_constellation":     "sparkle_constellation",
+    "spec_sparkle_firefly":           "sparkle_firefly",
+    "spec_sparkle_champagne":         "sparkle_champagne",
+}
+for _new_id, _old_id in _HP_H4HR_SPEC_ALIASES.items():
+    if _new_id not in PATTERN_CATALOG and _old_id in PATTERN_CATALOG:
+        PATTERN_CATALOG[_new_id] = PATTERN_CATALOG[_old_id]
+
+
+def _spb_catalog_seed(name):
+    h = 2166136261
+    for ch in str(name):
+        h ^= ord(ch)
+        h = (h * 16777619) & 0xFFFFFFFF
+    return h
+
+
+def _spb_micro_overlay(shape, seed, family):
+    h, w = shape[:2] if len(shape) > 2 else shape
+    rng_seed = (int(seed) * 1664525 + int(family) * 1013904223) & 0xFFFFFFFF
+    rng = np.random.default_rng(rng_seed)
+    raw = rng.random((h, w), dtype=np.float32)
+    fine = raw * 0.58 + _gauss(raw, sigma=0.85) * 0.27 + _gauss(raw, sigma=2.1) * 0.15
+    fine = _normalize(fine).astype(np.float32)
+    sparkle = (raw > (0.986 - min(0.018, (family % 10) * 0.0018))).astype(np.float32)
+    if sparkle.any():
+        sparkle = np.maximum(sparkle, _gauss(sparkle, sigma=0.38) * 0.55).astype(np.float32)
+    return fine, sparkle
+
+
+_SPB_SPEC_REBUILD_MODES = {
+    "depth_gradient": "depth_pool",
+    "abstract_ink_wash_gradient": "ink_wash",
+    "cc_fish_eye": "bubbles",
+    "cc_drip_runs": "drips",
+    "sponsor_tape_vinyl": "tape",
+    "race_number_ghost": "race_ghost",
+    "crayon_wax_resist": "wax",
+    "exhaust_pipe_scorch": "scorch",
+    "spec_battle_scars": "scratches",
+    "electric_branches": "branches",
+    "undercarriage_spray": "spray_grit",
+    "tire_smoke_streaks": "smoke_streaks",
+    "abstract_suprematism": "hard_edge",
+    "cloud_wisps": "wisps",
+    "tarmac_grit_embed": "grit",
+    "spec_cast_surface": "cast_pits",
+    "abstract_expressionist_splatter": "splatter",
+    "spec_chromatic_aberration": "chromatic_fringe",
+    "sponsor_deboss": "deboss",
+    "abstract_minimalist_stripe": "pinstripe",
+    "rain_droplet_beads": "beads",
+    "tire_smoke_residue": "smoke_residue",
+    "victory_lap_confetti": "confetti",
+    "sticker_bubble_film": "bubbles",
+    "spec_caustic_light": "caustic",
+    "cloud_wisps_cool": "wisps",
+    "gravel_chip_field": "chips",
+    "racing_tape_residue": "tape",
+    "spec_thermal_spray": "thermal_spray",
+    "spec_leaf_venation": "leaf_veins",
+    "sponsor_emboss_v2": "emboss",
+    "moire_overlay": "moire_rebuild",
+    "engine_bay_grime": "oil_grime",
+    "brushstroke_bold": "bristles",
+    "abstract_kandinsky_shapes": "kandinsky",
+}
+
+
+def _spb_draw_line(canvas, x0, y0, x1, y1, value=1.0, thickness=1):
+    h, w = canvas.shape
+    if _CV2_OK:
+        _cv2.line(
+            canvas,
+            (int(np.clip(x0, 0, w - 1)), int(np.clip(y0, 0, h - 1))),
+            (int(np.clip(x1, 0, w - 1)), int(np.clip(y1, 0, h - 1))),
+            float(value),
+            thickness=max(1, int(thickness)),
+            lineType=_cv2.LINE_AA,
+        )
+        return
+    steps = max(abs(int(x1 - x0)), abs(int(y1 - y0)), 1)
+    xs = np.clip(np.linspace(x0, x1, steps + 1).astype(np.int32), 0, w - 1)
+    ys = np.clip(np.linspace(y0, y1, steps + 1).astype(np.int32), 0, h - 1)
+    np.maximum.at(canvas, (ys, xs), float(value))
+
+
+def _spb_spec_rebuild_feature(shape, seed, name, mode):
+    """Targeted concept layer for underperforming spec overlays.
+
+    This is intentionally ID-gated. The global wrapper adds pixel coverage;
+    these modes add the visual idea the weak thumbnail promised.
+    """
+    h, w = shape[:2] if len(shape) > 2 else shape
+    rng = np.random.default_rng((_spb_catalog_seed(name) + int(seed) * 2654435761) & 0xFFFFFFFF)
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+    xn = xx / max(w - 1, 1)
+    yn = yy / max(h - 1, 1)
+    base = np.zeros((h, w), dtype=np.float32)
+    fine, sparkle = _spb_micro_overlay((h, w), seed + 991, _spb_catalog_seed(name) ^ 0xA5A5A5A5)
+
+    if mode == "depth_pool":
+        gravity = yn ** 1.35
+        meniscus = np.sin((yn + fine * 0.075) * np.pi * 34.0 + np.sin(xn * 13.0) * 1.7)
+        base = gravity * 0.58 + (meniscus * 0.5 + 0.5) * 0.22 + fine * 0.20
+        for _ in range(18):
+            x = rng.uniform(0, w)
+            _spb_draw_line(base, x, rng.uniform(0, h * 0.15), x + rng.uniform(-18, 18), h, rng.uniform(0.35, 0.95), 1)
+        base = np.maximum(base, _gauss(base, 0.55) * 0.72)
+    elif mode in {"drips", "spray_grit"}:
+        for _ in range(90 if mode == "drips" else 150):
+            x = rng.uniform(0, w)
+            y0 = rng.uniform(0, h * 0.92)
+            length = rng.uniform(h * 0.035, h * (0.28 if mode == "drips" else 0.13))
+            lean = rng.uniform(-0.08, 0.08) * length
+            _spb_draw_line(base, x, y0, x + lean, y0 + length, rng.uniform(0.35, 1.0), rng.integers(1, 3))
+        base += sparkle * (0.40 if mode == "spray_grit" else 0.20)
+        base = np.maximum(base, _gauss(base, 0.75) * 0.62)
+    elif mode in {"bubbles", "beads"}:
+        count = 180 if mode == "bubbles" else 260
+        max_r = 13.0 if mode == "bubbles" else 8.0
+        for _ in range(count):
+            cx = int(rng.integers(0, w))
+            cy = int(rng.integers(0, h))
+            r = int(max(2, rng.uniform(2.0, max_r)))
+            value = float(rng.uniform(0.48, 1.0))
+            if _CV2_OK:
+                _cv2.circle(base, (cx, cy), r, value, 1, lineType=_cv2.LINE_AA)
+                if r > 3:
+                    _cv2.circle(base, (cx, cy), max(1, r // 3), value * 0.22, -1, lineType=_cv2.LINE_AA)
+            else:
+                _spb_draw_line(base, cx - r, cy, cx + r, cy, value, 1)
+                _spb_draw_line(base, cx, cy - r, cx, cy + r, value * 0.72, 1)
+        base += fine * 0.20
+    elif mode == "race_ghost":
+        # Two faded seven-segment-style numerals, with residue halos and worn edges.
+        for digit in range(2):
+            ox = w * (0.24 + digit * 0.27 + rng.uniform(-0.025, 0.025))
+            oy = h * rng.uniform(0.24, 0.36)
+            dw = w * rng.uniform(0.16, 0.22)
+            dh = h * rng.uniform(0.30, 0.42)
+            segs = [
+                (0.08, 0.00, 0.92, 0.00),
+                (0.00, 0.06, 0.00, 0.48),
+                (1.00, 0.06, 1.00, 0.48),
+                (0.10, 0.50, 0.90, 0.50),
+                (0.00, 0.54, 0.00, 0.94),
+                (1.00, 0.54, 1.00, 0.94),
+                (0.08, 1.00, 0.92, 1.00),
+            ]
+            keep = rng.choice(len(segs), size=int(rng.integers(4, 7)), replace=False)
+            for idx in keep:
+                x0, y0, x1, y1 = segs[int(idx)]
+                _spb_draw_line(
+                    base,
+                    ox + x0 * dw,
+                    oy + y0 * dh,
+                    ox + x1 * dw,
+                    oy + y1 * dh,
+                    rng.uniform(0.55, 1.0),
+                    max(2, int(min(h, w) * rng.uniform(0.006, 0.012))),
+                )
+        halo = _gauss(base, 2.0)
+        worn = (fine > 0.58).astype(np.float32)
+        base = np.maximum(base * (0.62 + worn * 0.38), halo * 0.42)
+        base += fine * 0.22 + sparkle * 0.18
+    elif mode in {"tape", "ghost", "deboss", "emboss"}:
+        for _ in range(16):
+            y = rng.uniform(0.05, 0.95)
+            ang = rng.uniform(-0.18, 0.18)
+            dist = np.abs((yn - y) - ang * (xn - 0.5))
+            base += np.exp(-(dist ** 2) / (2.0 * rng.uniform(0.0015, 0.0045) ** 2)) * rng.uniform(0.30, 0.75)
+        for _ in range(18 if mode in {"deboss", "emboss"} else 9):
+            x0 = rng.uniform(0.02, 0.80)
+            y0 = rng.uniform(0.02, 0.85)
+            bw = rng.uniform(0.035, 0.17)
+            bh = rng.uniform(0.018, 0.10)
+            edge = (
+                (np.abs(xn - (x0 + bw * 0.5)) < bw * 0.5).astype(np.float32)
+                * (np.abs(yn - (y0 + bh * 0.5)) < bh * 0.5).astype(np.float32)
+            )
+            if _CV2_OK:
+                rim = _cv2.Canny((edge * 255).astype(np.uint8), 1, 2).astype(np.float32) / 255.0
+            else:
+                rim = np.clip(
+                    np.abs(edge - np.roll(edge, 1, axis=0)) +
+                    np.abs(edge - np.roll(edge, 1, axis=1)),
+                    0,
+                    1,
+                )
+            base += rim * rng.uniform(0.35, 0.95) + edge * (0.09 if mode == "ghost" else 0.18)
+        base += fine * (0.12 if mode == "ghost" else 0.22)
+    elif mode in {"scratches", "chips"}:
+        for _ in range(260):
+            x = rng.uniform(0, w)
+            y = rng.uniform(0, h)
+            length = rng.uniform(4, 38)
+            ang = rng.uniform(0, 2 * np.pi)
+            _spb_draw_line(base, x, y, x + np.cos(ang) * length, y + np.sin(ang) * length, rng.uniform(0.35, 1.0), 1)
+        if mode == "chips":
+            base += sparkle * 0.65
+        base = np.maximum(base, _gauss(base, 0.45) * 0.55)
+    elif mode == "scorch":
+        cx = rng.uniform(0.35, 0.65) * w
+        cy = rng.uniform(0.38, 0.68) * h
+        d = np.hypot((xx - cx) / max(w, 1), (yy - cy) / max(h, 1))
+        rings = np.sin(d * 220.0 + fine * 3.0) * 0.5 + 0.5
+        plume = np.exp(-(d ** 2) / 0.085)
+        soot = _normalize(_gauss(fine, 3.0) + yn * 0.35)
+        base = plume * (0.42 + rings * 0.38) + soot * 0.24 + sparkle * 0.10
+    elif mode in {"branches", "leaf_veins"}:
+        root_count = 18 if mode == "branches" else 42
+        for _ in range(root_count):
+            x = rng.uniform(0, w)
+            y = rng.uniform(0, h)
+            ang = rng.uniform(-np.pi, np.pi)
+            length = rng.uniform(18, 70)
+            for depth in range(5):
+                x2 = x + np.cos(ang) * length
+                y2 = y + np.sin(ang) * length
+                _spb_draw_line(base, x, y, x2, y2, rng.uniform(0.45, 1.0), 1)
+                if rng.random() < 0.65:
+                    ang += rng.uniform(-0.78, 0.78)
+                x, y = x2, y2
+                length *= rng.uniform(0.52, 0.76)
+        base = np.maximum(base, _gauss(base, 0.58) * 0.60)
+        base += fine * 0.12
+    elif mode in {"wisps", "smoke_streaks", "smoke_residue", "oil_grime"}:
+        flow = (
+            np.sin(xx * 0.052 + yy * 0.018 + fine * 4.0)
+            + np.sin(xx * -0.026 + yy * 0.044 + fine * 5.5)
+        ) * 0.5 + 0.5
+        smear = _normalize(_gauss(fine, 5.0) + flow * 0.85 + yn * (0.22 if mode != "wisps" else 0.0))
+        streaks = np.sin(xx * 0.24 + yy * 0.035 + smear * 2.8) * 0.5 + 0.5
+        base = smear * 0.54 + streaks * 0.24 + sparkle * (0.10 if mode == "wisps" else 0.22)
+    elif mode in {"grit", "cast_pits", "thermal_spray"}:
+        density = 0.075 if mode == "grit" else 0.115
+        pits = (rng.random((h, w), dtype=np.float32) < density).astype(np.float32)
+        pits = np.maximum(pits, _gauss(pits, 0.65) * 0.62)
+        orange = _normalize(_gauss(rng.random((h, w), dtype=np.float32), 1.8))
+        base = pits * 0.58 + orange * 0.34 + fine * 0.20
+    elif mode in {"splatter", "confetti", "hard_edge", "kandinsky"}:
+        for _ in range(140 if mode == "splatter" else 70):
+            cx = int(rng.integers(0, w))
+            cy = int(rng.integers(0, h))
+            if mode in {"confetti", "hard_edge", "kandinsky"}:
+                rw = int(rng.integers(3, max(5, int(w * 0.035))))
+                rh = int(rng.integers(2, max(4, int(h * 0.028))))
+                x0, x1 = max(0, cx - rw), min(w, cx + rw)
+                y0, y1 = max(0, cy - rh), min(h, cy + rh)
+                base[y0:y1, x0:x1] = np.maximum(base[y0:y1, x0:x1], rng.uniform(0.38, 1.0))
+            else:
+                r = int(max(1, rng.uniform(1.5, 8.0)))
+                value = float(rng.uniform(0.45, 1.0))
+                if _CV2_OK:
+                    _cv2.circle(base, (cx, cy), r, value, -1, lineType=_cv2.LINE_AA)
+                    if r > 2:
+                        _cv2.circle(base, (cx, cy), r + 1, value * 0.42, 1, lineType=_cv2.LINE_AA)
+                else:
+                    x0, x1 = max(0, cx - r), min(w, cx + r + 1)
+                    y0, y1 = max(0, cy - r), min(h, cy + r + 1)
+                    base[y0:y1, x0:x1] = np.maximum(base[y0:y1, x0:x1], value)
+        base += fine * 0.14
+    elif mode in {"pinstripe", "moire_rebuild", "chromatic_fringe"}:
+        angle = rng.uniform(-0.5, 0.5)
+        coord = (xx * np.cos(angle) + yy * np.sin(angle))
+        freq1 = rng.uniform(0.42, 0.64)
+        freq2 = freq1 * rng.uniform(1.055, 1.11)
+        lines = (np.sin(coord * freq1) * 0.5 + 0.5) ** 9
+        lines2 = (np.sin((coord + yy * 0.12) * freq2 + 1.7) * 0.5 + 0.5) ** 9
+        base = np.maximum(lines, lines2) * 0.75 + fine * 0.18
+        if mode == "chromatic_fringe":
+            base += np.abs(np.sin(coord * 0.035 + fine * 3.0)) * 0.22
+    elif mode == "caustic":
+        web = (
+            np.sin(xx * 0.085 + fine * 6.0)
+            + np.sin(yy * 0.073 + fine * 5.0)
+            + np.sin((xx + yy) * 0.052)
+        )
+        base = np.clip((web - 1.0) * 0.50, 0, 1) + fine * 0.18
+        base = np.maximum(base, _gauss(base, 0.50) * 0.64)
+    elif mode == "wax":
+        for _ in range(120):
+            y = rng.uniform(0, h)
+            x0 = rng.uniform(0, w * 0.25)
+            x1 = rng.uniform(w * 0.55, w)
+            wobble = rng.uniform(-26, 26)
+            _spb_draw_line(base, x0, y, x1, y + wobble, rng.uniform(0.25, 0.90), rng.integers(1, 3))
+        base += (1.0 - fine) * 0.18 + sparkle * 0.16
+    elif mode == "bristles":
+        for _ in range(180):
+            y = rng.uniform(0, h)
+            x = rng.uniform(0, w)
+            length = rng.uniform(18, 96)
+            _spb_draw_line(base, x, y, x + length, y + rng.uniform(-12, 12), rng.uniform(0.32, 1.0), rng.integers(1, 4))
+        base = np.maximum(base, _gauss(base, 0.60) * 0.58)
+    else:
+        base = fine
+
+    base = _normalize(np.clip(base, 0, None).astype(np.float32))
+    # Restore a subtle all-over carrier so dense panel coverage survives at 2048.
+    return np.clip(base * 0.86 + fine * 0.10 + sparkle * 0.04, 0, 1).astype(np.float32)
+
+
+def _spb_spec_detail_profile(name, index):
+    family = _spb_catalog_seed(name)
+    is_sparkle = any(tok in name for tok in ("sparkle", "flake", "dust", "glass", "shimmer", "crystal", "sand"))
+    is_directional = any(tok in name for tok in ("brushed", "grain", "grating", "weave", "carbon", "machined"))
+    is_weather = any(tok in name for tok in ("mud", "dust", "grime", "rust", "scorch", "patina", "wear", "rain"))
+    is_ring = any(tok in name for tok in ("ring", "ripple", "concentric", "halo", "spiral", "wave"))
+    is_crack = any(tok in name for tok in ("crack", "branch", "lightning", "electric", "shatter", "fracture"))
+    is_grid = any(tok in name for tok in ("grid", "hex", "cell", "matrix", "dot", "weave", "carbon"))
+    return {
+        "detail_gain": 0.21 + (family % 7) * 0.014 + (0.22 if is_sparkle else 0.0) + (0.10 if is_directional else 0.0),
+        "edge_gain": 0.048 + (index % 5) * 0.009 + (0.034 if is_directional else 0.0) + (0.020 if is_weather else 0.0),
+        "sparkle_gain": 0.110 + (family % 9) * 0.010 + (0.130 if is_sparkle else 0.0),
+        "threshold_shift": min(0.085, (family % 11) * 0.007),
+        "directional_gain": 0.140 if is_directional else 0.0,
+        "ring_gain": 0.170 if is_ring else 0.0,
+        "crack_gain": 0.190 if is_crack else 0.0,
+        "grid_gain": 0.155 if is_grid else 0.0,
+    }
+
+
+_SPEC_PATTERN_DETAIL_PROFILES = {
+    _spb_name: _spb_spec_detail_profile(_spb_name, _spb_i)
+    for _spb_i, _spb_name in enumerate(PATTERN_CATALOG)
+}
+
+
+def _spb_wrap_spec_pattern(name, fn):
+    if getattr(fn, "_spb_detail_wrapped", False):
+        return fn
+    if getattr(fn, "_spb_concept_complete", False):
+        fn._spb_detail_wrapped = True
+        return fn
+    rebuild_mode = _SPB_SPEC_REBUILD_MODES.get(name)
+    if not rebuild_mode:
+        return fn
+
+    def _wrapped(shape, seed=0, sm=1.0, **kwargs):
+        strength = float(np.clip(abs(sm), 0.0, 2.0))
+        if strength <= 1e-6:
+            return _validate_spec_output(fn(shape, seed, sm, **kwargs), name)
+        concept = _spb_spec_rebuild_feature(shape, seed + 1217, name, rebuild_mode)
+        concept_edge = np.clip(
+            np.abs(concept - np.roll(concept, 1, axis=0)) +
+            np.abs(concept - np.roll(concept, 1, axis=1)),
+            0,
+            1,
+        )
+        enhanced = _normalize(np.clip(concept + concept_edge * 0.20 * min(strength, 1.0), 0, 1))
+        enhanced = np.clip(0.5 + (enhanced - 0.5) * (1.12 + 0.18 * min(strength, 1.0)), 0, 1)
+        return _validate_spec_output(np.clip(enhanced, 0, 1).astype(np.float32), name)
+
+    _wrapped._spb_detail_wrapped = True
+    _wrapped.__name__ = getattr(fn, "__name__", name)
+    _wrapped.__doc__ = getattr(fn, "__doc__", None)
+    _wrapped.__module__ = getattr(fn, "__module__", __name__)
+    return _wrapped
+
+
+PATTERN_CATALOG = {
+    _spb_name: _spb_wrap_spec_pattern(_spb_name, _spb_fn)
+    for _spb_name, _spb_fn in PATTERN_CATALOG.items()
+}
+
+
+def _spb_fast_line_distance(coord, period, width, phase=0.0):
+    pos = np.mod(coord + float(phase), float(period))
+    dist = np.minimum(pos, float(period) - pos)
+    return np.clip(1.0 - dist / max(float(width), 1e-6), 0, 1).astype(np.float32)
+
+
+def _spb_fast_hash_grid(shape, seed):
+    h, w = shape[:2] if len(shape) > 2 else shape
+    y = np.arange(h, dtype=np.float32)[:, np.newaxis]
+    x = np.arange(w, dtype=np.float32)[np.newaxis, :]
+    return (np.mod(x * 12.9898 + y * 78.233 + float(seed % 997) * 37.719, 101.0) / 100.0).astype(np.float32)
+
+
+def _spb_fast_dots_px(x, y, period_x, period_y, radius, phase_x=0.0, phase_y=0.0):
+    px = np.mod(x + float(phase_x), float(period_x)) - float(period_x) * 0.5
+    py = np.mod(y + float(phase_y), float(period_y)) - float(period_y) * 0.5
+    rr = float(radius) * float(radius)
+    return np.clip(1.0 - (px * px + py * py) / max(rr, 1e-6), 0, 1).astype(np.float32)
+
+
+def _spb_fast_spec_pattern(name, style):
+    def _fast(shape, seed=0, sm=1.0, **kwargs):
+        h, w = shape[:2] if len(shape) > 2 else shape
+        if sm < 0.001:
+            return _flat((h, w))
+        rng = np.random.default_rng((_spb_catalog_seed(name) ^ int(seed) * 2654435761) & 0xFFFFFFFF)
+        y = np.arange(h, dtype=np.float32)[:, np.newaxis]
+        x = np.arange(w, dtype=np.float32)[np.newaxis, :]
+        base = np.zeros((h, w), dtype=np.float32)
+        grain = _spb_fast_hash_grid((h, w), seed + _spb_catalog_seed(name))
+
+        if style == "tire_rubber_transfer":
+            base.fill(0.50)
+            for _ in range(46):
+                pts = []
+                cx = rng.uniform(w * 0.10, w * 0.90)
+                cy = rng.uniform(h * 0.18, h * 0.86)
+                length = rng.uniform(w * 0.18, w * 0.52)
+                bow = rng.uniform(-h * 0.08, h * 0.08)
+                angle = rng.uniform(-0.22, 0.22)
+                for t in np.linspace(-0.5, 0.5, 18):
+                    px = cx + t * length
+                    py = cy + bow * (t * t - 0.25)
+                    rx = (px - cx) * np.cos(angle) - (py - cy) * np.sin(angle) + cx
+                    ry = (px - cx) * np.sin(angle) + (py - cy) * np.cos(angle) + cy
+                    pts.append([int(np.clip(rx, 0, w - 1)), int(np.clip(ry, 0, h - 1))])
+                if _CV2_OK:
+                    _cv2.polylines(base, [np.asarray(pts, dtype=np.int32)], False, float(rng.uniform(0.05, 0.32)), int(rng.integers(1, 4)), lineType=_cv2.LINE_AA)
+            base -= (grain > 0.985).astype(np.float32) * 0.10
+
+        elif style == "mother_of_pearl_inlay":
+            cell = 38.0
+            qx = np.floor((x + y * 0.28) / cell)
+            qy = np.floor((y - x * 0.16) / (cell * 0.78))
+            cell_hash = np.mod(qx * 17.0 + qy * 31.0 + float(seed % 251), 19.0) / 18.0
+            seams = np.maximum(_spb_fast_line_distance(x + y * 0.28, cell, 1.3, seed), _spb_fast_line_distance(y - x * 0.16, cell * 0.78, 1.3, seed * 0.37))
+            nacre = np.sin((x * 0.032 + y * 0.021) + cell_hash * 4.8) * 0.5 + 0.5
+            base = seams * 0.60 + nacre * 0.28 + cell_hash * 0.22 + (grain > 0.982).astype(np.float32) * 0.18
+
+        elif style == "meteor_impact":
+            base.fill(0.42)
+            for _ in range(7):
+                cx = int(rng.integers(0, w))
+                cy = int(rng.integers(0, h))
+                radius = int(rng.integers(max(8, min(h, w) // 38), max(16, min(h, w) // 10)))
+                if _CV2_OK:
+                    _cv2.circle(base, (cx, cy), radius, float(rng.uniform(0.72, 1.0)), 1, lineType=_cv2.LINE_AA)
+                    _cv2.circle(base, (cx, cy), max(2, radius // 4), float(rng.uniform(0.08, 0.24)), -1, lineType=_cv2.LINE_AA)
+                    for _ray in range(9):
+                        ang = rng.uniform(0, np.pi * 2)
+                        x2 = cx + np.cos(ang) * radius * rng.uniform(1.2, 2.8)
+                        y2 = cy + np.sin(ang) * radius * rng.uniform(1.2, 2.8)
+                        _cv2.line(base, (cx, cy), (int(np.clip(x2, 0, w - 1)), int(np.clip(y2, 0, h - 1))), float(rng.uniform(0.35, 0.88)), 1, lineType=_cv2.LINE_AA)
+            base += (grain > 0.992).astype(np.float32) * 0.25
+
+        elif style == "acid_etch":
+            directional = _spb_fast_line_distance(x + y * 0.22, 27.0, 2.2, seed)
+            pitted = (grain > 0.78).astype(np.float32)
+            if _CV2_OK:
+                pitted = _cv2.GaussianBlur(pitted, (0, 0), 1.2)
+            base = directional * 0.34 + pitted * 0.46 + _spb_fast_line_distance(x - y * 0.51, 73.0, 1.1, seed * 0.7) * 0.22
+
+        elif style == "rust_bloom":
+            bloom = (grain > 0.935).astype(np.float32)
+            if _CV2_OK:
+                bloom = _cv2.GaussianBlur(bloom, (0, 0), 3.0)
+            veins = np.maximum(_spb_fast_line_distance(x + y * 0.33, 61.0, 1.4, seed), _spb_fast_line_distance(x - y * 0.41, 79.0, 1.0, seed * 0.31))
+            base = bloom * 0.62 + veins * 0.30 + (grain > 0.985).astype(np.float32) * 0.20
+
+        elif style == "spec_shot_peened":
+            pits = (grain > 0.915).astype(np.float32)
+            if _CV2_OK:
+                pits = np.maximum(pits, _cv2.GaussianBlur(pits, (0, 0), 0.75) * 0.65)
+            base = pits * 0.72 + (grain > 0.985).astype(np.float32) * 0.22
+
+        elif style == "engraved_crosshatch":
+            a = _spb_fast_line_distance(x + y * 0.58, 16.0, 0.85, seed)
+            b = _spb_fast_line_distance(x - y * 0.62, 18.0, 0.85, seed * 0.29)
+            c = _spb_fast_line_distance(x, 96.0, 1.2, seed)
+            base = np.maximum(a, b) * 0.78 + c * 0.18 + grain * 0.08
+
+        elif style == "wax_streak_polish":
+            base.fill(0.48)
+            for _ in range(34):
+                y0 = int(rng.integers(0, h))
+                x0 = int(rng.integers(0, max(1, w // 4)))
+                x1 = int(rng.integers(max(2, w // 2), w))
+                wob = int(rng.integers(-max(2, h // 80), max(3, h // 80)))
+                if _CV2_OK:
+                    _cv2.line(base, (x0, y0), (x1, int(np.clip(y0 + wob, 0, h - 1))), float(rng.uniform(0.58, 0.92)), int(rng.integers(1, 3)), lineType=_cv2.LINE_AA)
+            base += _spb_fast_line_distance(y, 13.0, 0.45, seed) * 0.12 + grain * 0.05
+
+        elif style == "flow_lines":
+            wave = y + np.sin(x * 0.021 + seed * 0.013) * 13.0 + np.sin(x * 0.007 - seed * 0.017) * 31.0
+            base = _spb_fast_line_distance(wave, 34.0, 1.15, seed) * 0.76
+            base += _spb_fast_line_distance(wave + x * 0.035, 89.0, 0.9, seed * 0.21) * 0.28 + grain * 0.06
+
+        elif style == "oil_streak_panel":
+            base.fill(0.48)
+            for _ in range(22):
+                x0 = int(rng.integers(0, w))
+                y0 = int(rng.integers(0, max(1, h // 3)))
+                length = int(rng.integers(max(8, h // 10), max(12, h // 2)))
+                lean = int(rng.integers(-max(2, w // 24), max(3, w // 24)))
+                if _CV2_OK:
+                    _cv2.line(base, (x0, y0), (int(np.clip(x0 + lean, 0, w - 1)), int(np.clip(y0 + length, 0, h - 1))), float(rng.uniform(0.18, 0.42)), int(rng.integers(1, 4)), lineType=_cv2.LINE_AA)
+            smear = _spb_fast_line_distance(x + y * 0.11, 67.0, 2.0, seed) * 0.16
+            base += smear - (grain > 0.985).astype(np.float32) * 0.08
+
+        elif style == "copper_patina_drip":
+            base.fill(0.46)
+            for _ in range(32):
+                x0 = int(rng.integers(0, w))
+                y0 = int(rng.integers(0, h))
+                length = int(rng.integers(max(6, h // 30), max(12, h // 5)))
+                if _CV2_OK:
+                    _cv2.line(base, (x0, y0), (int(np.clip(x0 + rng.integers(-4, 5), 0, w - 1)), int(np.clip(y0 + length, 0, h - 1))), float(rng.uniform(0.62, 0.95)), int(rng.integers(1, 3)), lineType=_cv2.LINE_AA)
+                    _cv2.circle(base, (x0, y0), int(rng.integers(2, 7)), float(rng.uniform(0.54, 0.88)), -1, lineType=_cv2.LINE_AA)
+            base += (grain > 0.955).astype(np.float32) * 0.22 + _spb_fast_line_distance(y, 43.0, 1.1, seed) * 0.14
+
+        elif style in {"sponsor_deboss", "sponsor_emboss"}:
+            base.fill(0.50)
+            sign = -1.0 if style == "sponsor_deboss" else 1.0
+            for _ in range(16):
+                x0 = int(rng.integers(0, max(1, int(w * 0.82))))
+                y0 = int(rng.integers(0, max(1, int(h * 0.86))))
+                rw = int(rng.integers(max(8, w // 32), max(12, w // 8)))
+                rh = int(rng.integers(max(5, h // 44), max(9, h // 10)))
+                x1 = min(w - 1, x0 + rw)
+                y1 = min(h - 1, y0 + rh)
+                val = 0.5 + sign * float(rng.uniform(0.18, 0.38))
+                if _CV2_OK:
+                    _cv2.rectangle(base, (x0, y0), (x1, y1), val, 1, lineType=_cv2.LINE_AA)
+                    _cv2.line(base, (x0, (y0 + y1) // 2), (x1, (y0 + y1) // 2), 0.5 + sign * 0.12, 1, lineType=_cv2.LINE_AA)
+                    _cv2.line(base, ((x0 + x1) // 2, y0), ((x0 + x1) // 2, y1), 0.5 - sign * 0.10, 1, lineType=_cv2.LINE_AA)
+            base += (grain - 0.5) * 0.10
+
+        elif style == "banded_rows":
+            row = _spb_fast_line_distance(y, 28.0, 5.5, seed)
+            fine_rows = _spb_fast_line_distance(y, 7.0, 0.65, seed * 0.19)
+            base = row * 0.64 + fine_rows * 0.24 + _spb_fast_line_distance(x + y * 0.05, 93.0, 1.0, seed) * 0.12
+
+        elif style == "mud_splatter_random":
+            base.fill(0.46)
+            splats = (grain > 0.965).astype(np.float32)
+            if _CV2_OK:
+                splats = np.maximum(splats, _cv2.GaussianBlur(splats, (0, 0), 1.6) * 0.78)
+            gravity = (y / max(h - 1, 1)) ** 1.35
+            base += splats * (0.30 + gravity * 0.34) + (grain > 0.992).astype(np.float32) * 0.18
+
+        elif style == "spray_paint_drip":
+            base.fill(0.48)
+            mist = (grain > 0.90).astype(np.float32)
+            if _CV2_OK:
+                mist = _cv2.GaussianBlur(mist, (0, 0), 0.9)
+            for _ in range(28):
+                x0 = int(rng.integers(0, w))
+                y0 = int(rng.integers(0, h))
+                if _CV2_OK:
+                    _cv2.line(base, (x0, y0), (int(np.clip(x0 + rng.integers(-3, 4), 0, w - 1)), int(np.clip(y0 + rng.integers(h // 40, max(h // 7, h // 40 + 1)), 0, h - 1))), float(rng.uniform(0.62, 0.94)), 1, lineType=_cv2.LINE_AA)
+            base += mist * 0.26
+
+        elif style == "electroformed":
+            cells = np.maximum(_spb_fast_line_distance(x + y * 0.37, 31.0, 1.1, seed), _spb_fast_line_distance(x - y * 0.52, 43.0, 1.1, seed * 0.43))
+            nodules = (grain > 0.965).astype(np.float32)
+            if _CV2_OK:
+                nodules = np.maximum(nodules, _cv2.GaussianBlur(nodules, (0, 0), 0.85) * 0.62)
+            base = cells * 0.46 + nodules * 0.40 + grain * 0.10
+
+        elif style == "hand_polished":
+            arcs = _spb_fast_line_distance(x + np.sin(y * 0.018 + seed) * 18.0, 52.0, 1.0, seed)
+            swirls = _spb_fast_line_distance(np.sqrt((x - w * 0.5) ** 2 + (y - h * 0.5) ** 2), 19.0, 0.8, seed)
+            base = arcs * 0.48 + swirls * 0.32 + grain * 0.08
+
+        elif style == "electroplated_chrome":
+            bath = _spb_fast_line_distance(x + np.sin(y * 0.014 + seed) * 22.0, 47.0, 0.9, seed)
+            current = _spb_fast_line_distance(y - x * 0.18, 89.0, 0.75, seed * 0.31)
+            pinholes = (grain > 0.986).astype(np.float32)
+            base = bath * 0.42 + current * 0.26 + pinholes * 0.22 + 0.46
+
+        elif style == "xirallic_crystal":
+            facets = np.maximum(
+                np.maximum(_spb_fast_line_distance(x + y * 0.41, 29.0, 0.95, seed), _spb_fast_line_distance(x - y * 0.63, 37.0, 0.9, seed * 0.23)),
+                _spb_fast_line_distance(x * 0.18 + y, 43.0, 0.8, seed * 0.57),
+            )
+            flashes = (grain > 0.976).astype(np.float32)
+            base = facets * 0.48 + flashes * 0.34 + grain * 0.08 + 0.38
+
+        elif style == "pvd_coating":
+            vapor = _spb_fast_line_distance(y + np.sin(x * 0.015 + seed) * 18.0, 53.0, 1.0, seed)
+            ion = _spb_fast_line_distance(x - y * 0.28, 71.0, 0.85, seed * 0.47)
+            base = vapor * 0.40 + ion * 0.28 + (grain > 0.982).astype(np.float32) * 0.18 + 0.44
+
+        elif style == "quantum_noise":
+            packets = (grain > 0.91).astype(np.float32)
+            fringes = _spb_fast_line_distance(x + np.sin(y * 0.023 + seed) * 9.0, 17.0, 0.55, seed)
+            anti = _spb_fast_line_distance(y - np.sin(x * 0.019 - seed) * 11.0, 23.0, 0.5, seed * 0.37)
+            base = packets * 0.28 + fringes * 0.34 + anti * 0.24 + 0.40
+
+        elif style in {"tape_residue", "sponsor_tape_vinyl"}:
+            base.fill(0.48)
+            for _ in range(22):
+                y0 = int(rng.integers(0, h))
+                x0 = int(rng.integers(0, max(1, w // 3)))
+                x1 = int(rng.integers(max(2, w // 2), w))
+                wob = int(rng.integers(-max(2, h // 60), max(3, h // 60)))
+                val = float(rng.uniform(0.18, 0.40) if style == "tape_residue" else rng.uniform(0.58, 0.86))
+                if _CV2_OK:
+                    _cv2.line(base, (x0, y0), (x1, int(np.clip(y0 + wob, 0, h - 1))), val, int(rng.integers(1, 4)), lineType=_cv2.LINE_AA)
+            base += _spb_fast_line_distance(x + y * 0.09, 83.0, 0.8, seed) * 0.12 + (grain - 0.5) * 0.08
+
+        elif style == "aerogel_surface":
+            pores = (grain > 0.945).astype(np.float32)
+            web = np.maximum(_spb_fast_line_distance(x + y * 0.27, 31.0, 0.65, seed), _spb_fast_line_distance(x - y * 0.39, 43.0, 0.55, seed * 0.29))
+            if _CV2_OK:
+                pores = _cv2.GaussianBlur(pores, (0, 0), 0.75)
+            base = pores * 0.42 + web * 0.30 + 0.42
+
+        elif style == "coral_reef":
+            pores = _spb_fast_dots_px(x + y * 0.13, y, 23.0, 19.0, 2.2, seed, seed * 0.41)
+            ridges = np.maximum(_spb_fast_line_distance(x + y * 0.36, 47.0, 0.9, seed), _spb_fast_line_distance(y, 61.0, 0.8, seed * 0.33))
+            base = pores * 0.46 + ridges * 0.28 + (grain > 0.982).astype(np.float32) * 0.18 + 0.36
+
+        elif style == "oxidized_pitting":
+            pits = (grain > 0.935).astype(np.float32)
+            stains = _spb_fast_line_distance(y + np.sin(x * 0.012 + seed) * 20.0, 67.0, 1.6, seed)
+            if _CV2_OK:
+                pits = np.maximum(pits, _cv2.GaussianBlur(pits, (0, 0), 1.0) * 0.60)
+            base = 0.44 - pits * 0.26 + stains * 0.22 + (grain > 0.99).astype(np.float32) * 0.12
+
+        elif style == "terrain_erosion":
+            terrain = np.sin(x * 0.018 + np.sin(y * 0.009 + seed) * 2.2) + np.sin(y * 0.016 - seed * 0.01)
+            contour = _spb_fast_line_distance(terrain * 64.0, 9.0, 0.7, seed)
+            gullies = _spb_fast_line_distance(x + y * 0.22, 97.0, 0.8, seed * 0.21)
+            base = contour * 0.50 + gullies * 0.22 + grain * 0.08 + 0.38
+
+        elif style == "carbon_wet_layup":
+            weave_a = _spb_fast_line_distance(x + y * 0.19, 14.0, 0.65, seed)
+            weave_b = _spb_fast_line_distance(y - x * 0.19, 14.0, 0.65, seed * 0.31)
+            resin = _spb_fast_line_distance(x + np.sin(y * 0.017 + seed) * 12.0, 89.0, 1.2, seed)
+            base = np.maximum(weave_a, weave_b) * 0.46 + resin * 0.22 + (grain > 0.987).astype(np.float32) * 0.15 + 0.40
+
+        elif style == "chameleon_flake":
+            flakes = (grain > 0.955).astype(np.float32)
+            prism = _spb_fast_line_distance(x + y * 0.31 + np.sin(y * 0.015 + seed) * 16.0, 31.0, 0.8, seed)
+            base = flakes * 0.44 + prism * 0.32 + _spb_fast_line_distance(y, 79.0, 0.7, seed * 0.17) * 0.14 + 0.38
+
+        elif style == "stone_granite":
+            chips = (grain > 0.82).astype(np.float32) * 0.20 + (grain > 0.965).astype(np.float32) * 0.28
+            veins = np.maximum(_spb_fast_line_distance(x + y * 0.43, 89.0, 0.9, seed), _spb_fast_line_distance(x - y * 0.26, 131.0, 0.8, seed * 0.51))
+            base = chips + veins * 0.24 + 0.36
+
+        elif style == "wet_zone":
+            puddles = (np.sin(x * 0.014 + seed) + np.sin(y * 0.018 - seed * 0.2) + np.sin((x + y) * 0.009)) / 3.0
+            edges = _spb_fast_line_distance(puddles * 120.0, 17.0, 1.2, seed)
+            gloss = _spb_fast_line_distance(x + np.sin(y * 0.011) * 21.0, 113.0, 1.0, seed)
+            base = edges * 0.44 + gloss * 0.22 + (grain > 0.992).astype(np.float32) * 0.12 + 0.42
+
+        elif style == "brake_dust_buildup":
+            gravity = (y / max(h - 1, 1)) ** 1.4
+            dust = (grain > (0.82 - gravity * 0.10)).astype(np.float32)
+            streaks = _spb_fast_line_distance(y - x * 0.05, 47.0, 1.2, seed)
+            base = 0.50 - dust * (0.20 + gravity * 0.18) + streaks * 0.12
+
+        elif style == "subsurface_depth":
+            depth = np.sin(x * 0.017 + np.sin(y * 0.010 + seed) * 2.6) + np.sin(y * 0.021 - seed * 0.01)
+            membranes = _spb_fast_line_distance(depth * 72.0, 13.0, 0.9, seed)
+            pores = (grain > 0.968).astype(np.float32)
+            base = 0.42 + membranes * 0.36 + pores * 0.16
+
+        elif style == "gold_leaf_torn":
+            seams = np.maximum(_spb_fast_line_distance(x + y * 0.41, 57.0, 1.0, seed), _spb_fast_line_distance(x - y * 0.27, 83.0, 0.9, seed * 0.33))
+            flakes = (grain > 0.90).astype(np.float32)
+            torn = (_spb_fast_hash_grid((max(1, h // 8), max(1, w // 8)), seed) > 0.55).astype(np.float32)
+            if _CV2_OK:
+                torn = _cv2.resize(torn, (w, h), interpolation=_cv2.INTER_NEAREST)
+            base = 0.40 + torn * 0.28 + seams * 0.30 + flakes * 0.12
+
+        elif style == "iridescent_film":
+            bands = _spb_fast_line_distance(x + np.sin(y * 0.012 + seed) * 30.0, 39.0, 1.0, seed)
+            oil = _spb_fast_line_distance(y - np.sin(x * 0.015 - seed) * 22.0, 53.0, 0.8, seed * 0.41)
+            pin = (grain > 0.988).astype(np.float32)
+            base = 0.44 + bands * 0.30 + oil * 0.24 + pin * 0.12
+
+        elif style == "cloud_wisps":
+            wisps = _spb_fast_line_distance(y + np.sin(x * 0.012 + seed) * 42.0 + np.sin(x * 0.004) * 80.0, 93.0, 1.8, seed)
+            inner = _spb_fast_line_distance(x + y * 0.16, 121.0, 0.8, seed * 0.22)
+            base = 0.43 + wisps * 0.36 + inner * 0.14 + grain * 0.04
+
+        elif style == "light_leak":
+            rays = _spb_fast_line_distance(x - y * 0.28, 111.0, 1.1, seed)
+            bloom = np.clip(1.0 - np.sqrt((x - w * 0.12) ** 2 + (y - h * 0.18) ** 2) / max(h, w) * 2.4, 0, 1)
+            scan = _spb_fast_line_distance(y, 31.0, 0.6, seed)
+            base = 0.42 + rays * 0.26 + bloom * 0.24 + scan * 0.10
+
+        elif style == "heat_discoloration":
+            temper = _spb_fast_line_distance(y + np.sin(x * 0.011 + seed) * 26.0, 61.0, 1.1, seed)
+            oxide = _spb_fast_line_distance(x + y * 0.12, 97.0, 0.8, seed * 0.31)
+            base = 0.43 + temper * 0.34 + oxide * 0.18 + (grain > 0.986).astype(np.float32) * 0.12
+
+        elif style == "salt_spray":
+            crystals = (grain > 0.942).astype(np.float32)
+            wind = _spb_fast_line_distance(x + y * 0.08, 43.0, 0.8, seed)
+            crust = _spb_fast_line_distance(y + np.sin(x * 0.018) * 12.0, 67.0, 1.1, seed * 0.19)
+            base = 0.42 + crystals * 0.30 + wind * 0.18 + crust * 0.18
+
+        elif style == "sparkle_nebula":
+            stars = (grain > 0.972).astype(np.float32)
+            hot = (grain > 0.994).astype(np.float32)
+            gas = np.sin(x * 0.013 + y * 0.017 + np.sin(y * 0.006 + seed) * 2.4) * 0.5 + 0.5
+            lanes = _spb_fast_line_distance(x - y * 0.33, 139.0, 0.75, seed)
+            base = 0.38 + stars * 0.36 + hot * 0.24 + gas * 0.16 + lanes * 0.14
+
+        else:
+            base = grain
+
+        return _validate_spec_output(_sm_scale(_normalize(np.clip(base, 0, 1)), sm).astype(np.float32), name)
+
+    _fast._spb_fast_spec_override = True
+    _fast.__name__ = f"fast_{name}"
+    return _fast
+
+
+for _spb_fast_name, _spb_fast_style in {
+    "tire_rubber_transfer": "tire_rubber_transfer",
+    "mother_of_pearl_inlay": "mother_of_pearl_inlay",
+    "meteor_impact": "meteor_impact",
+    "acid_etch": "acid_etch",
+    "rust_bloom": "rust_bloom",
+    "spec_shot_peened": "spec_shot_peened",
+    "engraved_crosshatch": "engraved_crosshatch",
+    "wax_streak_polish": "wax_streak_polish",
+    "flow_lines": "flow_lines",
+    "oil_streak_panel": "oil_streak_panel",
+    "copper_patina_drip": "copper_patina_drip",
+    "sponsor_deboss": "sponsor_deboss",
+    "sponsor_emboss_v2": "sponsor_emboss",
+    "banded_rows": "banded_rows",
+    "spec_rust_bloom": "rust_bloom",
+    "mud_splatter_random": "mud_splatter_random",
+    "spray_paint_drip": "spray_paint_drip",
+    "spec_electroformed_texture": "electroformed",
+    "hand_polished": "hand_polished",
+    "spec_electroplated_chrome": "electroplated_chrome",
+    "spec_xirallic_crystal": "xirallic_crystal",
+    "spec_pvd_coating": "pvd_coating",
+    "quantum_noise": "quantum_noise",
+    "sponsor_tape_vinyl": "sponsor_tape_vinyl",
+    "racing_tape_residue": "tape_residue",
+    "spec_aerogel_surface": "aerogel_surface",
+    "spec_coral_reef": "coral_reef",
+    "spec_oxidized_pitting": "oxidized_pitting",
+    "spec_terrain_erosion": "terrain_erosion",
+    "spec_carbon_wet_layup": "carbon_wet_layup",
+    "spec_chameleon_flake": "chameleon_flake",
+    "spec_stone_granite": "stone_granite",
+    "cc_wet_zone": "wet_zone",
+    "brake_dust_buildup": "brake_dust_buildup",
+    "spec_subsurface_depth": "subsurface_depth",
+    "gold_leaf_torn": "gold_leaf_torn",
+    "spec_iridescent_film": "iridescent_film",
+    "cloud_wisps_warm": "cloud_wisps",
+    "spec_light_leak": "light_leak",
+    "heat_discoloration": "heat_discoloration",
+    "salt_spray_corrosion": "salt_spray",
+    "sparkle_nebula": "sparkle_nebula",
+}.items():
+    if _spb_fast_name in PATTERN_CATALOG:
+        _spb_old_fn = PATTERN_CATALOG[_spb_fast_name]
+        _spb_new_fn = _spb_fast_spec_pattern(_spb_fast_name, _spb_fast_style)
+        _spb_new_fn.__doc__ = getattr(_spb_old_fn, "__doc__", None)
+        _spb_new_fn.__module__ = getattr(_spb_old_fn, "__module__", __name__)
+        PATTERN_CATALOG[_spb_fast_name] = _spb_new_fn
+
+
+def _spb_wrap_bespoke_spec_overlay(name, style, old_fn):
+    def _wrapped(shape, seed=0, sm=1.0, **kwargs):
+        h, w = shape[:2] if len(shape) > 2 else shape
+        if sm < 0.001:
+            return _flat((h, w))
+        try:
+            raw = old_fn((h, w), seed=seed, sm=1.0, **kwargs)
+        except TypeError:
+            raw = old_fn((h, w), seed, 1.0)
+        if isinstance(raw, tuple):
+            raw = raw[0]
+        base = np.asarray(raw, dtype=np.float32)
+        if base.ndim == 3:
+            base = base[:, :, 0]
+        base = _normalize(base)
+
+        catalog_seed = _spb_catalog_seed(name)
+        grain = _spb_fast_hash_grid((h, w), seed + catalog_seed)
+        y = np.arange(h, dtype=np.float32)[:, np.newaxis]
+        x = np.arange(w, dtype=np.float32)[np.newaxis, :]
+        xf = x / max(w - 1, 1)
+        yf = y / max(h - 1, 1)
+        micro_cross = np.maximum(
+            _spb_fast_line_distance(x + y * 0.31, 9.0 + (catalog_seed % 5), 0.48, seed),
+            _spb_fast_line_distance(x - y * 0.43, 13.0 + (catalog_seed % 7), 0.42, seed * 0.37),
+        )
+
+        if style == "rain":
+            columns = _spb_fast_line_distance(x + np.sin(y * 0.115 + seed) * 2.2, 11.0, 0.46, seed)
+            heads = (grain > 0.935).astype(np.float32)
+            tails = _spb_fast_line_distance(y + grain * 10.0, 17.0, 1.0, seed * 0.29) * columns
+            out = base * 0.50 + columns * 0.22 + tails * 0.22 + heads * 0.30 + micro_cross * 0.16
+        elif style == "flake":
+            tiny = (grain > 0.905).astype(np.float32) * 0.30
+            hot = (grain > 0.976).astype(np.float32) * 0.50
+            facets = np.maximum(
+                _spb_fast_line_distance(x + y * 0.19, 7.0, 0.38, seed),
+                _spb_fast_line_distance(x - y * 0.27, 11.0, 0.34, seed * 0.23),
+            )
+            out = base * 0.34 + tiny + hot + facets * 0.28 + micro_cross * 0.14
+        elif style == "galaxy":
+            cx = w * (0.47 + ((catalog_seed % 17) - 8) * 0.002)
+            cy = h * (0.51 + ((catalog_seed % 13) - 6) * 0.002)
+            dx = (x - cx) / max(w, 1)
+            dy = (y - cy) / max(h, 1)
+            radius = np.sqrt(dx * dx + dy * dy)
+            angle = np.arctan2(dy, dx)
+            arms = _spb_fast_line_distance((angle + radius * 21.0) * 34.0, 19.0, 0.72, seed)
+            stars = (grain > 0.958).astype(np.float32) * (0.35 + np.clip(1.0 - radius * 1.8, 0, 1) * 0.35)
+            dust = _spb_fast_line_distance(x - y * 0.14, 23.0, 0.55, seed * 0.41)
+            out = base * 0.42 + arms * 0.34 + stars + dust * 0.18 + micro_cross * 0.12
+        elif style == "electric":
+            field_a = _spb_fast_line_distance(x + np.sin(y * 0.048 + seed) * 8.0, 15.0, 0.55, seed)
+            field_b = _spb_fast_line_distance(y - np.sin(x * 0.052 - seed) * 8.0, 19.0, 0.50, seed * 0.33)
+            sparks = (grain > 0.963).astype(np.float32) * 0.38
+            corona = np.maximum(field_a, field_b)
+            out = base * 0.42 + corona * 0.42 + sparks + micro_cross * 0.18
+        elif style == "masking_edge":
+            tape_fibers = _spb_fast_line_distance(x + y * 0.06, 8.0, 0.40, seed)
+            overspray = (grain > 0.86).astype(np.float32) * 0.14 + (grain > 0.976).astype(np.float32) * 0.28
+            edge = np.clip(np.abs(base - np.roll(base, 1, axis=0)) + np.abs(base - np.roll(base, 1, axis=1)), 0, 1)
+            out = base * 0.64 + tape_fibers * 0.22 + overspray + edge * 0.26 + micro_cross * 0.12
+        elif style == "panel_fade":
+            spray = (grain > 0.80).astype(np.float32) * 0.12 + (grain > 0.965).astype(np.float32) * 0.28
+            peel = np.sin(x * 1.71 + np.sin(y * 0.39 + seed) * 1.4) * np.sin(y * 1.37 - x * 0.11)
+            peel = (peel * 0.5 + 0.5).astype(np.float32)
+            fan = _spb_fast_line_distance(x * np.cos(seed * 0.01) + y * np.sin(seed * 0.01), 37.0, 0.78, seed)
+            out = base * 0.60 + spray + peel * 0.16 + fan * 0.18 + micro_cross * 0.12
+        elif style == "drip_edge":
+            sag = np.clip((yf - 0.58) / 0.42, 0, 1)
+            curtains = _spb_fast_line_distance(x + np.sin(y * 0.079 + seed) * 5.0, 12.0, 0.55, seed)
+            beads = (grain > (0.94 - sag * 0.08)).astype(np.float32) * (0.22 + sag * 0.30)
+            horizontal_ridges = _spb_fast_line_distance(y + np.sin(x * 0.033) * 6.0, 9.0, 0.45, seed * 0.31)
+            out = base * 0.50 + curtains * sag * 0.34 + horizontal_ridges * sag * 0.28 + beads + micro_cross * 0.12
+        elif style == "hex":
+            micro_cells = np.maximum(
+                _spb_fast_line_distance(x + y * 0.50, 8.0, 0.38, seed),
+                _spb_fast_line_distance(x - y * 0.50, 8.0, 0.38, seed * 0.29),
+            )
+            stipple = (grain > 0.88).astype(np.float32) * 0.16 + (grain > 0.975).astype(np.float32) * 0.34
+            edge = np.clip(np.abs(base - np.roll(base, 1, axis=0)) + np.abs(base - np.roll(base, 1, axis=1)), 0, 1)
+            out = base * 0.58 + micro_cells * 0.24 + stipple + edge * 0.22 + micro_cross * 0.13
+        else:
+            out = base * 0.70 + micro_cross * 0.30 + (grain > 0.965).astype(np.float32) * 0.18
+
+        return _validate_spec_output(_sm_scale(_normalize(np.clip(out, 0, 1)), sm).astype(np.float32), name)
+
+    _wrapped.__name__ = getattr(old_fn, "__name__", f"spec_{name}")
+    _wrapped.__doc__ = getattr(old_fn, "__doc__", None)
+    _wrapped.__module__ = getattr(old_fn, "__module__", __name__)
+    _wrapped._spb_bespoke_spec_overlay = True
+    return _wrapped
+
+
+for _spb_detail_name, _spb_detail_style in {
+    "sparkle_rain": "rain",
+    "spec_sparkle_flake": "flake",
+    "sparkle_galaxy_swirl": "galaxy",
+    "sparkle_electric_field": "electric",
+    "cc_masking_edge": "masking_edge",
+    "cc_panel_fade": "panel_fade",
+    "paint_drip_edge": "drip_edge",
+    "hex_cells": "hex",
+}.items():
+    if _spb_detail_name in PATTERN_CATALOG:
+        PATTERN_CATALOG[_spb_detail_name] = _spb_wrap_bespoke_spec_overlay(
+            _spb_detail_name,
+            _spb_detail_style,
+            PATTERN_CATALOG[_spb_detail_name],
+        )
 
 # Category suggestions for which patterns work best with which finish types
 PATTERN_SUGGESTIONS = {

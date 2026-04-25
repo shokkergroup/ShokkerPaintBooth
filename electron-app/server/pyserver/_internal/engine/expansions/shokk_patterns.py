@@ -20,33 +20,34 @@ from PIL import Image
 # HELPERS
 # ================================================================
 
-def _mgrid(shape):
-    return np.mgrid[0:shape[0], 0:shape[1]]
+from engine.core import get_mgrid as _mgrid  # cached version
 
 
 def _noise(shape, scales, weights, seed):
-    """Multi-octave noise via PIL resize."""
+    """Multi-octave noise — delegates to cached core.multi_scale_noise."""
+    try:
+        from engine.core import multi_scale_noise as _cached_msn
+        return _cached_msn(shape, scales, weights, seed)
+    except ImportError:
+        pass
+    import cv2 as _cv2
     h, w = shape
     result = np.zeros((h, w), dtype=np.float32)
     rng = np.random.RandomState(seed)
     for scale, weight in zip(scales, weights):
         sh, sw = max(1, h // scale), max(1, w // scale)
         small = rng.randn(sh, sw).astype(np.float32)
-        mn, mx = small.min(), small.max()
-        norm = ((small - mn) / (mx - mn + 1e-8) * 255).clip(0, 255).astype(np.uint8)
-        img = Image.fromarray(norm).resize((w, h), Image.BILINEAR)
-        arr = np.array(img).astype(np.float32) / 255.0
-        arr = arr * (mx - mn) + mn
+        arr = _cv2.resize(small, (w, h), interpolation=_cv2.INTER_LINEAR)
         result += arr * weight
     return result
 
 
-def _paint_noop(paint, shape, mask, seed, pm, bb):
-    return paint
+from engine.core import paint_none as _paint_noop
 
 
 def _apply_paint_blend(paint, shape, mask, seed, pm, field, hue_shift=0.0, sat_boost=0.0):
     """Common paint blend: shift hue/brightness based on field intensity and pm."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape[:2] if len(shape) > 2 else shape
     out = paint[:, :, :3].copy().astype(np.float32)
     if pm == 0.0:
@@ -130,6 +131,7 @@ def texture_shokk_bitrot(shape, mask, seed, sm):
 
 
 def paint_shokk_bitrot(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape[:2] if len(shape) > 2 else shape
     if pm == 0.0:
         return paint[:, :, :3].astype(np.float32)
@@ -204,6 +206,7 @@ def texture_shokk_packet_storm(shape, mask, seed, sm):
 
 
 def paint_shokk_packet_storm(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape[:2] if len(shape) > 2 else shape
     if pm == 0.0:
         return paint[:, :, :3].astype(np.float32)
@@ -298,6 +301,7 @@ def texture_shokk_hex_dump(shape, mask, seed, sm):
 
 
 def paint_shokk_hex_dump(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape[:2] if len(shape) > 2 else shape
     if pm == 0.0:
         return paint[:, :, :3].astype(np.float32)
@@ -366,6 +370,7 @@ def texture_shokk_signal_noise(shape, mask, seed, sm):
 
 
 def paint_shokk_signal_noise(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape[:2] if len(shape) > 2 else shape
     if pm == 0.0:
         return paint[:, :, :3].astype(np.float32)
@@ -437,6 +442,7 @@ def texture_shokk_scan_line(shape, mask, seed, sm):
 
 
 def paint_shokk_scan_line(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape[:2] if len(shape) > 2 else shape
     if pm == 0.0:
         return paint[:, :, :3].astype(np.float32)
@@ -507,6 +513,7 @@ def texture_shokk_cipher(shape, mask, seed, sm):
 
 
 def paint_shokk_cipher(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape[:2] if len(shape) > 2 else shape
     if pm == 0.0:
         return paint[:, :, :3].astype(np.float32)
@@ -595,6 +602,7 @@ def texture_shokk_overflow(shape, mask, seed, sm):
 
 
 def paint_shokk_overflow(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape[:2] if len(shape) > 2 else shape
     if pm == 0.0:
         return paint[:, :, :3].astype(np.float32)
@@ -686,6 +694,7 @@ def texture_shokk_kernel_panic(shape, mask, seed, sm):
 
 
 def paint_shokk_kernel_panic(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape[:2] if len(shape) > 2 else shape
     if pm == 0.0:
         return paint[:, :, :3].astype(np.float32)
@@ -781,6 +790,7 @@ def texture_shokk_zero_day(shape, mask, seed, sm):
 
 
 def paint_shokk_zero_day(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape[:2] if len(shape) > 2 else shape
     if pm == 0.0:
         return paint[:, :, :3].astype(np.float32)
@@ -865,10 +875,14 @@ def _compute_firewall(shape, seed):
 def texture_shokk_firewall(shape, mask, seed, sm):
     h, w = shape[:2] if len(shape) > 2 else shape
     field = _compute_firewall((h, w), seed)
+    # Background digital noise fill for coverage
+    bg_fill = _noise((h, w), [4, 8, 16, 32], [0.2, 0.3, 0.3, 0.2], seed + 700) * 0.18 + 0.10
+    field = np.clip(np.maximum(field, bg_fill), 0, 1)
     return {"pattern_val": field, "R_range": 1.0, "M_range": 1.0, "CC": None}
 
 
 def paint_shokk_firewall(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape[:2] if len(shape) > 2 else shape
     if pm == 0.0:
         return paint[:, :, :3].astype(np.float32)

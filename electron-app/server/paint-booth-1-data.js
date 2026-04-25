@@ -5,12 +5,18 @@
 //          loadDecodedImageToCanvas, server finish-data merge.
 // Deps:    paint-booth-0-finish-data.js (BASES, PATTERNS, MONOLITHICS
 //          must be defined before this file runs).
-// Edit:    TGA decode bugs → decodeTGA. Server merge → _mergeFinishDataFromServer.
+// Edit:    TGA decode bugs -> decodeTGA. Server merge -> _mergeFinishDataFromServer.
 //          DO NOT put finish arrays here - they go in 0-finish-data.js.
 // See:     PROJECT_STRUCTURE.md in this folder.
+// Version: 2026-04-17
 // ============================================================
 
 // ===== SETTINGS DROPDOWN =====
+/**
+ * Toggles the settings gear dropdown. Pure DOM mutation; tolerates missing
+ * elements (older shell views without the gear button).
+ * @returns {void}
+ */
 function toggleSettingsDropdown() {
     const dd = document.getElementById('settingsDropdown');
     const btn = document.getElementById('settingsGearBtn');
@@ -28,7 +34,14 @@ document.addEventListener('click', function (e) {
 });
 
 // ===== ONBOARDING HINTS =====
+/** @type {boolean} Set true after the first render so we stop pulsing the button. */
 let hasRenderedOnce = false;
+
+/**
+ * Shows/hides onboarding affordances (canvas hint + render-button pulse) based
+ * on the current zone state. Called on every zone change.
+ * @returns {void}
+ */
 function updateOnboardingHints() {
     const canvasHint = document.getElementById('canvasHint');
     const renderBtn = document.getElementById('btnRender');
@@ -53,6 +66,14 @@ function updateOnboardingHints() {
 }
 
 // ===== TGA DECODER (browsers can't natively display TGA) =====
+/**
+ * Decodes a Targa (.tga) buffer into an RGBA pixel array suitable for
+ * `new ImageData(...)`. Handles uncompressed (type 2) and RLE (type 10) at
+ * 24 or 32 bpp; flips vertically for bottom-origin images.
+ * @param {ArrayBuffer} arrayBuffer
+ * @returns {{width: number, height: number, bpp: number, rgba: Uint8ClampedArray}}
+ * @throws {Error} if the TGA variant isn't supported.
+ */
 function decodeTGA(arrayBuffer) {
     const view = new DataView(arrayBuffer);
     const idLength = view.getUint8(0);
@@ -138,7 +159,17 @@ function decodeTGA(arrayBuffer) {
     return { width, height, bpp, rgba };
 }
 
-// Load decoded TGA (or any image) data into the paint preview canvas
+/**
+ * Loads decoded pixel data into the paint preview canvas, resizes the region
+ * canvas to match, and toggles UI chrome (empty-state banners, zoom controls,
+ * eyedropper info, split view). Also auto-captures the "before" snapshot
+ * used by the Before/After comparison widget.
+ * @param {number} width
+ * @param {number} height
+ * @param {Uint8ClampedArray} rgbaData - RGBA pixels, row-major.
+ * @param {string} fileName - shown in the toast/status line.
+ * @returns {void}
+ */
 function loadDecodedImageToCanvas(width, height, rgbaData, fileName) {
     const canvas = document.getElementById('paintCanvas');
     const ctx = canvas.getContext('2d');
@@ -175,6 +206,12 @@ function loadDecodedImageToCanvas(width, height, rgbaData, fileName) {
     }
     // Capture before image for Before/After comparison
     if (typeof captureBeforeImage === 'function') captureBeforeImage();
+    if (typeof triggerPreviewRender === 'function') {
+        const paintFileEl = document.getElementById('paintFile');
+        if (paintFileEl && paintFileEl.value.trim()) {
+            setTimeout(() => { try { triggerPreviewRender(); } catch (_) { } }, 0);
+        }
+    }
     showToast(`Loaded ${fileName} (${width}x${height}, TGA decoded)`);
 }
 
@@ -188,6 +225,13 @@ function loadDecodedImageToCanvas(width, height, rgbaData, fileName) {
 // ➤ See SHOKKER_BIBLE.md + FINISH_WIRING_CHECKLIST.md for the full ID contract.
 // =============================================================================
 
+/**
+ * Pulls the authoritative finish catalogue from the server and merges any
+ * new entries into BASES/PATTERNS/MONOLITHICS. Static arrays are populated
+ * first so the UI is usable while the fetch is in flight. Silently ignores
+ * network errors to avoid blocking startup.
+ * @returns {Promise<void>}
+ */
 async function _mergeFinishDataFromServer() {
     try {
         // Populate from static arrays first (offline / before server responds)

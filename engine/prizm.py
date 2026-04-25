@@ -50,18 +50,27 @@ def integrate_prizm(engine_module):
 
 
 def _msn(shape, scales, weights, seed):
-    """Delegate multi_scale_noise to host engine."""
-    return _engine.multi_scale_noise(shape, scales, weights, seed)
+    """Multi-scale noise — use engine delegate if available, fall back to direct import."""
+    if _engine is not None:
+        return _engine.multi_scale_noise(shape, scales, weights, seed)
+    from engine.core import multi_scale_noise
+    return multi_scale_noise(shape, scales, weights, seed)
 
 
 def get_mgrid(shape):
-    """Delegate get_mgrid to host engine."""
-    return _engine.get_mgrid(shape)
+    """Get coordinate grid — use engine delegate if available, fall back to direct import."""
+    if _engine is not None:
+        return _engine.get_mgrid(shape)
+    from engine.core import get_mgrid as _gm
+    return _gm(shape)
 
 
 def hsv_to_rgb_vec(h, s, v):
-    """Delegate hsv_to_rgb_vec to host engine."""
-    return _engine.hsv_to_rgb_vec(h, s, v)
+    """HSV to RGB — use engine delegate if available, fall back to direct import."""
+    if _engine is not None:
+        return _engine.hsv_to_rgb_vec(h, s, v)
+    from engine.core import hsv_to_rgb_vec as _hsv
+    return _hsv(h, s, v)
 
 
 def _sample_zone_color_local(paint, mask):
@@ -69,6 +78,7 @@ def _sample_zone_color_local(paint, mask):
 
     Returns (hue, sat, val) 0-1 floats - the dominant color of the zone.
     """
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     masked = paint * mask[:, :, np.newaxis]
     total = float(np.sum(mask)) + 1e-8
     avg_r = float(np.sum(masked[:, :, 0]) / total)
@@ -171,7 +181,7 @@ def _generate_panel_direction_field(shape, seed, flow_complexity=3):
 
         # Component 5: Perlin-scale noise for panel boundary breakup
         # Much lower than v1-v3 noise - just enough to make boundaries organic
-        noise = _msn(shape, [64, 128, 256], [0.25, 0.40, 0.35], seed + 7001)
+        noise = _msn(shape, [8, 16, 32], [0.25, 0.40, 0.35], seed + 7001)
         field = field + noise * 0.06
 
     # Normalize to 0-1
@@ -293,15 +303,16 @@ def spec_prizm(shape, mask, seed, sm, metallic=225, roughness=14, clearcoat=30):
     h, w = shape
     spec = np.zeros((h, w, 4), dtype=np.uint8)
 
-    # Base values with very light noise for realism
-    noise = _msn(shape, [32, 64], [0.5, 0.5], seed + 7200)
-    M_arr = metallic + noise * 4 * sm
-    R_arr = roughness + noise * 3 * sm
+    # Independent noise fields for M and R — different seeds create viewing-angle shimmer
+    noise_m = _msn(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + 7200)
+    noise_r = _msn(shape, [32, 64, 128], [0.3, 0.4, 0.3], seed + 7300)  # Different seed + finer scale
+    M_arr = metallic + noise_m * 14 * sm
+    R_arr = roughness + noise_r * 12 * sm  # Wider R variation for shimmer effect
 
     # Apply mask
     spec[:, :, 0] = np.clip(M_arr * mask, 0, 255).astype(np.uint8)
-    spec[:, :, 1] = np.clip(R_arr * mask, 15, 255).astype(np.uint8)  # GGX floor
-    spec[:, :, 2] = np.where(mask > 0.5, clearcoat, 0).astype(np.uint8)
+    spec[:, :, 1] = np.where(mask > 0.01, np.clip(R_arr, 15, 255), 0).astype(np.uint8)  # R≥15 in zone
+    spec[:, :, 2] = np.where(mask > 0.5, np.clip(clearcoat, 16, 255), 0).astype(np.uint8)  # CC≥16 in zone
     spec[:, :, 3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
 
@@ -328,6 +339,7 @@ def paint_prizm_core(paint, shape, mask, seed, pm, bb,
     flake_intensity: 0.0-0.10, metallic flake noise
     blend_strength: 0.0-1.0, how much to replace original paint
     """
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
 
     # Step 1: Generate panel direction field
@@ -356,7 +368,8 @@ def paint_prizm_core(paint, shape, mask, seed, pm, bb,
     paint = paint * (1.0 - blend * mask3) + shift_rgb * blend * mask3
 
     # Brightness boost for dark source paints
-    paint = np.clip(paint + bb * 1.0 * mask3, 0, 1)
+    bb_2d = np.mean(bb[:,:,:3], axis=2) if hasattr(bb, 'ndim') and bb.ndim == 3 else (bb if hasattr(bb, 'ndim') and bb.ndim == 2 else np.full(paint.shape[:2], float(np.mean(bb)), dtype=np.float32))
+    paint = np.clip(paint + bb_2d[:,:,np.newaxis] * 1.0 * mask3, 0, 1)
 
     return paint
 
@@ -376,6 +389,7 @@ def paint_prizm_core(paint, shape, mask, seed, pm, bb,
 # --- Prizm: Holographic (Full rainbow sweep - the flagship effect) ---
 def paint_prizm_holographic(paint, shape, mask, seed, pm, bb):
     """Holographic - Full rainbow sweep across panels (VIVID signature effect)"""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     stops = [
         (0.00, 350, 0.88, 0.85),  # Red-Pink (vivid)
         (0.18, 35,  0.90, 0.88),  # Gold (vivid)
@@ -393,6 +407,7 @@ def spec_prizm_holographic(shape, mask, seed, sm):
 # --- Prizm: Midnight (Purple → Teal → Gold - dark luxury) ---
 def paint_prizm_midnight(paint, shape, mask, seed, pm, bb):
     """Midnight - Purple to Teal to Gold (deep luxury shift)"""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     stops = [
         (0.00, 275, 0.82, 0.68),  # Deep Purple
         (0.40, 195, 0.85, 0.72),  # Teal
@@ -408,6 +423,7 @@ def spec_prizm_midnight(shape, mask, seed, sm):
 # --- Prizm: Phoenix (Red → Gold → Green - warm to cool transition) ---
 def paint_prizm_phoenix(paint, shape, mask, seed, pm, bb):
     """Phoenix - Red to Gold to Green (fire-to-earth shift)"""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     stops = [
         (0.00, 5,   0.88, 0.80),  # Red
         (0.30, 30,  0.85, 0.84),  # Orange
@@ -424,6 +440,7 @@ def spec_prizm_phoenix(shape, mask, seed, sm):
 # --- Prizm: Oceanic (Teal → Blue → Purple → Magenta - cool spectrum) ---
 def paint_prizm_oceanic(paint, shape, mask, seed, pm, bb):
     """Oceanic - Teal to Blue to Purple to Magenta (deep sea shift)"""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     stops = [
         (0.00, 175, 0.85, 0.78),  # Teal
         (0.35, 220, 0.82, 0.74),  # Blue
@@ -439,6 +456,7 @@ def spec_prizm_oceanic(shape, mask, seed, sm):
 # --- Prizm: Ember (Copper → Magenta → Purple - warm metal) ---
 def paint_prizm_ember(paint, shape, mask, seed, pm, bb):
     """Ember - Copper to Magenta to Purple (molten metal shift)"""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     stops = [
         (0.00, 25,  0.82, 0.82),  # Copper
         (0.35, 345, 0.78, 0.78),  # Rose
@@ -454,6 +472,7 @@ def spec_prizm_ember(shape, mask, seed, sm):
 # --- Prizm: Arctic (Silver → Ice Blue → Teal - cold metallic) ---
 def paint_prizm_arctic(paint, shape, mask, seed, pm, bb):
     """Arctic - Silver to Ice Blue to Teal (frozen metal shift)"""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     stops = [
         (0.00, 210, 0.18, 0.88),  # Silver (low sat, high val)
         (0.30, 200, 0.45, 0.85),  # Ice Blue
@@ -469,6 +488,7 @@ def spec_prizm_arctic(shape, mask, seed, sm):
 # --- Prizm: Solar (Gold → Orange → Red → Crimson - sunset) ---
 def paint_prizm_solar(paint, shape, mask, seed, pm, bb):
     """Solar - Gold to Orange to Red to Crimson (sunset shift)"""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     stops = [
         (0.00, 50,  0.82, 0.86),  # Gold
         (0.30, 35,  0.85, 0.84),  # Amber
@@ -485,6 +505,7 @@ def spec_prizm_solar(shape, mask, seed, sm):
 # --- Prizm: Venom (Green → Teal → Purple - toxic shift) ---
 def paint_prizm_venom(paint, shape, mask, seed, pm, bb):
     """Venom - Green to Teal to Purple (toxic color shift)"""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     stops = [
         (0.00, 130, 0.85, 0.78),  # Bright Green
         (0.35, 165, 0.82, 0.76),  # Teal-Green
@@ -500,6 +521,7 @@ def spec_prizm_venom(shape, mask, seed, sm):
 # --- Prizm: Mystichrome (Green → Blue → Purple - Ford SVT tribute) ---
 def paint_prizm_mystichrome(paint, shape, mask, seed, pm, bb):
     """Mystichrome - Green to Blue to Purple (Ford SVT Cobra tribute)"""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     stops = [
         (0.00, 140, 0.82, 0.76),  # Forest Green
         (0.30, 175, 0.80, 0.74),  # Teal
@@ -516,6 +538,7 @@ def spec_prizm_mystichrome(shape, mask, seed, sm):
 # --- Prizm: Black Rainbow (Dark base with rainbow highlights - Neonizm's signature product) ---
 def paint_prizm_black_rainbow(paint, shape, mask, seed, pm, bb):
     """Black Rainbow - Dark base with vivid rainbow color shift"""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     stops = [
         (0.00, 350, 0.80, 0.65),  # Dark Red
         (0.16, 30,  0.82, 0.68),  # Dark Gold
@@ -535,6 +558,7 @@ def spec_prizm_black_rainbow(shape, mask, seed, sm):
 # --- Prizm: Duochrome (Two-color only - clean, minimal shift) ---
 def paint_prizm_duochrome(paint, shape, mask, seed, pm, bb):
     """Duochrome - Clean two-color shift (teal ↔ purple)"""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     stops = [
         (0.00, 175, 0.85, 0.80),  # Teal
         (1.00, 280, 0.80, 0.75),  # Purple
@@ -548,6 +572,7 @@ def spec_prizm_duochrome(shape, mask, seed, sm):
 # --- Prizm: Iridescent (Subtle pearlescent - low saturation, high metallic) ---
 def paint_prizm_iridescent(paint, shape, mask, seed, pm, bb):
     """Iridescent - Subtle pearl-like color shift (low saturation)"""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     stops = [
         (0.00, 200, 0.35, 0.88),  # Pearl Blue
         (0.25, 280, 0.30, 0.86),  # Pearl Lavender
@@ -565,6 +590,7 @@ def spec_prizm_iridescent(shape, mask, seed, sm):
 # --- Prizm: Adaptive (reads zone color, creates shift from it) ---
 def paint_prizm_adaptive(paint, shape, mask, seed, pm, bb):
     """Adaptive Prizm - reads zone color, generates complementary color ramp"""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     zone_hue, zone_sat, zone_val = _sample_zone_color_local(paint, mask)
 
     # If achromatic, inject a base hue
@@ -587,6 +613,101 @@ def paint_prizm_adaptive(paint, shape, mask, seed, pm, bb):
 
 def spec_prizm_adaptive(shape, mask, seed, sm):
     return spec_prizm(shape, mask, seed, sm, metallic=228, roughness=14, clearcoat=35)  # Adaptive: mid coat - works with any zone color
+
+
+# ================================================================
+# PRIZM WAVE 2 — 10 additional presets (previously JS-only, now wired)
+# ================================================================
+
+def paint_prizm_galaxy_dust(paint, shape, mask, seed, pm, bb):
+    """Galaxy Dust — Purple → pink → white → teal angular sweep"""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
+    stops = [(0.00, 270, 0.80, 0.55), (0.35, 320, 0.65, 0.70), (0.65, 0, 0.05, 0.93), (1.00, 170, 0.70, 0.68)]
+    return paint_prizm_core(paint, shape, mask, seed, pm, bb, stops, flow_complexity=3, flake_intensity=0.035)
+
+def spec_prizm_galaxy_dust(shape, mask, seed, sm):
+    return spec_prizm(shape, mask, seed, sm, metallic=240, roughness=15, clearcoat=22)
+
+def paint_prizm_sunset_strip(paint, shape, mask, seed, pm, bb):
+    """Sunset Strip — Orange → magenta → violet → navy angular sweep"""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
+    stops = [(0.00, 25, 0.88, 0.88), (0.35, 340, 0.80, 0.72), (0.65, 275, 0.75, 0.55), (1.00, 225, 0.85, 0.40)]
+    return paint_prizm_core(paint, shape, mask, seed, pm, bb, stops, flow_complexity=3, flake_intensity=0.03)
+
+def spec_prizm_sunset_strip(shape, mask, seed, sm):
+    return spec_prizm(shape, mask, seed, sm, metallic=230, roughness=16, clearcoat=28)
+
+def paint_prizm_toxic_waste(paint, shape, mask, seed, pm, bb):
+    """Toxic Waste — Acid green → black → neon yellow → purple faceted shift"""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
+    stops = [(0.00, 110, 0.92, 0.85), (0.30, 0, 0.0, 0.08), (0.65, 65, 0.90, 0.90), (1.00, 275, 0.80, 0.55)]
+    return paint_prizm_core(paint, shape, mask, seed, pm, bb, stops, flow_complexity=2, flake_intensity=0.04)
+
+def spec_prizm_toxic_waste(shape, mask, seed, sm):
+    return spec_prizm(shape, mask, seed, sm, metallic=225, roughness=18, clearcoat=30)
+
+def paint_prizm_chrome_rose(paint, shape, mask, seed, pm, bb):
+    """Chrome Rose — Chrome silver → rose → pink → platinum faceted"""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
+    stops = [(0.00, 0, 0.05, 0.85), (0.35, 350, 0.40, 0.72), (0.65, 345, 0.30, 0.78), (1.00, 0, 0.03, 0.88)]
+    return paint_prizm_core(paint, shape, mask, seed, pm, bb, stops, flow_complexity=2, flake_intensity=0.02)
+
+def spec_prizm_chrome_rose(shape, mask, seed, sm):
+    return spec_prizm(shape, mask, seed, sm, metallic=248, roughness=15, clearcoat=20)
+
+def paint_prizm_deep_space(paint, shape, mask, seed, pm, bb):
+    """Deep Space — Black → deep blue → purple → white flash angular"""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
+    stops = [(0.00, 0, 0.0, 0.07), (0.35, 230, 0.85, 0.45), (0.65, 270, 0.75, 0.55), (1.00, 0, 0.0, 0.92)]
+    return paint_prizm_core(paint, shape, mask, seed, pm, bb, stops, flow_complexity=3, flake_intensity=0.05)
+
+def spec_prizm_deep_space(shape, mask, seed, sm):
+    return spec_prizm(shape, mask, seed, sm, metallic=235, roughness=15, clearcoat=25)
+
+def paint_prizm_copper_flame(paint, shape, mask, seed, pm, bb):
+    """Copper Flame — Copper → flame orange → dark red → bronze flowing"""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
+    stops = [(0.00, 25, 0.72, 0.65), (0.35, 18, 0.88, 0.82), (0.65, 350, 0.82, 0.45), (1.00, 30, 0.68, 0.55)]
+    return paint_prizm_core(paint, shape, mask, seed, pm, bb, stops, flow_complexity=2, flake_intensity=0.04)
+
+def spec_prizm_copper_flame(shape, mask, seed, sm):
+    return spec_prizm(shape, mask, seed, sm, metallic=220, roughness=20, clearcoat=30)
+
+def paint_prizm_alien_skin(paint, shape, mask, seed, pm, bb):
+    """Alien Skin — Lime → teal → dark green → gold faceted shift"""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
+    stops = [(0.00, 90, 0.85, 0.75), (0.35, 170, 0.78, 0.62), (0.65, 135, 0.80, 0.35), (1.00, 48, 0.82, 0.72)]
+    return paint_prizm_core(paint, shape, mask, seed, pm, bb, stops, flow_complexity=2, flake_intensity=0.03)
+
+def spec_prizm_alien_skin(shape, mask, seed, sm):
+    return spec_prizm(shape, mask, seed, sm, metallic=215, roughness=22, clearcoat=32)
+
+def paint_prizm_titanium(paint, shape, mask, seed, pm, bb):
+    """Titanium — Blue-grey → purple-grey → gold-grey → steel flowing"""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
+    stops = [(0.00, 215, 0.18, 0.58), (0.35, 270, 0.15, 0.55), (0.65, 42, 0.20, 0.58), (1.00, 195, 0.12, 0.60)]
+    return paint_prizm_core(paint, shape, mask, seed, pm, bb, stops, flow_complexity=3, flake_intensity=0.02, blend_strength=0.88)
+
+def spec_prizm_titanium(shape, mask, seed, sm):
+    return spec_prizm(shape, mask, seed, sm, metallic=210, roughness=25, clearcoat=35)
+
+def paint_prizm_aurora_shift(paint, shape, mask, seed, pm, bb):
+    """Aurora Shift — Northern lights colors in angular prizm style"""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
+    stops = [(0.00, 145, 0.82, 0.72), (0.25, 185, 0.78, 0.70), (0.50, 230, 0.80, 0.65), (0.75, 275, 0.75, 0.55), (1.00, 325, 0.72, 0.65)]
+    return paint_prizm_core(paint, shape, mask, seed, pm, bb, stops, flow_complexity=3, flake_intensity=0.035)
+
+def spec_prizm_aurora_shift(shape, mask, seed, sm):
+    return spec_prizm(shape, mask, seed, sm, metallic=232, roughness=15, clearcoat=24)
+
+def paint_prizm_candy_paint(paint, shape, mask, seed, pm, bb):
+    """Candy Paint — Hot pink → purple → blue → teal faceted shift"""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
+    stops = [(0.00, 335, 0.88, 0.82), (0.35, 275, 0.82, 0.58), (0.65, 220, 0.85, 0.70), (1.00, 178, 0.78, 0.62)]
+    return paint_prizm_core(paint, shape, mask, seed, pm, bb, stops, flow_complexity=2, flake_intensity=0.04)
+
+def spec_prizm_candy_paint(shape, mask, seed, sm):
+    return spec_prizm(shape, mask, seed, sm, metallic=225, roughness=16, clearcoat=26)
 
 
 # ================================================================

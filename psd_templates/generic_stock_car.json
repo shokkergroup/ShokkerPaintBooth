@@ -1,0 +1,70 @@
+{
+  "id": "generic_stock_car",
+  "name": "Generic Stock Car (Next Gen)",
+  "category": "NASCAR Cup",
+  "canvas_size": [2048, 2048],
+  "color_space": "sRGB",
+  "alpha_required": true,
+  "iracing_folder": "stockcars/nextgen",
+  "schema_version": "1.0.0",
+  "description": "Generic baseline for the Next Gen NASCAR Cup chassis. Symmetric body with TV panel above driver door, contingency stack at rear quarter, and large hood real estate. Specific manufacturer PSDs (Mustang, Camaro, Camry) override naming but inherit layer structure.",
+  "layer_tree": [
+    {"name": "Wire", "type": "raster", "purpose": "Wireframe placement reference.", "default_visibility": true, "export_visibility": false},
+    {"name": "Mask", "type": "mask", "purpose": "Paintable region constraint.", "default_visibility": true, "export_visibility": true},
+    {
+      "name": "Paintable Area",
+      "type": "group",
+      "purpose": "User-editable paint and decals.",
+      "children": ["Car_Paint", "Numbers", "Sponsors", "Tape", "Color Change Logos", "TV Panel"]
+    },
+    {"name": "Car_Paint", "type": "raster", "purpose": "SPB-generated paint output.", "default_visibility": true, "export_visibility": true},
+    {"name": "Numbers", "type": "smart_object", "purpose": "Door numbers (left+right) + roof.", "default_visibility": true, "export_visibility": true},
+    {"name": "Sponsors", "type": "group", "purpose": "Primary / associate / contingency stacks.", "default_visibility": true, "export_visibility": true},
+    {"name": "Tape", "type": "raster", "purpose": "Body stripe overlays.", "default_visibility": true, "export_visibility": true},
+    {"name": "Pitbox Colors", "type": "raster", "purpose": "Pit stall signage.", "default_visibility": false, "export_visibility": true},
+    {"name": "Color Change Logos", "type": "raster", "purpose": "Manufacturer logo recolor zone.", "default_visibility": true, "export_visibility": true},
+    {"name": "Windshield Banner", "type": "raster", "purpose": "Driver name strip.", "default_visibility": true, "export_visibility": true},
+    {"name": "TV Panel", "type": "raster", "purpose": "Above-driver-door TV-camera panel — primary sponsor visibility.", "default_visibility": true, "export_visibility": true},
+    {"name": "Contingency Row", "type": "group", "purpose": "Rear-quarter contingency decal stack.", "default_visibility": true, "export_visibility": true},
+    {"name": "Turn Off Before Exporting TGA", "type": "group", "purpose": "Reference layers to hide before export.", "children": ["Wire", "Guides"], "default_visibility": true, "export_visibility": false}
+  ],
+  "uv_safe_areas": [
+    {"name": "left_door", "bbox_uv": [0.10, 0.40, 0.30, 0.62], "use": "primary sponsor + door number"},
+    {"name": "right_door", "bbox_uv": [0.55, 0.40, 0.75, 0.62], "use": "primary sponsor + door number (mirror)"},
+    {"name": "hood", "bbox_uv": [0.30, 0.05, 0.60, 0.32], "use": "primary sponsor (large lockup)"},
+    {"name": "roof", "bbox_uv": [0.32, 0.62, 0.55, 0.80], "use": "spotter number"},
+    {"name": "tv_panel_left", "bbox_uv": [0.12, 0.34, 0.28, 0.40], "use": "TV-visible secondary brand"},
+    {"name": "tv_panel_right", "bbox_uv": [0.57, 0.34, 0.73, 0.40], "use": "TV-visible secondary brand"},
+    {"name": "rear_quarter_left", "bbox_uv": [0.05, 0.62, 0.18, 0.80], "use": "contingency stack — series-mandated decals"},
+    {"name": "rear_quarter_right", "bbox_uv": [0.62, 0.62, 0.75, 0.80], "use": "contingency stack — series-mandated decals"},
+    {"name": "front_fascia", "bbox_uv": [0.30, 0.32, 0.60, 0.40], "use": "manufacturer / class branding"},
+    {"name": "rear_fascia", "bbox_uv": [0.30, 0.80, 0.60, 0.88], "use": "associate sponsor"}
+  ],
+  "number_panels": [
+    {"id": "door_left", "bbox_uv": [0.16, 0.45, 0.26, 0.58]},
+    {"id": "door_right", "bbox_uv": [0.59, 0.45, 0.69, 0.58]},
+    {"id": "roof", "bbox_uv": [0.36, 0.66, 0.50, 0.76]}
+  ],
+  "windshield_banner": {
+    "bbox_uv": [0.30, 0.86, 0.60, 0.92],
+    "max_chars": 18,
+    "default_height_px": 96
+  },
+  "recommended_zones": [
+    {"id": "hood_zone", "label": "Hood", "default_finish": "candy_special", "default_color": "#0A2A6C"},
+    {"id": "doors_zone", "label": "Doors", "default_finish": "metallic_standard", "default_color": "#FFFFFF"},
+    {"id": "roof_zone", "label": "Roof", "default_finish": "matte_basic", "default_color": "#0A0A0A"},
+    {"id": "fenders_zone", "label": "Fenders", "default_finish": "metallic_flake", "default_color": "#C20000"},
+    {"id": "tv_panel_zone", "label": "TV Panel", "default_finish": "metallic_standard", "default_color": "#FFD700"}
+  ],
+  "warnings": [
+    "TV Panel is the single highest-CPM real estate on a Cup car — never paint it solid without a sponsor.",
+    "Contingency Row is series-mandated; do not move or scale individual decals.",
+    "Next Gen body has a flatter rear quarter than Gen 6 — sponsors migrated will look smaller than expected."
+  ],
+  "tips": [
+    "Mirror left-side door artwork to right side via SPB's clone tool — saves 10+ minutes per livery.",
+    "TV Panel paint should match or contrast strongly with door paint for brand separation.",
+    "Reserve a 32 px gutter between door number and primary sponsor for legibility on stream."
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "name": "Sponsor Block (Primary)",
+  "description": "Primary sponsor name block — readable, bold, neutral letterforms. This is the main money-maker text on a livery: the primary title sponsor above the door, on the hood, or across the rear quarter. Clean sans-serif with subtle stroke and zero shadow keeps it corporate and brand-safe.",
+  "category": "Sponsor",
+  "version": "6.2.0",
+  "template": {
+    "text": "SPONSOR",
+    "font_family": "Helvetica Neue, Helvetica, Arial, sans-serif",
+    "font_weight": 700,
+    "font_size": 90,
+    "italic": false,
+    "color": "#ffffff",
+    "stroke_color": "#000000",
+    "stroke_width": 2,
+    "shadow": {
+      "color": "#000000",
+      "opacity": 0.25,
+      "dx": 2,
+      "dy": 2,
+      "blur": 1
+    },
+    "alignment": "center",
+    "letter_spacing": 2,
+    "line_height": 1.1,
+    "rotation": 0,
+    "anchor_x": 0.5,
+    "anchor_y": 0.5
+  },
+  "placement_hints": {
+    "recommended_zones": ["hood", "door_upper", "rear_quarter", "roof_edge"],
+    "min_size_px": 60,
+    "max_size_px": 180,
+    "safe_area_padding_px": 15
+  },
+  "variants": [
+    {
+      "name": "No Stroke (clean corporate)",
+      "overrides": {
+        "stroke_width": 0,
+        "shadow": { "color": "#000000", "opacity": 0, "dx": 0, "dy": 0, "blur": 0 }
+      }
+    },
+    {
+      "name": "Condensed Tight",
+      "overrides": {
+        "font_family": "Oswald, Bebas Neue, sans-serif",
+        "letter_spacing": 1,
+        "font_weight": 600
+      }
+    },
+    {
+      "name": "Dark-base Sponsor",
+      "overrides": {
+        "color": "#000000",
+        "stroke_color": "#ffffff",
+        "stroke_width": 2
+      }
+    }
+  ],
+  "compatible_finishes": ["gloss", "satin", "matte", "clearcoat"],
+  "notes": "For long sponsor names (8+ characters), switch to a condensed variant. Always test against the final base paint — 2px stroke can disappear on busy metallic flakes, bump to 3-4px if needed."
+}

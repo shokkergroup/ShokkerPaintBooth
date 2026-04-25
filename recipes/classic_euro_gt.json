@@ -1,0 +1,83 @@
+{
+  "name": "Classic Euro GT",
+  "description": "1960s European GT livery. Elegant gloss white body with dual dark blue racing stripes over the long hood, red accent pinstripe, chrome bumpers, and a subtle roundel number field. Think Le Mans circa 1965.",
+  "author": "Shokker Paint Booth",
+  "version": "6.2.0",
+  "compatible_with": "GT40, 250 GTO tribute, cobra, shelby daytona, vintage GT builds",
+  "notes": "Tolerance on the blue should be tight (25-30) so stripes stay crisp. The red pinstripe is decorative — if it reads too busy on your chassis, drop patternIntensity to 70.",
+  "zones": [
+    {
+      "name": "Gloss White Body",
+      "color": "everything",
+      "base": "gloss",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "special",
+      "baseColor": "#f4f1ea",
+      "baseColorMode": "solid",
+      "baseStrength": 1,
+      "baseSpecStrength": 1
+    },
+    {
+      "name": "Dark Blue Racing Stripes",
+      "color": "blue",
+      "base": "gloss",
+      "pattern": "racing_stripe",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#0a2a6a",
+      "pickerTolerance": 28,
+      "baseColor": "#06205c",
+      "baseColorMode": "solid",
+      "patternIntensity": "100"
+    },
+    {
+      "name": "Red Accent Pinstripe",
+      "color": "red",
+      "base": "gloss",
+      "pattern": "pinstripe",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#c21818",
+      "pickerTolerance": 30,
+      "baseColor": "#a81414",
+      "baseColorMode": "solid",
+      "patternIntensity": "85"
+    },
+    {
+      "name": "Chrome Bumpers",
+      "color": "gray",
+      "base": "chrome",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#cccccc",
+      "pickerTolerance": 30,
+      "baseColorMode": "source"
+    },
+    {
+      "name": "Roundel Number Field",
+      "color": "yellow",
+      "base": "gloss",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#f0d040",
+      "pickerTolerance": 28,
+      "baseColor": "#e8c530",
+      "baseColorMode": "solid"
+    },
+    {
+      "name": "Piano Black Grille",
+      "color": "dark",
+      "base": "piano_black",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#181818",
+      "pickerTolerance": 30,
+      "baseColor": "#060606",
+      "baseColorMode": "solid"
+    }
+  ]
+}

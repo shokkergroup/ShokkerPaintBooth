@@ -36,6 +36,7 @@ def _shape2(shape):
 
 
 def _blend_paint(paint, mask, pm, color, strength=0.90):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     m3 = mask[:, :, np.newaxis]
     bl = np.clip(pm * strength, 0, 1)
     paint[:, :, :3] = paint[:, :, :3] * (1 - m3 * bl) + np.clip(color, 0, 1) * m3 * bl
@@ -67,6 +68,7 @@ def _thin_film_color(thickness, base_hue_shift=0.0):
 
 def paint_beetle_jewel(paint, shape, mask, seed, pm, bb):
     """Beetle jewel: Chrysina-style green-gold iridescent shell. Organic flow zones."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = _shape2(shape)
     field = _iridescent_field((h, w), seed + 9400)
     micro = _insect_micro((h, w), seed + 9400)
@@ -102,6 +104,7 @@ def spec_beetle_jewel(shape, seed, sm, base_m, base_r):
 
 def paint_beetle_rainbow(paint, shape, mask, seed, pm, bb):
     """Beetle rainbow: full-spectrum Chrysochroa wing case via thin-film interference."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = _shape2(shape)
     field = _iridescent_field((h, w), seed + 9401, scale_mod=0.8)
     micro = _insect_micro((h, w), seed + 9401)
@@ -113,12 +116,21 @@ def paint_beetle_rainbow(paint, shape, mask, seed, pm, bb):
 
 
 def spec_beetle_rainbow(shape, seed, sm, base_m, base_r):
-    """Beetle rainbow spec: high metallic throughout for shell reflection."""
+    """Beetle rainbow spec: iridescent shell, widely varying M/R/CC.
+
+    2026-04-20 HEENAN AUTO-LOOP-17 — weakest insect_underground spec
+    (dM=50 dR=15 dCC=8 at baseline). Rainbow-beetle shell should flash
+    between chrome peaks and dielectric interstices as the iridescent
+    field varies. Widen:
+      M amp 50→130 (field low = 180 dielectric, peak = 250+ chrome)
+      R amp 15→30 (peaks smooth, troughs scattered)
+      CC amp 8→20 (ridges thicken clearcoat)
+    """
     h, w = _shape2(shape)
     field = _iridescent_field((h, w), seed + 9401, scale_mod=0.8)
-    M = np.clip(200.0 + field * 50.0 * sm, 0, 255)
-    R = np.clip(20.0 + (1 - field) * 15.0, 15, 255)
-    CC = np.clip(16.0 + field * 8.0, 16, 255)
+    M = np.clip(125.0 + field * 130.0 * sm, 0, 255)
+    R = np.clip(15.0 + (1.0 - field) * 30.0, 15, 255)
+    CC = np.clip(16.0 + field * 20.0, 16, 255)
     return M.astype(np.float32), R.astype(np.float32), CC.astype(np.float32)
 
 
@@ -129,12 +141,13 @@ def spec_beetle_rainbow(shape, seed, sm, base_m, base_r):
 
 def paint_butterfly_morpho(paint, shape, mask, seed, pm, bb):
     """Morpho butterfly: brilliant blue structural color with angle-dependent flash."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = _shape2(shape)
     yf, xf = _insect_mgrid((h, w))
     # Simulated viewing-angle gradient (like Morpho wing scales)
     angle_sim = np.clip((1.0 - yf / h) * 0.5 + (xf / w) * 0.5, 0, 1).astype(np.float32)
     # Multi-scale scale pattern (wing scale structure)
-    scale_pat = multi_scale_noise((h, w), [2, 4, 8], [0.4, 0.35, 0.25], seed + 9402)
+    scale_pat = multi_scale_noise((h, w), [16, 32, 64], [0.4, 0.35, 0.25], seed + 9402)
     scale_n = np.clip(scale_pat * 0.5 + 0.5, 0, 1)
     # Morpho blue shifts to deeper purple at grazing angles
     bright_blue = np.array([0.05, 0.30, 0.95], dtype=np.float32)
@@ -149,15 +162,22 @@ def paint_butterfly_morpho(paint, shape, mask, seed, pm, bb):
 
 
 def spec_butterfly_morpho(shape, seed, sm, base_m, base_r):
-    """Morpho spec: extreme metallic on bright zones, mid on deep zones."""
+    """Morpho spec: extreme metallic on bright zones, mid on deep zones.
+
+    2026-04-20 HEENAN AUTO-LOOP-21 — big M swing (155) but R amp only
+    15 (t-range 15..30) — roughness ties the angle effect together
+    weakly. Morpho structural color needs visible smoothness contrast:
+    bright zones mirror-smooth vs deep zones diffusely-scattered.
+    Widen R amp 15→50 (range 10..60 clipped at 15 floor: effective
+    15..60). CC amp 10→22 (bright zones thin clear, deep thicker)."""
     h, w = _shape2(shape)
     yf, xf = _insect_mgrid((h, w))
     angle_sim = np.clip((1.0 - yf / h) * 0.5 + (xf / w) * 0.5, 0, 1)
-    scale_pat = multi_scale_noise((h, w), [2, 4, 8], [0.4, 0.35, 0.25], seed + 9402)
+    scale_pat = multi_scale_noise((h, w), [16, 32, 64], [0.4, 0.35, 0.25], seed + 9402)
     t = np.clip(angle_sim * (0.8 + np.clip(scale_pat * 0.5 + 0.5, 0, 1) * 0.2), 0, 1)
     M = np.clip(100.0 + t * 155.0 * sm, 0, 255)
-    R = np.clip(30.0 - t * 15.0 * sm, 15, 255)
-    CC = np.clip(16.0 + (1 - t) * 10.0, 16, 255)
+    R = np.clip(65.0 - t * 50.0 * sm, 15, 255)
+    CC = np.clip(16.0 + (1 - t) * 22.0, 16, 255)
     return M.astype(np.float32), R.astype(np.float32), CC.astype(np.float32)
 
 
@@ -168,6 +188,7 @@ def spec_butterfly_morpho(shape, seed, sm, base_m, base_r):
 
 def paint_butterfly_monarch(paint, shape, mask, seed, pm, bb):
     """Monarch butterfly: orange-black wing pattern with white spots."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = _shape2(shape)
     yf, xf = _insect_mgrid((h, w))
     # Wing vein network via Voronoi edges
@@ -189,7 +210,7 @@ def paint_butterfly_monarch(paint, shape, mask, seed, pm, bb):
     black = np.array([0.03, 0.02, 0.02], dtype=np.float32)
     # White spots at border regions
     border = np.clip(np.maximum(yf / h, 1.0 - yf / h) + np.maximum(xf / w, 1.0 - xf / w) - 1.2, 0, 1)
-    turb = multi_scale_noise((h, w), [4, 8], [0.5, 0.5], seed + 9403)
+    turb = multi_scale_noise((h, w), [16, 32], [0.5, 0.5], seed + 9403)
     spots = np.clip((turb - 0.3) * 5.0, 0, 1) * border
     white = np.array([0.95, 0.95, 0.95], dtype=np.float32)
     color = orange[None, None, :] * (1 - vein[:, :, None]) + black[None, None, :] * vein[:, :, None]
@@ -209,7 +230,11 @@ def spec_butterfly_monarch(shape, seed, sm, base_m, base_r):
     d, _ = tree.query(grid_pts, k=2, workers=-1)
     d1, d2 = d[:, 0].reshape(h, w).astype(np.float32), d[:, 1].reshape(h, w).astype(np.float32)
     vein = np.clip(1.0 - (d2 - d1) / (np.median(d1) * 0.15 + 1e-8), 0, 1).astype(np.float32)
-    M = np.clip(60.0 * (1 - vein) * sm + 5.0 * vein, 0, 255)
+    # 2026-04-20 HEENAN AUTO-LOOP-18 — M was 60..5 (dM=55). Orange wing
+    # zones should feel like waxy satin-metallic surface with the veins
+    # reading as dead-matte dielectric seams. Widen M to 185..5 (dM=180)
+    # keeping R/CC where they already had good contrast.
+    M = np.clip(185.0 * (1 - vein) * sm + 5.0 * vein, 0, 255)
     R = np.clip(70.0 * (1 - vein) + 200.0 * vein, 15, 255)
     CC = np.clip(25.0 * (1 - vein) + 100.0 * vein, 16, 255)
     return M.astype(np.float32), R.astype(np.float32), CC.astype(np.float32)
@@ -222,6 +247,7 @@ def spec_butterfly_monarch(shape, seed, sm, base_m, base_r):
 
 def paint_dragonfly_wing(paint, shape, mask, seed, pm, bb):
     """Dragonfly wing: semi-transparent wing membrane with rainbow interference."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = _shape2(shape)
     yf, xf = _insect_mgrid((h, w))
     # Wing vein structure (sparse branching)
@@ -265,6 +291,7 @@ def spec_dragonfly_wing(shape, seed, sm, base_m, base_r):
 
 def paint_scarab_gold(paint, shape, mask, seed, pm, bb):
     """Scarab gold: Egyptian scarab golden-green iridescence with organic shell texture."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = _shape2(shape)
     field = _iridescent_field((h, w), seed + 9405)
     micro = _insect_micro((h, w), seed + 9405)
@@ -282,14 +309,20 @@ def paint_scarab_gold(paint, shape, mask, seed, pm, bb):
 
 
 def spec_scarab_gold(shape, seed, sm, base_m, base_r):
-    """Scarab gold spec: gold zones extreme chrome, green zones mid-metallic."""
+    """Scarab gold spec: gold zones extreme chrome, green zones mid-metallic.
+
+    2026-04-20 HEENAN AUTO-LOOP-22 — dM=159 was strong already but
+    dR=19 meant the iridescent shell had almost uniform smoothness.
+    Real Egyptian-scarab shell has hard-polished gold ridges and
+    rougher green interstices. Widen R amp 20→55 (green zones R=70
+    scattered, gold R=15 mirror). CC amp 12→25."""
     h, w = _shape2(shape)
     field = _iridescent_field((h, w), seed + 9405)
     micro = _insect_micro((h, w), seed + 9405)
     t = np.clip(field * (0.8 + micro * 0.2), 0, 1)
     M = np.clip(90.0 + t * 165.0 * sm, 0, 255)
-    R = np.clip(35.0 - t * 20.0 * sm, 15, 255)
-    CC = np.clip(18.0 + (1 - t) * 12.0, 16, 255)
+    R = np.clip(70.0 - t * 55.0 * sm, 15, 255)
+    CC = np.clip(16.0 + (1 - t) * 25.0, 16, 255)
     return M.astype(np.float32), R.astype(np.float32), CC.astype(np.float32)
 
 
@@ -300,6 +333,7 @@ def spec_scarab_gold(shape, seed, sm, base_m, base_r):
 
 def paint_moth_luna(paint, shape, mask, seed, pm, bb):
     """Luna moth: pale green with large concentric eye-spot patterns."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = _shape2(shape)
     yf, xf = _insect_mgrid((h, w))
     rng = np.random.RandomState((seed + 9406) & 0x7FFFFFFF)
@@ -321,7 +355,7 @@ def paint_moth_luna(paint, shape, mask, seed, pm, bb):
         eye_map = np.maximum(eye_map, center)
         ring_map = np.maximum(ring_map, ring)
     # Wing texture
-    turb = multi_scale_noise((h, w), [4, 8, 16], [0.3, 0.4, 0.3], seed + 9406)
+    turb = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.4, 0.3], seed + 9406)
     wing_var = np.clip(turb * 0.08, -0.08, 0.08)
     # Colors
     eye_dark = np.array([0.10, 0.10, 0.18], dtype=np.float32)
@@ -347,9 +381,16 @@ def spec_moth_luna(shape, seed, sm, base_m, base_r):
         center = np.exp(-(dist / (eye_r[k] * 0.4))**2)
         eye_map = np.maximum(eye_map, center)
     eye_map = np.clip(eye_map, 0, 1).astype(np.float32)
-    M = np.clip(30.0 + eye_map * 80.0 * sm, 0, 255)
-    R = np.clip(130.0 - eye_map * 40.0, 15, 255)
-    CC = np.clip(80.0 - eye_map * 30.0, 16, 255)
+    # 2026-04-20 HEENAN AUTO-LOOP-20 — luna wing dM=80, eye spots too
+    # similar to the wing. The "eye" spots on a luna moth wing are the
+    # signature detail — should pop as satin-metallic islands vs the
+    # fuzzy-matte wing field.
+    #   Wing (eye_map=0): M=10 dielectric, R=160 fuzz, CC=90 thick clear
+    #   Eyes (eye_map=1): M=190 satin-metallic, R=30 glossy, CC=16 thin
+    #   dM 80→180, dR 40→130, dCC 30→74
+    M = np.clip(10.0 + eye_map * 180.0 * sm, 0, 255)
+    R = np.clip(160.0 - eye_map * 130.0, 15, 255)
+    CC = np.clip(90.0 - eye_map * 74.0, 16, 255)
     return M.astype(np.float32), R.astype(np.float32), CC.astype(np.float32)
 
 
@@ -360,6 +401,7 @@ def spec_moth_luna(shape, seed, sm, base_m, base_r):
 
 def paint_beetle_stag(paint, shape, mask, seed, pm, bb):
     """Stag beetle: dark metallic brown-black armor plating with chitin shine."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = _shape2(shape)
     yf, xf = _insect_mgrid((h, w))
     # Armor plate pattern: large Voronoi cells
@@ -414,6 +456,7 @@ def spec_beetle_stag(shape, seed, sm, base_m, base_r):
 
 def paint_wasp_warning(paint, shape, mask, seed, pm, bb):
     """Wasp warning: bold yellow-black aposematic banding with metallic shimmer."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = _shape2(shape)
     yf, xf = _insect_mgrid((h, w))
     # Horizontal bands with slight wave
@@ -441,9 +484,14 @@ def spec_wasp_warning(shape, seed, sm, base_m, base_r):
     band_freq = max(3, h // 120)
     wave_y = yf + turb * (h * 0.04)
     band = np.clip(np.sin(wave_y / band_freq * np.pi) * 5.0, 0, 1).astype(np.float32)
-    M = np.clip(100.0 * band * sm + 40.0 * (1 - band) * sm, 0, 255)
-    R = np.clip(30.0 * band + 80.0 * (1 - band), 15, 255)
-    CC = np.clip(20.0 * band + 50.0 * (1 - band), 16, 255)
+    # 2026-04-20 HEENAN AUTO-LOOP-19 — yellow bands 100/40 dM=60 too
+    # similar. Real wasp exoskeleton has waxy semi-metallic yellow vs
+    # dead-matte black chitin. Widen M to 220 yellow / 10 black (dM=210).
+    # Also widen R: yellow smoother (25), black rougher (95); CC: yellow
+    # thin (18), black thicker (65).
+    M = np.clip(220.0 * band * sm + 10.0 * (1 - band) * sm, 0, 255)
+    R = np.clip(25.0 * band + 95.0 * (1 - band), 15, 255)
+    CC = np.clip(18.0 * band + 65.0 * (1 - band), 16, 255)
     return M.astype(np.float32), R.astype(np.float32), CC.astype(np.float32)
 
 
@@ -454,6 +502,7 @@ def spec_wasp_warning(shape, seed, sm, base_m, base_r):
 
 def paint_firefly_glow(paint, shape, mask, seed, pm, bb):
     """Firefly glow: dark exoskeleton with bioluminescent yellow-green lantern zones."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = _shape2(shape)
     yf, xf = _insect_mgrid((h, w))
     rng = np.random.RandomState((seed + 9409) & 0x7FFFFFFF)
@@ -472,7 +521,7 @@ def paint_firefly_glow(paint, shape, mask, seed, pm, bb):
         glow_map = np.maximum(glow_map, glow)
     glow_map = np.clip(glow_map, 0, 1).astype(np.float32)
     # Subtle body texture
-    turb = multi_scale_noise((h, w), [2, 4, 8], [0.4, 0.35, 0.25], seed + 9409)
+    turb = multi_scale_noise((h, w), [16, 32, 64], [0.4, 0.35, 0.25], seed + 9409)
     body_var = np.clip(turb * 0.04 + 0.02, 0, 0.08)
     # Glow color: warm yellow-green
     glow_core = np.array([0.70, 0.90, 0.20], dtype=np.float32)

@@ -28,6 +28,7 @@ from engine.paint_v2 import ensure_bb_2d
 
 def paint_bentley_silver_v2(paint, shape, mask, seed, pm, bb):
     """Bentley signature silver with directional metallic flake orientation sparkle."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     rng = np.random.RandomState(seed + 400)
@@ -35,7 +36,7 @@ def paint_bentley_silver_v2(paint, shape, mask, seed, pm, bb):
     # Oriented flake map — spray direction creates preferred flake alignment
     flake_orient = multi_scale_noise((h, w), [1, 2, 4], [0.4, 0.35, 0.25], seed + 401)
     # Large flake sparkle (coarser noise = bigger flakes)
-    flake_large = multi_scale_noise((h, w), [4, 8], [0.5, 0.5], seed + 402)
+    flake_large = multi_scale_noise((h, w), [16, 32], [0.5, 0.5], seed + 402)
     # Spray direction gradient (vertical = spray gun passes)
     y, x = get_mgrid((h, w))
     spray_dir = np.sin(y * 0.02 + flake_orient * 2.0) * 0.5 + 0.5
@@ -62,7 +63,7 @@ def spec_bentley_silver(shape, seed, sm, base_m, base_r):
     flake = multi_scale_noise((h, w), [1, 2, 4], [0.4, 0.35, 0.25], seed + 401)
     M = np.clip(180.0 + flake * 60.0 * sm, 0, 255).astype(np.float32)
     R = np.clip(8.0 + flake * 15.0 * sm, 15, 255).astype(np.float32)
-    CC = np.clip(16.0 + flake * 5.0, 0, 255).astype(np.float32)
+    CC = np.clip(16.0 + flake * 5.0, 16, 255).astype(np.float32)
     return M, R, CC
 
 # ==================================================================
@@ -73,6 +74,7 @@ def spec_bentley_silver(shape, seed, sm, base_m, base_r):
 
 def paint_bugatti_blue_v2(paint, shape, mask, seed, pm, bb):
     """Bugatti deep blue multi-coat with 5-layer color-shifting interference depth."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
@@ -106,7 +108,7 @@ def spec_bugatti_blue(shape, seed, sm, base_m, base_r):
     depth = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.4, 0.3], seed + 410)
     M = np.clip(60.0 + depth * 40.0 * sm, 0, 255).astype(np.float32)
     R = np.clip(6.0 + depth * 10.0 * sm, 15, 255).astype(np.float32)
-    CC = np.clip(16.0 + depth * 6.0, 0, 255).astype(np.float32)
+    CC = np.clip(16.0 + depth * 6.0, 16, 255).astype(np.float32)
     return M, R, CC
 
 # ==================================================================
@@ -118,13 +120,14 @@ def spec_bugatti_blue(shape, seed, sm, base_m, base_r):
 
 def paint_ferrari_rosso_v2(paint, shape, mask, seed, pm, bb):
     """Ferrari Rosso triple-layer candy: Beer-Lambert absorption through translucent pigment."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     rng = np.random.RandomState(seed + 420)
 
     # Layer 1: Reflective metallic base (silver-aluminum)
-    base_reflect = multi_scale_noise((h, w), [2, 4, 8], [0.3, 0.4, 0.3], seed + 421)
+    base_reflect = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.4, 0.3], seed + 421)
     # Layer 2: Translucent red pigment — Beer-Lambert absorption
     # Absorption coefficient varies spatially (pigment density variation)
     pigment_density = multi_scale_noise((h, w), [16, 32], [0.6, 0.4], seed + 422)
@@ -156,7 +159,7 @@ def spec_ferrari_rosso(shape, seed, sm, base_m, base_r):
     M = np.clip(120.0 + pigment * 50.0 * sm, 0, 255).astype(np.float32)
     R = np.clip(4.0 + pigment * 8.0 * sm, 15, 255).astype(np.float32)  # GGX floor — MiMo audit catch
     # Thick clearcoat
-    CC = np.clip(22.0 + pigment * 8.0, 0, 255).astype(np.float32)
+    CC = np.clip(22.0 + pigment * 8.0, 16, 255).astype(np.float32)
     return M, R, CC
 
 # ==================================================================
@@ -169,6 +172,7 @@ def spec_ferrari_rosso(shape, seed, sm, base_m, base_r):
 
 def paint_koenigsegg_clear_v2(paint, shape, mask, seed, pm, bb):
     """Koenigsegg naked carbon under amber-tinted clearcoat via Beer-Lambert tinting."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
@@ -216,7 +220,7 @@ def spec_koenigsegg_clear(shape, seed, sm, base_m, base_r):
     # Carbon under clearcoat: low metallic, low roughness (glossy clear)
     M = np.clip(15.0 + weave * 20.0 * sm, 0, 255).astype(np.float32)
     R = np.clip(5.0 + weave * 6.0 * sm, 15, 255).astype(np.float32)
-    CC = np.clip(20.0 + weave * 4.0, 0, 255).astype(np.float32)
+    CC = np.clip(20.0 + weave * 4.0, 16, 255).astype(np.float32)
     return M, R, CC
 
 # ==================================================================
@@ -229,6 +233,7 @@ def spec_koenigsegg_clear(shape, seed, sm, base_m, base_r):
 
 def paint_lamborghini_verde_v2(paint, shape, mask, seed, pm, bb):
     """Lamborghini Verde pearlescent flip: thin-film OPD interference green-to-gold shift."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
@@ -270,7 +275,7 @@ def spec_lamborghini_verde(shape, seed, sm, base_m, base_r):
     # Pearl: moderate metallic from mica, very smooth clearcoat
     M = np.clip(100.0 + flake * 80.0 * sm, 0, 255).astype(np.float32)
     R = np.clip(5.0 + normal * 10.0 * sm, 15, 255).astype(np.float32)
-    CC = np.clip(18.0 + normal * 6.0, 0, 255).astype(np.float32)
+    CC = np.clip(18.0 + normal * 6.0, 16, 255).astype(np.float32)
     return M, R, CC
 
 # ==================================================================
@@ -282,6 +287,7 @@ def spec_lamborghini_verde(shape, seed, sm, base_m, base_r):
 
 def paint_maybach_two_tone_v2(paint, shape, mask, seed, pm, bb):
     """Maybach two-tone horizontal split with sigmoid coachline blend zone."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
@@ -326,7 +332,7 @@ def spec_maybach_two_tone(shape, seed, sm, base_m, base_r):
     upper_r, lower_r = 4.0, 10.0
     M = np.clip(upper_m * (1.0 - split) + lower_m * split * sm + (1.0 - sm) * 30.0, 0, 255).astype(np.float32)
     R = np.clip(upper_r * (1.0 - split) + lower_r * split * sm, 15, 255).astype(np.float32)
-    CC = np.clip(18.0 + split * 4.0, 0, 255).astype(np.float32)
+    CC = np.clip(18.0 + split * 4.0, 16, 255).astype(np.float32)
     return M, R, CC
 
 # ==================================================================
@@ -339,6 +345,7 @@ def spec_maybach_two_tone(shape, seed, sm, base_m, base_r):
 
 def paint_mclaren_orange_v2(paint, shape, mask, seed, pm, bb):
     """McLaren Papaya Spark fluorescent pigment with UV re-emission glow simulation."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
@@ -380,7 +387,7 @@ def spec_mclaren_orange(shape, seed, sm, base_m, base_r):
     # Metallic flake in orange + glossy clearcoat
     M = np.clip(90.0 + flake * 60.0 * sm, 0, 255).astype(np.float32)
     R = np.clip(5.0 + uv * 8.0 * sm, 15, 255).astype(np.float32)
-    CC = np.clip(16.0 + uv * 6.0, 0, 255).astype(np.float32)
+    CC = np.clip(16.0 + uv * 6.0, 16, 255).astype(np.float32)
     return M, R, CC
 
 # ==================================================================
@@ -392,6 +399,7 @@ def spec_mclaren_orange(shape, seed, sm, base_m, base_r):
 
 def paint_pagani_tricolore_v2(paint, shape, mask, seed, pm, bb):
     """Pagani tricolore three-zone vertical fade with smoothstep Hermite transitions."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = ensure_bb_2d(bb, shape)
     if pm == 0.0:
         return paint
@@ -401,7 +409,7 @@ def paint_pagani_tricolore_v2(paint, shape, mask, seed, pm, bb):
 
     # Noise-driven surface angle simulation (replaces hard stripe boundaries)
     angle_noise = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.4, 0.3], seed + 471)
-    fine_noise = multi_scale_noise((h, w), [4, 8], [0.6, 0.4], seed + 472)
+    fine_noise = multi_scale_noise((h, w), [16, 32], [0.6, 0.4], seed + 472)
 
     # Surface angle parameter: combines position + noise for angle-resolved shift
     # This simulates how real tricolore paint shifts color based on viewing angle
@@ -432,7 +440,7 @@ def paint_pagani_tricolore_v2(paint, shape, mask, seed, pm, bb):
 
     # Pearl shimmer in transition zones (where two colors meet)
     transition_intensity = t1 * (1.0 - t1) + t2 * (1.0 - t2)
-    pearl = multi_scale_noise((h, w), [2, 4, 8], [0.4, 0.35, 0.25], seed + 473)
+    pearl = multi_scale_noise((h, w), [16, 32, 64], [0.4, 0.35, 0.25], seed + 473)
     shimmer = transition_intensity * pearl * 0.12
 
     effect = np.stack([
@@ -451,7 +459,7 @@ def spec_pagani_tricolore(shape, seed, sm, base_m, base_r):
     y_norm = y / max(h - 1, 1)
     # Noise-based angle simulation for spec variation
     angle_noise = multi_scale_noise((h, w), [16, 32, 64], [0.3, 0.4, 0.3], seed + 471)
-    fine = multi_scale_noise((h, w), [4, 8], [0.6, 0.4], seed + 474)
+    fine = multi_scale_noise((h, w), [16, 32], [0.6, 0.4], seed + 474)
     angle_param = np.clip(y_norm * 0.6 + angle_noise * 0.25 + fine * 0.15, 0, 1)
 
     def smoothstep(edge0, edge1, val):
@@ -479,6 +487,7 @@ def spec_pagani_tricolore(shape, seed, sm, base_m, base_r):
 
 def paint_porsche_pts_v2(paint, shape, mask, seed, pm, bb):
     """Porsche Paint-to-Sample ultra-flat precision color with micro orange-peel texture."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
@@ -522,5 +531,5 @@ def spec_porsche_pts(shape, seed, sm, base_m, base_r):
     # Only micro-variation from orange peel
     M = np.clip(3.0 + peel * 4.0 * sm, 0, 255).astype(np.float32)
     R = np.clip(3.0 + peel * 5.0 * sm, 15, 255).astype(np.float32)
-    CC = np.clip(20.0 + peel * 3.0, 0, 255).astype(np.float32)
+    CC = np.clip(20.0 + peel * 3.0, 16, 255).astype(np.float32)
     return M, R, CC

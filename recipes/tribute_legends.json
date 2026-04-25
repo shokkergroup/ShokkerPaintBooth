@@ -1,0 +1,107 @@
+{
+  "name": "Tribute Legends",
+  "description": "Period-correct racing heritage tribute — classic Gulf-style blue + orange with white accents, gloss finish, chrome numbers, and subtle weathering for authenticity.",
+  "author": "Shokker Paint Booth",
+  "version": "6.2.0",
+  "compatible_with": "classic_le_mans, gt40_chassis, porsche_917, any historic endurance body",
+  "notes": "Gulf-style requires exact color ratio — keep baseColor #4ba6d9 for upper, orange band for middle third. Light enamel finish reads more period-correct than full modern gloss. Add subtle satin wash over the top for 'just driven' feel.",
+  "zones": [
+    {
+      "name": "Heritage Blue Body",
+      "color": "everything",
+      "base": "enamel",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "special",
+      "baseColor": "#4ba6d9",
+      "baseColorMode": "solid",
+      "baseStrength": 1,
+      "baseSpecStrength": 0.9
+    },
+    {
+      "name": "Orange Band",
+      "color": "yellow",
+      "base": "enamel",
+      "pattern": "racing_stripe",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#ffcc00",
+      "pickerTolerance": 30,
+      "baseColor": "#f26a1a",
+      "baseColorMode": "solid",
+      "patternIntensity": "100"
+    },
+    {
+      "name": "White Accent Stripe",
+      "color": "white",
+      "base": "gloss",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#ffffff",
+      "pickerTolerance": 25,
+      "baseColor": "#f7f7f7",
+      "baseColorMode": "solid"
+    },
+    {
+      "name": "Period Chrome Numbers",
+      "color": "red",
+      "base": "chrome",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#cc2222",
+      "pickerTolerance": 35,
+      "baseColorMode": "source"
+    },
+    {
+      "name": "Subtle Weathering",
+      "color": "remaining",
+      "base": "satin",
+      "pattern": "none",
+      "intensity": "35",
+      "colorMode": "special",
+      "baseColor": "#6b7580",
+      "baseColorMode": "solid",
+      "baseStrength": 0.3,
+      "baseSpecStrength": 0.6
+    },
+    {
+      "name": "Flat Black Scoop",
+      "color": "dark",
+      "base": "flat_black",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#111111",
+      "pickerTolerance": 35,
+      "baseColor": "#0f0f0f",
+      "baseColorMode": "solid",
+      "baseSpecStrength": 0.35
+    },
+    {
+      "name": "Blue Accent Detail",
+      "color": "blue",
+      "base": "candy_cobalt",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#3366ff",
+      "pickerTolerance": 35,
+      "baseColor": "#0a3d8a",
+      "baseColorMode": "solid"
+    },
+    {
+      "name": "Aged Gold Badge",
+      "color": "gray",
+      "base": "mirror_gold",
+      "pattern": "none",
+      "intensity": "85",
+      "colorMode": "quick",
+      "pickerColor": "#aaaaaa",
+      "pickerTolerance": 30,
+      "baseColor": "#c89420",
+      "baseColorMode": "solid"
+    }
+  ]
+}

@@ -1,0 +1,123 @@
+{
+  "version": "6.2.0",
+  "description": "Generic metadata for racing series identifiers. No trademark content — descriptions only. SPB uses these entries to suggest placement zones and color palettes for series-specific branding.",
+  "schema": {
+    "id": "string — unique key",
+    "name": "string — generic series descriptor",
+    "category": "string — racing discipline",
+    "typical_placement": "array of placement zones",
+    "color_palette": "array of hex colors typical of this series style",
+    "size_hint": "small|medium|large",
+    "notes": "string — generic guidance"
+  },
+  "series": [
+    {
+      "id": "nascar_cup_series",
+      "name": "Premier Stock Car Series",
+      "category": "stock_car",
+      "typical_placement": ["Windshield top banner", "Quarter panel", "Door panel adjacent to number"],
+      "color_palette": ["#0033A0", "#FFFFFF", "#E4002B"],
+      "size_hint": "medium",
+      "notes": "Top-tier stock car series identifier — usually placed prominently in the windshield banner zone. Patriotic palette common."
+    },
+    {
+      "id": "nascar_xfinity_series",
+      "name": "Second-Tier Stock Car Series",
+      "category": "stock_car",
+      "typical_placement": ["Windshield top banner", "Front fender"],
+      "color_palette": ["#FCB300", "#000000", "#FFFFFF"],
+      "size_hint": "medium",
+      "notes": "Developmental stock car identifier. Yellow accents are typical of the modern era."
+    },
+    {
+      "id": "nascar_truck_series",
+      "name": "Pickup Truck Racing Series",
+      "category": "stock_car",
+      "typical_placement": ["Windshield banner", "Tailgate", "Bedside"],
+      "color_palette": ["#FF6900", "#000000", "#FFFFFF"],
+      "size_hint": "medium",
+      "notes": "Truck-bodied stock car series. Use the larger tailgate canvas for series identifier when possible."
+    },
+    {
+      "id": "imsa_dpi",
+      "name": "Daytona Prototype Series",
+      "category": "prototype",
+      "typical_placement": ["Front splitter", "Rear wing endplate"],
+      "color_palette": ["#003DA5", "#FFD100", "#FFFFFF"],
+      "size_hint": "small",
+      "notes": "Top-class American sports car prototype identifier. Small but consistently placed at the splitter leading edge."
+    },
+    {
+      "id": "imsa_gt3",
+      "name": "American GT3 Class",
+      "category": "sports_car",
+      "typical_placement": ["Door panel", "Hood corner"],
+      "color_palette": ["#003DA5", "#E4002B", "#FFFFFF"],
+      "size_hint": "small",
+      "notes": "GT class identifier in American sports car series. Often placed adjacent to the class-color number panel."
+    },
+    {
+      "id": "f1_world_championship",
+      "name": "Formula 1 World Championship",
+      "category": "open_wheel",
+      "typical_placement": ["Nose", "Halo bar", "Rear wing endplate"],
+      "color_palette": ["#E10600", "#FFFFFF", "#15151E"],
+      "size_hint": "small",
+      "notes": "Premier open-wheel world championship identifier. Tiny but always present at the nose tip."
+    },
+    {
+      "id": "indycar",
+      "name": "American Open-Wheel Series",
+      "category": "open_wheel",
+      "typical_placement": ["Sidepod", "Airbox", "Front wing endplate"],
+      "color_palette": ["#E12022", "#003DA5", "#FFFFFF"],
+      "size_hint": "medium",
+      "notes": "American open-wheel championship identifier. Often placed on the airbox alongside the car number."
+    },
+    {
+      "id": "dirt_late_model",
+      "name": "Dirt Late Model Touring Series",
+      "category": "dirt_oval",
+      "typical_placement": ["Roof spoiler", "Quarter panel", "Sail panel"],
+      "color_palette": ["#000000", "#FFD100", "#E4002B"],
+      "size_hint": "medium",
+      "notes": "Touring dirt-oval series identifier. Often hand-applied vinyl with high-contrast palette to survive dust occlusion."
+    },
+    {
+      "id": "world_of_outlaws",
+      "name": "Outlaw Sprint Car Series",
+      "category": "dirt_oval",
+      "typical_placement": ["Top wing", "Tail tank"],
+      "color_palette": ["#000000", "#FFFFFF", "#E4002B"],
+      "size_hint": "large",
+      "notes": "Wing-sprint touring series identifier. Top wing has large flat canvas perfect for high-visibility series branding."
+    },
+    {
+      "id": "arca_menards",
+      "name": "Stock Car Development Series",
+      "category": "stock_car",
+      "typical_placement": ["Windshield banner", "Quarter panel"],
+      "color_palette": ["#003DA5", "#FFD100", "#FFFFFF"],
+      "size_hint": "medium",
+      "notes": "Entry-level stock car development series identifier. Conservative placement matches the series' grassroots feel."
+    },
+    {
+      "id": "formula_drift",
+      "name": "Professional Drift Series",
+      "category": "drift",
+      "typical_placement": ["Door panel", "Rear quarter window", "Hood"],
+      "color_palette": ["#FF6900", "#000000", "#FFFFFF"],
+      "size_hint": "medium",
+      "notes": "Pro drift series identifier. Bright orange accent ties into the series' high-energy visual identity."
+    },
+    {
+      "id": "world_endurance_championship",
+      "name": "Global Endurance Championship",
+      "category": "endurance",
+      "typical_placement": ["Front splitter leading edge", "Door panel", "Rear wing endplate"],
+      "color_palette": ["#E4002B", "#003DA5", "#FFFFFF"],
+      "size_hint": "small",
+      "notes": "International endurance championship identifier. Multi-class — placement matches class regulations rather than team preference."
+    }
+  ]
+}

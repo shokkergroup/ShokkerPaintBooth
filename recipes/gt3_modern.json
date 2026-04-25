@@ -1,0 +1,90 @@
+{
+  "name": "GT3 Modern",
+  "description": "Contemporary GT3 factory-team livery: pearl body with color-shift accents, gloss sponsors, and brushed aluminum roof.",
+  "author": "Shokker Paint Booth",
+  "version": "6.2.0",
+  "compatible_with": "any GT3 chassis, generic_sports_car",
+  "notes": "Designed for sleek endurance cars. The color shift accent comes alive under track lights. Swap base color hex on Body zone to re-theme the whole livery instantly.",
+  "zones": [
+    {
+      "name": "Body Main",
+      "color": "everything",
+      "base": "tri_coat_pearl",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "special",
+      "baseColor": "#0a2540",
+      "baseColorMode": "solid",
+      "baseStrength": 1,
+      "baseSpecStrength": 1
+    },
+    {
+      "name": "Color Shift Accent",
+      "color": "blue",
+      "base": "chameleon",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#3366ff",
+      "pickerTolerance": 40,
+      "baseColorMode": "source",
+      "baseStrength": 1,
+      "baseSpecStrength": 1
+    },
+    {
+      "name": "Roof",
+      "color": "gray",
+      "base": "brushed_aluminum",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#777777",
+      "pickerTolerance": 30,
+      "baseColorMode": "source"
+    },
+    {
+      "name": "Sponsors / Logos",
+      "color": "white",
+      "base": "race_day_gloss",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#ffffff",
+      "pickerTolerance": 25,
+      "baseColorMode": "source"
+    },
+    {
+      "name": "Car Numbers",
+      "color": "yellow",
+      "base": "satin",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#ffcc00",
+      "pickerTolerance": 35,
+      "baseColor": "#ffffff",
+      "baseColorMode": "solid"
+    },
+    {
+      "name": "Carbon Aero",
+      "color": "dark",
+      "base": "carbon_base",
+      "pattern": "carbon_spread_tow",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#1a1a1a",
+      "pickerTolerance": 40,
+      "patternIntensity": "100"
+    },
+    {
+      "name": "Lower Splitter",
+      "color": "remaining",
+      "base": "matte",
+      "pattern": "none",
+      "intensity": "80",
+      "colorMode": "special",
+      "baseColor": "#0a0a0a",
+      "baseColorMode": "solid"
+    }
+  ]
+}

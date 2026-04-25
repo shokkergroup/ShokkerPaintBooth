@@ -4,16 +4,42 @@
 // Purpose: Canvas renderers for every finish (base, pattern, special) used for
 //          small preview swatches in the UI. Large file - search by finish id.
 // Deps:    paint-booth-1-data.js (finish ids). Called by UI that shows previews.
-// Edit:    Add/change a client preview for a finish → baseFns, patternFns, or
+//          fusion-swatches.js / swatch-upgrades*.js populate
+//          window._fusionSwatchRenderers which this file consults first.
+// Edit:    Add/change a client preview for a finish -> baseFns, patternFns, or
 //          the big specials object; search for finish id or "FINISH PATTERN PREVIEW".
 // See:     PROJECT_STRUCTURE.md in this folder.
+// Swatch size conventions (kept for visual regression parity):
+//   - Detail / hero swatch: 96x96
+//   - Picker tile        : 48x48
+//   - Zone chip          : 24x24
+// Version: 2026-04-17
 // ============================================================
 
 // ===== FINISH PATTERN PREVIEW RENDERER (Client-side) =====
-// Renders miniature versions of each texture/base to canvas for visual preview
-const _previewCache = {}; // Cache rendered previews: finishId → ImageData
-const _imagePatternCache = {}; // url → HTMLImageElement for image-based pattern swatches
+// Renders miniature versions of each texture/base to canvas for visual preview.
+/** @type {Object.<string, ImageData>} finishId_swatch -> cached ImageData */
+const _previewCache = {};
+/** @type {Object.<string, HTMLImageElement>} url -> loaded image for image-based swatches */
+const _imagePatternCache = {};
 
+/**
+ * Standard swatch dimensions used across the UI. Keeping these as constants
+ * prevents "every dev picks their own size" drift.
+ * @type {{detail: number, picker: number, chip: number}}
+ */
+const SWATCH_SIZES = Object.freeze({ detail: 96, picker: 48, chip: 24 });
+
+/**
+ * Paints an image-based pattern swatch from a URL. Async: if the image isn't
+ * cached yet, we draw a dark placeholder and swap in the real image onload.
+ * Falls back to an X-cross if the image fails to load.
+ * @param {CanvasRenderingContext2D} ctx
+ * @param {number} w
+ * @param {number} h
+ * @param {string} imageUrl - relative or absolute URL.
+ * @returns {void}
+ */
 function renderImagePatternSwatch(ctx, w, h, imageUrl) {
     // Dark background so white patterns are visible
     ctx.fillStyle = '#1a1a1a';
@@ -42,6 +68,20 @@ function renderImagePatternSwatch(ctx, w, h, imageUrl) {
     img.src = fullUrl;
 }
 
+/**
+ * Main entry: paints a finish preview onto an already-sized canvas context.
+ * Resolution order:
+ *   1. window._fusionSwatchRenderers (populated by fusion-swatches + upgrades)
+ *   2. local baseFns / patternFns / specials tables (below)
+ *   3. Fallback: a flat neutral fill so something is always shown.
+ * Deterministic: same (finishId, w, h) -> same pixels.
+ * @param {CanvasRenderingContext2D} ctx
+ * @param {number} w
+ * @param {number} h
+ * @param {string} finishId
+ * @param {string} [bgColor] - optional CSS color to use as the neutral background.
+ * @returns {void}
+ */
 function renderPatternPreview(ctx, w, h, finishId, bgColor) {
     // Use a neutral-ish background to show the pattern clearly
     const bg = bgColor || '#4a4a5a';
@@ -7938,8 +7978,20 @@ function _simpleNoise2D(w, h, scales, weights, rng) {
     return result;
 }
 
-// Render a swatch canvas for the finish library list item
+/**
+ * Renders a full swatch onto a <canvas> for a library-list item.
+ * Caches ImageData (by finishId) for non-image swatches so repeated paints
+ * are effectively free. Image-backed swatches bypass the cache because their
+ * draw is already cheap (blitting an HTMLImageElement).
+ * @param {HTMLCanvasElement} canvas
+ * @param {string} finishId
+ * @returns {void}
+ */
 function renderFinishSwatch(canvas, finishId) {
+    if (!canvas || typeof canvas.getContext !== 'function') {
+        console.warn('[SWATCH] renderFinishSwatch: bad canvas for ' + finishId);
+        return;
+    }
     const finishForCache = [...(typeof BASES !== 'undefined' ? BASES : []), ...(typeof PATTERNS !== 'undefined' ? PATTERNS : []), ...(typeof MONOLITHICS !== 'undefined' ? MONOLITHICS : [])].find(f => f && f.id === finishId);
     const isImageSwatch = finishForCache && finishForCache.swatch_image;
     const cacheKey = finishId + '_swatch';
@@ -7948,9 +8000,21 @@ function renderFinishSwatch(canvas, finishId) {
         return;
     }
     const ctx = canvas.getContext('2d');
-    renderPatternPreview(ctx, canvas.width, canvas.height, finishId);
-    if (!isImageSwatch) {
-        _previewCache[cacheKey] = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    try {
+        renderPatternPreview(ctx, canvas.width, canvas.height, finishId);
+        if (!isImageSwatch) {
+            _previewCache[cacheKey] = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        }
+    } catch (err) {
+        console.warn('[SWATCH] renderFinishSwatch failed for ' + finishId + ': ' + (err && err.message ? err.message : err));
+        try { ctx.fillStyle = '#3a3a3a'; ctx.fillRect(0, 0, canvas.width, canvas.height); } catch (_) { /* noop */ }
     }
+}
+
+// Expose helpers globally for cross-file use (parity with pre-existing patterns).
+if (typeof window !== 'undefined') {
+    window.renderFinishSwatch = renderFinishSwatch;
+    window.renderPatternPreview = renderPatternPreview;
+    window.SWATCH_SIZES = SWATCH_SIZES;
 }
 

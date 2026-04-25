@@ -1,0 +1,100 @@
+# EditorConfig — cross-editor formatting consistency for Shokker Paint Booth
+# Docs: https://editorconfig.org
+#
+# Stop at this root file; do not search parent directories.
+root = true
+
+# ---------------------------------------------------------------------------
+# Defaults for every file in the repo
+# ---------------------------------------------------------------------------
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 4
+max_line_length = 120
+
+# ---------------------------------------------------------------------------
+# Python — PEP 8, 4 spaces
+# ---------------------------------------------------------------------------
+[*.py]
+indent_size = 4
+max_line_length = 120
+
+# ---------------------------------------------------------------------------
+# JavaScript / TypeScript — match existing SPB style (4-space)
+# ---------------------------------------------------------------------------
+[*.{js,jsx,ts,tsx,mjs,cjs}]
+indent_size = 4
+max_line_length = 120
+
+# ---------------------------------------------------------------------------
+# JSON / JSON5 — 2-space (compact)
+# ---------------------------------------------------------------------------
+[*.{json,json5,jsonc}]
+indent_size = 2
+
+# ---------------------------------------------------------------------------
+# YAML — 2-space (spec requires spaces, 2-space community norm)
+# ---------------------------------------------------------------------------
+[*.{yml,yaml}]
+indent_size = 2
+
+# ---------------------------------------------------------------------------
+# TOML — 2-space
+# ---------------------------------------------------------------------------
+[*.toml]
+indent_size = 2
+
+# ---------------------------------------------------------------------------
+# Markdown — preserve trailing whitespace (linebreaks) but still trim inside
+# ---------------------------------------------------------------------------
+[*.md]
+indent_size = 4
+trim_trailing_whitespace = false
+max_line_length = off
+
+# ---------------------------------------------------------------------------
+# HTML / CSS / SCSS
+# ---------------------------------------------------------------------------
+[*.{html,htm,css,scss,sass}]
+indent_size = 4
+
+# ---------------------------------------------------------------------------
+# Shell scripts — 2-space (Google shell style)
+# ---------------------------------------------------------------------------
+[*.sh]
+indent_size = 2
+
+# ---------------------------------------------------------------------------
+# Windows batch / PowerShell — CRLF line endings required
+# ---------------------------------------------------------------------------
+[*.{bat,cmd}]
+end_of_line = crlf
+indent_size = 2
+
+[*.{ps1,psm1,psd1}]
+end_of_line = crlf
+indent_size = 4
+
+# ---------------------------------------------------------------------------
+# Makefiles — tabs are mandatory, do not convert
+# ---------------------------------------------------------------------------
+[Makefile]
+indent_style = tab
+
+# ---------------------------------------------------------------------------
+# Generated / vendored — leave alone
+# ---------------------------------------------------------------------------
+[{package-lock.json,yarn.lock,pnpm-lock.yaml}]
+indent_size = unset
+insert_final_newline = unset
+trim_trailing_whitespace = unset
+
+# ---------------------------------------------------------------------------
+# Windows Sandbox config files
+# ---------------------------------------------------------------------------
+[*.wsb]
+indent_size = 2

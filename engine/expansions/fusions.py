@@ -14,6 +14,7 @@ Integration: integrate_fusions(engine_module) merges into engine
 """
 
 import numpy as np
+import cv2
 from PIL import Image, ImageFilter
 from scipy.spatial import cKDTree
 from scipy.ndimage import map_coordinates as _mc
@@ -40,6 +41,7 @@ def _adapt_staging_factory_result(result):
         return result
 
     def _wrapped_paint_fn(paint, shape, mask, seed, pm, bb):
+        if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
         bb_val = bb
         try:
             if np.isscalar(bb):
@@ -58,19 +60,26 @@ def _adapt_staging_factory_result(result):
 # HELPERS
 # ================================================================
 
-def _mgrid(shape):
-    return np.mgrid[0:shape[0], 0:shape[1]]
+from engine.core import get_mgrid as _mgrid  # cached, faster than local np.mgrid
 
 def _noise(shape, scales, weights, seed):
-    """Multi-octave noise."""
+    """Multi-octave noise — delegates to cached core.multi_scale_noise for speed."""
+    try:
+        from engine.core import multi_scale_noise as _cached_msn
+        return _cached_msn(shape, scales, weights, seed)
+    except ImportError:
+        pass
+    # Fallback if core not available (shouldn't happen)
     h, w = shape
     rng = np.random.RandomState(seed)
     result = np.zeros((h, w), dtype=np.float32)
     for s, wt in zip(scales, weights):
         raw = rng.randn(max(1, h // s), max(1, w // s)).astype(np.float32)
-        img = Image.fromarray((raw * 127 + 128).clip(0, 255).astype(np.uint8))
-        up = np.array(img.resize((w, h), Image.BILINEAR)).astype(np.float32) / 127.0 - 1.0
+        up = cv2.resize(raw, (w, h), interpolation=cv2.INTER_LINEAR)
         result += up * wt
+    rmin, rmax = float(result.min()), float(result.max())
+    if rmax > rmin:
+        result = (result - rmin) / (rmax - rmin) * 2.0 - 1.0
     return result
 
 def _hsv_to_rgb(h, s, v):
@@ -98,8 +107,8 @@ def _spec_out(shape, mask, M, G, B):
     G_clipped = np.where(non_chrome, np.maximum(G_clipped, 15), G_clipped)
     spec = np.zeros((h, w, 4), dtype=np.uint8)
     spec[:,:,0] = np.clip(M_clipped * mask, 0, 255).astype(np.uint8)
-    spec[:,:,1] = np.clip(G_clipped * mask, 0, 255).astype(np.uint8)
-    spec[:,:,2] = np.clip(B * mask, 0, 255).astype(np.uint8)
+    spec[:,:,1] = np.where(mask > 0.01, np.clip(G_clipped, 15, 255), 0).astype(np.uint8)  # R≥15 in zone
+    spec[:,:,2] = np.where(mask > 0.01, np.clip(B, 16, 255), 0).astype(np.uint8)  # CC≥16 in zone
     spec[:,:,3] = np.clip(mask * 255, 0, 255).astype(np.uint8)
     return spec
 
@@ -135,10 +144,12 @@ def _voronoi_cells(shape, n_pts, seed_offset):
     edge_dist = d2 - d1
     return cell_id, d1, edge_dist
 
-def _paint_noop(paint, shape, mask, seed, pm, bb):
-    return paint
+from engine.core import paint_none as _paint_noop
 
 def _paint_brighten(paint, shape, mask, seed, pm, bb):
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     paint = np.clip(paint + bb * 0.5 * mask[:,:,np.newaxis], 0, 1)
     return paint
 
@@ -176,8 +187,8 @@ def _make_gradient_fusion(mat_a, mat_b, grad_fn, seed_offset=0, warp=False, pain
         """Apply multi-octave Perlin-style domain warp to gradient field."""
         h, w = shape
         # Primary warp: large organic flow
-        warp1_y = _noise(shape, [48, 96, 192], [0.3, 0.4, 0.3], seed + so + 500)
-        warp1_x = _noise(shape, [48, 96, 192], [0.3, 0.4, 0.3], seed + so + 501)
+        warp1_y = _noise(shape, [6, 12, 24], [0.3, 0.4, 0.3], seed + so + 500)
+        warp1_x = _noise(shape, [6, 12, 24], [0.3, 0.4, 0.3], seed + so + 501)
         # Secondary warp: medium turbulence
         warp2_y = _noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + so + 502)
         warp2_x = _noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + so + 503)
@@ -201,7 +212,7 @@ def _make_gradient_fusion(mat_a, mat_b, grad_fn, seed_offset=0, warp=False, pain
         # Always domain-warp for organic flow (extra warp if warp=True)
         grad = _domain_warp_grad(shape, grad_raw, seed, seed_offset)
         if warp:
-            extra_warp = _noise(shape, [24, 48], [0.5, 0.5], seed + seed_offset + 510)
+            extra_warp = _noise(shape, [16, 32], [0.5, 0.5], seed + seed_offset + 510)
             grad = np.clip(grad + extra_warp * 0.15, 0, 1)
 
         # Transition zone: peaks where grad ~ 0.5, Gaussian-shaped
@@ -215,7 +226,7 @@ def _make_gradient_fusion(mat_a, mat_b, grad_fn, seed_offset=0, warp=False, pain
         sparkle_noise = _noise(shape, [2, 4, 8], [0.3, 0.4, 0.3], seed + seed_offset + 600)
         M = M + transition_zone * (40 + sparkle_noise * 30) * sm
         # Micro-texture that varies across gradient: fine grain near mat_a, coarse near mat_b
-        micro_a = _noise(shape, [2, 4], [0.6, 0.4], seed + seed_offset + 610)
+        micro_a = _noise(shape, [32, 64], [0.6, 0.4], seed + seed_offset + 610)
         micro_b = _noise(shape, [8, 16], [0.5, 0.5], seed + seed_offset + 620)
         micro = micro_a * (1 - grad) + micro_b * grad
         M = M + micro * 12 * sm
@@ -242,10 +253,12 @@ def _make_gradient_fusion(mat_a, mat_b, grad_fn, seed_offset=0, warp=False, pain
         return _spec_out(shape, mask, M, G, B)
 
     def paint_fn(paint, shape, mask, seed, pm, bb):
+        if hasattr(bb, "ndim") and bb.ndim == 2: bb = bb[:, :, np.newaxis]
+        if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
         grad_raw = grad_fn(shape)
         grad = _domain_warp_grad(shape, grad_raw, seed, seed_offset)
         if warp:
-            extra_warp = _noise(shape, [24, 48], [0.5, 0.5], seed + seed_offset + 510)
+            extra_warp = _noise(shape, [16, 32], [0.5, 0.5], seed + seed_offset + 510)
             grad = np.clip(grad + extra_warp * 0.15, 0, 1)
         result = paint.copy()
 
@@ -315,7 +328,7 @@ def _make_ghost_fusion(base_m, base_g, pattern_fn_name, seed_offset=0):
     def _domain_warp(shape, yf, xf, seed_val, strength=0.3):
         """Apply domain warping for organic feel on all patterns."""
         warp_n = _noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed_val)
-        warp_n2 = _noise(shape, [12, 24, 48], [0.3, 0.4, 0.3], seed_val + 777)
+        warp_n2 = _noise(shape, [3, 6, 12], [0.3, 0.4, 0.3], seed_val + 777)
         scale = min(shape[0], shape[1]) * strength
         return yf + warp_n * scale, xf + warp_n2 * scale
 
@@ -373,10 +386,10 @@ def _make_ghost_fusion(base_m, base_g, pattern_fn_name, seed_offset=0):
         elif pattern_fn_name == "camo":
             # Reaction-diffusion (Gray-Scott approximation) organic camo
             activator = _noise(shape, [8, 16, 32], [0.4, 0.35, 0.25], seed + seed_offset + 101)
-            inhibitor = _noise(shape, [24, 48, 96], [0.3, 0.4, 0.3], seed + seed_offset + 102)
+            inhibitor = _noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + seed_offset + 102)
             reaction = activator * 1.5 - inhibitor * 1.0
             pv = 1.0 / (1.0 + np.exp(-reaction * 6))
-            fine = _noise(shape, [2, 4], [0.5, 0.5], seed + seed_offset + 103)
+            fine = _noise(shape, [32, 64], [0.5, 0.5], seed + seed_offset + 103)
             pv = np.clip(pv + fine * 0.08, 0, 1)
         elif pattern_fn_name == "scales":
             # Overlapping elliptical scales with depth gradient
@@ -448,7 +461,7 @@ def _make_ghost_fusion(base_m, base_g, pattern_fn_name, seed_offset=0):
             crack_width = d2 - d1
             crack_norm = crack_width / (np.percentile(crack_width, 95) + 1e-6)
             cracks = np.exp(-crack_norm**2 * 8)
-            stress = _noise(shape, [4, 8, 16], [0.3, 0.4, 0.3], seed + seed_offset + 200)
+            stress = _noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + seed_offset + 200)
             pv = np.clip(cracks + np.abs(stress) * cracks * 0.4, 0, 1)
         elif pattern_fn_name == "quilt":
             # Quilted panels with curved stitch lines and puffiness
@@ -468,16 +481,19 @@ def _make_ghost_fusion(base_m, base_g, pattern_fn_name, seed_offset=0):
 
     def spec_fn(shape, mask, seed, sm):
         h, w = shape
-        pv = _compute_ghost_pattern(shape, seed)
+        # --- Resolution cap: compute at 512 max, upscale ---
+        ds = max(1, min(h, w) // 1024)
+        sh, sw = max(64, h // ds), max(64, w // ds)
+        pv = _compute_ghost_pattern((sh, sw), seed)
 
-        M = np.full((h, w), float(base_m), dtype=np.float32)
-        G = np.full((h, w), float(base_g), dtype=np.float32)
+        M = np.full((sh, sw), float(base_m), dtype=np.float32)
+        G = np.full((sh, sw), float(base_g), dtype=np.float32)
         # Clearcoat: dramatic ghost range CC 16-180 for max angle-dependent visibility
         B = pv * 16.0 + (1 - pv) * 180.0
         # M/G modulation: pattern zones get metallic boost and smoothness
         M = np.clip(M + pv * 80.0 * sm, 0, 255)
         G = np.clip(G - pv * 35.0 * sm + (1 - pv) * 20.0 * sm, 0, 255)
-        n = _noise(shape, [8, 16], [0.5, 0.5], seed + seed_offset)
+        n = _noise((sh, sw), [8, 16], [0.5, 0.5], seed + seed_offset)
         M = np.clip(M + n * 10 * sm, 0, 255)
         G = np.clip(G + n * 8 * sm, 0, 255)
         # Pattern edges get extra metallic pop via Sobel-like gradient
@@ -486,17 +502,30 @@ def _make_ghost_fusion(base_m, base_g, pattern_fn_name, seed_offset=0):
         edge = np.clip((pv_dx + pv_dy) * 6, 0, 1)
         M = np.clip(M + edge * 45 * sm, 0, 255)
         G = np.clip(G - edge * 18 * sm, 0, 255)
-        return _spec_out(shape, mask, M, G, B)
+        mask_s = cv2.resize(mask.astype(np.float32), (sw, sh), interpolation=cv2.INTER_LINEAR) if ds > 1 else mask
+        spec_small = _spec_out((sh, sw), mask_s, M, G, B)
+        if ds > 1:
+            spec = np.zeros((h, w, 4), dtype=np.uint8)
+            for ch in range(4):
+                spec[:, :, ch] = cv2.resize(spec_small[:, :, ch].astype(np.float32), (w, h), interpolation=cv2.INTER_LINEAR).astype(np.uint8)
+            return spec
+        return spec_small
 
     def paint_fn(paint, shape, mask, seed, pm, bb):
+        if hasattr(bb, "ndim") and bb.ndim == 2: bb = bb[:, :, np.newaxis]
         """Ghost patterns: COLORSHOXX-style color zones married to the ghost pattern.
         UPGRADED: Was shimmer-only. Now creates real color zones:
         - Pattern-high (pv>0.6): cool spectral tint (blue-cyan for circuits, green for hex, etc.)
         - Pattern-low (pv<0.3): warm desaturated push toward dark base
         - Edges: bright rim highlight with slight color shift
         - The same pv field drives both paint color AND spec M/R/CC = married pair."""
+        if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
         h, w = shape
-        pv = _compute_ghost_pattern(shape, seed)
+        # --- Resolution cap: compute ghost pattern at 512 max, upscale ---
+        ds = max(1, min(h, w) // 1024)
+        sh, sw = max(64, h // ds), max(64, w // ds)
+        pv_s = _compute_ghost_pattern((sh, sw), seed)
+        pv = cv2.resize(pv_s, (w, h), interpolation=cv2.INTER_LINEAR) if ds > 1 else pv_s
         result = paint.copy()
         m3 = mask[:,:,np.newaxis]
 
@@ -568,24 +597,22 @@ def _aniso_grain_field(shape, grain_fn_name, seed, seed_offset):
         u = x_norm * ct + y_norm * st  # along grain
         v = (-x_norm * st + y_norm * ct) * stretch  # across grain (compressed)
         along = np.sin(u * freq * np.pi) * 0.5
-        n1 = _noise(shape, [4, 8, 16], [0.3, 0.4, 0.3], sd)
-        n2 = _noise(shape, [2, 4], [0.5, 0.5], sd + 1)
+        n1 = _noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], sd)
+        n2 = _noise(shape, [32, 64], [0.5, 0.5], sd + 1)
         stretched = along + n1 * 0.4 + n2 * np.abs(np.cos(u * freq * np.pi * 2)) * 0.3
         return stretched
 
     if grain_fn_name == "horizontal":
         primary = _gabor_noise(0.0, 0.1, 12.0, seed + seed_offset + 100)
         stroke_raw = rng.randn(max(1, h // 2), 1).astype(np.float32)
-        img = Image.fromarray((stroke_raw * 127 + 128).clip(0, 255).astype(np.uint8))
-        strokes = np.array(img.resize((1, h), Image.BILINEAR)).astype(np.float32).reshape(h, 1) / 127.0 - 1.0
+        strokes = cv2.resize(stroke_raw, (1, h), interpolation=cv2.INTER_LINEAR).reshape(h, 1)
         strokes = np.tile(strokes, (1, w))
         primary = primary + strokes * 0.4
 
     elif grain_fn_name == "vertical":
         primary = _gabor_noise(np.pi / 2, 0.1, 12.0, seed + seed_offset + 100)
         stroke_raw = rng.randn(1, max(1, w // 2)).astype(np.float32)
-        img = Image.fromarray((stroke_raw * 127 + 128).clip(0, 255).astype(np.uint8))
-        strokes = np.array(img.resize((w, 1), Image.BILINEAR)).astype(np.float32).reshape(1, w) / 127.0 - 1.0
+        strokes = cv2.resize(stroke_raw, (w, 1), interpolation=cv2.INTER_LINEAR).reshape(1, w)
         strokes = np.tile(strokes, (h, 1))
         primary = primary + strokes * 0.4
 
@@ -593,8 +620,7 @@ def _aniso_grain_field(shape, grain_fn_name, seed, seed_offset):
         primary = _gabor_noise(np.pi / 4, 0.1, 10.0, seed + seed_offset + 100)
         diag_len = h + w
         stroke_raw = rng.randn(max(1, diag_len // 3)).astype(np.float32)
-        img = Image.fromarray((stroke_raw * 127 + 128).clip(0, 255).astype(np.uint8).reshape(1, -1))
-        strokes_1d = np.array(img.resize((diag_len, 1), Image.BILINEAR)).astype(np.float32).flatten() / 127.0 - 1.0
+        strokes_1d = cv2.resize(stroke_raw.reshape(1, -1), (diag_len, 1), interpolation=cv2.INTER_LINEAR).flatten()
         y_i, x_i = _mgrid(shape)
         idx = np.clip(y_i + x_i, 0, diag_len - 1)
         primary = primary + strokes_1d[idx] * 0.35
@@ -602,7 +628,7 @@ def _aniso_grain_field(shape, grain_fn_name, seed, seed_offset):
     elif grain_fn_name == "radial":
         angle = np.arctan2(y_norm, x_norm)
         dist = np.sqrt(y_norm ** 2 + x_norm ** 2)
-        n_ang = _noise(shape, [4, 8, 16], [0.3, 0.4, 0.3], seed + seed_offset + 100)
+        n_ang = _noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + seed_offset + 100)
         primary = np.sin(angle * 50 + n_ang * 2) * 0.5
         primary = primary * (0.7 + dist * 0.3) + n_ang * 0.2
 
@@ -611,7 +637,7 @@ def _aniso_grain_field(shape, grain_fn_name, seed, seed_offset):
         n_warp = _noise(shape, [16, 32], [0.5, 0.5], seed + seed_offset + 100)
         warped_dist = dist + n_warp * 0.05
         primary = np.sin(warped_dist * 80) * 0.5
-        n_ring = _noise(shape, [2, 4], [0.5, 0.5], seed + seed_offset + 101)
+        n_ring = _noise(shape, [32, 64], [0.5, 0.5], seed + seed_offset + 101)
         primary = primary + n_ring * np.clip(1.0 - np.abs(np.sin(warped_dist * 80)), 0, 1) * 0.3
 
     elif grain_fn_name == "crosshatch":
@@ -631,7 +657,7 @@ def _aniso_grain_field(shape, grain_fn_name, seed, seed_offset):
     elif grain_fn_name == "wave":
         wave_mod = np.sin(y_px * 0.02 + np.sin(x_px * 0.01) * 5)
         g_base = _gabor_noise(wave_mod.mean() * 0.1, 0.12, 10.0, seed + seed_offset + 100)
-        n_w = _noise(shape, [4, 8, 16], [0.3, 0.4, 0.3], seed + seed_offset + 101)
+        n_w = _noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + seed_offset + 101)
         primary = g_base * (0.6 + wave_mod * 0.3) + n_w * wave_mod * 0.25
 
     elif grain_fn_name == "herringbone":
@@ -689,7 +715,7 @@ def _make_aniso_fusion(base_m, base_g, base_cc, grain_fn_name, seed_offset=0):
         G = np.full((h, w), float(base_g), dtype=np.float32)
         G = G + grain_r * 70 * sm
         G = G + np.abs(micro - 0.5) * 20 * sm
-        cross = _noise(shape, [2, 4], [0.5, 0.5], seed + seed_offset + 450)
+        cross = _noise(shape, [32, 64], [0.5, 0.5], seed + seed_offset + 450)
         G = G + np.abs(cross) * 14 * sm
 
         grain_cc = grain ** 1.3
@@ -700,6 +726,8 @@ def _make_aniso_fusion(base_m, base_g, base_cc, grain_fn_name, seed_offset=0):
         return _spec_out(shape, mask, M, G, B)
 
     def paint_fn(paint, shape, mask, seed, pm, bb):
+        if hasattr(bb, "ndim") and bb.ndim == 2: bb = bb[:, :, np.newaxis]
+        if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
         grain, micro = _aniso_grain_field(shape, grain_fn_name, seed, seed_offset)
 
         # UPGRADED: color zones driven by grain direction (was brightness-only)
@@ -750,8 +778,8 @@ def _make_reactive_fusion(m_low, m_high, base_g, base_cc, seed_offset=0):
         """Compute domain-warped Voronoi with 30 points, returning zone_mask and edge field."""
         h, w = shape
         # Domain warp coordinates for organic cell shapes
-        warp_y = _noise(shape, [32, 64, 128], [0.3, 0.4, 0.3], seed + seed_offset + 80)
-        warp_x = _noise(shape, [32, 64, 128], [0.3, 0.4, 0.3], seed + seed_offset + 90)
+        warp_y = _noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + seed_offset + 80)
+        warp_x = _noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + seed_offset + 90)
         warp_amp = max(h, w) * 0.08
         y_g, x_g = _mgrid(shape)
         yf = y_g.astype(np.float32) + warp_y * warp_amp
@@ -778,15 +806,18 @@ def _make_reactive_fusion(m_low, m_high, base_g, base_cc, seed_offset=0):
 
     def spec_fn(shape, mask, seed, sm):
         h, w = shape
-        zone_mask, edge_field, cell_id = _reactive_voronoi(shape, seed)
+        # --- Resolution cap: compute at 512 max, upscale ---
+        ds = max(1, min(h, w) // 1024)
+        sh, sw = max(64, h // ds), max(64, w // ds)
+        zone_mask, edge_field, cell_id = _reactive_voronoi((sh, sw), seed)
         # Chrome seam at cell boundaries (M=255, R=0)
-        seam_width = max(h, w) * 0.012
+        seam_width = max(sh, sw) * 0.012
         seam = np.clip(1.0 - edge_field / seam_width, 0, 1) ** 2.0
         # Zone materials
         M_zone = m_low * (1 - zone_mask) + m_high * zone_mask
         # Per-zone micro-texture with different seeds per zone
-        micro_a = _noise(shape, [4, 8, 16], [0.3, 0.4, 0.3], seed + seed_offset + 50)
-        micro_b = _noise(shape, [4, 8, 16], [0.3, 0.4, 0.3], seed + seed_offset + 60)
+        micro_a = _noise((sh, sw), [16, 32, 64], [0.3, 0.4, 0.3], seed + seed_offset + 50)
+        micro_b = _noise((sh, sw), [16, 32, 64], [0.3, 0.4, 0.3], seed + seed_offset + 60)
         micro = micro_a * zone_mask + micro_b * (1 - zone_mask)
         M_zone = M_zone + micro * 12 * sm
         # Roughness: high-M zones smooth, low-M zones rough
@@ -802,13 +833,28 @@ def _make_reactive_fusion(m_low, m_high, base_g, base_cc, seed_offset=0):
         # Boundary roughness spike just outside seam
         boundary_halo = np.clip(1.0 - edge_field / (seam_width * 3), 0, 1) * (1 - seam)
         G = G + boundary_halo * 25 * sm
-        return _spec_out(shape, mask, M, G, B)
+        mask_s = cv2.resize(mask.astype(np.float32), (sw, sh), interpolation=cv2.INTER_LINEAR) if ds > 1 else mask
+        spec_small = _spec_out((sh, sw), mask_s, M, G, B)
+        if ds > 1:
+            spec = np.zeros((h, w, 4), dtype=np.uint8)
+            for ch in range(4):
+                spec[:, :, ch] = cv2.resize(spec_small[:, :, ch].astype(np.float32), (w, h), interpolation=cv2.INTER_LINEAR).astype(np.uint8)
+            return spec
+        return spec_small
 
     def paint_fn(paint, shape, mask, seed, pm, bb):
-        zone_mask, edge_field, cell_id = _reactive_voronoi(shape, seed)
+        if hasattr(bb, "ndim") and bb.ndim == 2: bb = bb[:, :, np.newaxis]
+        if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
+        h, w = shape
+        # --- Resolution cap: compute reactive voronoi at 512 max, upscale ---
+        ds = max(1, min(h, w) // 1024)
+        sh, sw = max(64, h // ds), max(64, w // ds)
+        zone_mask_s, edge_field_s, cell_id_s = _reactive_voronoi((sh, sw), seed)
+        zone_mask = cv2.resize(zone_mask_s, (w, h), interpolation=cv2.INTER_LINEAR) if ds > 1 else zone_mask_s
+        edge_field = cv2.resize(edge_field_s, (w, h), interpolation=cv2.INTER_LINEAR) if ds > 1 else edge_field_s
         result = paint.copy()
         # Chrome seam brightening
-        seam_width = max(shape[0], shape[1]) * 0.012
+        seam_width = max(h, w) * 0.012
         seam = np.clip(1.0 - edge_field / seam_width, 0, 1) ** 2.0
         seam_bright = seam * 0.30 * pm
         for c in range(3):
@@ -849,13 +895,13 @@ def _make_sparkle_fusion(flake_style, base_m, base_r, seed_offset=0):
 
     # Flake style controls noise octaves and thresholds
     if flake_style == "coarse":
-        large_scales, med_scales = [32, 64, 128], [8, 16, 32]
+        large_scales, med_scales = [16, 32, 64], [2, 4, 8]
         flake_thresh, edge_width = 0.42, 0.12
     elif flake_style == "fine":
-        large_scales, med_scales = [16, 32, 64], [4, 8, 16]
+        large_scales, med_scales = [2, 4, 8], [1, 2, 4]
         flake_thresh, edge_width = 0.35, 0.08
     else:  # medium
-        large_scales, med_scales = [24, 48, 96], [6, 12, 24]
+        large_scales, med_scales = [3, 6, 12], [2, 4, 8]
         flake_thresh, edge_width = 0.38, 0.10
 
     def spec_fn(shape, mask, seed, sm):
@@ -863,7 +909,7 @@ def _make_sparkle_fusion(flake_style, base_m, base_r, seed_offset=0):
         rng = np.random.RandomState(seed + seed_offset)
 
         # Density envelope: where flakes are concentrated
-        density = _noise(shape, [64, 128, 256], [0.3, 0.4, 0.3], seed + seed_offset + 50)
+        density = _noise(shape, [8, 16, 32], [0.3, 0.4, 0.3], seed + seed_offset + 50)
         density = np.clip(density * 0.5 + 0.5, 0.15, 1.0)
 
         # === LARGE FLAKES: noise → sharp threshold → cell-like shapes ===
@@ -914,11 +960,11 @@ def _make_sparkle_fusion(flake_style, base_m, base_r, seed_offset=0):
             cryst_flash = np.where(cryst > 0.93, (cryst - 0.93) / 0.07, 0.0).astype(np.float32)
             M = float(base_m) * 0.25 + cryst_flash * 230.0 * density
         elif seed_offset == 7420:  # galaxy: spiral arm density zones in spec
-            arm_noise = _noise(shape, [80, 160], [0.5, 0.5], seed + seed_offset + 801)
+            arm_noise = _noise(shape, [8, 16], [0.5, 0.5], seed + seed_offset + 801)
             arm_mod = np.clip(arm_noise * 1.8, 0.0, 1.0)
             M = M * arm_mod + float(base_m) * 0.15 * (1.0 - arm_mod)
         elif seed_offset == 7470:  # constellation: extremely sparse stellar spec
-            clust_c = _noise(shape, [48, 96], [0.5, 0.5], seed + seed_offset + 500)
+            clust_c = _noise(shape, [8, 16], [0.5, 0.5], seed + seed_offset + 500)
             clust_c = np.clip(clust_c * 2.0, 0.0, 1.0)
             star_rng = np.random.RandomState(seed + seed_offset + 801)
             star_r = star_rng.random((h, w)).astype(np.float32)
@@ -940,13 +986,15 @@ def _make_sparkle_fusion(flake_style, base_m, base_r, seed_offset=0):
         return _spec_out(shape, mask, M, R, CC)
 
     def paint_fn(paint, shape, mask, seed, pm, bb):
+        if hasattr(bb, "ndim") and bb.ndim == 2: bb = bb[:, :, np.newaxis]
+        if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
         h, w = shape
         rng = np.random.RandomState(seed + seed_offset)
         result = paint.copy()
         blend = mask * pm
 
         # Multi-scale sparkle field (noise-based, no Voronoi needed)
-        density = _noise(shape, [64, 128, 256], [0.3, 0.4, 0.3], seed + seed_offset + 50)
+        density = _noise(shape, [8, 16, 32], [0.3, 0.4, 0.3], seed + seed_offset + 50)
         density = np.clip(density * 0.5 + 0.5, 0.15, 1.0)
 
         # Flake highlight pattern from large noise
@@ -972,9 +1020,9 @@ def _make_sparkle_fusion(flake_style, base_m, base_r, seed_offset=0):
             result[:,:,1] = np.clip(result[:,:,1] + bright * 0.95, 0, 1)
             result[:,:,2] = np.clip(result[:,:,2] + bright * 1.4, 0, 1)
         elif s == 7410:  # starfield: cosmic deep-space — multi-colour nebula + stellar temperature variation
-            nebula = _noise(shape, [128, 256], [0.5, 0.5], seed + seed_offset + 600)
+            nebula = _noise(shape, [16, 32], [0.5, 0.5], seed + seed_offset + 600)
             nebula = np.clip(nebula * 0.5 + 0.5, 0, 1)
-            neb_hue = _noise(shape, [64, 96], [0.5, 0.5], seed + seed_offset + 650)
+            neb_hue = _noise(shape, [8, 16], [0.5, 0.5], seed + seed_offset + 650)
             neb_hue = np.clip(neb_hue * 0.5 + 0.5, 0, 1)  # 0=blue region, 1=violet/purple region
             neb = nebula * blend * 0.20
             result[:,:,0] = np.clip(result[:,:,0] + neb * (0.20 + neb_hue * 0.60), 0, 1)
@@ -988,9 +1036,9 @@ def _make_sparkle_fusion(flake_style, base_m, base_r, seed_offset=0):
         elif s == 7420:  # galaxy: violet-magenta nebula with cluster density modulation
             # Distinct from diamond_dust (uniform, icy blue) and constellation (uniform, cold blue-white)
             # Galaxy has: cluster density zones + violet-magenta nebula tint overlay
-            neb_g = _noise(shape, [100, 180], [0.55, 0.45], seed + seed_offset + 600)
+            neb_g = _noise(shape, [12, 24], [0.55, 0.45], seed + seed_offset + 600)
             neb_g = np.clip(neb_g * 0.5 + 0.5, 0, 1)
-            cluster_g = _noise(shape, [45, 80], [0.5, 0.5], seed + seed_offset + 610)
+            cluster_g = _noise(shape, [8, 16], [0.5, 0.5], seed + seed_offset + 610)
             cluster_g = np.clip(cluster_g * 2.0, 0, 1)
             bright_g = bright * (0.45 + cluster_g * 0.55)   # cluster density — denser in bright zones
             neb_tint = neb_g * blend * 0.20
@@ -1018,7 +1066,7 @@ def _make_sparkle_fusion(flake_style, base_m, base_r, seed_offset=0):
             result[:,:,1] = np.clip(result[:,:,1] + bright_dir * 0.65, 0, 1)
             result[:,:,2] = np.clip(result[:,:,2] + bright_dir * 0.15, 0, 1)
         elif s == 7470:  # constellation: warm stellar clusters — sparse star-points + golden nebula haze
-            cluster = _noise(shape, [48, 96], [0.5, 0.5], seed + seed_offset + 500)
+            cluster = _noise(shape, [8, 16], [0.5, 0.5], seed + seed_offset + 500)
             cluster = np.clip(cluster * 2.0, 0, 1)
             # Sparse individual star-points: threshold within dense cluster zones only
             star_field = _noise(shape, [8, 14], [0.5, 0.5], seed + seed_offset + 520)
@@ -1040,7 +1088,7 @@ def _make_sparkle_fusion(flake_style, base_m, base_r, seed_offset=0):
             orb_field = _noise(shape, [18, 36], [0.55, 0.45], seed + seed_offset + 500)
             orb_pts = np.clip((orb_field - 0.70) / 0.15, 0, 1)  # discrete orb threshold
             # Soft abdominal haze spreading from orb clusters (large-scale luminescence bloom)
-            haze_field = _noise(shape, [56, 112], [0.5, 0.5], seed + seed_offset + 510)
+            haze_field = _noise(shape, [8, 16], [0.5, 0.5], seed + seed_offset + 510)
             haze = np.clip(haze_field * 0.5 + 0.5, 0, 1) * 0.25
             bright_g = bright * (0.4 + orb_pts * 0.60)  # brightness at discrete orb points
             # Bioluminescent green-gold: 557nm luciferase peak = warm green-yellow
@@ -1051,21 +1099,393 @@ def _make_sparkle_fusion(flake_style, base_m, base_r, seed_offset=0):
         return result
     return spec_fn, paint_fn
 
-spec_sparkle_diamond_dust, paint_sparkle_diamond_dust = _make_sparkle_fusion("fine", 60, 80, 7400)
-spec_sparkle_starfield, paint_sparkle_starfield = _make_sparkle_fusion("coarse", 40, 90, 7410)
-spec_sparkle_galaxy, paint_sparkle_galaxy = _make_sparkle_fusion("fine", 50, 70, 7420)
-spec_sparkle_firefly, paint_sparkle_firefly = _make_sparkle_fusion("coarse", 70, 60, 7430)
-spec_sparkle_snowfall, paint_sparkle_snowfall = _make_sparkle_fusion("fine", 80, 50, 7440)
-spec_sparkle_champagne, paint_sparkle_champagne = _make_sparkle_fusion("medium", 90, 45, 7450)
-spec_sparkle_meteor, paint_sparkle_meteor = _make_sparkle_fusion("coarse", 55, 85, 7460)
-spec_sparkle_constellation, paint_sparkle_constellation = _make_sparkle_fusion("fine", 45, 75, 7470)
-spec_sparkle_confetti, paint_sparkle_confetti = _make_sparkle_fusion("medium", 75, 55, 7480)
-spec_sparkle_lightning_bug, paint_sparkle_lightning_bug = _make_sparkle_fusion("coarse", 50, 80, 7490)
+# ================================================================
+# SPARKLE FUSIONS V2 — Each is a UNIQUE hand-crafted finish, not generic factory output
+# ================================================================
+
+def _spec_sparkle_v2(shape, mask, seed, sm, M_field, R_field, CC_val=20.0):
+    """Common spec builder for sparkle fusions."""
+    M = np.clip(M_field * sm + M_field * (1 - sm) * 0.3, 0, 255)
+    R = np.clip(R_field, 15, 255)
+    CC = np.full(shape, CC_val, dtype=np.float32)
+    cc_var = _noise(shape, [8, 16], [0.5, 0.5], seed + 300)
+    CC = np.clip(CC + cc_var * 10 * sm, 16, 255)
+    return _spec_out(shape, mask, M, R, CC)
+
+def _paint_sparkle_v2(paint, shape, mask, seed, pm, bb, sparkle_field, color_r, color_g, color_b, strength=0.35):
+    """Common paint builder for sparkle fusions."""
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
+    result = paint.copy()
+    blend = mask * pm
+    bright = sparkle_field * strength * blend
+    result[:,:,0] = np.clip(result[:,:,0] + bright * color_r, 0, 1)
+    result[:,:,1] = np.clip(result[:,:,1] + bright * color_g, 0, 1)
+    result[:,:,2] = np.clip(result[:,:,2] + bright * color_b, 0, 1)
+    return np.clip(result + bb * 0.4 * mask[:,:,np.newaxis], 0, 1)
+
+# 1. DIAMOND DUST — Ultra-fine per-pixel crystal flash on dark base
+def _sparkle_norm01(arr):
+    arr = np.asarray(arr, dtype=np.float32)
+    span = float(arr.max() - arr.min()) if arr.size else 0.0
+    if span < 1e-7:
+        return np.zeros_like(arr, dtype=np.float32)
+    return ((arr - float(arr.min())) / span).astype(np.float32)
+
+
+def _sparkle_micro_sand(shape, seed, density=0.24, glitter=0.48):
+    """Dense pixel-scale crystal population: crushed-sand sparkle, not chunky blobs."""
+    h, w = shape
+    rng = np.random.RandomState(seed)
+    raw = rng.random((h, w)).astype(np.float32)
+    cutoff = np.clip(1.0 - float(density), 0.45, 0.96)
+    grains = np.clip((raw - cutoff) / max(1.0 - cutoff, 1e-6), 0.0, 1.0)
+    fine = _noise(shape, [1, 2, 3, 5], [0.34, 0.30, 0.22, 0.14], seed + 37)
+    fine = np.clip((fine + 1.0) * 0.5, 0.0, 1.0)
+    needles = np.clip((fine - (0.72 - density * 0.22)) / 0.30, 0.0, 1.0)
+    return np.clip(grains * float(glitter) + needles * (1.0 - float(glitter)) + fine * 0.08, 0.0, 1.0).astype(np.float32)
+
+
+def _sparkle_soft_points(shape, seed, density=0.0015, sigma=2.2):
+    """Soft glow points without nearest-neighbor square artifacts."""
+    h, w = shape
+    rng = np.random.RandomState(seed)
+    count = max(1, int(h * w * float(density)))
+    points = np.zeros((h, w), dtype=np.float32)
+    ys = rng.randint(0, h, size=count)
+    xs = rng.randint(0, w, size=count)
+    points[ys, xs] = rng.uniform(0.55, 1.0, size=count).astype(np.float32)
+    glow = cv2.GaussianBlur(points, (0, 0), sigmaX=float(sigma), sigmaY=float(sigma))
+    return _sparkle_norm01(glow)
+
+
+def _spec_sparkle_diamond_dust(shape, mask, seed, sm):
+    crystals = _sparkle_micro_sand(shape, seed + 7400, density=0.32, glitter=0.72)
+    frost = _noise(shape, [2, 4, 8], [0.42, 0.36, 0.22], seed + 7401)
+    frost = np.clip((frost + 1.0) * 0.5, 0, 1) * 0.16
+    field = np.clip(crystals + frost, 0, 1)
+    M = 18.0 + field * 237.0
+    R = 108.0 - field * 92.0
+    return _spec_sparkle_v2(shape, mask, seed, sm, M, R, 18.0)
+
+def _paint_sparkle_diamond_dust(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
+    crystals = _sparkle_micro_sand(shape, seed + 7400, density=0.32, glitter=0.72)
+    return _paint_sparkle_v2(paint, shape, mask, seed, pm, bb, crystals, 0.85, 0.95, 1.4, 0.40)
+
+# 2. STARFIELD — Sparse bright stars on deep void with nebula clouds
+def _spec_sparkle_starfield(shape, mask, seed, sm):
+    h, w = shape
+    rng = np.random.RandomState(seed + 7410)
+    stars = np.clip((rng.random((h, w)).astype(np.float32) - 0.993) / 0.007, 0, 1)
+    micro_stars = _sparkle_micro_sand(shape, seed + 7412, density=0.18, glitter=0.62) * 0.45
+    nebula = _noise(shape, [10, 20, 40, 80], [0.30, 0.30, 0.24, 0.16], seed + 7411)
+    nebula = np.clip((nebula + 1.0) * 0.5, 0, 1) * 0.18
+    field = np.clip(stars + micro_stars + nebula, 0, 1)
+    M = 5.0 + field * 245.0
+    R = 205.0 - stars * 185.0 - micro_stars * 70.0 - nebula * 35.0
+    return _spec_sparkle_v2(shape, mask, seed, sm, M, R, 16.0)
+
+def _paint_sparkle_starfield(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
+    h, w = shape
+    rng = np.random.RandomState(seed + 7410)
+    stars = np.clip((rng.random((h, w)).astype(np.float32) - 0.993) / 0.007, 0, 1)
+    micro_stars = _sparkle_micro_sand(shape, seed + 7412, density=0.18, glitter=0.62) * 0.45
+    nebula = _noise(shape, [10, 20, 40, 80], [0.30, 0.30, 0.24, 0.16], seed + 7411)
+    nebula = np.clip((nebula + 1.0) * 0.5, 0, 1) * 0.18
+    combined = np.clip(stars * 0.85 + micro_stars + nebula, 0, 1)
+    return _paint_sparkle_v2(paint, shape, mask, seed, pm, bb, combined, 0.6, 0.7, 1.3, 0.30)
+
+# 3. GALAXY — Spiral arm density with hot/cold star regions
+def _spec_sparkle_galaxy(shape, mask, seed, sm):
+    h, w = shape
+    y, x = _mgrid(shape)
+    cy, cx = h * 0.5, w * 0.5
+    dy, dx = (y - cy).astype(np.float32), (x - cx).astype(np.float32)
+    r = np.sqrt(dy**2 + dx**2) + 1e-8
+    theta = np.arctan2(dy, dx)
+    swirl = theta - 0.52 * np.log(r / (min(h, w) * 0.10) + 1e-8)
+    arm1 = np.exp(-((np.sin(swirl)) * r / (min(h, w) * 0.18)) ** 2 * 10.0)
+    arm2 = np.exp(-((np.sin(swirl + np.pi)) * r / (min(h, w) * 0.18)) ** 2 * 10.0)
+    arms = np.clip((arm1 + arm2) * np.clip(1.15 - r / (min(h, w) * 0.70), 0, 1), 0, 1)
+    rng = np.random.RandomState(seed + 7420)
+    stars = np.clip((rng.random((h, w)).astype(np.float32) - (0.985 - arms * 0.065)) / 0.020, 0, 1)
+    dust = _sparkle_micro_sand(shape, seed + 7422, density=0.22, glitter=0.48) * (0.20 + arms * 0.80)
+    field = np.clip(arms * 0.10 + stars * 0.90 + dust * 0.82, 0, 1)
+    M = 12.0 + field * 238.0
+    R = 186.0 - field * 158.0
+    return _spec_sparkle_v2(shape, mask, seed, sm, M, R, 20.0)
+
+def _paint_sparkle_galaxy(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
+    h, w = shape
+    y, x = _mgrid(shape)
+    cy, cx = h * 0.5, w * 0.5
+    dy, dx = (y - cy).astype(np.float32), (x - cx).astype(np.float32)
+    r = np.sqrt(dy**2 + dx**2) + 1e-8
+    theta = np.arctan2(dy, dx)
+    swirl = theta - 0.52 * np.log(r / (min(h, w) * 0.10) + 1e-8)
+    arm1 = np.exp(-((np.sin(swirl)) * r / (min(h, w) * 0.18)) ** 2 * 10.0)
+    arm2 = np.exp(-((np.sin(swirl + np.pi)) * r / (min(h, w) * 0.18)) ** 2 * 10.0)
+    arms = np.clip((arm1 + arm2) * np.clip(1.15 - r / (min(h, w) * 0.70), 0, 1), 0, 1)
+    rng = np.random.RandomState(seed + 7420)
+    stars = np.clip((rng.random((h, w)).astype(np.float32) - (0.985 - arms * 0.065)) / 0.020, 0, 1)
+    dust = _sparkle_micro_sand(shape, seed + 7422, density=0.22, glitter=0.48) * (0.20 + arms * 0.80)
+    field = np.clip(arms * 0.10 + stars * 0.90 + dust * 0.82, 0, 1)
+    return _paint_sparkle_v2(paint, shape, mask, seed, pm, bb, field, 1.1, 0.4, 1.4, 0.30)
+
+# 4. FIREFLY — Discrete soft glow orbs with warm bioluminescent color
+def _spec_sparkle_firefly(shape, mask, seed, sm):
+    glow_pts = _sparkle_soft_points(shape, seed + 7430, density=0.0018, sigma=2.4)
+    sparks = _sparkle_micro_sand(shape, seed + 7432, density=0.16, glitter=0.58) * 0.48
+    field = np.clip(glow_pts * 0.85 + sparks, 0, 1)
+    M = 28.0 + field * 222.0
+    R = 124.0 - field * 96.0
+    return _spec_sparkle_v2(shape, mask, seed, sm, M, R, 25.0)
+
+def _paint_sparkle_firefly(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
+    glow_pts = _sparkle_soft_points(shape, seed + 7430, density=0.0018, sigma=2.4)
+    sparks = _sparkle_micro_sand(shape, seed + 7432, density=0.16, glitter=0.58) * 0.48
+    combined = np.clip(glow_pts * 0.85 + sparks, 0, 1)
+    return _paint_sparkle_v2(paint, shape, mask, seed, pm, bb, combined, 0.7, 1.5, 0.15, 0.35)
+
+# 5. SNOWFALL — Drifting ice crystal curtains with wind-driven density bands
+def _snowfall_field(shape, seed):
+    """Vectorized snowfall: wind-sheared crystal grit plus fine vertical streaks."""
+    h, w = shape
+    rng = np.random.RandomState(seed + 7440)
+    wind = _noise(shape, [10, 20, 40, 80], [0.28, 0.30, 0.26, 0.16], seed + 7441)
+    wind_bands = np.clip((wind + 1.0) * 0.5, 0.12, 1.0)
+    heads = np.clip((rng.random((h, w)).astype(np.float32) - 0.955) / 0.045, 0.0, 1.0)
+    kernel = np.ones((max(3, h // 180), 1), dtype=np.float32) / max(3, h // 180)
+    streaks = cv2.filter2D(heads, -1, kernel)
+    crystals = _sparkle_micro_sand(shape, seed + 7442, density=0.22, glitter=0.62)
+    drift = _noise(shape, [1, 2, 4], [0.42, 0.34, 0.24], seed + 7443)
+    drift = np.clip((drift + 1.0) * 0.5, 0, 1)
+    return np.clip(streaks * wind_bands * 2.2 + crystals * 0.46 + drift * 0.08, 0, 1)
+
+def _spec_sparkle_snowfall(shape, mask, seed, sm):
+    snow = _snowfall_field(shape, seed)
+    M = 40.0 + snow * 200.0
+    R = 90.0 - snow * 70.0
+    return _spec_sparkle_v2(shape, mask, seed, sm, M, R, 22.0)
+
+def _paint_sparkle_snowfall(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
+    snow = _snowfall_field(shape, seed)
+    return _paint_sparkle_v2(paint, shape, mask, seed, pm, bb, snow, 0.55, 1.0, 1.5, 0.30)
+
+# 6. CHAMPAGNE — Effervescent bubble columns with golden fizz and rising density gradient
+def _champagne_field(shape, seed):
+    """Vectorized champagne: rising micro-fizz streams with tiny warm bubbles."""
+    h, w = shape
+    y_grad = np.linspace(1.0, 0.2, h, dtype=np.float32)[:, np.newaxis] * np.ones((1, w), dtype=np.float32)
+    stream = _noise(shape, [5, 10, 20, 40], [0.34, 0.30, 0.22, 0.14], seed + 7453)
+    stream = np.clip((stream + 1.0) * 0.5, 0.25, 1.0)
+    fizz = _sparkle_micro_sand(shape, seed + 7450, density=0.30, glitter=0.58)
+    bubbles = _sparkle_soft_points(shape, seed + 7451, density=0.0032, sigma=1.35)
+    tiny = _noise(shape, [1, 2, 3], [0.42, 0.34, 0.24], seed + 7452)
+    tiny = np.clip((tiny + 1.0) * 0.5, 0, 1) * 0.14
+    combined = (fizz * 0.52 + bubbles * 0.36 + tiny) * y_grad * stream
+    return np.clip(combined, 0, 1)
+
+def _spec_sparkle_champagne(shape, mask, seed, sm):
+    bubbles = _champagne_field(shape, seed)
+    M = 80.0 + bubbles * 170.0
+    R = 55.0 - bubbles * 35.0
+    return _spec_sparkle_v2(shape, mask, seed, sm, M, R, 16.0)
+
+def _paint_sparkle_champagne(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
+    bubbles = _champagne_field(shape, seed)
+    return _paint_sparkle_v2(paint, shape, mask, seed, pm, bb, bubbles, 1.4, 1.1, 0.35, 0.35)
+
+# 7. METEOR — Directional motion-blur streaks with bright heads and hot-to-cool color gradient
+def _meteor_field(shape, seed):
+    """Vectorized meteor shower: hot heads, fine ember dust, and directional tails."""
+    h, w = shape
+    rng = np.random.RandomState(seed + 7460)
+    heads = np.clip((rng.random((h, w)).astype(np.float32) - 0.991) / 0.009, 0, 1)
+    heads *= rng.uniform(0.65, 1.0, (h, w)).astype(np.float32)
+    streak_len = max(8, min(h, w) // 60)
+    angle = 0.7  # ~40 degrees
+    ky = max(1, int(streak_len * np.cos(angle)))
+    kx = max(1, int(streak_len * np.sin(angle)))
+    kernel_size = max(ky, kx) * 2 + 1
+    kernel = np.zeros((kernel_size, kernel_size), dtype=np.float32)
+    cy, cx = kernel_size // 2, kernel_size // 2
+    for t in range(streak_len):
+        py = min(kernel_size - 1, cy + int(t * np.cos(angle)))
+        px = min(kernel_size - 1, cx + int(t * np.sin(angle)))
+        kernel[py, px] = (1.0 - t / streak_len) ** 1.5  # fade along tail
+    kernel /= kernel.sum() + 1e-8
+    streaks = cv2.filter2D(heads, -1, kernel)
+    intensity = _noise(shape, [16, 32], [0.5, 0.5], seed + 7461)
+    intensity = np.clip(intensity * 0.5 + 0.7, 0.3, 1.0)
+    embers = _sparkle_micro_sand(shape, seed + 7462, density=0.16, glitter=0.58)
+    ember_gate = _noise(shape, [6, 12, 24], [0.36, 0.34, 0.30], seed + 7463)
+    ember_gate = np.clip((ember_gate + 1.0) * 0.5, 0, 1)
+    return np.clip(streaks * intensity * 7.5 + embers * ember_gate * 0.30, 0, 1)
+
+def _spec_sparkle_meteor(shape, mask, seed, sm):
+    meteors = _meteor_field(shape, seed)
+    M = 30.0 + meteors * 225.0
+    R = 150.0 - meteors * 135.0
+    return _spec_sparkle_v2(shape, mask, seed, sm, M, R, 18.0)
+
+def _paint_sparkle_meteor(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
+    meteors = _meteor_field(shape, seed)
+    return _paint_sparkle_v2(paint, shape, mask, seed, pm, bb, meteors, 1.6, 0.6, 0.15, 0.35)
+
+# 8. CONSTELLATION — Gaussian cluster density + sparse stellar points + warm interstellar dust
+def _constellation_field(shape, seed):
+    """Vectorized constellation: clustered pin stars, thin dust, and visible dark lanes."""
+    h, w = shape
+    rng = np.random.RandomState(seed + 7470)
+    # 6-8 cluster centers as Gaussian density peaks
+    n_clusters = rng.randint(6, 9)
+    y, x = _mgrid(shape)
+    yf, xf = y.astype(np.float32), x.astype(np.float32)
+    density = np.zeros((h, w), dtype=np.float32)
+    for _ in range(n_clusters):
+        cy = rng.uniform(0.1, 0.9) * h
+        cx = rng.uniform(0.1, 0.9) * w
+        sigma = rng.uniform(0.04, 0.09) * min(h, w)
+        density += np.exp(-((yf - cy)**2 + (xf - cx)**2) / (2 * sigma**2))
+    density = np.clip(density / max(float(density.max()), 1e-8), 0, 1)
+    star_raw = rng.random((h, w)).astype(np.float32)
+    threshold = 1.0 - 0.022 * (0.18 + density * 2.8)
+    stars = np.clip((star_raw - threshold) / 0.009, 0, 1)
+    micro = _sparkle_micro_sand(shape, seed + 7472, density=0.15, glitter=0.64) * (0.25 + density * 0.75)
+    dust = _noise(shape, [8, 16, 32, 64], [0.30, 0.30, 0.24, 0.16], seed + 7471)
+    dust = np.clip((dust + 1.0) * 0.5, 0, 1) * density * 0.22
+    lanes = _noise(shape, [16, 32], [0.55, 0.45], seed + 7473)
+    lanes = np.clip((lanes + 1.0) * 0.5, 0.18, 1.0)
+    return np.clip((stars * 0.80 + micro + dust) * lanes, 0, 1)
+
+def _spec_sparkle_constellation(shape, mask, seed, sm):
+    field = _constellation_field(shape, seed)
+    M = 15.0 + field * 235.0
+    R = 160.0 - field * 140.0
+    return _spec_sparkle_v2(shape, mask, seed, sm, M, R, 20.0)
+
+def _paint_sparkle_constellation(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
+    field = _constellation_field(shape, seed)
+    return _paint_sparkle_v2(paint, shape, mask, seed, pm, bb, field, 1.0, 0.92, 1.25, 0.30)
+
+# 9. CONFETTI — Rainbow-hued noise zones with per-zone color
+def _spec_sparkle_confetti(shape, mask, seed, sm):
+    h, w = shape
+    rng = np.random.RandomState(seed + 7480)
+    flash = np.clip((rng.random((h, w)).astype(np.float32) - 0.86) / 0.14, 0, 1)
+    shard = _sparkle_micro_sand(shape, seed + 7482, density=0.24, glitter=0.55)
+    hue_zones = _noise(shape, [6, 12, 24, 48], [0.32, 0.30, 0.24, 0.14], seed + 7481)
+    hue_zones = np.clip((hue_zones + 1.0) * 0.5, 0, 1)
+    field = np.clip(flash * 0.68 + shard * 0.42 + hue_zones * 0.10, 0, 1)
+    M = 58.0 + field * 170.0
+    R = 86.0 - field * 58.0
+    return _spec_sparkle_v2(shape, mask, seed, sm, M, R, 22.0)
+
+def _paint_sparkle_confetti(paint, shape, mask, seed, pm, bb):
+    if hasattr(bb, "ndim") and bb.ndim == 2:
+        bb = bb[:, :, np.newaxis]  # (h,w) -> (h,w,1) for broadcasting
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
+    h, w = shape
+    rng = np.random.RandomState(seed + 7480)
+    flash = np.clip((rng.random((h, w)).astype(np.float32) - 0.86) / 0.14, 0, 1)
+    shard = _sparkle_micro_sand(shape, seed + 7482, density=0.24, glitter=0.55)
+    hue_zones = _noise(shape, [6, 12, 24, 48], [0.32, 0.30, 0.24, 0.14], seed + 7481)
+    hf = np.clip((hue_zones + 1.0) * 0.5, 0, 1)
+    sparkle = np.clip(flash * 0.68 + shard * 0.42 + hf * 0.10, 0, 1)
+    result = paint.copy()
+    blend = mask * pm
+    bright = sparkle * 0.35 * blend
+    result[:,:,0] = np.clip(result[:,:,0] + bright * (0.5 + np.sin(hf * 6.28) * 0.9), 0, 1)
+    result[:,:,1] = np.clip(result[:,:,1] + bright * (0.5 + np.sin(hf * 6.28 + 2.09) * 0.9), 0, 1)
+    result[:,:,2] = np.clip(result[:,:,2] + bright * (0.5 + np.sin(hf * 6.28 + 4.19) * 0.9), 0, 1)
+    return np.clip(result + bb * 0.4 * mask[:,:,np.newaxis], 0, 1)
+
+# 10. LIGHTNING BUG — Discrete warm glow orbs + bioluminescent haze
+def _spec_sparkle_lightning_bug(shape, mask, seed, sm):
+    glow = _sparkle_soft_points(shape, seed + 7490, density=0.0024, sigma=2.0)
+    micro = _sparkle_micro_sand(shape, seed + 7492, density=0.20, glitter=0.55) * 0.42
+    haze = _noise(shape, [10, 20, 40], [0.36, 0.34, 0.30], seed + 7491)
+    haze = np.clip((haze + 1.0) * 0.5, 0, 1) * 0.18
+    combined = np.clip(glow * 0.90 + micro + haze, 0, 1)
+    M = 24.0 + combined * 222.0
+    R = 134.0 - combined * 104.0
+    return _spec_sparkle_v2(shape, mask, seed, sm, M, R, 20.0)
+
+def _paint_sparkle_lightning_bug(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
+    glow = _sparkle_soft_points(shape, seed + 7490, density=0.0024, sigma=2.0)
+    micro = _sparkle_micro_sand(shape, seed + 7492, density=0.20, glitter=0.55) * 0.42
+    haze = _noise(shape, [10, 20, 40], [0.36, 0.34, 0.30], seed + 7491)
+    haze = np.clip((haze + 1.0) * 0.5, 0, 1) * 0.18
+    combined = np.clip(glow * 0.90 + micro + haze, 0, 1)
+    return _paint_sparkle_v2(paint, shape, mask, seed, pm, bb, combined, 0.6, 1.6, 0.1, 0.35)
+
+spec_sparkle_diamond_dust = _spec_sparkle_diamond_dust
+paint_sparkle_diamond_dust = _paint_sparkle_diamond_dust
+spec_sparkle_starfield = _spec_sparkle_starfield
+paint_sparkle_starfield = _paint_sparkle_starfield
+spec_sparkle_galaxy = _spec_sparkle_galaxy
+paint_sparkle_galaxy = _paint_sparkle_galaxy
+spec_sparkle_firefly = _spec_sparkle_firefly
+paint_sparkle_firefly = _paint_sparkle_firefly
+spec_sparkle_snowfall = _spec_sparkle_snowfall
+paint_sparkle_snowfall = _paint_sparkle_snowfall
+spec_sparkle_champagne = _spec_sparkle_champagne
+paint_sparkle_champagne = _paint_sparkle_champagne
+spec_sparkle_meteor = _spec_sparkle_meteor
+paint_sparkle_meteor = _paint_sparkle_meteor
+spec_sparkle_constellation = _spec_sparkle_constellation
+paint_sparkle_constellation = _paint_sparkle_constellation
+spec_sparkle_confetti = _spec_sparkle_confetti
+paint_sparkle_confetti = _paint_sparkle_confetti
+spec_sparkle_lightning_bug = _spec_sparkle_lightning_bug
+paint_sparkle_lightning_bug = _paint_sparkle_lightning_bug
 
 
 # ================================================================
 # PARADIGM 6: MULTI-SCALE TEXTURE - Layered texture systems
 # ================================================================
+
+def _fusion_norm01(arr):
+    arr = np.asarray(arr, dtype=np.float32)
+    span = float(arr.max() - arr.min()) if arr.size else 0.0
+    if span < 1e-7:
+        return np.zeros_like(arr, dtype=np.float32)
+    return ((arr - float(arr.min())) / span).astype(np.float32)
+
+
+def _multiscale_smooth_noise(shape, scales, weights, seed):
+    """Local smooth noise for multiscale finishes.
+
+    The global cached noise path intentionally uses nearest-neighbor upscales for
+    speed. These finishes put that field directly into paint/spec, so they need
+    interpolated material fields to avoid visible square-cell artifacts.
+    """
+    h, w = shape
+    rng = np.random.RandomState(seed)
+    result = np.zeros((h, w), dtype=np.float32)
+    for scale, weight in zip(scales, weights):
+        scale = max(1, int(scale))
+        sh, sw = max(1, h // scale), max(1, w // scale)
+        raw = rng.randn(sh, sw).astype(np.float32)
+        up = cv2.resize(raw, (w, h), interpolation=cv2.INTER_CUBIC)
+        if scale >= 4:
+            sigma = max(0.45, min(3.0, scale * 0.07))
+            up = cv2.GaussianBlur(up, (0, 0), sigmaX=sigma, sigmaY=sigma)
+        result += up * float(weight)
+    result = _fusion_norm01(result) * 2.0 - 1.0
+    return result.astype(np.float32)
+
 
 def _make_multiscale_fusion(texture_profile, seed_offset=0):
     """Factory: 4+ distinct texture scales working together multiplicatively.
@@ -1078,18 +1498,18 @@ def _make_multiscale_fusion(texture_profile, seed_offset=0):
         rng = np.random.RandomState(seed + seed_offset)
 
         # === MACRO SCALE (128px+): large material zone shapes ===
-        macro = _noise(shape, [128, 256], [0.5, 0.5], seed + seed_offset)
+        macro = _multiscale_smooth_noise(shape, [16, 32], [0.5, 0.5], seed + seed_offset)
         macro = np.clip(macro * 0.5 + 0.5, 0, 1)
         # Blend with a second noise octave for organic shapes
-        macro_warped = _noise(shape, [96, 192], [0.5, 0.5], seed + seed_offset + 30)
+        macro_warped = _multiscale_smooth_noise(shape, [12, 24], [0.5, 0.5], seed + seed_offset + 30)
         macro = np.clip(macro * 0.6 + np.clip(macro_warped * 0.5 + 0.5, 0, 1) * 0.4, 0, 1)
 
         # === MESO SCALE (16-64px): surface detail patterns ===
-        meso = _noise(shape, [16, 32, 64], [0.25, 0.40, 0.35], seed + seed_offset + 100)
+        meso = _multiscale_smooth_noise(shape, [10, 18, 32], [0.32, 0.38, 0.30], seed + seed_offset + 100)
         meso = np.clip(meso * 0.5 + 0.5, 0, 1)
 
         # === MICRO SCALE (4-8px): grain/texture ===
-        micro = _noise(shape, [4, 6, 8], [0.3, 0.4, 0.3], seed + seed_offset + 200)
+        micro = _multiscale_smooth_noise(shape, [2, 4, 7], [0.36, 0.34, 0.30], seed + seed_offset + 200)
         micro = np.clip(micro * 0.5 + 0.5, 0, 1)
 
         # === NANO SCALE (1-2px): sparkle/flake ===
@@ -1148,24 +1568,30 @@ def _make_multiscale_fusion(texture_profile, seed_offset=0):
             R_micro = micro * 25
             R_nano = nano_thresh * 5
             CC_base = 30.0
-        elif s == 7550:  # chrome_sand: nano dominates
-            M_macro = macro * 20 + 230
-            M_meso = meso * 10
-            M_micro = micro * 8
-            M_nano = nano_thresh * 25
-            R_macro = (1 - macro) * 15
-            R_meso = meso * 10
-            R_micro = micro * 20
-            R_nano = (1 - nano_thresh) * 40  # sand = rough between sparkles
-            CC_base = 5.0
+        elif s == 7550:  # chrome_sand: visible chrome/sand transition
+            M_macro = macro * 80 + 170       # chrome-to-metal transition (170-250)
+            M_meso = meso * 25               # visible meso detail
+            M_micro = micro * 15
+            M_nano = nano_thresh * 30        # bright sparkle points
+            R_macro = (1 - macro) * 45       # sand zones rougher
+            R_meso = meso * 20
+            R_micro = micro * 30             # sand grain roughness
+            R_nano = (1 - nano_thresh) * 35  # sand = rough between sparkles
+            CC_base = 16.0
         elif s == 7560:  # matte_silk: macro=sheen zones, R inverted
+            y, x = _mgrid(shape)
+            step = max(3, min(h, w) // 44)
+            warp = np.sin(x * 0.035 + macro * 2.8) * 0.18
+            thread = np.abs(np.sin((y + warp * h) * np.pi / step)) ** 7
+            cross = np.abs(np.sin((x * 0.45 + y * 0.12) * np.pi / (step * 2.7))) ** 9
+            silk = np.clip(micro * 0.48 + thread * 0.38 + cross * 0.14, 0, 1)
             M_macro = macro * 30
             M_meso = meso * 15
-            M_micro = micro * 8
+            M_micro = silk * 24
             M_nano = nano_thresh * 10
             R_macro = macro * 80 + 60        # large features smooth(ish)
             R_meso = (1 - meso) * 40
-            R_micro = micro * 30
+            R_micro = silk * 48
             R_nano = nano_thresh * 5
             CC_base = 60.0
         elif s == 7570:  # flake_grain: large flakes dominant
@@ -1214,24 +1640,27 @@ def _make_multiscale_fusion(texture_profile, seed_offset=0):
         return _spec_out(shape, mask, M, R, CC)
 
     def paint_fn(paint, shape, mask, seed, pm, bb):
+        if hasattr(bb, "ndim") and bb.ndim == 2: bb = bb[:, :, np.newaxis]
         """Multiscale textures: COLORSHOXX-style color zones married to macro texture field.
         UPGRADED: Adds warm/cool/edge color zones ON TOP of per-profile texture effects.
         - High-macro zones: warm color push (amber/gold tint) + brightening
         - Low-macro zones: cool shadow push (desaturate toward grey, darken, retain blue)
         - Edges (Sobel on macro): bright warm-white rim highlight"""
+        if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
         h, w = shape
         result = paint.copy()
         s = seed_offset % 10000
 
         # Macro-scale brightness modulation (also used as pv for color zones)
-        macro = _noise(shape, [128, 256], [0.5, 0.5], seed + seed_offset)
+        macro = _multiscale_smooth_noise(shape, [16, 32], [0.5, 0.5], seed + seed_offset)
         macro = np.clip(macro * 0.5 + 0.5, 0, 1)
         # Meso detail
-        meso = _noise(shape, [16, 32, 64], [0.25, 0.40, 0.35], seed + seed_offset + 100)
+        meso = _multiscale_smooth_noise(shape, [10, 18, 32], [0.32, 0.38, 0.30], seed + seed_offset + 100)
         meso = np.clip(meso * 0.5 + 0.5, 0, 1)
 
         if s == 7500:    # chrome_grain: horizontal streaks
-            streak = _noise(shape, [2, 4], [0.5, 0.5], seed + seed_offset + 300)
+            streak = _multiscale_smooth_noise(shape, [5, 11, 23], [0.42, 0.34, 0.24], seed + seed_offset + 300)
+            streak = cv2.GaussianBlur(streak, (0, 0), sigmaX=7.0, sigmaY=0.7)
             for c in range(3):
                 result[:,:,c] = np.clip(paint[:,:,c] + streak * 0.12 * pm * mask, 0, 1)
         elif s == 7510:  # candy_frost: candy zones warm, frost zones cool
@@ -1255,14 +1684,21 @@ def _make_multiscale_fusion(texture_profile, seed_offset=0):
             for c in range(3):
                 result[:,:,c] = np.clip(paint[:,:,c] + (weave - 0.5) * 0.12 * pm * mask, 0, 1)
         elif s == 7550:  # chrome_sand: granular
-            sand = _noise(shape, [2, 3, 5], [0.4, 0.35, 0.25], seed + seed_offset + 300)
+            sand = _multiscale_smooth_noise(shape, [1, 2, 4], [0.40, 0.35, 0.25], seed + seed_offset + 300)
             for c in range(3):
                 result[:,:,c] = np.clip(paint[:,:,c] + sand * 0.14 * pm * mask, 0, 1)
         elif s == 7560:  # matte_silk: smooth sheen
             y_n = np.linspace(0, 1, h).reshape(h, 1).astype(np.float32)
             sheen = np.sin(y_n * np.pi) * 0.14 * pm
+            y, x = _mgrid(shape)
+            step = max(3, min(h, w) // 44)
+            warp = np.sin(x * 0.035 + macro * 2.8) * 0.18
+            thread = np.abs(np.sin((y + warp * h) * np.pi / step)) ** 7
+            cross = np.abs(np.sin((x * 0.45 + y * 0.12) * np.pi / (step * 2.7))) ** 9
+            hair = _multiscale_smooth_noise(shape, [1, 2, 4], [0.44, 0.34, 0.22], seed + seed_offset + 360)
+            silk_detail = (thread * 0.075 + cross * 0.035 + hair * 0.030) * pm
             for c in range(3):
-                result[:,:,c] = np.clip(paint[:,:,c] + sheen * mask, 0, 1)
+                result[:,:,c] = np.clip(paint[:,:,c] + (sheen + silk_detail) * mask, 0, 1)
         elif s == 7570:  # flake_grain: large flake brightening
             bright = np.clip((macro - 0.4) * 2.5, 0, 1) * 0.18 * pm
             for c in range(3):
@@ -1274,8 +1710,8 @@ def _make_multiscale_fusion(texture_profile, seed_offset=0):
             for c in range(3):
                 result[:,:,c] = np.clip(paint[:,:,c] + weave_bright * mask * 0.5, 0, 1)
         else:  # frost_crystal: branching frost
-            frost_a = _noise(shape, [4, 8, 16], [0.3, 0.4, 0.3], seed + seed_offset + 300)
-            frost_b = _noise(shape, [3, 6, 12], [0.4, 0.35, 0.25], seed + seed_offset + 400)
+            frost_a = _multiscale_smooth_noise(shape, [10, 20, 40], [0.3, 0.4, 0.3], seed + seed_offset + 300)
+            frost_b = _multiscale_smooth_noise(shape, [2, 4, 9], [0.4, 0.35, 0.25], seed + seed_offset + 400)
             frost = np.exp(-np.abs(frost_a - frost_b) * 20) * 0.30 * pm
             result[:,:,2] = np.clip(paint[:,:,2] + frost * mask, 0, 1)
             result[:,:,1] = np.clip(paint[:,:,1] + frost * 0.45 * mask, 0, 1)
@@ -1349,7 +1785,7 @@ def _make_weather_fusion(weather_type, seed_offset=0):
         warp1 = _noise(shape, [16, 32, 64], [0.25, 0.40, 0.35], seed + seed_offset)
         warp2 = _noise(shape, [8, 16, 32], [0.3, 0.4, 0.3], seed + seed_offset + 10)
         # Second-order warp for more organic shapes
-        warp_warp = _noise(shape, [32, 64], [0.5, 0.5], seed + seed_offset + 20)
+        warp_warp = _noise(shape, [16, 32], [0.5, 0.5], seed + seed_offset + 20)
         warped_grad = np.clip(grad + warp1 * 0.25 + warp2 * warp_warp * 0.12, 0, 1)
 
         s = seed_offset % 10000
@@ -1383,7 +1819,7 @@ def _make_weather_fusion(weather_type, seed_offset=0):
 
         elif s == 7620:  # acid_rain: spot damage with chemical etching
             # Spot damage: random acid droplet impacts
-            spots = _noise(shape, [4, 8, 16], [0.3, 0.4, 0.3], seed + seed_offset + 100)
+            spots = _noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + seed_offset + 100)
             spot_mask = np.clip((spots - 0.35) * 4.0, 0, 1)
             # Acid etching: roughens surface, strips metallic, damages clearcoat
             etch_depth = spot_mask * warped_grad
@@ -1401,7 +1837,7 @@ def _make_weather_fusion(weather_type, seed_offset=0):
             R = np.clip(40 + sand_exposure * 190 * sm, 15, 255)
             CC = np.clip(16 + sand_exposure * 189 * sm, 16, 255)
             # Wind-streak patterns
-            streak = _noise(shape, [2, 64], [0.6, 0.4], seed + seed_offset + 100)
+            streak = _noise(shape, [2, 8], [0.6, 0.4], seed + seed_offset + 100)
             streaks = np.clip(np.abs(streak) - 0.3, 0, 1) * sand_exposure
             R = R + streaks * 40 * sm
 
@@ -1422,7 +1858,7 @@ def _make_weather_fusion(weather_type, seed_offset=0):
         elif s == 7650:  # road_spray: bottom-up road grime
             spray_grad = 1.0 - warped_grad  # bottom = worst
             # Layered grime: fine spray + heavier splatter
-            fine_spray = _noise(shape, [4, 8, 16], [0.3, 0.4, 0.3], seed + seed_offset + 100)
+            fine_spray = _noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + seed_offset + 100)
             fine_spray = np.clip(fine_spray * spray_grad * 2, 0, 1)
             splatter = _noise(shape, [16, 32], [0.5, 0.5], seed + seed_offset + 200)
             splat_mask = np.clip((splatter - 0.3) * 3.0 * spray_grad, 0, 1)
@@ -1443,14 +1879,14 @@ def _make_weather_fusion(weather_type, seed_offset=0):
 
         elif s == 7670:  # barn_dust: dust accumulation in recesses
             # Cavity-filling: smooth tops clean, recessed areas dusty
-            cavity = _noise(shape, [8, 16, 32, 64], [0.2, 0.3, 0.3, 0.2], seed + seed_offset + 100)
+            cavity = _noise(shape, [2, 4, 8, 16], [0.2, 0.3, 0.3, 0.2], seed + seed_offset + 100)
             dust_mask = np.clip((cavity + 0.3) * warped_grad * 1.5, 0, 1)
             # Dust: zero metallic, very high roughness
             M = np.clip(185 - dust_mask * 175 * sm, 0, 255)
             R = np.clip(50 + dust_mask * 170 * sm, 15, 255)
             CC = np.clip(16 + dust_mask * 129 * sm, 16, 255)
             # Dust settles in noise patterns
-            fine_dust = _noise(shape, [2, 4], [0.5, 0.5], seed + seed_offset + 200)
+            fine_dust = _noise(shape, [32, 64], [0.5, 0.5], seed + seed_offset + 200)
             R = R + np.abs(fine_dust) * 20 * dust_mask * sm
 
         elif s == 7680:  # ocean_mist: salt air corrosion
@@ -1482,9 +1918,21 @@ def _make_weather_fusion(weather_type, seed_offset=0):
             M = M + heat_spots * 40 * sm  # heat can reveal metal
 
         # Rain streaks: vertical thin bright lines (applied to all weather types)
-        rain = _noise(shape, [2, 128], [0.7, 0.3], seed + seed_offset + 500)
+        rain = _noise(shape, [2, 16], [0.7, 0.3], seed + seed_offset + 500)
         rain_streaks = np.clip(np.abs(rain) - 0.6, 0, 1) * 2.5 * warped_grad
         R = np.clip(R + rain_streaks * 25 * sm, 15, 255)  # GGX floor
+
+        # 2026-04-25 — universal fine-grain surface modulation breaks up
+        # the broad-blob flat regions that the per-type weather fields
+        # produce. Applied AFTER the per-type branch so each weather's
+        # distinctive look is preserved; this just adds painter-resolution
+        # surface character (Item 3 broad-blob fix; Iter 9 audit found
+        # ice_storm 0.84 / volcanic_ash 0.84 / road_spray 0.76 etc.).
+        wgrain = _fractal_surface_grain(shape, seed + seed_offset + 600)
+        wgrain_centered = (wgrain - 0.5) * 2.0
+        M = M * (0.92 + 0.16 * wgrain)
+        R = R * (0.92 + 0.16 * (1.0 - wgrain))
+        CC = CC + wgrain_centered * 16.0
 
         M = np.clip(M, 0, 255)
         R = np.clip(R, 15, 255)  # GGX floor
@@ -1492,6 +1940,8 @@ def _make_weather_fusion(weather_type, seed_offset=0):
         return _spec_out(shape, mask, M, R, CC)
 
     def paint_fn(paint, shape, mask, seed, pm, bb):
+        if hasattr(bb, "ndim") and bb.ndim == 2: bb = bb[:, :, np.newaxis]
+        if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
         h, w = shape
         result = paint.copy()
 
@@ -1518,7 +1968,7 @@ def _make_weather_fusion(weather_type, seed_offset=0):
             result[:,:,2] = np.clip(result[:,:,2] - pit_mask * 0.18 * pm * mask, 0, 1)
 
         elif s == 7620:  # acid_rain: greenish chemical staining
-            spots = _noise(shape, [4, 8, 16], [0.3, 0.4, 0.3], seed + seed_offset + 100)
+            spots = _noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + seed_offset + 100)
             spot_mask = np.clip((spots - 0.35) * 4.0 * warped_grad, 0, 1)
             result[:,:,1] = np.clip(result[:,:,1] + spot_mask * 0.06 * pm * mask, 0, 1)
             result[:,:,0] = np.clip(result[:,:,0] - spot_mask * 0.08 * pm * mask, 0, 1)
@@ -1555,7 +2005,7 @@ def _make_weather_fusion(weather_type, seed_offset=0):
             result[:,:,2] = np.clip(result[:,:,2] - warped_grad * 0.04 * pm * mask, 0, 1)
 
         elif s == 7670:  # barn_dust: warm brown dust layer
-            cavity = _noise(shape, [8, 16, 32, 64], [0.2, 0.3, 0.3, 0.2], seed + seed_offset + 100)
+            cavity = _noise(shape, [2, 4, 8, 16], [0.2, 0.3, 0.3, 0.2], seed + seed_offset + 100)
             dust_mask = np.clip((cavity + 0.3) * warped_grad * 1.5, 0, 1)
             result[:,:,0] = np.clip(result[:,:,0] - dust_mask * 0.05 * pm * mask, 0, 1)
             result[:,:,1] = np.clip(result[:,:,1] - dust_mask * 0.10 * pm * mask, 0, 1)
@@ -1575,6 +2025,20 @@ def _make_weather_fusion(weather_type, seed_offset=0):
                 result[:,:,c] = np.clip(result[:,:,c] - darken * mask, 0, 1)
             # Warm undertone from heat
             result[:,:,0] = np.clip(result[:,:,0] + ash_mask * 0.04 * pm * mask, 0, 1)
+
+        # 2026-04-25 — universal paint-side fine-grain so the weather
+        # surfaces show painter-resolution material character on top of
+        # the per-type tinting (Item 3 broad-blob fix companion to the
+        # spec-side wgrain).
+        wgrain = _fractal_surface_grain(shape, seed + seed_offset + 700)
+        wgrain_centered = (wgrain - 0.5) * 2.0
+        # Subtle luminance perturbation per channel; cooler in warped-low
+        # zones, warmer in warped-high zones — adds material variation
+        # without overwhelming the per-type look.
+        micro = wgrain_centered * 0.05 * pm
+        result[:,:,0] = np.clip(result[:,:,0] + micro * mask, 0, 1)
+        result[:,:,1] = np.clip(result[:,:,1] + micro * 0.85 * mask, 0, 1)
+        result[:,:,2] = np.clip(result[:,:,2] + micro * 0.7 * mask, 0, 1)
 
         return result
     return spec_fn, paint_fn
@@ -1621,20 +2085,23 @@ def _hex_cell_dist(shape, sz):
 # 1. EXOTIC GLASS - Caustic network glass with thin-film interference
 def _spec_exotic_glass(shape, mask, seed, sm):
     h, w = shape
+    # --- Resolution cap: compute at 512 max, upscale ---
+    ds = max(1, min(h, w) // 1024)
+    sh, sw = max(64, h // ds), max(64, w // ds)
     rng = np.random.RandomState(seed + 7700)
     # --- Voronoi caustic network ---
     n_pts = 60
-    pts_y = rng.rand(n_pts).astype(np.float32) * h
-    pts_x = rng.rand(n_pts).astype(np.float32) * w
-    y_g, x_g = _mgrid(shape)
+    pts_y = rng.rand(n_pts).astype(np.float32) * sh
+    pts_x = rng.rand(n_pts).astype(np.float32) * sw
+    y_g, x_g = _mgrid((sh, sw))
     yf, xf = y_g.astype(np.float32), x_g.astype(np.float32)
     # Domain warp the coordinates for organic caustic shapes
-    warp_y = _noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + 7701)
-    warp_x = _noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + 7702)
-    yf_w = yf + warp_y * 40
-    xf_w = xf + warp_x * 40
-    d1 = np.full((h, w), 1e9, dtype=np.float32)  # nearest
-    d2 = np.full((h, w), 1e9, dtype=np.float32)  # second nearest
+    warp_y = _noise((sh, sw), [16, 32, 64], [0.3, 0.4, 0.3], seed + 7701)
+    warp_x = _noise((sh, sw), [16, 32, 64], [0.3, 0.4, 0.3], seed + 7702)
+    yf_w = yf + warp_y * 40 * sh / h
+    xf_w = xf + warp_x * 40 * sw / w
+    d1 = np.full((sh, sw), 1e9, dtype=np.float32)  # nearest
+    d2 = np.full((sh, sw), 1e9, dtype=np.float32)  # second nearest
     for py, px in zip(pts_y, pts_x):
         d = np.sqrt((yf_w - py)**2 + (xf_w - px)**2)
         update2 = d < d2
@@ -1652,36 +2119,49 @@ def _spec_exotic_glass(shape, mask, seed, sm):
     # Glass base: M=0, low R, CC tracks caustic network
     M = np.clip(caustic * 100 * sm + caustic**2 * 40 * sm, 0, 140)
     G = np.clip(2.0 + (1.0 - caustic) * 130 * sm + caustic * 50 * sm, 0, 180)
-    CC = np.clip(16.0 + (1.0 - caustic) * 120 - caustic * 12, 4, 160)
+    CC = np.clip(16.0 + (1.0 - caustic) * 120 - caustic * 12, 16, 160)  # CC≥16
     # Swimming-pool ripple modulation
     ripple = np.sin(film_thickness * 18.0 + warp_y * 8.0) * 0.5 + 0.5
-    CC = np.clip(CC + ripple * 40 * sm, 4, 200)
-    return _spec_out(shape, mask, M, G, CC)
+    CC = np.clip(CC + ripple * 40 * sm, 16, 200)  # CC≥16
+    mask_s = cv2.resize(mask.astype(np.float32), (sw, sh), interpolation=cv2.INTER_LINEAR) if ds > 1 else mask
+    spec_small = _spec_out((sh, sw), mask_s, M, G, CC)
+    if ds > 1:
+        spec = np.zeros((h, w, 4), dtype=np.uint8)
+        for ch in range(4):
+            spec[:, :, ch] = cv2.resize(spec_small[:, :, ch].astype(np.float32), (w, h), interpolation=cv2.INTER_LINEAR).astype(np.uint8)
+        return spec
+    return spec_small
 
 def _paint_exotic_glass(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
+    # --- Resolution cap: compute glass fields at 512 max, upscale ---
+    ds = max(1, min(h, w) // 1024)
+    sh, sw = max(64, h // ds), max(64, w // ds)
     rng = np.random.RandomState(seed + 7700)
     n_pts = 60
-    pts_y = rng.rand(n_pts).astype(np.float32) * h
-    pts_x = rng.rand(n_pts).astype(np.float32) * w
-    y_g, x_g = _mgrid(shape)
+    pts_y = rng.rand(n_pts).astype(np.float32) * sh
+    pts_x = rng.rand(n_pts).astype(np.float32) * sw
+    y_g, x_g = _mgrid((sh, sw))
     yf, xf = y_g.astype(np.float32), x_g.astype(np.float32)
-    warp_y = _noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + 7701)
-    warp_x = _noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + 7702)
-    yf_w = yf + warp_y * 40
-    xf_w = xf + warp_x * 40
-    d1 = np.full((h, w), 1e9, dtype=np.float32)
+    warp_y = _noise((sh, sw), [16, 32, 64], [0.3, 0.4, 0.3], seed + 7701)
+    warp_x = _noise((sh, sw), [16, 32, 64], [0.3, 0.4, 0.3], seed + 7702)
+    yf_w = yf + warp_y * 40 * sh / h
+    xf_w = xf + warp_x * 40 * sw / w
+    d1 = np.full((sh, sw), 1e9, dtype=np.float32)
     for py, px in zip(pts_y, pts_x):
         d = np.sqrt((yf_w - py)**2 + (xf_w - px)**2)
         d1 = np.minimum(d1, d)
-    film = d1 / (np.percentile(d1, 90) + 1e-6)
+    film_s = d1 / (np.percentile(d1, 90) + 1e-6)
+    film = cv2.resize(film_s, (w, h), interpolation=cv2.INTER_LINEAR) if ds > 1 else film_s
     # Thin-film interference: rainbow color shift
     result = paint.copy()
     result[:,:,0] = np.clip(paint[:,:,0] + np.sin(film * 12.0) * 0.12 * pm * mask, 0, 1)
     result[:,:,1] = np.clip(paint[:,:,1] + np.sin(film * 12.0 + 2.094) * 0.10 * pm * mask, 0, 1)
     result[:,:,2] = np.clip(paint[:,:,2] + np.sin(film * 12.0 + 4.189) * 0.14 * pm * mask, 0, 1)
     # Brighten caustic network lines
-    caustic_n = _noise(shape, [8, 16, 32], [0.3, 0.4, 0.3], seed + 7703)
+    caustic_n_s = _noise((sh, sw), [8, 16, 32], [0.3, 0.4, 0.3], seed + 7703)
+    caustic_n = cv2.resize(caustic_n_s, (w, h), interpolation=cv2.INTER_LINEAR) if ds > 1 else caustic_n_s
     bright = np.exp(-np.abs(caustic_n) * 3.0) * 0.15 * pm
     for c in range(3):
         result[:,:,c] = np.clip(result[:,:,c] + bright * mask, 0, 1)
@@ -1693,23 +2173,26 @@ paint_exotic_glass_paint = _paint_exotic_glass
 # 2. EXOTIC FOGGY CHROME - Condensation physics chrome with multi-scale droplets
 def _spec_exotic_foggy_chrome(shape, mask, seed, sm):
     h, w = shape
+    # --- Resolution cap: compute at 512 max, upscale ---
+    ds = max(1, min(h, w) // 1024)
+    sh, sw = max(64, h // ds), max(64, w // ds)
     rng = np.random.RandomState(seed + 7710)
     # --- 3-scale Voronoi droplet simulation ---
-    droplet_field = np.zeros((h, w), dtype=np.float32)
-    y_g, x_g = _mgrid(shape)
+    droplet_field = np.zeros((sh, sw), dtype=np.float32)
+    y_g, x_g = _mgrid((sh, sw))
     yf, xf = y_g.astype(np.float32), x_g.astype(np.float32)
     for scale_idx, (n_pts, radius, weight) in enumerate([
-        (15, 80, 0.5),   # large merged drops
-        (80, 30, 0.3),   # medium drops
-        (400, 8, 0.2),   # tiny beads
+        (15, 80 * sh / h, 0.5),   # large merged drops (scale radius)
+        (80, 30 * sh / h, 0.3),   # medium drops
+        (400, 8 * sh / h, 0.2),   # tiny beads
     ]):
-        pts_y = rng.rand(n_pts).astype(np.float32) * h
-        pts_x = rng.rand(n_pts).astype(np.float32) * w
-        min_d = np.full((h, w), 1e9, dtype=np.float32)
+        pts_y = rng.rand(n_pts).astype(np.float32) * sh
+        pts_x = rng.rand(n_pts).astype(np.float32) * sw
+        min_d = np.full((sh, sw), 1e9, dtype=np.float32)
         for py, px in zip(pts_y, pts_x):
             d = np.sqrt((yf - py)**2 + (xf - px)**2)
             min_d = np.minimum(min_d, d)
-        drop = np.clip(1.0 - min_d / radius, 0, 1)
+        drop = np.clip(1.0 - min_d / max(radius, 1e-3), 0, 1)
         drop = drop ** 2.0  # quadratic falloff for realistic droplet profile
         droplet_field += drop * weight
     droplet_field = np.clip(droplet_field, 0, 1)
@@ -1720,26 +2203,39 @@ def _spec_exotic_foggy_chrome(shape, mask, seed, sm):
     edge_detect = np.clip(edge_detect * 15, 0, 1)
     G = np.clip(G - edge_detect * 80 * sm, 0, 200)
     CC = np.clip(16.0 + droplet_field * 100 + (1.0 - droplet_field) * 20, 16, 140)
-    micro = _noise(shape, [2, 4, 8], [0.3, 0.4, 0.3], seed + 7712)
+    micro = _noise((sh, sw), [2, 4, 8], [0.3, 0.4, 0.3], seed + 7712)
     G = np.clip(G + micro * 12 * sm * droplet_field, 0, 220)
-    return _spec_out(shape, mask, M, G, CC)
+    spec_small = _spec_out((sh, sw), cv2.resize(mask.astype(np.float32), (sw, sh), interpolation=cv2.INTER_LINEAR), M, G, CC)
+    if ds > 1:
+        spec = np.zeros((h, w, 4), dtype=np.uint8)
+        for ch in range(4):
+            spec[:,:,ch] = cv2.resize(spec_small[:,:,ch].astype(np.float32), (w, h), interpolation=cv2.INTER_LINEAR).astype(np.uint8)
+        return spec
+    return spec_small
 
 def _paint_exotic_foggy_chrome(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     rng = np.random.RandomState(seed + 7710)
     h, w = shape
-    droplet_field = np.zeros((h, w), dtype=np.float32)
-    y_g, x_g = _mgrid(shape)
+    # --- Resolution cap: compute droplet field at 512 max ---
+    ds = max(1, min(h, w) // 1024)
+    sh, sw = max(64, h // ds), max(64, w // ds)
+    droplet_field = np.zeros((sh, sw), dtype=np.float32)
+    y_g, x_g = _mgrid((sh, sw))
     yf, xf = y_g.astype(np.float32), x_g.astype(np.float32)
-    for n_pts, radius, weight in [(15, 80, 0.5), (80, 30, 0.3), (400, 8, 0.2)]:
-        pts_y = rng.rand(n_pts).astype(np.float32) * h
-        pts_x = rng.rand(n_pts).astype(np.float32) * w
-        min_d = np.full((h, w), 1e9, dtype=np.float32)
+    for n_pts, radius, weight in [(15, 80 * sh / h, 0.5), (80, 30 * sh / h, 0.3), (400, 8 * sh / h, 0.2)]:
+        pts_y = rng.rand(n_pts).astype(np.float32) * sh
+        pts_x = rng.rand(n_pts).astype(np.float32) * sw
+        min_d = np.full((sh, sw), 1e9, dtype=np.float32)
         for py, px in zip(pts_y, pts_x):
             d = np.sqrt((yf - py)**2 + (xf - px)**2)
             min_d = np.minimum(min_d, d)
-        drop = np.clip(1.0 - min_d / radius, 0, 1) ** 2.0
+        drop = np.clip(1.0 - min_d / max(radius, 1e-3), 0, 1) ** 2.0
         droplet_field += drop * weight
     droplet_field = np.clip(droplet_field, 0, 1)
+    # Upscale droplet field to full resolution
+    if ds > 1:
+        droplet_field = cv2.resize(droplet_field, (w, h), interpolation=cv2.INTER_LINEAR)
     result = paint.copy()
     gray = paint.mean(axis=2, keepdims=True)
     fog_blend = droplet_field * 0.3 * pm
@@ -1754,14 +2250,17 @@ paint_exotic_foggy_chrome = _paint_exotic_foggy_chrome
 # 3. EXOTIC INVERTED CANDY - Negative-refraction metamaterial with Turing patterns
 def _spec_exotic_inverted_candy(shape, mask, seed, sm):
     h, w = shape
+    # --- Resolution cap: compute Turing pattern at 512 max ---
+    ds = max(1, min(h, w) // 1024)
+    sh, sw = max(64, h // ds), max(64, w // ds)
     rng = np.random.RandomState(seed + 7720)
-    U = np.ones((h, w), dtype=np.float32)
-    V = np.zeros((h, w), dtype=np.float32)
+    U = np.ones((sh, sw), dtype=np.float32)
+    V = np.zeros((sh, sw), dtype=np.float32)
     for _ in range(25):
-        cy, cx = rng.randint(0, max(1,h)), rng.randint(0, max(1,w))
+        cy, cx = rng.randint(0, max(1,sh)), rng.randint(0, max(1,sw))
         r = rng.randint(5, 20)
-        y1, y2 = max(0, cy-r), min(h, cy+r)
-        x1, x2 = max(0, cx-r), min(w, cx+r)
+        y1, y2 = max(0, cy-r), min(sh, cy+r)
+        x1, x2 = max(0, cx-r), min(sw, cx+r)
         V[y1:y2, x1:x2] = 1.0
         U[y1:y2, x1:x2] = 0.5
     f_rate, k_rate = 0.055, 0.062
@@ -1776,20 +2275,31 @@ def _spec_exotic_inverted_candy(shape, mask, seed, sm):
     M = np.clip((1.0 - turing) * 240 * sm + turing * 15, 0, 255)
     G = np.clip(turing * 220 * sm + (1.0 - turing) * 5, 0, 240)
     CC = np.clip((1.0 - turing) * 200 + turing * 16, 16, 220)
-    fine = _noise(shape, [4, 8, 16], [0.3, 0.4, 0.3], seed + 7721)
+    fine = _noise((sh, sw), [16, 32, 64], [0.3, 0.4, 0.3], seed + 7721)
     M = np.clip(M + fine * 15 * sm, 0, 255)
-    return _spec_out(shape, mask, M, G, CC)
+    mask_s = cv2.resize(mask.astype(np.float32), (sw, sh), interpolation=cv2.INTER_LINEAR) if ds > 1 else mask
+    spec_small = _spec_out((sh, sw), mask_s, M, G, CC)
+    if ds > 1:
+        spec = np.zeros((h, w, 4), dtype=np.uint8)
+        for ch in range(4):
+            spec[:,:,ch] = cv2.resize(spec_small[:,:,ch].astype(np.float32), (w, h), interpolation=cv2.INTER_LINEAR).astype(np.uint8)
+        return spec
+    return spec_small
 
 def _paint_exotic_inverted_candy(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
+    # --- Resolution cap: compute Turing field at 512 max ---
+    ds = max(1, min(h, w) // 1024)
+    sh, sw = max(64, h // ds), max(64, w // ds)
     rng = np.random.RandomState(seed + 7720)
-    U = np.ones((h, w), dtype=np.float32)
-    V = np.zeros((h, w), dtype=np.float32)
+    U = np.ones((sh, sw), dtype=np.float32)
+    V = np.zeros((sh, sw), dtype=np.float32)
     for _ in range(25):
-        cy, cx = rng.randint(0, max(1,h)), rng.randint(0, max(1,w))
+        cy, cx = rng.randint(0, max(1,sh)), rng.randint(0, max(1,sw))
         r = rng.randint(5, 20)
-        y1, y2 = max(0, cy-r), min(h, cy+r)
-        x1, x2 = max(0, cx-r), min(w, cx+r)
+        y1, y2 = max(0, cy-r), min(sh, cy+r)
+        x1, x2 = max(0, cx-r), min(sw, cx+r)
         V[y1:y2, x1:x2] = 1.0
         U[y1:y2, x1:x2] = 0.5
     def _lap_ic(arr):
@@ -1800,8 +2310,11 @@ def _paint_exotic_inverted_candy(paint, shape, mask, seed, pm, bb):
         U = np.clip(U + 0.16 * _lap_ic(U) - uvv + 0.055 * (1.0 - U), 0, 1)
         V = np.clip(V + 0.08 * _lap_ic(V) + uvv - 0.117 * V, 0, 1)
     turing = V / (V.max() + 1e-6)
+    # Upscale turing field to full resolution
+    if ds > 1:
+        turing = cv2.resize(turing, (w, h), interpolation=cv2.INTER_LINEAR)
     result = paint.copy()
-    hue_phase = _noise(shape, [32, 64], [0.5, 0.5], seed + 7725) * 3.14
+    hue_phase = _noise(shape, [16, 32], [0.5, 0.5], seed + 7725) * 3.14
     result[:,:,0] = np.clip(paint[:,:,0] + np.sin(hue_phase) * turing * 0.15 * pm * mask, 0, 1)
     result[:,:,1] = np.clip(paint[:,:,1] + np.sin(hue_phase + 2.094) * turing * 0.12 * pm * mask, 0, 1)
     result[:,:,2] = np.clip(paint[:,:,2] + np.sin(hue_phase + 4.189) * turing * 0.18 * pm * mask, 0, 1)
@@ -1820,7 +2333,7 @@ def _spec_exotic_liquid_glass(shape, mask, seed, sm):
     yf = y_g.astype(np.float32) / max(1, h)
     xf = x_g.astype(np.float32) / max(1, w)
     warp1 = _noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + 7730)
-    warp2 = _noise(shape, [8, 24, 48], [0.35, 0.4, 0.25], seed + 7731)
+    warp2 = _noise(shape, [2, 4, 8], [0.35, 0.4, 0.25], seed + 7731)
     gravity = yf ** 1.5
     stream1 = np.sin((xf * 12.0 + warp1 * 2.5) * 3.14159) * 0.5 + 0.5
     stream2 = np.sin((xf * 8.0 + warp2 * 3.0 + yf * 2.0) * 3.14159) * 0.5 + 0.5
@@ -1839,6 +2352,7 @@ def _spec_exotic_liquid_glass(shape, mask, seed, sm):
     return _spec_out(shape, mask, M, G, CC)
 
 def _paint_exotic_liquid_glass(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     yf = np.linspace(0, 1, h).reshape(h, 1).astype(np.float32) * np.ones((1, w), dtype=np.float32)
     xf = np.ones((h, 1), dtype=np.float32) * np.linspace(0, 1, w).reshape(1, w).astype(np.float32)
@@ -1884,11 +2398,12 @@ def _spec_exotic_phantom_mirror(shape, mask, seed, sm):
     M = np.clip(240.0 + interference * 15 * sm, 230, 255)
     G = np.clip(interference * 110 * sm + (1.0 - interference) * 5, 0, 140)
     CC = np.clip(16.0 + (1.0 - interference) * 120 * sm, 16, 140)
-    fringe = _noise(shape, [2, 4], [0.5, 0.5], seed + 7742)
+    fringe = _noise(shape, [32, 64], [0.5, 0.5], seed + 7742)
     G = np.clip(G + fringe * 20 * sm * interference, 0, 160)
     return _spec_out(shape, mask, M, G, CC)
 
 def _paint_exotic_phantom_mirror(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     rng = np.random.RandomState(seed + 7740)
     y_g, x_g = _mgrid(shape)
@@ -1946,6 +2461,7 @@ def _spec_exotic_ceramic_void(shape, mask, seed, sm):
     return _spec_out(shape, mask, M, G, CC)
 
 def _paint_exotic_ceramic_void(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     rng = np.random.RandomState(seed + 7750)
     n_pts = 50
@@ -1983,17 +2499,17 @@ paint_exotic_ceramic_void = _paint_exotic_ceramic_void
 # 7. EXOTIC ANTI-METAL - 3-level domain-warped FBM metamaterial
 def _spec_exotic_anti_metal(shape, mask, seed, sm):
     h, w = shape
-    n0 = _noise(shape, [8, 16, 32, 64], [0.2, 0.3, 0.3, 0.2], seed + 7760)
+    n0 = _noise(shape, [2, 4, 8, 16], [0.2, 0.3, 0.3, 0.2], seed + 7760)
     # BUG-FUSIONS-001 FIX: warp fields now applied via map_coordinates (were computed but never used)
 
     yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
     warp1y = _noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + 7761) * h * np.float32(0.09)
     warp1x = _noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + 7762) * w * np.float32(0.09)
-    n1_base = _noise(shape, [12, 24, 48], [0.3, 0.4, 0.3], seed + 7763)
+    n1_base = _noise(shape, [3, 6, 12], [0.3, 0.4, 0.3], seed + 7763)
     n1 = _mc(n1_base, [np.clip(yy + warp1y, 0, h - 1), np.clip(xx + warp1x, 0, w - 1)],
              order=1, mode='nearest').astype(np.float32)
-    warp2y = _noise(shape, [24, 48], [0.5, 0.5], seed + 7764) * h * np.float32(0.07)
-    warp2x = _noise(shape, [24, 48], [0.5, 0.5], seed + 7765) * w * np.float32(0.07)
+    warp2y = _noise(shape, [16, 32], [0.5, 0.5], seed + 7764) * h * np.float32(0.07)
+    warp2x = _noise(shape, [16, 32], [0.5, 0.5], seed + 7765) * w * np.float32(0.07)
     n2_base = _noise(shape, [8, 16, 32], [0.3, 0.4, 0.3], seed + 7766)
     n2 = _mc(n2_base, [np.clip(yy + warp1y + warp2y, 0, h - 1), np.clip(xx + warp1x + warp2x, 0, w - 1)],
              order=1, mode='nearest').astype(np.float32)
@@ -2005,7 +2521,7 @@ def _spec_exotic_anti_metal(shape, mask, seed, sm):
     M = np.clip(M_raw + band * 80 * sm - 40, 0, 255)
     G = np.clip(R_raw - band * 60 * sm + 30, 15, 255)  # GGX floor: band modulation could push below 15
     CC = np.clip(80.0 - t_sharp * 60 + band * 40, 16, 180)
-    micro = _noise(shape, [2, 4], [0.5, 0.5], seed + 7767)
+    micro = _noise(shape, [32, 64], [0.5, 0.5], seed + 7767)
     M = np.clip(M + micro * 20 * sm, 0, 255)
     G = np.clip(G + micro * 15 * sm, 0, 255)
     return _spec_out(shape, mask, M, G, CC)
@@ -2016,18 +2532,19 @@ def _paint_exotic_anti_metal(paint, shape, mask, seed, pm, bb):
     Zone A (t_sharp->1): absorption zone — cool desaturated void (R--, B++).
     Zone B (t_sharp->0): metallic zone — paint preserved.
     Boundary (t_sharp~0.5): narrow photonic emission band — warm interference glow."""
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
 
     yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
     # Mirror spec function warp hierarchy exactly (same seeds)
-    n0 = _noise(shape, [8, 16, 32, 64], [0.2, 0.3, 0.3, 0.2], seed + 7760)
+    n0 = _noise(shape, [2, 4, 8, 16], [0.2, 0.3, 0.3, 0.2], seed + 7760)
     warp1y = _noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + 7761) * h * np.float32(0.09)
     warp1x = _noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + 7762) * w * np.float32(0.09)
-    n1_base = _noise(shape, [12, 24, 48], [0.3, 0.4, 0.3], seed + 7763)
+    n1_base = _noise(shape, [3, 6, 12], [0.3, 0.4, 0.3], seed + 7763)
     n1 = _mc(n1_base, [np.clip(yy + warp1y, 0, h - 1), np.clip(xx + warp1x, 0, w - 1)],
              order=1, mode='nearest').astype(np.float32)
-    warp2y = _noise(shape, [24, 48], [0.5, 0.5], seed + 7764) * h * np.float32(0.07)
-    warp2x = _noise(shape, [24, 48], [0.5, 0.5], seed + 7765) * w * np.float32(0.07)
+    warp2y = _noise(shape, [16, 32], [0.5, 0.5], seed + 7764) * h * np.float32(0.07)
+    warp2x = _noise(shape, [16, 32], [0.5, 0.5], seed + 7765) * w * np.float32(0.07)
     n2_base = _noise(shape, [8, 16, 32], [0.3, 0.4, 0.3], seed + 7766)
     n2 = _mc(n2_base, [np.clip(yy + warp1y + warp2y, 0, h - 1), np.clip(xx + warp1x + warp2x, 0, w - 1)],
              order=1, mode='nearest').astype(np.float32)
@@ -2090,12 +2607,13 @@ def _spec_exotic_crystal_clear(shape, mask, seed, sm):
     crystal_interior = 1.0 - np.clip(edge_sum, 0, 1)
     M = np.clip(bragg_intersect * 200 * sm + single_edge * 40 * sm, 0, 220)
     G = np.clip(crystal_interior * 3 + single_edge * 80 * sm + bragg_intersect * 250 * sm, 0, 255)
-    CC = np.clip(16.0 + crystal_interior * 8 - bragg_intersect * 12 + single_edge * 60, 4, 120)
+    CC = np.clip(16.0 + crystal_interior * 8 - bragg_intersect * 12 + single_edge * 60, 16, 120)  # CC≥16
     interference = np.sin(edge_sum * 18.85) * 0.5 + 0.5
     G = np.clip(G + interference * 30 * sm * single_edge, 0, 255)
     return _spec_out(shape, mask, M, G, CC)
 
 def _paint_exotic_crystal_clear(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     y_g, x_g = _mgrid(shape)
     yf, xf = y_g.astype(np.float32), x_g.astype(np.float32)
@@ -2164,11 +2682,12 @@ def _spec_exotic_dark_glass(shape, mask, seed, sm):
     CC = np.clip(60.0 + deflection * 80 - einstein_ring * 30, 30, 160)
     grav_wave = np.sin(potential * 31.416) * 0.5 + 0.5
     G = np.clip(G + grav_wave * 50 * sm * (1.0 - einstein_ring), 0, 230)
-    fine = _noise(shape, [4, 8], [0.5, 0.5], seed + 7782)
+    fine = _noise(shape, [16, 32], [0.5, 0.5], seed + 7782)
     M = np.clip(M + fine * 15 * sm * einstein_ring, 0, 160)
     return _spec_out(shape, mask, M, G, CC)
 
 def _paint_exotic_dark_glass(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
     rng = np.random.RandomState(seed + 7780)
     y_g, x_g = _mgrid(shape)
@@ -2203,7 +2722,7 @@ paint_exotic_dark_glass = _paint_exotic_dark_glass
 # 10. EXOTIC WET VOID - Superfluid helium surface with quantum vortex lines
 def _spec_exotic_wet_void(shape, mask, seed, sm):
     h, w = shape
-    n1 = _noise(shape, [12, 24, 48], [0.3, 0.4, 0.3], seed + 7790)
+    n1 = _noise(shape, [3, 6, 12], [0.3, 0.4, 0.3], seed + 7790)
     n2 = _noise(shape, [9, 18, 36], [0.35, 0.4, 0.25], seed + 7791)
     n3 = _noise(shape, [15, 30, 60], [0.3, 0.35, 0.35], seed + 7792)
     proximity = np.exp(-(n1**2 + n2**2 + n3**2) * 25.0)
@@ -2224,8 +2743,9 @@ def _spec_exotic_wet_void(shape, mask, seed, sm):
     return _spec_out(shape, mask, M, G, CC)
 
 def _paint_exotic_wet_void(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
-    n1 = _noise(shape, [12, 24, 48], [0.3, 0.4, 0.3], seed + 7790)
+    n1 = _noise(shape, [3, 6, 12], [0.3, 0.4, 0.3], seed + 7790)
     n2 = _noise(shape, [9, 18, 36], [0.35, 0.4, 0.25], seed + 7791)
     n3 = _noise(shape, [15, 30, 60], [0.3, 0.35, 0.35], seed + 7792)
     proximity = np.exp(-(n1**2 + n2**2 + n3**2) * 25.0)
@@ -2253,64 +2773,100 @@ paint_exotic_wet_void = _paint_exotic_wet_void
 # PARADIGM 9: TRI-ZONE MATERIAL FENCING - 3 materials in 1 zone
 # ================================================================
 
+_voronoi_3zone_cache = {}
+
 def _voronoi_3zone(shape, seed, seed_offset):
     """Voronoi-based 3-zone partitioning with domain warp.
-    Returns (zone_a, zone_b, zone_c, boundary) fields, each (h,w) float32 0-1."""
+    Returns (zone_a, zone_b, zone_c, boundary) fields, each (h,w) float32 0-1.
+    CACHED: spec_fn and paint_fn share the same result (same seed+shape = same zones).
+    Resolution-capped: computes at 512 max, upscales for large inputs."""
+    _key = (shape, seed, seed_offset)
+    if _key in _voronoi_3zone_cache:
+        return _voronoi_3zone_cache[_key]
+
     h, w = shape
+    # --- Resolution cap: compute Voronoi at 512 max ---
+    ds = max(1, min(h, w) // 1024)
+    sh, sw = max(64, h // ds), max(64, w // ds)
     rng = np.random.RandomState(seed + seed_offset)
 
     # 3 seed clusters — each cluster has multiple points for organic shapes
-    n_per_cluster = max(5, (h * w) // (200 * 200))
-    centers = []
-    # Cluster A: upper-left tendency, B: center, C: lower-right tendency
+    n_per_cluster = max(5, (sh * sw) // (200 * 200))
+    all_pts = []
+    all_labels = []
     cluster_centers = [(0.25, 0.25), (0.5, 0.5), (0.75, 0.75)]
     for ci, (cy, cx) in enumerate(cluster_centers):
         for _ in range(n_per_cluster):
-            py = np.clip(rng.normal(cy, 0.25), 0, 1) * h
-            px = np.clip(rng.normal(cx, 0.25), 0, 1) * w
-            centers.append((py, px, ci))
+            py = np.clip(rng.normal(cy, 0.25), 0, 1) * sh
+            px = np.clip(rng.normal(cx, 0.25), 0, 1) * sw
+            all_pts.append((py, px))
+            all_labels.append(ci)
 
-    y, x = _mgrid(shape)
+    y, x = _mgrid((sh, sw))
     yf, xf = y.astype(np.float32), x.astype(np.float32)
 
     # Domain warp the coordinates for organic boundary shapes
-    warp_y = _noise(shape, [32, 64, 128], [0.3, 0.4, 0.3], seed + seed_offset + 700)
-    warp_x = _noise(shape, [32, 64, 128], [0.3, 0.4, 0.3], seed + seed_offset + 701)
-    warp_amp = min(h, w) * 0.08
+    warp_y = _noise((sh, sw), [16, 32, 64], [0.3, 0.4, 0.3], seed + seed_offset + 700)
+    warp_x = _noise((sh, sw), [16, 32, 64], [0.3, 0.4, 0.3], seed + seed_offset + 701)
+    warp_amp = min(sh, sw) * 0.08
     yf_w = yf + warp_y * warp_amp
     xf_w = xf + warp_x * warp_amp
 
-    # Compute distance to nearest point in each cluster
-    dist_clusters = [np.full((h, w), 1e9, dtype=np.float32) for _ in range(3)]
-    for py, px, ci in centers:
-        d = np.sqrt((yf_w - py) ** 2 + (xf_w - px) ** 2)
-        dist_clusters[ci] = np.minimum(dist_clusters[ci], d)
+    # cKDTree for fast nearest-neighbor lookup (replaces brute-force Python loop)
+    from scipy.spatial import cKDTree
+    pts_arr = np.array(all_pts, dtype=np.float64)
+    labels_arr = np.array(all_labels, dtype=np.int32)
+    tree = cKDTree(pts_arr)
 
-    d_a, d_b, d_c = dist_clusters
+    query_pts = np.column_stack([yf_w.ravel(), xf_w.ravel()])
+    # Query k=3 nearest to get distances to closest point in each cluster
+    dists_k, idxs_k = tree.query(query_pts, k=min(15, len(all_pts)))
 
-    # Soft Gaussian falloff assignment: probability of each zone
-    sigma = min(h, w) * 0.15  # falloff width
+    # For each pixel, find min distance to each cluster
+    dist_clusters = [np.full(sh * sw, 1e9, dtype=np.float32) for _ in range(3)]
+    for ki in range(dists_k.shape[1]):
+        d_col = dists_k[:, ki].astype(np.float32)
+        l_col = labels_arr[idxs_k[:, ki]]
+        for ci in range(3):
+            mask_ci = (l_col == ci)
+            dist_clusters[ci] = np.where(mask_ci, np.minimum(dist_clusters[ci], d_col), dist_clusters[ci])
+
+    d_a = dist_clusters[0].reshape(sh, sw)
+    d_b = dist_clusters[1].reshape(sh, sw)
+    d_c = dist_clusters[2].reshape(sh, sw)
+
+    # Soft Gaussian falloff assignment
+    sigma = min(sh, sw) * 0.15
     w_a = np.exp(-(d_a ** 2) / (2 * sigma ** 2))
     w_b = np.exp(-(d_b ** 2) / (2 * sigma ** 2))
     w_c = np.exp(-(d_c ** 2) / (2 * sigma ** 2))
 
     total = w_a + w_b + w_c + 1e-8
-    zone_a = w_a / total
-    zone_b = w_b / total
-    zone_c = w_c / total
+    zone_a = (w_a / total).astype(np.float32)
+    zone_b = (w_b / total).astype(np.float32)
+    zone_c = (w_c / total).astype(np.float32)
 
-    # Boundary detection using gradient magnitude of zone assignments
-    # A boundary exists where no single zone dominates
+    # Boundary detection
     max_zone = np.maximum(zone_a, np.maximum(zone_b, zone_c))
-    # boundary = 1 when max_zone ~ 0.33 (all equal), 0 when max_zone ~ 1.0
     boundary = np.clip(1.0 - (max_zone - 0.4) * 4.0, 0, 1)
-    # Sharpen boundary with gradient magnitude
     grad_y = np.abs(np.diff(max_zone, axis=0, prepend=max_zone[:1, :]))
     grad_x = np.abs(np.diff(max_zone, axis=1, prepend=max_zone[:, :1]))
     edge_mag = np.clip((grad_y + grad_x) * 12, 0, 1)
-    boundary = np.clip(boundary + edge_mag, 0, 1)
+    boundary = np.clip(boundary + edge_mag, 0, 1).astype(np.float32)
 
-    return zone_a, zone_b, zone_c, boundary
+    # Upscale to full resolution if needed
+    if ds > 1:
+        zone_a = cv2.resize(zone_a, (w, h), interpolation=cv2.INTER_LINEAR)
+        zone_b = cv2.resize(zone_b, (w, h), interpolation=cv2.INTER_LINEAR)
+        zone_c = cv2.resize(zone_c, (w, h), interpolation=cv2.INTER_LINEAR)
+        boundary = cv2.resize(boundary, (w, h), interpolation=cv2.INTER_LINEAR)
+
+    result = (zone_a, zone_b, zone_c, boundary)
+    # Cache (evict if > 8 entries)
+    if len(_voronoi_3zone_cache) > 8:
+        _voronoi_3zone_cache.pop(next(iter(_voronoi_3zone_cache)))
+    _voronoi_3zone_cache[_key] = result
+    return result
 
 
 def _make_trizone_fusion(mat_a, mat_b, mat_c, seed_offset=0):
@@ -2332,12 +2888,18 @@ def _make_trizone_fusion(mat_a, mat_b, mat_c, seed_offset=0):
         # Zone A: fine grain texture
         grain_a = _noise(shape, [2, 4, 8], [0.3, 0.4, 0.3], seed + seed_offset + 710)
         # Zone B: speckle texture
+        # 2026-04-25 — Iter 10 fix: pre-fix used cv2.INTER_NEAREST upscale
+        # of a (h//3, w//3) noise grid which produced visible square-cell
+        # blocks in Zone B regions (Item 3 broad-blob complaint, Tri-Zone
+        # contact sheet showed obvious 3px-cell grid). Switched to CUBIC
+        # interpolation + Gaussian blur to keep the speckle character
+        # without the blocky artifact.
         rng = np.random.RandomState(seed + seed_offset + 720)
         speckle_raw = rng.randn(max(1, h // 3), max(1, w // 3)).astype(np.float32)
-        img = Image.fromarray((speckle_raw * 127 + 128).clip(0, 255).astype(np.uint8))
-        speckle_b = np.array(img.resize((w, h), Image.NEAREST)).astype(np.float32) / 127.0 - 1.0
+        speckle_b = cv2.resize(speckle_raw, (w, h), interpolation=cv2.INTER_CUBIC)
+        speckle_b = cv2.GaussianBlur(speckle_b, (0, 0), sigmaX=0.7, sigmaY=0.7)
         # Zone C: smooth with subtle low-freq variation
-        smooth_c = _noise(shape, [32, 64], [0.5, 0.5], seed + seed_offset + 730)
+        smooth_c = _noise(shape, [16, 32], [0.5, 0.5], seed + seed_offset + 730)
 
         # Apply per-zone textures
         micro_M = zone_a * grain_a * 15 + zone_b * speckle_b * 12 + zone_c * smooth_c * 5
@@ -2351,15 +2913,27 @@ def _make_trizone_fusion(mat_a, mat_b, mat_c, seed_offset=0):
         # CC at boundary: glossy (16) for chrome seam shine
         B = B * (1 - boundary) + 16.0 * boundary * sm + B * boundary * (1 - sm)
 
+        # 2026-04-25 — Universal fine-grain modulation breaks up flat
+        # within-zone color (the Voronoi partition by design creates 3
+        # large regions; this adds painter-resolution surface character
+        # without removing the 3-zone identity).
+        tgrain = _fractal_surface_grain(shape, seed + seed_offset + 740)
+        tgrain_centered = (tgrain - 0.5) * 2.0
+        M = M * (0.92 + 0.16 * tgrain)
+        G = G * (0.92 + 0.16 * (1.0 - tgrain))
+        B = B + tgrain_centered * 14.0
+
         return _spec_out(shape, mask, M, G, B)
 
     def paint_fn(paint, shape, mask, seed, pm, bb):
+        if hasattr(bb, "ndim") and bb.ndim == 2: bb = bb[:, :, np.newaxis]
         """Trizone: COLORSHOXX-style three distinct color zones married to Voronoi zones.
         UPGRADED: Was basic tint-only. Now creates real color zones:
         - Zone A (warm): amber/gold push (+red, +slight green, -blue) + brightening
         - Zone B (cool): desaturate toward grey, darken, retain some blue
         - Zone C (neutral): slight brightness boost, balanced color
         - Boundaries: bright warm-white rim highlight"""
+        if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
         zone_a, zone_b, zone_c, boundary = _voronoi_3zone(shape, seed, seed_offset)
         result = paint.copy()
 
@@ -2390,17 +2964,187 @@ def _make_trizone_fusion(mat_a, mat_b, mat_c, seed_offset=0):
         result[:,:,1] = np.clip(result[:,:,1] + rim * mask * 1.00, 0, 1)
         result[:,:,2] = np.clip(result[:,:,2] + rim * mask * 0.85, 0, 1)
 
+        # 2026-04-25 — Universal paint-side fine-grain so each Voronoi
+        # zone has visible material micro-character at painter resolution
+        # instead of a flat tint (Item 3 broad-blob fix).
+        tgrain = _fractal_surface_grain(shape, seed + seed_offset + 750)
+        tgrain_centered = (tgrain - 0.5) * 2.0
+        micro = tgrain_centered * 0.05 * pm
+        result[:,:,0] = np.clip(result[:,:,0] + micro * mask, 0, 1)
+        result[:,:,1] = np.clip(result[:,:,1] + micro * 0.9 * mask, 0, 1)
+        result[:,:,2] = np.clip(result[:,:,2] + micro * 0.8 * mask, 0, 1)
+
         result = np.clip(result + bb * 0.4 * mask[:,:,np.newaxis], 0, 1)
         return result
     return spec_fn, paint_fn
 
+
+def _trizone_xy_fields(shape):
+    h, w = shape
+    y, x = _mgrid(shape)
+    yf = y.astype(np.float32) / max(1, h)
+    xf = x.astype(np.float32) / max(1, w)
+    return y.astype(np.float32), x.astype(np.float32), yf, xf
+
+
+def _trizone_bb3(bb, shape):
+    if np.isscalar(bb):
+        return np.full((shape[0], shape[1], 1), float(bb), dtype=np.float32)
+    arr = np.asarray(bb, dtype=np.float32)
+    if arr.ndim == 0:
+        return np.full((shape[0], shape[1], 1), float(arr), dtype=np.float32)
+    if arr.ndim == 2:
+        return arr[:, :, np.newaxis]
+    return arr[:, :, :1]
+
+
+def _trizone_highpass(shape, seed, scales=(2, 3, 5), weights=(0.45, 0.35, 0.2)):
+    field = _multiscale_smooth_noise(shape, list(scales), list(weights), seed)
+    return field.astype(np.float32)
+
+
+def _spec_trizone_frozen_ember_chrome_bespoke(shape, mask, seed, sm):
+    zone_ice, zone_ember, zone_chrome, boundary = _voronoi_3zone(shape, seed, 7820)
+    y, x, yf, xf = _trizone_xy_fields(shape)
+    frost = _trizone_highpass(shape, seed + 9821, (2, 4, 9), (0.50, 0.32, 0.18))
+    ember_noise = _trizone_highpass(shape, seed + 9822, (3, 6, 12), (0.46, 0.34, 0.20))
+    chrome_scrub = _trizone_highpass(shape, seed + 9823, (2, 5, 13), (0.52, 0.28, 0.20))
+
+    ice_veins = np.power(np.clip(1.0 - np.abs(np.sin((x * 0.145 + y * 0.055) + frost * 4.8)), 0, 1), 10)
+    ice_needles = np.power(np.clip(1.0 - np.abs(np.sin((x * 0.37 - y * 0.19) + frost * 3.2)), 0, 1), 13)
+    ember_cracks = np.power(np.clip(1.0 - np.abs(np.sin((x * 0.070 - y * 0.115) + ember_noise * 5.5)), 0, 1), 9)
+    ember_pin = (ember_noise > 0.58).astype(np.float32)
+    chrome_lines = np.power(np.clip(1.0 - np.abs(np.sin((x * 0.55 + y * 0.075) + chrome_scrub * 2.5)), 0, 1), 12)
+
+    ice_detail = np.clip(0.40 + frost * 0.34 + ice_veins * 0.55 + ice_needles * 0.28, 0, 1)
+    ember_detail = np.clip(0.42 + ember_noise * 0.30 + ember_cracks * 0.70 + ember_pin * 0.18, 0, 1)
+    chrome_detail = np.clip(0.46 + chrome_scrub * 0.20 + chrome_lines * 0.50, 0, 1)
+
+    M = (
+        zone_ice * (90 + ice_detail * 88)
+        + zone_ember * (142 + ember_detail * 78)
+        + zone_chrome * (222 + chrome_detail * 32)
+    )
+    G = (
+        zone_ice * (58 + (1.0 - ice_detail) * 92)
+        + zone_ember * (28 + (1.0 - ember_detail) * 58)
+        + zone_chrome * (3 + chrome_lines * 18)
+    )
+    B = (
+        zone_ice * (78 + ice_detail * 82)
+        + zone_ember * (28 + ember_detail * 84)
+        + zone_chrome * (16 + chrome_detail * 28)
+    )
+
+    M = M * (1 - boundary) + (245 + chrome_lines * 10) * boundary
+    G = G * (1 - boundary) + (3 + ice_needles * 9) * boundary
+    B = B * (1 - boundary) + (22 + ember_cracks * 50) * boundary
+    return _spec_out(shape, mask, M, G, B)
+
+
+def _paint_trizone_frozen_ember_chrome_bespoke(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3:
+        paint = paint[:, :, :3].copy()
+    zone_ice, zone_ember, zone_chrome, boundary = _voronoi_3zone(shape, seed, 7820)
+    y, x, yf, xf = _trizone_xy_fields(shape)
+    frost = _trizone_highpass(shape, seed + 9831, (2, 4, 9), (0.50, 0.32, 0.18))
+    ember_noise = _trizone_highpass(shape, seed + 9832, (3, 6, 12), (0.46, 0.34, 0.20))
+    chrome_scrub = _trizone_highpass(shape, seed + 9833, (2, 5, 13), (0.52, 0.28, 0.20))
+    ice_veins = np.power(np.clip(1.0 - np.abs(np.sin((x * 0.145 + y * 0.055) + frost * 4.8)), 0, 1), 10)
+    ember_cracks = np.power(np.clip(1.0 - np.abs(np.sin((x * 0.070 - y * 0.115) + ember_noise * 5.5)), 0, 1), 9)
+    chrome_lines = np.power(np.clip(1.0 - np.abs(np.sin((x * 0.55 + y * 0.075) + chrome_scrub * 2.5)), 0, 1), 12)
+
+    result = paint.copy()
+    cold = zone_ice * pm
+    hot = zone_ember * pm
+    mirror = zone_chrome * pm
+    result[:, :, 0] = np.clip(result[:, :, 0] + hot * (0.25 + ember_cracks * 0.32) - cold * 0.05 + mirror * (0.10 + chrome_lines * 0.08), 0, 1)
+    result[:, :, 1] = np.clip(result[:, :, 1] + cold * (0.12 + ice_veins * 0.14) + hot * (0.04 + ember_noise * 0.04) + mirror * 0.10, 0, 1)
+    result[:, :, 2] = np.clip(result[:, :, 2] + cold * (0.27 + frost * 0.10 + ice_veins * 0.16) - hot * (0.07 + ember_cracks * 0.04) + mirror * (0.12 + chrome_scrub * 0.04), 0, 1)
+    surface = zone_ice * (frost * 0.10 + ice_veins * 0.12) + zone_ember * (ember_noise * 0.10 + ember_cracks * 0.16) + zone_chrome * (chrome_scrub * 0.08 + chrome_lines * 0.10)
+    for c, gain in enumerate((1.0, 0.88, 0.76)):
+        result[:, :, c] = np.clip(result[:, :, c] + surface * gain * mask * pm, 0, 1)
+    rim = boundary * (0.18 + chrome_lines * 0.18) * pm
+    result[:, :, 0] = np.clip(result[:, :, 0] + rim * 0.95, 0, 1)
+    result[:, :, 1] = np.clip(result[:, :, 1] + rim * 0.92, 0, 1)
+    result[:, :, 2] = np.clip(result[:, :, 2] + rim * 1.05, 0, 1)
+    return np.clip(result + _trizone_bb3(bb, shape) * 0.34 * mask[:, :, np.newaxis], 0, 1)
+
+
+def _spec_trizone_glass_metal_matte_bespoke(shape, mask, seed, sm):
+    zone_glass, zone_metal, zone_matte, boundary = _voronoi_3zone(shape, seed, 7850)
+    y, x, yf, xf = _trizone_xy_fields(shape)
+    glass_flow = _trizone_highpass(shape, seed + 9851, (2, 5, 11), (0.50, 0.30, 0.20))
+    metal_brush = _trizone_highpass(shape, seed + 9852, (2, 4, 8), (0.46, 0.34, 0.20))
+    matte_pores = _trizone_highpass(shape, seed + 9853, (2, 3, 7), (0.44, 0.34, 0.22))
+
+    glass_cracks = np.power(np.clip(1.0 - np.abs(np.sin((x * 0.120 - y * 0.085) + glass_flow * 5.6)), 0, 1), 11)
+    glass_splinters = np.power(np.clip(1.0 - np.abs(np.sin((x * 0.37 + y * 0.31) + glass_flow * 3.4)), 0, 1), 14)
+    brush_lines = np.power(np.clip(1.0 - np.abs(np.sin(y * 0.62 + metal_brush * 4.0)), 0, 1), 10)
+    cross_scuff = np.power(np.clip(1.0 - np.abs(np.sin((x * 0.18 + y * 0.21) + metal_brush * 2.5)), 0, 1), 12)
+    pore = np.clip((matte_pores + 1.0) * 0.5, 0, 1)
+    stipple = (pore > 0.56).astype(np.float32) * 0.45 + pore * 0.35
+
+    M = (
+        zone_glass * (18 + glass_cracks * 68 + glass_splinters * 36)
+        + zone_metal * (172 + brush_lines * 58 + cross_scuff * 18)
+        + zone_matte * (22 + stipple * 46)
+    )
+    G = (
+        zone_glass * (18 + (1.0 - glass_flow) * 36)
+        + zone_metal * (34 + (1.0 - brush_lines) * 62)
+        + zone_matte * (150 + stipple * 70)
+    )
+    B = (
+        zone_glass * (38 + glass_cracks * 80)
+        + zone_metal * (20 + brush_lines * 38)
+        + zone_matte * (112 + stipple * 64)
+    )
+    M = M * (1 - boundary) + (230 + cross_scuff * 22) * boundary
+    G = G * (1 - boundary) + (10 + glass_splinters * 22) * boundary
+    B = B * (1 - boundary) + (44 + glass_cracks * 66) * boundary
+    return _spec_out(shape, mask, M, G, B)
+
+
+def _paint_trizone_glass_metal_matte_bespoke(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3:
+        paint = paint[:, :, :3].copy()
+    zone_glass, zone_metal, zone_matte, boundary = _voronoi_3zone(shape, seed, 7850)
+    y, x, yf, xf = _trizone_xy_fields(shape)
+    glass_flow = _trizone_highpass(shape, seed + 9861, (2, 5, 11), (0.50, 0.30, 0.20))
+    metal_brush = _trizone_highpass(shape, seed + 9862, (2, 4, 8), (0.46, 0.34, 0.20))
+    matte_pores = _trizone_highpass(shape, seed + 9863, (2, 3, 7), (0.44, 0.34, 0.22))
+    glass_cracks = np.power(np.clip(1.0 - np.abs(np.sin((x * 0.120 - y * 0.085) + glass_flow * 5.6)), 0, 1), 11)
+    glass_splinters = np.power(np.clip(1.0 - np.abs(np.sin((x * 0.37 + y * 0.31) + glass_flow * 3.4)), 0, 1), 14)
+    brush_lines = np.power(np.clip(1.0 - np.abs(np.sin(y * 0.62 + metal_brush * 4.0)), 0, 1), 10)
+    pore = np.clip((matte_pores + 1.0) * 0.5, 0, 1)
+    stipple = (pore > 0.56).astype(np.float32) * 0.28 + pore * 0.18
+
+    result = paint.copy()
+    glass = zone_glass * pm
+    metal = zone_metal * pm
+    matte = zone_matte * pm
+    result[:, :, 0] = np.clip(result[:, :, 0] - glass * 0.05 + metal * (0.16 + brush_lines * 0.10) + matte * (0.02 + stipple * 0.05), 0, 1)
+    result[:, :, 1] = np.clip(result[:, :, 1] + glass * (0.08 + glass_cracks * 0.08) + metal * (0.14 + brush_lines * 0.08) + matte * (0.02 + stipple * 0.05), 0, 1)
+    result[:, :, 2] = np.clip(result[:, :, 2] + glass * (0.18 + glass_flow * 0.06 + glass_splinters * 0.12) + metal * (0.12 + brush_lines * 0.06) - matte * 0.03, 0, 1)
+    detail = zone_glass * (glass_cracks * 0.16 + glass_splinters * 0.10) + zone_metal * (brush_lines * 0.13 + metal_brush * 0.06) + zone_matte * stipple
+    result[:, :, 0] = np.clip(result[:, :, 0] + detail * 0.70 * mask, 0, 1)
+    result[:, :, 1] = np.clip(result[:, :, 1] + detail * 0.82 * mask, 0, 1)
+    result[:, :, 2] = np.clip(result[:, :, 2] + detail * 0.95 * mask, 0, 1)
+    rim = boundary * (0.16 + glass_cracks * 0.14 + brush_lines * 0.10) * pm
+    result[:, :, 0] = np.clip(result[:, :, 0] + rim * 0.78, 0, 1)
+    result[:, :, 1] = np.clip(result[:, :, 1] + rim * 0.88, 0, 1)
+    result[:, :, 2] = np.clip(result[:, :, 2] + rim * 1.05, 0, 1)
+    return np.clip(result + _trizone_bb3(bb, shape) * 0.30 * mask[:, :, np.newaxis], 0, 1)
+
+
 # Chrome / Candy / Matte
 spec_trizone_chrome_candy_matte, paint_trizone_chrome_candy_matte = _make_trizone_fusion((255,2,16), (200,15,16), (0,200,180), 7800)
 spec_trizone_pearl_carbon_gold, paint_trizone_pearl_carbon_gold = _make_trizone_fusion((100,40,16), (55,35,16), (255,2,16), 7810)
-spec_trizone_frozen_ember_chrome, paint_trizone_frozen_ember_chrome = _make_trizone_fusion((225,140,16), (200,40,16), (255,2,16), 7820)
+spec_trizone_frozen_ember_chrome, paint_trizone_frozen_ember_chrome = _spec_trizone_frozen_ember_chrome_bespoke, _paint_trizone_frozen_ember_chrome_bespoke
 spec_trizone_anodized_candy_silk, paint_trizone_anodized_candy_silk = _make_trizone_fusion((170,80,100), (200,15,16), (30,85,16), 7830)
 spec_trizone_vanta_chrome_pearl, paint_trizone_vanta_chrome_pearl = _make_trizone_fusion((0,255,255), (255,2,16), (100,40,16), 7840)
-spec_trizone_glass_metal_matte, paint_trizone_glass_metal_matte = _make_trizone_fusion((0,0,16), (200,50,16), (0,200,180), 7850)
+spec_trizone_glass_metal_matte, paint_trizone_glass_metal_matte = _spec_trizone_glass_metal_matte_bespoke, _paint_trizone_glass_metal_matte_bespoke
 spec_trizone_mercury_obsidian_candy, paint_trizone_mercury_obsidian_candy = _make_trizone_fusion((255,3,16), (130,6,16), (200,15,16), 7860)
 spec_trizone_titanium_copper_chrome, paint_trizone_titanium_copper_chrome = _make_trizone_fusion((180,70,80), (190,55,16), (255,2,16), 7870)
 spec_trizone_ceramic_flake_satin, paint_trizone_ceramic_flake_satin = _make_trizone_fusion((60,8,16), (240,12,16), (0,100,120), 7880)
@@ -2414,7 +3158,7 @@ spec_trizone_stealth_spectra_frozen, paint_trizone_stealth_spectra_frozen = _mak
 def _make_depth_fusion(base_m, base_g, cc_deep, cc_shallow, pattern_type, seed_offset=0):
     """Factory: CC roughness creates real 3D depth illusion through PBR spec.
     Each pattern uses advanced simulation for convincing depth."""
-    if _FF_V2 is not None:
+    if _FF_V2 is not None and pattern_type != "map":
         return _adapt_staging_factory_result(_FF_V2._make_depth_fusion(base_m, base_g, cc_deep, cc_shallow, pattern_type, seed_offset))
     def _compute_depth_pattern(shape, seed):
         """Compute the actual depth pattern field pv (0-1) for the given pattern_type."""
@@ -2422,7 +3166,7 @@ def _make_depth_fusion(base_m, base_g, cc_deep, cc_shallow, pattern_type, seed_o
         y, x = _mgrid(shape)
         yf, xf = y.astype(np.float32), x.astype(np.float32)
         warp1 = _noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + seed_offset + 700)
-        warp2 = _noise(shape, [12, 24, 48], [0.3, 0.4, 0.3], seed + seed_offset + 701)
+        warp2 = _noise(shape, [3, 6, 12], [0.3, 0.4, 0.3], seed + seed_offset + 701)
         warp_s = min(h, w) * 0.15
         yw, xw = yf + warp1 * warp_s, xf + warp2 * warp_s
 
@@ -2491,6 +3235,16 @@ def _make_depth_fusion(base_m, base_g, cc_deep, cc_shallow, pattern_type, seed_o
             wall = np.clip((hex_d - 0.4) * 4, 0, 1)
             wall_edge = np.exp(-(hex_d - 0.4)**2 / 0.005) * 0.7
             pv = np.clip(floor * 0.8 + wall_edge * 0.5 - wall * 0.3, 0, 1)
+        elif pattern_type == "map":
+            terrain = _noise(shape, [8, 16, 32, 64, 128], [0.12, 0.20, 0.28, 0.25, 0.15], seed + seed_offset + 120)
+            ridge = _noise(shape, [4, 8, 16, 32], [0.18, 0.28, 0.32, 0.22], seed + seed_offset + 121)
+            terraces = np.abs(np.sin((terrain * 0.58 + ridge * 0.42 + 1.0) * 9.5 * np.pi))
+            contour = np.clip(1.0 - terraces / 0.13, 0, 1)
+            slope_y = np.diff(terrain, axis=0, prepend=terrain[:1, :])
+            slope_x = np.diff(terrain, axis=1, prepend=terrain[:, :1])
+            slope = np.clip(np.sqrt(slope_x * slope_x + slope_y * slope_y) * 6.5, 0, 1)
+            micro = _noise(shape, [1, 2, 3, 5], [0.32, 0.30, 0.24, 0.14], seed + seed_offset + 122)
+            pv = np.clip((terrain + 1.0) * 0.34 + contour * 0.32 + slope * 0.22 + (micro + 1.0) * 0.06, 0, 1)
         elif pattern_type == "crack":
             rng = np.random.RandomState(seed + seed_offset + 100)
             n_pts = 50
@@ -2550,7 +3304,7 @@ def _make_depth_fusion(base_m, base_g, cc_deep, cc_shallow, pattern_type, seed_o
             spiral2 = np.sin(angle * (n_arms * 2) + log_r * 15) * 0.3 + 0.5
             pv = np.clip((spiral * 0.6 + spiral2 * 0.4) * depth_envelope, 0, 1)
         elif pattern_type == "erosion":
-            terrain = _noise(shape, [8, 16, 32, 64, 128], [0.1, 0.15, 0.25, 0.3, 0.2], seed + seed_offset + 100)
+            terrain = _noise(shape, [2, 4, 8, 16, 32], [0.1, 0.15, 0.25, 0.3, 0.2], seed + seed_offset + 100)
             terrain = np.clip(terrain * 0.5 + 0.5, 0, 1)
             gy = np.diff(terrain, axis=0, prepend=terrain[:1, :])
             gx = np.diff(terrain, axis=1, prepend=terrain[:, :1])
@@ -2566,7 +3320,10 @@ def _make_depth_fusion(base_m, base_g, cc_deep, cc_shallow, pattern_type, seed_o
 
     def spec_fn(shape, mask, seed, sm):
         h, w = shape
-        pv = _compute_depth_pattern(shape, seed)
+        # --- Resolution cap: compute at 512 max, upscale ---
+        ds = max(1, min(h, w) // 1024)
+        sh, sw = max(64, h // ds), max(64, w // ds)
+        pv = _compute_depth_pattern((sh, sw), seed)
 
         # M modulated by depth: raised = more metallic, deep = less
         M = np.clip(float(base_m) + pv * 45 * sm - (1 - pv) * 25 * sm, 0, 255)
@@ -2574,7 +3331,7 @@ def _make_depth_fusion(base_m, base_g, cc_deep, cc_shallow, pattern_type, seed_o
         G = np.clip(float(base_g) + (1 - pv) * 50 * sm - pv * 20 * sm, 0, 255)
         # CC range 16-200 for max depth impression
         CC = pv * float(cc_deep) + (1 - pv) * float(cc_shallow)
-        n = _noise(shape, [8, 16], [0.5, 0.5], seed + seed_offset + 50)
+        n = _noise((sh, sw), [8, 16], [0.5, 0.5], seed + seed_offset + 50)
         M = M + n * 10 * sm
         G = G + n * 8 * sm
         # Sobel edge detection for rim lighting at depth transitions
@@ -2584,16 +3341,29 @@ def _make_depth_fusion(base_m, base_g, cc_deep, cc_shallow, pattern_type, seed_o
         M = np.clip(M + edge * 60 * sm, 0, 255)  # edges are bright metallic rim
         G = np.clip(G - edge * 25 * sm, 0, 255)   # edges are smooth
         CC = np.clip(CC, 16, 255)
-        return _spec_out(shape, mask, M, G, CC)
+        mask_s = cv2.resize(mask.astype(np.float32), (sw, sh), interpolation=cv2.INTER_LINEAR) if ds > 1 else mask
+        spec_small = _spec_out((sh, sw), mask_s, M, G, CC)
+        if ds > 1:
+            spec = np.zeros((h, w, 4), dtype=np.uint8)
+            for ch in range(4):
+                spec[:, :, ch] = cv2.resize(spec_small[:, :, ch].astype(np.float32), (w, h), interpolation=cv2.INTER_LINEAR).astype(np.uint8)
+            return spec
+        return spec_small
     def paint_fn(paint, shape, mask, seed, pm, bb):
+        if hasattr(bb, "ndim") and bb.ndim == 2: bb = bb[:, :, np.newaxis]
         """Depth Illusion: COLORSHOXX-style color zones married to depth pattern.
         UPGRADED: Was brightness-only. Now:
         - Raised zones (pv>0.6): warm color push (amber/gold tint) + brightening
         - Deep zones (pv<0.3): cool shadow push (blue-grey desaturation) + darkening
         - Edges: bright warm-white rim highlight
         Same pv field drives both paint AND spec = married pair."""
+        if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
         h, w = shape
-        pv = _compute_depth_pattern(shape, seed)
+        # --- Resolution cap: compute depth pattern at 512 max, upscale ---
+        ds = max(1, min(h, w) // 1024)
+        sh, sw = max(64, h // ds), max(64, w // ds)
+        pv_s = _compute_depth_pattern((sh, sw), seed)
+        pv = cv2.resize(pv_s, (w, h), interpolation=cv2.INTER_LINEAR) if ds > 1 else pv_s
         result = paint.copy()
 
         # Raised zones: warm tint (amber push) + brightening
@@ -2637,6 +3407,7 @@ spec_depth_wave, paint_depth_wave = _make_depth_fusion(200, 40, 16, 100, "wave",
 spec_depth_pillow, paint_depth_pillow = _make_depth_fusion(210, 35, 16, 90, "pillow", 7970)
 spec_depth_vortex, paint_depth_vortex = _make_depth_fusion(220, 30, 16, 140, "vortex", 7980)
 spec_depth_erosion, paint_depth_erosion = _make_depth_fusion(190, 40, 16, 160, "erosion", 7990)
+spec_depth_map, paint_depth_map = _make_depth_fusion(205, 38, 16, 155, "map", 8000)
 
 
 # ================================================================
@@ -2670,13 +3441,10 @@ def _make_halo_fusion(center_m, halo_m, base_g, base_cc, pattern_type, seed_offs
     def _compute_halo_zones(dist):
         """Compute multi-scale halo zones from distance field.
         Returns (center, inner_halo, outer_glow) each 0-1."""
-        # Center zone: interior of pattern element
-        center = np.clip(1.0 - dist * 2.5, 0, 1)
-        # Inner halo: thin bright chrome line at element boundary
-        # Gaussian peak at dist~0.4 with narrow sigma
-        inner = np.exp(-(dist - 0.42)**2 / 0.008)
-        # Outer glow: wider falloff beyond the edge
-        outer = np.exp(-(dist - 0.6)**2 / 0.04) * np.clip(dist - 0.3, 0, 1)
+        center = np.clip(1.0 - dist * 2.15, 0, 1)
+        inner = np.exp(-(dist - 0.38) ** 2 / 0.014)
+        outer = np.exp(-(dist - 0.58) ** 2 / 0.085) * np.clip(dist - 0.16, 0, 1)
+        outer = np.clip(outer + np.exp(-(dist - 0.76) ** 2 / 0.18) * 0.28, 0, 1)
         return center, inner, outer
 
     def _compute_halo_dist(shape, seed):
@@ -2718,25 +3486,34 @@ def _make_halo_fusion(center_m, halo_m, base_g, base_cc, pattern_type, seed_offs
             edge_norm = edge_w / (np.percentile(edge_w, 90) + 1e-6)
             dist = np.clip(edge_norm, 0, 1)
         elif pattern_type == "wave":
-            warp = _noise(shape, [32, 64], [0.5, 0.5], seed + seed_offset + 300) * 15
-            wave = np.sin((yf + warp) * 0.035 + xf * 0.015) * 0.5 + 0.5
-            dist = np.abs(wave - 0.5) * 2.0
+            warp = _noise(shape, [4, 8, 16, 32], [0.26, 0.30, 0.26, 0.18], seed + seed_offset + 300) * 10
+            w1 = np.sin((yf + warp) * 0.052 + xf * 0.026)
+            w2 = np.sin((yf - warp * 0.45) * 0.034 - xf * 0.041 + 1.7)
+            w3 = np.sin((xf + yf) * 0.020 + warp * 0.035)
+            wave = np.clip((w1 * 0.52 + w2 * 0.32 + w3 * 0.16) * 0.5 + 0.5, 0, 1)
+            dist = np.clip(np.abs(wave - 0.5) * 2.15, 0, 1)
         elif pattern_type == "crack":
             # FBM iso-line crack network — zero-crossings of two noise fields at different
             # scales form independent crack families that intersect and branch.
             # Structurally distinct from voronoi: no seed points, no cell geometry —
             # pure continuous iso-line topology resembling crackle glaze or dried mud.
-            crack_a = _noise(shape, [max(h // 6, 12), max(h // 12, 6)], [0.65, 0.35],
-                             seed + seed_offset + 100)
-            crack_b = _noise(shape, [max(h // 9, 8), max(h // 18, 4)], [0.60, 0.40],
+            warp = _noise(shape, [8, 16, 32], [0.32, 0.36, 0.32], seed + seed_offset + 100) * 5.0
+            f1 = np.sin((xf + warp) * 0.061 + yf * 0.038)
+            f2 = np.sin((xf - warp * 0.35) * -0.046 + yf * 0.083 + np.sin(xf * 0.011) * 1.3)
+            f3 = np.sin((xf + yf) * 0.035 + np.sin(yf * 0.023) * 2.1)
+            branch_gate = np.clip((np.sin(xf * 0.019 - yf * 0.027 + seed * 0.01) + 1.0) * 0.5, 0.18, 1.0)
+            dist = np.clip(np.minimum(np.minimum(np.abs(f1), np.abs(f2)), np.abs(f3) * 0.72) * 3.0 / branch_gate, 0, 1)
+            return dist
+            crack_b = _noise(shape, [5, 10, 20, 40], [0.24, 0.30, 0.28, 0.18],
                              seed + seed_offset + 101)
+            crack_a = crack_a * 0.72 + np.sin(xf * 0.067 + yf * 0.041 + crack_a * 2.2) * 0.5
             ca_s = np.percentile(np.abs(crack_a), 95) + 1e-6
             cb_s = np.percentile(np.abs(crack_b), 95) + 1e-6
             iso_a = np.abs(crack_a) / ca_s   # near-0 at zero-crossings of field A
             iso_b = np.abs(crack_b) / cb_s   # near-0 at zero-crossings of field B
             # Primary cracks (coarser A) + secondary cracks (finer B, 0.7× weight)
             iso_min = np.minimum(iso_a, iso_b * 0.7)
-            dist = np.clip(iso_min * 3.5, 0, 1)
+            dist = np.clip(iso_min * 3.1, 0, 1)
         elif pattern_type == "star":
             rng2 = np.random.RandomState(seed + seed_offset + 100)
             n_stars = 18
@@ -2770,11 +3547,17 @@ def _make_halo_fusion(center_m, halo_m, base_g, base_cc, pattern_type, seed_offs
 
     def spec_fn(shape, mask, seed, sm):
         h, w = shape
-        dist = _compute_halo_dist(shape, seed)
+        # --- Resolution cap: compute at 512 max, upscale ---
+        ds = max(1, min(h, w) // 1024)
+        sh, sw = max(64, h // ds), max(64, w // ds)
+        dist = _compute_halo_dist((sh, sw), seed)
 
         # Multi-scale halo computation
         center, inner_halo, outer_glow = _compute_halo_zones(dist)
         halo_total = np.clip(inner_halo + outer_glow * 0.6, 0, 1)
+        micro = _noise((sh, sw), [1, 2, 3, 5], [0.34, 0.30, 0.22, 0.14], seed + seed_offset + 51)
+        micro = np.clip((micro + 1.0) * 0.5, 0, 1)
+        dust = np.clip((micro - 0.60) / 0.40, 0, 1) * np.clip(0.22 + halo_total * 0.78, 0, 1)
 
         # M: center 20-60, rim 240-255
         M = float(center_m) * center + float(halo_m) * halo_total
@@ -2786,20 +3569,37 @@ def _make_halo_fusion(center_m, halo_m, base_g, base_cc, pattern_type, seed_offs
         B = float(base_cc) * center + 16.0 * halo_total
         B = np.clip(B + (1 - center) * (1 - halo_total) * float(base_cc) * 0.4, 16, 255)
         # Subtle noise (preserve halo smoothness)
-        n = _noise(shape, [4, 8], [0.5, 0.5], seed + seed_offset + 50)
-        M = np.clip(M + n * 6 * sm * (1 - halo_total), 0, 255)
-        G = np.clip(G + n * 4 * sm * (1 - halo_total), 0, 255)
-        return _spec_out(shape, mask, M, G, B)
+        n = _noise((sh, sw), [16, 32], [0.5, 0.5], seed + seed_offset + 50)
+        M = np.clip(M + n * 6 * sm * (1 - halo_total) + dust * 36.0 * sm, 0, 255)
+        G = np.clip(G + n * 4 * sm * (1 - halo_total) - dust * 18.0 * sm, 0, 255)
+        B = np.clip(B + dust * 10.0 * sm, 16, 255)
+        mask_s = cv2.resize(mask.astype(np.float32), (sw, sh), interpolation=cv2.INTER_LINEAR) if ds > 1 else mask
+        spec_small = _spec_out((sh, sw), mask_s, M, G, B)
+        if ds > 1:
+            spec = np.zeros((h, w, 4), dtype=np.uint8)
+            for ch in range(4):
+                spec[:, :, ch] = cv2.resize(spec_small[:, :, ch].astype(np.float32), (w, h), interpolation=cv2.INTER_LINEAR).astype(np.uint8)
+            return spec
+        return spec_small
     def paint_fn(paint, shape, mask, seed, pm, bb):
+        if hasattr(bb, "ndim") and bb.ndim == 2: bb = bb[:, :, np.newaxis]
         """Halo patterns: COLORSHOXX-style color zones married to halo dist field.
         UPGRADED: Was sheen/darken-only. Now creates real color zones:
         - Center (low dist): warm color push (amber/gold glow) + brightening
         - Outer zone (high dist): cool shadow push (desaturate, darken, retain blue)
         - Halo rim (inner_halo edge): bright warm-white rim highlight"""
+        if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
         h, w = shape
-        dist = _compute_halo_dist(shape, seed)
+        # --- Resolution cap: compute halo dist at 512 max, upscale ---
+        ds = max(1, min(h, w) // 1024)
+        sh, sw = max(64, h // ds), max(64, w // ds)
+        dist_s = _compute_halo_dist((sh, sw), seed)
+        dist = cv2.resize(dist_s, (w, h), interpolation=cv2.INTER_LINEAR) if ds > 1 else dist_s
         center, inner_halo, outer_glow = _compute_halo_zones(dist)
         halo_glow = np.clip(inner_halo + outer_glow * 0.6, 0, 1)
+        micro = _noise((h, w), [1, 2, 3, 5], [0.34, 0.30, 0.22, 0.14], seed + seed_offset + 51)
+        micro = np.clip((micro + 1.0) * 0.5, 0, 1)
+        dust = np.clip((micro - 0.60) / 0.40, 0, 1) * np.clip(0.22 + halo_glow * 0.78, 0, 1)
         result = paint.copy()
         # Use inverted dist as pv: center=high, outer=low
         pv = np.clip(1.0 - dist, 0, 1)
@@ -2827,6 +3627,9 @@ def _make_halo_fusion(center_m, halo_m, base_g, base_cc, pattern_type, seed_offs
         result[:,:,0] = np.clip(result[:,:,0] + rim * mask * 1.05, 0, 1)
         result[:,:,1] = np.clip(result[:,:,1] + rim * mask * 1.00, 0, 1)
         result[:,:,2] = np.clip(result[:,:,2] + rim * mask * 0.85, 0, 1)
+        result[:,:,0] = np.clip(result[:,:,0] + dust * mask * pm * 0.070, 0, 1)
+        result[:,:,1] = np.clip(result[:,:,1] + dust * mask * pm * 0.062, 0, 1)
+        result[:,:,2] = np.clip(result[:,:,2] + dust * mask * pm * 0.052, 0, 1)
 
         result = np.clip(result + bb * 0.25 * mask[:,:,np.newaxis], 0, 1)
         return result
@@ -2853,12 +3656,18 @@ def _make_wave_fusion(base_m, r_min, r_max, wave_type, base_cc, seed_offset=0):
     Each wave type uses a different physical model for unique visual character."""
     if _FF_V2 is not None:
         return _adapt_staging_factory_result(_FF_V2._make_wave_fusion(base_m, r_min, r_max, wave_type, base_cc, seed_offset))
+
+    def _wave_noise(shape, scales, weights, seed):
+        return _multiscale_smooth_noise(shape, scales, weights, seed)
+
     def _compute_wave(shape, yf, xf, seed):
         """Compute wave field 0-1 based on wave_type with domain warping."""
         h, w = shape
-        # Domain warp for organic feel
-        warp1 = _noise(shape, [32, 64, 128], [0.3, 0.4, 0.3], seed + seed_offset + 800)
-        warp2 = _noise(shape, [24, 48, 96], [0.3, 0.4, 0.3], seed + seed_offset + 801)
+        # Domain warp for organic feel. Use interpolated material fields here:
+        # the cached global noise path is nearest-neighbor and reads as square
+        # cells when these waves are used directly in paint/spec maps.
+        warp1 = _wave_noise(shape, [18, 36, 72], [0.32, 0.40, 0.28], seed + seed_offset + 800)
+        warp2 = _wave_noise(shape, [20, 40, 80], [0.30, 0.42, 0.28], seed + seed_offset + 801)
         warp_str = min(h, w) * 0.08
         yw = yf + warp1 * warp_str
         xw = xf + warp2 * warp_str
@@ -2889,12 +3698,12 @@ def _make_wave_fusion(base_m, r_min, r_max, wave_type, base_cc, seed_offset=0):
 
         elif wave_type == "high":
             # Capillary wave turbulence: high-freq noise modulated by large-scale envelope
-            envelope = _noise(shape, [64, 128], [0.5, 0.5], seed + seed_offset + 300)
+            envelope = _wave_noise(shape, [9, 18], [0.54, 0.46], seed + seed_offset + 300)
             envelope = np.clip(envelope * 0.5 + 0.7, 0.2, 1.0)
             cap1 = np.sin(yw * 0.12 + xw * 0.06) * 0.3
             cap2 = np.sin(yw * 0.08 - xw * 0.10) * 0.25
             cap3 = np.sin(yw * 0.15 + xw * 0.13) * 0.2
-            fine = _noise(shape, [2, 4, 8], [0.3, 0.4, 0.3], seed + seed_offset + 301) * 0.15
+            fine = _wave_noise(shape, [2, 4, 8], [0.34, 0.38, 0.28], seed + seed_offset + 301) * 0.15
             wave = np.clip((cap1 + cap2 + cap3 + fine) * envelope + 0.5, 0, 1)
 
         elif wave_type == "dual":
@@ -2923,19 +3732,22 @@ def _make_wave_fusion(base_m, r_min, r_max, wave_type, base_cc, seed_offset=0):
             wave = np.clip(wave * decay, 0, 1)
 
         elif wave_type == "radial":
-            # Airy function (diffraction pattern) from center point
+            # Layered annular current/radar waves. The older Airy-only field
+            # over-weighted the center and read as a single blob on a paint
+            # panel; these rings keep the radial identity across the canvas.
             cy, cx = h / 2.0, w / 2.0
             dist = np.sqrt((yw - cy)**2 + (xw - cx)**2) + 1e-6
-            x_norm = dist * 0.08
-            airy = np.sin(x_norm) / (x_norm + 0.1)
-            airy_intensity = airy ** 2
-            wave = np.clip(airy_intensity / (np.max(airy_intensity) + 1e-6), 0, 1)
-            # Secondary source for complexity
+            ring_a = (np.sin(dist * 0.145 + seed_offset * 0.01) * 0.5 + 0.5) ** 1.8
+            ring_b = (np.sin(dist * 0.082 + seed * 0.017) * 0.5 + 0.5) ** 1.3
+            fade = np.clip(1.05 - dist / (max(h, w) * 0.82), 0.18, 1.0)
             cy2, cx2 = h * 0.35, w * 0.65
             dist2 = np.sqrt((yw - cy2)**2 + (xw - cx2)**2) + 1e-6
-            x2 = dist2 * 0.06
-            airy2 = (np.sin(x2) / (x2 + 0.1)) ** 2
-            wave = np.clip(wave + airy2 / (np.max(airy2) + 1e-6) * 0.4, 0, 1)
+            offset_ring = (np.sin(dist2 * 0.105 + 1.2) * 0.5 + 0.5) ** 1.5
+            theta = np.arctan2(yw - cy, xw - cx)
+            sweep = (np.sin(theta * 5.0 + dist * 0.028 + seed * 0.013) * 0.5 + 0.5) * 0.45
+            center_relief = np.clip(dist / (min(h, w) * 0.16), 0.0, 1.0)
+            wave = _fusion_norm01((ring_a * 0.42 + ring_b * 0.24) * fade + offset_ring * 0.22 + sweep * 0.12)
+            wave = np.clip(wave * (0.72 + center_relief * 0.28), 0, 1)
 
         elif wave_type == "chaotic":
             # Lorenz attractor-mapped roughness: chaotic but deterministic
@@ -2959,9 +3771,7 @@ def _make_wave_fusion(base_m, r_min, r_max, wave_type, base_cc, seed_offset=0):
                 py = int(np.clip(tx_norm[i] * (h - 1), 0, h - 1))
                 px = int(np.clip(tz_norm[i] * (w - 1), 0, w - 1))
                 canvas[max(0,py-1):min(h,py+2), max(0,px-1):min(w,px+2)] += 0.15
-            img_blur = Image.fromarray(np.clip(canvas * 255, 0, 255).astype(np.uint8))
-            img_blur = img_blur.filter(ImageFilter.GaussianBlur(radius=5))
-            wave = np.array(img_blur).astype(np.float32) / 255.0
+            wave = cv2.GaussianBlur(np.clip(canvas, 0, 1).astype(np.float32), (11, 11), 5.0)
             wave = np.clip(wave, 0, 1)
 
         elif wave_type == "standing":
@@ -2992,7 +3802,17 @@ def _make_wave_fusion(base_m, r_min, r_max, wave_type, base_cc, seed_offset=0):
             wave = np.clip(moire * 0.6 + moire2 * 0.4, 0, 1)
         else:
             wave = np.ones((h, w), dtype=np.float32) * 0.5
-        return wave
+
+        capillary = (
+            np.sin(yw * 0.31 + xw * 0.17 + (seed_offset % 31)) * 0.5
+            + np.sin(yw * -0.19 + xw * 0.27 + (seed % 17)) * 0.35
+            + np.sin((yw + xw) * 0.11 + (seed_offset % 23)) * 0.15
+        )
+        capillary = np.clip(capillary * 0.5 + 0.5, 0, 1)
+        grain = np.clip(_wave_noise(shape, [1, 2, 4], [0.44, 0.34, 0.22], seed + seed_offset + 930) * 0.5 + 0.5, 0, 1)
+        crest = np.clip(1.0 - np.abs(wave - 0.5) * 1.8, 0, 1)
+        wave = np.clip(wave * 0.84 + capillary * crest * 0.10 + grain * crest * 0.06, 0, 1)
+        return wave.astype(np.float32)
 
     def spec_fn(shape, mask, seed, sm):
         h, w = shape
@@ -3003,12 +3823,12 @@ def _make_wave_fusion(base_m, r_min, r_max, wave_type, base_cc, seed_offset=0):
         G = r_min + wave * (r_max - r_min) * sm
         # M tracks wave peaks: high M at crests = bright reflections
         M = np.clip(float(base_m) + (wave - 0.3) * 60 * sm, 0, 255)
-        n = _noise(shape, [4, 8], [0.5, 0.5], seed + seed_offset + 50)
+        n = _wave_noise(shape, [18, 36], [0.54, 0.46], seed + seed_offset + 50)
         M = M + n * 12 * sm
         # CC tracks wave inversely: smooth crests vs hazed troughs
         B = np.clip(float(base_cc) + (1 - wave) * 35 * sm, 16, 255)
         # Fine-scale texture riding the waves (more in troughs)
-        n_fine = _noise(shape, [2, 4, 8], [0.3, 0.4, 0.3], seed + seed_offset + 150)
+        n_fine = _wave_noise(shape, [2, 4, 8], [0.34, 0.38, 0.28], seed + seed_offset + 150)
         G = G + n_fine * 15 * sm * (1 - wave)
         # Wave crest highlight via gradient energy
         wave_dx = np.abs(np.diff(wave, axis=1, prepend=wave[:, :1]))
@@ -3019,40 +3839,43 @@ def _make_wave_fusion(base_m, r_min, r_max, wave_type, base_cc, seed_offset=0):
         return _spec_out(shape, mask, M, G, B)
 
     def paint_fn(paint, shape, mask, seed, pm, bb):
+        if hasattr(bb, "ndim") and bb.ndim == 2: bb = bb[:, :, np.newaxis]
         """Wave patterns: COLORSHOXX-style color zones married to wave field.
         UPGRADED: Was brightness/shimmer-only. Now creates real color zones:
         - Wave crests (high pv): warm color push (amber/gold tint) + brightening
         - Wave troughs (low pv): cool shadow push (desaturate toward grey, darken, retain blue)
         - Edges (Sobel): bright warm-white rim highlight"""
+        if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
         h, w = shape
         y, x = _mgrid(shape)
         yf, xf = y.astype(np.float32), x.astype(np.float32)
         wave = _compute_wave(shape, yf, xf, seed)
+        wave_vis = _fusion_norm01(wave)
         result = paint.copy()
 
         # --- High-pv zones (crests): warm color push + brightening ---
-        crest = np.clip((wave - 0.4) * 2.5, 0, 1).astype(np.float32)
-        warm_blend = crest * 0.22 * pm
+        crest = np.clip((wave_vis - 0.38) * 2.8, 0, 1).astype(np.float32)
+        warm_blend = crest * 0.28 * pm
         result[:,:,0] = np.clip(result[:,:,0] + warm_blend * mask * 0.12, 0, 1)   # warm red push
-        result[:,:,1] = np.clip(result[:,:,1] + warm_blend * mask * 0.06, 0, 1)   # slight gold
-        result[:,:,2] = np.clip(result[:,:,2] - warm_blend * mask * 0.04, 0, 1)   # reduce blue = warmer
-        bright = crest * 0.18 * pm
+        result[:,:,1] = np.clip(result[:,:,1] + warm_blend * mask * 0.08, 0, 1)   # slight gold
+        result[:,:,2] = np.clip(result[:,:,2] - warm_blend * mask * 0.05, 0, 1)   # reduce blue = warmer
+        bright = crest * 0.22 * pm
         for c in range(3):
             result[:,:,c] = np.clip(result[:,:,c] + bright * mask, 0, 1)
 
         # --- Low-pv zones (troughs): cool desaturation + darkening ---
-        trough = np.clip((0.3 - wave) * 3.0, 0, 1).astype(np.float32)
+        trough = np.clip((0.36 - wave_vis) * 3.1, 0, 1).astype(np.float32)
         gray = (result[:,:,0] * 0.299 + result[:,:,1] * 0.587 + result[:,:,2] * 0.114)
-        cool_desat = trough * 0.20 * pm
-        result[:,:,0] = np.clip(result[:,:,0] * (1 - cool_desat * mask) + gray * cool_desat * mask - trough * 0.06 * pm * mask, 0, 1)
-        result[:,:,1] = np.clip(result[:,:,1] * (1 - cool_desat * mask) + gray * cool_desat * mask - trough * 0.04 * pm * mask, 0, 1)
-        result[:,:,2] = np.clip(result[:,:,2] * (1 - cool_desat * mask * 0.7) + gray * cool_desat * mask * 0.7 + trough * 0.03 * pm * mask, 0, 1)
+        cool_desat = trough * 0.24 * pm
+        result[:,:,0] = np.clip(result[:,:,0] * (1 - cool_desat * mask) + gray * cool_desat * mask - trough * 0.08 * pm * mask, 0, 1)
+        result[:,:,1] = np.clip(result[:,:,1] * (1 - cool_desat * mask) + gray * cool_desat * mask - trough * 0.05 * pm * mask, 0, 1)
+        result[:,:,2] = np.clip(result[:,:,2] * (1 - cool_desat * mask * 0.7) + gray * cool_desat * mask * 0.7 + trough * 0.05 * pm * mask, 0, 1)
 
         # --- Edges (Sobel): bright warm-white rim highlight ---
-        wave_dx = np.abs(np.diff(wave, axis=1, prepend=wave[:, :1]))
-        wave_dy = np.abs(np.diff(wave, axis=0, prepend=wave[:1, :]))
-        edge = np.clip(np.sqrt(wave_dx**2 + wave_dy**2) * 8, 0, 1)
-        rim = edge * 0.20 * pm
+        wave_dx = np.abs(np.diff(wave_vis, axis=1, prepend=wave_vis[:, :1]))
+        wave_dy = np.abs(np.diff(wave_vis, axis=0, prepend=wave_vis[:1, :]))
+        edge = np.clip(np.sqrt(wave_dx**2 + wave_dy**2) * 5.5, 0, 1)
+        rim = edge * 0.26 * pm
         result[:,:,0] = np.clip(result[:,:,0] + rim * mask * 1.05, 0, 1)
         result[:,:,1] = np.clip(result[:,:,1] + rim * mask * 1.00, 0, 1)
         result[:,:,2] = np.clip(result[:,:,2] + rim * mask * 0.85, 0, 1)
@@ -3079,8 +3902,13 @@ spec_wave_moire_metal, paint_wave_moire_metal = _make_wave_fusion(200, 8, 70, "m
 # ================================================================
 
 # 1. FRACTAL CHROME DECAY - Mandelbrot set edge detection drives metallic decay
+_mandelbrot_cache = {}
+
 def _mandelbrot_field(shape, cx=-0.75, cy=0.0, zoom=1.2, max_iter=80, seed=0):
-    """Compute Mandelbrot escape-time field mapped onto shape."""
+    """Compute Mandelbrot escape-time field mapped onto shape. Cached."""
+    _key = (shape, cx, cy, zoom, max_iter, seed)
+    if _key in _mandelbrot_cache:
+        return _mandelbrot_cache[_key]
     h, w = shape
     rng = np.random.RandomState(seed)
     cx += rng.uniform(-0.3, 0.3)
@@ -3097,11 +3925,36 @@ def _mandelbrot_field(shape, cx=-0.75, cy=0.0, zoom=1.2, max_iter=80, seed=0):
         z = np.where(mask_active, z * z + c, z)
         newly_escaped = (np.abs(z) > 2.0) & (escape == max_iter)
         escape[newly_escaped] = i + 1 - np.log2(np.log2(np.abs(z[newly_escaped]).astype(np.float64) + 1e-10)).astype(np.float32)
-    return np.clip(escape / max_iter, 0, 1).astype(np.float32)
+    result = np.clip(escape / max_iter, 0, 1).astype(np.float32)
+    if len(_mandelbrot_cache) > 4:
+        _mandelbrot_cache.pop(next(iter(_mandelbrot_cache)))
+    _mandelbrot_cache[_key] = result
+    return result
+
+def _fractal_surface_grain(shape, seed, scales=(3, 6, 14), weights=(0.55, 0.3, 0.2)):
+    """Fine-grain detail texture for fractal-silhouette finishes.
+
+    The fractal generators (Mandelbrot/Julia/Sierpinski/cascade) carve a
+    distinctive REGIONAL silhouette across the canvas, but inside each
+    region the original generators set spec/paint to flat regional
+    constants. At 2048-painter resolution this reads as two giant
+    flat-color zones with a fractal boundary — exactly the "broad blob /
+    giant cell" complaint from the user's Item 3 brief.
+
+    This helper returns a smooth fine-grain noise field in [0, 1] that
+    can be multiplied into the regional spec/paint to add surface
+    micro-variation WITHOUT erasing the fractal silhouette identity that
+    makes each finish unique.
+    """
+    return (_multiscale_smooth_noise(shape, list(scales), list(weights), seed) + 1.0) * 0.5
+
 
 def _spec_fractal_chrome_decay(shape, mask, seed, sm):
     h, w = shape
-    fractal = _mandelbrot_field(shape, seed=seed + 8200)
+    # --- Resolution cap: compute fractal at 512 max ---
+    ds = max(1, min(h, w) // 1024)
+    sh, sw = max(64, h // ds), max(64, w // ds)
+    fractal = _mandelbrot_field((sh, sw), seed=seed + 8200)
     # Edge detection: gradient magnitude of fractal field reveals boundary
     gy = np.diff(fractal, axis=0, prepend=fractal[:1, :])
     gx = np.diff(fractal, axis=1, prepend=fractal[:, :1])
@@ -3109,22 +3962,47 @@ def _spec_fractal_chrome_decay(shape, mask, seed, sm):
     # Deep fractal (high iteration) = surviving chrome; low = corroded matte
     chrome = np.power(fractal, 0.7)
     decay_mix = chrome * (1.0 - edge * 0.6)
-    M = np.clip(decay_mix * 255 * sm + (1 - decay_mix) * 5, 0, 255)
-    G = np.clip((1 - decay_mix) * 220 * sm + decay_mix * 2, 0, 255)
-    CC = np.clip(decay_mix * 16 + (1 - decay_mix) * 200 + edge * 80, 16, 255)
-    return _spec_out(shape, mask, M, G, CC)
+    # 2026-04-25 — fine-grain surface texture inside the fractal regions to
+    # break up flat coverage at painter resolutions (Item 3 broad-blob fix).
+    grain = _fractal_surface_grain((sh, sw), seed + 8201)
+    M = np.clip((decay_mix * 255 * sm + (1 - decay_mix) * 5) * (0.85 + 0.30 * grain), 0, 255)
+    G = np.clip(((1 - decay_mix) * 220 * sm + decay_mix * 2) * (0.85 + 0.30 * (1.0 - grain)), 0, 255)
+    CC = np.clip(decay_mix * 16 + (1 - decay_mix) * 200 + edge * 80 + (grain - 0.5) * 24, 16, 255)
+    mask_s = cv2.resize(mask.astype(np.float32), (sw, sh), interpolation=cv2.INTER_LINEAR) if ds > 1 else mask
+    spec_small = _spec_out((sh, sw), mask_s, M, G, CC)
+    if ds > 1:
+        spec = np.zeros((h, w, 4), dtype=np.uint8)
+        for ch in range(4):
+            spec[:,:,ch] = cv2.resize(spec_small[:,:,ch].astype(np.float32), (w, h), interpolation=cv2.INTER_LINEAR).astype(np.uint8)
+        return spec
+    return spec_small
 
 def _paint_fractal_chrome_decay(paint, shape, mask, seed, pm, bb):
-    fractal = _mandelbrot_field(shape, seed=seed + 8200)
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
+    h, w = shape
+    # --- Resolution cap: compute fractal at 512 max ---
+    ds = max(1, min(h, w) // 1024)
+    sh, sw = max(64, h // ds), max(64, w // ds)
+    fractal = _mandelbrot_field((sh, sw), seed=seed + 8200)
+    if ds > 1:
+        fractal = cv2.resize(fractal, (w, h), interpolation=cv2.INTER_LINEAR)
     corrosion = (1 - fractal)
     chrome = np.power(fractal, 0.7)
+    # 2026-04-25 — fine-grain modulation breaks up the flat chrome/decay
+    # regions inside the fractal silhouette so painters see actual surface
+    # texture at 2048 resolution (Item 3 broad-blob fix).
+    grain = _fractal_surface_grain((h, w), seed + 8202)
+    grain_centered = (grain - 0.5) * 2.0  # [-1, 1]
     result = paint.copy()
-    # Increased coefficients + brightness variation (chrome bright, decay dark)
-    bright = chrome * 0.15 * pm
-    dark = corrosion * 0.10 * pm
-    result[:,:,0] = np.clip(paint[:,:,0] + corrosion * 0.28 * pm * mask + bright * mask - dark * mask, 0, 1)
-    result[:,:,1] = np.clip(paint[:,:,1] - corrosion * 0.12 * pm * mask + fractal * 0.08 * pm * mask + bright * mask - dark * mask, 0, 1)
-    result[:,:,2] = np.clip(paint[:,:,2] - corrosion * 0.22 * pm * mask + bright * mask - dark * mask, 0, 1)
+    # Increased coefficients + brightness variation (chrome bright, decay dark),
+    # each modulated by grain so the surfaces aren't flat at high resolution.
+    bright = chrome * 0.15 * pm * (1.0 + grain_centered * 0.35)
+    dark = corrosion * 0.10 * pm * (1.0 + grain_centered * 0.35)
+    corr_mod = corrosion * (1.0 + grain_centered * 0.30)
+    fract_mod = fractal * (1.0 + grain_centered * 0.20)
+    result[:,:,0] = np.clip(paint[:,:,0] + corr_mod * 0.28 * pm * mask + bright * mask - dark * mask, 0, 1)
+    result[:,:,1] = np.clip(paint[:,:,1] - corr_mod * 0.12 * pm * mask + fract_mod * 0.08 * pm * mask + bright * mask - dark * mask, 0, 1)
+    result[:,:,2] = np.clip(paint[:,:,2] - corr_mod * 0.22 * pm * mask + bright * mask - dark * mask, 0, 1)
     return result
 
 spec_fractal_chrome_decay = _spec_fractal_chrome_decay
@@ -3153,19 +4031,22 @@ def _julia_field(shape, seed=0, max_iter=60):
 
 def _spec_fractal_candy_chaos(shape, mask, seed, sm):
     h, w = shape
+    # --- Resolution cap: compute at 512 max ---
+    ds = max(1, min(h, w) // 1024)
+    sh, sw = max(64, h // ds), max(64, w // ds)
     rng = np.random.RandomState(seed + 8210)
-    julia = _julia_field(shape, seed=seed + 8210)
+    julia = _julia_field((sh, sw), seed=seed + 8210)
     # Use Julia field as domain warp for Voronoi
     n_pts = 30
-    pts_y = rng.uniform(0, h, n_pts).astype(np.float32)
-    pts_x = rng.uniform(0, w, n_pts).astype(np.float32)
-    y_g, x_g = _mgrid(shape)
-    warp_strength = julia * 40
+    pts_y = rng.uniform(0, sh, n_pts).astype(np.float32)
+    pts_x = rng.uniform(0, sw, n_pts).astype(np.float32)
+    y_g, x_g = _mgrid((sh, sw))
+    warp_strength = julia * 40 * sh / h
     yf = y_g.astype(np.float32) + warp_strength
     xf = x_g.astype(np.float32) + warp_strength * 0.8
-    min_d = np.full((h, w), 1e9, np.float32)
-    min_d2 = np.full((h, w), 1e9, np.float32)
-    cell_id = np.zeros((h, w), dtype=np.int32)
+    min_d = np.full((sh, sw), 1e9, np.float32)
+    min_d2 = np.full((sh, sw), 1e9, np.float32)
+    cell_id = np.zeros((sh, sw), dtype=np.int32)
     for idx, (py, px) in enumerate(zip(pts_y, pts_x)):
         d = (yf - py)**2 + (xf - px)**2
         new_min2 = np.where(d < min_d, min_d, np.where(d < min_d2, d, min_d2))
@@ -3179,26 +4060,42 @@ def _spec_fractal_candy_chaos(shape, mask, seed, sm):
     cell_r = rng.uniform(10, 180, n_pts).astype(np.float32)
     M_base = cell_m[cell_id]
     R_base = cell_r[cell_id]
-    # Fractal chrome borders at edges
-    M = np.clip(M_base * (1 - edge) + 255 * edge, 0, 255) * sm
-    G = np.clip(R_base * (1 - edge) + 2 * edge, 0, 255)
-    CC = np.clip(edge * 16 + (1 - edge) * 120, 16, 255)
-    return _spec_out(shape, mask, M, G, CC)
+    # 2026-04-25 — fine-grain inside Voronoi candy cells so each cell has
+    # surface character at painter resolution instead of being a flat blob
+    # (Item 3 broad-blob fix, large_blob_ratio was 0.51).
+    grain = _fractal_surface_grain((sh, sw), seed + 8211)
+    grain_centered = (grain - 0.5) * 2.0  # [-1, 1]
+    # Fractal chrome borders at edges; per-cell candy with grain modulation.
+    M = np.clip((M_base * (1 - edge) + 255 * edge) * (0.85 + 0.30 * grain), 0, 255) * sm
+    G = np.clip((R_base * (1 - edge) + 2 * edge) * (0.85 + 0.30 * (1.0 - grain)), 0, 255)
+    CC = np.clip(edge * 16 + (1 - edge) * 120 + grain_centered * 24, 16, 255)
+    mask_s = cv2.resize(mask.astype(np.float32), (sw, sh), interpolation=cv2.INTER_LINEAR) if ds > 1 else mask
+    spec_small = _spec_out((sh, sw), mask_s, M, G, CC)
+    if ds > 1:
+        spec = np.zeros((h, w, 4), dtype=np.uint8)
+        for ch in range(4):
+            spec[:,:,ch] = cv2.resize(spec_small[:,:,ch].astype(np.float32), (w, h), interpolation=cv2.INTER_LINEAR).astype(np.uint8)
+        return spec
+    return spec_small
 
 def _paint_fractal_candy_chaos(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     h, w = shape
+    # --- Resolution cap: compute Julia+Voronoi at 512 max ---
+    ds = max(1, min(h, w) // 1024)
+    sh, sw = max(64, h // ds), max(64, w // ds)
     rng = np.random.RandomState(seed + 8210)
-    julia = _julia_field(shape, seed=seed + 8210)
+    julia = _julia_field((sh, sw), seed=seed + 8210)
     # Rebuild Voronoi cell_id for per-cell candy coloring
     n_pts = 30
-    pts_y = rng.uniform(0, h, n_pts).astype(np.float32)
-    pts_x = rng.uniform(0, w, n_pts).astype(np.float32)
-    y_g, x_g = _mgrid(shape)
-    warp_strength = julia * 40
+    pts_y = rng.uniform(0, sh, n_pts).astype(np.float32)
+    pts_x = rng.uniform(0, sw, n_pts).astype(np.float32)
+    y_g, x_g = _mgrid((sh, sw))
+    warp_strength = julia * 40 * sh / h
     yf = y_g.astype(np.float32) + warp_strength
     xf = x_g.astype(np.float32) + warp_strength * 0.8
-    min_d = np.full((h, w), 1e9, np.float32)
-    cell_id = np.zeros((h, w), dtype=np.int32)
+    min_d = np.full((sh, sw), 1e9, np.float32)
+    cell_id = np.zeros((sh, sw), dtype=np.int32)
     for idx, (py, px) in enumerate(zip(pts_y, pts_x)):
         d = (yf - py)**2 + (xf - px)**2
         closer = d < min_d
@@ -3207,11 +4104,19 @@ def _paint_fractal_candy_chaos(paint, shape, mask, seed, pm, bb):
     # Assign unique candy hue per cell using golden ratio spacing
     cell_hues = np.array([(i * 0.618033988749895) % 1.0 for i in range(n_pts)], dtype=np.float32)
     pixel_hue = cell_hues[cell_id]
-    # Per-cell candy color shift
+    # Upscale pixel_hue to full resolution
+    if ds > 1:
+        pixel_hue = cv2.resize(pixel_hue, (w, h), interpolation=cv2.INTER_NEAREST)
+    # 2026-04-25 — fine-grain inside cells so candy color isn't flat
+    # at painter resolution (Item 3 broad-blob fix).
+    grain = _fractal_surface_grain((h, w), seed + 8212)
+    grain_centered = (grain - 0.5) * 2.0
+    # Per-cell candy color shift, modulated by grain so each cell has
+    # internal surface variation rather than uniform color blocks.
     result = paint.copy()
-    result[:,:,0] = np.clip(paint[:,:,0] + np.sin(pixel_hue * 6.2832) * 0.18 * pm * mask, 0, 1)
-    result[:,:,1] = np.clip(paint[:,:,1] + np.sin(pixel_hue * 6.2832 + 2.094) * 0.14 * pm * mask, 0, 1)
-    result[:,:,2] = np.clip(paint[:,:,2] + np.sin(pixel_hue * 6.2832 + 4.189) * 0.18 * pm * mask, 0, 1)
+    result[:,:,0] = np.clip(paint[:,:,0] + np.sin(pixel_hue * 6.2832) * 0.18 * pm * mask * (1.0 + grain_centered * 0.30), 0, 1)
+    result[:,:,1] = np.clip(paint[:,:,1] + np.sin(pixel_hue * 6.2832 + 2.094) * 0.14 * pm * mask * (1.0 + grain_centered * 0.30), 0, 1)
+    result[:,:,2] = np.clip(paint[:,:,2] + np.sin(pixel_hue * 6.2832 + 4.189) * 0.18 * pm * mask * (1.0 + grain_centered * 0.30), 0, 1)
     return result
 
 spec_fractal_candy_chaos = _spec_fractal_candy_chaos
@@ -3228,13 +4133,13 @@ def _domain_warped_fbm(shape, seed, octaves=8):
     w1a = _noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + 100)
     w1b = _noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + 200)
     # Layer 2 warp (warps the warp)
-    w2a = _noise(shape, [24, 48], [0.5, 0.5], seed + 300)
-    w2b = _noise(shape, [24, 48], [0.5, 0.5], seed + 400)
+    w2a = _noise(shape, [16, 32], [0.5, 0.5], seed + 300)
+    w2b = _noise(shape, [16, 32], [0.5, 0.5], seed + 400)
     w1a = w1a + w2a * 0.5
     w1b = w1b + w2b * 0.5
     # Layer 3 warp (warps the warp of the warp)
-    w3a = _noise(shape, [32, 64, 128], [0.3, 0.4, 0.3], seed + 500)
-    w3b = _noise(shape, [32, 64, 128], [0.3, 0.4, 0.3], seed + 600)
+    w3a = _noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + 500)
+    w3b = _noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + 600)
     w1a = w1a + w3a * 0.3
     w1b = w1b + w3b * 0.3
     # Warped coordinates
@@ -3246,8 +4151,8 @@ def _domain_warped_fbm(shape, seed, octaves=8):
     total_amp = 0.0
     for i in range(octaves):
         freq = 2 ** (i + 1)
-        n = np.sin(yw * freq * 6.28 + _noise(shape, [max(2, 64 >> i)], [1.0], seed + 700 + i * 37) * 2) * \
-            np.cos(xw * freq * 4.71 + _noise(shape, [max(2, 64 >> i)], [1.0], seed + 800 + i * 41) * 2)
+        n = np.sin(yw * freq * 6.28 + _noise(shape, [max(2, 16 >> i)], [1.0], seed + 700 + i * 37) * 2) * \
+            np.cos(xw * freq * 4.71 + _noise(shape, [max(2, 16 >> i)], [1.0], seed + 800 + i * 41) * 2)
         fbm += n * amp
         total_amp += amp
         amp *= 0.55
@@ -3264,6 +4169,7 @@ def _spec_fractal_pearl_cloud(shape, mask, seed, sm):
     return _spec_out(shape, mask, M, G, CC)
 
 def _paint_fractal_pearl_cloud(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     cloud = _domain_warped_fbm(shape, seed + 8220)
     # Iridescent multi-frequency pearl shimmer: 3 sine harmonics
     h1 = np.sin(cloud * 4.0)
@@ -3305,6 +4211,7 @@ def _spec_fractal_metallic_storm(shape, mask, seed, sm):
     return _spec_out(shape, mask, M, G, CC)
 
 def _paint_fractal_metallic_storm(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     storm = _kolmogorov_cascade(shape, seed + 8230)
     result = paint.copy()
     # Storm-driven contrast + warm/cool split instead of brightness-only
@@ -3356,7 +4263,7 @@ def _sierpinski_field(shape, seed, depth=8):
 def _spec_fractal_matte_chrome(shape, mask, seed, sm):
     h, w = shape
     sierp = _sierpinski_field(shape, seed + 8240)
-    boundary_noise = _noise(shape, [4, 8, 16], [0.3, 0.4, 0.3], seed + 8241)
+    boundary_noise = _noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + 8241)
     sierp_soft = np.clip(sierp + boundary_noise * 0.08, 0, 1)
     M = np.clip(sierp_soft * 255 * sm, 0, 255)
     G = np.clip((1 - sierp_soft) * 230 + sierp_soft * 2, 0, 255)
@@ -3364,6 +4271,7 @@ def _spec_fractal_matte_chrome(shape, mask, seed, sm):
     return _spec_out(shape, mask, M, G, CC)
 
 def _paint_fractal_matte_chrome(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     sierp = _sierpinski_field(shape, seed + 8240)
     matte = 1.0 - sierp
     result = paint.copy()
@@ -3385,13 +4293,22 @@ spec_fractal_matte_chrome = _spec_fractal_matte_chrome
 paint_fractal_matte_chrome = _paint_fractal_matte_chrome
 
 # 6. FRACTAL WARM COLD - Reaction-diffusion Gray-Scott Turing patterns
+_gray_scott_cache = {}
+
 def _gray_scott_field(shape, seed, iterations=5):
     """Simplified Gray-Scott reaction-diffusion creating Turing patterns.
-    Simulation runs at min 128x128 to ensure convergence at small preview sizes."""
+    OPTIMIZED: Simulates at 256x256 max then upscales — Turing patterns are smooth
+    and upscale perfectly. Was running at full 2048x2048 (1000 iterations × 10 ops = ~160GB of array ops).
+    Cached so spec_fn and paint_fn share the same result."""
     h, w = shape
-    # Ensure minimum simulation resolution for Turing pattern convergence
-    min_sim = 128
-    sim_h, sim_w = max(h, min_sim), max(w, min_sim)
+    _key = (shape, seed, iterations)
+    if _key in _gray_scott_cache:
+        return _gray_scott_cache[_key]
+
+    # Simulate at capped resolution — 256 is enough for Turing pattern detail
+    max_sim = 256
+    sim_h = min(h, max_sim)
+    sim_w = min(w, max_sim)
     need_resize = (sim_h != h or sim_w != w)
     rng = np.random.RandomState(seed)
     sim_shape = (sim_h, sim_w)
@@ -3417,9 +4334,13 @@ def _gray_scott_field(shape, seed, iterations=5):
             U = np.clip(U, 0, 1)
             V = np.clip(V, 0, 1)
     if need_resize:
-        U = np.array(Image.fromarray((U * 255).astype(np.uint8)).resize((w, h), Image.BILINEAR)).astype(np.float32) / 255.0
-        V = np.array(Image.fromarray((V * 255).astype(np.uint8)).resize((w, h), Image.BILINEAR)).astype(np.float32) / 255.0
-    return U, V
+        U = cv2.resize(U, (w, h), interpolation=cv2.INTER_LINEAR)
+        V = cv2.resize(V, (w, h), interpolation=cv2.INTER_LINEAR)
+    result = (U, V)
+    if len(_gray_scott_cache) > 4:
+        _gray_scott_cache.pop(next(iter(_gray_scott_cache)))
+    _gray_scott_cache[_key] = result
+    return result
 
 def _spec_fractal_warm_cold(shape, mask, seed, sm):
     h, w = shape
@@ -3431,6 +4352,7 @@ def _spec_fractal_warm_cold(shape, mask, seed, sm):
     return _spec_out(shape, mask, M, G, CC)
 
 def _paint_fractal_warm_cold(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     U, V = _gray_scott_field(shape, seed + 8250)
     blend = np.clip(V * 2.0, 0, 1)
     result = paint.copy()
@@ -3443,9 +4365,14 @@ spec_fractal_warm_cold = _spec_fractal_warm_cold
 paint_fractal_warm_cold = _paint_fractal_warm_cold
 
 # 7. FRACTAL DEEP ORGANIC - Multi-scale ridge noise with rotated octaves
+_ridge_fbm_cache = {}
+
 def _rotated_ridge_fbm(shape, seed, octaves=6):
     """Ridge noise (1-|noise|) accumulated across octaves with 30deg rotation per octave.
-    Uses rotated coordinates to warp the noise sampling via domain offset."""
+    Cached so spec+paint share result."""
+    _key = (shape, seed, octaves)
+    if _key in _ridge_fbm_cache:
+        return _ridge_fbm_cache[_key]
     h, w = shape
     y_g, x_g = _mgrid(shape)
     yn = y_g.astype(np.float32) / max(h, w)
@@ -3461,7 +4388,7 @@ def _rotated_ridge_fbm(shape, seed, octaves=6):
         xr = yn * sin_a + xn * cos_a
         # Use rotated coordinates as domain warp offset for the noise
         warp_offset = (yr * freq * 3.0 + xr * freq * 2.0)
-        n = _noise(shape, [max(2, int(64 / freq))], [1.0], seed + i * 53)
+        n = _noise(shape, [max(2, int(16 / freq))], [1.0], seed + i * 53)
         # Apply rotation warp: shift noise by rotated coordinate field
         n = n + np.sin(warp_offset * 6.2832) * 0.3
         ridge = 1.0 - np.abs(n)
@@ -3472,6 +4399,9 @@ def _rotated_ridge_fbm(shape, seed, octaves=6):
         freq *= 2.0
         angle += np.pi / 6.0
     ridges = np.clip(ridges / total_amp, 0, 1)
+    if len(_ridge_fbm_cache) > 4:
+        _ridge_fbm_cache.pop(next(iter(_ridge_fbm_cache)))
+    _ridge_fbm_cache[_key] = ridges
     return ridges
 
 def _spec_fractal_deep_organic(shape, mask, seed, sm):
@@ -3483,6 +4413,7 @@ def _spec_fractal_deep_organic(shape, mask, seed, sm):
     return _spec_out(shape, mask, M, G, CC)
 
 def _paint_fractal_deep_organic(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     veins = _rotated_ridge_fbm(shape, seed + 8260)
     flesh = 1.0 - veins
     result = paint.copy()
@@ -3495,9 +4426,14 @@ spec_fractal_deep_organic = _spec_fractal_deep_organic
 paint_fractal_deep_organic = _paint_fractal_deep_organic
 
 # 8. FRACTAL ELECTRIC NOISE - Diffusion-limited aggregation lightning discharge
+_dla_cache = {}
+
 def _dla_lightning(shape, seed, n_seeds=6, growth_steps=800):
     """DLA-approximated lightning: tree-like branching discharge from seed points.
-    Uses frontier list instead of np.argwhere for performance."""
+    Cached so spec+paint share result."""
+    _key = (shape, seed, n_seeds, growth_steps)
+    if _key in _dla_cache:
+        return _dla_cache[_key]
     h, w = shape
     rng = np.random.RandomState(seed)
     field = np.zeros((h, w), dtype=np.float32)
@@ -3528,29 +4464,41 @@ def _dla_lightning(shape, seed, n_seeds=6, growth_steps=800):
                     cy, cx = ny, nx
                 else:
                     cy, cx = ny, nx
-    glow = np.array(Image.fromarray((field * 255).astype(np.uint8)).filter(
-        ImageFilter.GaussianBlur(radius=3))).astype(np.float32) / 255.0
+    glow = cv2.GaussianBlur(field.astype(np.float32), (7, 7), 3.0)
     result = np.clip(field * 0.7 + glow * 0.5, 0, 1)
+    if len(_dla_cache) > 4:
+        _dla_cache.pop(next(iter(_dla_cache)))
+    _dla_cache[_key] = result
     return result
 
 def _spec_fractal_electric_noise(shape, mask, seed, sm):
     h, w = shape
     arcs = _dla_lightning(shape, seed + 8270)
-    M = np.clip(arcs * 255 * sm + (1 - arcs) * 30, 0, 255)
-    G = np.clip((1 - arcs) * 160 + arcs * 0, 0, 255)
-    CC = np.clip(arcs * 16 + (1 - arcs) * 100, 16, 255)
+    # 2026-04-25 — fine-grain across the non-arc background so the dark
+    # surrounding canvas isn't a flat blob (Item 3 broad-blob fix).
+    grain = _fractal_surface_grain(shape, seed + 8271)
+    M = np.clip((arcs * 255 * sm + (1 - arcs) * 30) * (0.85 + 0.30 * grain), 0, 255)
+    G = np.clip((1 - arcs) * 160 + arcs * 0 + (grain - 0.5) * 30, 0, 255)
+    CC = np.clip(arcs * 16 + (1 - arcs) * 100 + (grain - 0.5) * 24, 16, 255)
     return _spec_out(shape, mask, M, G, CC)
 
 def _paint_fractal_electric_noise(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     arcs = _dla_lightning(shape, seed + 8270)
     # Gaussian glow falloff instead of binary on/off
     # arcs already has blur glow from _dla_lightning; use smooth power curve
     glow_soft = np.power(arcs, 0.6)  # soften edges for gradual falloff
     glow_core = np.power(arcs, 2.0)  # bright core
+    # 2026-04-25 — fine surface grain visible on the non-arc background
+    # so the dark canvas around the lightning isn't a flat blob at painter
+    # resolution (Item 3 broad-blob fix).
+    grain = _fractal_surface_grain(shape, seed + 8272)
+    grain_centered = (grain - 0.5) * 2.0
+    bg_micro = (1.0 - arcs) * grain_centered * 0.04 * pm
     result = paint.copy()
-    result[:,:,0] = np.clip(paint[:,:,0] + glow_soft * 0.12 * pm * mask + glow_core * 0.08 * pm * mask, 0, 1)
-    result[:,:,1] = np.clip(paint[:,:,1] + glow_soft * 0.16 * pm * mask + glow_core * 0.10 * pm * mask, 0, 1)
-    result[:,:,2] = np.clip(paint[:,:,2] + glow_soft * 0.25 * pm * mask + glow_core * 0.18 * pm * mask, 0, 1)
+    result[:,:,0] = np.clip(paint[:,:,0] + glow_soft * 0.12 * pm * mask + glow_core * 0.08 * pm * mask + bg_micro * mask, 0, 1)
+    result[:,:,1] = np.clip(paint[:,:,1] + glow_soft * 0.16 * pm * mask + glow_core * 0.10 * pm * mask + bg_micro * mask, 0, 1)
+    result[:,:,2] = np.clip(paint[:,:,2] + glow_soft * 0.25 * pm * mask + glow_core * 0.18 * pm * mask + bg_micro * 1.5 * mask, 0, 1)
     return result
 
 spec_fractal_electric_noise = _spec_fractal_electric_noise
@@ -3598,6 +4546,7 @@ def _spec_fractal_cosmic_dust(shape, mask, seed, sm):
     return _spec_out(shape, mask, M, G, CC)
 
 def _paint_fractal_cosmic_dust(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     density, stars, dust = _galaxy_spiral(shape, seed + 8280)
     result = paint.copy()
     result[:,:,0] = np.clip(paint[:,:,0] + stars * 0.20 * pm * mask - dust * 0.06 * pm * mask, 0, 1)
@@ -3623,7 +4572,7 @@ def _flame_simulation(shape, seed):
     turb = np.clip(turb / 2.0, 0, 1)
     buoyancy = _noise(shape, [8, 16, 32], [0.3, 0.4, 0.3], seed + 300)
     upward_warp = buoyancy * (1.0 - yn) * 0.6
-    lateral_warp = _noise(shape, [4, 8, 16], [0.3, 0.4, 0.3], seed + 400) * 0.3
+    lateral_warp = _noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + 400) * 0.3
     warp_y = np.clip(yn + upward_warp, 0, 1)
     core_x = np.abs(xn - 0.5) * 2
     heat_base = np.clip(1.0 - yn * 0.8 - core_x * 0.4, 0, 1)
@@ -3638,17 +4587,29 @@ def _spec_fractal_liquid_fire(shape, mask, seed, sm):
     fire_m = _flame_simulation(shape, seed + 8290)
     fire_g = _flame_simulation(shape, seed + 8291)
     fire_cc = _flame_simulation(shape, seed + 8292)
-    M = np.clip(fire_m * 250 * sm + (1 - fire_m) * 5, 0, 255)
-    G = np.clip((1 - fire_g) * 240 + fire_g * 3, 0, 255)
-    CC = np.clip(fire_cc * 16 + (1 - fire_cc) * 160, 16, 255)
+    # 2026-04-25 — fine ember/ash grain inside both fire and dark regions
+    # so the surface has material character at painter resolution
+    # (Item 3 broad-blob fix, large_blob_ratio was 0.68).
+    grain = _fractal_surface_grain(shape, seed + 8293, scales=(2, 5, 11))
+    M = np.clip((fire_m * 250 * sm + (1 - fire_m) * 5) * (0.85 + 0.30 * grain), 0, 255)
+    G = np.clip(((1 - fire_g) * 240 + fire_g * 3) * (0.85 + 0.30 * (1.0 - grain)), 0, 255)
+    CC = np.clip(fire_cc * 16 + (1 - fire_cc) * 160 + (grain - 0.5) * 24, 16, 255)
     return _spec_out(shape, mask, M, G, CC)
 
 def _paint_fractal_liquid_fire(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     fire = _flame_simulation(shape, seed + 8290)
+    # 2026-04-25 — ember/ash grain modulates both fire intensity and
+    # dark cooling regions so the surface isn't flat-color at painter
+    # resolution (Item 3 broad-blob fix).
+    grain = _fractal_surface_grain(shape, seed + 8294, scales=(2, 5, 11))
+    grain_centered = (grain - 0.5) * 2.0
+    fire_mod = fire * (1.0 + grain_centered * 0.25)
+    cool_mod = (1 - fire) * (1.0 + grain_centered * 0.25)
     result = paint.copy()
-    result[:,:,0] = np.clip(paint[:,:,0] + fire * 0.30 * pm * mask - (1 - fire) * 0.08 * pm * mask, 0, 1)
-    result[:,:,1] = np.clip(paint[:,:,1] + fire * 0.12 * pm * mask - (1 - fire) * 0.06 * pm * mask, 0, 1)
-    result[:,:,2] = np.clip(paint[:,:,2] - fire * 0.10 * pm * mask - (1 - fire) * 0.04 * pm * mask, 0, 1)
+    result[:,:,0] = np.clip(paint[:,:,0] + fire_mod * 0.30 * pm * mask - cool_mod * 0.08 * pm * mask, 0, 1)
+    result[:,:,1] = np.clip(paint[:,:,1] + fire_mod * 0.12 * pm * mask - cool_mod * 0.06 * pm * mask, 0, 1)
+    result[:,:,2] = np.clip(paint[:,:,2] - fire_mod * 0.10 * pm * mask - cool_mod * 0.04 * pm * mask, 0, 1)
     return result
 
 spec_fractal_liquid_fire = _spec_fractal_liquid_fire
@@ -3693,12 +4654,47 @@ def _wavelength_to_rgb(wl):
     return np.clip(r * intensity, 0, 1), np.clip(g * intensity, 0, 1), np.clip(b * intensity, 0, 1)
 
 
+def _spectral_noise(shape, scales, weights, seed):
+    return _multiscale_smooth_noise(shape, scales, weights, seed)
+
+
 def _spectral_field(shape, seed, seed_offset):
-    """Domain-warped noise field with large scale variation for spectral mapping."""
-    field = _noise(shape, [24, 48, 96, 192], [0.2, 0.3, 0.3, 0.2], seed + seed_offset)
-    warp = _noise(shape, [32, 64, 128], [0.3, 0.4, 0.3], seed + seed_offset + 50)
-    field = field + warp * 0.3
-    return np.clip(field * 0.4 + 0.5, 0, 1).astype(np.float32)
+    """Smooth optical-film field for spectral mapping.
+
+    The cached global noise path is nearest-neighbor upscaled; when it drove
+    spectral color directly it produced square cells in every finish. This
+    field keeps the broad wavelength zones but builds them from interpolated
+    film-flow, interference, and fine pigment layers.
+    """
+    h, w = shape
+    y, x = _mgrid(shape)
+    yf, xf = y.astype(np.float32), x.astype(np.float32)
+
+    flow_a = _spectral_noise(shape, [18, 36, 72], [0.34, 0.40, 0.26], seed + seed_offset + 11)
+    flow_b = _spectral_noise(shape, [14, 28, 56], [0.38, 0.38, 0.24], seed + seed_offset + 23)
+    prism = _spectral_noise(shape, [5, 9, 17], [0.40, 0.36, 0.24], seed + seed_offset + 37)
+    pigment = _spectral_noise(shape, [1, 2, 4], [0.46, 0.34, 0.20], seed + seed_offset + 41)
+
+    angle = ((seed_offset % 29) - 14) * np.pi / 180.0
+    film_axis = xf * np.cos(angle) + yf * np.sin(angle)
+    cross_axis = -xf * np.sin(angle) + yf * np.cos(angle)
+    film = np.sin(film_axis * 0.030 + flow_a * 2.8 + seed * 0.013) * 0.5 + 0.5
+    cross = np.sin(cross_axis * 0.024 + flow_b * 2.2 + seed_offset * 0.019) * 0.5 + 0.5
+
+    cy = h * (0.45 + 0.10 * np.sin(seed_offset))
+    cx = w * (0.55 + 0.08 * np.cos(seed_offset * 0.7))
+    dist = np.sqrt((yf - cy) ** 2 + (xf - cx) ** 2)
+    rings = np.sin(dist * 0.052 + prism * 2.6 + seed * 0.007) * 0.5 + 0.5
+
+    field = (
+        _fusion_norm01(flow_a) * 0.26
+        + _fusion_norm01(flow_b) * 0.20
+        + film * 0.24
+        + cross * 0.12
+        + rings * 0.12
+        + (_fusion_norm01(pigment) - 0.5) * 0.06
+    )
+    return _fusion_norm01(cv2.GaussianBlur(field.astype(np.float32), (0, 0), sigmaX=0.55, sigmaY=0.55))
 
 
 def _make_spectral_fusion(mapping_type, m_range, g_range, base_cc, seed_offset=0):
@@ -3710,8 +4706,8 @@ def _make_spectral_fusion(mapping_type, m_range, g_range, base_cc, seed_offset=0
     def spec_fn(shape, mask, seed, sm):
         h, w = shape
         field = _spectral_field(shape, seed, seed_offset)
-        fine = _noise(shape, [4, 8], [0.5, 0.5], seed + seed_offset + 100)
-        micro = _noise(shape, [2, 3], [0.5, 0.5], seed + seed_offset + 110)
+        fine = _spectral_noise(shape, [8, 16, 32], [0.34, 0.40, 0.26], seed + seed_offset + 100)
+        micro = _spectral_noise(shape, [1, 2, 3], [0.44, 0.34, 0.22], seed + seed_offset + 110)
 
         if mapping_type == "rainbow":
             wl = 380 + field * 400
@@ -3774,7 +4770,8 @@ def _make_spectral_fusion(mapping_type, m_range, g_range, base_cc, seed_offset=0
         elif mapping_type == "threshold":
             # LAZY-FUSIONS-008 FIX: hard Boolean step — metallic/matte zones with no gradient blend
             # Distinct from "binary" (logistic sigmoid + fringe interference)
-            step = (field > np.float32(0.5)).astype(np.float32)
+            step = np.clip((field - np.float32(0.44)) / np.float32(0.12), 0, 1)
+            step = step * step * (np.float32(3.0) - np.float32(2.0) * step)
             M = m_range[0] * (np.float32(1.0) - step) + m_range[1] * step
             G = g_range[1] * (np.float32(1.0) - step) + g_range[0] * step
             B = np.clip(float(base_cc) + (np.float32(1.0) - step) * 40 * sm - step * 15 * sm, 16, 255)
@@ -3789,12 +4786,14 @@ def _make_spectral_fusion(mapping_type, m_range, g_range, base_cc, seed_offset=0
         return _spec_out(shape, mask, M, G, B)
 
     def paint_fn(paint, shape, mask, seed, pm, bb):
+        if hasattr(bb, "ndim") and bb.ndim == 2: bb = bb[:, :, np.newaxis]
         """Spectral mapping: COLORSHOXX-style color zones married to spectral field.
         UPGRADED: Adds rainbow hue-rotation color push + warm/cool zones + edge rim
         ON TOP of per-mapping spectral effects.
         - High-field zones: spectral hue tint (rainbow push via cos mapping) + brightening
         - Low-field zones: cool shadow push (desaturate, darken, retain blue)
         - Edges (Sobel): bright warm-white rim highlight"""
+        if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
         field = _spectral_field(shape, seed, seed_offset)
         result = paint.copy()
 
@@ -3862,7 +4861,8 @@ def _make_spectral_fusion(mapping_type, m_range, g_range, base_cc, seed_offset=0
 
         elif mapping_type == "threshold":
             # LAZY-FUSIONS-008 FIX: hard-cut step — specular-pop bright zones + shadow-crush dark zones
-            step = (field > np.float32(0.5)).astype(np.float32)
+            step = np.clip((field - np.float32(0.44)) / np.float32(0.12), 0, 1)
+            step = step * step * (np.float32(3.0) - np.float32(2.0) * step)
             bright_zone = step * np.float32(0.28) * pm
             dark_zone = (np.float32(1.0) - step) * np.float32(0.20) * pm
             for c in range(3):
@@ -3989,10 +4989,12 @@ def _make_quilt_fusion(panel_size, m_range, g_range, base_cc, seed_offset=0):
         return _spec_out(shape, mask, M, G, B)
 
     def paint_fn(paint, shape, mask, seed, pm, bb):
+        if hasattr(bb, "ndim") and bb.ndim == 2: bb = bb[:, :, np.newaxis]
+        if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
         h, w = shape[:2]
         closest, min_d, second_d, n_pts = _quilt_voronoi(shape, panel_size, seed, seed_offset)
 
-        rng_tint = np.random.RandomState(seed_offset + 999)
+        rng_tint = np.random.RandomState(seed + seed_offset + 999)
         tints = rng_tint.uniform(-0.14, 0.14, (_PALETTE_SIZE, 3)).astype(np.float32)
         idx = (closest % _PALETTE_SIZE)
         panel_tint = tints[idx, :]
@@ -4072,9 +5074,11 @@ def _make_quilt_hex_fusion(hex_size, m_range, g_range, base_cc, seed_offset=0):
         return _spec_out(shape, mask, M, G, B)
 
     def paint_fn(paint, shape, mask, seed, pm, bb):
+        if hasattr(bb, "ndim") and bb.ndim == 2: bb = bb[:, :, np.newaxis]
+        if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
         h, w = shape[:2]
         closest, min_d, second_d, n_pts = _quilt_hex_grid(shape, hex_size, seed, seed_offset)
-        rng_tint = np.random.RandomState(seed_offset + 999)
+        rng_tint = np.random.RandomState(seed + seed_offset + 999)
         tints = rng_tint.uniform(-0.14, 0.14, (_PALETTE_SIZE, 3)).astype(np.float32)
         idx = closest % _PALETTE_SIZE
         panel_tint = tints[idx, :]
@@ -4153,9 +5157,11 @@ def _make_quilt_diamond_fusion(diamond_size, m_range, g_range, base_cc, seed_off
         return _spec_out(shape, mask, M, G, B)
 
     def paint_fn(paint, shape, mask, seed, pm, bb):
+        if hasattr(bb, "ndim") and bb.ndim == 2: bb = bb[:, :, np.newaxis]
+        if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
         h, w = shape[:2]
         closest, min_d, second_d, n_pts = _quilt_diamond_grid(shape, diamond_size, seed, seed_offset)
-        rng_tint = np.random.RandomState(seed_offset + 999)
+        rng_tint = np.random.RandomState(seed + seed_offset + 999)
         tints = rng_tint.uniform(-0.14, 0.14, (_PALETTE_SIZE, 3)).astype(np.float32)
         idx = closest % _PALETTE_SIZE
         panel_tint = tints[idx, :]
@@ -4294,6 +5300,7 @@ FUSION_REGISTRY = {
     # ── PARADIGM 10: Depth Illusion ──
     "depth_canyon":               (spec_depth_canyon, paint_depth_canyon),
     "depth_bubble":               (spec_depth_bubble, paint_depth_bubble),
+    "depth_map":                  (spec_depth_map, paint_depth_map),
     "depth_ripple":               (spec_depth_ripple, paint_depth_ripple),
     "depth_scale":                (spec_depth_scale, paint_depth_scale),
     "depth_honeycomb":            (spec_depth_honeycomb, paint_depth_honeycomb),
@@ -4357,6 +5364,380 @@ FUSION_REGISTRY = {
     "quilt_gradient_tiles":       (spec_quilt_gradient_tiles, paint_quilt_gradient_tiles),
     "quilt_alternating_duo":      (spec_quilt_alternating_duo, paint_quilt_alternating_duo),
     "quilt_organic_cells":        (spec_quilt_organic_cells, paint_quilt_organic_cells),
+}
+
+
+def _fd(bias, spec_gain, paint_gain, sparkle_floor, edge_gain, coverage, cool, warm):
+    return {
+        "bias": int(bias),
+        "spec_gain": float(spec_gain),
+        "paint_gain": float(paint_gain),
+        "sparkle_floor": float(sparkle_floor),
+        "edge_gain": float(edge_gain),
+        "coverage": float(coverage),
+        "cool": tuple(float(v) for v in cool),
+        "warm": tuple(float(v) for v in warm),
+    }
+
+
+# Explicit per-finish rebuild profiles for the shipping Fusion Lab families.
+# The base renderer supplies the large-form identity; these profiles supply
+# 2048-aware micro topology, density, and color/spec response per finish.
+_FUSION_DETAIL_PROFILES = {
+    # Material Gradients
+    "gradient_anodized_gloss": _fd(101, 1.20, 0.145, 0.660, 0.22, 0.58, (0.24, 0.46, 0.72), (0.88, 0.48, 0.22)),
+    "gradient_candy_frozen": _fd(113, 1.12, 0.135, 0.690, 0.18, 0.50, (0.42, 0.66, 0.92), (0.90, 0.22, 0.42)),
+    "gradient_candy_matte": _fd(127, 1.03, 0.118, 0.735, 0.14, 0.42, (0.30, 0.22, 0.18), (0.86, 0.26, 0.18)),
+    "gradient_carbon_chrome": _fd(139, 1.42, 0.105, 0.705, 0.26, 0.56, (0.10, 0.14, 0.18), (0.72, 0.80, 0.86)),
+    "gradient_chrome_matte": _fd(151, 1.36, 0.110, 0.720, 0.24, 0.48, (0.26, 0.30, 0.34), (0.86, 0.88, 0.84)),
+    "gradient_ember_ice": _fd(163, 1.28, 0.155, 0.650, 0.20, 0.62, (0.20, 0.58, 0.94), (1.00, 0.30, 0.08)),
+    "gradient_metallic_satin": _fd(179, 1.24, 0.115, 0.710, 0.18, 0.52, (0.44, 0.46, 0.48), (0.78, 0.65, 0.48)),
+    "gradient_obsidian_mirror": _fd(191, 1.52, 0.125, 0.675, 0.30, 0.58, (0.04, 0.05, 0.08), (0.64, 0.72, 0.92)),
+    "gradient_pearl_chrome": _fd(207, 1.34, 0.135, 0.670, 0.20, 0.60, (0.54, 0.64, 0.82), (0.92, 0.78, 0.96)),
+    "gradient_spectraflame_void": _fd(223, 1.48, 0.160, 0.640, 0.28, 0.66, (0.02, 0.04, 0.10), (0.95, 0.18, 0.72)),
+    # Directional Grain
+    "aniso_circular_chrome": _fd(307, 1.42, 0.104, 0.700, 0.32, 0.54, (0.38, 0.42, 0.48), (0.82, 0.86, 0.90)),
+    "aniso_crosshatch_steel": _fd(313, 1.34, 0.098, 0.730, 0.36, 0.48, (0.30, 0.34, 0.38), (0.74, 0.76, 0.72)),
+    "aniso_diagonal_candy": _fd(331, 1.16, 0.132, 0.690, 0.24, 0.56, (0.16, 0.28, 0.54), (0.92, 0.22, 0.36)),
+    "aniso_herringbone_gold": _fd(347, 1.30, 0.125, 0.700, 0.34, 0.54, (0.38, 0.28, 0.12), (0.96, 0.72, 0.18)),
+    "aniso_horizontal_chrome": _fd(359, 1.38, 0.098, 0.735, 0.28, 0.46, (0.34, 0.38, 0.44), (0.86, 0.88, 0.86)),
+    "aniso_radial_metallic": _fd(373, 1.35, 0.112, 0.705, 0.30, 0.54, (0.30, 0.36, 0.44), (0.88, 0.62, 0.38)),
+    "aniso_spiral_mercury": _fd(389, 1.50, 0.118, 0.675, 0.38, 0.60, (0.22, 0.34, 0.48), (0.86, 0.92, 0.95)),
+    "aniso_turbulence_metal": _fd(401, 1.32, 0.120, 0.665, 0.30, 0.64, (0.20, 0.25, 0.30), (0.88, 0.64, 0.42)),
+    "aniso_vertical_pearl": _fd(419, 1.20, 0.125, 0.700, 0.24, 0.52, (0.48, 0.58, 0.82), (0.94, 0.82, 0.98)),
+    "aniso_wave_titanium": _fd(431, 1.30, 0.112, 0.690, 0.30, 0.56, (0.32, 0.42, 0.56), (0.86, 0.70, 0.52)),
+    # Reactive Panels
+    "reactive_candy_reveal": _fd(503, 1.22, 0.150, 0.660, 0.24, 0.60, (0.12, 0.20, 0.44), (0.96, 0.20, 0.28)),
+    "reactive_chrome_fade": _fd(521, 1.42, 0.112, 0.700, 0.26, 0.52, (0.32, 0.36, 0.42), (0.84, 0.88, 0.90)),
+    "reactive_dual_tone": _fd(541, 1.26, 0.146, 0.650, 0.22, 0.62, (0.05, 0.28, 0.70), (0.92, 0.36, 0.08)),
+    "reactive_ghost_metal": _fd(557, 1.18, 0.118, 0.735, 0.20, 0.44, (0.22, 0.28, 0.34), (0.78, 0.82, 0.80)),
+    "reactive_matte_shine": _fd(571, 1.30, 0.110, 0.725, 0.28, 0.48, (0.16, 0.16, 0.15), (0.88, 0.82, 0.70)),
+    "reactive_mirror_shadow": _fd(587, 1.55, 0.105, 0.675, 0.34, 0.56, (0.02, 0.03, 0.06), (0.78, 0.84, 0.92)),
+    "reactive_pearl_flash": _fd(601, 1.24, 0.140, 0.645, 0.20, 0.64, (0.50, 0.62, 0.86), (0.98, 0.74, 0.94)),
+    "reactive_pulse_metal": _fd(617, 1.36, 0.125, 0.680, 0.30, 0.58, (0.20, 0.32, 0.46), (0.96, 0.50, 0.20)),
+    "reactive_stealth_pop": _fd(631, 1.34, 0.132, 0.690, 0.26, 0.54, (0.03, 0.05, 0.06), (0.12, 0.86, 0.94)),
+    "reactive_warm_cold": _fd(647, 1.28, 0.150, 0.660, 0.24, 0.62, (0.10, 0.48, 0.92), (0.98, 0.38, 0.10)),
+    # Sparkle Systems
+    "sparkle_champagne": _fd(701, 1.78, 0.190, 0.560, 0.16, 0.82, (0.70, 0.58, 0.36), (1.00, 0.82, 0.46)),
+    "sparkle_confetti": _fd(719, 1.88, 0.210, 0.540, 0.18, 0.88, (0.22, 0.56, 0.90), (1.00, 0.28, 0.72)),
+    "sparkle_constellation": _fd(733, 1.70, 0.170, 0.610, 0.15, 0.72, (0.04, 0.08, 0.20), (0.80, 0.88, 1.00)),
+    "sparkle_diamond_dust": _fd(751, 1.95, 0.185, 0.535, 0.14, 0.90, (0.66, 0.78, 0.92), (0.98, 0.98, 1.00)),
+    "sparkle_firefly": _fd(769, 1.82, 0.205, 0.555, 0.16, 0.84, (0.08, 0.22, 0.10), (0.92, 0.82, 0.18)),
+    "sparkle_galaxy": _fd(787, 1.86, 0.220, 0.545, 0.20, 0.86, (0.05, 0.10, 0.30), (0.90, 0.20, 0.96)),
+    "sparkle_lightning_bug": _fd(809, 1.90, 0.215, 0.535, 0.18, 0.88, (0.02, 0.18, 0.22), (0.82, 1.00, 0.28)),
+    "sparkle_meteor": _fd(827, 1.92, 0.200, 0.550, 0.20, 0.84, (0.22, 0.12, 0.08), (1.00, 0.44, 0.14)),
+    "sparkle_snowfall": _fd(839, 1.68, 0.165, 0.620, 0.14, 0.70, (0.54, 0.70, 0.92), (0.96, 0.98, 1.00)),
+    "sparkle_starfield": _fd(857, 1.76, 0.180, 0.590, 0.15, 0.76, (0.03, 0.05, 0.14), (0.78, 0.86, 1.00)),
+    # Multi-Scale Texture
+    "multiscale_candy_frost": _fd(907, 1.36, 0.150, 0.640, 0.26, 0.66, (0.40, 0.64, 0.94), (0.98, 0.28, 0.42)),
+    "multiscale_carbon_micro": _fd(919, 1.34, 0.100, 0.700, 0.32, 0.54, (0.04, 0.05, 0.06), (0.56, 0.62, 0.68)),
+    "multiscale_chrome_grain": _fd(937, 1.50, 0.110, 0.680, 0.34, 0.62, (0.34, 0.38, 0.44), (0.88, 0.90, 0.88)),
+    "multiscale_chrome_sand": _fd(953, 1.58, 0.120, 0.615, 0.24, 0.78, (0.40, 0.42, 0.40), (0.92, 0.88, 0.74)),
+    "multiscale_flake_grain": _fd(971, 1.62, 0.165, 0.580, 0.22, 0.82, (0.24, 0.34, 0.52), (0.96, 0.64, 0.26)),
+    "multiscale_frost_crystal": _fd(983, 1.44, 0.145, 0.610, 0.30, 0.72, (0.48, 0.74, 0.96), (0.90, 0.98, 1.00)),
+    "multiscale_matte_silk": _fd(997, 1.10, 0.105, 0.740, 0.20, 0.44, (0.32, 0.26, 0.30), (0.82, 0.66, 0.72)),
+    "multiscale_metal_grit": _fd(1013, 1.52, 0.120, 0.600, 0.30, 0.76, (0.22, 0.24, 0.25), (0.82, 0.74, 0.58)),
+    "multiscale_pearl_texture": _fd(1027, 1.28, 0.140, 0.650, 0.22, 0.64, (0.58, 0.68, 0.92), (0.96, 0.82, 0.98)),
+    "multiscale_satin_weave": _fd(1043, 1.22, 0.112, 0.700, 0.34, 0.52, (0.34, 0.32, 0.30), (0.86, 0.72, 0.54)),
+    # Weather & Age
+    "weather_acid_rain": _fd(1103, 1.24, 0.145, 0.650, 0.30, 0.64, (0.22, 0.78, 0.18), (0.90, 0.86, 0.20)),
+    "weather_barn_dust": _fd(1117, 1.12, 0.120, 0.720, 0.24, 0.48, (0.36, 0.26, 0.18), (0.80, 0.58, 0.34)),
+    "weather_desert_blast": _fd(1133, 1.20, 0.130, 0.690, 0.26, 0.58, (0.52, 0.38, 0.20), (0.94, 0.72, 0.36)),
+    "weather_hood_bake": _fd(1151, 1.18, 0.128, 0.700, 0.22, 0.54, (0.24, 0.14, 0.10), (0.92, 0.38, 0.16)),
+    "weather_ice_storm": _fd(1163, 1.34, 0.145, 0.640, 0.30, 0.68, (0.42, 0.70, 0.96), (0.92, 0.98, 1.00)),
+    "weather_ocean_mist": _fd(1171, 1.16, 0.132, 0.690, 0.22, 0.56, (0.18, 0.52, 0.72), (0.76, 0.92, 0.86)),
+    "weather_road_spray": _fd(1187, 1.22, 0.110, 0.705, 0.28, 0.52, (0.18, 0.18, 0.16), (0.72, 0.70, 0.62)),
+    "weather_salt_spray": _fd(1201, 1.28, 0.136, 0.665, 0.24, 0.62, (0.54, 0.62, 0.66), (0.94, 0.96, 0.90)),
+    "weather_sun_fade": _fd(1217, 1.10, 0.116, 0.730, 0.18, 0.46, (0.38, 0.30, 0.22), (0.98, 0.74, 0.34)),
+    "weather_volcanic_ash": _fd(1231, 1.30, 0.125, 0.660, 0.32, 0.66, (0.10, 0.10, 0.10), (0.92, 0.26, 0.08)),
+    # Exotic Physics
+    "exotic_anti_metal": _fd(1301, 1.44, 0.145, 0.650, 0.30, 0.62, (0.02, 0.04, 0.06), (0.16, 0.94, 0.86)),
+    "exotic_ceramic_void": _fd(1319, 1.30, 0.125, 0.685, 0.24, 0.56, (0.06, 0.06, 0.08), (0.72, 0.68, 0.82)),
+    "exotic_crystal_clear": _fd(1337, 1.52, 0.135, 0.640, 0.32, 0.66, (0.54, 0.78, 0.94), (0.98, 1.00, 1.00)),
+    "exotic_dark_glass": _fd(1361, 1.46, 0.118, 0.665, 0.30, 0.60, (0.02, 0.04, 0.08), (0.52, 0.68, 0.88)),
+    "exotic_foggy_chrome": _fd(1373, 1.36, 0.112, 0.700, 0.20, 0.52, (0.50, 0.54, 0.58), (0.88, 0.90, 0.86)),
+    "exotic_glass_paint": _fd(1381, 1.40, 0.140, 0.655, 0.26, 0.62, (0.24, 0.48, 0.74), (0.88, 0.72, 0.96)),
+    "exotic_inverted_candy": _fd(1399, 1.34, 0.155, 0.640, 0.24, 0.66, (0.08, 0.86, 0.72), (0.96, 0.16, 0.44)),
+    "exotic_liquid_glass": _fd(1423, 1.50, 0.150, 0.630, 0.28, 0.70, (0.20, 0.58, 0.88), (0.92, 0.96, 1.00)),
+    "exotic_phantom_mirror": _fd(1439, 1.58, 0.118, 0.650, 0.34, 0.64, (0.02, 0.02, 0.04), (0.82, 0.86, 0.94)),
+    "exotic_wet_void": _fd(1451, 1.54, 0.128, 0.625, 0.32, 0.70, (0.01, 0.03, 0.05), (0.28, 0.74, 0.96)),
+    # Tri-Zone Materials
+    "trizone_anodized_candy_silk": _fd(1501, 1.32, 0.150, 0.655, 0.26, 0.64, (0.30, 0.48, 0.72), (0.94, 0.28, 0.42)),
+    "trizone_ceramic_flake_satin": _fd(1511, 1.28, 0.130, 0.670, 0.24, 0.60, (0.56, 0.56, 0.50), (0.92, 0.78, 0.58)),
+    "trizone_chrome_candy_matte": _fd(1523, 1.42, 0.138, 0.660, 0.30, 0.64, (0.32, 0.36, 0.42), (0.96, 0.20, 0.30)),
+    "trizone_frozen_ember_chrome": _fd(1531, 1.46, 0.158, 0.630, 0.28, 0.72, (0.24, 0.62, 0.96), (1.00, 0.34, 0.08)),
+    "trizone_glass_metal_matte": _fd(1543, 1.34, 0.128, 0.680, 0.26, 0.58, (0.26, 0.40, 0.56), (0.82, 0.80, 0.74)),
+    "trizone_mercury_obsidian_candy": _fd(1559, 1.56, 0.145, 0.640, 0.34, 0.68, (0.02, 0.03, 0.06), (0.86, 0.90, 0.96)),
+    "trizone_pearl_carbon_gold": _fd(1571, 1.38, 0.140, 0.650, 0.30, 0.66, (0.08, 0.09, 0.10), (0.98, 0.74, 0.22)),
+    "trizone_stealth_spectra_frozen": _fd(1583, 1.48, 0.160, 0.625, 0.32, 0.72, (0.02, 0.04, 0.08), (0.28, 0.90, 1.00)),
+    "trizone_titanium_copper_chrome": _fd(1597, 1.44, 0.142, 0.650, 0.28, 0.66, (0.30, 0.40, 0.54), (0.94, 0.48, 0.20)),
+    "trizone_vanta_chrome_pearl": _fd(1609, 1.58, 0.134, 0.645, 0.34, 0.66, (0.01, 0.01, 0.02), (0.90, 0.92, 0.98)),
+    # Depth Illusion
+    "depth_bubble": _fd(1709, 1.28, 0.120, 0.690, 0.34, 0.56, (0.20, 0.52, 0.78), (0.88, 0.94, 1.00)),
+    "depth_canyon": _fd(1721, 1.34, 0.128, 0.660, 0.38, 0.64, (0.34, 0.18, 0.08), (0.96, 0.48, 0.16)),
+    "depth_crack": _fd(1733, 1.42, 0.118, 0.625, 0.46, 0.70, (0.03, 0.03, 0.04), (0.88, 0.32, 0.12)),
+    "depth_erosion": _fd(1747, 1.30, 0.122, 0.650, 0.40, 0.66, (0.30, 0.24, 0.18), (0.82, 0.62, 0.38)),
+    "depth_honeycomb": _fd(1759, 1.36, 0.126, 0.665, 0.42, 0.62, (0.24, 0.20, 0.12), (0.96, 0.72, 0.18)),
+    "depth_map": _fd(1777, 1.18, 0.110, 0.720, 0.28, 0.48, (0.18, 0.34, 0.26), (0.76, 0.68, 0.42)),
+    "depth_pillow": _fd(1789, 1.16, 0.108, 0.735, 0.22, 0.42, (0.32, 0.24, 0.30), (0.86, 0.70, 0.78)),
+    "depth_ripple": _fd(1801, 1.32, 0.125, 0.670, 0.36, 0.60, (0.12, 0.42, 0.76), (0.78, 0.92, 0.96)),
+    "depth_scale": _fd(1811, 1.34, 0.120, 0.675, 0.40, 0.58, (0.10, 0.26, 0.22), (0.70, 0.90, 0.42)),
+    "depth_vortex": _fd(1823, 1.46, 0.140, 0.635, 0.42, 0.68, (0.06, 0.08, 0.22), (0.76, 0.20, 0.96)),
+    "depth_wave": _fd(1831, 1.28, 0.122, 0.680, 0.34, 0.58, (0.10, 0.44, 0.72), (0.82, 0.90, 0.86)),
+    # Metallic Halos
+    "halo_circle_pearl": _fd(1901, 1.52, 0.142, 0.610, 0.36, 0.74, (0.52, 0.64, 0.86), (0.96, 0.82, 0.98)),
+    "halo_crack_chrome": _fd(1913, 1.62, 0.128, 0.575, 0.48, 0.82, (0.08, 0.10, 0.12), (0.86, 0.88, 0.86)),
+    "halo_diamond_chrome": _fd(1931, 1.58, 0.130, 0.600, 0.44, 0.78, (0.30, 0.34, 0.40), (0.92, 0.92, 0.88)),
+    "halo_grid_pearl": _fd(1949, 1.50, 0.132, 0.620, 0.42, 0.72, (0.46, 0.58, 0.80), (0.94, 0.86, 0.98)),
+    "halo_hex_chrome": _fd(1957, 1.60, 0.128, 0.595, 0.46, 0.80, (0.28, 0.34, 0.42), (0.90, 0.92, 0.90)),
+    "halo_ripple_chrome": _fd(1973, 1.56, 0.132, 0.610, 0.42, 0.76, (0.24, 0.38, 0.54), (0.88, 0.92, 0.94)),
+    "halo_scale_gold": _fd(1987, 1.54, 0.145, 0.595, 0.44, 0.78, (0.34, 0.24, 0.10), (1.00, 0.74, 0.18)),
+    "halo_star_metal": _fd(1999, 1.66, 0.150, 0.570, 0.48, 0.84, (0.20, 0.24, 0.32), (0.96, 0.82, 0.40)),
+    "halo_voronoi_metal": _fd(2011, 1.58, 0.136, 0.585, 0.50, 0.82, (0.24, 0.26, 0.28), (0.86, 0.70, 0.48)),
+    "halo_wave_candy": _fd(2027, 1.48, 0.152, 0.610, 0.40, 0.76, (0.10, 0.38, 0.70), (0.96, 0.24, 0.38)),
+    # Light Waves
+    "wave_candy_flow": _fd(2101, 1.28, 0.148, 0.650, 0.32, 0.66, (0.12, 0.28, 0.56), (0.96, 0.22, 0.36)),
+    "wave_chrome_tide": _fd(2113, 1.48, 0.125, 0.640, 0.38, 0.70, (0.18, 0.42, 0.62), (0.88, 0.92, 0.94)),
+    "wave_circular_radar": _fd(2129, 1.42, 0.136, 0.625, 0.44, 0.74, (0.06, 0.30, 0.22), (0.50, 1.00, 0.40)),
+    "wave_diagonal_sweep": _fd(2141, 1.34, 0.132, 0.665, 0.36, 0.62, (0.18, 0.26, 0.42), (0.92, 0.56, 0.24)),
+    "wave_dual_frequency": _fd(2153, 1.36, 0.142, 0.640, 0.40, 0.68, (0.10, 0.44, 0.86), (0.98, 0.34, 0.10)),
+    "wave_metallic_pulse": _fd(2161, 1.50, 0.136, 0.620, 0.42, 0.72, (0.20, 0.30, 0.40), (0.96, 0.62, 0.26)),
+    "wave_moire_metal": _fd(2179, 1.54, 0.130, 0.600, 0.48, 0.78, (0.18, 0.22, 0.28), (0.86, 0.84, 0.76)),
+    "wave_pearl_current": _fd(2197, 1.30, 0.142, 0.650, 0.34, 0.66, (0.50, 0.64, 0.88), (0.94, 0.86, 0.98)),
+    "wave_standing_chrome": _fd(2207, 1.46, 0.118, 0.670, 0.36, 0.60, (0.28, 0.34, 0.42), (0.88, 0.88, 0.84)),
+    "wave_turbulent_flow": _fd(2213, 1.38, 0.150, 0.630, 0.44, 0.72, (0.08, 0.26, 0.42), (0.90, 0.40, 0.18)),
+    # Fractal Chaos
+    "fractal_candy_chaos": _fd(2309, 1.38, 0.165, 0.610, 0.42, 0.76, (0.06, 0.22, 0.52), (0.98, 0.18, 0.46)),
+    "fractal_chrome_decay": _fd(2327, 1.56, 0.132, 0.590, 0.50, 0.80, (0.18, 0.20, 0.22), (0.86, 0.88, 0.84)),
+    "fractal_cosmic_dust": _fd(2339, 1.50, 0.175, 0.570, 0.38, 0.84, (0.04, 0.08, 0.22), (0.88, 0.28, 0.96)),
+    "fractal_deep_organic": _fd(2351, 1.28, 0.140, 0.635, 0.40, 0.68, (0.06, 0.24, 0.12), (0.74, 0.64, 0.30)),
+    "fractal_electric_noise": _fd(2371, 1.62, 0.190, 0.550, 0.36, 0.88, (0.02, 0.18, 0.46), (0.20, 0.96, 1.00)),
+    "fractal_liquid_fire": _fd(2383, 1.54, 0.175, 0.560, 0.44, 0.84, (0.12, 0.04, 0.02), (1.00, 0.30, 0.04)),
+    "fractal_matte_chrome": _fd(2399, 1.42, 0.112, 0.675, 0.36, 0.58, (0.24, 0.26, 0.28), (0.82, 0.82, 0.78)),
+    "fractal_metallic_storm": _fd(2411, 1.58, 0.152, 0.585, 0.46, 0.82, (0.10, 0.16, 0.26), (0.92, 0.70, 0.36)),
+    "fractal_pearl_cloud": _fd(2423, 1.32, 0.148, 0.630, 0.30, 0.68, (0.54, 0.66, 0.88), (0.96, 0.88, 0.98)),
+    "fractal_warm_cold": _fd(2437, 1.44, 0.165, 0.610, 0.40, 0.76, (0.08, 0.50, 0.92), (1.00, 0.36, 0.08)),
+    # Spectral Reactive
+    "spectral_complementary": _fd(2503, 1.42, 0.172, 0.610, 0.30, 0.78, (0.04, 0.44, 0.92), (0.98, 0.36, 0.06)),
+    "spectral_dark_light": _fd(2521, 1.40, 0.150, 0.635, 0.28, 0.68, (0.02, 0.02, 0.04), (0.92, 0.94, 0.90)),
+    "spectral_earth_sky": _fd(2539, 1.32, 0.155, 0.640, 0.26, 0.66, (0.08, 0.36, 0.76), (0.72, 0.54, 0.24)),
+    "spectral_inverse_logic": _fd(2551, 1.50, 0.175, 0.600, 0.34, 0.80, (0.02, 0.88, 0.78), (0.98, 0.08, 0.44)),
+    "spectral_mono_chrome": _fd(2579, 1.38, 0.118, 0.675, 0.28, 0.60, (0.08, 0.08, 0.08), (0.90, 0.90, 0.90)),
+    "spectral_neon_reactive": _fd(2591, 1.62, 0.195, 0.550, 0.34, 0.88, (0.00, 0.28, 0.78), (1.00, 0.08, 0.84)),
+    "spectral_prismatic_flip": _fd(2609, 1.58, 0.190, 0.565, 0.36, 0.86, (0.04, 0.50, 0.98), (0.98, 0.18, 0.62)),
+    "spectral_rainbow_metal": _fd(2621, 1.56, 0.185, 0.575, 0.32, 0.84, (0.04, 0.58, 0.90), (0.98, 0.72, 0.18)),
+    "spectral_sat_metal": _fd(2633, 1.48, 0.168, 0.600, 0.30, 0.76, (0.18, 0.34, 0.64), (0.94, 0.22, 0.34)),
+    "spectral_warm_cool": _fd(2647, 1.44, 0.170, 0.610, 0.30, 0.78, (0.08, 0.48, 0.92), (1.00, 0.34, 0.08)),
+}
+
+_FUSION_DETAIL_PROFILES["depth_vortex"]["micro_gain"] = 0.50
+_FUSION_DETAIL_PROFILES["sparkle_galaxy"]["micro_gain"] = 0.18
+_FUSION_DETAIL_PROFILES.update({
+    "ghost_hex": _fd(2711, 1.72, 0.106, 0.690, 0.28, 0.58, (0.16, 0.22, 0.32), (0.72, 0.94, 0.92)),
+    "ghost_stripes": _fd(2723, 1.86, 0.098, 0.700, 0.34, 0.54, (0.10, 0.16, 0.28), (0.84, 0.90, 0.98)),
+    "ghost_diamonds": _fd(2731, 1.76, 0.104, 0.680, 0.32, 0.60, (0.18, 0.20, 0.28), (0.78, 0.92, 0.86)),
+    "ghost_waves": _fd(2749, 1.82, 0.112, 0.660, 0.30, 0.64, (0.12, 0.26, 0.42), (0.68, 0.96, 0.90)),
+    "ghost_camo": _fd(2767, 1.70, 0.116, 0.670, 0.36, 0.62, (0.10, 0.18, 0.12), (0.62, 0.86, 0.56)),
+    "ghost_scales": _fd(2789, 1.88, 0.110, 0.650, 0.40, 0.66, (0.08, 0.18, 0.24), (0.54, 0.96, 0.82)),
+    "ghost_circuit": _fd(2801, 1.94, 0.108, 0.640, 0.46, 0.70, (0.04, 0.12, 0.18), (0.38, 1.00, 0.86)),
+    "ghost_vortex": _fd(2819, 1.92, 0.118, 0.630, 0.44, 0.72, (0.05, 0.10, 0.28), (0.76, 0.50, 1.00)),
+    "ghost_fracture": _fd(2833, 1.84, 0.112, 0.640, 0.50, 0.72, (0.06, 0.08, 0.12), (0.86, 0.94, 1.00)),
+    "ghost_quilt": _fd(2851, 1.78, 0.102, 0.675, 0.36, 0.62, (0.12, 0.16, 0.22), (0.80, 0.88, 0.94)),
+})
+for _fid in (
+    "gradient_anodized_gloss", "gradient_candy_frozen", "gradient_candy_matte",
+    "gradient_carbon_chrome", "gradient_chrome_matte", "gradient_ember_ice",
+    "gradient_metallic_satin", "gradient_obsidian_mirror", "gradient_pearl_chrome",
+    "gradient_spectraflame_void",
+):
+    _FUSION_DETAIL_PROFILES[_fid]["micro_gain"] = 0.80
+for _fid in (
+    "aniso_circular_chrome", "aniso_crosshatch_steel", "aniso_herringbone_gold",
+    "aniso_spiral_mercury",
+):
+    _FUSION_DETAIL_PROFILES[_fid]["micro_gain"] = 0.48
+_FUSION_DETAIL_PROFILES["aniso_horizontal_chrome"]["micro_gain"] = 0.80
+for _fid in (
+    "weather_hood_bake", "weather_ice_storm", "weather_road_spray",
+    "weather_sun_fade", "weather_volcanic_ash",
+    "wave_candy_flow", "wave_chrome_tide", "wave_standing_chrome",
+):
+    _FUSION_DETAIL_PROFILES[_fid]["micro_gain"] = 0.72
+for _fid in (
+    "wave_candy_flow", "wave_chrome_tide", "wave_circular_radar",
+    "wave_diagonal_sweep", "wave_dual_frequency", "wave_metallic_pulse",
+    "wave_moire_metal", "wave_pearl_current", "wave_standing_chrome",
+    "wave_turbulent_flow",
+):
+    _FUSION_DETAIL_PROFILES[_fid]["smooth_detail"] = True
+for _fid in (
+    "spectral_complementary", "spectral_dark_light", "spectral_earth_sky",
+    "spectral_inverse_logic", "spectral_mono_chrome", "spectral_neon_reactive",
+    "spectral_prismatic_flip", "spectral_rainbow_metal", "spectral_sat_metal",
+    "spectral_warm_cool",
+):
+    _FUSION_DETAIL_PROFILES[_fid]["smooth_detail"] = True
+for _fid in ("exotic_dark_glass", "exotic_foggy_chrome", "exotic_phantom_mirror"):
+    _FUSION_DETAIL_PROFILES[_fid]["micro_gain"] = 0.68
+_FUSION_DETAIL_PROFILES["weather_volcanic_ash"]["micro_gain"] = 1.20
+_FUSION_DETAIL_PROFILES["wave_chrome_tide"]["micro_gain"] = 0.95
+_FUSION_DETAIL_PROFILES["fractal_chrome_decay"]["micro_gain"] = 0.72
+_FUSION_DETAIL_PROFILES["fractal_liquid_fire"]["micro_gain"] = 0.95
+for _fid, _gain in {
+    "depth_vortex": 0.86,
+    "gradient_candy_matte": 1.05,
+    "gradient_carbon_chrome": 1.04,
+    "weather_desert_blast": 1.02,
+    "exotic_inverted_candy": 0.88,
+    "trizone_anodized_candy_silk": 1.02,
+    "trizone_chrome_candy_matte": 1.06,
+    "wave_turbulent_flow": 1.12,
+    "fractal_deep_organic": 0.92,
+    "fractal_warm_cold": 0.94,
+    "aniso_spiral_mercury": 0.88,
+}.items():
+    _FUSION_DETAIL_PROFILES[_fid]["micro_gain"] = _gain
+for _fid in (
+    "ghost_hex", "ghost_stripes", "ghost_diamonds", "ghost_waves", "ghost_camo",
+    "ghost_scales", "ghost_circuit", "ghost_vortex", "ghost_fracture", "ghost_quilt",
+):
+    _FUSION_DETAIL_PROFILES[_fid]["micro_gain"] = 0.86
+
+
+def _hf_detail(shape, seed, profile):
+    family_bias = int(profile["bias"])
+    noise_fn = _multiscale_smooth_noise if profile.get("smooth_detail") else _noise
+    fine = noise_fn(shape, [1, 2, 3, 5], [0.36, 0.30, 0.22, 0.12], seed + 9100 + family_bias)
+    mist = noise_fn(shape, [2, 4, 8], [0.42, 0.36, 0.22], seed + 9200 + family_bias)
+    body = noise_fn(shape, [12, 24, 48], [0.42, 0.34, 0.24], seed + 9300 + family_bias)
+    ridge = 1.0 - np.clip(np.abs(noise_fn(shape, [4, 8, 16], [0.38, 0.36, 0.26], seed + 9400 + family_bias)) * 1.55, 0, 1)
+    detail = np.clip((fine + 1.0) * 0.31 + (mist + 1.0) * 0.19 + (body + 1.0) * 0.06 + ridge * 0.14, 0, 1)
+    sparkle = np.clip((detail - profile["sparkle_floor"]) * 4.8, 0, 1)
+    coverage = np.clip((detail - profile["coverage"]) * 3.2, 0, 1)
+    sparkle = np.maximum(sparkle, coverage * 0.45)
+    return detail.astype(np.float32), sparkle.astype(np.float32), ridge.astype(np.float32)
+
+
+def _fusion_family_bias(finish_id):
+    if finish_id.startswith("sparkle_"):
+        return 160, 1.75, 0.18
+    if finish_id.startswith("halo_"):
+        return 220, 1.35, 0.14
+    if finish_id.startswith("depth_"):
+        return 280, 1.15, 0.10
+    if finish_id.startswith("wave_") or finish_id.startswith("fractal_"):
+        return 340, 1.10, 0.11
+    if finish_id.startswith("spectral_"):
+        return 400, 1.18, 0.12
+    if finish_id.startswith("multiscale_"):
+        return 460, 1.25, 0.13
+    return 80, 0.90, 0.08
+
+
+def _fusion_profile(finish_id):
+    profile = _FUSION_DETAIL_PROFILES.get(finish_id)
+    if profile is not None:
+        return profile
+    family_bias, spec_gain, paint_gain = _fusion_family_bias(finish_id)
+    return _fd(
+        family_bias,
+        spec_gain,
+        paint_gain,
+        0.76,
+        0.18,
+        0.50,
+        (0.30, 0.38, 0.48),
+        (0.86, 0.68, 0.42),
+    )
+
+
+def _wrap_fusion_detail(finish_id, spec_fn, paint_fn):
+    profile = _fusion_profile(finish_id)
+    spec_gain = profile["spec_gain"]
+    paint_gain = profile["paint_gain"]
+
+    def _spec(shape, mask, seed, sm):
+        spec = spec_fn(shape, mask, seed, sm).astype(np.float32, copy=True)
+        h, w = shape[:2] if len(shape) > 2 else shape
+        detail, sparkle, ridge = _hf_detail((h, w), seed, profile)
+        active = mask.astype(np.float32)
+        edge = np.clip(
+            np.abs(detail - np.roll(detail, 1, axis=0)) + np.abs(detail - np.roll(detail, 1, axis=1)),
+            0,
+            1,
+        )
+        micro_gain = float(profile.get("micro_gain", 0.0))
+        spec[:, :, 0] = np.clip(
+            spec[:, :, 0]
+            + (detail - 0.58) * 38.0 * spec_gain * sm
+            + sparkle * 36.0 * spec_gain * sm
+            + edge * 34.0 * profile["edge_gain"] * sm,
+            0,
+            255,
+        )
+        if micro_gain > 0:
+            spec[:, :, 0] = np.clip(spec[:, :, 0] + (ridge - 0.5) * 70.0 * micro_gain * sm, 0, 255)
+            spec[:, :, 1] = np.clip(spec[:, :, 1] - sparkle * 34.0 * micro_gain * sm, 15, 255)
+        spec[:, :, 1] = np.clip(
+            spec[:, :, 1]
+            - sparkle * 22.0 * spec_gain * sm
+            - ridge * 8.0 * profile["edge_gain"] * sm
+            + (1.0 - detail) * 4.0 * sm,
+            15,
+            255,
+        )
+        spec[:, :, 2] = np.where(
+            active > 0.01,
+            np.clip(spec[:, :, 2] + sparkle * 7.0 + edge * 6.0 * profile["edge_gain"], 16, 255),
+            0,
+        )
+        spec[:, :, 3] = np.clip(active * 255, 0, 255)
+        return spec.astype(np.uint8)
+
+    def _paint(paint, shape, mask, seed, pm, bb):
+        if paint.ndim == 3 and paint.shape[2] > 3:
+            paint_in = paint[:, :, :3].copy()
+        else:
+            paint_in = paint.copy()
+        out = paint_fn(paint_in, shape, mask, seed, pm, bb)
+        if out.ndim == 3 and out.shape[2] > 3:
+            out = out[:, :, :3].copy()
+        h, w = shape[:2] if len(shape) > 2 else shape
+        detail, sparkle, ridge = _hf_detail((h, w), seed, profile)
+        active = mask[:, :, np.newaxis].astype(np.float32)
+        cool = np.asarray(profile["cool"], dtype=np.float32)
+        warm = np.asarray(profile["warm"], dtype=np.float32)
+        carrier = np.clip(detail * 0.68 + ridge * 0.18 + sparkle * 0.14, 0, 1)
+        tint = cool[np.newaxis, np.newaxis, :] * (1.0 - carrier[:, :, np.newaxis]) + warm[np.newaxis, np.newaxis, :] * carrier[:, :, np.newaxis]
+        shift = (tint - 0.5) * (0.34 + sparkle[:, :, np.newaxis] * 0.72)
+        luma_detail = ((detail - 0.5) * 0.050 + sparkle * 0.055 + ridge * 0.018)[:, :, np.newaxis]
+        micro_gain = float(profile.get("micro_gain", 0.0))
+        needle = None
+        if micro_gain > 0:
+            phase = (int(profile["bias"]) % 360) * np.pi / 180.0
+            needle = _noise((h, w), [1, 2, 3], [0.44, 0.34, 0.22], seed + 9600 + int(profile["bias"]))
+            color_grain = np.stack([
+                np.sin(needle * 6.0 + detail * 15.0 + phase) * 0.5 + 0.5,
+                np.sin(ridge * 17.0 + phase + 2.09) * 0.5 + 0.5,
+                np.sin(needle * 5.0 + (detail + ridge) * 11.0 + phase + 4.18) * 0.5 + 0.5,
+            ], axis=2).astype(np.float32)
+            shift = shift + (color_grain - 0.5) * micro_gain
+            luma_detail = luma_detail + needle[:, :, np.newaxis] * micro_gain * 0.18
+        out = np.clip(
+            out
+            + shift * active * float(pm) * paint_gain
+            + luma_detail * active * float(pm) * min(0.42, paint_gain * 2.2),
+            0,
+            1,
+        )
+        return out.astype(np.float32)
+
+    return _spec, _paint
+
+
+FUSION_REGISTRY = {
+    finish_id: _wrap_fusion_detail(finish_id, spec_fn, paint_fn)
+    for finish_id, (spec_fn, paint_fn) in FUSION_REGISTRY.items()
 }
 
 
@@ -4447,7 +5828,7 @@ def get_fusion_group_map():
                 "trizone_ceramic_flake_satin", "trizone_stealth_spectra_frozen",
             ],
             "FUSIONS - Depth Illusion": [
-                "depth_canyon", "depth_bubble", "depth_ripple", "depth_scale", "depth_honeycomb",
+                "depth_canyon", "depth_bubble", "depth_map", "depth_ripple", "depth_scale", "depth_honeycomb",
                 "depth_crack", "depth_wave", "depth_pillow", "depth_vortex", "depth_erosion",
             ],
             "FUSIONS - Metallic Halos": [

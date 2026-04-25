@@ -12,6 +12,8 @@ REGISTRY_PATCH = {
     "surgical_steel": "paint_surgical_steel_v2",
     "titanium_raw": "paint_titanium_raw_v2",
     "tungsten": "paint_tungsten_v2",
+    "chromaflair": "paint_chromaflair_v2",
+    "xirallic": "paint_xirallic_v2",
 }
 
 
@@ -25,4 +27,6 @@ SPEC_PATCH = {
     "surgical_steel": "spec_surgical_steel",
     "titanium_raw": "spec_titanium_raw",
     "tungsten": "spec_tungsten",
+    "chromaflair": "spec_chromaflair",
+    "xirallic": "spec_xirallic",
 }

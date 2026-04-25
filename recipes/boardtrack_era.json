@@ -1,0 +1,71 @@
+{
+  "name": "Boardtrack Era",
+  "description": "1920s wooden board-track racer aesthetic. Cream/off-white enamel body, hand-painted black number circle, dark green thin pinstripes, faded brass-tone trim, and single red accent ribbon. Feels hand-built in a barn in 1923.",
+  "author": "Shokker Paint Booth",
+  "version": "6.2.0",
+  "compatible_with": "pre-war board-track specials, vintage indy roadsters, early motorcycle builds",
+  "notes": "Keep ALL specStrengths low (0.6-0.75) — period paint didn't have modern clearcoat. Enamel base already de-glosses; don't fight it. Number roundel should feel brush-painted, not decal-sharp.",
+  "zones": [
+    {
+      "name": "Cream Enamel Body",
+      "color": "everything",
+      "base": "enamel",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "special",
+      "baseColor": "#f0e6c8",
+      "baseColorMode": "solid",
+      "baseStrength": 0.9,
+      "baseSpecStrength": 0.7
+    },
+    {
+      "name": "Hand-Painted Black Number",
+      "color": "dark",
+      "base": "matte",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#1a1a1a",
+      "pickerTolerance": 30,
+      "baseColor": "#0a0a0a",
+      "baseColorMode": "solid"
+    },
+    {
+      "name": "Dark Green Pinstripe",
+      "color": "green",
+      "base": "enamel",
+      "pattern": "pinstripe",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#1e4a2a",
+      "pickerTolerance": 30,
+      "baseColor": "#163c20",
+      "baseColorMode": "solid",
+      "patternIntensity": "100"
+    },
+    {
+      "name": "Faded Brass Trim",
+      "color": "yellow",
+      "base": "mirror_gold",
+      "pattern": "none",
+      "intensity": "80",
+      "colorMode": "quick",
+      "pickerColor": "#b89040",
+      "pickerTolerance": 30,
+      "baseColor": "#a08030",
+      "baseColorMode": "solid"
+    },
+    {
+      "name": "Red Accent Ribbon",
+      "color": "red",
+      "base": "enamel",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#a02020",
+      "pickerTolerance": 30,
+      "baseColor": "#881818",
+      "baseColorMode": "solid"
+    }
+  ]
+}

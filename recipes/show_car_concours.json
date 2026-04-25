@@ -1,0 +1,81 @@
+{
+  "name": "Show Car Concours",
+  "description": "Concours d'Elegance level presentation. Deep monochrome gloss body, every trim piece polished chrome, piano black undercarriage, gold mirror badging, pearl highlight on fender caps. No sponsors, no numbers — only the paint.",
+  "author": "Shokker Paint Booth",
+  "version": "6.2.0",
+  "compatible_with": "any restored classic, pre-war luxury, 50s-70s restorations, concours builds",
+  "notes": "Concours is about DEPTH. baseSpecStrength stays at 1 on body so reflections stack cleanly. If the car is photographed indoors, drop chrome tolerance to 25 to avoid chrome leaking into dark body paint.",
+  "zones": [
+    {
+      "name": "Deep Gloss Monochrome",
+      "color": "everything",
+      "base": "gloss",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "special",
+      "baseColor": "#1a0f3a",
+      "baseColorMode": "solid",
+      "baseStrength": 1,
+      "baseSpecStrength": 1
+    },
+    {
+      "name": "Polished Chrome Everything",
+      "color": "gray",
+      "base": "chrome",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#d0d0d0",
+      "pickerTolerance": 32,
+      "baseColorMode": "source"
+    },
+    {
+      "name": "Piano Black Undercarriage",
+      "color": "dark",
+      "base": "piano_black",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#151515",
+      "pickerTolerance": 30,
+      "baseColor": "#050505",
+      "baseColorMode": "solid"
+    },
+    {
+      "name": "Gold Mirror Badging",
+      "color": "yellow",
+      "base": "mirror_gold",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#f4c430",
+      "pickerTolerance": 28,
+      "baseColorMode": "source"
+    },
+    {
+      "name": "Pearl Fender Highlight",
+      "color": "white",
+      "base": "pearl",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#f5f0e4",
+      "pickerTolerance": 25,
+      "baseColor": "#fbf6ea",
+      "baseColorMode": "solid"
+    },
+    {
+      "name": "Wine Red Pinstripe",
+      "color": "red",
+      "base": "gloss",
+      "pattern": "pinstripe",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#6a1020",
+      "pickerTolerance": 28,
+      "baseColor": "#520a18",
+      "baseColorMode": "solid",
+      "patternIntensity": "100"
+    }
+  ]
+}

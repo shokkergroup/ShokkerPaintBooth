@@ -35,6 +35,7 @@ except Exception as _cmf_ex:
 
 def _wrap_staging_paint_fn(fn):
     def _wrapped(paint, shape, mask, seed, pm, bb):
+        if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
         bb_val = bb
         try:
             if np.isscalar(bb):
@@ -168,6 +169,7 @@ def _make_solid_spec(M, R, CC):
 def _make_solid_paint(r, g, b, style="solid"):
     """Factory: returns a paint_fn closure that replaces paint with target color."""
     def paint_fn(paint, shape, mask, seed, pm, bb):
+        if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
         m3 = mask[:,:,np.newaxis]
         blend = 0.92 * pm  # Strong replacement, pm scales it
         if style == "solid":
@@ -194,7 +196,7 @@ def _make_solid_paint(r, g, b, style="solid"):
             paint[:,:,0] = paint[:,:,0] * (1 - m3[:,:,0] * blend) + r * m3[:,:,0] * blend
             paint[:,:,1] = paint[:,:,1] * (1 - m3[:,:,0] * blend) + g * m3[:,:,0] * blend
             paint[:,:,2] = paint[:,:,2] * (1 - m3[:,:,0] * blend) + b * m3[:,:,0] * blend
-            shimmer = _engine.multi_scale_noise(shape, [4, 8, 16], [0.3, 0.4, 0.3], seed + 7100)
+            shimmer = _engine.multi_scale_noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + 7100)
             # Shift hue slightly based on noise (pearlescent effect)
             paint[:,:,0] = np.clip(paint[:,:,0] + shimmer * 0.06 * pm * mask, 0, 1)
             paint[:,:,2] = np.clip(paint[:,:,2] - shimmer * 0.04 * pm * mask, 0, 1)
@@ -216,7 +218,7 @@ def _make_solid_paint(r, g, b, style="solid"):
             paint[:,:,1] = paint[:,:,1] * (1 - m3[:,:,0] * blend) + cg * m3[:,:,0] * blend
             paint[:,:,2] = paint[:,:,2] * (1 - m3[:,:,0] * blend) + cb * m3[:,:,0] * blend
             # Add reflection noise
-            refl = _engine.multi_scale_noise(shape, [4, 8, 16], [0.3, 0.4, 0.3], seed + 7300)
+            refl = _engine.multi_scale_noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + 7300)
             paint = np.clip(paint + refl[:,:,np.newaxis] * 0.04 * pm * m3, 0, 1)
         return paint
     return paint_fn
@@ -241,6 +243,7 @@ def _make_gradient_spec(M=80, R=40, CC=30):  # CC=30: gradients look best with s
 def _make_gradient_paint(r1, g1, b1, r2, g2, b2, direction="vertical"):
     """Factory: two-color gradient blend across the zone."""
     def paint_fn(paint, shape, mask, seed, pm, bb):
+        if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
         h, w = shape
         m3 = mask[:,:,np.newaxis]
         blend = 1.0 * pm
@@ -300,6 +303,7 @@ def _make_colorshift_paint_direct(r1, g1, b1, r2, g2, b2):
     Pure RGB interpolation: black+silver = actual black and silver, always.
     """
     def paint_fn(paint, shape, mask, seed, pm, bb):
+        if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
         h, w = shape
         # Structural field: multi-scale noise simulating panel orientation
         # Large scales dominate (panel-to-panel variation), small adds detail
@@ -333,7 +337,7 @@ def _make_colorshift_paint_direct(r1, g1, b1, r2, g2, b2):
         lum1 = 0.299 * r1 + 0.587 * g1 + 0.114 * b1
         lum2 = 0.299 * r2 + 0.587 * g2 + 0.114 * b2
         if lum1 > 0.04 or lum2 > 0.04:
-            micro = _engine.multi_scale_noise(shape, [2, 4, 8], [0.4, 0.35, 0.25], seed + 6100)
+            micro = _engine.multi_scale_noise(shape, [16, 32, 64], [0.4, 0.35, 0.25], seed + 6100)
             shimmer = micro * 0.025 * pm * mask
             for c in range(3):
                 result[:,:,c] = np.clip(result[:,:,c] + shimmer, 0, 1)
@@ -367,6 +371,7 @@ def _make_multicolor_paint(colors, pattern_type="swirl"):
     pattern_type: swirl, camo, marble, splatter
     """
     def paint_fn(paint, shape, mask, seed, pm, bb):
+        if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
         h, w = shape
         blend = 0.85 * pm
         n_colors = len(colors)
@@ -389,7 +394,7 @@ def _make_multicolor_paint(colors, pattern_type="swirl"):
             zone_map = np.clip((vein + 1) * 0.5, 0, 0.999)
             zone_idx = (zone_map * n_colors).astype(int)
         else:  # splatter
-            n1 = _engine.multi_scale_noise(shape, [2, 4, 8], [0.3, 0.4, 0.3], seed + 8400)
+            n1 = _engine.multi_scale_noise(shape, [16, 32, 64], [0.3, 0.4, 0.3], seed + 8400)
             zone_map = np.clip((n1 + 1) * 0.5, 0, 0.999)
             zone_idx = (zone_map * n_colors).astype(int)
 

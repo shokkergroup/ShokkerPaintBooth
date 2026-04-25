@@ -1,0 +1,156 @@
+{
+  "version": "6.2.0",
+  "schema": "spb-league-config-v1",
+  "description": "League configuration template for standardizing livery looks across a sim-racing league. Fill in the fields, save, and distribute to drivers along with the league's shared decal pack.",
+  "league_name": "Example Racing League",
+  "league_slug": "example-racing-league",
+  "season": "2026 Spring",
+  "series_tier": "Open-wheel / GT3 / Stock / Touring",
+  "regulations_url": "https://example-league.com/regs",
+  "contact": {
+    "admin_name": "League Admin Name",
+    "admin_email": "admin@example-league.com",
+    "discord_channel": "#livery-approvals"
+  },
+  "required_zones": [
+    {
+      "name": "League Logo Windshield Banner",
+      "description": "The league logo must appear on the windshield banner zone across the top of the windshield.",
+      "layer": "Windshield Banner",
+      "required": true,
+      "minimum_size_percent": 90,
+      "supplied_asset": "assets/league_logo_windshield.png"
+    },
+    {
+      "name": "League Contingency B-Pillar",
+      "description": "League contingency stack on both B-pillars, sized to regulation.",
+      "layer": "B-Pillar Zone",
+      "required": true,
+      "minimum_size_percent": 75,
+      "supplied_asset": "assets/contingency_stack.png"
+    },
+    {
+      "name": "Primary Sponsor Door",
+      "description": "Primary sponsor lockup on both doors. Driver-chosen sponsor, subject to approval.",
+      "layer": "Door Primary",
+      "required": true,
+      "approval_required": true
+    },
+    {
+      "name": "Series Title Sponsor Roof Stripe",
+      "description": "Series title-sponsor wordmark running along the roof centerline.",
+      "layer": "Roof Stripe",
+      "required": true,
+      "supplied_asset": "assets/series_title_sponsor_roof.png"
+    }
+  ],
+  "approved_bases": [
+    "gloss_base",
+    "matte_base",
+    "satin_base",
+    "metallic_base",
+    "pearl_base",
+    "candy_base",
+    "chrome_base",
+    "carbon_base"
+  ],
+  "banned_bases": [
+    "mortal_shokk_*",
+    "damage_wear_*",
+    "neon_underground_*"
+  ],
+  "approved_patterns": [
+    "stripe_basic",
+    "stripe_pinstripe",
+    "chevron_wing",
+    "checker_band",
+    "flame_hood",
+    "fade_gradient",
+    "split_halves"
+  ],
+  "banned_patterns": [
+    "pixel_glitch_heavy",
+    "digital_camo_full",
+    "weathered_barn_find"
+  ],
+  "color_palette": {
+    "name": "racing_classic",
+    "description": "Clean classic racing palette — saturated primary colors, no neons, no pastels.",
+    "allowed_colors": [
+      "white", "black", "red", "royal_blue", "green", "yellow", "orange",
+      "silver", "gold", "chrome", "navy", "maroon", "british_racing_green"
+    ],
+    "banned_colors": ["fluorescent_pink", "neon_lime", "pastel_mint", "safety_vest_yellow"]
+  },
+  "number_style": {
+    "preset": "nascar_door_panel",
+    "font": "racing_bold_upright",
+    "fill_color": "driver_choice",
+    "outline_color": "driver_choice",
+    "minimum_height_pixels": 120,
+    "placement": "centered_door_both_sides"
+  },
+  "contingency_stack": {
+    "preset": "nascar_b_pillar",
+    "layout": "vertical_stack",
+    "supplied_stack_file": "assets/contingency_stack.shokker",
+    "locked": true,
+    "notes": "Contingency stack is supplied pre-built. Do not edit. Drop onto B-pillar zone as-is."
+  },
+  "naming_convention": "<driver_last>_<car_number>_<season>.shokker",
+  "example_filename": "smith_48_spring2026.shokker",
+  "submission": {
+    "deadline": "Weekly Thursday 11:59 PM EST",
+    "submission_channel": "#livery-submissions",
+    "review_duration_hours": 24,
+    "approval_required_before_qualifying": true,
+    "max_revisions_per_week": 3,
+    "late_submission_penalty": "Driver uses previous week's approved livery."
+  },
+  "penalties_for_non_compliance": [
+    {
+      "violation": "Missing required zone",
+      "penalty": "Livery rejected; driver uses previous approved livery or default plain base.",
+      "severity": "high"
+    },
+    {
+      "violation": "Banned base or pattern used",
+      "penalty": "Livery rejected; 24-hour resubmission window.",
+      "severity": "medium"
+    },
+    {
+      "violation": "Out-of-palette color",
+      "penalty": "Warning first offense, rejection on second.",
+      "severity": "low"
+    },
+    {
+      "violation": "Contingency stack modified",
+      "penalty": "Automatic rejection; reset stack from supplied file.",
+      "severity": "high"
+    }
+  ],
+  "optional_features": {
+    "allow_driver_custom_primary_sponsor": true,
+    "allow_helmet_crossover_from_livery": true,
+    "allow_custom_monolithic_bases": false,
+    "allow_personalized_damage_wear": false
+  },
+  "template_liveries_provided": [
+    {
+      "name": "League Template A — Clean Stripe",
+      "file": "assets/template_clean_stripe.shokker",
+      "description": "Base white body with league-color centerline stripe. Drop in sponsors."
+    },
+    {
+      "name": "League Template B — Split Halves",
+      "file": "assets/template_split_halves.shokker",
+      "description": "Two-color split down the centerline. Driver chooses the two colors from palette."
+    },
+    {
+      "name": "League Template C — Minimalist",
+      "file": "assets/template_minimalist.shokker",
+      "description": "Solid body color with a single contrast accent stripe."
+    }
+  ],
+  "notes_for_admins": "Replace all 'example' strings with your league's real values. Distribute this file along with the required asset files in the assets/ folder. Drivers import this config into SPB (File menu → Import League Config) and SPB will enforce required zones, warn on banned bases/patterns, and provide the supplied template liveries as starting points."
+}

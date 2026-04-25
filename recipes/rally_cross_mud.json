@@ -1,0 +1,96 @@
+{
+  "name": "Rally Cross Mud",
+  "description": "Heavy rally-cross weathering with realistic mud splatter, rally graphics, reflective numbers, and weathered satin body. Looks like it just finished a Group B stage.",
+  "author": "Shokker Paint Booth",
+  "version": "6.2.0",
+  "compatible_with": "rally_hatch, subaru_impreza, lancia_delta, any WRC-style chassis",
+  "notes": "For tarmac rally feel, drop Heavy Mud Splatter intensity to 30 and increase baseSpecStrength on Body. For full gravel mode, bump Splatter to 100 and add a second pass at lower tolerance.",
+  "zones": [
+    {
+      "name": "Rally Body",
+      "color": "everything",
+      "base": "satin",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "special",
+      "baseColor": "#ffffff",
+      "baseColorMode": "solid",
+      "baseStrength": 1,
+      "baseSpecStrength": 0.85
+    },
+    {
+      "name": "Heavy Mud Splatter",
+      "color": "remaining",
+      "base": "rally_mud",
+      "pattern": "none",
+      "intensity": "85",
+      "colorMode": "special",
+      "baseColor": "#4a3218",
+      "baseColorMode": "solid",
+      "baseStrength": 0.8,
+      "baseSpecStrength": 0.4
+    },
+    {
+      "name": "Mud Crust Lower",
+      "color": "dark",
+      "base": "rally_mud",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#2a1e0c",
+      "pickerTolerance": 45,
+      "baseColor": "#2e1f0c",
+      "baseColorMode": "solid",
+      "baseStrength": 1,
+      "baseSpecStrength": 0.25
+    },
+    {
+      "name": "Rally Blue Graphic",
+      "color": "blue",
+      "base": "gloss",
+      "pattern": "racing_stripe",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#3366ff",
+      "pickerTolerance": 35,
+      "baseColor": "#003cb5",
+      "baseColorMode": "solid",
+      "patternIntensity": "95"
+    },
+    {
+      "name": "Rally Red Graphic",
+      "color": "red",
+      "base": "gloss",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#cc2222",
+      "pickerTolerance": 35,
+      "baseColor": "#e81818",
+      "baseColorMode": "solid"
+    },
+    {
+      "name": "Reflective Race Numbers",
+      "color": "yellow",
+      "base": "chrome",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#ffcc00",
+      "pickerTolerance": 30,
+      "baseColorMode": "source"
+    },
+    {
+      "name": "Matte Hood Patch",
+      "color": "gray",
+      "base": "matte",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#444444",
+      "pickerTolerance": 35,
+      "baseColor": "#1c1c1c",
+      "baseColorMode": "solid"
+    }
+  ]
+}

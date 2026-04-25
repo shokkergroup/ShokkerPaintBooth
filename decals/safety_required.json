@@ -1,0 +1,69 @@
+{
+  "version": "6.2.0",
+  "description": "Mandatory safety and regulatory decals required by most sanctioning bodies. SPB warns the user if any of these zones are missing on a finished livery.",
+  "schema": {
+    "id": "string — unique key",
+    "name": "string — human label",
+    "required_by": "array of sanctioning categories",
+    "size_hint_uv": "[width, height] in UV space",
+    "placement": "string — typical zone",
+    "color_rule": "string — required color or contrast rule",
+    "notes": "string — purpose and reasoning"
+  },
+  "decals": [
+    {
+      "id": "driver_name_plate",
+      "name": "Driver Name Plate",
+      "required_by": ["stock_car", "sports_car", "prototype", "open_wheel"],
+      "size_hint_uv": [0.15, 0.025],
+      "placement": "Roof rail, A-pillar, or above driver door",
+      "color_rule": "Must contrast with body color — black on light, white on dark",
+      "notes": "Driver identification for trackside marshals, broadcast graphics, and emergency response. Some series mandate the name above the door, others on the roof rail. Length varies with name — leave at least 15% UV width."
+    },
+    {
+      "id": "blood_type_indicator",
+      "name": "Blood Type Indicator",
+      "required_by": ["stock_car", "open_wheel", "prototype", "sports_car"],
+      "size_hint_uv": [0.025, 0.025],
+      "placement": "A-pillar, helmet, or roll cage area",
+      "color_rule": "Red text on white background, square or shield-shaped",
+      "notes": "Critical for emergency medical response. Shows driver's ABO and Rh blood type so medics can begin transfusion preparation before transport. Must be visible from outside the cabin without opening doors."
+    },
+    {
+      "id": "iracing_nameplate",
+      "name": "Sim-Series Nameplate",
+      "required_by": ["sim_racing"],
+      "size_hint_uv": [0.18, 0.025],
+      "placement": "Roof rail or A-pillar",
+      "color_rule": "Series-defined — usually white text on dark background",
+      "notes": "Sim-racing equivalent of the driver nameplate. Required for league participation and broadcast eligibility. Some sim platforms generate this dynamically; others require it baked into the livery."
+    },
+    {
+      "id": "class_indicator_lights",
+      "name": "Class Indicator Light Surround",
+      "required_by": ["sports_car", "prototype", "endurance"],
+      "size_hint_uv": [0.02, 0.02],
+      "placement": "Roof corner, rear deck, front fender",
+      "color_rule": "Black surround around the LED — does not paint the LED itself",
+      "notes": "Multi-class endurance racing requires illuminated class indicator lights (yellow GTD, red GTP, etc.). The decal is the bezel that contrasts the LED, not the light itself. SPB should reserve these zones from livery paint to avoid covering the LEDs."
+    },
+    {
+      "id": "transponder_marker",
+      "name": "Transponder Mount Marker",
+      "required_by": ["stock_car", "sports_car", "prototype", "open_wheel", "dirt_oval"],
+      "size_hint_uv": [0.03, 0.015],
+      "placement": "Lower nose, side skirt, or undertray edge",
+      "color_rule": "Yellow with black border — high-vis utility marker",
+      "notes": "Marks the transponder mounting location for tech inspection. Transponders are series-issued; the decal indicates where the unit is fastened. Often overlooked on custom liveries — SPB should flag if missing."
+    },
+    {
+      "id": "pit_window_marker",
+      "name": "Pit Window / Fuel Cell Marker",
+      "required_by": ["stock_car", "endurance", "sports_car"],
+      "size_hint_uv": [0.04, 0.04],
+      "placement": "Rear quarter near fuel filler, or roof above filler",
+      "color_rule": "High-contrast — usually red or yellow on white background",
+      "notes": "Locates the fuel cell filler for pit crew and emergency responders. May also indicate the safe pit window for refueling. Mandatory in most refueling-allowed series. Must remain visible regardless of livery design."
+    }
+  ]
+}

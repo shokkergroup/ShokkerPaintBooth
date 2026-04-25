@@ -1,0 +1,83 @@
+{
+  "name": "Drift Wrap",
+  "description": "Cut-vinyl drift car vibe: matte wrap body, bold graphic stripes, and matte sticker decals. Built to look like it was assembled in a shop, not a paint booth.",
+  "author": "Shokker Paint Booth",
+  "version": "6.2.0",
+  "compatible_with": "any chassis, best on street/drift/time-attack builds",
+  "notes": "Vinyl wrap bases have a slightly different reflectivity than paint - this is intentional. Layer multiple stripe zones with distinct pickerColors to build multi-color graphic kits.",
+  "zones": [
+    {
+      "name": "Wrap Body",
+      "color": "everything",
+      "base": "matte_wrap",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "special",
+      "baseColor": "#ffffff",
+      "baseColorMode": "solid",
+      "baseStrength": 1,
+      "baseSpecStrength": 1
+    },
+    {
+      "name": "Graphic Stripe Main",
+      "color": "red",
+      "base": "gloss_wrap",
+      "pattern": "zigzag_stripe",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#cc2222",
+      "pickerTolerance": 35,
+      "baseColor": "#ff2255",
+      "baseColorMode": "solid",
+      "patternIntensity": "100"
+    },
+    {
+      "name": "Graphic Stripe Secondary",
+      "color": "blue",
+      "base": "gloss_wrap",
+      "pattern": "chevron",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#3366ff",
+      "pickerTolerance": 35,
+      "baseColor": "#22aaff",
+      "baseColorMode": "solid",
+      "patternIntensity": "100"
+    },
+    {
+      "name": "Matte Decals",
+      "color": "white",
+      "base": "satin_wrap",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#ffffff",
+      "pickerTolerance": 25,
+      "baseColor": "#f0f0f0",
+      "baseColorMode": "solid"
+    },
+    {
+      "name": "Carbon Hood",
+      "color": "dark",
+      "base": "carbon_weave",
+      "pattern": "carbon_fiber",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#1a1a1a",
+      "pickerTolerance": 40,
+      "patternIntensity": "100"
+    },
+    {
+      "name": "Tinted Glass Stripe",
+      "color": "yellow",
+      "base": "tinted_clear",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#ffcc00",
+      "pickerTolerance": 30,
+      "baseColor": "#2a2a2a",
+      "baseColorMode": "solid"
+    }
+  ]
+}

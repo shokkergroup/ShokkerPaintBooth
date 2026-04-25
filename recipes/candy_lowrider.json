@@ -1,0 +1,104 @@
+{
+  "name": "Candy Lowrider",
+  "description": "Full-on candy paint lowrider with heavy metal flake, gold leaf pinstripes, chrome everything, and pearl pattern overlays. A rolling sculpture built for slow cruising and cameras.",
+  "author": "Shokker Paint Booth",
+  "version": "6.2.0",
+  "compatible_with": "impala, cadillac, cutlass, monte_carlo, any G-body classic",
+  "notes": "Lowrider style LIVES in the paint depth — don't skimp on Pearl Overlay strength. Candy body responds strongly to lighting; adjust baseColor to match your crew/theme. Chrome should cover bumpers, trim, and mirrors.",
+  "zones": [
+    {
+      "name": "Candy Apple Body",
+      "color": "everything",
+      "base": "candy_apple",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "special",
+      "baseColor": "#a8002a",
+      "baseColorMode": "solid",
+      "baseStrength": 1,
+      "baseSpecStrength": 1
+    },
+    {
+      "name": "Heavy Pearl Flake",
+      "color": "remaining",
+      "base": "pearl",
+      "pattern": "none",
+      "intensity": "85",
+      "colorMode": "special",
+      "baseColor": "#ffd8c4",
+      "baseColorMode": "solid",
+      "baseStrength": 0.8,
+      "baseSpecStrength": 1
+    },
+    {
+      "name": "Full Chrome Trim",
+      "color": "gray",
+      "base": "chrome",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#cccccc",
+      "pickerTolerance": 30,
+      "baseColorMode": "source"
+    },
+    {
+      "name": "Gold Leaf Pinstripe",
+      "color": "yellow",
+      "base": "mirror_gold",
+      "pattern": "pinstripe",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#ffcc00",
+      "pickerTolerance": 30,
+      "patternIntensity": "100"
+    },
+    {
+      "name": "Pearl Panel Overlay",
+      "color": "white",
+      "base": "pearl",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#ffffff",
+      "pickerTolerance": 25,
+      "baseColor": "#fff4df",
+      "baseColorMode": "solid"
+    },
+    {
+      "name": "Candy Blue Accent",
+      "color": "blue",
+      "base": "candy_cobalt",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#3366ff",
+      "pickerTolerance": 35,
+      "baseColor": "#0c2aa8",
+      "baseColorMode": "solid"
+    },
+    {
+      "name": "Candy Emerald Detail",
+      "color": "red",
+      "base": "candy_emerald",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#cc2222",
+      "pickerTolerance": 35,
+      "baseColor": "#0d7a2c",
+      "baseColorMode": "solid"
+    },
+    {
+      "name": "Piano Black Undercarriage",
+      "color": "dark",
+      "base": "piano_black",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#1a1a1a",
+      "pickerTolerance": 35,
+      "baseColor": "#050505",
+      "baseColorMode": "solid"
+    }
+  ]
+}

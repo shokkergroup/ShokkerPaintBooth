@@ -24,6 +24,7 @@ from engine.paint_v2 import ensure_bb_2d
 # ══════════════════════════════════════════════════════════════════
 
 def paint_shokk_blood_v2(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     rng = np.random.RandomState(seed + 800)
@@ -58,9 +59,8 @@ def paint_shokk_blood_v2(paint, shape, mask, seed, pm, bb):
         u = np.clip(u + du * 1.0, 0, 1)
         v = np.clip(v + dv * 1.0, 0, 1)
     # Upscale vein pattern to full resolution
-    from PIL import Image as _Img
-    vein_map = np.array(_Img.fromarray((v * 255).astype(np.uint8)).resize(
-        (w, h), _Img.BICUBIC)).astype(np.float32) / 255.0
+    import cv2 as _cv2
+    vein_map = _cv2.resize(v.astype(np.float32), (w, h), interpolation=_cv2.INTER_CUBIC)
 
     # --- Blood red base with vein darkening ---
     base = paint.copy()
@@ -113,13 +113,13 @@ def spec_shokk_blood(shape, seed, sm, base_m, base_r):
         u = np.clip(u + (Du * laplacian(u) - uvv + f_rate * (1 - u)), 0, 1)
         v = np.clip(v + (Dv * laplacian(v) + uvv - (f_rate + k_rate) * v), 0, 1)
 
-    from PIL import Image as _Img
-    vein = np.array(_Img.fromarray((v*255).astype(np.uint8)).resize((w,h),_Img.BICUBIC)).astype(np.float32)/255.0
+    import cv2 as _cv2
+    vein = _cv2.resize(v.astype(np.float32), (w, h), interpolation=_cv2.INTER_CUBIC)
 
     # Veins are wet (low roughness, moderate metallic)
     M = np.clip(base_m + vein * 60.0 * sm, 0, 255).astype(np.float32)
     R = np.clip(base_r - vein * 80.0 * sm + 20.0, 15, 255).astype(np.float32)
-    CC = np.clip(20 + vein * 30.0, 0, 255).astype(np.float32)
+    CC = np.clip(20.0 + vein * 30.0, 16, 255).astype(np.float32)
     return M, R, CC
 
 # ══════════════════════════════════════════════════════════════════
@@ -131,6 +131,7 @@ def spec_shokk_blood(shape, seed, sm, base_m, base_r):
 # ══════════════════════════════════════════════════════════════════
 
 def paint_shokk_pulse_v2(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     rng = np.random.RandomState(seed + 810)
@@ -167,11 +168,8 @@ def paint_shokk_pulse_v2(paint, shape, mask, seed, pm, bb):
     # --- Fresnel rim glow ---
     # Simulate viewing angle using distance from mask edges
     # Edges of the painted area glow brighter (like Fresnel reflection)
-    from PIL import Image as _Img, ImageFilter as _Filt
-    mask_pil = _Img.fromarray((mask * 255).astype(np.uint8))
-    mask_blur = np.array(mask_pil.filter(
-        _Filt.GaussianBlur(radius=max(h // 64, 3))
-    )).astype(np.float32) / 255.0
+    import cv2 as _cv2
+    mask_blur = _cv2.GaussianBlur(mask.astype(np.float32), (0, 0), max(h // 64, 3))
     # Rim = where mask transitions from 0→1 (edge detection via gradient)
     rim = np.clip(mask - mask_blur, 0, 1)
     rim = np.clip(rim * 8.0, 0, 1)  # Sharpen the rim band
@@ -219,7 +217,7 @@ def spec_shokk_pulse(shape, seed, sm, base_m, base_r):
     # Energy channels = metallic + smooth; background = rough dielectric
     M = np.clip(base_m * 0.3 + energy * 200.0 * sm, 0, 255).astype(np.float32)
     R = np.clip(base_r + 40.0 - energy * 120.0 * sm, 15, 255).astype(np.float32)
-    CC = np.clip(10.0 + energy * 20.0, 0, 255).astype(np.float32)
+    CC = np.clip(16.0 + energy * 20.0, 16, 255).astype(np.float32)
     return M, R, CC
 
 # ══════════════════════════════════════════════════════════════════
@@ -231,6 +229,7 @@ def spec_shokk_pulse(shape, seed, sm, base_m, base_r):
 # ══════════════════════════════════════════════════════════════════
 
 def paint_shokk_static_v2(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     rng = np.random.RandomState(seed + 820)
@@ -317,7 +316,7 @@ def spec_shokk_static(shape, seed, sm, base_m, base_r):
         glitch_map[gy:min(gy+gh, h), :] = 1.0
     M = np.clip(base_m + glitch_map * 80.0 * sm + static * 20.0 * sm, 0, 255).astype(np.float32)
     R = np.clip(base_r * rough_band - static * 15.0 * sm, 15, 255).astype(np.float32)
-    CC = np.clip(16.0 - glitch_map * 10.0, 0, 255).astype(np.float32)
+    CC = np.clip(16.0 + glitch_map * 10.0, 16, 255).astype(np.float32)  # was subtracting, could go <16
     return M, R, CC
 
 # ══════════════════════════════════════════════════════════════════
@@ -330,6 +329,7 @@ def spec_shokk_static(shape, seed, sm, base_m, base_r):
 # ══════════════════════════════════════════════════════════════════
 
 def paint_shokk_venom_v2(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     rng = np.random.RandomState(seed + 830)
@@ -351,9 +351,8 @@ def paint_shokk_venom_v2(paint, shape, mask, seed, pm, bb):
         r = rng.randint(1, 4)
         fluid[max(0,dy-r):dy+r, max(0,dx-r):dx+r] = rng.uniform(0.5, 1.0)
     # Downsample surface map for flow simulation
-    from PIL import Image as _Img
-    surf_small = np.array(_Img.fromarray((surface * 255).astype(np.uint8)).resize(
-        (sw, sh), _Img.BILINEAR)).astype(np.float32) / 255.0
+    import cv2 as _cv2
+    surf_small = _cv2.resize(surface.astype(np.float32), (sw, sh), interpolation=_cv2.INTER_LINEAR)
 
     # Iterate: fluid flows downward, deflected by surface features
     # viscosity = how much spreads sideways, gravity = downward pull
@@ -382,8 +381,7 @@ def paint_shokk_venom_v2(paint, shape, mask, seed, pm, bb):
         # Re-seed top edge slightly each iteration (continuous drip)
         fluid[0, :] = np.clip(fluid[0, :] + rng.rand(sw) * 0.05, 0, 1)
     # Upscale fluid map to full resolution
-    drip_map = np.array(_Img.fromarray((np.clip(fluid, 0, 1) * 255).astype(np.uint8)).resize(
-        (w, h), _Img.BICUBIC)).astype(np.float32) / 255.0
+    drip_map = _cv2.resize(np.clip(fluid, 0, 1).astype(np.float32), (w, h), interpolation=_cv2.INTER_CUBIC)
 
     # --- Toxic acid green-yellow color ---
     base = paint.copy()
@@ -429,9 +427,8 @@ def spec_shokk_venom(shape, seed, sm, base_m, base_r):
         r = rng.randint(1, 4)
         fluid[max(0,dy-r):dy+r, max(0,dx-r):dx+r] = rng.uniform(0.5, 1.0)
 
-    from PIL import Image as _Img
-    surf_small = np.array(_Img.fromarray((surface * 255).astype(np.uint8)).resize(
-        (sw, sh), _Img.BILINEAR)).astype(np.float32) / 255.0
+    import cv2 as _cv2
+    surf_small = _cv2.resize(surface.astype(np.float32), (sw, sh), interpolation=_cv2.INTER_LINEAR)
 
     for _ in range(60):
         flow_down = np.roll(fluid, 1, axis=0) * 0.6
@@ -445,8 +442,7 @@ def spec_shokk_venom(shape, seed, sm, base_m, base_r):
             np.roll(np.clip(slope_r,0,1)*fluid*0.15, 1, axis=1), 0, 1)
         fluid[0, :] = np.clip(fluid[0, :] + rng.rand(sw) * 0.05, 0, 1)
 
-    drip = np.array(_Img.fromarray((np.clip(fluid,0,1)*255).astype(np.uint8)).resize(
-        (w, h), _Img.BICUBIC)).astype(np.float32) / 255.0
+    drip = _cv2.resize(np.clip(fluid, 0, 1).astype(np.float32), (w, h), interpolation=_cv2.INTER_CUBIC)
 
     # Wet pooled acid: low roughness, some metallic (dissolved metal particles)
     # Dry residue: high roughness, no metallic
@@ -454,7 +450,7 @@ def spec_shokk_venom(shape, seed, sm, base_m, base_r):
     R = np.clip(base_r + 30.0 - drip * 100.0 * sm, 15, 255).astype(np.float32)
     # Thick pools get clearcoat (surface tension creates smooth meniscus)
     thick = np.clip((drip - 0.5) * 2.0, 0, 1)
-    CC = np.clip(5.0 + thick * 25.0, 0, 255).astype(np.float32)
+    CC = np.clip(16.0 + thick * 25.0, 16, 255).astype(np.float32)
     return M, R, CC
 
 # ══════════════════════════════════════════════════════════════════
@@ -468,6 +464,7 @@ def spec_shokk_venom(shape, seed, sm, base_m, base_r):
 # ══════════════════════════════════════════════════════════════════
 
 def paint_shokk_void_v2(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     rng = np.random.RandomState(seed + 840)
@@ -492,22 +489,17 @@ def paint_shokk_void_v2(paint, shape, mask, seed, pm, bb):
     # In reality, even vantablack shows a faint blue shimmer at grazing
     # angles because shorter wavelengths (blue) scatter more (1/lambda^4).
     # We simulate "grazing angle" using distance from mask edges.
-    from PIL import Image as _Img, ImageFilter as _Filt
+    import cv2 as _cv2
 
     # Create edge distance map via progressive blur
-    mask_pil = _Img.fromarray((mask * 255).astype(np.uint8))
-    # Multiple blur passes for smooth gradient from edge
     blur_r = max(h // 32, 4)
-    mask_inner = np.array(mask_pil.filter(
-        _Filt.GaussianBlur(radius=blur_r)
-    )).astype(np.float32) / 255.0
+    mask_inner = _cv2.GaussianBlur(mask.astype(np.float32), (0, 0), blur_r)
 
     # Edge proximity: 1.0 at mask edge, 0.0 deep inside
     edge_prox = np.clip((mask - mask_inner) * 6.0, 0, 1)
     # Also catch outer edges
-    edge_prox2 = np.clip((mask_inner - np.array(mask_pil.filter(
-        _Filt.GaussianBlur(radius=blur_r * 3)
-    )).astype(np.float32) / 255.0) * 3.0, 0, 1)
+    mask_outer = _cv2.GaussianBlur(mask.astype(np.float32), (0, 0), blur_r * 3)
+    edge_prox2 = np.clip((mask_inner - mask_outer) * 3.0, 0, 1)
     edge = np.clip(edge_prox + edge_prox2, 0, 1)
 
     # Rayleigh: blue scatters most, red scatters least (1/lambda^4)
@@ -546,5 +538,5 @@ def spec_shokk_void(shape, seed, sm, base_m, base_r):
     # Extremely high roughness — the micro-texture traps light
     R = np.clip(220.0 + micro * 30.0 * sm, 15, 255).astype(np.float32)
     # Near-zero clearcoat — no specular reflection layer
-    CC = np.clip(2.0 + micro * 3.0, 0, 255).astype(np.float32)
+    CC = np.clip(16.0 + micro * 3.0, 16, 255).astype(np.float32)
     return M, R, CC

@@ -1,0 +1,108 @@
+{
+  "name": "Formula Drift Pro",
+  "description": "Modern Formula Drift livery — loud, sponsor-saturated, high-contrast. Neon pink body, toxic green sponsor panels, electric blue roof stripe, chrome gold badging, carbon fiber hood, piano black window trim, plaid door pattern, red accent kick. Peak pro-drift chaos.",
+  "author": "Shokker Paint Booth",
+  "version": "6.2.0",
+  "compatible_with": "modern drift chassis, 240SX, s14, s15, RX-7, E46, Mustang drift builds",
+  "notes": "Drift liveries earn their loudness — don't be shy with baseStrength. The plaid door pattern is a deliberate chaos accent; if it clashes, swap to racing_stripe. Chrome gold should contrast hard with the pink body.",
+  "zones": [
+    {
+      "name": "Neon Pink Body",
+      "color": "everything",
+      "base": "neon_pink_blaze",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "special",
+      "baseColor": "#ff2a95",
+      "baseColorMode": "solid",
+      "baseStrength": 1,
+      "baseSpecStrength": 1
+    },
+    {
+      "name": "Toxic Green Sponsor Panel",
+      "color": "green",
+      "base": "neon_toxic_green",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#33ff44",
+      "pickerTolerance": 33,
+      "baseColor": "#2cfa50",
+      "baseColorMode": "solid"
+    },
+    {
+      "name": "Electric Blue Roof Stripe",
+      "base": "neon_electric_blue",
+      "color": "blue",
+      "pattern": "racing_stripe",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#00aaff",
+      "pickerTolerance": 32,
+      "baseColor": "#1ab8ff",
+      "baseColorMode": "solid",
+      "patternIntensity": "95"
+    },
+    {
+      "name": "Chrome Gold Badging",
+      "color": "yellow",
+      "base": "mirror_gold",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#ffc830",
+      "pickerTolerance": 30,
+      "baseColorMode": "source"
+    },
+    {
+      "name": "Carbon Fiber Hood",
+      "color": "dark",
+      "base": "carbon_base",
+      "pattern": "carbon_fiber",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#181818",
+      "pickerTolerance": 30,
+      "baseColor": "#0d0d0d",
+      "baseColorMode": "solid",
+      "patternIntensity": "100"
+    },
+    {
+      "name": "Piano Black Window Trim",
+      "color": "gray",
+      "base": "piano_black",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#2a2a2a",
+      "pickerTolerance": 28,
+      "baseColor": "#080808",
+      "baseColorMode": "solid"
+    },
+    {
+      "name": "Plaid Door Pattern",
+      "color": "white",
+      "base": "gloss",
+      "pattern": "plaid",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#f0ece4",
+      "pickerTolerance": 26,
+      "baseColor": "#fafafa",
+      "baseColorMode": "solid",
+      "patternIntensity": "100"
+    },
+    {
+      "name": "Red Accent Kick",
+      "color": "red",
+      "base": "gloss",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#d91f1f",
+      "pickerTolerance": 32,
+      "baseColor": "#c01515",
+      "baseColorMode": "solid"
+    }
+  ]
+}

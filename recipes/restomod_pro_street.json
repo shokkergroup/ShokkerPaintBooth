@@ -1,0 +1,105 @@
+{
+  "name": "Restomod Pro Street",
+  "description": "Show-quality deep gloss restomod — mirror-like paint, subtle metalflake, piano-black trim, chrome badges, and period-correct pinstripe accents. Trailer-queen beauty with modern depth.",
+  "author": "Shokker Paint Booth",
+  "version": "6.2.0",
+  "compatible_with": "classic muscle, pro_touring, pro_street, pre-80s GM / Ford / Mopar bodies",
+  "notes": "This recipe stacks gloss + subtle metalflake for that 'wet' deep-paint look judges pay attention to. Keep baseSpecStrength high (1.0) on Body — the whole point is reflections. Pinstripe color should match your interior.",
+  "zones": [
+    {
+      "name": "Deep Gloss Body",
+      "color": "everything",
+      "base": "gloss",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "special",
+      "baseColor": "#2a0d40",
+      "baseColorMode": "solid",
+      "baseStrength": 1,
+      "baseSpecStrength": 1
+    },
+    {
+      "name": "Subtle Metalflake",
+      "color": "remaining",
+      "base": "pearl",
+      "pattern": "none",
+      "intensity": "45",
+      "colorMode": "special",
+      "baseColor": "#6b3d8a",
+      "baseColorMode": "solid",
+      "baseStrength": 0.4,
+      "baseSpecStrength": 1
+    },
+    {
+      "name": "Piano Black Trim",
+      "color": "dark",
+      "base": "piano_black",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#1a1a1a",
+      "pickerTolerance": 35,
+      "baseColor": "#0a0a0a",
+      "baseColorMode": "solid"
+    },
+    {
+      "name": "Chrome Badges",
+      "color": "gray",
+      "base": "chrome",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#cccccc",
+      "pickerTolerance": 30,
+      "baseColorMode": "source"
+    },
+    {
+      "name": "Ghost Flame Accent",
+      "color": "red",
+      "base": "candy_apple",
+      "pattern": "none",
+      "intensity": "75",
+      "colorMode": "quick",
+      "pickerColor": "#cc2222",
+      "pickerTolerance": 35,
+      "baseColor": "#541225",
+      "baseColorMode": "solid",
+      "baseStrength": 0.75
+    },
+    {
+      "name": "Gold Pinstripe",
+      "color": "yellow",
+      "base": "mirror_gold",
+      "pattern": "pinstripe",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#ffcc00",
+      "pickerTolerance": 30,
+      "patternIntensity": "100"
+    },
+    {
+      "name": "White Accent Panel",
+      "color": "white",
+      "base": "gloss",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#ffffff",
+      "pickerTolerance": 25,
+      "baseColor": "#f9f4eb",
+      "baseColorMode": "solid"
+    },
+    {
+      "name": "Blue Inlay Detail",
+      "color": "blue",
+      "base": "candy_cobalt",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#3366ff",
+      "pickerTolerance": 35,
+      "baseColor": "#0e2a8e",
+      "baseColorMode": "solid"
+    }
+  ]
+}

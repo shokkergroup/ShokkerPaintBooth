@@ -1,0 +1,246 @@
+{
+  "version": "6.2.0",
+  "description": "Helmet design style presets for SPB",
+  "styles": [
+    {
+      "id": "ayrton_senna_inspired",
+      "name": "Yellow & Green Vertical Stripes",
+      "category": "iconic_classic",
+      "primary_color": [255, 220, 0],
+      "secondary_color": [0, 140, 60],
+      "tertiary_color": [0, 80, 200],
+      "zones": {
+        "top": "primary",
+        "front": "secondary_stripe_vertical",
+        "left": "primary",
+        "right": "primary",
+        "back": "tertiary_band",
+        "visor": "tinted_dark",
+        "chinbar": "primary"
+      },
+      "finish": "gloss",
+      "spec": {"metallic": 0, "roughness": 30, "clearcoat": 16},
+      "notes": "Generic descriptor inspired by classic vertical-stripe yellow helmets. Bold tropical color contrast."
+    },
+    {
+      "id": "valentino_rossi_style",
+      "name": "Sun & Moon Graphic",
+      "category": "iconic_modern",
+      "primary_color": [255, 235, 50],
+      "secondary_color": [20, 20, 30],
+      "tertiary_color": [255, 255, 255],
+      "zones": {
+        "top": "primary_with_sun_moon_graphic",
+        "front": "primary",
+        "left": "primary",
+        "right": "primary",
+        "back": "primary",
+        "visor": "tinted_smoke",
+        "chinbar": "secondary"
+      },
+      "finish": "gloss",
+      "spec": {"metallic": 0, "roughness": 25, "clearcoat": 16},
+      "notes": "Generic sun/moon motif on bright yellow. Personality-driven helmet style."
+    },
+    {
+      "id": "modern_minimalist",
+      "name": "Modern Minimalist",
+      "category": "minimalist",
+      "primary_color": [240, 240, 240],
+      "secondary_color": [30, 30, 30],
+      "tertiary_color": [200, 0, 30],
+      "zones": {
+        "top": "primary",
+        "front": "primary",
+        "left": "primary",
+        "right": "primary",
+        "back": "secondary_block",
+        "visor": "tinted_smoke",
+        "chinbar": "secondary"
+      },
+      "finish": "satin",
+      "spec": {"metallic": 0, "roughness": 80, "clearcoat": 60},
+      "notes": "Clean color blocks, no graphics. Lets the suit and car carry the brand."
+    },
+    {
+      "id": "classic_pro_stripe",
+      "name": "Classic Pro Stripe",
+      "category": "classic",
+      "primary_color": [255, 255, 255],
+      "secondary_color": [200, 30, 30],
+      "tertiary_color": [20, 20, 20],
+      "zones": {
+        "top": "secondary_stripe_centerline",
+        "front": "primary",
+        "left": "primary_with_secondary_band",
+        "right": "primary_with_secondary_band",
+        "back": "primary",
+        "visor": "clear",
+        "chinbar": "tertiary"
+      },
+      "finish": "gloss",
+      "spec": {"metallic": 0, "roughness": 30, "clearcoat": 16},
+      "notes": "Top centerline stripe plus a wraparound side accent band. Timeless pro look."
+    },
+    {
+      "id": "carbon_skull_cap",
+      "name": "Carbon Skull Cap",
+      "category": "tech_modern",
+      "primary_color": [40, 40, 45],
+      "secondary_color": [80, 80, 90],
+      "tertiary_color": [255, 200, 0],
+      "zones": {
+        "top": "carbon_weave_pattern",
+        "front": "carbon_weave_pattern",
+        "left": "carbon_weave_pattern_with_tertiary_logo",
+        "right": "carbon_weave_pattern_with_tertiary_logo",
+        "back": "carbon_weave_pattern",
+        "visor": "iridescent",
+        "chinbar": "carbon_weave_pattern"
+      },
+      "finish": "satin_carbon",
+      "spec": {"metallic": 80, "roughness": 110, "clearcoat": 40},
+      "notes": "Full carbon weave with subtle accent logos. Pairs with iridescent visor."
+    },
+    {
+      "id": "racing_flag_motif",
+      "name": "Checkered Flag Motif",
+      "category": "motorsport_classic",
+      "primary_color": [255, 255, 255],
+      "secondary_color": [10, 10, 10],
+      "tertiary_color": [220, 0, 0],
+      "zones": {
+        "top": "checkered_band",
+        "front": "primary",
+        "left": "primary",
+        "right": "primary",
+        "back": "checkered_band",
+        "visor": "tinted_smoke",
+        "chinbar": "tertiary"
+      },
+      "finish": "gloss",
+      "spec": {"metallic": 0, "roughness": 30, "clearcoat": 16},
+      "notes": "Black-and-white checkered band wrapping the crown. Universal racing motif."
+    },
+    {
+      "id": "patriotic_flag_top",
+      "name": "Patriotic Flag Crown",
+      "category": "patriotic",
+      "primary_color": [200, 30, 40],
+      "secondary_color": [255, 255, 255],
+      "tertiary_color": [20, 40, 120],
+      "zones": {
+        "top": "tri_color_flag_pattern",
+        "front": "secondary",
+        "left": "tertiary_with_stars",
+        "right": "tertiary_with_stars",
+        "back": "tri_color_flag_pattern",
+        "visor": "clear",
+        "chinbar": "secondary"
+      },
+      "finish": "gloss",
+      "spec": {"metallic": 0, "roughness": 30, "clearcoat": 16},
+      "notes": "Generic patriotic three-color flag pattern across the top. Customize colors to any nation."
+    },
+    {
+      "id": "gradient_fade",
+      "name": "Gradient Fade",
+      "category": "modern",
+      "primary_color": [120, 30, 200],
+      "secondary_color": [0, 200, 220],
+      "tertiary_color": [255, 255, 255],
+      "zones": {
+        "top": "gradient_primary_to_secondary",
+        "front": "gradient_primary_to_secondary",
+        "left": "gradient_primary_to_secondary",
+        "right": "gradient_primary_to_secondary",
+        "back": "gradient_primary_to_secondary",
+        "visor": "iridescent",
+        "chinbar": "secondary"
+      },
+      "finish": "gloss",
+      "spec": {"metallic": 0, "roughness": 25, "clearcoat": 16},
+      "notes": "Smooth top-to-bottom or front-to-back gradient. Great with iridescent or chrome visor."
+    },
+    {
+      "id": "color_block_vertical",
+      "name": "Vertical Color Block",
+      "category": "modern_geometric",
+      "primary_color": [255, 200, 0],
+      "secondary_color": [10, 10, 10],
+      "tertiary_color": [255, 255, 255],
+      "zones": {
+        "top": "split_vertical_primary_secondary",
+        "front": "primary",
+        "left": "primary",
+        "right": "secondary",
+        "back": "split_vertical_primary_secondary",
+        "visor": "tinted_dark",
+        "chinbar": "tertiary"
+      },
+      "finish": "gloss",
+      "spec": {"metallic": 0, "roughness": 30, "clearcoat": 16},
+      "notes": "Two-tone vertical split down the centerline. Bold modern statement."
+    },
+    {
+      "id": "chrome_accent_band",
+      "name": "Chrome Accent Band",
+      "category": "premium",
+      "primary_color": [20, 20, 25],
+      "secondary_color": [220, 220, 230],
+      "tertiary_color": [255, 30, 30],
+      "zones": {
+        "top": "primary",
+        "front": "primary",
+        "left": "primary_with_chrome_band",
+        "right": "primary_with_chrome_band",
+        "back": "primary",
+        "visor": "chrome_mirror",
+        "chinbar": "tertiary"
+      },
+      "finish": "gloss_with_chrome",
+      "spec": {"metallic": 255, "roughness": 0, "clearcoat": 16, "zone_chrome_only": true},
+      "notes": "Mirror-chrome side band against deep matte primary. Premium look paired with chrome visor."
+    },
+    {
+      "id": "skull_punisher",
+      "name": "Skull / Punisher Style",
+      "category": "graphic_bold",
+      "primary_color": [10, 10, 10],
+      "secondary_color": [220, 220, 220],
+      "tertiary_color": [200, 30, 30],
+      "zones": {
+        "top": "primary_with_skull_graphic",
+        "front": "primary",
+        "left": "primary",
+        "right": "primary",
+        "back": "primary_with_skull_graphic",
+        "visor": "tinted_dark",
+        "chinbar": "primary"
+      },
+      "finish": "satin",
+      "spec": {"metallic": 0, "roughness": 110, "clearcoat": 40},
+      "notes": "Aggressive skull graphic on stealth matte black. Pairs well with dark visor."
+    },
+    {
+      "id": "neon_underground",
+      "name": "Neon Underground",
+      "category": "underground",
+      "primary_color": [10, 10, 15],
+      "secondary_color": [0, 255, 180],
+      "tertiary_color": [255, 0, 200],
+      "zones": {
+        "top": "primary_with_neon_pinstripe",
+        "front": "primary_with_secondary_glow_logo",
+        "left": "primary_with_neon_pinstripe",
+        "right": "primary_with_neon_pinstripe",
+        "back": "primary_with_tertiary_glow_logo",
+        "visor": "iridescent",
+        "chinbar": "primary"
+      },
+      "finish": "gloss",
+      "spec": {"metallic": 0, "roughness": 25, "clearcoat": 16},
+      "notes": "Cyber/neon pinstripes glowing against black. Iridescent visor for the full nightlife feel."
+    }
+  ]
+}

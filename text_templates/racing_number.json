@@ -1,0 +1,62 @@
+{
+  "name": "Racing Number (Large)",
+  "description": "Standard racing number — bold, large, high-contrast. The iconic 2-3 digit car number that appears on doors, roof, and nose. Black stroke around white fill gives TV-camera legibility against any base paint. Drop shadow adds physical presence so the number reads as applied vinyl, not paint.",
+  "category": "Numbers",
+  "version": "6.2.0",
+  "template": {
+    "text": "55",
+    "font_family": "Impact, Arial Black, sans-serif",
+    "font_weight": 900,
+    "font_size": 200,
+    "italic": false,
+    "color": "#ffffff",
+    "stroke_color": "#000000",
+    "stroke_width": 8,
+    "shadow": {
+      "color": "#000000",
+      "opacity": 0.5,
+      "dx": 4,
+      "dy": 4,
+      "blur": 0
+    },
+    "alignment": "center",
+    "letter_spacing": 0,
+    "line_height": 1.0,
+    "rotation": 0,
+    "anchor_x": 0.5,
+    "anchor_y": 0.5
+  },
+  "placement_hints": {
+    "recommended_zones": ["door_left", "door_right", "roof", "nose_cone"],
+    "min_size_px": 120,
+    "max_size_px": 400,
+    "safe_area_padding_px": 20
+  },
+  "variants": [
+    {
+      "name": "Inverted (Dark Base)",
+      "overrides": {
+        "color": "#000000",
+        "stroke_color": "#ffffff",
+        "stroke_width": 8
+      }
+    },
+    {
+      "name": "Chrome Border",
+      "overrides": {
+        "color": "#ffffff",
+        "stroke_color": "#c0c0c0",
+        "stroke_width": 10
+      }
+    },
+    {
+      "name": "Italic Speed",
+      "overrides": {
+        "italic": true,
+        "letter_spacing": -2
+      }
+    }
+  ],
+  "compatible_finishes": ["gloss", "satin", "matte", "chrome_mirror", "metallic_flake"],
+  "notes": "For 3-digit numbers, reduce font_size by ~20% or switch to a condensed family like Oswald to avoid crowding. For single-digit numbers, increase stroke_width to 10-12 for visual balance."
+}

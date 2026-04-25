@@ -1,7 +1,32 @@
-# Build artifacts
+# ============================================================================
+# Shokker Paint Booth — .gitignore
+# ----------------------------------------------------------------------------
+# Keep this list comprehensive. Pairs of the same pattern in different
+# sections are intentional for grouping/clarity.
+# ============================================================================
+
+# ----- Sandbox / agent write-probe debris ------------------------------------
+# Codex (and similar sandboxed agents under PowerShell ConstrainedLanguage
+# mode) drop 4-byte "blat" sentinel files at the working directory root to
+# probe write permissions, then fail to clean them up. Match the canonical
+# 8-character lowercase-alphanumeric (with optional underscore) pattern at
+# repo root only — this won't shadow legit subfolder files. Kill on sight.
+/[a-z0-9_][a-z0-9_][a-z0-9_][a-z0-9_][a-z0-9_][a-z0-9_][a-z0-9_][a-z0-9_]
+/.codex-tmp/
+/.pytest-tmp/
+
+# ----- Python build artifacts ------------------------------------------------
 __pycache__/
 *.pyc
 *.pyo
+*.pyd
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
 build/
 dist/
 server.build/
@@ -11,13 +36,16 @@ _nuitka_test/
 _pybuild_work/
 _pybuild_work_ag/
 
-# Binaries
+# ----- Binaries --------------------------------------------------------------
 *.exe
 *.pdb
 *.dll
+*.so
+*.dylib
 
-# Logs
+# ----- Logs ------------------------------------------------------------------
 *.log
+logs/
 *_log.txt
 server_err.txt
 server_log.txt
@@ -28,12 +56,27 @@ build_output.txt
 _server_stdout.txt
 _server_stderr.txt
 _server_err.txt
+npm_build_log.txt
+rebuild_log.txt
 
-# Electron build output
+# ----- Electron / Node -------------------------------------------------------
+node_modules/
 electron-app/dist/
 electron-app/node_modules/
+electron-app/_build_*.txt
+electron-app/_build_*.log
+electron-app/out/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
 
-# Output / render results
+# ----- Electron-builder outputs ---------------------------------------------
+dist_electron/
+release/
+out/
+app-builds/
+
+# ----- Render output / preview images ---------------------------------------
 output/
 swatches/
 audit_images/
@@ -42,30 +85,44 @@ test_improvements_imgs/
 spec_check/
 thumbnails/
 
-# Test/preview images
+# ----- Test / preview images (allow docs + assets) --------------------------
 *.png
 !docs/*.png
 !assets/*.png
+!assets/**/*.png
 
-# Temp files
+# ----- Temp / scratch files --------------------------------------------------
 .server_port
 last_render_request.json
 *.BACKUP_PRE_AUDIT
+*.tmp
+*.swp
+*.swo
+*~
+~$*
+.#*
 
-# Backup files
-*.bak*
+# ----- Backups --------------------------------------------------------------
+*.bak
+*.bak.*
+*.old
+*.orig
+*.psd.bak
+*.tga.bak
 
-# Archive & staging
+# ----- Archive / staging / abandoned -----------------------------------------
 _archive/
 _staging/
+_deprecated/
+_scratch/
 
-# Temp/debug/diag scripts (prefixed with _)
+# ----- Temp / debug / diag scripts (prefixed with _) ------------------------
 _*.py
 _*.txt
 _*.bat
 _*.ps1
 
-# Audit & dev scripts
+# ----- Audit / dev / one-off scripts ----------------------------------------
 audit_*.py
 audit_*.txt
 audit_*.json
@@ -95,7 +152,7 @@ extract_*.js
 find_*.py
 add_*.py
 
-# One-off scripts
+# ----- Named one-off scripts ------------------------------------------------
 _build_v5.py
 _cc_audit.py
 _diag*.py
@@ -110,8 +167,10 @@ shokk_manager.py
 compose_backup.py
 update_ui.py
 server_health.py
+BUILD_WIKI_*.py
+BUILD_INSTALLER.py
 
-# Misc temp output
+# ----- Misc temp output -----------------------------------------------------
 out.json
 out.txt
 diff_fc.txt
@@ -123,7 +182,7 @@ deck_check_results.txt
 tmp_*.txt
 pyinst_check.txt
 
-# Dev docs (not for distribution)
+# ----- Dev-only docs (not for distribution) ---------------------------------
 *_AUDIT*.md
 *_CHECKLIST*.md
 *_STATUS*.md
@@ -141,31 +200,70 @@ RESET_PYTHON.md
 QUALITY_STANDARDS.md
 MIGRATION_STATUS.md
 WORK_IN_PROGRESS.md
-BUILD_INSTALLER.py
 
-# PayHip & marketing
+# ----- Marketing assets (large; tracked separately) -------------------------
 PayHip-upload/
 *.pptx
 *.docx
 *.jpg
 !assets/*.jpg
+!assets/**/*.jpg
 
-# Node
-node_modules/
-package-lock.json
+# ----- Editor / IDE ---------------------------------------------------------
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+.cursor/
 
-# Claude
+# ----- Claude Code ----------------------------------------------------------
 .claude/
+memory/
 
-# Colorshift research
+# ----- Misc research --------------------------------------------------------
 Colorshift_research/
-
-# basespatterns examples
 basespatterns_examples/
 
-# Spec file
+# ----- PyInstaller spec files ------------------------------------------------
 *.spec
 
-# OS files
+# ----- OS files -------------------------------------------------------------
 Thumbs.db
 .DS_Store
+desktop.ini
+
+# ----- User-local config / secrets ------------------------------------------
+.env
+.env.local
+.env.*.local
+.spbconfig.json
+spb-user.json
+*.license
+*.key
+api_keys.json
+credentials.json
+secrets.yaml
+
+# ----- Profiling / tracing --------------------------------------------------
+*.prof
+*.trace
+profile_*.txt
+
+# ----- Benchmarks (keep code, ignore results) -------------------------------
+benchmark_results/
+bench_*.json
+.pytest-tmp/
+tests/_runtime_harness/mkdtemp/*
+!tests/_runtime_harness/mkdtemp/.gitkeep
+tests/_runtime_harness/temp_files/*
+!tests/_runtime_harness/temp_files/.gitkeep
+tests/_runtime_harness/tmp_path/no_override/*
+!tests/_runtime_harness/tmp_path/no_override/.gitkeep
+tests/_runtime_harness/tmp_path/with_override/*
+!tests/_runtime_harness/tmp_path/with_override/.gitkeep
+!tests/test_regression_high_detail_specials.py
+!tests/test_regression_runtime_mirror_coverage.py
+!tests/test_regression_dev_qol_tools.py
+!scripts/audit_spec_pattern_quality.py
+!scripts/audit_pattern_quality.py
+scripts/.runtime-sync.lock

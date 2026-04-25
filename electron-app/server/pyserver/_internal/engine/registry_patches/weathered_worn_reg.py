@@ -12,10 +12,11 @@ REGISTRY_PATCH = {
     "destroyed_coat": "paint_destroyed_coat_v2",
     "oxidized": "paint_oxidized_v2",
     "oxidized_copper": "paint_oxidized_copper_v2",
+    "rugged": "paint_rugged_v2",
     "salt_corroded": "paint_salt_corroded_v2",
     "sun_baked": "paint_sun_baked_v2",
     "sun_fade": "paint_sun_fade_v2",
-    "track_worn": "paint_track_worn_v2",
+    # track_worn: REMOVED per audit 2026-03-15
     "vintage_chrome": "paint_vintage_chrome_v2",
 }
 
@@ -30,9 +31,10 @@ SPEC_PATCH = {
     "destroyed_coat": "spec_destroyed_coat",
     "oxidized": "spec_oxidized",
     "oxidized_copper": "spec_oxidized_copper",
+    "rugged": "spec_rugged",
     "salt_corroded": "spec_salt_corroded",
     "sun_baked": "spec_sun_baked",
     "sun_fade": "spec_sun_fade",
-    "track_worn": "spec_track_worn",
+    # track_worn: REMOVED per audit 2026-03-15
     "vintage_chrome": "spec_vintage_chrome",
 }

@@ -5,17 +5,14 @@ import os
 import importlib.util
 
 
-def _ensure_bb_2d(shape, bb):
-    """Expand scalar or 0-d bb to (H,W) so paint_fns can use bb[:,:,np.newaxis]."""
-    if np.isscalar(bb) or (hasattr(bb, "ndim") and bb.ndim == 0):
-        return np.full((shape[0], shape[1]), float(bb), dtype=np.float32)
-    return bb
+from engine.paint_v2 import ensure_bb_2d as _ensure_bb_2d_canonical
 
 
 def _wrap_paint_bb(fn):
     """Wrap a pattern paint_fn so it accepts scalar bb from the engine."""
     def wrapped(paint, shape, mask, seed, pm, bb):
-        bb = _ensure_bb_2d(shape, bb)
+        if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
+        bb = _ensure_bb_2d_canonical(bb, shape)  # canonical (bb, shape) order
         return fn(paint, shape, mask, seed, pm, bb)
     return wrapped
 

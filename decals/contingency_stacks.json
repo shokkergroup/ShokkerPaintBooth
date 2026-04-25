@@ -1,0 +1,105 @@
+{
+  "version": "6.2.0",
+  "description": "Contingency decal stacks — the small grids of sponsor logos that line a car's quarter panel, b-pillar, or sidepod. Used by SPB to suggest aligned sponsor block placement.",
+  "schema": {
+    "id": "string — unique key",
+    "name": "string — human label",
+    "layout": "vertical|horizontal|grid",
+    "typical_count": "[min, max] — how many logos usually fit",
+    "spacing": "px between logos",
+    "size_hint_uv": "[width, height] of each logo cell in UV space",
+    "alignment": "string — left/center/right or top/middle/bottom",
+    "good_for": "array of placement hints",
+    "notes": "string — practical guidance"
+  },
+  "stacks": [
+    {
+      "id": "nascar_b_pillar",
+      "name": "NASCAR B-Pillar Stack",
+      "layout": "vertical",
+      "typical_count": [6, 12],
+      "spacing": 4,
+      "size_hint_uv": [0.04, 0.018],
+      "alignment": "center",
+      "good_for": ["B-pillar", "C-pillar"],
+      "notes": "Classic NASCAR contingency tower — 6 to 12 small horizontal-format logos stacked top to bottom. Each row is roughly 1.8% of UV height. Logos must be sized identically for visual cleanliness even when source aspect ratios differ."
+    },
+    {
+      "id": "nascar_quarter_cluster",
+      "name": "NASCAR Quarter Panel Cluster",
+      "layout": "horizontal",
+      "typical_count": [4, 8],
+      "spacing": 6,
+      "size_hint_uv": [0.05, 0.025],
+      "alignment": "center",
+      "good_for": ["Quarter panel", "Lower door"],
+      "notes": "Horizontal sponsor row that typically runs above the quarter-panel sweep. Larger than the b-pillar stack because there is more horizontal canvas. Often paired with primary sponsor block above it."
+    },
+    {
+      "id": "gt3_endurance_stack",
+      "name": "GT3 Endurance Stack",
+      "layout": "grid",
+      "typical_count": [8, 16],
+      "spacing": 3,
+      "size_hint_uv": [0.035, 0.02],
+      "alignment": "center",
+      "good_for": ["Door panel lower edge", "Rear quarter", "Front fender"],
+      "notes": "2-column grid common in 24h endurance racing. Slightly smaller logos than NASCAR. Allows more sponsors per square cm at the cost of some readability from distance."
+    },
+    {
+      "id": "lmp_acrylic_panel",
+      "name": "LMP Acrylic Sponsor Panel",
+      "layout": "grid",
+      "typical_count": [6, 12],
+      "spacing": 4,
+      "size_hint_uv": [0.045, 0.025],
+      "alignment": "center",
+      "good_for": ["Acrylic side window", "Rear wing endplate"],
+      "notes": "Prototype cars often have a translucent acrylic panel reserved for sponsors. Layout is grid-based, with logos sized to fill the available rectangle. Backlit at night events — logos should remain readable when illuminated from behind."
+    },
+    {
+      "id": "f1_floor_strip",
+      "name": "F1 Floor Edge Strip",
+      "layout": "horizontal",
+      "typical_count": [4, 7],
+      "spacing": 8,
+      "size_hint_uv": [0.06, 0.012],
+      "alignment": "left",
+      "good_for": ["Floor edge", "Bargeboard"],
+      "notes": "Long, low-profile horizontal strip that fits the narrow band along the floor edge. Wide aspect ratio — logos are stretched to fit horizontally. Visible from below in onboard helicam shots."
+    },
+    {
+      "id": "indy_sidepod_stack",
+      "name": "IndyCar Sidepod Stack",
+      "layout": "vertical",
+      "typical_count": [5, 8],
+      "spacing": 5,
+      "size_hint_uv": [0.05, 0.022],
+      "alignment": "center",
+      "good_for": ["Sidepod aft section", "Rear wheel pod"],
+      "notes": "Vertical stack on the side of the sidepod, typically below the primary sponsor. Camera-facing during oval racing telecasts. Slightly larger than NASCAR b-pillar logos because of viewing distance from infield cameras."
+    },
+    {
+      "id": "dirt_late_model_quarter",
+      "name": "Dirt Late Model Quarter Panel",
+      "layout": "horizontal",
+      "typical_count": [3, 6],
+      "spacing": 10,
+      "size_hint_uv": [0.07, 0.04],
+      "alignment": "left",
+      "good_for": ["Quarter panel", "Above wheel arch"],
+      "notes": "Larger logos with generous spacing — viewing distance is short but dust is heavy. Few but visible logos beat many tiny ones. Often hand-applied vinyl rather than pre-printed wraps."
+    },
+    {
+      "id": "vintage_lower_door",
+      "name": "Vintage Lower Door Strip",
+      "layout": "horizontal",
+      "typical_count": [3, 5],
+      "spacing": 12,
+      "size_hint_uv": [0.08, 0.035],
+      "alignment": "center",
+      "good_for": ["Lower door rocker", "Front fender skirt"],
+      "notes": "Period-correct sponsor strip in a single horizontal row. Generous spacing reflects the era — no team had 12 sponsors. Logos were often hand-painted rather than vinyl, so allow slight irregularity in the alignment."
+    }
+  ]
+}

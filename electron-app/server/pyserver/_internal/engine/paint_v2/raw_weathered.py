@@ -13,6 +13,7 @@ from engine.paint_v2 import ensure_bb_2d
 
 # ANODIZED ALUMINUM - Electrochemical oxide layer thickness variation
 def paint_anodized_v2(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
@@ -31,7 +32,7 @@ def paint_anodized_v2(paint, shape, mask, seed, pm, bb):
     effect[:, :, 2] = np.clip(base[:, :, 2] + hue_shift * 0.2, 0, 1)  # B
     
     # Add micro-pitting texture
-    pitting = multi_scale_noise((h, w), [2, 4], [0.4, 0.2], seed + 1501)
+    pitting = multi_scale_noise((h, w), [32, 64], [0.4, 0.2], seed + 1501)
     pitting = np.maximum(0, pitting - 0.3) * 0.5
     
     effect = np.dstack([np.clip(effect[:, :, i] * (1.0 - pitting * 0.2), 0, 1) for i in range(3)])
@@ -44,12 +45,14 @@ def paint_anodized_v2(paint, shape, mask, seed, pm, bb):
 
 def spec_anodized(shape, seed, sm, base_m, base_r):
     h, w = shape = shape if len(shape) == 2 else shape[:2]
-    
+    base_m = base_m / 255.0  # registry sends 0-255, normalize to 0-1
+    base_r = base_r / 255.0
+
     # Anodized surface is harder, more specular
     M = np.full((h, w), np.clip(base_m + 0.25, 0, 1), dtype=np.float32)
     
     # Add micro-roughness from pitting
-    pitting = multi_scale_noise((h, w), [2, 4], [0.3, 0.2], seed + 1501)
+    pitting = multi_scale_noise((h, w), [32, 64], [0.3, 0.2], seed + 1501)
     M = np.clip(M + np.maximum(0, pitting - 0.4) * 0.15, 0, 1).astype(np.float32)
     
     # Specular color shift toward cool tones (iridescence)
@@ -58,11 +61,12 @@ def spec_anodized(shape, seed, sm, base_m, base_r):
     # Coating clarity (high)
     CC = np.full((h, w), 0.8, dtype=np.float32)
     
-    return (np.clip(M * 255.0, 0, 255).astype(np.float32), np.clip(R * 255.0, 0, 255).astype(np.float32), np.clip(CC * 255.0, 0, 255).astype(np.float32))
+    return (np.clip(M * 255.0, 0, 255).astype(np.float32), np.clip(R * 255.0, 15, 255).astype(np.float32), np.clip(CC * 255.0, 16, 255).astype(np.float32))
 
 
 # BATTLE PATINA - Multi-oxide corrosion with impact crater damage
 def paint_battle_patina_v2(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
@@ -95,6 +99,8 @@ def paint_battle_patina_v2(paint, shape, mask, seed, pm, bb):
 
 def spec_battle_patina(shape, seed, sm, base_m, base_r):
     h, w = shape = shape if len(shape) == 2 else shape[:2]
+    base_m = base_m / 255.0  # registry sends 0-255
+    base_r = base_r / 255.0
     
     # Rough, pitted surface from corrosion
     M = np.full((h, w), np.clip(base_m - 0.3, 0.1, 1), dtype=np.float32)
@@ -109,17 +115,18 @@ def spec_battle_patina(shape, seed, sm, base_m, base_r):
     # Low coating clarity (oxidized/dull)
     CC = np.full((h, w), 0.3, dtype=np.float32)
     
-    return (np.clip(M * 255.0, 0, 255).astype(np.float32), np.clip(R * 255.0, 0, 255).astype(np.float32), np.clip(CC * 255.0, 0, 255).astype(np.float32))
+    return (np.clip(M * 255.0, 0, 255).astype(np.float32), np.clip(R * 255.0, 15, 255).astype(np.float32), np.clip(CC * 255.0, 16, 255).astype(np.float32))
 
 
 # BURNT HEADERS - Exhaust manifold heat cycling with tempering colors
 def paint_burnt_headers_v2(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     
     # Heat gradient creates tempering color zones (straw->blue->purple)
-    heat_map = multi_scale_noise((h, w), [2, 4, 8], [0.5, 0.3, 0.2], seed + 1504)
+    heat_map = multi_scale_noise((h, w), [16, 32, 64], [0.5, 0.3, 0.2], seed + 1504)
     heat_map = (heat_map + 1.0) / 2.0
     
     effect = base.copy()
@@ -154,6 +161,8 @@ def paint_burnt_headers_v2(paint, shape, mask, seed, pm, bb):
 
 def spec_burnt_headers(shape, seed, sm, base_m, base_r):
     h, w = shape = shape if len(shape) == 2 else shape[:2]
+    base_m = base_m / 255.0  # registry sends 0-255
+    base_r = base_r / 255.0
     
     # Heat cycling creates oxide scale (moderate roughness)
     M = np.full((h, w), np.clip(base_m - 0.15, 0.2, 1), dtype=np.float32)
@@ -168,11 +177,12 @@ def spec_burnt_headers(shape, seed, sm, base_m, base_r):
     # Medium coating clarity
     CC = np.full((h, w), 0.5, dtype=np.float32)
     
-    return (np.clip(M * 255.0, 0, 255).astype(np.float32), np.clip(R * 255.0, 0, 255).astype(np.float32), np.clip(CC * 255.0, 0, 255).astype(np.float32))
+    return (np.clip(M * 255.0, 0, 255).astype(np.float32), np.clip(R * 255.0, 15, 255).astype(np.float32), np.clip(CC * 255.0, 16, 255).astype(np.float32))
 
 
 # GALVANIZED - Zinc spangle crystallization dendritic pattern
 def paint_galvanized_v2(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
@@ -189,7 +199,7 @@ def paint_galvanized_v2(paint, shape, mask, seed, pm, bb):
     effect[:, :, 2] = np.clip(base[:, :, 2] + dendrites * 0.2, 0, 1)
     
     # Crystal grain shadowing (Voronoi cellular)
-    cells = multi_scale_noise((h, w), [2, 4], [0.6, 0.4], seed + 1507)
+    cells = multi_scale_noise((h, w), [32, 64], [0.6, 0.4], seed + 1507)
     cells = np.maximum(0, cells - 0.3)
     
     # Subtle grain darkening
@@ -203,12 +213,14 @@ def paint_galvanized_v2(paint, shape, mask, seed, pm, bb):
 
 def spec_galvanized(shape, seed, sm, base_m, base_r):
     h, w = shape = shape if len(shape) == 2 else shape[:2]
+    base_m = base_m / 255.0  # registry sends 0-255
+    base_r = base_r / 255.0
     
     # Crystalline surface (moderate specularity)
     M = np.full((h, w), np.clip(base_m + 0.1, 0, 1), dtype=np.float32)
     
     # Crystal grain boundaries add micro-roughness
-    cells = multi_scale_noise((h, w), [2, 4], [0.5, 0.3], seed + 1507)
+    cells = multi_scale_noise((h, w), [32, 64], [0.5, 0.3], seed + 1507)
     M = np.clip(M + np.maximum(0, cells - 0.3) * 0.12, 0, 1).astype(np.float32)
     
     # Zinc has cool specular response
@@ -217,11 +229,12 @@ def spec_galvanized(shape, seed, sm, base_m, base_r):
     # High coating clarity (metallic)
     CC = np.full((h, w), 0.75, dtype=np.float32)
     
-    return (np.clip(M * 255.0, 0, 255).astype(np.float32), np.clip(R * 255.0, 0, 255).astype(np.float32), np.clip(CC * 255.0, 0, 255).astype(np.float32))
+    return (np.clip(M * 255.0, 0, 255).astype(np.float32), np.clip(R * 255.0, 15, 255).astype(np.float32), np.clip(CC * 255.0, 16, 255).astype(np.float32))
 
 
 # HEAT TREATED - Steel tempering color gradient (straw->blue->purple)
 def paint_heat_treated_v2(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
@@ -276,12 +289,14 @@ def paint_heat_treated_v2(paint, shape, mask, seed, pm, bb):
 
 def spec_heat_treated(shape, seed, sm, base_m, base_r):
     h, w = shape = shape if len(shape) == 2 else shape[:2]
+    base_m = base_m / 255.0  # registry sends 0-255
+    base_r = base_r / 255.0
 
     # Tempered steel (hard, moderately specular)
     M = np.full((h, w), np.clip(base_m + 0.2, 0, 1), dtype=np.float32)
 
     # Very slight surface variation from tempering color bands
-    micro = multi_scale_noise((h, w), [4, 8], [0.3, 0.2], seed + 1509)
+    micro = multi_scale_noise((h, w), [16, 32], [0.3, 0.2], seed + 1509)
     M = np.clip(M + np.maximum(0, micro - 0.3) * 0.15, 0, 1).astype(np.float32)
 
     # Temper zone affects roughness - blued areas are smoother, straw areas rougher
@@ -293,12 +308,13 @@ def spec_heat_treated(shape, seed, sm, base_m, base_r):
     CC = np.clip(0.7 + temp_zones * 0.15, 0, 1).astype(np.float32)
 
     return (np.clip(M * 255.0, 0, 255).astype(np.float32),
-            np.clip(R * 255.0, 0, 255).astype(np.float32),
-            np.clip(CC * 255.0, 0, 255).astype(np.float32))
+            np.clip(R * 255.0, 15, 255).astype(np.float32),
+            np.clip(CC * 255.0, 16, 255).astype(np.float32))
 
 
 # PATINA BRONZE - Verdigris copper carbonate formation model
 def paint_patina_bronze_v2(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
@@ -330,6 +346,8 @@ def paint_patina_bronze_v2(paint, shape, mask, seed, pm, bb):
 
 def spec_patina_bronze(shape, seed, sm, base_m, base_r):
     h, w = shape = shape if len(shape) == 2 else shape[:2]
+    base_m = base_m / 255.0  # registry sends 0-255
+    base_r = base_r / 255.0
     
     # Patinated surface is rough but with some metallic undertone
     M = np.full((h, w), np.clip(base_m - 0.2, 0.15, 1), dtype=np.float32)
@@ -344,17 +362,18 @@ def spec_patina_bronze(shape, seed, sm, base_m, base_r):
     # Low-medium clarity (patina veils the surface)
     CC = np.full((h, w), 0.4, dtype=np.float32)
     
-    return (np.clip(M * 255.0, 0, 255).astype(np.float32), np.clip(R * 255.0, 0, 255).astype(np.float32), np.clip(CC * 255.0, 0, 255).astype(np.float32))
+    return (np.clip(M * 255.0, 0, 255).astype(np.float32), np.clip(R * 255.0, 15, 255).astype(np.float32), np.clip(CC * 255.0, 16, 255).astype(np.float32))
 
 
 # PATINA COAT - General oxidation with moisture-driven patina zones
 def paint_patina_coat_v2(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
     
     # General oxidation layer
-    oxide = multi_scale_noise((h, w), [2, 4, 8], [0.4, 0.35, 0.25], seed + 1511)
+    oxide = multi_scale_noise((h, w), [16, 32, 64], [0.4, 0.35, 0.25], seed + 1511)
     oxide = (oxide + 1.0) / 2.0
     
     # Moisture gradient (top-down environment exposure)
@@ -381,12 +400,14 @@ def paint_patina_coat_v2(paint, shape, mask, seed, pm, bb):
 
 def spec_patina_coat(shape, seed, sm, base_m, base_r):
     h, w = shape = shape if len(shape) == 2 else shape[:2]
+    base_m = base_m / 255.0  # registry sends 0-255
+    base_r = base_r / 255.0
     
     # Oxidized coat reduces specularity
     M = np.full((h, w), np.clip(base_m - 0.25, 0.1, 1), dtype=np.float32)
     
     # Patina unevenness adds roughness
-    oxide = multi_scale_noise((h, w), [2, 4], [0.35, 0.25], seed + 1511)
+    oxide = multi_scale_noise((h, w), [32, 64], [0.35, 0.25], seed + 1511)
     M = np.clip(M - (oxide + 1.0) / 2.0 * 0.2, 0.1, 1).astype(np.float32)
     
     # Dull warm specular
@@ -395,11 +416,12 @@ def spec_patina_coat(shape, seed, sm, base_m, base_r):
     # Very low clarity (thick patina layer)
     CC = np.full((h, w), 0.25, dtype=np.float32)
     
-    return (np.clip(M * 255.0, 0, 255).astype(np.float32), np.clip(R * 255.0, 0, 255).astype(np.float32), np.clip(CC * 255.0, 0, 255).astype(np.float32))
+    return (np.clip(M * 255.0, 0, 255).astype(np.float32), np.clip(R * 255.0, 15, 255).astype(np.float32), np.clip(CC * 255.0, 16, 255).astype(np.float32))
 
 
 # RAW ALUMINUM - Mill-finish aluminum with rolling marks and oxide bloom
 def paint_raw_aluminum_v2(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
@@ -430,6 +452,8 @@ def paint_raw_aluminum_v2(paint, shape, mask, seed, pm, bb):
 
 def spec_raw_aluminum(shape, seed, sm, base_m, base_r):
     h, w = shape = shape if len(shape) == 2 else shape[:2]
+    base_m = base_m / 255.0  # registry sends 0-255
+    base_r = base_r / 255.0
     
     # Mill finish is moderately rough with directional texture
     y, x = get_mgrid((h, w))
@@ -447,11 +471,12 @@ def spec_raw_aluminum(shape, seed, sm, base_m, base_r):
     # Medium-high clarity
     CC = np.full((h, w), 0.65, dtype=np.float32)
     
-    return (np.clip(M * 255.0, 0, 255).astype(np.float32), np.clip(R * 255.0, 0, 255).astype(np.float32), np.clip(CC * 255.0, 0, 255).astype(np.float32))
+    return (np.clip(M * 255.0, 0, 255).astype(np.float32), np.clip(R * 255.0, 15, 255).astype(np.float32), np.clip(CC * 255.0, 16, 255).astype(np.float32))
 
 
 # SANDBLASTED - Abrasive particle impact crater distribution model
 def paint_sandblasted_v2(paint, shape, mask, seed, pm, bb):
+    if paint.ndim == 3 and paint.shape[2] > 3: paint = paint[:,:,:3].copy()
     bb = ensure_bb_2d(bb, shape)
     h, w = shape[:2] if len(shape) > 2 else shape
     base = paint.copy()
@@ -485,6 +510,8 @@ def paint_sandblasted_v2(paint, shape, mask, seed, pm, bb):
 
 def spec_sandblasted(shape, seed, sm, base_m, base_r):
     h, w = shape = shape if len(shape) == 2 else shape[:2]
+    base_m = base_m / 255.0  # registry sends 0-255
+    base_r = base_r / 255.0
     
     # Sandblasted surface is highly rough
     M = np.full((h, w), np.clip(base_m - 0.4, 0.1, 1), dtype=np.float32)
@@ -499,4 +526,4 @@ def spec_sandblasted(shape, seed, sm, base_m, base_r):
     # Very low clarity (matte finish)
     CC = np.full((h, w), 0.15, dtype=np.float32)
     
-    return (np.clip(M * 255.0, 0, 255).astype(np.float32), np.clip(R * 255.0, 0, 255).astype(np.float32), np.clip(CC * 255.0, 0, 255).astype(np.float32))
+    return (np.clip(M * 255.0, 0, 255).astype(np.float32), np.clip(R * 255.0, 15, 255).astype(np.float32), np.clip(CC * 255.0, 16, 255).astype(np.float32))

@@ -1,0 +1,94 @@
+{
+  "name": "Rolling Smoke Burnout",
+  "description": "Heavy burnout aesthetic — hot-rod body with smoke wash texture over the rear quarters, tire-scuff black on lower rockers, and candy flame accent. Built for the cloud.",
+  "author": "Shokker Paint Booth",
+  "version": "6.2.0",
+  "compatible_with": "muscle_car, drag_car, g_body, fox_body",
+  "notes": "Smoke texture works best when the car shape has visible rear quarter panels. Crank Smoke Wash intensity for a just-finished-a-3rd-gear-burnout look. Drop to 50 for morning cars-and-coffee.",
+  "zones": [
+    {
+      "name": "Hot Rod Body",
+      "color": "everything",
+      "base": "gloss",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "special",
+      "baseColor": "#f25a1a",
+      "baseColorMode": "solid",
+      "baseStrength": 1,
+      "baseSpecStrength": 1
+    },
+    {
+      "name": "Smoke Wash",
+      "color": "remaining",
+      "base": "satin",
+      "pattern": "none",
+      "intensity": "65",
+      "colorMode": "special",
+      "baseColor": "#7a7a7a",
+      "baseColorMode": "solid",
+      "baseStrength": 0.55,
+      "baseSpecStrength": 0.6
+    },
+    {
+      "name": "Tire Scuff Rockers",
+      "color": "dark",
+      "base": "flat_black",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#1a1a1a",
+      "pickerTolerance": 35,
+      "baseColor": "#141414",
+      "baseColorMode": "solid",
+      "baseSpecStrength": 0.25
+    },
+    {
+      "name": "Candy Flame Accent",
+      "color": "red",
+      "base": "candy_apple",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#cc2222",
+      "pickerTolerance": 35,
+      "baseColor": "#c00000",
+      "baseColorMode": "solid"
+    },
+    {
+      "name": "Chrome Trim",
+      "color": "gray",
+      "base": "chrome",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#cccccc",
+      "pickerTolerance": 30,
+      "baseColorMode": "source"
+    },
+    {
+      "name": "Racing Numbers",
+      "color": "white",
+      "base": "semi_gloss",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#ffffff",
+      "pickerTolerance": 25,
+      "baseColor": "#ffffff",
+      "baseColorMode": "solid"
+    },
+    {
+      "name": "Blower Scoop Blackout",
+      "color": "yellow",
+      "base": "matte",
+      "pattern": "none",
+      "intensity": "100",
+      "colorMode": "quick",
+      "pickerColor": "#ffcc00",
+      "pickerTolerance": 30,
+      "baseColor": "#0f0f0f",
+      "baseColorMode": "solid"
+    }
+  ]
+}

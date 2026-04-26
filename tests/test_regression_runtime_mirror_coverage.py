@@ -431,7 +431,7 @@ def test_orphan_mirror_count_does_not_grow_beyond_known_baseline():
     else:
         orphan_count = int(m.group(1))
 
-    KNOWN_ORPHAN_BASELINE = 2  # 2026-04-21: 2 x legacy paint-booth-app.js
+    KNOWN_ORPHAN_BASELINE = 0  # 2026-04-26: mirror orphan floor is clean.
 
     if orphan_count < KNOWN_ORPHAN_BASELINE:
         pytest.skip(

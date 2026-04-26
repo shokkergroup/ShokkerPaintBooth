@@ -159,3 +159,34 @@ console.log(JSON.stringify(vm.runInContext('PATTERN_GROUPS', ctx)));
     assert "nature_water_ripple_pat" in natural_group
     assert "hypocycloid" in math_group
     assert "geo_hilbert_curve" in math_group
+
+
+def test_pattern_compatibility_aliases_are_machine_readable_not_silent_copies():
+    import shokker_engine_v2 as eng
+
+    alias_maps = {
+        **eng._PATTERN_FALLBACKS,
+        **eng._UI_PATTERN_ALIASES,
+    }
+    missing = []
+    bad = {}
+    for alias_id, target_id in alias_maps.items():
+        alias_entry = eng.PATTERN_REGISTRY.get(alias_id)
+        target_entry = eng.PATTERN_REGISTRY.get(target_id)
+        if not isinstance(alias_entry, dict) or not isinstance(target_entry, dict):
+            missing.append((alias_id, target_id))
+            continue
+        problems = []
+        if alias_entry is target_entry:
+            problems.append("same object as target")
+        if alias_entry.get("_spb_alias_of") != target_id:
+            problems.append("missing _spb_alias_of")
+        if alias_entry.get("_spb_alias_kind") not in {"compatibility_fallback", "ui_id_alias"}:
+            problems.append("missing _spb_alias_kind")
+        if not alias_entry.get("_spb_alias_reason"):
+            problems.append("missing _spb_alias_reason")
+        if problems:
+            bad[alias_id] = problems
+
+    assert missing == []
+    assert bad == {}

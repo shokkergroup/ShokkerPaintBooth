@@ -8878,13 +8878,32 @@ _PATTERN_FALLBACKS = {
     'satin_wax': 'board_wax',
     'uv_night_accent':      'shimmer_neon_weft',       # was 'glow_pulse' (missing)
 }
+
+def _spb_wire_pattern_compat_alias(alias_id, target_id, alias_kind, alias_reason):
+    """Install an explicit pattern compatibility alias without hiding its target."""
+    if alias_id in PATTERN_REGISTRY or target_id not in PATTERN_REGISTRY:
+        return False
+    target_entry = PATTERN_REGISTRY[target_id]
+    if not isinstance(target_entry, dict):
+        return False
+    alias_entry = dict(target_entry)
+    alias_entry["_spb_alias_of"] = target_id
+    alias_entry["_spb_alias_kind"] = alias_kind
+    alias_entry["_spb_alias_reason"] = alias_reason
+    PATTERN_REGISTRY[alias_id] = alias_entry
+    return True
+
 _pat_wired = 0
 for _pk, _pv_target in _PATTERN_FALLBACKS.items():
-    if _pk not in PATTERN_REGISTRY and _pv_target in PATTERN_REGISTRY:
-        PATTERN_REGISTRY[_pk] = PATTERN_REGISTRY[_pv_target]
+    if _spb_wire_pattern_compat_alias(
+        _pk,
+        _pv_target,
+        "compatibility_fallback",
+        "legacy/ui pattern id has no dedicated source renderer; routed to closest documented renderer",
+    ):
         _pat_wired += 1
 if _pat_wired:
-    print(f"  [Pattern Fallback] Wired {_pat_wired} missing patterns to closest equivalents")
+    print(f"  [Pattern Fallback] Wired {_pat_wired} documented compatibility alias(es)")
 
 # 2026-04-21 HEENAN OVERNIGHT iter 3: UI-visible pattern id aliases.
 # Two categories covered here:
@@ -8919,11 +8938,15 @@ _UI_PATTERN_ALIASES = {
 }
 _alias_wired = 0
 for _ak, _av_target in _UI_PATTERN_ALIASES.items():
-    if _ak not in PATTERN_REGISTRY and _av_target in PATTERN_REGISTRY:
-        PATTERN_REGISTRY[_ak] = PATTERN_REGISTRY[_av_target]
+    if _spb_wire_pattern_compat_alias(
+        _ak,
+        _av_target,
+        "ui_id_alias",
+        "UI canonical id intentionally maps to existing Python pattern renderer",
+    ):
         _alias_wired += 1
 if _alias_wired:
-    print(f"  [UI Alias] Wired {_alias_wired} UI-exposed pattern ids to canonical Python render functions")
+    print(f"  [UI Alias] Wired {_alias_wired} documented UI pattern alias(es)")
 
 
 def _spb_normalize01(arr):

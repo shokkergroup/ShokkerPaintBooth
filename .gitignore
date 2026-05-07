@@ -59,9 +59,20 @@ _server_err.txt
 npm_build_log.txt
 rebuild_log.txt
 
+# ----- HERMES recon loop -----------------------------------------------------
+/codex_recon_inbox/*
+!/codex_recon_inbox/README.md
+/tools/hermes_recon/.env
+/tools/hermes_recon/*.log
+/tools/hermes_recon/*.out
+/tools/hermes_recon/*.pid
+/tools/hermes_recon/state.json
+/tools/hermes_recon/last_snapshot_preview.txt
+
 # ----- Electron / Node -------------------------------------------------------
 node_modules/
 electron-app/dist/
+electron-app/dist-sandbox-*/
 electron-app/node_modules/
 electron-app/_build_*.txt
 electron-app/_build_*.log
@@ -79,6 +90,7 @@ app-builds/
 # ----- Render output / preview images ---------------------------------------
 output/
 swatches/
+audit/
 audit_images/
 chameleon_test_output/
 test_improvements_imgs/
@@ -132,6 +144,10 @@ fix_*.py
 patch*.py
 patch*.js
 test_*.py
+!tests/test_regression_color_clash_owner_review.py
+!tests/test_regression_effects_vision_owner_review.py
+!tests/test_regression_atmosphere_owner_review.py
+!tests/test_regression_spb30_visual_wave.py
 test_*.txt
 upgrade_*.py
 sync_*.py
@@ -174,6 +190,8 @@ BUILD_INSTALLER.py
 out.json
 out.txt
 diff_fc.txt
+shokker-material-report-*.json
+nul
 similars_to_replace.json
 finish_ids_canonical.json
 finish_colors.json
@@ -257,6 +275,8 @@ tests/_runtime_harness/mkdtemp/*
 !tests/_runtime_harness/mkdtemp/.gitkeep
 tests/_runtime_harness/temp_files/*
 !tests/_runtime_harness/temp_files/.gitkeep
+tests/_runtime_harness/tmp_path/*
+!tests/_runtime_harness/tmp_path/.gitkeep
 tests/_runtime_harness/tmp_path/no_override/*
 !tests/_runtime_harness/tmp_path/no_override/.gitkeep
 tests/_runtime_harness/tmp_path/with_override/*
@@ -264,6 +284,8 @@ tests/_runtime_harness/tmp_path/with_override/*
 !tests/test_regression_high_detail_specials.py
 !tests/test_regression_runtime_mirror_coverage.py
 !tests/test_regression_dev_qol_tools.py
+!tests/test_regression_paint_technique_ui_payload.py
 !scripts/audit_spec_pattern_quality.py
 !scripts/audit_pattern_quality.py
+!scripts/audit_renderer_performance.py
 scripts/.runtime-sync.lock

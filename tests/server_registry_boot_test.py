@@ -91,3 +91,55 @@ def test_server_boot_preserves_pattern_driven_ornamentals():
 def test_server_boot_does_not_add_numeric_catalog_junk_ids():
     payload = _clean_server_boot_payload()
     assert payload["numeric_ids"] == []
+
+
+def test_server_v5_finish_data_groups_cultural_monolithics():
+    code = r"""
+import contextlib
+import io
+import json
+
+buf = io.StringIO()
+with contextlib.redirect_stdout(buf), contextlib.redirect_stderr(buf):
+    import server_v5
+
+server_v5.app.config["TESTING"] = True
+client = server_v5.app.test_client()
+response = client.get("/api/finish-data?rich=1")
+payload = response.get_json()
+
+def grouped(name):
+    return payload.get("groups", {}).get("specials", {}).get(name, [])
+
+category_by_id = {
+    row.get("id"): row.get("category")
+    for row in payload.get("specials", [])
+    if str(row.get("id", "")).startswith(("vm_", "rs_"))
+}
+
+print(json.dumps({
+    "status_code": response.status_code,
+    "viva_count": len(grouped("VIVA MEXICO")),
+    "rising_sun_count": len(grouped("RISING SUN")),
+    "viva_sample": category_by_id.get("vm_aztec_sunfire"),
+    "rising_sun_sample": category_by_id.get("rs_rising_sun_flare"),
+}, sort_keys=True))
+"""
+    proc = subprocess.run(
+        [sys.executable, "-c", code],
+        cwd=str(REPO),
+        capture_output=True,
+        text=True,
+        timeout=120,
+    )
+    if proc.returncode != 0:
+        pytest.fail(
+            f"server_v5 finish-data rich contract failed (exit {proc.returncode})\n"
+            f"stdout:\n{proc.stdout}\nstderr:\n{proc.stderr}"
+        )
+    payload = json.loads(proc.stdout)
+    assert payload["status_code"] == 200
+    assert payload["viva_count"] >= 58
+    assert payload["rising_sun_count"] >= 52
+    assert payload["viva_sample"] == "VIVA MEXICO"
+    assert payload["rising_sun_sample"] == "RISING SUN"

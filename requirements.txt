@@ -6,3 +6,6 @@ flask-cors
 numpy
 Pillow
 scipy
+
+# Optional — Union Jacked footer OCR (pip install pytesseract + install Tesseract OCR for your OS):
+# pytesseract>=0.3.10

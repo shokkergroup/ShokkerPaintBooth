@@ -1,0 +1,18 @@
+{
+  "model": "deepseek/deepseek-v4-flash",
+  "interval_minutes": 15,
+  "output_dir": "codex_recon_inbox",
+  "max_input_chars": 55000,
+  "max_output_tokens": 3600,
+  "temperature": 0.72,
+  "focus_rotation": [
+    "finish_quality",
+    "spec_map_depth",
+    "pattern_library",
+    "color_systems",
+    "ui_finish_workflow",
+    "render_performance",
+    "catalog_consistency",
+    "export_polish"
+  ]
+}

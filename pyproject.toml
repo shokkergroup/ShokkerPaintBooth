@@ -219,6 +219,7 @@ addopts = [
   "--strict-config",
   "-p",
   "no:cacheprovider",
+  "--capture=no",
   "--tb=short",
   "--showlocals",
   "-ra",

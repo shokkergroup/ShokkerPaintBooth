@@ -324,6 +324,9 @@ function validateManifestShape(manifest, manifestPath) {
   if (!Array.isArray(manifest.files)) {
     throw new Error(`Manifest at ${manifestPath}: "files" must be an array`);
   }
+  if (manifest.directories !== undefined && !Array.isArray(manifest.directories)) {
+    throw new Error(`Manifest at ${manifestPath}: "directories" must be an array when present`);
+  }
   if (!Array.isArray(manifest.targets)) {
     throw new Error(`Manifest at ${manifestPath}: "targets" must be an array`);
   }
@@ -341,6 +344,10 @@ function validateManifestShape(manifest, manifestPath) {
   if (badTarget !== undefined) {
     throw new Error(`Manifest at ${manifestPath}: "targets" entry ${JSON.stringify(badTarget)} is not a non-empty string`);
   }
+  const badDirectory = (manifest.directories || []).find((d) => typeof d !== 'string' || !d.trim());
+  if (badDirectory !== undefined) {
+    throw new Error(`Manifest at ${manifestPath}: "directories" entry ${JSON.stringify(badDirectory)} is not a non-empty string`);
+  }
   // Detect duplicates which are almost always a copy-paste mistake.
   const seenFiles = new Set();
   for (const f of manifest.files) {
@@ -348,12 +355,44 @@ function validateManifestShape(manifest, manifestPath) {
     if (seenFiles.has(key)) throw new Error(`Manifest: duplicate file entry "${f}"`);
     seenFiles.add(key);
   }
+  const seenDirectories = new Set();
+  for (const d of manifest.directories || []) {
+    const key = path.normalize(d);
+    if (seenDirectories.has(key)) throw new Error(`Manifest: duplicate directory entry "${d}"`);
+    seenDirectories.add(key);
+  }
   const seenTargets = new Set();
   for (const t of manifest.targets) {
     const key = path.normalize(t);
     if (seenTargets.has(key)) throw new Error(`Manifest: duplicate target entry "${t}"`);
     seenTargets.add(key);
   }
+}
+
+function walkManifestDirectory(relDir) {
+  const rootAbs = path.join(REPO_ROOT, relDir);
+  const files = [];
+  const stack = [rootAbs];
+  while (stack.length > 0) {
+    const dir = stack.pop();
+    let entries;
+    try {
+      entries = fs.readdirSync(dir, { withFileTypes: true });
+    } catch (err) {
+      if (err.code === 'ENOENT') return [];
+      throw err;
+    }
+    entries.sort((a, b) => a.name.localeCompare(b.name));
+    for (const ent of entries) {
+      const abs = path.join(dir, ent.name);
+      if (ent.isDirectory()) {
+        stack.push(abs);
+      } else if (ent.isFile()) {
+        files.push(path.relative(REPO_ROOT, abs).replace(/\\/g, '/'));
+      }
+    }
+  }
+  return files.sort();
 }
 
 /**
@@ -366,7 +405,11 @@ function validateManifestShape(manifest, manifestPath) {
 function listRuntimeSyncPairs(manifest) {
   const m = manifest || loadManifest();
   const pairs = [];
-  for (const relFile of m.files) {
+  const manifestFiles = [
+    ...m.files,
+    ...(m.directories || []).flatMap((relDir) => walkManifestDirectory(relDir)),
+  ];
+  for (const relFile of manifestFiles) {
     const sourceAbs = path.join(REPO_ROOT, relFile);
     for (const relTargetDir of m.targets) {
       // 2026-04-21 HEENAN POST-AUDIT: preserve subdirectory structure

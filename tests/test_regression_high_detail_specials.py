@@ -8,6 +8,8 @@ import numpy as np
 from engine.paint_v2.paradigm_scifi import paint_p_volcanic_v2, spec_p_volcanic
 from engine.expansions import fusions
 from engine.expansions import arsenal_24k
+from engine.expansions import living_finishes
+from engine.expansions import owner_review_standalone
 import engine.pattern_expansion as pattern_expansion
 import engine.spec_patterns as spec_patterns
 from engine.perceptual_color_shift import (
@@ -110,6 +112,30 @@ LIGHT_WAVE_IDS = [
 ]
 
 
+MATERIAL_GRADIENT_IDS = [
+    "gradient_anodized_gloss", "gradient_candy_frozen", "gradient_candy_matte",
+    "gradient_carbon_chrome", "gradient_chrome_matte", "gradient_ember_ice",
+    "gradient_metallic_satin", "gradient_obsidian_mirror", "gradient_pearl_chrome",
+    "gradient_spectraflame_void",
+]
+
+
+DIRECTIONAL_GRAIN_IDS = [
+    "aniso_circular_chrome", "aniso_crosshatch_steel", "aniso_diagonal_candy",
+    "aniso_herringbone_gold", "aniso_horizontal_chrome", "aniso_radial_metallic",
+    "aniso_spiral_mercury", "aniso_turbulence_metal", "aniso_vertical_pearl",
+    "aniso_wave_titanium",
+]
+
+
+WEATHER_AGE_IDS = [
+    "weather_acid_rain", "weather_barn_dust", "weather_desert_blast",
+    "weather_hood_bake", "weather_ice_storm", "weather_ocean_mist",
+    "weather_road_spray", "weather_salt_spray", "weather_sun_fade",
+    "weather_volcanic_ash",
+]
+
+
 SPECTRAL_REACTIVE_IDS = [
     "spectral_complementary", "spectral_dark_light", "spectral_earth_sky",
     "spectral_inverse_logic", "spectral_mono_chrome", "spectral_neon_reactive",
@@ -138,6 +164,15 @@ EXTREME_INTERNAL_DETAIL_IDS = [
 
 
 CANDY_PEARL_REVIEW_IDS = [
+    "candy_burgundy",
+    "candy_cobalt",
+    "candy_emerald",
+    "chameleon",
+    "iridescent",
+    "moonstone",
+    "opal",
+    "spectraflame",
+    "tinted_clear",
     "tri_coat_pearl",
     "deep_pearl",
     "jelly_pearl",
@@ -150,6 +185,14 @@ SPEC_PATTERN_REVIEW_IDS = [
     "spec_carbon_weave", "concentric_ripple", "crackle_network", "hex_cells",
     "crushed_glass", "prismatic_shatter", "sparkle_shattered", "micro_facets",
     "voronoi_fracture", "spec_faceted_diamond", "spec_crystal_growth",
+]
+
+
+SPEC_OVERLAY_OWNER_CALLED_IDS = [
+    "sparkle_comet",
+    "electric_branches",
+    "tire_smoke_residue",
+    "galaxy_swirl",
 ]
 
 
@@ -167,6 +210,26 @@ METALS_FORGED_SOURCE_IDS = [
     "annealed_steel",
     "oxidized_bronze",
     "damascus_steel",
+]
+
+
+LIVING_FINISH_IDS = [
+    "living_wave_tide",
+    "living_lake_ripple",
+    "living_flame_flicker",
+    "living_led_chase",
+    "living_twinkle_stars",
+    "living_neon_equalizer",
+    "living_heat_haze",
+    "living_electric_current",
+    "living_oil_pulse",
+]
+
+
+STANDALONE_EFFECT_IDS = [
+    "thermal_titanium", "galaxy_nebula_base", "dark_sigil", "deep_space_void",
+    "polished_obsidian_mono", "patinated_bronze", "reactive_plasma",
+    "molten_metal", "oil_slick_base", "aurora_borealis_mono",
 ]
 
 
@@ -395,6 +458,99 @@ def test_ornamental_special_monolithics_are_visible_and_not_catalog_fallbacks():
     for (id_a, a), (id_b, b) in itertools.combinations(fingerprints.items(), 2):
         corr = float(np.corrcoef(a, b)[0, 1])
         assert abs(corr) < 0.94, f"{id_a} and {id_b} monolithic paints are too similar: corr={corr:.3f}"
+
+
+def test_weather_age_has_source_owned_micro_weather_and_varied_spec_response():
+    mask = np.ones(SHAPE, dtype=np.float32)
+    paint = np.full((SHAPE[0], SHAPE[1], 3), [0.26, 0.24, 0.21], dtype=np.float32)
+    bb = np.zeros(SHAPE, dtype=np.float32)
+    fallback_ids = getattr(eng, "CATALOG_FALLBACK_WIRED_IDS", set())
+    fingerprints = {}
+
+    for i, finish_id in enumerate(WEATHER_AGE_IDS):
+        assert finish_id in eng.MONOLITHIC_REGISTRY
+        assert finish_id not in fallback_ids
+        assert fusions._FUSION_DETAIL_PROFILES[finish_id].get("skip_detail_wrapper") is True
+        spec_fn, paint_fn = eng.MONOLITHIC_REGISTRY[finish_id]
+        rgb = paint_fn(paint.copy(), SHAPE, mask, seed=7741 + i, pm=1.0, bb=bb)
+        spec = np.asarray(spec_fn(SHAPE, mask, 7741 + i, 1.0), dtype=np.float32)
+        luma = rgb[:, :, :3].mean(axis=2)
+
+        assert np.isfinite(rgb).all(), finish_id
+        assert np.isfinite(spec).all(), finish_id
+        assert _residual_energy(luma) > 0.0065, finish_id
+        assert _fine_energy(luma) > 0.018, finish_id
+        assert _color_population(rgb) >= 3, finish_id
+        assert float(spec[:, :, 0].max() - spec[:, :, 0].min()) > 120.0, finish_id
+        assert float(spec[:, :, 1].max() - spec[:, :, 1].min()) > 120.0, finish_id
+        assert float(spec[:, :, 2].max() - spec[:, :, 2].min()) > 90.0, finish_id
+        fingerprints[finish_id] = _normalized(luma).ravel()
+
+    for (id_a, a), (id_b, b) in itertools.combinations(fingerprints.items(), 2):
+        corr = float(np.corrcoef(a, b)[0, 1])
+        assert abs(corr) < 0.96, f"{id_a} and {id_b} weather paints are too similar: corr={corr:.3f}"
+
+
+def test_directional_grain_is_source_owned_detailed_and_material_varied():
+    mask = np.ones(SHAPE, dtype=np.float32)
+    paint = np.full((SHAPE[0], SHAPE[1], 3), [0.20, 0.19, 0.18], dtype=np.float32)
+    bb = np.zeros(SHAPE, dtype=np.float32)
+    fallback_ids = getattr(eng, "CATALOG_FALLBACK_WIRED_IDS", set())
+    fingerprints = {}
+
+    for i, finish_id in enumerate(DIRECTIONAL_GRAIN_IDS):
+        assert finish_id in eng.MONOLITHIC_REGISTRY
+        assert finish_id not in fallback_ids
+        assert fusions._FUSION_DETAIL_PROFILES[finish_id].get("skip_detail_wrapper") is True
+        spec_fn, paint_fn = eng.MONOLITHIC_REGISTRY[finish_id]
+        rgb = paint_fn(paint.copy(), SHAPE, mask, seed=8320 + i, pm=1.0, bb=bb)
+        spec = np.asarray(spec_fn(SHAPE, mask, 8320 + i, 1.0), dtype=np.float32)
+        luma = rgb[:, :, :3].mean(axis=2)
+
+        assert np.isfinite(rgb).all(), finish_id
+        assert np.isfinite(spec).all(), finish_id
+        assert _fine_energy(luma) > 0.044, finish_id
+        assert _residual_energy(luma) > 0.018, finish_id
+        assert _color_population(rgb) >= 5, finish_id
+        assert float(spec[:, :, 0].max() - spec[:, :, 0].min()) > 55.0, finish_id
+        assert float(spec[:, :, 1].max() - spec[:, :, 1].min()) > 120.0, finish_id
+        assert float(spec[:, :, 2].max() - spec[:, :, 2].min()) > 130.0, finish_id
+        fingerprints[finish_id] = _normalized(luma).ravel()
+
+    for (id_a, a), (id_b, b) in itertools.combinations(fingerprints.items(), 2):
+        corr = float(np.corrcoef(a, b)[0, 1])
+        assert abs(corr) < 0.965, f"{id_a} and {id_b} directional grains are too similar: corr={corr:.3f}"
+
+
+def test_material_gradients_are_source_owned_and_not_macro_washes():
+    mask = np.ones(SHAPE, dtype=np.float32)
+    paint = np.full((SHAPE[0], SHAPE[1], 3), [0.18, 0.18, 0.18], dtype=np.float32)
+    bb = np.zeros(SHAPE, dtype=np.float32)
+    fallback_ids = getattr(eng, "CATALOG_FALLBACK_WIRED_IDS", set())
+    fingerprints = {}
+
+    for i, finish_id in enumerate(MATERIAL_GRADIENT_IDS):
+        assert finish_id in eng.MONOLITHIC_REGISTRY
+        assert finish_id not in fallback_ids
+        assert fusions._FUSION_DETAIL_PROFILES[finish_id].get("skip_detail_wrapper") is True
+        spec_fn, paint_fn = eng.MONOLITHIC_REGISTRY[finish_id]
+        rgb = paint_fn(paint.copy(), SHAPE, mask, seed=8520 + i, pm=1.0, bb=bb)
+        spec = np.asarray(spec_fn(SHAPE, mask, 8520 + i, 1.0), dtype=np.float32)
+        luma = rgb[:, :, :3].mean(axis=2)
+
+        assert np.isfinite(rgb).all(), finish_id
+        assert np.isfinite(spec).all(), finish_id
+        assert _fine_energy(luma) > 0.035, finish_id
+        assert _residual_energy(luma) > 0.016, finish_id
+        assert _color_population(rgb) >= 6, finish_id
+        assert float(spec[:, :, 0].max() - spec[:, :, 0].min()) > 30.0, finish_id
+        assert float(spec[:, :, 1].max() - spec[:, :, 1].min()) > 25.0, finish_id
+        assert float(spec[:, :, 2].max() - spec[:, :, 2].min()) > 200.0, finish_id
+        fingerprints[finish_id] = _normalized(luma).ravel()
+
+    for (id_a, a), (id_b, b) in itertools.combinations(fingerprints.items(), 2):
+        corr = float(np.corrcoef(a, b)[0, 1])
+        assert abs(corr) < 0.965, f"{id_a} and {id_b} gradients are too similar: corr={corr:.3f}"
 
 
 def test_hyperflip_embeds_opponent_colors_and_spec_selects_flash_population():
@@ -765,6 +921,7 @@ def test_extreme_experimental_bases_keep_internal_detail_in_large_regions():
 
 
 def test_candy_pearl_review_targets_keep_depth_and_pixel_detail():
+    eng._ensure_expansions_loaded()
     for finish_id in CANDY_PEARL_REVIEW_IDS:
         painted, spec_m = _paint_base_finish(finish_id)
         signal = painted[:, :, 0] * 0.31 + painted[:, :, 1] * 0.37 + painted[:, :, 2] * 0.32
@@ -778,6 +935,39 @@ def test_candy_pearl_review_targets_keep_depth_and_pixel_detail():
         assert _large_blob_ratio(signal) < 0.78, finish_id
         assert max(paint_region_detail, spec_region_detail) > 0.040, finish_id
         assert _color_population(painted) >= 2, finish_id
+
+
+def test_candy_pearl_shipping_ids_use_dedicated_renderers_not_legacy_broken_paths():
+    eng._ensure_expansions_loaded()
+    expected_modules = {
+        "candy_burgundy": "engine.paint_v2.candy_special",
+        "candy_cobalt": "engine.paint_v2.exotic_metal",
+        "candy_emerald": "engine.paint_v2.candy_special",
+        "chameleon": "engine.paint_v2.candy_special",
+        "iridescent": "engine.paint_v2.candy_special",
+        "moonstone": "engine.paint_v2.candy_special",
+        "opal": "engine.paint_v2.candy_special",
+        "spectraflame": "engine.paint_v2.candy_special",
+        "tinted_clear": "engine.paint_v2.candy_special",
+        "tri_coat_pearl": "engine.paint_v2.candy_special",
+        "deep_pearl": "engine.paint_v2.candy_special",
+        "jelly_pearl": "engine.paint_v2.candy_special",
+        "hypershift_spectral": "engine.paint_v2.candy_special",
+    }
+    paint = np.full((SHAPE_SMALL[0], SHAPE_SMALL[1], 3), 0.18, dtype=np.float32)
+    mask = np.ones(SHAPE_SMALL, dtype=np.float32)
+    bb = np.zeros(SHAPE_SMALL, dtype=np.float32)
+
+    for finish_id, module_name in expected_modules.items():
+        entry = eng.BASE_REGISTRY[finish_id]
+        assert getattr(entry["paint_fn"], "__module__", "") == module_name
+        painted = entry["paint_fn"](paint.copy(), SHAPE_SMALL, mask, seed=8521, pm=1.0, bb=bb)
+        spec = entry["base_spec_fn"](SHAPE_SMALL, seed=8521, sm=1.0, base_m=entry["M"], base_r=entry["R"])
+        spec_m = _spec_m_channel(spec)
+        assert painted.shape == paint.shape
+        assert spec_m.shape == SHAPE_SMALL
+        assert np.isfinite(painted).all(), finish_id
+        assert np.isfinite(spec_m).all(), finish_id
 
 
 def test_metallic_halos_have_broad_aligned_coverage_without_block_artifacts():
@@ -810,6 +1000,21 @@ def test_spec_patterns_have_stronger_category_specific_micro_overlays():
         assert float(arr.max() - arr.min()) > 0.42, pattern_id
         assert _fine_energy(arr) > 0.040, pattern_id
         assert _residual_energy(arr) > 0.016, pattern_id
+
+
+def test_owner_called_spec_overlay_patterns_keep_native_micro_detail_and_identity():
+    signatures = []
+    for pattern_id in SPEC_OVERLAY_OWNER_CALLED_IDS:
+        assert pattern_id in PATTERN_CATALOG
+        arr = np.asarray(PATTERN_CATALOG[pattern_id](SHAPE, seed=6127, sm=1.0), dtype=np.float32)
+        assert np.isfinite(arr).all(), pattern_id
+        assert float(arr.max() - arr.min()) > 0.42, pattern_id
+        assert _fine_energy(arr) > 0.026, pattern_id
+        assert _residual_energy(arr) > 0.014, pattern_id
+        signatures.append(_normalized(arr).ravel())
+
+    for a, b in itertools.combinations(signatures, 2):
+        assert abs(float(np.corrcoef(a, b)[0, 1])) < 0.92
 
 
 def test_decade_patterns_keep_era_signature_and_pixel_detail():
@@ -862,6 +1067,35 @@ def test_pattern_monolithic_material_world_ids_have_individual_rebuild_profiles(
         assert abs(float(np.corrcoef(a, b)[0, 1])) < 0.990
 
 
+def test_brushed_metal_fine_is_source_owned_machined_satin_not_flat_chrome():
+    eng._ensure_expansions_loaded()
+    spec_fn, paint_fn = eng.MONOLITHIC_REGISTRY["brushed_metal_fine"]
+    assert getattr(spec_fn, "_spb_brushed_machined_source_owned", False)
+    assert getattr(paint_fn, "_spb_brushed_machined_source_owned", False)
+
+    spec = spec_fn(SHAPE, seed=7301, sm=1.0, base_m=70, base_r=80)
+    m, r, cc = (np.asarray(ch, dtype=np.float32) for ch in spec)
+    paint = np.full((SHAPE[0], SHAPE[1], 3), 0.16, dtype=np.float32)
+    painted = paint_fn(
+        paint,
+        SHAPE,
+        np.ones(SHAPE, dtype=np.float32),
+        seed=7301,
+        pm=1.0,
+        bb=np.zeros(SHAPE, dtype=np.float32),
+    )
+
+    assert float(m.max() - m.min()) > 95.0
+    assert float(r.max() - r.min()) > 105.0
+    assert float(cc.max() - cc.min()) > 105.0
+    assert float(m.mean()) < 205.0
+    assert float(r.mean()) > 75.0
+    assert _fine_energy(m / 255.0) > 0.018
+    assert _residual_energy(m / 255.0) > 0.010
+    assert _color_population(painted) >= 4
+    assert _fine_energy(painted.mean(axis=2)) > 0.010
+
+
 def test_spec_and_regular_pattern_registries_have_per_id_detail_profiles():
     assert set(spec_patterns.PATTERN_CATALOG).issubset(spec_patterns._SPEC_PATTERN_DETAIL_PROFILES)
     assert set(pattern_expansion.NEW_PATTERNS).issubset(pattern_expansion._EXPANSION_PATTERN_DETAIL_PROFILES)
@@ -904,3 +1138,83 @@ def test_metals_forged_source_paint_functions_do_not_crash_or_get_masked():
     for finish_id in METALS_FORGED_SOURCE_IDS:
         _spec_fn, registry_paint_fn = eng.MONOLITHIC_REGISTRY[finish_id]
         assert not getattr(registry_paint_fn, "_spb_standalone_detail_wrapped", False), finish_id
+
+
+def test_standalone_effects_are_source_owned_detailed_and_material_varied():
+    eng._ensure_expansions_loaded()
+    paint = np.full((SHAPE[0], SHAPE[1], 3), 0.16, dtype=np.float32)
+    mask = np.ones(SHAPE, dtype=np.float32)
+    bb = np.zeros(SHAPE, dtype=np.float32)
+    signatures = []
+
+    assert set(STANDALONE_EFFECT_IDS) <= set(owner_review_standalone.OWNER_REVIEW_STANDALONE_MONOLITHICS)
+
+    for finish_id in STANDALONE_EFFECT_IDS:
+        assert finish_id in eng.MONOLITHIC_REGISTRY
+        spec_fn, paint_fn = eng.MONOLITHIC_REGISTRY[finish_id]
+        spec = spec_fn(SHAPE, mask, seed=9401, sm=1.0)
+        out = paint_fn(paint.copy(), SHAPE, mask, seed=9401, pm=1.0, bb=bb)
+
+        assert getattr(spec_fn, "_spb_standalone_source_owned", False), finish_id
+        assert getattr(paint_fn, "_spb_standalone_source_owned", False), finish_id
+        assert not getattr(spec_fn, "_spb_standalone_detail_wrapped", False), finish_id
+        assert not getattr(paint_fn, "_spb_standalone_detail_wrapped", False), finish_id
+        assert spec.shape == (SHAPE[0], SHAPE[1], 4), finish_id
+        assert out.shape == paint.shape, finish_id
+        assert np.isfinite(spec).all(), finish_id
+        assert np.isfinite(out).all(), finish_id
+        assert float(np.abs(out - paint).mean()) > 0.025, finish_id
+        assert max(float(spec[:, :, ch].max() - spec[:, :, ch].min()) for ch in range(3)) > 80.0, finish_id
+        assert _fine_energy(out[:, :, 0]) > 0.0030 or _fine_energy(spec[:, :, 0] / 255.0) > 0.0030, finish_id
+        assert _residual_energy(spec[:, :, 0] / 255.0) > 0.0025, finish_id
+
+        signatures.append((
+            round(float(out[:, :, 0].mean()), 3),
+            round(float(out[:, :, 1].mean()), 3),
+            round(float(out[:, :, 2].mean()), 3),
+            round(float(spec[:, :, 0].mean()), 1),
+            round(float(spec[:, :, 1].mean()), 1),
+            round(float(spec[:, :, 2].mean()), 1),
+            round(float(_fine_energy(out[:, :, 0])), 4),
+            round(float(_residual_energy(spec[:, :, 0] / 255.0)), 4),
+        ))
+
+    assert len(set(signatures)) == len(STANDALONE_EFFECT_IDS)
+
+
+def test_living_finishes_are_registered_nonflat_and_distinct():
+    eng._ensure_expansions_loaded()
+    paint = np.full((SHAPE[0], SHAPE[1], 3), 0.16, dtype=np.float32)
+    mask = np.ones(SHAPE, dtype=np.float32)
+    bb = np.zeros(SHAPE, dtype=np.float32)
+    signatures = []
+
+    assert set(LIVING_FINISH_IDS) <= set(living_finishes.LIVING_FINISH_REGISTRY)
+
+    for finish_id in LIVING_FINISH_IDS:
+        assert finish_id in eng.MONOLITHIC_REGISTRY
+        spec_fn, paint_fn = eng.MONOLITHIC_REGISTRY[finish_id]
+        spec = spec_fn(SHAPE, mask, seed=9101, sm=1.0)
+        out = paint_fn(paint.copy(), SHAPE, mask, seed=9101, pm=1.0, bb=bb)
+
+        assert spec.shape == (SHAPE[0], SHAPE[1], 4), finish_id
+        assert out.shape == paint.shape, finish_id
+        assert np.isfinite(spec).all(), finish_id
+        assert np.isfinite(out).all(), finish_id
+        assert float(np.abs(out - paint).mean()) > 0.020, finish_id
+        assert max(float(spec[:, :, ch].max() - spec[:, :, ch].min()) for ch in range(3)) > 65.0, finish_id
+        assert _fine_energy(out[:, :, 0]) > 0.0025 or _fine_energy(spec[:, :, 0] / 255.0) > 0.0025, finish_id
+
+        sig = (
+            round(float(out[:, :, 0].mean()), 3),
+            round(float(out[:, :, 1].mean()), 3),
+            round(float(out[:, :, 2].mean()), 3),
+            round(float(spec[:, :, 0].mean()), 1),
+            round(float(spec[:, :, 1].mean()), 1),
+            round(float(spec[:, :, 2].mean()), 1),
+            round(float(_fine_energy(out[:, :, 0])), 4),
+            round(float(_residual_energy(spec[:, :, 0] / 255.0)), 4),
+        )
+        signatures.append(sig)
+
+    assert len(set(signatures)) == len(LIVING_FINISH_IDS)

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "version": "2026.04.21-1",
-  "description": "SPB runtime file mirror list. Root-level files are the source of truth; they are copied into every entry in `targets`. See scripts/README.md and scripts/RUNTIME_SYNC.md. 2026-04-21 HEENAN OVERNIGHT post-Codex-audit: extended to include the 4 hot-path Python modules that were previously only mirrored at Electron build time via electron-app/copy-server-assets.js. The Codex audit of the overnight loop found that Python backend edits did not reach the Electron runtime per-edit, only per-build; this manifest now covers both paths so `node scripts/sync-runtime-copies.js --write` catches them. 2026-04-22 HEENAN FAMILY overnight iter 4 (Foundation trust): added engine/base_registry_data.py so Foundation-Base metadata edits at root auto-sync to Electron mirrors (previously only copied at build-time, caused recurrent drift).",
+  "description": "SPB runtime file mirror list. Root-level files and selected asset directories are the source of truth; they are copied into every entry in `targets`. See scripts/README.md and scripts/RUNTIME_SYNC.md. 2026-04-21 HEENAN OVERNIGHT post-Codex-audit: extended to include the 4 hot-path Python modules that were previously only mirrored at Electron build time via electron-app/copy-server-assets.js. The Codex audit of the overnight loop found that Python backend edits did not reach the Electron runtime per-edit, only per-build; this manifest now covers both paths so `node scripts/sync-runtime-copies.js --write` catches them. 2026-04-22 HEENAN FAMILY overnight iter 4 (Foundation trust): added engine/base_registry_data.py so Foundation-Base metadata edits at root auto-sync to Electron mirrors (previously only copied at build-time, caused recurrent drift). 2026-05-05 cultural texture fix: added directory mirroring for image-authored Cultural finishes so Viva Mexico / Rising Sun texture packs cannot disappear from the served Electron runtime.",
   "source_of_truth": "repo_root",
   "targets": [
     "electron-app/server",
@@ -13,6 +13,8 @@
     "paint-booth-pro-theme.css",
     "paint-booth-0-finish-data.js",
     "paint-booth-0-finish-metadata.js",
+    "paint-booth-0-catalog-scorecard.js",
+    "paint-booth-0-picker-owner-ratings.js",
     "paint-booth-1-data.js",
     "paint-booth-2-state-zones.js",
     "paint-booth-3-canvas.js",
@@ -28,6 +30,7 @@
     "config.py",
     "server.py",
     "server_v5.py",
+    "server_health.py",
     "shokker_engine_v2.py",
     "engine/compose.py",
     "engine/core.py",
@@ -35,11 +38,19 @@
     "engine/micro_flake_shift.py",
     "engine/spec_patterns.py",
     "engine/spec_paint.py",
+    "engine/color_shift.py",
+    "engine/prizm.py",
     "engine/pattern_expansion.py",
     "engine/expansions/arsenal_24k.py",
+    "engine/expansions/color_monolithics.py",
+    "engine/expansions/color_clash.py",
     "engine/expansions/fusions.py",
+    "engine/expansions/living_finishes.py",
     "engine/expansions/atelier.py",
     "engine/expansions/paradigm.py",
+    "engine/expansions/owner_review_effects.py",
+    "engine/expansions/owner_review_chameleon.py",
+    "engine/expansions/owner_review_standalone.py",
     "engine/paint_v2/brushed_directional.py",
     "engine/paint_v2/candy_special.py",
     "engine/paint_v2/exotic_metal.py",
@@ -47,6 +58,9 @@
     "engine/paint_v2/metallic_flake.py",
     "engine/paint_v2/metallic_standard.py",
     "engine/paint_v2/paint_technique.py",
+    "engine/paint_v2/cultural_rising_sun.py",
+    "engine/paint_v2/cultural_union_jacked.py",
+    "engine/paint_v2/cultural_viva_mexico.py",
     "engine/paint_v2/paradigm_scifi.py",
     "engine/paint_v2/structural_color.py",
     "engine/registry_patches/candy_special_reg.py",
@@ -56,5 +70,10 @@
     "engine/perceptual_color_shift.py",
     "engine/base_registry_data.py",
     "engine/registry.py"
+  ],
+  "directories": [
+    "assets/reference_textures/cultural/rising_sun",
+    "assets/reference_textures/cultural/viva_mexico",
+    "assets/reference_textures/cultural/union_jacked"
   ]
 }

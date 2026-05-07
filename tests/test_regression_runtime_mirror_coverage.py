@@ -75,11 +75,14 @@ KEY_PYTHON_FILES = [
     "shokker_24k_expansion.py",
     "shokker_color_monolithics.py",
     "shokker_fusions_expansion.py",
+    "engine/expansions/owner_review_effects.py",
 ]
 
 # Key JS files (subset of the front-end manifest).
 KEY_JS_FILES = [
     "paint-booth-0-finish-data.js",
+    "paint-booth-0-catalog-scorecard.js",
+    "paint-booth-0-picker-owner-ratings.js",
     "paint-booth-2-state-zones.js",
     "paint-booth-3-canvas.js",
     "paint-booth-5-api-render.js",
@@ -129,13 +132,17 @@ def test_runtime_manifest_structure_is_stable():
     assert "targets" in manifest and isinstance(manifest["targets"], list), (
         "runtime-sync-manifest.json lost its `targets` array. Schema changed."
     )
+    assert "directories" in manifest and isinstance(manifest["directories"], list), (
+        "runtime-sync-manifest.json lost its `directories` array for shipped asset folders."
+    )
 
     file_count = len(manifest["files"])
     target_count = len(manifest["targets"])
+    directory_count = len(manifest["directories"])
 
-    assert file_count == 48, (
+    assert file_count == 56, (
         f"runtime-sync manifest now lists {file_count} files "
-        f"(expected 48 = 17 front-end + 31 Python hot-path modules). "
+        f"(expected 56 = 19 front-end + 37 Python hot-path modules). "
         f"Confirm each added/removed entry is either a front-end "
         f"asset or an explicitly-synced Python module; tests and "
         f"build artifacts must never be added. Update this count "
@@ -147,6 +154,11 @@ def test_runtime_manifest_structure_is_stable():
         f"mirror targets: `electron-app/server` and "
         f"`electron-app/server/pyserver/_internal`. Confirm any "
         f"addition is intentional."
+    )
+    assert directory_count == 2, (
+        f"runtime-sync manifest now lists {directory_count} directories "
+        f"(expected 2 cultural texture folders). Confirm shipped image "
+        f"asset folders are intentional and do not include raw source dumps."
     )
 
     expected_targets = {
@@ -184,6 +196,7 @@ def test_runtime_manifest_contains_no_test_or_artifact_files():
         "config.py",
         "server.py",
         "server_v5.py",
+        "server_health.py",
         "engine/compose.py",
         "engine/core.py",
         "engine/dual_color_shift.py",
@@ -193,10 +206,15 @@ def test_runtime_manifest_contains_no_test_or_artifact_files():
         "engine/pattern_expansion.py",
         "engine/expansions/arsenal_24k.py",
         "engine/expansions/fusions.py",
+        "engine/expansions/living_finishes.py",
         "engine/expansions/atelier.py",
         "engine/expansions/paradigm.py",
+        "engine/expansions/owner_review_effects.py",
+        "engine/expansions/owner_review_standalone.py",
         "engine/paint_v2/brushed_directional.py",
         "engine/paint_v2/candy_special.py",
+        "engine/paint_v2/cultural_rising_sun.py",
+        "engine/paint_v2/cultural_viva_mexico.py",
         "engine/paint_v2/exotic_metal.py",
         "engine/paint_v2/foundation_enhanced.py",
         "engine/paint_v2/metallic_flake.py",
@@ -232,6 +250,23 @@ def test_runtime_manifest_contains_no_test_or_artifact_files():
         "runtime-sync manifest contains files that don't belong:\n  "
         + "\n  ".join(leaks)
     )
+
+
+def test_runtime_manifest_mirrors_cultural_texture_directories():
+    manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
+    directories = set(manifest.get("directories", []))
+
+    expected = {
+        "assets/reference_textures/cultural/rising_sun",
+        "assets/reference_textures/cultural/viva_mexico",
+    }
+    assert expected <= directories
+
+    for rel_dir in expected:
+        root_dir = REPO / rel_dir
+        assert (root_dir / "manifest.json").is_file(), f"{rel_dir} is missing manifest.json"
+        textures = list(root_dir.glob("*.png"))
+        assert textures, f"{rel_dir} has no shipped texture PNGs"
 
 
 def test_backend_assets_list_includes_core_python_mirrors():

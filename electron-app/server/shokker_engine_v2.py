@@ -8772,6 +8772,13 @@ def _ensure_expansions_loaded():
         _normalize_classic_foundation_contract()
     if "_spb_apply_regular_base_quality_wrappers" in globals():
         _spb_apply_regular_base_quality_wrappers()
+    # SPB-WILDS 2026-08-25 — isolated owner-test rollout. Only the fourteen
+    # native-reviewed survivors are present on this experimental branch.
+    try:
+        from engine.expansions.fractured_wilds_accepted_2026 import install_into_engine as _wilds_test_install
+        print("  [Fractured-Wilds-Owner-Test] " + _wilds_test_install(MONOLITHIC_REGISTRY))
+    except Exception as _wilds_test_err:
+        print(f"  [Fractured-Wilds-Owner-Test] warning: {_wilds_test_err}")
     if "_spb_apply_monolithic_contract_guards" in globals():
         _spb_apply_monolithic_contract_guards()
 

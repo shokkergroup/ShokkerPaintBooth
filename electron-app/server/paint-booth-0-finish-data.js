@@ -1055,6 +1055,7 @@ const _SPECIALS_SHOKKER = {
     "Angle SHOKK": ["chameleon", "color_flip_wrap", "pagani_tricolore"],
     "Extreme & Experimental": ["bioluminescent", "dark_matter", "holographic_base", "neutron_star", "plasma_core", "quantum_black", "solar_panel", "superconductor", "prismatic", "liquid_obsidian", "vantablack"],
     "★ NEON UNDERGROUND": ["neon_pink_blaze", "neon_toxic_green", "neon_electric_blue", "neon_blacklight", "neon_orange_hazard", "neon_red_alert", "neon_cyber_yellow", "neon_ice_white", "neon_dual_glow", "neon_rainbow_tube"],
+    "🌿 FRACTURED WILDS · OWNER TEST": ["fmo_morpho_blue", "fc_webbed_membrane", "fpe_amber_plankton", "fc_bark_camo", "fmo_raven_flash", "fpe_violet_garden", "fmo_soap_bubble", "fmo_monarch_vein", "fmo_nacre_brick", "fmo_hummingbird_gorget", "fmo_scarab_horn", "fmo_moonstone_adular", "fmo_oil_slick", "fmo_fire_agate"],
 };
 
 const _SPECIALS_COLOR_SCIENCE = {
@@ -1148,7 +1149,7 @@ const _SPECIALS_EFFECTS_VISION = {
 // 25 Multi-Spectrum finishes were scrubbed entirely per user request.
 const SPECIALS_SECTION_ORDER = ["SHOKKER", "Color Science", "Material World", "Fusion Lab", "Atmosphere", "Signal", "Effects & Vision"];
 const SPECIALS_SECTIONS = {
-    "SHOKKER": ["PARADIGM", "★ COLORSHOXX", "★ MORTAL SHOKK", "★ NEON UNDERGROUND", "★ ANIME INSPIRED", "★ IRIDESCENT INSECTS", "Shokk Series", "Angle SHOKK", "Extreme & Experimental"],
+    "SHOKKER": ["PARADIGM", "★ COLORSHOXX", "★ MORTAL SHOKK", "★ NEON UNDERGROUND", "🌿 FRACTURED WILDS · OWNER TEST", "★ ANIME INSPIRED", "★ IRIDESCENT INSECTS", "Shokk Series", "Angle SHOKK", "Extreme & Experimental"],
     "Color Science": ["Chameleon", "Aurora & Chromatic Flow", "Chromatic Flake", "Prizm", "Color-Shift Adaptive", "Color-Shift Presets", "Color-Shift Duos", "Color Clash", "Gradient Directional", "Gradient Vortex", "Gradient Extended"],
     "Material World": ["Atelier — Ultra Detail", "Metals & Forged", "Glass & Surface", "Leather & Texture", "Standalone Effects", "Brushed & Machined", "Clearcoat Effects", "Ornamental", "Natural & Organic", "Surface Treatment", "Geometric & Structural", "Optical & Light", "Particles & Textures", "Patterns & Effects"],
     "Fusion Lab": ["Ghost Geometry", "Depth Illusion", "Material Gradients", "Directional Grain", "Reactive Panels", "Sparkle Systems", "Multi-Scale Texture", "Weather & Age", "Exotic Physics", "Tri-Zone Materials", "Metallic Halos", "Light Waves", "Fractal Chaos", "Spectral Reactive", "Panel Quilting", "Surface Accent"],
@@ -1183,6 +1184,21 @@ Object.keys(SPECIAL_GROUPS).forEach(function (groupName) {
 });
 
 const MONOLITHICS = [
+    // SPB-WILDS 2026-08-25: only native-reviewed experimental survivors.
+    { id: "fmo_morpho_blue", name: "Morpho Blue", desc: "Independent nanoridge wing-scale structure with strong Fractured optical travel.", swatch: "linear-gradient(135deg, #10275f, #11a7ea, #7937df)" },
+    { id: "fc_webbed_membrane", name: "Webbed Membrane", desc: "Stretched translucent membrane cells bounded by an irregular causal vein network.", swatch: "linear-gradient(135deg, #16493f, #1cbca9, #b7f1d7)" },
+    { id: "fpe_amber_plankton", name: "Amber Plankton", desc: "Chaotically folded plankton chemistry with independent Fractured source populations.", swatch: "linear-gradient(135deg, #35120b, #e36e0e, #ffdc61)" },
+    { id: "fc_bark_camo", name: "Bark Camo", desc: "Dense cambium anatomy, bark furrows, scars and fine forest-shadow color flipping.", swatch: "linear-gradient(135deg, #172412, #647934, #d39243)" },
+    { id: "fmo_raven_flash", name: "Raven Flash", desc: "Nematic feather domains with fine barb anatomy and blue-violet-green flash.", swatch: "linear-gradient(135deg, #080b16, #274bb9, #34a77d)" },
+    { id: "fpe_violet_garden", name: "Violet Garden", desc: "A dense biological growth sheet with causal buds, membranes and vascular detail.", swatch: "linear-gradient(135deg, #261040, #9c3ada, #f183c5)" },
+    { id: "fmo_soap_bubble", name: "Soap Bubble", desc: "Thin-film bubble domains with changing spectral rims and restrained interior material.", swatch: "linear-gradient(135deg, #112331, #42e4e2, #f05bd0)" },
+    { id: "fmo_monarch_vein", name: "Monarch Vein", desc: "Layered wing scales, closed cross-veins, collars, faults and color-flipping anatomy.", swatch: "linear-gradient(135deg, #1b1010, #f06a13, #1dc8d1)" },
+    { id: "fmo_nacre_brick", name: "Nacre Brick", desc: "Unequal overlapping nacre tablets with independent seams, chips and optical faces.", swatch: "linear-gradient(135deg, #49445f, #e3a9d9, #7ee5dd)" },
+    { id: "fmo_hummingbird_gorget", name: "Hummingbird Gorget", desc: "Phase-folded gorget blades with fine lamellae and extreme jewel-color travel.", swatch: "linear-gradient(135deg, #142a38, #0de0bb, #ed2aa7)" },
+    { id: "fmo_scarab_horn", name: "Scarab Horn", desc: "Bouligand chitin layers, horn ridges and attached material transitions.", swatch: "linear-gradient(135deg, #15251b, #17a866, #c2a42d)" },
+    { id: "fmo_moonstone_adular", name: "Moonstone Adular", desc: "Fine adularescent relief with layered blue light pockets and mineral seams.", swatch: "linear-gradient(135deg, #34364f, #73b9ec, #e5d8f0)" },
+    { id: "fmo_oil_slick", name: "Oil Slick", desc: "Advected thin-film folds with sharp attached ridges and full-spectrum Fractured travel.", swatch: "linear-gradient(135deg, #171523, #19c7b1, #e33c87)" },
+    { id: "fmo_fire_agate", name: "Fire Agate", desc: "Layered chalcedony fire sheets with fine crowns, seams and independent spec structure.", swatch: "linear-gradient(135deg, #30130d, #dd4a10, #ffd33e)" },
     // ★ COLORSHOXX WAVE 3 — Micro-Flake Color Shift (migrated from MICRO-FLAKE COLOR SHIFT)
     // 2-color micro-flake shifts
     { id: "cx_gold_green", name: "CX Gold-Green Flake", desc: "Warm gold with green-gold micro-flakes. Subtle shift — the car breathes between gold and olive.", swatch: "linear-gradient(135deg, #D4A017 0%, #8B9A1E 100%)" },

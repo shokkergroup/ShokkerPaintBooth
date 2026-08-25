@@ -1055,7 +1055,7 @@ const _SPECIALS_SHOKKER = {
     "Angle SHOKK": ["chameleon", "color_flip_wrap", "pagani_tricolore"],
     "Extreme & Experimental": ["bioluminescent", "dark_matter", "holographic_base", "neutron_star", "plasma_core", "quantum_black", "solar_panel", "superconductor", "prismatic", "liquid_obsidian", "vantablack"],
     "★ NEON UNDERGROUND": ["neon_pink_blaze", "neon_toxic_green", "neon_electric_blue", "neon_blacklight", "neon_orange_hazard", "neon_red_alert", "neon_cyber_yellow", "neon_ice_white", "neon_dual_glow", "neon_rainbow_tube"],
-"🌿 FRACTURED WILDS · OWNER TEST": ["fmo_morpho_blue", "fc_webbed_membrane", "fpe_amber_plankton", "fc_bark_camo", "fmo_raven_flash", "fpe_violet_garden", "fmo_soap_bubble", "fmo_monarch_vein", "fmo_nacre_brick", "fmo_hummingbird_gorget", "fmo_scarab_horn", "fmo_moonstone_adular", "fmo_oil_slick", "fmo_fire_agate", "fpe_cyan_spineball", "fc_feathered_wing", "fmo_owl_eye", "fbl_leaf_whorl", "fbl_magenta_whorl", "fpe_cyan_colony"],
+"🌿 FRACTURED WILDS · OWNER TEST": ["fmo_morpho_blue", "fc_webbed_membrane", "fpe_amber_plankton", "fc_bark_camo", "fmo_raven_flash", "fpe_violet_garden", "fmo_soap_bubble", "fmo_monarch_vein", "fmo_nacre_brick", "fmo_hummingbird_gorget", "fmo_scarab_horn", "fmo_moonstone_adular", "fmo_oil_slick", "fmo_fire_agate", "fpe_cyan_spineball", "fc_feathered_wing", "fmo_owl_eye", "fbl_leaf_whorl", "fbl_magenta_whorl", "fpe_cyan_colony", "fc_dragon_hex_glass"],
 };
 
 const _SPECIALS_COLOR_SCIENCE = {
@@ -1205,6 +1205,7 @@ const MONOLITHICS = [
     { id: "fbl_leaf_whorl", name: "Leaf Whorl", desc: "An asymmetric differential-growth lamina with nested lips, split veins, serrated fronts, rupture windows and color-flipping whorl history.", swatch: "linear-gradient(135deg, #06151d, #16a67a, #c9dc4f, #eb7d7d, #762b92)" },
     { id: "fbl_magenta_whorl", name: "Magenta Whorl", desc: "A multi-focus folded-growth lamina with crossed growth lips, split fans, cusp folds, wound windows and color-flipping repair seams.", swatch: "linear-gradient(135deg, #200539, #a51f90, #ed6382, #d6d34c, #21aa91)" },
     { id: "fpe_cyan_colony", name: "Cyan Colony", desc: "A deterministic reaction-diffusion pellicle of advancing growth fronts, nutrient terraces, pores, capillary forks, repair skins and Fractured color-flipping broth.", swatch: "linear-gradient(135deg, #082e3a, #0d8c88, #4fc899, #d6d86d, #d44f93)" },
+    { id: "fc_dragon_hex_glass", name: "Dragon Hex Glass", desc: "An aperiodic micro-scute cuticle with double keratin walls, hinge bands, molting notches, stress bridges and a radical Fractured green-gold to violet face flip.", swatch: "linear-gradient(135deg, #092039, #1b876f, #9ac95a, #e5bc4c, #6b247d)" },
     // ★ COLORSHOXX WAVE 3 — Micro-Flake Color Shift (migrated from MICRO-FLAKE COLOR SHIFT)
     // 2-color micro-flake shifts
     { id: "cx_gold_green", name: "CX Gold-Green Flake", desc: "Warm gold with green-gold micro-flakes. Subtle shift — the car breathes between gold and olive.", swatch: "linear-gradient(135deg, #D4A017 0%, #8B9A1E 100%)" },

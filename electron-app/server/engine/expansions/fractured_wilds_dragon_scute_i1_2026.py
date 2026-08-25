@@ -13,6 +13,13 @@ from functools import lru_cache
 from pathlib import Path
 import cv2,numpy as np
 ID,ATTEMPT,WORK,NATIVE="fc_dragon_hex_glass",114,512,2048
+# SPB-105 / Wilds owner review 2026-08-25: "unnatural border ... noticeable
+# and messed up" when scale is reduced.  The old finite 512 field allowed
+# Voronoi cells on the visible perimeter to grow without external neighbours.
+# Build a larger continuous dermis and crop its protected interior instead;
+# this changes the physical growth boundary, never hides it with noise. Exact
+# rerun: M7 99.0 -> 99.4; cold/warm authored runs 0.304/0.098/0.097 s.
+FIELD, CROP = 640, 64
 PA=np.asarray(((6,13,25),(10,28,48),(14,50,70),(19,76,92),(28,106,107),(47,140,111),(83,171,104),(132,194,90),(184,207,75),(224,193,75),(238,145,83),(223,83,108),(181,45,128),(111,27,121)),np.float32)/255
 PB=np.asarray(((10,6,33),(25,11,63),(46,20,94),(73,32,122),(107,42,137),(148,49,133),(191,61,116),(226,93,96),(243,139,78),(224,183,72),(169,207,80),(92,195,107),(37,157,129),(13,99,125)),np.float32)/255
 MT=np.asarray((13,42,75,110,148,186,223,250),np.uint8);RT=np.asarray((18,47,79,114,151,189,226,252),np.uint8);CT=np.asarray((9,34,63,98,136,177,216,250),np.uint8)
@@ -21,13 +28,13 @@ def _map(t,p):q=np.mod(t,1)*len(p);i=np.floor(q).astype(np.int16)%len(p);f=(q-np
 def _hash(label,a,b):return _fract(label*a+b*np.sin(label*.61803398875))
 @lru_cache(maxsize=1)
 def _fields():
- seeds=np.ones((WORK,WORK),np.uint8)
+ seeds=np.ones((FIELD,FIELD),np.uint8)
  # A dense but non-grid growth chronology: each site is warped before it
  # becomes a growth centre.  Collisions are irregular keratin boundaries.
- for n in range(1,5001):
+ for n in range(1,7814):
   u=_fract(n*1.61803398875+.17*np.sin(n*1.41421356237));v=_fract(n*1.32471795724+.13*np.sin(n*2.2360679775+.31))
-  x=(u+.031*np.sin(11*v+3*u)+.018*np.sin(29*v-7*u))*WORK;y=(v+.026*np.sin(13*u-4*v)+.017*np.cos(31*u+5*v))*WORK
-  seeds[int(np.clip(round(y),0,WORK-1)),int(np.clip(round(x),0,WORK-1))]=0
+  x=(u+.031*np.sin(11*v+3*u)+.018*np.sin(29*v-7*u))*FIELD;y=(v+.026*np.sin(13*u-4*v)+.017*np.cos(31*u+5*v))*FIELD
+  seeds[int(np.clip(round(y),0,FIELD-1)),int(np.clip(round(x),0,FIELD-1))]=0
  dist,labels=cv2.distanceTransformWithLabels(seeds,cv2.DIST_L2,3,labelType=cv2.DIST_LABEL_PIXEL);labels=labels.astype(np.int32)
  boundary=((labels!=np.roll(labels,1,0))|(labels!=np.roll(labels,-1,0))|(labels!=np.roll(labels,1,1))|(labels!=np.roll(labels,-1,1))).astype(np.uint8)
  outer=cv2.dilate(boundary,np.ones((3,3),np.uint8)).astype(np.float32);inner=cv2.dilate(boundary,np.ones((5,5),np.uint8)).astype(np.float32)-outer
@@ -38,11 +45,12 @@ def _fields():
  cortex=np.clip(centre*(.54+.46*h1),0,1);hinge=np.exp(-np.square((interior-(1.8+1.9*h2))/(.65+.25*h1))).astype(np.float32)
  # Molting is a wedge-like subtraction selected by a cell's physical growth
  # age and its inward normal direction; the result remains attached to walls.
- yy,xx=np.mgrid[0:WORK,0:WORK].astype(np.float32);ang=np.arctan2(yy-(labels//WORK),xx-(labels%WORK));notch=((h1>.80)&(np.sin(ang*2.0+h2*6.3)>.63)&(interior<3.6)).astype(np.float32)
+ yy,xx=np.mgrid[0:FIELD,0:FIELD].astype(np.float32);ang=np.arctan2(yy-(labels//FIELD),xx-(labels%FIELD));notch=((h1>.80)&(np.sin(ang*2.0+h2*6.3)>.63)&(interior<3.6)).astype(np.float32)
  bridge=((h2>.86)&(boundary>0)&(np.sin(xx*.61+yy*.43+h1*9)>.72)).astype(np.float32);bridge=cv2.dilate(bridge,np.ones((3,3),np.uint8)).astype(np.float32)
  stress=np.clip(np.abs(cv2.Sobel(cortex,cv2.CV_32F,1,0,ksize=3))+np.abs(cv2.Sobel(cortex,cv2.CV_32F,0,1,ksize=3)),0,1)
  phase=.17*h1+.21*h2+.26*cortex+.15*hinge-.14*notch+.10*stress
- return {"scute_outer_walls":outer,"scute_inner_walls":inner,"keratin_cortex":cortex,"hinge_bands":hinge,"molting_notches":notch,"stress_bridges":bridge,"stress_crazing":stress,"phase":phase}
+ fields={"scute_outer_walls":outer,"scute_inner_walls":inner,"keratin_cortex":cortex,"hinge_bands":hinge,"molting_notches":notch,"stress_bridges":bridge,"stress_crazing":stress,"phase":phase}
+ return {key:value[CROP:CROP+WORK,CROP:CROP+WORK].copy() for key,value in fields.items()}
 def _paint(b=False):
  f=_fields();t=.08+f["phase"]+.17*f["hinge_bands"]+.12*f["stress_bridges"]-.16*f["molting_notches"]
  if b:t=.52-t+.18*f["scute_inner_walls"]+.13*f["stress_crazing"]-.15*f["scute_outer_walls"]

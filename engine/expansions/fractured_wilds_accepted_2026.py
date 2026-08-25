@@ -42,6 +42,7 @@ ACCEPTED_IDS = (
     "fpe_cyan_spineball",
     "fc_feathered_wing",
     "fmo_owl_eye",
+    "fbl_leaf_whorl",
 )
 
 
@@ -123,6 +124,9 @@ def _accepted_authored(fid: str) -> tuple[np.ndarray, np.ndarray]:
         paint, spec = module._authored()
     elif fid == "fmo_owl_eye":
         from . import fractured_wilds_owl_eye_ocellus_i1_2026 as module
+        paint, spec = module._authored()
+    elif fid == "fbl_leaf_whorl":
+        from . import fractured_wilds_leaf_whorl_lamina_i2_2026 as module
         paint, spec = module._authored()
     else:
         raise KeyError(f"Wilds ID is not accepted for runtime override: {fid}")

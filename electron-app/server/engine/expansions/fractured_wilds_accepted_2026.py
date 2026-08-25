@@ -44,6 +44,7 @@ ACCEPTED_IDS = (
     "fmo_owl_eye",
     "fbl_leaf_whorl",
     "fbl_magenta_whorl",
+    "fpe_cyan_colony",
 )
 
 
@@ -135,6 +136,13 @@ def _accepted_authored(fid: str) -> tuple[np.ndarray, np.ndarray]:
         # collision triage vs. 18 survivors max 0.211625/0.071981, A/B
         # mean/p95 0.109693/0.325490, native 0.487-0.538 s. M7 pending.
         from . import fractured_wilds_magenta_whorl_i1_2026 as module
+        paint, spec = module._authored()
+    elif fid == "fpe_cyan_colony":
+        # SPB-105 / Wilds attempt 111 / 2026-08-25. Owner-test provisional:
+        # deterministic reaction-diffusion pellicle, not a recolored cell/grid;
+        # M7 86.5, A/B mean/p95 0.101957/0.313725, native 0.167-0.183 s;
+        # collision vs. 19 survivors max paint/spec 0.153929/0.038393.
+        from . import fractured_wilds_cyan_colony_reaction_i2_2026 as module
         paint, spec = module._authored()
     else:
         raise KeyError(f"Wilds ID is not accepted for runtime override: {fid}")

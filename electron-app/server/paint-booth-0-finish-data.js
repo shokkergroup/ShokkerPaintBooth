@@ -1055,7 +1055,7 @@ const _SPECIALS_SHOKKER = {
     "Angle SHOKK": ["chameleon", "color_flip_wrap", "pagani_tricolore"],
     "Extreme & Experimental": ["bioluminescent", "dark_matter", "holographic_base", "neutron_star", "plasma_core", "quantum_black", "solar_panel", "superconductor", "prismatic", "liquid_obsidian", "vantablack"],
     "★ NEON UNDERGROUND": ["neon_pink_blaze", "neon_toxic_green", "neon_electric_blue", "neon_blacklight", "neon_orange_hazard", "neon_red_alert", "neon_cyber_yellow", "neon_ice_white", "neon_dual_glow", "neon_rainbow_tube"],
-    "🌿 FRACTURED WILDS · OWNER TEST": ["fmo_morpho_blue", "fc_webbed_membrane", "fpe_amber_plankton", "fc_bark_camo", "fmo_raven_flash", "fpe_violet_garden", "fmo_soap_bubble", "fmo_monarch_vein", "fmo_nacre_brick", "fmo_hummingbird_gorget", "fmo_scarab_horn", "fmo_moonstone_adular", "fmo_oil_slick", "fmo_fire_agate"],
+    "🌿 FRACTURED WILDS · OWNER TEST": ["fmo_morpho_blue", "fc_webbed_membrane", "fpe_amber_plankton", "fc_bark_camo", "fmo_raven_flash", "fpe_violet_garden", "fmo_soap_bubble", "fmo_monarch_vein", "fmo_nacre_brick", "fmo_hummingbird_gorget", "fmo_scarab_horn", "fmo_moonstone_adular", "fmo_oil_slick", "fmo_fire_agate", "fpe_cyan_spineball"],
 };
 
 const _SPECIALS_COLOR_SCIENCE = {
@@ -1199,6 +1199,7 @@ const MONOLITHICS = [
     { id: "fmo_moonstone_adular", name: "Moonstone Adular", desc: "Fine adularescent relief with layered blue light pockets and mineral seams.", swatch: "linear-gradient(135deg, #34364f, #73b9ec, #e5d8f0)" },
     { id: "fmo_oil_slick", name: "Oil Slick", desc: "Advected thin-film folds with sharp attached ridges and full-spectrum Fractured travel.", swatch: "linear-gradient(135deg, #171523, #19c7b1, #e33c87)" },
     { id: "fmo_fire_agate", name: "Fire Agate", desc: "Layered chalcedony fire sheets with fine crowns, seams and independent spec structure.", swatch: "linear-gradient(135deg, #30130d, #dd4a10, #ffd33e)" },
+    { id: "fpe_cyan_spineball", name: "Cyan Spineball", desc: "One close-cropped radiolarian cage with fine shell panels, inner windows, fracture corridors, spine roots and broken sockets.", swatch: "linear-gradient(135deg, #063f65, #24c99c, #f3e86d, #df71da)" },
     // ★ COLORSHOXX WAVE 3 — Micro-Flake Color Shift (migrated from MICRO-FLAKE COLOR SHIFT)
     // 2-color micro-flake shifts
     { id: "cx_gold_green", name: "CX Gold-Green Flake", desc: "Warm gold with green-gold micro-flakes. Subtle shift — the car breathes between gold and olive.", swatch: "linear-gradient(135deg, #D4A017 0%, #8B9A1E 100%)" },

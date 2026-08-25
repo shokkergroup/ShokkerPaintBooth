@@ -1055,7 +1055,7 @@ const _SPECIALS_SHOKKER = {
     "Angle SHOKK": ["chameleon", "color_flip_wrap", "pagani_tricolore"],
     "Extreme & Experimental": ["bioluminescent", "dark_matter", "holographic_base", "neutron_star", "plasma_core", "quantum_black", "solar_panel", "superconductor", "prismatic", "liquid_obsidian", "vantablack"],
     "★ NEON UNDERGROUND": ["neon_pink_blaze", "neon_toxic_green", "neon_electric_blue", "neon_blacklight", "neon_orange_hazard", "neon_red_alert", "neon_cyber_yellow", "neon_ice_white", "neon_dual_glow", "neon_rainbow_tube"],
-"🌿 FRACTURED WILDS · OWNER TEST": ["fmo_morpho_blue", "fc_webbed_membrane", "fpe_amber_plankton", "fc_bark_camo", "fmo_raven_flash", "fpe_violet_garden", "fmo_soap_bubble", "fmo_monarch_vein", "fmo_nacre_brick", "fmo_hummingbird_gorget", "fmo_scarab_horn", "fmo_moonstone_adular", "fmo_oil_slick", "fmo_fire_agate", "fpe_cyan_spineball", "fc_feathered_wing", "fmo_owl_eye", "fbl_leaf_whorl", "fbl_magenta_whorl", "fpe_cyan_colony", "fc_dragon_hex_glass"],
+"🌿 FRACTURED WILDS · OWNER TEST": ["fmo_morpho_blue", "fpe_amber_plankton", "fpe_violet_garden", "fmo_soap_bubble", "fmo_nacre_brick", "fpe_cyan_spineball", "fpe_cyan_colony", "fc_dragon_hex_glass"],
 };
 
 const _SPECIALS_COLOR_SCIENCE = {
